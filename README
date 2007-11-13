@@ -1,0 +1,73 @@
+= Buildr
+
+This is Buildr, the build system that doesn't suck.
+
+http://incubator.apache.org/buildr/
+
+== Get Started
+
+=== Install Buildr:
+Make sure to set JAVA_HOME environment variable first, then:
+
+  gem install buildr
+
+(Use su for Linux and OS/X)
+
+=== RTFM:
+
+* Buildr documentation: http://incubator.apache.org/buildr/
+* More about Rake: http://docs.rubyrake.org
+* Antwrap documentation: http://antwrap.rubyforge.org
+
+=== Mailing list:
+
+* Users: buildr-user@incubator.apache.org (subscribe: buildr-user-subscribe@incubator.apache.org, archive: http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/
+
+* Developers: buildr-dev@incubator.apache.org (subscribe: buildr-dev-subscribe@incubator.apache.org, archive: http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/
+
+Create your own Buildfile and start living the life!
+
+
+== Where's My Ruby?
+
+Buildr needs Ruby 1.8 or later and RubyGems 0.9 or later. All other dependencies are installed when you run:
+  gem install buildr
+
+=== Windows
+
+Windows users can get the one-click Ruby installer, which includes the latest version of Ruby and RubyGems:
+
+http://rubyinstaller.rubyforge.org
+
+=== Linux and OS/X
+
+If you're running Linux or OS/X you may already have Ruby installed, or you can get it through the usual channels:
+  yum install ruby
+  apt-get install ruby
+  emerge ruby
+
+You can get RubyGems here: http://rubyforge.org/frs/?group_id=126
+
+To install:
+  tar -xz < rubygems-0.9.2.tgz
+  cd rubygems-0.9.2
+  sudo ruby setup.rb
+  sudo gem install rubygems-update
+
+
+== Living On the Edge
+
+You can check the latest sources from SVN:
+  svn co http://svn.apache.org/repos/asf/incubator/buildr/trunk
+Or browse the SVN repository online: http://svn.apache.org/repos/asf/incubator/buildr
+
+To install Buildr locally from source, do:
+
+  cd buildr
+  rake install
+
+If the cutting edge doesn't work, make sure to check the CHANGELOG, to see which changes might have broken your build.
+
+== License
+
+:include:LICENSE

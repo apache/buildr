@@ -1,0 +1,252 @@
+h1. More Stuff
+
+h2. Help Tasks
+
+Buildr includes a number of informative tasks.  Currently that number stands at two, but we'll be adding more tasks in future releases.
+
+To start with, type:
+
+{{{!sh
+$ buildr help
+}}}
+
+You can list the name and description of all your projects using the @help:projects@ task.  For example:
+
+{{{!sh
+$ buildr help:projects
+killer-app                 # Code. Build. ??? Profit!
+killer-app:teh-api         # Abstract classes and interfaces
+killer-app:teh-impl        # All those implementation details
+killer-app:la-web          # What our users see
+}}}
+
+You are, of course, describing your projects for the sake of those who will maintain your code, right?  To describe a project, or a task, call the @desc@ method before the project or task definition.
+
+
+h2. Peronsal Settings and Environment Variables
+
+Some things clearly do not belong in the Buildfile.  For example, the username/password you use to upload releases.  If you're working in a team or making the source code available, you'd want to keep these in a separate place.  You may want to pick a different location for the local repository, or use a different remote repository than everyone else, etc.
+
+Besides loading the Buildfile, Buildr will also attempt to load two @buildr.rb@ files.  It looks for the first @buildr.rb@ file in your home directory.  That's the file you would use to define personal settings.  It then looks for the second @buildr.rb@ file in the project directory.  You can use that one to over-ride settings specific to that project.
+
+Here's an example @buildr.rb@, not one I actually use, but close enough:
+
+{{{!ruby
+# Only I should know that
+repositories.upload_to[:username] = "assaf"
+repositories.upload_to[:password] = "supersekreet"
+# Search here first, it's faster
+repositories.remote << "http://inside-the-firewall"
+}}} 
+
+Environment variables are another way to set personal settings.  Here's an example for a Buildfile that will read the username/password from environment variables:
+
+{{{!ruby
+repositories.upload_to[:username] = ENV["USERNAME"]
+repositories.upload_to[:password] = ENV["PASSWORD"]
+}}}
+
+Build itself uses several environment variables, some more common, some specific to Buildr:
+
+*JAVA_HOME* -- Points to your JDK, required for running Buildr.
+
+*JAVA_OPTS/JAVA_OPTIONS* -- Command line options to pass to the JDK (e.g. @"-Xms1g"@)[1].
+
+*HTTP_PROXY* -- URL for HTTP proxy server (see "Specifying Repositories":artifacts.html#specifying_repositories).
+
+*NO_PROXY* -- Comma separated list of hosts and domain that should not be proxied (see "Specifying Repositories":artifacts.html#specifying_repositories).
+
+*DEBUG* -- Set to @off@ if you want Buildr to compile without debugging information (default when running @release@, see "Compiling":building.html#compiling).
+
+*TEST* -- Set to @off@ to tell Buildr to skip tests, or @all@ to tell Buildr to run all tests and ignore failures (see "Running Tests":testing.html#running_tests).
+
+*BUILDR_ENV* -- Environment name that you can also set using the @-e@ command line option.
+
+Some Buildfiles depend on the environment in which they are running, and may work differently in development, QA, production, etc.  Setting the environment name is a simple mechanism to control the Buildfile behavior.
+
+You set the environment name either using the @BUILDR_ENV@ environment variable, or the @-e@ command line option.  For example:
+
+{{{!sh
+$ export BUILDR_ENV=development
+$ buildr
+(in /home/john/project, development)
+. . .
+$ buildr -e production
+(in /home/john/project, production)
+. . .
+}}}
+
+From the Buildfile, you can access the environment name using @Buildr.environment@, and in some contexts, simply by calling @environment@.  For example:
+
+{{{!ruby
+project 'db-module' do
+  db = (environment == 'production' ? 'oracle' : 'hsql')
+  resources.filter.using :database=>db
+end
+}}}
+
+
+h2. Eclipse, IDEA
+
+If you're using Eclipse, you can generate @.classpath@ and @.project@ from your Buildfile and use them to create a project in your workspace:
+
+{{{!sh
+$ buildr eclipse
+}}}
+
+The @eclipse@ task will generate a @.classpath@ and @.project@ file for each of projects (and sub-project) that compiles source code.  It will not generate files for other projects, for examples, projects you use strictly for packaging a distribution, or creating command line scripts, etc.
+
+If you add a new project, change the dependencies, or make any other change to your Buildfile, just run the @eclipse@ task again to re-generate the Eclipse project files.
+
+If you prefer IntelliJ IDEA, you can always:
+
+{{{!sh
+$ buildr idea
+}}}
+
+It will generate a @.iml@ file for every project (or subproject) and a @.ipr@ that you can directly open for the root project.  To allow IntelliJ Idea to resolve external dependencies properly, you will need to add a @M2_REPO@ variable pointing to your Maven2 repository directory (@Settings / Path Variables@).
+
+
+h2. Cobertura, JDepend
+
+You can use "Cobertura":http://cobertura.sourceforge.net/ to instrument your code, run the tests and create a test coverage report in either HTML or XML format.
+
+There are two tasks, both of which generate a test coverage report in the @reports/cobertura@ directory.  For example:
+
+{{{!sh
+$ buildr test cobertura:html
+}}}
+
+As you can guess, the other task is @cobertura:xml@.
+
+You can use "JDepend":http://clarkware.com/software/JDepend.html on to generate design quality metrics.  There are three tasks this time, the eye candy one:
+
+{{{!sh
+$ buildr jdepend:swing
+}}}
+
+The other two tasks are @jdepend:text@ and @jdepend:xml@.
+
+We want Buildr to load fast, and not everyone cares for these tasks, so we don't include them by default.  If you want to use either one, you need to require it explicitly.  The proper way to do it in Ruby:
+
+{{{!ruby
+require "buildr/cobertura"
+require "buildr/jdepend"
+}}}
+
+You may want to add those to the Buildfile.  Alternatively, you can use these tasks for all your projects without modifying the Buildfile.  One convenient method is to add these two likes to the @buildr.rb@ file in your home directory.
+
+Another option is to require it from the command line (@--require@ or @-r@), for example:
+
+{{{!sh
+$ buildr --require buildr/jdepend jdepend:swing
+$ buildr -rbuildr/cobertura cobertura:html
+}}}
+
+
+h2. Organizing Tasks
+
+A couple of things we learned while working on Buildr.  Being able to write your own Rake tasks is a very powerful feature.  But if you find yourself doing the same thing over and over, you might also want to consider functions.  They give you a lot more power and easy abstractions.
+
+For example, we use OpenJPA in several projects.  It's a very short task, but each time I have to go back to the OpenJPA documentation to figure out how to set the Ant MappingTool task, tell Ant how to define it.  After the second time, you're recognizing a pattern and it's just easier to write a function that does all that for you.
+
+Compare this:
+
+{{{!ruby
+file("derby.sql") do
+  requires = [
+    "org.apache.openjpa:openjpa-all:jar:0.9.7-incubating",
+    "commons-collections:commons-collections:jar:3.1",
+    . . . 
+    "net.sourceforge.serp:serp:jar:1.11.0" ]
+  ant("openjpa") do |ant|
+    ant.taskdef :name=>"mapping",
+      :classname=>"org.apache.openjpa.jdbc.ant.MappingToolTask",
+      :classpath=>REQUIRES.join(File::PATH_SEPARATOR)
+      ant.mapping :schemaAction=>"build", :sqlFile=>task.name,
+        :ignoreErrors=>true do
+        ant.config :propertiesFile=>_("src/main/sql/derby.xml")
+        ant.classpath :path=>projects("store", "utils" ).
+          flatten.map(&:to_s).join(File::PATH_SEPARATOR)
+      end
+    end
+  end
+end
+}}}
+
+To this:
+
+{{{!ruby
+file("derby.sql") do
+  mapping_tool :action=>"build", :sql=>task.name,
+    :properties=>_("src/main/sql/derby.xml"),
+    :classpath=>projects("store", "utils" )
+end
+}}}
+
+I prefer the second.  It's easier to look at the Buildfile and understand what it does.  It's easier to maintain when you only have to look at the important information.
+
+But just using functions is not always enough.  You end up with a Buildfile containing a lot of code that clearly doesn't belong there.  For starters, I recommend putting it in the @tasks@ directory.  Write it into a file with a @.rake@ extension and place that in the @tasks@ directory next to the Buildfile.  Buildr will automatically pick it up and load it for you.
+
+If you want to share these pre-canned definitions between projects, you have a few more options.  You can share the @tasks@ directory using SVN externals.  Another mechanism with better version control is to package all these tasks, functions and modules into a "Gem":http://rubygems.org/ and require it from your Buildfile.  You can run your own internal Gem server for that.
+
+For individual task files, you can also use "Sake":http://errtheblog.com/post/6069 for system-wide Rake tasks deployment.
+
+
+h2. Anything Ruby Can Do
+
+Buildr is Ruby code.  That's an implementation detail for some, but a useful features for others.  You can use Ruby to keep your build scripts simple and DRY, tackle ad hoc tasks and write reusable features without the complexity of "plugins".
+
+We already showed you one example where Ruby could help.  You can use Ruby to manage dependency by setting constants and reusing them, grouping related dependencies into arrays and structures.
+
+You can use Ruby to perform ad hoc tasks.  For example, Buildr doesn't have any pre-canned task for setting file permissions.  But Ruby has a method for just, so it's just a matter of writing a task:
+
+{{{!ruby
+bins = file("target/bin"=>FileList[_("src/main/dist/bin/*")]) do |task|
+  mkpath task.name
+  cp task.prerequisites, task.name
+  chmod 0755, FileList[task.name + "/*.sh"], :verbose=>false
+end
+}}}
+
+You can use functions to keep your code simple.  For example, in the ODE project we create two binary distributions, both of which contain a common set of files, and one additional file unique to each distribution.  We use a method to define the common distribution:
+
+{{{!ruby
+def distro(project, id)
+  project.package(:zip, :id=>id).path("#{id}-#{version}").tap do |zip|
+    zip.include meta_inf + ["RELEASE_NOTES", "README"].map { |f| path_to(f) }
+    zip.path("examples").include project.path_to("src/examples"), :as=>"."
+    zip.merge project("ode:tools-bin").package(:zip)
+    zip.path("lib").include artifacts(COMMONS.logging, COMMONS.codec,
+      COMMONS.httpclient, COMMONS.pool, COMMONS.collections, JAXEN, SAXON,
+      LOG4J, WSDL4J, XALAN, XERCES)
+    project("ode").projects("utils", "tools", "bpel-compiler", "bpel-api",
+      "bpel-obj", "bpel-schemas").map(&:packages).flatten.each do |pkg|
+        zip.include(pkg.to_s, :as=>"#{pkg.id}.#{pkg.type}", :path=>"lib")
+      end
+    yield zip
+  end
+end
+}}}
+
+And then use it in the project definition:
+
+{{{!ruby
+define "distro-axis2" do
+  parent.distro(self, "#{parent.id}-war") { |zip|
+    zip.include project("ode:axis2-war").package(:war), :as=>"ode.war" }
+end
+}}}
+
+Ruby's functional style and blocks make some task extremely easy.  For example, let's say we wanted to count how many source files we have, and total number of lines:
+
+{{{!ruby
+sources = projects.map { |prj| prj.compile.sources.
+  map { |src| FileList["#{src}/**/*.java"] } }.flatten
+puts "There are #{source.size} source files"
+lines = sources.inject(0) { |lines, src| lines += File.readlines(src).size }
+puts "That contain #{lines} lines"
+}}}
+
+
+fn1. Unfortunately, Buildr does not check any of the arguments in @JAVA_OPTS@.  A common mistake is to pass an option like @mx512mb@, where it should be @Xmx512mb@.  Make sure to double check @JAVA_OPTS@.

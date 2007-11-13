@@ -1,0 +1,7 @@
+begin
+  require "buildr"
+rescue LoadError
+  require "rubygems"
+  require "buildr"
+end
+Rake.application.run

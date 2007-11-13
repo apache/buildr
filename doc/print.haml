@@ -1,0 +1,24 @@
+!!!
+%html
+  %head
+    %meta{ "http-equiv"=>"Content-Type", :content=>"text/html;charset=UTF-8" }/
+    %title= collection.title
+    %style{ :type=>"text/css" }
+      @import "css/default.css";
+      @import "css/eiffel.css";
+      @import "css/print.css";
+    %meta{ :name=>"subject", :content=>"Official Buildr documentation from the people in the know" }
+  %body
+    #wrap
+      #header
+        %img{ :src=>"images/buildr-hires.png", :alt=>collection.title }
+        .tagline= "The build system that doesn't suck"
+      #content
+        = collection.toc.to_html(:nested, :class=>"toc")
+        - pages.each do |page|
+          %h1{ :id=>page.id }= page.title
+          = page.toc.to_html(:nested, :class=>"toc")
+          ~ collect_links(renumber_footnotes(page.content))
+        %h1 References
+        ~ list_links("footnote-links")
+      #footer

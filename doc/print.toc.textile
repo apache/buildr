@@ -1,0 +1,11 @@
+h1. Buildr -- The build system that doesn't suck
+
+# index
+# getting_started
+# projects
+# building
+# artifacts
+# packaging
+# testing
+# more_stuff
+# contributing

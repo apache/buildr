@@ -1,0 +1,14 @@
+h1. Mailing Lists
+
+The following mailing-lists are open to anybody:
+
+| Mailing-List | Address | Subscribe |
+| Users | "buildr-user@incubator.apache.org":mailto:buildr-user@incubator.apache.org | "buildr-user-subscribe@incubator.apache.org":mailto:buildr-user-subscribe@incubator.apache.org |
+| Development | "buildr-dev@incubator.apache.org":mailto:buildr-dev@incubator.apache.org | "buildr-dev-subscribe@incubator.apache.org":mailto:buildr-dev-subscribe@incubator.apache.org |
+| Commits | "buildr-commits@incubator.apache.org":mailto:buildr-commits@incubator.apache.org | "buildr-commits-subscribe@incubator.apache.org":mailto:buildr-commits-subscribe@incubator.apache.org |
+
+The archives are available below:
+
+"http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/":http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/
+"http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/":http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/
+"http://mail-archives.apache.org/mod_mbox/incubator-buildr-commits/":http://mail-archives.apache.org/mod_mbox/incubator-buildr-commits/

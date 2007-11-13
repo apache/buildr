@@ -1,0 +1,647 @@
+require File.join(File.dirname(__FILE__), 'sandbox')
+
+
+describe Project do
+  it "should be findable" do
+    foo = define("foo")
+    project("foo").should be(foo)
+  end
+
+  it "should not exist unless defined" do
+    lambda { project("foo") }.should raise_error(RuntimeError, /No such project/)
+  end
+
+  it "should exist once defined" do
+    define "foo"
+    lambda { project("foo") }.should_not raise_error
+  end
+
+  it "should always return same project for same name" do
+    foo, bar = define("foo"), define("bar")
+    foo.should_not be(bar)
+    foo.should be(project("foo"))
+    bar.should be(project("bar"))
+  end
+    
+  it "should show up in projects list if defined" do
+    define("foo")
+    projects.map(&:name).should include("foo")
+  end
+
+  it "should not show up in projects list unless defined" do
+    projects.map(&:name).should_not include("foo")
+  end
+
+  it "should be findable from within a project" do
+    define("foo")
+    project("foo").project("foo").should be(project("foo"))
+  end
+
+  it "should cease to exist when project list cleared" do
+    define "foo"
+    projects.map(&:name).should include("foo")
+    Project.clear
+    projects.map(&:name).should be_empty
+  end
+
+  it "should be defined only once" do
+    lambda { define "foo" }.should_not raise_error
+    lambda { define "foo" }.should raise_error
+  end
+
+  it "should be definable in any order" do
+    Buildr.define("baz") { define("bar") { project("foo:bar") } }
+    Buildr.define("foo") { define("bar") }
+    lambda { project("foo") }.should_not raise_error
+  end
+
+  it "should detect circular dependency" do
+    Buildr.define("baz") { define("bar") { project("foo:bar") } }
+    Buildr.define("foo") { define("bar") { project("baz:bar") } }
+    lambda { project("foo") }.should raise_error(RuntimeError, /Circular dependency/)
+  end
+end
+
+
+describe Project, " name" do
+  it "should be pwd if not specified" do
+    foo = define("foo")
+    foo.base_dir.should eql(Dir.pwd)
+  end
+
+  it "should come from property, if specified" do
+    foo = define("foo", :base_dir=>"tmp")
+    foo.base_dir.should eql(File.expand_path("tmp"))
+  end
+
+  it "should be expanded path" do
+    foo = define("foo", :base_dir=>"tmp")
+    foo.base_dir.should eql(File.expand_path("tmp"))
+  end
+
+  it "should be relative to parent project" do
+    define("foo") { define "bar" }
+    project("foo:bar").base_dir.should eql(File.join(project("foo").base_dir, "bar"))
+  end
+
+  it "should be settable only if not read" do
+    lambda { define("foo", :base_dir=>"tmp") }.should_not raise_error
+    lambda { define("bar", :base_dir=>"tmp") { self.base_dir = "bar" } }.should raise_error(Exception, /Cannot set/)
+  end
+end
+
+
+describe Project, " property" do
+  it "should be set if passed as argument" do
+    define "foo", "version"=>"1.1"
+    project("foo").version.should eql("1.1")
+  end
+
+  it "should be set if assigned in body" do
+    define("foo") { self.version = "1.2" }
+    project("foo").version.should eql("1.2")
+  end
+
+  it "should take precedence when assigned in body" do
+    define("foo", "version"=>"1.1") { self.version = "1.2" }
+    project("foo").version.should eql("1.2")
+  end
+
+  it "should inherit from parent (for some properties)" do
+    define("foo", "version"=>"1.2", :group=>"foobar") { define "bar" }
+    project("foo:bar").version.should eql("1.2")
+    project("foo:bar").group.should eql("foobar")
+  end
+
+  it "should have different value if set in sub-project" do
+    define "foo", "version"=>"1.2", :group=>"foobar" do
+      define "bar", :version=>"1.3" do
+        self.group = "barbaz"
+      end
+    end
+    project("foo:bar").version.should eql("1.3")
+    project("foo:bar").group.should eql("barbaz")
+  end
+end
+
+
+describe Project, " block" do
+  it "should execute once" do
+    define("foo") { self.name.should eql("foo") }
+  end
+
+  it "should execute in describe of project" do
+    define("foo") { self.version = "1.3" }
+    project("foo").version.should eql("1.3")
+  end
+
+  it "should execute by passing project" do
+    define("foo") { |project| project.version = "1.3" }
+    project("foo").version.should eql("1.3")
+  end
+
+  it "should execute in namespace of project" do
+    define("foo") { define("bar") { Rake.application.current_scope.should eql(["foo", "bar"]) } }
+  end
+end
+
+
+describe Project, "#path_to" do
+  before do
+    @project = define("foo") { define("bar") }
+    @base_dir = @project.base_dir
+  end
+
+  it "should return absolute paths as is" do
+    @project.path_to("/tmp").should eql("/tmp")
+  end
+
+  it "should resolve relative paths" do
+    @project.path_to().should eql(@project.base_dir)
+    @project.path_to("tmp").should eql("#{@base_dir}/tmp")
+  end
+
+  it "should accept multiple arguments" do
+    @project.path_to("foo", "bar").should eql("#{@base_dir}/foo/bar")
+  end
+
+  it "should handle relative paths" do
+    @project.path_to("..", "bar").should eql(File.join(@base_dir.pathmap("%d"), "bar"))
+  end
+
+  it "should resolve symbols using accessors" do
+    class << @project
+      def dir ; "foo" ; end
+    end
+    @project.path_to(:dir).should eql(File.join(@base_dir, @project.dir))
+    @project.path_to(:dir, "tmp").should eql(File.join(@base_dir, @project.dir, "tmp"))
+  end
+
+  it "should resolve path for sub-project" do
+    project("foo:bar").path_to("foo").should eql(File.join(project("foo:bar").base_dir, "foo"))
+  end
+end
+
+
+describe Project, "#on_define" do
+  it "should be called when project is defined" do
+    names = []
+    Project.on_define { |project| names << project.name }
+    define "foo" ; define "bar"
+    names.should eql(["foo", "bar"])
+  end
+
+  it "should be called with project object" do
+    Project.on_define { |project| project.name.should eql("foo") }
+    define("foo")
+  end
+
+  it "should be called with project object and set properties" do
+    Project.on_define { |project| project.version.should eql("2.0") }
+    define("foo", :version=>"2.0")
+  end
+
+  it "should execute in namespace of project" do
+    scopes = []
+    Project.on_define { |project| scopes << Rake.application.current_scope }
+    define("foo") { define "bar" }
+    scopes.should eql([["foo"], ["foo", "bar"]])
+  end
+
+  it "should be called before project block" do
+    order = []
+    Project.on_define { |project| order << "on_define" }
+    define("foo") { order << "define" }
+    order.should eql(["on_define", "define"])
+  end
+
+  it "should accept enhancement and call it after project block" do
+    order = []
+    Project.on_define { |project| project.enhance { order << "enhance" } }
+    define("foo") { order << "define" }
+    order.should eql(["define", "enhance"])
+  end
+
+  it "should accept enhancement and call it with project" do
+    Project.on_define { |project| project.enhance { |project| project.name.should eql("foo") } }
+    define("foo")
+  end
+
+  it "should execute enhancement in namespace of project" do
+    scopes = []
+    Project.on_define { |project| project.enhance { scopes << Rake.application.current_scope } }
+    define("foo") { define "bar" }
+    scopes.should eql([["foo"], ["foo", "bar"]])
+  end
+end
+
+
+describe Rake::Task, " recursive" do
+  before do
+    @order = []
+    Project.on_define do |project|
+      project.recursive_task("doda") { @order << project.name }
+    end
+    define("foo") { define("bar") { define("baz") } }
+  end
+
+  it "should invoke same task in child project" do
+    task("foo:doda").invoke
+    @order.should include("foo:bar:baz")
+    @order.should include("foo:bar")
+    @order.should include("foo")
+  end
+
+  it "should invoke in depth-first order" do
+    task("foo:doda").invoke
+    @order.should eql([ "foo:bar:baz", "foo:bar", "foo" ])
+  end
+
+  it "should not invoke task in parent project" do
+    task("foo:bar:baz:doda").invoke
+    @order.should eql([ "foo:bar:baz" ])
+  end
+end
+
+
+describe "Sub-project" do
+  it "should point at parent project" do
+    define("foo") { define "bar" }
+    project("foo:bar").parent.should be(project("foo"))
+  end
+
+  it "should be defined only within parent project" do
+    lambda { define("foo:bar") }.should raise_error
+  end
+
+  it "should have unique name" do
+    lambda do
+      define "foo" do
+        define "bar"
+        define "bar"
+      end 
+    end.should raise_error
+  end
+
+  it "should be findable from root" do
+    define("foo") { define "bar" }
+    projects.map(&:name).should include("foo:bar")
+  end
+
+  it "should be findable from parent project" do
+    define("foo") { define "bar" }
+    project("foo").projects.map(&:name).should include("foo:bar")
+  end
+
+  it "should be findable only if exists" do
+    define("foo") { define "bar" }
+    lambda { project("foo").project("baz") }.should raise_error(RuntimeError, /No such project/)
+  end
+
+  it "should always execute its definition " do
+    ordered = []
+    define "foo" do
+      ordered << self.name
+      define("bar") { ordered << self.name }
+      define("baz") { ordered << self.name }
+    end 
+    ordered.should eql(["foo", "foo:bar", "foo:baz"])
+  end
+
+  it "should execute in order of dependency" do
+    ordered = []
+    define "foo" do
+      ordered << self.name
+      define("bar") { project("foo:baz") ; ordered << self.name }
+      define("baz") { ordered << self.name }
+    end 
+    ordered.should eql(["foo", "foo:baz", "foo:bar"])
+  end
+
+  it "should warn of circular dependency" do
+    lambda do
+      define "foo" do
+        define("bar") { project("foo:baz") }
+        define("baz") { project("foo:bar") }
+      end 
+    end.should raise_error(RuntimeError, /Circular dependency/)
+  end
+end
+
+
+describe "Top-level project" do
+  it "should have no parent" do
+    define("foo")
+    project("foo").parent.should be_nil
+  end
+end
+
+
+describe Buildr, "#project" do
+  it "should raise error if no such project" do
+    lambda { project("foo") }.should raise_error(RuntimeError, /No such project/)
+  end
+
+  it "should return a project if exists" do
+    foo = define("foo")
+    project("foo").should be(foo)
+  end
+
+  it "should find a project by its full name" do
+    bar, baz = nil
+    define("foo") { bar = define("bar") { baz = define("baz")  } }
+    project("foo:bar").should be(bar)
+    project("foo:bar:baz").should be(baz)
+  end
+
+  it "should find a project from any context" do
+    bar, baz = nil
+    define("foo") { bar = define("bar") { baz = define("baz")  } }
+    project("foo:bar").project("foo:bar:baz").should be(baz)
+    project("foo:bar:baz").project("foo:bar").should be(bar)
+  end
+
+  it "should find a project from its parent or sibling project" do
+    define "foo" do
+      define "bar"
+      define "baz"
+    end
+    project("foo").project("bar").should be(project("foo:bar"))
+    project("foo").project("baz").should be(project("foo:baz"))
+    project("foo:bar").project("baz").should be(project("foo:baz"))
+  end
+
+  it "should fine a project from its parent by proximity" do
+    define "foo" do
+      define("bar") { define "baz" }
+      define "baz"
+    end
+    project("foo").project("baz").should be(project("foo:baz"))
+    project("foo:bar").project("baz").should be(project("foo:bar:baz"))
+  end
+
+  it "should invoke project before returning it" do
+    define("foo").should_receive(:invoke).once
+    project("foo")
+  end
+
+  it "should fail if called without a project name" do
+    lambda { project }.should raise_error(ArgumentError)
+  end
+
+  it "should return self if called on a project without a name" do
+    define("foo") { project.should be(self) }
+  end
+
+  it "should evaluate parent project before returning" do
+    # Note: gets around our define that also invokes the project.
+    Buildr.define("foo") { define("bar"); define("baz") }
+    project("foo:bar").should eql(projects[1])
+  end
+end
+
+
+describe Buildr, "#projects" do
+  it "should only return defined projects" do
+    projects.should eql([])
+    define "foo"
+    projects.should eql([project("foo")])
+  end
+
+  it "should return all defined projects" do
+    define "foo"
+    define("bar") { define "baz" }
+    projects.should include(project("foo"))
+    projects.should include(project("bar"))
+    projects.should include(project("bar:baz"))
+  end
+
+  it "should return only named projects" do
+    define "foo" ; define "bar" ; define "baz"
+    projects("foo", "bar").should include(project("foo"))
+    projects("foo", "bar").should include(project("bar"))
+    projects("foo", "bar").should_not include(project("baz"))
+  end
+
+  it "should complain if named project does not exist" do
+    define "foo"
+    projects("foo").should include(project("foo"))
+    lambda { projects("bar") }.should raise_error(RuntimeError, /No such project/)
+  end
+
+  it "should find a project from its parent or sibling project" do
+    define "foo" do
+      define "bar"
+      define "baz"
+    end
+    project("foo").projects("bar").should eql(projects("foo:bar"))
+    project("foo").projects("baz").should eql(projects("foo:baz"))
+    project("foo:bar").projects("baz").should eql(projects("foo:baz"))
+  end
+
+  it "should fine a project from its parent by proximity" do
+    define "foo" do
+      define("bar") { define "baz" }
+      define "baz"
+    end
+    project("foo").projects("baz").should eql(projects("foo:baz"))
+    project("foo:bar").projects("baz").should eql(projects("foo:bar:baz"))
+  end
+
+  it "should evaluate all projects before returning" do
+    # Note: gets around our define that also invokes the project.
+    Buildr.define("foo") { define("bar"); define("baz") }
+    projects.should eql(projects("foo", "foo:bar", "foo:baz"))
+  end
+end
+
+
+describe Rake::Task, " local directory" do
+  before do
+    @task = Project.local_task(task(("doda")))
+    Project.on_define { |project| task("doda") { |task| @task.from project.name } }
+  end
+
+  it "should execute project in local directory" do
+    define "foo"
+    @task.should_receive(:from).with("foo")
+    @task.invoke
+  end
+
+  it "should execute sub-project in local directory" do
+    @task.should_receive(:from).with("foo:bar")
+    define("foo") { define "bar" }
+    in_original_dir(project("foo:bar").base_dir) { @task.invoke }
+  end
+
+  it "should do nothing if no project in local directory" do
+    @task.should_not_receive(:from)
+    define("foo") { define "bar" }
+    in_original_dir("../not_foo") { @task.invoke }
+  end
+
+  it "should find closest project that matches current directory" do
+    mkpath "bar/src/main"
+    define("foo") { define "bar" }
+    @task.should_receive(:from).with("foo:bar")
+    in_original_dir("bar/src/main") { @task.invoke }
+  end
+end
+
+
+describe Project, "#task" do
+  it "should create a regular task" do
+    define("foo") { task("bar") }
+    Rake.application.lookup("foo:bar").should_not be_nil
+  end 
+
+  it "should return a task defined in the project" do
+    define("foo") { task("bar") }
+    project("foo").task("bar").should be_instance_of(Rake::Task)
+  end
+
+  it "should not create task outside project definition" do
+    define "foo"
+    lambda { project("foo").task("bar") }.should raise_error(RuntimeError, /no task foo:bar/)
+  end
+
+  it "should include project name as prefix" do
+    define("foo") { task("bar") }
+    project("foo").task("bar").name.should eql("foo:bar")
+  end
+
+  it "should accept single dependency" do
+    define("foo") { task("bar"=>"baz") }
+    project("foo").task("bar").prerequisites.should include("baz")
+  end
+
+  it "should accept multiple dependencies" do
+    define("foo") { task("bar"=>["baz1", "baz2"]) }
+    project("foo").task("bar").prerequisites.should include("baz1")
+    project("foo").task("bar").prerequisites.should include("baz2")
+  end
+
+  it "should execute task exactly once" do
+    define("foo") do
+      task "baz"
+      task "bar"=>"baz"
+    end
+    lambda { project("foo").task("bar").invoke }.should run_tasks(["foo:baz", "foo:bar"])
+  end
+
+  it "should create a file task" do
+    define("foo") { file("bar") }
+    Rake.application.lookup(File.expand_path("bar")).should_not be_nil
+  end
+
+  it "should create file task with absolute path" do
+    define("foo") { file("/tmp") }
+    Rake.application.lookup("/tmp").should_not be_nil
+  end
+
+  it "should create file task relative to project base directory" do
+    define("foo", :base_dir=>"tmp") { file("bar") }
+    Rake.application.lookup(File.expand_path("tmp/bar")).should_not be_nil
+  end
+
+  it "should accept single dependency" do
+    define("foo") { file("bar"=>"baz") }
+    project("foo").file("bar").prerequisites.should include("baz")
+  end
+
+  it "should accept multiple dependencies" do
+    define("foo") { file("bar"=>["baz1", "baz2"]) }
+    project("foo").file("bar").prerequisites.should include("baz1")
+    project("foo").file("bar").prerequisites.should include("baz2")
+  end
+
+  it "should accept hash arguments" do
+    define("foo") do
+      task "bar"=>"bar_dep"
+      file "baz"=>"baz_dep"
+    end
+    project("foo").task("bar").prerequisites.should include("bar_dep")
+    project("foo").file("baz").prerequisites.should include("baz_dep")
+  end
+
+  it "should return a file task defined in the project" do
+    define("foo") { file("bar") }
+    project("foo").file("bar").should be_instance_of(Rake::FileTask)
+  end
+
+  it "should create file task relative to project definition" do
+    define("foo") { define "bar" }
+    project("foo:bar").file("baz").name.should eql(File.expand_path("bar/baz"))
+  end
+
+  it "should execute task exactly once" do
+    define("foo") do
+      task "baz"
+      file "bar"=>"baz"
+    end
+    lambda { project("foo").file("bar").invoke }.should run_tasks(["foo:baz", project("foo").path_to("bar")])
+  end
+end
+
+
+describe InheritedAttributes do
+  before do
+    class TestAttributes
+      include InheritedAttributes
+      inherited_attr :foo
+      inherited_attr :bar do "barring" end
+      attr_accessor :parent 
+    end
+    @parent = TestAttributes.new
+    @child = TestAttributes.new
+    @child.parent = @parent
+  end
+
+  it "should have getter and setter methods" do
+    @parent.foo = "foo"
+    @parent.bar = "bar"
+    @parent.foo.should eql("foo")
+    @parent.bar.should eql("bar")
+  end
+
+  it "should take default value from block" do
+    @parent.foo.should be_nil
+    @parent.bar.should eql("barring")
+  end
+
+  it "should take default value from parent" do
+    @child.foo.should be_nil
+    @parent.foo = "foo"
+    @child.foo.should eql("foo")
+    @child.foo.should be(@parent.foo)
+  end
+
+  it "should cache default value from parent" do
+    @parent.foo = "foo"
+    @child.foo.should eql("foo")
+    @parent.foo = "bar"
+    @child.foo.should eql("foo")
+  end
+
+  it "should set value in child separately from parent" do
+    @child.bar = "barred"
+    @child.bar.should eql("barred")
+    @parent.bar.should eql("barring")
+  end
+
+  after do
+    Object.send :remove_const, TestAttributes.name
+  end
+end
+
+describe Rake::Task, " buildr:initialize" do
+  it "should be ready to run as the first task" do
+    Rake.application.top_level_tasks.first.should eql("buildr:initialize")
+  end
+
+  it "should evaluate all project definitions" do
+    defined = false
+    Buildr.define("foo") { defined = true }
+    lambda { task("buildr:initialize").invoke }.should change { defined }.to(true)
+  end
+end

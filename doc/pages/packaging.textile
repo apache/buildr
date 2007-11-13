@@ -1,0 +1,365 @@
+h1. Packaging
+
+For our next trick, we're going to try and create an artifact ourselves.  We're going to start with:
+
+{{{!ruby
+package :jar
+}}}
+
+We just told the project to create a JAR file in the @target@ directory, including all the classes (and resources) that we previously complied into @target/classes@.  Or we can create a WAR file:
+
+{{{!ruby
+package :war
+}}}
+
+The easy case is always easy, but sometimes we have more complicated use cases which we'll address through the rest of this section.
+
+Now let's run the build, test cases and create these packages:
+
+{{{!sh
+$ buildr package
+}}}
+
+The @package@ task runs the @build@ task (remember: @compile@ and @test@) and then runs each of the packaging tasks, creating packages in the projects' target directories[1].
+
+
+
+h2. Packaging JARs
+
+There are several ways you can configure the JAR package.  We'll start with the MANIFEST.MF file.  You can include a specific file:
+
+{{{!ruby
+package(:jar).with :manifest=>_("src/main/MANIFEST.MF")
+}}}
+
+Or generate a manifest from a hash:
+
+{{{!ruby
+package(:jar).with :manifest=>{ "Copyright"=>"Acme Inc (C) 2007" }
+}}}
+
+You can also generate a JAR with no manifest with the value @false@, create a manifest with several sections using an array of hashes, or create it from a proc.
+
+In large projects, where all the packages use the same manifest, it's easier to set it once on the top project using the @manifest@ project property.  Sub-projects inherit the property from their parents, and the @package@ method uses that property if you don't override it, as we do above.
+
+For example, we can get the same result by specifying this at the top project:
+
+{{{!ruby
+manifest["Copyright"] = "Acme Inc (C) 2007"
+}}}
+
+If you need to mix-in the project's manifest with values that only one package uses, you can do so easily:
+
+{{{!ruby
+package(:jar).with :manifest=>manifest.merge("Main-Class"=>"com.acme.Main")
+}}}
+
+If you need to include more files in the @META-INF@ directory, you can use the @:meta_inf@ option.  You can give it a file, or array of files.  And yes, there is a @meta_inf@ project property you can set once to include the same set of file in all the JARs.  It works like this:
+
+{{{!ruby
+meta_inf << file("DISCLAIMER") << file("NOTICE")
+}}}
+
+If you have a @LICENSE@ file, it's already included in the @meta_inf@ list of files.
+
+Other than that, @package :jar@ includes the contents of the compiler's target directory, which most often is exactly what you intend it to do.  If you want to include other files in the JAR, instead or in addition, you can do so using the @include@ and @exclude@ methods.  We'll tell you more about them when we talk about "Packaging Zips":#packaging_zips.
+
+
+h2. Packaging WARs
+
+Pretty much everything you know about JARs works the same way for WARs, so let's just look at the differences.
+
+Without much prompting, @package :war@ picks the contents of the @src/main/webapp@ directory and places it at the root of the WAR, copies the compiler target directory into the @WEB-INF/classes@ path, and copies any compiled classpath dependencies into the @WEB-INF/libs@ paths.
+
+Again, you can use the @include@ and @exclude@ methods to change the contents of the WAR.  There are two convenience options you can use to make the more common changes.  If you need to include a classes directory other than the default:
+
+{{{!ruby
+package(:war).with :classes=>_("target/additional")
+}}}
+
+If you want to include a different set of libraries other than the default:
+
+{{{!ruby
+package(:war).with :libs=>MYSQL_JDBC
+}}}
+
+Both options accept a single value or an array.  The @:classes@ option accepts the name of a directory containing class files, initially set to @compiler.target@.  The @:libs@ option accepts artifact specifications, file names and tasks, initially set to include everything in @compile.classpath@.
+
+As you can guess, the package task has two attributes called @classes@ and @libs@; the @with@ method merely sets their value.  If you need more precise control over these arrays, you can always work with them directly, for example:
+
+{{{!ruby
+# Add an artifact to the existing set:
+package(:war).libs += artifacts(MYSQL_JDBC)
+# Remove an artifact from the existing set:
+package(:war).libs += artifacts(LOG4J)
+# List all the artifacts:
+puts "Artifacts included in WAR package:"
+puts package(:war).libs.map(&:to_spec)
+}}}
+
+
+h2. Packaging ZIPs
+
+JARs and WARs are pretty much glorified ZIPs.  The ZIP packaging is much simpler, it doesn't support the @:manifest@ and @:meta_inf@ options.  Sounds simpler, and it is.
+
+Which is why we're going to use this section to tell you a bit more about ZIP file packaging.  But anything you read here, you can also use with @package :jar@ and @package :war@.  They're all ZIP files, afterall.
+
+Let's start by including additional files in the ZIP package.  We're going to include the @target/docs@ directory and @README@ file:
+
+{{{!ruby
+package(:zip).include _("target/docs"), "README"
+}}}
+
+The @include@ method accepts files, directories and file tasks.  You can also use file pattern to match multiple files and directories.  File patterns include asterisk (@*@) to match any file name or part of a file name, double asterisk (@**@) to match directories recursively, question mark (@?@) to match any character, square braces (@[]@) to match a set of characters, and curly braces (@{}@) to one of several names.
+
+And the same way you @include@, you can also @exclude@ specific files you don't want showing up in the ZIP.  For example, to exclude @.draft@ and @.raw@ files:
+
+{{{!ruby
+package(:zip).include("target/docs").
+  exclude("target/docs/**/*.{draft,raw}")
+}}}
+
+So far we've included files under the root of the ZIP.  Let's include some files under a given path using the @:path@ option:
+
+{{{!ruby
+package(:zip).include "target/docs", :path=>"#{id}-#{version}"
+}}}
+
+If you need to use the @:path@ option repeatedly, consider using the @path@ method instead.  For example[2]:
+
+{{{!ruby
+package(:zip).path("#{id}-#{version}").tap do |path|
+  path.include "target/docs"
+  path.include "README"
+end
+}}}
+
+*Note:* To allow you to spread files across different paths, the include/exclude patterns are specific to a path.  So in the above example, if you want to exclude some files from the "target/docs" directory, make sure to call @exclude@ on the path, not on the ZIP task itself.
+
+
+If you need to include a file or directory under a different name, use the @:as@ option.  For example:
+
+{{{!ruby
+package(:zip).include("corporate-logo-350x240.png", :as=>"logo.png")
+}}}
+
+You can also use @:as=>"."@ to include all files from the given directory.  For example:
+
+{{{!ruby
+package(:zip).include "target/docs/*"
+package(:zip).include "target/docs", :as=>"."
+}}}
+
+These two are almost identical.  They both include all the files from the @target/docs@ directory, but not the directory itself.  But they operate differently.  The first line expands to include all the files in @target/docs@.  If you don't already have files in @target/docs@, well, then it won't do anything interesting.  Your ZIP will come up empty.  The second file includes the directory itself, but strips the path during inclusion.  You can define it now, create these files later, and then ZIP them all up.
+
+For example, when @package :jar@ decides to include all the files form @target/classes@, it's still working on the project definition, and has yet to compile anything.  Since @target/classes@ may be empty, may not even exist, it uses @:as=>"."@.
+
+You can also merge two ZIP files together, expanding the content of one ZIP into the other.  For example:
+
+{{{!ruby
+package(:zip).merge "part1.zip", "part2.zip"
+}}}
+
+If you need to be more selective, you can apply the include/exclude pattern to the expanded ZIP.  For example:
+
+{{{!ruby
+# Everything but the libs
+package(:zip).merge("bigbad.war").exclude("libs/*")
+}}}
+
+
+h2. Packaging AARs
+
+Axis2 service archives are similar to JAR's (compiled classes go into the root of the archive) but they can embed additional libraries under /lib and include @services.xml@ and WSDL files.
+
+{{{!ruby
+package(:aar).with(:libs=>"log4j:log4j:jar:1.1")
+package(:aar).with(:services_xml=>_("target/services.xml"), :wsdls=>_("target/*.wsdl"))
+}}}
+
+The @libs@ attribute is a list of .jar artifacts to be included in the archive under /lib.  The default is no artifacts; artifacts from the compile classpath are not included by default.
+
+The @services_xml@ attribute points to an Axis2 services configuration file called @services.xml@ that will be placed in the @META-INF@ directory inside the archive.  the default behavior is to point to the @services.xml@ file in the project's @src/main/axis2@ directory.  In the second example above we set it explicitly, 
+
+The @wsdls@ attribute is a collection of file names or glob patterns for WSDL files that get included in the @META-INF@ directory.  In the second example we include WSDL files from the @target@ directory, presumably created by an earlier build task.  In addition, AAR packaging will include all files ending with @.wsdl@ from the @src/main/axis2@ directory.
+
+If you already have WSDL files in the @src/main/axis2@ directory but would like to perform some filtering, for example, to set the HTTP port number, consider ignoring the originals and including only the filtered files, for example:
+
+{{{!ruby
+# Host name depends on environment.
+host = ENV['ENV'] == 'test' ? 'test.host' : 'ws.example.com'
+filter.from("src/main/axis2").into("target").
+  include("services.xml", "*.wsdl").using("http_port"=>"8080", "http_host"=>host)
+package(:aar).wsdls.clear
+package(:aar).with(:services_xml=>_("target/services.xml"), :wsdls=>_("target/*.wsdl"))
+}}}
+
+
+h2.  Packaging Tars and GZipped Tars
+
+Everything you know about working with ZIP files translates to Tar files, the two tasks are identical in more respect, so here we'll just go over the differences.
+
+{{{!ruby
+package(:tar).include _("target/docs"), "README"
+package(:tgz).include _("target/docs"), "README"
+}}}
+
+The first line creates a Tar archive with the extension @.tar@, the second creates a GZipped Tar archive with the extension @.tgz@.
+The first creates a Tar archive with the extension @.tar@, the second creates a GZipped Tar archive with the extension @.tgz@.
+
+In addition to packaging that includes the archive in the list of installed/released files, you can use the method @tar@ to create a @TarTask@.  This task is similar to @ZipTask@, and introduces the @gzip@ attribute, which you can use to tell it whether to create a regular file, or GZip it.  By default the attribute it set to true (GZip) if the file name ends with either @.gz@ or @.tgz@.
+
+
+h2. Installing and Uploading
+
+You can bring in the artifacts you need from remote repositories and install them in the local repositories.  Other projects have the same expectation, that your packages be their artifacts.
+
+So let's create these packages and install them in the local repository where other projects can access them:
+
+{{{!sh
+$ buildr install
+}}}
+
+If you changes your mind you can always:
+
+{{{!sh
+$ buildr uninstall
+}}}
+
+That works between projects you build on the same machine.  Now let's share these artifacts with other developers through a remote repository:
+
+{{{!sh
+$ buildr upload
+}}}
+
+Of course, you'll need to tell Buildr about the release server:
+
+{{{!ruby
+repositories.release_to = "sftp://john:secret@release/usr/share/repo"
+}}}
+
+We're using the SFTP protocol, currently the only protocol Buildr uses for uploads.  The URL contains the release server ("release"), path to repository ("user/share/repo") and username/password for access.  The way SFTP works, you specify the path on the release server, and give the user permissions to create directories and files inside the repository.  The file system path is different from the path you use to download these artifacts through an HTTP server, and starts at the root, not the user's home directory.
+
+Of course, you'll want to specify the release server URL in the Buildfile, but leave the username/password settings private in your local @buildr.rb@ file.  Let's break up the release server settings:
+
+{{{!ruby
+# build.rb, loaded first
+repositories.release_to[:username] = "john"
+repositories.release_to[:password] = "secret"
+
+# Buildfile, loaded next
+repositories.release_to[:url] = "sftp://release/usr/share/repo"
+}}}
+
+The @upload@ task takes care of uploading all the packages created by your project, along with their associated POM files and MD5/SHA1 signatures (Buildr creates these for you).
+
+If you need to upload other files, you can always extend the @upload@ task and use @repositories.release_to@ in combination with @URI.upload@.  You can also extend it to upload to different servers, for example, to publish the documentation and test coverage reports to your site:
+
+{{{!ruby
+# We'll let some other task decide how to create "docs"
+task "deploy"=>"docs" do
+  uri = URI("sftp://#{username}:#{password}@var/www/docs")
+  uri.upload file("docs")
+end
+}}}
+
+
+h2. Specifying And Referencing Packages
+
+If it's a package to us and an artifact to someone else, then it must have an artifact specification.  Right? And to have an artifact specification, it must have a group identifier, artifact identifier, version number and optional classifier.  Where do they come from?
+
+These are all options you can pass to the @package@ method.  Or, you can let it pick them from the project definition.  In this case it pays to be lazy, and easier to just specify the group identifier and version number as project properties.  The artifact identifier is just the project (full) name, with colons (@:@) replaced by dashes (@-@).
+
+Let's run an example and find out:
+
+{{{!ruby
+puts project("killer-app:teh-impl").packages.first.to_spec
+=> acme:killer-app-teh-impl:1.0:jar
+}}}
+
+What you don't like, you can always change.  For example:
+
+{{{!ruby
+# Generates silly-1.0.jar
+package :jar, :id=>"silly"
+
+# Generates killer-app-la-web-1.x.war
+project "la-web" do
+  package :war, :version=>"1.x"
+end
+
+# Generates killer-app-the-api-1.0-sources.zip
+project "teh-api" do
+  package :zip, :classifier=>"sources"
+end
+}}}
+
+You can get all the packages created by a project and filter them yourself.  Let's illustrate that with an example that prints artifact specifications for all the packages we generate through our projects[3]:
+
+{{{!ruby
+puts projects.map(&:packages).flatten.map(&:to_spec).join(", ")
+=> acme:killer-app:zip:sources:1.0, acme:killer-app-teh-api:jar:1.0,
+   acme:killer-app-teh-impl:jar:1.0, acme:killer-app-la-web:war:1.0
+}}}
+
+Now reduce it to only use the JAR packages:
+
+{{{!ruby
+puts projects.map(&:packages).flatten.select { |pkg| pkg.type == :jar }.
+  map(&:to_spec).join(", ")
+}}}
+
+But for a single package, we're just going to call @package@ with the right artifact specification.  Each time you call @package@ on a project, it returns a file task for that package.  It only creates the file task once, so call it twice, and you'll get the same file task.  We can use that to our advantage:
+
+{{{!ruby
+compile.with project("teh-api").package(:jar)
+}}}
+
+But remember, @package@ decides which file task to return from the combination of file type, artifact and group identifiers, version number and classifier.  So we need to pass the very same arguments to retrieve the very same package.  For example:
+
+{{{!ruby
+projec("killer-app:teh-impl").package(:war)
+project("killer-app").package(:zip, :classifier=>"docs")
+}}}
+
+
+h2. Packaging Sources and JavaDocs
+
+IDEs can take advantage of source packages to help you debug and trace through compiled code.  We'll start with a simple example:
+
+{{{!ruby
+package :sources
+}}}
+
+This one creates a ZIP package with the classifier "sources" that will contain all the source directories in that project, typically @src/main/java@, but also other sources generated from Apt, JavaCC, XMLBeans and friends.
+
+You can also generate a ZIP package with the classifier "javadoc" that contains the JavaDoc documentation for the project.  It uses the same set of documentation files generated by the project's @javadoc@ task, so you can use it in combination with the @javadoc@ method.  For example:
+
+{{{!ruby
+package :javadoc
+javadoc :windowtitle=>"Buggy but Works"
+}}}
+
+By default Buildr picks the project's description for the window title.
+
+You can also tell Buildr to automatically create sources and JavaDoc packages in all the sub-projects that have any source files to package or document.  Just add either or both of these methods in the top-level project:
+
+{{{!ruby
+package_with_sources
+package_with_javadoc
+}}}
+
+You can also tell it to be selective using the @:only@ and @:except@ options.  For example:
+
+{{{!ruby
+package_with_javadoc :except=>"la-web"
+}}}
+
+We packaged the code, but will it actually work? Let's see "what the tests say":testing.html.
+
+
+fn1. The @package@ task and @package@ methods are related, but that relation is different from other task/method pairs.  The @package@ method creates a file task that points to the package in the @target@ directory and knows how to create it.  It then adds itself as a prerequisite to the @package@ task.  Translation: you can create multiple packages from the same project.
+
+fn2. The @tap@ method is not part of the core library, but a very useful extension.  It takes an object, yields to the block with that object, and then returns that object.
+
+fn3. The @map@ method takes an array, runs the block with each item, and returns a new array.  The @&:@ shortcut is not a standard part of Ruby but a useful convenience that calls this method on each instance.  So @map(&:packages)@ is just a shorter way of saying @map { |obj| obj.packages }@.

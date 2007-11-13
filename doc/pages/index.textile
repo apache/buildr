@@ -1,0 +1,18 @@
+h1. Welcome
+
+Buildr is a build system for Java applications.  We wanted something that's simple and intuitive to use, so we only need to tell it what to do, and it takes care of the rest.  But also something we can easily extend for those one-off tasks, with a language that's a joy to use.  And of course, we wanted it to be fast, reliable and have outstanding dependency management.
+
+Here's what we got:
+
+* A simple way to specify projects, and build large projects out of smaller sub-projects.
+* Pre-canned tasks that require the least amount of configuration, keeping the build script DRY and simple.
+* Compiling, copying and filtering resources, JUnit/TestNG test cases, APT source code generation, Javadoc and more.
+* A dependency mechanism that only build that which changed since the last release.
+* A drop-in replacement for Maven 2.0, Buildr uses the same file layout, artifact specifications, local and remote repositories.
+* All your Ant tasks belong to us! Anything you can do with Ant, you can do with Buildr.
+* No overhead for building "plugins" or configuration. Just write new tasks or functions.
+* Buildr is Ruby all the way down.  No one-off task is too demanding when you write code using variables, functions and objects.
+* Simple way to upgrade to new versions.
+* Did we mention fast?
+
+"So let's get started":getting_started.html.

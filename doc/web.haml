@@ -1,0 +1,36 @@
+!!!
+%html
+  %head
+    %meta{ "http-equiv"=>"Content-Type", :content=>"text/html;charset=UTF-8" }/
+    %title= "#{collection.title} &#8211; #{page.title}"
+    %link{ :rel=>"stylesheet", :type=>"text/css", :href=>"css/default.css" }
+    %link{ :rel=>"stylesheet", :type=>"text/css", :href=>"css/eiffel.css" }
+    %style{ :type=>"text/css", :media=>"print" }
+      @import "css/print.css";
+      \#header { display: none } 
+    %meta{ :name=>"subject", :content=>"Official Buildr documentation from the people in the know" }
+  %body
+    #wrap
+      #header
+        %a{ :href=>"http://incubator.apache.org/buildr/" }
+          %img{ :src=>"images/buildr.png", :alt=>collection.title }
+        .tagline= "The build system that doesn't suck"
+      #pages
+        = collection.toc.to_html
+        %form{ :id=>"searchbox_003673095760649043902:ogcgrzu0l2y", :action=>"http://www.google.com/cse" }
+          %input{ :type=>"hidden", :name=>"cx", :value=>"003673095760649043902:ogcgrzu0l2y" }
+          %input{ :type=>"hidden", :name=>"cof", :value=>"FORID:0" }
+          %input{ :name=>"q", :type=>"text", :size=>"20" }
+          %input{ :type=>"submit", :name=>"sa", :value=>"Search" }
+          %img{ :src=>"http://www.google.com/coop/images/google_custom_search_smnar.gif", :alt=>"Google Custom Search" }
+        
+      #content
+        %h1= page.title
+        = page.toc.to_html(:nested, :class=>"toc")
+        ~ page.content
+        #navigation
+          - if prev_page = collection.prev(page)
+            %a{ :href=>prev_page.path, :class=>"prev" }= "&laquo; " + prev_page.title
+          - if next_page = collection.next(page)
+            %a{ :href=>next_page.path, :class=>"next" }= next_page.title + " &raquo;"
+      #footer

@@ -1,0 +1,267 @@
+require File.join(File.dirname(__FILE__), 'sandbox')
+
+
+describe URI, "#download" do
+  before do
+    write @source = "source", @content = "Just a file"
+    @uri = URI("file://#{File.expand_path(@source)}")
+    @target = "target"
+  end
+
+  it "should download file if found" do
+    @uri.download @target
+    file(@target).should contain(@content)
+  end
+
+  it "should fail if file not found" do
+    lambda { (@uri + "missing").download @target }.should raise_error(URI::NotFoundError)
+    file(@target).should_not exist
+  end
+
+  it "should work the same way from static method with URI" do
+    URI.download @uri, @target
+    file(@target).should contain(@content)
+  end
+
+  it "should work the same way from static method with String" do
+    URI.download @uri.to_s, @target
+    file(@target).should contain(@content)
+  end
+
+  it "should download to a task" do
+    @uri.download file(@target)
+    file(@target).should contain(@content)
+  end
+
+  it "should download to a file" do
+    File.open(@target, "w") { |file| @uri.download file }
+    file(@target).should contain(@content)
+  end
+end
+
+
+describe URI, "#upload" do
+  before do
+    write @source = "source", @content = "Just a file"
+    @target = "target"
+    @uri = URI("file://#{File.expand_path(@target)}")
+  end
+
+  it "should upload file if found" do
+    @uri.upload @source
+    file(@target).should contain(@content)
+  end
+
+  it "should fail if file not found" do
+    lambda { @uri.upload @source.ext("missing") }.should raise_error(URI::NotFoundError)
+    file(@target).should_not exist
+  end
+
+  it "should work the same way from static method with URI" do
+    URI.upload @uri, @source
+    file(@target).should contain(@content)
+  end
+
+  it "should work the same way from static method with String" do
+    URI.upload @uri.to_s, @source
+    file(@target).should contain(@content)
+  end
+
+  it "should upload from a task" do
+    @uri.upload file(@source)
+    file(@target).should contain(@content)
+  end
+
+  it "should create MD5 hash" do
+    @uri.upload file(@source)
+    file(@target.ext(".md5")).should contain(Digest::MD5.hexdigest(@content))
+  end
+
+  it "should create SHA1 hash" do
+    @uri.upload file(@source)
+    file(@target.ext(".sha1")).should contain(Digest::SHA1.hexdigest(@content))
+  end
+
+  it "should upload an entire directory" do
+    mkpath "dir" ; write "dir/test", "in directory"
+    mkpath "dir/nested" ; write "dir/nested/test", "in nested directory"
+    @uri.upload "dir"
+    file(@target).should contain("test", "nested/test")
+    file(@target + "/test").should contain("in directory")
+    file(@target + "/nested/test").should contain("in nested directory")
+  end
+end
+
+
+describe URI::FILE do
+  it "should complain about file:" do
+    lambda { URI("file:") }.should raise_error(URI::InvalidURIError)
+  end
+
+  it "should accept file:something as file:///something" do
+    URI("file:something").should eql(URI("file:///something"))
+  end
+
+  it "should accept file:/ as file:///" do
+    URI("file:/").should eql(URI("file:///"))
+  end
+
+  it "should accept file:/something as file:///something" do
+    URI("file:/something").should eql(URI("file:///something"))
+  end
+
+  it "should complain about file://" do
+    lambda { URI("file://").should eql(URI("file:///")) }.should raise_error(URI::InvalidURIError)
+  end
+
+  it "should accept file://something as file://something/" do
+    URI("file://something").should eql(URI("file://something/"))
+  end
+
+  it "should accept file:///something" do
+    URI("file:///something").should be_kind_of(URI::FILE)
+    URI("file:///something").to_s.should eql("file:///something")
+    URI("file:///something").path.should eql("/something")
+  end
+
+  it "should treat host as path when host name is a Windows drive" do
+    URI("file://c:/something").should eql(URI("file:///c:/something"))
+  end
+end
+
+
+describe URI::FILE, "#read" do
+  before do
+    @filename = "readme"
+    @uri = URI("file:///#{File.expand_path(@filename)}")
+    @content = "Readme. Please!"
+    write "readme", @content
+  end
+
+  it "should not complain about excessive options" do
+    @uri.read :proxy=>[], :lovely=>true
+  end
+
+  it "should read the file" do
+    @uri.read.should eql(@content)
+  end
+
+  it "should read the file and yield to block" do
+    @uri.read { |content| content.should eql(@content) }
+  end
+
+  it "should raise NotFoundError if file doesn't exist" do
+    lambda { (@uri + "notme").read }.should raise_error(URI::NotFoundError)
+  end
+
+  it "should raise NotFoundError if file is actually a directory" do
+    mkpath "dir"
+    lambda { (@uri + "dir").read }.should raise_error(URI::NotFoundError)
+  end
+end
+
+
+describe URI::FILE, "#write" do
+  before do
+    @filename = "readme"
+    @uri = URI("file:///#{File.expand_path(@filename)}")
+    @content = "Readme. Please!"
+  end
+
+  it "should not complain about excessive options" do
+    @uri.write @content, :proxy=>[], :lovely=>true
+  end
+
+  it "should write the file from a string" do
+    @uri.write @content
+    read(@filename).should eql(@content)
+  end
+
+  it "should write the file from a reader" do
+    reader = Object.new
+    class << reader
+      def read(bytes) ; @array.pop ; end
+    end
+    reader.instance_variable_set :@array, [@content]
+    @uri.write reader
+    read(@filename).should eql(@content)
+  end
+
+  it "should write the file from a block" do
+    array = [@content]
+    @uri.write { array.pop }
+    read(@filename).should eql(@content)
+  end
+
+  it "should not create file if read fails" do
+    @uri.write { fail } rescue nil
+    file(@filename).should_not exist
+  end
+end
+
+
+
+describe URI::HTTP, "#read" do
+  before do
+    @proxy = "http://john:smith@myproxy:8080"
+    @domain = "domain"
+    @host_domain = "host.#{@domain}"
+    @uri = URI("http://#{@host_domain}")
+    @no_proxy_args = [@host_domain, 80]
+    @proxy_args = @no_proxy_args + ["myproxy", 8080, "john", "smith"]
+  end
+
+  it "should not use proxy unless proxy is set" do
+    Net::HTTP.should_receive(:start).with(*@no_proxy_args)
+    @uri.read
+  end
+
+  it "should use proxy from environment variable HTTP_PROXY" do
+    ENV["HTTP_PROXY"] = @proxy
+    Net::HTTP.should_receive(:start).with(*@proxy_args)
+    @uri.read
+  end
+
+  it "should not use proxy for hosts from environment variable NO_PROXY" do
+    ENV["HTTP_PROXY"] = @proxy
+    ENV["NO_PROXY"] = @host_domain
+    Net::HTTP.should_receive(:start).with(*@no_proxy_args)
+    @uri.read
+  end
+
+  it "should use proxy for hosts other than those specified by NO_PROXY" do
+    ENV["HTTP_PROXY"] = @proxy
+    ENV["NO_PROXY"] = "whatever"
+    Net::HTTP.should_receive(:start).with(*@proxy_args)
+    @uri.read
+  end
+
+  it "should support comma separated list in environment variable NO_PROXY" do
+    ENV["HTTP_PROXY"] = @proxy
+    ENV["NO_PROXY"] = "optimus,prime"
+    Net::HTTP.should_receive(:start).with("optimus", 80)
+    URI("http://optimus").read
+    Net::HTTP.should_receive(:start).with("prime", 80)
+    URI("http://prime").read
+    Net::HTTP.should_receive(:start).with("bumblebee", *@proxy_args.tail)
+    URI("http://bumblebee").read
+  end
+
+  it "should support glob pattern in NO_PROXY" do
+    ENV["HTTP_PROXY"] = @proxy
+    ENV["NO_PROXY"] = "*.#{@domain}"
+    Net::HTTP.should_receive(:start).once.with(*@no_proxy_args)
+    @uri.read
+  end
+
+  it "should support specific port in NO_PROXY" do
+    ENV["HTTP_PROXY"] = @proxy
+    ENV["NO_PROXY"] = "#{@host_domain}:80"
+    Net::HTTP.should_receive(:start).with(*@no_proxy_args)
+    @uri.read
+    ENV["NO_PROXY"] = "#{@host_domain}:800"
+    Net::HTTP.should_receive(:start).with(*@proxy_args)
+    @uri.read
+  end
+
+end

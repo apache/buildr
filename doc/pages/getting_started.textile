@@ -1,0 +1,93 @@
+h1. Getting Started
+
+h2. Conventions
+
+Lines that start with @$@ are command lines, for example:
+
+{{{!sh
+$ # Run Buildr
+$ buildr
+}}}
+
+Lines that start with @=>@ show output from the console or the result of a method, for example:
+
+{{{!sh
+puts "Hello world"
+=> "Hello world"
+}}}
+
+And as you guessed, everything else is Buildfile Ruby or Java code.  You can figure out which language is which.
+
+
+
+h2. Installing
+
+To use Buildr you need Ruby 1.8 with Gems.
+
+If you're running on Windows, you can get the "one-click installer":http://rubyinstaller.rubyforge.org/ that includes both.  On Linux, depending on your distribution, you can get Ruby via @yum install ruby@, @apt-get install ruby@, or @emerge ruby@.
+
+You will need to separately download and install "RubyGems":http://rubyforge.org/frs/?group_id=126.  Some distributions also include a rubygem package that you can @apt-get@ or @yum install@ directly, so try these options first.
+
+Got that?  Moving on. Set the @JAVA_HOME@ environment variable and install Buildr:
+
+{{{!sh
+$ gem install buildr
+}}}
+
+*Linux and OS/X:*  You probably need to be super user to install new Gems.  Turns out, in some configurations using @sudo@ does not pass the @JAVA_HOME@ environment variable, so either login as super user, or try this:
+
+{{{
+$sudo env JAVA_HOME=$JAVA_HOME gem install buildr
+}}}
+
+Buildr depends on other packages, so the next step is accepting these packages for installation.  For a couple, RJB and
+Antwrap, you'll need to select the right installation type.
+
+Now you're ready to start. Almost.
+
+
+h2. Running
+
+You need a *Buildfile*, a build script that tells Buildr all about the projects it's building, what they contain, what to produce, and so on.  The Buildfile resides in the root directory of your project.  We'll talk more about it in "the next chapter":projects.html.  If you don't already have one, ask Buildr to create it[1]:
+
+{{{!sh
+$ buildr
+}}}
+
+You use Buildr by running the @buildr@ command:
+
+{{{!sh
+buildr [-f buildfile] {options} targets...
+}}}
+
+There are several options you can use, for a full list of options type:
+
+{{{!sh
+buildr --help
+}}}
+
+You can use the @--help@ option anytime.  Once you have a Buildfile ready, you can find out even more information by running the _help_ task:
+
+{{{!sh
+buildr help
+}}}
+
+And before we move to more serious matters, here's a reminder.  If you want to upgrade to a new version of Buildr, just:
+
+{{{!sh
+$ gem update buildr
+}}}
+
+
+h2. More Info
+
+*Mailing List* Questions, ideas, comments and to report "features", join us on the "Buildr user mailing list":mailing_lists.html.
+
+*Rake* Buildr is based on Rake, a Ruby build system that handles tasks and dependencies.  Check out the "Rake documentation":http://docs.rubyrake.org/ for more information.
+
+*AntWrap* Buildr uses AntWrap, for configuring and running Ant tasks.  You can learn more from the "Antwrap documentation":http://antwrap.rubyforge.org/.
+
+*Building Ruby* If you don't have Ruby installed or want to build a different verions, here are instructions for "Building Ruby on OS/X":http://hivelogic.com/narrative/articles/ruby-rails-mongrel-mysql-osx.
+
+
+fn1. You'll notice that Buildr creates a file called @buildfile@.  It's case sensitive, but Buildr will look for either @buildfile@ or @Buildfile@.  You can also use @Rakefile@ or @rakefile@ for compatibility with previous versions of Buildr.
