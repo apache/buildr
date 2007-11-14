@@ -13,7 +13,7 @@ def specify(platform)
     spec.email        = "buildr-user@incubator.apache.org"
     spec.homepage     = "http://incubator.apache.org/#{spec.name}/"
     spec.summary      = "A build system that doesn't suck"
-    spec.files        = FileList["lib/**/*", "CHANGELOG", "README", "LICENSE", "Rakefile"].collect
+    spec.files        = FileList["lib/**/*", "CHANGELOG", "README", "LICENSE", "NOTICE", "DISCLAIMER", "Rakefile"].collect
     spec.require_path = "lib"
     spec.autorequire  = "buildr.rb"
     spec.has_rdoc     = true
