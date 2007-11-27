@@ -23,7 +23,7 @@ killer-app:la-web          # What our users see
 You are, of course, describing your projects for the sake of those who will maintain your code, right?  To describe a project, or a task, call the @desc@ method before the project or task definition.
 
 
-h2. Peronsal Settings and Environment Variables
+h2. Personal Settings and Environment Variables
 
 Some things clearly do not belong in the Buildfile.  For example, the username/password you use to upload releases.  If you're working in a team or making the source code available, you'd want to keep these in a separate place.  You may want to pick a different location for the local repository, or use a different remote repository than everyone else, etc.
 
@@ -34,7 +34,7 @@ Here's an example @buildr.rb@, not one I actually use, but close enough:
 {{{!ruby
 # Only I should know that
 repositories.upload_to[:username] = "assaf"
-repositories.upload_to[:password] = "supersekreet"
+repositories.upload_to[:password] = "supersecret"
 # Search here first, it's faster
 repositories.remote << "http://inside-the-firewall"
 }}} 

@@ -2,6 +2,7 @@
 * Changed: Resources sets permission on copied files to make them read/write-able.
 * Changed: Artifact download no longer generates destination directory if not downloaded.
 * Fixed: EOL in MANIFEST.MF.
+* Fixed: Bunch of typos, courtesy of Merlyn Albery-Speyer and Soemirno Kartosoewito.
 
 1.2.9 (11/8/2007)
 * Changed: Upgraded to RJB 1.0.11.

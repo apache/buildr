@@ -1,4 +1,4 @@
-h1. Building
+lding
 
 To remove any confusion, Buildr's build task is actually called @build@.  It's also the default task that executes when you run @buildr@ without any task name.
 
@@ -173,7 +173,7 @@ h2. More On Building
 
 The @build@ task runs the @compile@ (and @resources@) tasks as prerequisites, followed by any actions you add to it, and completes by running the @test@ task.  The @build@ task itself is a prerequisite to other tasks, for example, @package@ and @upload@.
 
-You can extend the @build@ task in two ways.  You can add more prerequisite that will execute before the task itself, or you can add actions that will execute as part of the task.  Which one you choose is up to you, we'll show you how they differ in a second.  If you call @build@ with a list of tasks, it adds these tasks as prerequisites.  Call @build@ with a block, and it adds that block as an action.  Again, a common idiom you'll see elsewhere in Buildr and Rake.
+You can extend the @build@ task in two ways.  You can add more prerequisites that will execute before the task itself, or you can add actions that will execute as part of the task.  Which one you choose is up to you, we'll show you how they differ in a second.  If you call @build@ with a list of tasks, it adds these tasks as prerequisites.  Call @build@ with a block, and it adds that block as an action.  Again, a common idiom you'll see elsewhere in Buildr and Rake.
 
 Let's look at a simple example.  Say we want to generate a Derby database form an SQL file and include it in the ZIP package:
 

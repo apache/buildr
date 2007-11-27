@@ -34,6 +34,16 @@ Got that?  Moving on. Set the @JAVA_HOME@ environment variable and install Build
 $ gem install buildr
 }}}
 
+*Ubuntu:*  Ubuntu is a popular Linux distribution.  Here are specific instructions for installing Buildr and its prerequisite packages on recent versions of Ubuntu (Dapper, Edgy, Feisty and Gusty):
+
+{{{!sh
+$ sudo apt-get install ruby
+$ sudo apt-get install ruby1.8-dev
+$ sudo apt-get install build-essential
+$ sudo apt-get install libopenssl-ruby
+$ sudo gem install buildr
+}}}
+
 *Linux and OS/X:*  You probably need to be super user to install new Gems.  Turns out, in some configurations using @sudo@ does not pass the @JAVA_HOME@ environment variable, so either login as super user, or try this:
 
 {{{

@@ -162,7 +162,7 @@ _la-web_ is the current project.  For example:
 $ buildr build
 
 # switch to and test only teh-impl
-$ cd the-impl
+$ cd teh-impl
 $ buildr test
 
 # switch to and package only la-web
@@ -247,7 +247,7 @@ project("teh-impl")._("src/main/java")
 
 h2. Defining The Project
 
-The project definition itself gives you a lot of pre-canned tasks to start with, but that's not enough to build a project.  You need to specify what gets built and how, whether it's the classpath dependencies to use, the packages you want to create and so forth.  You can configure existing tasks, extend them to do additional work, and create new tasks.  All that magic happens inside the project definition block.
+The project definition itself gives you a lot of pre-canned tasks to start with, but that's not enough to build a project.  You need to specify what gets built and how, which classpath dependencies to use, the packages you want to create and so forth.  You can configure existing tasks, extend them to do additional work, and create new tasks.  All that magic happens inside the project definition block.
 
 Since the project definition executes each time you run Buildr, you don't want to perform any work directly inside the project definition block.  Rather, you want to use it to specify how different build task work when you invoke them.  Here's an example to illustrate the point:
 
@@ -290,7 +290,7 @@ One last thing to remember.  Actually three, but they all go hand in hand.
 *Blocks are closures* The project definition is also a closure, which can reference variables from enclosing scopes.  You can use that, for example, to define constants, variables and even functions in your Buildfile, and reference them from your project definition.  As you'll see later on, in the "Artifacts":#artifacts section, it will save you a lot of work.
 
 *Projects are namespaces*
-While executing the project definition, Buildr switches the namespace to the project name.  If you define the task "do-this" inside the _teh-impl_ project, the actual task name is "killer-app:teh-impl:do-this".  Likewire, the @compile@ task is actually "killer-app:teh-impl:compile".
+While executing the project definition, Buildr switches the namespace to the project name.  If you define the task "do-this" inside the _teh-impl_ project, the actual task name is "killer-app:teh-impl:do-this".  Likewise, the @compile@ task is actually "killer-app:teh-impl:compile".
 
 From outside the project you can reference a task by its full name, either @task("foo:do")@ or @project("foo").task("do")@.  If you need to reference a task defined outside the project from within the project, prefix it with "rake:", for example, @task("rake:globally-defined")@.
 

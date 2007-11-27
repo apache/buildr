@@ -141,8 +141,7 @@ namespace :svn do
   
   task :tag do |task|
     cur_url = `svn info`.scan(/URL: (.*)/)[0][0]
-    new_url = cur_url.sub(/trunk$/, "tags/#{spec.version.to_s}")
-    system "svn", "remove", new_url, "-m", "Removing old copy" rescue nil
+    new_url = cur_url.sub(/(trunk$)|(branches\/\w*)$/, "tags/#{spec.version.to_s}")
     system "svn", "copy", cur_url, new_url, "-m", "Release #{spec.version.to_s}"
   end
 end

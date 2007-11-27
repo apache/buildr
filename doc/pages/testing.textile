@@ -187,7 +187,7 @@ You can use the @test@ task to run other kinds of tests beyond Java unit tests. 
 
 h2. Testing Your Build
 
-So you got the build running and all the tests pass, binaries are shipping when you find out some glaring omissions.  The license file is empty, the localized messages for Japanese are missing, there are no CSS files are not where you expect them to be.  The fact is, some errors slip by unit and integration tests.  So how do we make sure the same mistake doesn't happen again?
+So you got the build running and all the tests pass, binaries are shipping when you find out some glaring omissions.  The license file is empty, the localized messages for Japanese are missing, the CSS files are not where you expect them to be.  The fact is, some errors slip by unit and integration tests.  So how do we make sure the same mistake doesn't happen again?
 
 Each project has a @check@ task that runs just after packaging.  You can use this task to verify that your build created the files you wanted it to create.  And to make it extremely convenient, we introduced the notion of expectations.
 
@@ -241,7 +241,7 @@ Buildr provides the following matchers:
 
 All these matchers operate against a file task.  If you run them against a ZipTask (including JAR, WAR, etc) they can also check the contents of the ZIP file.  And as you can see in the examples above, you can also run them against a path in a ZIP file, checking its contents as if it was a directory, or against an entry in a ZIP file, checking the content of that file.
 
-*Note:* The @package@ method returns a package task based on packaging type, identifier, group, version and classifier.  The last four are inferred, but if you create a package with different specifications (for example, you specify a classifier) your checks much call @package@ with the same qualifying arguments to return the very same package task.
+*Note:* The @package@ method returns a package task based on packaging type, identifier, group, version and classifier.  The last four are inferred, but if you create a package with different specifications (for example, you specify a classifier) your checks must call @package@ with the same qualifying arguments to return the very same package task.
 
 Buildr expectations are based on RSpec.  Check the "RSpec documentation":http://rspec.rubyforge.org/ if want to see all the supported matchers, or want to write your own.
 
