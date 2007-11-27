@@ -1,4 +1,4 @@
-1.2.10 (Pending)
+1.2.10 (11/26/2007)
 * Changed: Resources sets permission on copied files to make them read/write-able.
 * Changed: Artifact download no longer generates destination directory if not downloaded.
 * Fixed: EOL in MANIFEST.MF.
