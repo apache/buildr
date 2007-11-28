@@ -30,7 +30,7 @@ require "builder"
 
 
 module Buildr
-  VERSION = "1.2.10".freeze # unless const_defined?(:VERSION)
+  VERSION = "1.2.11".freeze # unless const_defined?(:VERSION)
 end
 
 

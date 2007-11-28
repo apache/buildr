@@ -1,6 +1,9 @@
+1.2.11 (Pending)
+* Fixed: Artifact.pom resolves artifact without classifier, i.e org.testng:testng:jar:jdk15:5.1 uses org.testng:testng:pom:5.1 (Tommy).
+
 1.2.10 (11/26/2007)
 * Changed: Resources sets permission on copied files to make them read/write-able.
-* Changed: Artifact download no longer generates destination directory if not downloaded.
+* Changed: Artifact download no longer generates destination directory if not downloaded (Antoine).
 * Fixed: EOL in MANIFEST.MF.
 * Fixed: Bunch of typos, courtesy of Merlyn Albery-Speyer and Soemirno Kartosoewito.
 

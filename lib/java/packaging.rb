@@ -336,10 +336,7 @@ module Buildr
         package.extend ActsAsArtifact
         package.send :apply_spec, Hash[*Artifact::ARTIFACT_ATTRIBUTES.map { |k| [ k,options[k]] }.flatten]
         # Another task to create the POM file.
-        pom_spec = package.to_spec_hash.merge(:type=>:pom)
-        pom = file(Buildr.repositories.locate(pom_spec))
-        pom.extend ActsAsArtifact
-        pom.send :apply_spec, pom_spec
+        pom = package.pom
         pom.enhance do
           mkpath File.dirname(pom.name), :verbose=>false
           File.open(pom.name, "w") { |file| file.write pom.pom_xml }

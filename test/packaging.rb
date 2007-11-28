@@ -272,9 +272,9 @@ describe Project, "#package" do
 
   it "should create a POM artifact in local repository" do
     define("foo", :version=>"1.0") { package(:jar, :classifier=>"srcs") }
-    Artifact.lookup("foo:foo:pom:srcs:1.0").should_not be_nil
-    Artifact.lookup("foo:foo:pom:srcs:1.0").should be(project("foo").packages.first.pom)
-    repositories.locate("foo:foo:pom:srcs:1.0").should eql(project("foo").packages.first.pom.to_s)
+    Artifact.lookup("foo:foo:pom:1.0").should_not be_nil
+    Artifact.lookup("foo:foo:pom:1.0").should be(project("foo").packages.first.pom)
+    repositories.locate("foo:foo:pom:1.0").should eql(project("foo").packages.first.pom.to_s)
   end
 
   it "should create POM artifact that creates its own POM" do
@@ -287,7 +287,6 @@ describe Project, "#package" do
   <groupId>bar</groupId>
   <artifactId>foo</artifactId>
   <version>1.0</version>
-  <classifier>srcs</classifier>
 </project>
 POM
     )

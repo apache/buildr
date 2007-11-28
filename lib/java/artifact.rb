@@ -74,7 +74,7 @@ module Buildr
     # Convenience method that returns a POM artifact.
     def pom()
       return self if type == :pom
-      Buildr.artifact(:group=>group, :id=>id, :version=>version, :type=>:pom, :classifier=>classifier)
+      Buildr.artifact(:group=>group, :id=>id, :version=>version, :type=>:pom)
     end
 
     # :call-seq:

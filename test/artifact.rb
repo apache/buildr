@@ -53,7 +53,7 @@ describe Artifact do
 
   it "should have associated POM artifact" do
     @artifact.pom.to_hash.should == @artifact.to_hash.merge(:type=>:pom)
-    @classified.pom.to_hash.should == @classified.to_hash.merge(:type=>:pom)
+    @classified.pom.to_hash.should == @classified.to_hash.merge(:type=>:pom).except(:classifier)
   end
 
   it "should download file if file does not exist" do
