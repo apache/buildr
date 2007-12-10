@@ -28,7 +28,7 @@ module Buildr
 
       def initialize() #:nodoc:
         @classpath = [Java.tools_jar].compact
-        if RUBY_PLATFORM == 'java'
+        if Java.jruby?
           # in order to get a complete picture, we need to add a few jars to the list.
           @classpath += java.lang.System.getProperty('java.class.path').split(':').compact
         end
@@ -39,7 +39,7 @@ module Buildr
             cp = Buildr.artifacts(@classpath).map(&:to_s)
             cp.each { |path| file(path).invoke }
 
-            if RUBY_PLATFORM == 'java'
+            if Java.jruby?
               cp.each do |jlib|
                 require jlib
               end
@@ -68,8 +68,8 @@ module Buildr
       end
 
       def import(jlib)
-        if RUBY_PLATFORM == 'java'
-          ::Java.send(jlib)
+        if Java.jruby?
+          ::Java.instance_eval(jlib)
         else
           ::Rjb.import jlib
         end
@@ -78,7 +78,7 @@ module Buildr
       def method_missing(sym, *args, &block) #:nodoc:
         # these aren't the same, but depending on method_missing while
         # supporting two unrelated systems is asking for trouble anyways.
-        if RUBY_PLATFORM == 'java'
+        if Java.jruby?
           ::Java.send sym, *args, &block
         else
           ::Rjb.send sym, *args, &block
@@ -184,6 +184,7 @@ module Buildr
           puts "Running apt" if verbose
           puts (["apt"] + cmd_args).join(" ") if Rake.application.options.trace
           Java.wrapper do |jw|
+            cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
             jw.import("com.sun.tools.apt.Main").process(cmd_args) == 0 or
               fail "Failed to process annotations, see errors above"
           end
@@ -221,7 +222,8 @@ module Buildr
           puts "Compiling #{files.size} source files in #{name}" if verbose
           puts (["javac"] + cmd_args).join(" ") if Rake.application.options.trace
           Java.wrapper do |jw|
-            jw.import("com.sun.tools.javac.Main").compile(cmd_args) == 0 or
+            cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
+            jw.import("com.sun.tools.javac.Main").compile(cmd_args) == 0 or 
               fail "Failed to compile, see errors above"
           end
         end
@@ -272,6 +274,7 @@ module Buildr
           puts "Generating Javadoc for #{name}" if verbose
           puts (["javadoc"] + cmd_args).join(" ") if Rake.application.options.trace
           Java.wrapper do |jw|
+            cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
             jw.import("com.sun.tools.javadoc.Main").execute(cmd_args) == 0 or
               fail "Failed to generate Javadocs, see errors above"
           end
@@ -356,6 +359,11 @@ module Buildr
         File.join(home, "bin", name)
       end
 
+      # return true if we a running on c-ruby and must use rjb
+      def rjb?; RUBY_PLATFORM != "java"; end
+      # return true if we are running on jruby
+      def jruby?; RUBY_PLATFORM == "java"; end
+
   protected
 
       # :call-seq:
@@ -427,6 +435,20 @@ module Buildr
       @java_args = args.to_a
     end
 
+  end
+
+end
+
+
+if Buildr::Java.jruby?
+  
+  # Convert a RubyArray to a Java Object[] array of the specified element_type
+  class Array
+    def to_java_array(element_type)
+      java_array = ::Java.java.lang.reflect.Array.newInstance(element_type, self.size)
+      self.each_index { |i| java_array[i] = self[i] }
+      return java_array
+    end
   end
 
 end
