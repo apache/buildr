@@ -97,7 +97,18 @@ ol.toc ol {
   margin-bottom: 0.3em;
 }
 
-#content .footnote { margin-top: 2.5em; }
+#content .footnote {
+  margin-top: 2.5em;
+}
+#content .footnote {
+  padding-top: 1.5em;
+  border-top: 1px solid #ccc;
+}
+#content .footnote + .footnote {
+  margin-top: 0.5em;
+  padding-top: 0;
+  border: none;
+}
 #content .footnote sup { font-weight: bold; }
 
 #content .footnote-links dt { font-weight: bold; }
