@@ -4,28 +4,6 @@ require "core/checks"
 
 module Buildr
 
-  desc "Build the project"
-  Project.local_task("build") { |name| "Building #{name}" }
-  desc "Clean files generated during a build"
-  Project.local_task("clean") { |name| "Cleaning #{name}" }
-  desc "Create packages"
-  Project.local_task("package"=>"build") { |name| "Packaging #{name}" }
-  desc "Install packages created by the project"
-  Project.local_task("install"=>"package") { |name| "Installing packages from #{name}" }
-  desc "Remove previously installed packages"
-  Project.local_task("uninstall") { |name| "Uninstalling packages from #{name}" }
-  desc "Upload packages created by the project"
-  Project.local_task("upload"=>"package") { |name| "Deploying packages from #{name}" }
-
-  [ :build, :clean, :package, :install, :uninstall, :upload ].each do |name|
-    Project.on_define { |project| project.recursive_task name }
-  end
-
-  task("deploy"=>"upload") do
-    warn_deprecated "Please use the 'upload' task instead of 'deploy'."
-  end
-
-
   class Options
 
     # Runs the build in parallel when true (defaults to false). You can force a parallel build by
@@ -42,7 +20,43 @@ module Buildr
   task("parallel") { Buildr.options.parallel = true }
 
 
-  class Project
+  module Build
+
+    BUILD_TASKS = [ :build, :clean, :package, :install, :uninstall, :upload ]
+
+    include Extension
+
+    first_time do
+      desc "Build the project"
+      Project.local_task("build") { |name| "Building #{name}" }
+      desc "Clean files generated during a build"
+      Project.local_task("clean") { |name| "Cleaning #{name}" }
+      desc "Create packages"
+      Project.local_task("package"=>"build") { |name| "Packaging #{name}" }
+      desc "Install packages created by the project"
+      Project.local_task("install"=>"package") { |name| "Installing packages from #{name}" }
+      desc "Remove previously installed packages"
+      Project.local_task("uninstall") { |name| "Uninstalling packages from #{name}" }
+      desc "Upload packages created by the project"
+      Project.local_task("upload"=>"package") { |name| "Deploying packages from #{name}" }
+      task("deploy"=>"upload") do
+        warn_deprecated "Please use the 'upload' task instead of 'deploy'."
+      end
+
+      desc "The default task it build"
+      task "default"=>"build"
+    end
+
+    before_define do |project|
+      BUILD_TASKS.each { |name| project.recursive_task name }
+      project.clean do
+        verbose(true) do
+          rm_rf project.path_to(:target)
+          rm_rf project.path_to(:reports)
+        end
+      end
+    end
+
 
     # The target directory. By default, it's the "target" directory inside the project. Various tasks
     # use it to determine where to place files, e.g. when compiling or packaging. The clean task
@@ -85,19 +99,6 @@ module Buildr
     end
 
   end
-
-
-  Project.on_define do |project|
-    project.clean do
-      verbose(true) do
-        rm_rf project.path_to(:target)
-        rm_rf project.path_to(:reports)
-      end
-    end
-  end
-
-  desc "The default task it build"
-  task "default"=>"build"
 
 
   class Release

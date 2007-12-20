@@ -6,8 +6,8 @@ require "java/java"
 # -Cleanup compiler options
 
 module Buildr
-
   module Scala
+
     class << self
       def scala_home
         ENV["SCALA_HOME"]
@@ -304,14 +304,36 @@ module Buildr
       end
     end # ScalaCompilerTask
 
-  end # Scala
 
-  # Local task to execute the Scalac compile task of the current project.
-  # This task is not itself a compile task.
-  desc "Compile all scalac projects"
-  Project.local_task("scalac") { |name| "Compiling scala sources for #{name}" }
+    include Extension
 
-  class Project
+    first_time do
+      # Local task to execute the Scalac compile task of the current project.
+      # This task is not itself a compile task.
+      desc "Compile all scalac projects"
+      Project.local_task("scalac") { |name| "Compiling scala sources for #{name}" }
+    end
+
+    before_define do |project|
+      # Scalac runs after compile task (and therefore, after "prepare" and "resources")
+      scalac = Scala::ScalaCompilerTask.define_task("scalac"=>[task("compile")])
+      project.path_to("src/main/scala").tap { |dir| scalac.from dir if File.exist?(dir) }
+      scalac.into project.path_to(:target, "classes")
+      project.recursive_task("scalac")
+    end
+  
+    after_define do |project|
+      # This comes last because the target path may change.
+      project.packages.each do |p|
+        p.with project.scalac.target if p.type == :jar
+        p.classes = project.scalac.target if p.type == :war
+      end
+      # Work-in-progress
+      #project.task("eclipse").classpathContainers 'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER'
+
+      project.build project.scalac.target
+      project.clean { verbose(false) { rm_rf project.scalac.target.to_s } }
+    end
 
     # :call-seq:
     #   compile(*sources) => CompileTask
@@ -341,28 +363,8 @@ module Buildr
       task("scalac").from(sources).enhance &block
     end
 
-  end # Project
-
-  Project.on_define do |project|
-    # Scalac runs after compile task (and therefore, after "prepare" and "resources")
-    scalac = Scala::ScalaCompilerTask.define_task("scalac"=>[task("compile")])
-    project.path_to("src/main/scala").tap { |dir| scalac.from dir if File.exist?(dir) }
-    scalac.into project.path_to(:target, "classes")
-    project.recursive_task("scalac")
-
-    project.enhance do |project|
-      # This comes last because the target path may change.
-      project.packages.each do |p|
-        p.with scalac.target if p.type == :jar
-        p.classes = scalac.target if p.type == :war
-      end
-      # Work-in-progress
-      #project.task("eclipse").classpathContainers 'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER'
-
-      project.build project.scalac.target
-      project.clean { verbose(false) { rm_rf project.scalac.target.to_s } }
-    end
-  end
-
 end # Buildr
 
+class Buildr::Project
+  include Buildr::Scala
+end

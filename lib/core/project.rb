@@ -9,11 +9,8 @@ module Buildr
   # that did not override it.
   module InheritedAttributes
 
-    class << self
-    private
-      def included(mod)
-        mod.extend(self)
-      end
+    def self.included(base)
+      base.extend(self)
     end
 
     # :call-seq:
@@ -139,6 +136,14 @@ module Buildr
           @projects[name] = project
           # Set the project properties first, actions may use them.
           properties.each { |name, value| project.send "#{name}=", value } if properties
+          # Instantiate callbacks for this project, and setup to call before/after define.
+          # Don't cache list of callbacks, since project may add new callbacks.
+          project.enhance do |project|
+            project.send :call_callbacks, :before_define
+            project.enhance do |project|
+              project.send :call_callbacks, :after_define
+            end
+          end
           project.enhance do |project|
             @on_define.each { |callback| callback[project] }
           end if @on_define
@@ -246,21 +251,9 @@ module Buildr
         end
       end
 
-      # :call-seq:
-      #   on_define() { |project| ... }
-      #
-      # The Project class defines minimal behavior, only what is documented here.
-      # To extend its definition, other modules use Project#on_define to incorporate
-      # code called during a new project's definition.
-      #
-      # For example:
-      #   # Set the default version of each project to "1.0".
-      #   Project.on_define { |project| project.version ||= "1.0" }
-      #
-      # Since each project definition is essentially a task, if you need to do work
-      # at the end of the project definition (after the block is executed), you can
-      # enhance it from within #on_define.
+      # *Deprecated* Check the Extension module to see how extensions are handled.
       def on_define(&block)
+        warn_deprecated 'This method is deprecated, see Extension'
         (@on_define ||= []) << block if block
       end
 
@@ -297,6 +290,11 @@ module Buildr
         Rake.application.lookup((namespace + [last_name]).join(":"), []) unless namespace.empty?
       end
 
+      # Callback classes.
+      def callbacks #:nodoc:
+        @callbacks ||= []
+      end
+
     end
 
     include InheritedAttributes
@@ -316,6 +314,11 @@ module Buildr
         # dependencies (it's being invoked right now, so calling project() will fail).
         @parent = task(split[0...-1].join(":"))
         raise "No parent project #{split[0...-1].join(":")}" unless @parent && Project === parent
+      end
+      callbacks = Project.callbacks.uniq.map(&:new)
+      @callbacks = [:before_define, :after_define].inject({}) do |hash, state|
+        methods = callbacks.select { |callback| callback.respond_to?(state) }.map { |callback| callback.method(state) }
+        hash.update(state=>methods)
       end
     end
 
@@ -524,7 +527,140 @@ module Buildr
       %Q{project(#{name.inspect})}
     end
 
+  private
+
+    # Call all callbacks for a particular state, e.g. :before_define, :after_define.
+    def call_callbacks(state) #:nodoc:
+      methods = @callbacks.delete(state) || []
+      methods.each { |method| method.call(project) }
+    end
+
   end
+
+
+  # The basic mechanism for extending projects in Buildr are Ruby modules.  In fact,
+  # base features like compiling and testing are all developed in the form of modules,
+  # and then added to the core Project class.
+  #
+  # A module defines instance methods that are then mixed into the project and become
+  # instance methods of the project.  There are two general ways for extending projects.
+  # You can extend all projects by including the module in Project:
+  #    class Project
+  #      include MyExtension
+  #    end
+  # You can also extend a given project instance and only that instance by extending
+  # it with the module:
+  #   define 'foo' do
+  #     extend MyExtension
+  #   end
+  #
+  # Some extensions require tighter integration with the project, specifically for
+  # setting up tasks and properties, or for configuring tasks based on the project
+  # definition.  You can do that by adding callbacks to the process.
+  #
+  # The easiest way to add callbacks is by incorporating the Extension module in your
+  # own extension, and using the various class methods to define callback behavior:
+  # * first_time -- This block will be called once for any particular extension.
+  #     You can use this to setup top-level and local tasks.
+  # * before_define -- This block is called once for the project with the project
+  #     instance, right before running the project definition.  You can use this
+  #     to add tasks and set properties that will be used in the project definition.
+  # * after_define -- This block is called once for the project with the project
+  #     instance, right after running the project definition.  You can use this to
+  #     do any post-processing that depends on the project definition.
+  #
+  # This example illustrates how to write a simple extension:
+  #   module LinesOfCode
+  #     include Extension
+  #
+  #     first_time do
+  #       # Define task not specific to any projet.
+  #       desc 'Count lines of code in current project'
+  #       Project.local_task('loc')
+  #     end
+  #
+  #     before_define do |project|
+  #       # Define the loc task for this particular project.
+  #       define_task 'loc' do |task|
+  #         lines = task.prerequisites.map { |path| Dir["#{path}/**/*"] }.flatten.uniq.
+  #           inject(0) { |total, file| total + File.readlines(file).count }
+  #         puts "Project #{project.name} has #{lines} lines of code"
+  #       end
+  #     end
+  #
+  #     after_define do |project|
+  #       # Now that we know all the source directories, add them.
+  #       task('loc'=>compile.sources + compile.test.sources)
+  #     end
+  #
+  #     # To use this method in your project:
+  #     #   loc path_1, path_2
+  #     def loc(*paths)
+  #       task('loc'=>paths)
+  #     end
+  #
+  #   end
+  #
+  #   class Buildr::Project
+  #     include LinesOfCode
+  #   end
+  module Extension
+
+    def self.included(base) #:nodoc:
+      base.extend ClassMethods
+    end
+
+    # Methods added to the extension module when including Extension.
+    module ClassMethods
+
+      def included(base) #:nodoc:
+        # When included in Project, add callback and call first_time.
+        if Project == base && !base.callbacks.include?(callbacks)
+          base.callbacks << callbacks
+          callbacks.first_time if callbacks.respond_to?(:first_time)
+        end
+      end
+
+      def extended(base) #:nodoc:
+        # When extending project, add instance and call before_define.
+        if Project === base
+          callbacks = self.callbacks.new
+          callbacks.before_define if callbacks.respond_to?(:before_define)
+          base.callbacks << callbacks
+        end
+      end
+
+      # This block will be called once for any particular extension.
+      # You can use this to setup top-level and local tasks.
+      def first_time(&block)
+        meta = class << callbacks ; self ; end
+        meta.send :define_method, :first_time, &block
+      end
+
+      # This block is called once for the project with the project instance,
+      # right before running the project definition.  You can use this to add
+      # tasks and set properties that will be used in the project definition.
+      def before_define(&block)
+        callbacks.send :define_method, :before_define, &block
+      end
+
+      # This block is called once for the project with the project instance,
+      # right after running the project definition.  You can use this to do
+      # any post-processing that depends on the project definition.
+      def after_define(&block)
+        callbacks.send :define_method, :after_define, &block
+      end
+
+    private
+
+      def callbacks
+        const_get('Callbacks') rescue const_set('Callbacks', Class.new)
+      end
+
+    end
+
+  end
+
 
   # :call-seq:
   #   define(name, properties?) { |project| ... } => project

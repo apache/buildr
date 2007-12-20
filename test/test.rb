@@ -769,210 +769,210 @@ describe Rake::Task, "junit:report" do
 end
 
 
-describe Buildr, "integration" do
-  it "should return the same task from all contexts" do
-    task = integration
-    define "foo" do
+describe Buildr, 'integration' do
+  it 'should return the same task from all contexts' do
+    task = task('integration')
+    define 'foo' do
       integration.should be(task)
-      define "bar" do
+      define 'bar' do
         integration.should be(task)
       end
     end
     integration.should be(task)
   end
 
-  it "should respond to :setup and return setup task" do
+  it 'should respond to :setup and return setup task' do
     setup = integration.setup
-    define("foo") { integration.setup.should be(setup) }
+    define('foo') { integration.setup.should be(setup) }
   end
 
-  it "should respond to :setup and add prerequisites to integration:setup" do
-    define("foo") { integration.setup "prereq" }
-    integration.setup.prerequisites.should include("prereq")
+  it 'should respond to :setup and add prerequisites to integration:setup' do
+    define('foo') { integration.setup 'prereq' }
+    integration.setup.prerequisites.should include('prereq')
   end
 
-  it "should respond to :setup and add action for integration:setup" do
-    action = task("action")
-    define("foo") { integration.setup { action.invoke } }
+  it 'should respond to :setup and add action for integration:setup' do
+    action = task('action')
+    define('foo') { integration.setup { action.invoke } }
     lambda { integration.setup.invoke }.should run_tasks(action)
   end
 
-  it "should respond to :teardown and return teardown task" do
+  it 'should respond to :teardown and return teardown task' do
     teardown = integration.teardown
-    define("foo") { integration.teardown.should be(teardown) }
+    define('foo') { integration.teardown.should be(teardown) }
   end
 
-  it "should respond to :teardown and add prerequisites to integration:teardown" do
-    define("foo") { integration.teardown "prereq" }
-    integration.teardown.prerequisites.should include("prereq")
+  it 'should respond to :teardown and add prerequisites to integration:teardown' do
+    define('foo') { integration.teardown 'prereq' }
+    integration.teardown.prerequisites.should include('prereq')
   end
 
-  it "should respond to :teardown and add action for integration:teardown" do
-    action = task("action")
-    define("foo") { integration.teardown { action.invoke } }
+  it 'should respond to :teardown and add action for integration:teardown' do
+    action = task('action')
+    define('foo') { integration.teardown { action.invoke } }
     lambda { integration.teardown.invoke }.should run_tasks(action)
   end
 end
 
 
-describe Rake::Task, "integration" do
-  it "should be a local task" do
-    define("foo") { test.using :integration }
-    define("bar", :base_dir=>"other") { test.using :integration }
-    lambda { task("integration").invoke }.should run_task("foo:test").but_not("bar:test")
+describe Rake::Task, 'integration' do
+  it 'should be a local task' do
+    define('foo') { test.using :integration }
+    define('bar', :base_dir=>'other') { test.using :integration }
+    lambda { task('integration').invoke }.should run_task('foo:test').but_not('bar:test')
   end
 
-  it "should be a recursive task" do
-    define "foo" do
+  it 'should be a recursive task' do
+    define 'foo' do
       test.using :integration
-      define("bar") { test.using :integration }
+      define('bar') { test.using :integration }
     end
-    lambda { task("integration").invoke }.should run_tasks("foo:test", "foo:bar:test")
+    lambda { task('integration').invoke }.should run_tasks('foo:test', 'foo:bar:test')
   end
 
-  it "should find nested integration tests" do
-    define "foo" do
-      define("bar") { test.using :integration }
+  it 'should find nested integration tests' do
+    define 'foo' do
+      define('bar') { test.using :integration }
     end
-    lambda { task("integration").invoke }.should run_tasks("foo:bar:test").but_not("foo:test")
+    lambda { task('integration').invoke }.should run_tasks('foo:bar:test').but_not('foo:test')
   end
 
-  it "should ignore nested regular tasks" do
-    define "foo" do
+  it 'should ignore nested regular tasks' do
+    define 'foo' do
       test.using :integration
-      define("bar") { test.using :integration=>false }
+      define('bar') { test.using :integration=>false }
     end
-    lambda { task("integration").invoke }.should run_tasks("foo:test").but_not("foo:bar:test")
+    lambda { task('integration').invoke }.should run_tasks('foo:test').but_not('foo:bar:test')
   end
 
-  it "should agree not to run the same tasks as test" do
-    define "foo" do
-      define "bar" do
+  it 'should agree not to run the same tasks as test' do
+    define 'foo' do
+      define 'bar' do
         test.using :integration
-        define("baz") { test.using :integration=>false }
+        define('baz') { test.using :integration=>false }
       end
     end
-    lambda { task("test").invoke }.should run_tasks("foo:test", "foo:bar:baz:test").but_not("foo:bar:test")
-    lambda { task("integration").invoke }.should run_tasks("foo:bar:test").but_not("foo:test", "foo:bar:baz:test")
+    lambda { task('test').invoke }.should run_tasks('foo:test', 'foo:bar:baz:test').but_not('foo:bar:test')
+    lambda { task('integration').invoke }.should run_tasks('foo:bar:test').but_not('foo:test', 'foo:bar:baz:test')
   end
 
-  it "should run setup task before any project integration tests" do
-    define("foo") { test.using :integration }
-    define("bar") { test.using :integration }
-    lambda { task("integration").invoke }.should run_tasks([integration.setup, "bar:test", "foo:test"])
+  it 'should run setup task before any project integration tests' do
+    define('foo') { test.using :integration }
+    define('bar') { test.using :integration }
+    lambda { task('integration').invoke }.should run_tasks([integration.setup, 'bar:test', 'foo:test'])
   end
 
-  it "should run teardown task after all project integrations tests" do
-    define("foo") { test.using :integration }
-    define("bar") { test.using :integration }
-    lambda { task("integration").invoke }.should run_tasks(["bar:test", "foo:test", integration.teardown])
+  it 'should run teardown task after all project integrations tests' do
+    define('foo') { test.using :integration }
+    define('bar') { test.using :integration }
+    lambda { task('integration').invoke }.should run_tasks(['bar:test', 'foo:test', integration.teardown])
   end
 
-  it "should run test cases marked for integration" do
-    write "src/test/java/FailingTest.java", 
-      "public class FailingTest extends junit.framework.TestCase { public void testNothing() { assertTrue(false); } }"
-    define("foo") { test.using :integration }
-    lambda { task("test").invoke }.should_not raise_error
-    lambda { task("integration").invoke }.should raise_error(RuntimeError, /tests failed/i)
+  it 'should run test cases marked for integration' do
+    write 'src/test/java/FailingTest.java', 
+      'public class FailingTest extends junit.framework.TestCase { public void testNothing() { assertTrue(false); } }'
+    define('foo') { test.using :integration }
+    lambda { task('test').invoke }.should_not raise_error
+    lambda { task('integration').invoke }.should raise_error(RuntimeError, /tests failed/i)
   end
 
-  it "should run setup and teardown tasks marked for integration" do
-    define("foo") { test.using :integration }
-    lambda { task("test").invoke }.should run_tasks().but_not("foo:test:setup", "foo:test:teardown")
-    lambda { task("integration").invoke }.should run_tasks("foo:test:setup", "foo:test:teardown")
+  it 'should run setup and teardown tasks marked for integration' do
+    define('foo') { test.using :integration }
+    lambda { task('test').invoke }.should run_tasks().but_not('foo:test:setup', 'foo:test:teardown')
+    lambda { task('integration').invoke }.should run_tasks('foo:test:setup', 'foo:test:teardown')
   end
 
-  it "should run test actions marked for integration" do
-    task "action"
-    define "foo" do
+  it 'should run test actions marked for integration' do
+    task 'action'
+    define 'foo' do
       test.using :integration
-      test { task("action").invoke }
+      test { task('action').invoke }
     end
-    lambda { task("test").invoke }.should run_tasks().but_not("action")
-    lambda { task("integration").invoke }.should run_task("action")
+    lambda { task('test').invoke }.should run_tasks().but_not('action')
+    lambda { task('integration').invoke }.should run_task('action')
   end
 
-  it "should not fail if test=all" do
-    write "src/test/java/FailingTest.java", 
-      "public class FailingTest extends junit.framework.TestCase { public void testNothing() { assertTrue(false); } }"
-    define("foo") { test.using :integration }
+  it 'should not fail if test=all' do
+    write 'src/test/java/FailingTest.java', 
+      'public class FailingTest extends junit.framework.TestCase { public void testNothing() { assertTrue(false); } }'
+    define('foo') { test.using :integration }
     options.test = :all
-    lambda { task("integration").invoke }.should_not raise_error
+    lambda { task('integration').invoke }.should_not raise_error
   end
 
-  it "should execute by local package task" do
-    define "foo", :version=>"1.0" do
+  it 'should execute by local package task' do
+    define 'foo', :version=>'1.0' do
       test.using :integration
       package :jar
     end
-    lambda { task("package").invoke }.should run_tasks(["foo:package", "foo:test"])
+    lambda { task('package').invoke }.should run_tasks(['foo:package', 'foo:test'])
   end
 
-  it "should execute by local package task along with unit tests" do
-    define "foo", :version=>"1.0" do
+  it 'should execute by local package task along with unit tests' do
+    define 'foo', :version=>'1.0' do
       test.using :integration
       package :jar
-      define("bar") { test.using :integration=>false }
+      define('bar') { test.using :integration=>false }
     end
-    lambda { task("package").invoke }.should run_tasks(["foo:package", "foo:test"],
-      ["foo:bar:build", "foo:bar:test", "foo:bar:package"])
+    lambda { task('package').invoke }.should run_tasks(['foo:package', 'foo:test'],
+      ['foo:bar:build', 'foo:bar:test', 'foo:bar:package'])
   end
 
-  it "should not execute by local package task if test=no" do
-    define "foo", :version=>"1.0" do
+  it 'should not execute by local package task if test=no' do
+    define 'foo', :version=>'1.0' do
       test.using :integration
       package :jar
     end
     options.test = false
-    lambda { task("package").invoke }.should run_task("foo:package").but_not("foo:test")
+    lambda { task('package').invoke }.should run_task('foo:package').but_not('foo:test')
   end
 end
 
 
-describe "integration rule" do
+describe 'integration rule' do
   before do
-    define "foo" do
+    define 'foo' do
       test.using :integration
-      define "bar"
+      define 'bar'
     end
   end
 
-  it "should execute integration tests on local project" do
-    lambda { task("integration:something").invoke }.should run_task("foo:test")
+  it 'should execute integration tests on local project' do
+    lambda { task('integration:something').invoke }.should run_task('foo:test')
   end
 
-  it "should reset tasks to specific pattern" do
-    task("integration:something").invoke
-    ["foo", "foo:bar"].map { |name| project(name) }.each do |project|
-      project.test.include?("something").should be_true
-      project.test.include?("nothing").should be_false
-      project.test.include?("SomeTest").should be_false
+  it 'should reset tasks to specific pattern' do
+    task('integration:something').invoke
+    ['foo', 'foo:bar'].map { |name| project(name) }.each do |project|
+      project.test.include?('something').should be_true
+      project.test.include?('nothing').should be_false
+      project.test.include?('SomeTest').should be_false
     end
   end
 
-  it "should apply *name* pattern" do
-    task("integration:something").invoke
-    project("foo").test.include?("prefix-something-suffix").should be_true
-    project("foo").test.include?("prefix-nothing-suffix").should be_false
+  it 'should apply *name* pattern' do
+    task('integration:something').invoke
+    project('foo').test.include?('prefix-something-suffix').should be_true
+    project('foo').test.include?('prefix-nothing-suffix').should be_false
   end
 
-  it "should not apply *name* pattern if asterisks used" do
-    task("integration:*something").invoke
-    project("foo").test.include?("prefix-something").should be_true
-    project("foo").test.include?("prefix-something-suffix").should be_false
+  it 'should not apply *name* pattern if asterisks used' do
+    task('integration:*something').invoke
+    project('foo').test.include?('prefix-something').should be_true
+    project('foo').test.include?('prefix-something-suffix').should be_false
   end
 
-  it "should accept multiple tasks separated by commas" do
-    task("integration:foo,bar").invoke
-    project("foo").test.include?("foo").should be_true
-    project("foo").test.include?("bar").should be_true
-    project("foo").test.include?("baz").should be_false
+  it 'should accept multiple tasks separated by commas' do
+    task('integration:foo,bar').invoke
+    project('foo').test.include?('foo').should be_true
+    project('foo').test.include?('bar').should be_true
+    project('foo').test.include?('baz').should be_false
   end
 
-  it "should execute only the named tasts" do
-    write "src/test/java/TestSomething.java",
-      "public class TestSomething extends junit.framework.TestCase { public void testNothing() {} }"
-    write "src/test/java/TestFails.java", "class TestFails {}"
-    task("integration:Something").invoke
+  it 'should execute only the named tasts' do
+    write 'src/test/java/TestSomething.java',
+      'public class TestSomething extends junit.framework.TestCase { public void testNothing() {} }'
+    write 'src/test/java/TestFails.java', 'class TestFails {}'
+    task('integration:Something').invoke
   end
 end

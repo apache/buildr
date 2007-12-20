@@ -86,7 +86,7 @@ describe Project, "#manifest" do
 
   it "should not include project version unless specified" do
     define "foo"
-    project("foo").manifest.has_key?("Implementation-Version").should be_false
+    project("foo").manifest["Implementation-Version"].should be_nil
   end
 
   it "should inherit from parent project" do

@@ -31,25 +31,13 @@ require "builder"
 
 module Buildr
   VERSION = "1.2.11".freeze # unless const_defined?(:VERSION)
+
 end
 
-
-# Now it's safe to load Buildr, after we set up the Rake Application.
-require "core/application"
-require "core/project"
-require "core/build"
-require "core/help"
-require "core/generate"
-
-require "tasks/concat.rb"
-require "tasks/zip.rb"
-require "tasks/tar.rb"
-
-require "java/compile"
-require "java/test"
-require "java/packaging"
-require "java/eclipse"
-require "java/idea"
+require 'core'
+require 'tasks'
+require 'java'
+require 'ide'
 
 
 # Methods defined in Buildr are both instance methods (e.g. when included in Project)
@@ -60,5 +48,3 @@ class << self ; include Buildr ; end
 class Object #:nodoc:
   Buildr.constants.each { |c| const_set c, Buildr.const_get(c) unless const_defined?(c) }
 end
-# Project has visibility to everything in the Buildr namespace. (See above for constants)
-class Project ; include Buildr ; end

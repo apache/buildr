@@ -5,16 +5,22 @@ require 'stringio'
 require 'rexml/document'
 
 module Buildr
+  module Idea #:nodoc:
 
-  # Global task "idea" generates artifacts for all projects.
-  desc "Generate Idea artifacts for all projects"
-  Project.local_task "idea"=>"artifacts"
+    include Extension
 
-  Project.on_define do |project|
-    idea = project.recursive_task("idea")
+    first_time do
+      # Global task "idea" generates artifacts for all projects.
+      desc "Generate Idea artifacts for all projects"
+      Project.local_task "idea"=>"artifacts"
+    end
 
-    project.enhance do |project|
+    before_define do |project|
+      project.recursive_task("idea")
+    end
 
+    after_define do |project|
+      idea = project.task("idea")
       # We need paths relative to the top project's base directory.
       root_path = lambda { |p| f = lambda { |p| p.parent ? f[p.parent] : p.base_dir } ; f[p] }[project]
       # We want the Eclipse files changed every time the Buildfile changes, but also anything loaded by
@@ -154,6 +160,6 @@ module Buildr
       end
 
     end
-  end
 
+  end
 end # module Buildr

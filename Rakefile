@@ -20,7 +20,8 @@ def specify(platform)
     spec.has_rdoc     = true
     spec.extra_rdoc_files = ["README", "CHANGELOG", "LICENSE"]
     spec.rdoc_options << "--title" << "Buildr -- #{spec.summary}" <<
-                         "--main" << "README" << "--line-numbers" << "-inline-source"
+                         "--main" << "README" << "--line-numbers" << "--inline-source" << "-p" <<
+                         "--webcvs" << "http://svn.apache.org/repos/asf/incubator/buildr/trunk/"
     spec.rubyforge_project = "buildr"
 
     spec.bindir = "bin"                               # Use these for applications.
@@ -35,7 +36,7 @@ def specify(platform)
     spec.add_dependency "rubyzip",              "= 0.9.1"
     spec.add_dependency "highline",             "= 1.4.0"
     spec.add_dependency "Antwrap",              "= 0.6.0"
-    spec.add_dependency "rspec",                "= 1.0.8"
+    spec.add_dependency "rspec",                "= 1.1.1"
     spec.add_dependency "xml-simple",           "= 1.0.11"
     spec.add_dependency "archive-tar-minitar",  "= 0.5.1"
     
@@ -67,17 +68,24 @@ end
 
 
 # Testing is everything.
-desc "Run test cases"
-Spec::Rake::SpecTask.new(:test) do |task|
-  task.spec_files = FileList["test/**/*.rb"]
-  task.spec_opts = [ "--format", "specdoc", "--color", "--diff" ]
+desc "Run all specs"
+Spec::Rake::SpecTask.new('spec') do |task|
+  task.spec_files = FileList['test/**/*.rb']
+  task.spec_opts << '--options' << 'test/spec.opts' << '--format' << 'failing_examples:failing'
 end
 
-desc "Run test cases with rcov"
-Spec::Rake::SpecTask.new(:rcov) do |task|
-  task.spec_files = FileList["test/**/*.rb"]
-  task.spec_opts = [ "--format", "specdoc", "--color", "--diff" ]
+desc "Run all failing examples"
+Spec::Rake::SpecTask.new('failing') do |task|
+  task.spec_files = FileList['test/**/*.rb']
+  task.spec_opts << '--options' << 'test/spec.opts' << '--format' << 'failing_examples:failing' << '--example' << 'failing'
+end
+
+desc "Run all specs and store html output in doc/output/report.html"
+Spec::Rake::SpecTask.new('spec:html') do |task|
+  task.spec_files = FileList['test/**/*.rb']
+  task.spec_opts << '--format html:html/report.html' << '--backtrace'
   task.rcov = true
+  task.rcov_dir = 'html/coverage'
 end
 
 
@@ -204,7 +212,7 @@ namespace :release do
     File.open(__FILE__.pathmap("%d/CHANGELOG"), "w") { |file| file.write "#{next_version} (Pending)\n\n#{changelog}" }
   end
 
-  task :meat=>["clobber", "svn:clean?", "test", "upload:packages", "upload:docs", "svn:tag"]
+  task :meat=>["clobber", "svn:clean?", "spec:html", "upload:packages", "upload:docs", "svn:tag"]
 end
 
 desc "Upload release to RubyForge including docs, tag SVN"

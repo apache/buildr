@@ -443,7 +443,7 @@ end
 if Buildr::Java.jruby?
   
   # Convert a RubyArray to a Java Object[] array of the specified element_type
-  class Array
+  class Array #:nodoc:
     def to_java_array(element_type)
       java_array = ::Java.java.lang.reflect.Array.newInstance(element_type, self.size)
       self.each_index { |i| java_array[i] = self[i] }

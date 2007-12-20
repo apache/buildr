@@ -452,116 +452,121 @@ module Buildr
 
     end
 
-  end
+
+    # Methods added to Project for compiling, handling of resources and documentation.
+    module Compile
+
+      include Extension
+
+      first_time do
+        # Local task to execute the compile task of the current project.
+        # This task is not itself a compile task.
+        desc "Compile all projects"
+        Project.local_task("compile") { |name| "Compiling #{name}" }
+        desc "Create the Javadocs for this project"
+        Project.local_task("javadoc")
+      end
+      
+      before_define do |project|
+        prepare = task("prepare")
+        # Resources task is a filter.
+        resources = Java::ResourcesTask.define_task("resources")
+        project.path_to("src/main/resources").tap { |dir| resources.from dir if File.exist?(dir) }
+        # Compile task requires prepare and performs resources, if anything compiled.
+        compile = Java::CompileTask.define_task("compile"=>[prepare, resources])
+        project.path_to("src/main/java").tap { |dir| compile.from dir if File.exist?(dir) }
+        compile.into project.path_to(:target, "classes")
+        resources.filter.into project.compile.target
+        Java::JavadocTask.define_task("javadoc"=>prepare).tap do |javadoc|
+          javadoc.into project.path_to(:target, "javadoc")
+          javadoc.using :windowtitle=>project.comment || project.name
+        end
+        project.recursive_task("compile")
+      end
+
+      after_define do |project|
+        # This comes last because the target path may change.
+        project.build project.compile.target
+        # This comes last so we can determine all the source paths and classpath dependencies.
+        project.javadoc.from project
+        project.clean { verbose(false) { rm_rf project.compile.target.to_s } }
+      end
 
 
-  # Local task to execute the compile task of the current project.
-  # This task is not itself a compile task.
-  desc "Compile all projects"
-  Project.local_task("compile") { |name| "Compiling #{name}" }
+      # *Deprecated* Add a prerequisite to the compile task instead.
+      def prepare(*prereqs, &block)
+        warn_deprecated "Add a prerequisite to the compile task instead of using the prepare task."
+        task("prepare").enhance prereqs, &block
+      end
 
-  desc "Create the Javadocs for this project"
-  Project.local_task("javadoc")
+      # :call-seq:
+      #   compile(*sources) => CompileTask
+      #   compile(*sources) { |task| .. } => CompileTask
+      #
+      # The compile task does what its name suggests. This method returns the project's
+      # CompileTask. It also accepts a list of source directories and files to compile
+      # (equivalent to calling CompileTask#from on the task), and a block for any
+      # post-compilation work.
+      #
+      # The compile task will pick all the source files in the src/main/java directory,
+      # and unless specified, compile them into the target/classes directory. It will pick
+      # the default values for compiler options from the parent project's compile task.
+      #
+      # For example:
+      #   # Force target compatibility.
+      #   compile.options.source = "1.6"
+      #   # Include Apt-generated source files.
+      #   compile.from apt
+      #   # Include Log4J and the api sub-project artifacts.
+      #   compile.with "log4j:log4j:jar:1.2", project("api")
+      #   # Run the OpenJPA bytecode enhancer after compilation.
+      #   compile { open_jpa_enhance }
+      #
+      # For more information, see Java::CompileTask.
+      def compile(*sources, &block)
+        task("compile").from(sources).enhance &block
+      end
 
-  class Project
+      # :call-seq:
+      #   resources(*prereqs) => ResourcesTask
+      #   resources(*prereqs) { |task| .. } => ResourcesTask
+      #
+      # The resources task is executed by the compile task to copy resources files
+      # from the resource directory into the target directory.
+      #
+      # This method returns the project's resources task. It also accepts a list of
+      # prerequisites and a block, used to enhance the resources task.
+      #
+      # By default the resources task copies files from the src/main/resources into the
+      # same target directory as the #compile task. It does so using a filter that you
+      # can access by calling resources.filter (see Buildr::Filter).
+      #
+      # For example:
+      #   resources.from _("src/etc")
+      #   resources.filter.using "Copyright"=>"Acme Inc, 2007"
+      def resources(*prereqs, &block)
+        task("resources").enhance prereqs, &block
+      end
 
-    # *Deprecated* Add a prerequisite to the compile task instead.
-    def prepare(*prereqs, &block)
-      warn_deprecated "Add a prerequisite to the compile task instead of using the prepare task."
-      task("prepare").enhance prereqs, &block
+      # :call-seq:
+      #   javadoc(*sources) => JavadocTask
+      #
+      # This method returns the project's Javadoc task. It also accepts a list of source files,
+      # directories and projects to include when generating the Javadocs.
+      #
+      # By default the Javadoc task uses all the source directories from compile.sources and generates
+      # Javadocs in the target/javadoc directory. This method accepts sources and adds them by calling
+      # JavadocsTask#from.
+      #
+      # For example, if you want to generate Javadocs for a given project that includes all source files
+      # in two of its sub-projects:
+      #   javadoc projects("myapp:foo", "myapp:bar").using(:windowtitle=>"Docs for foo and bar")
+      def javadoc(*sources, &block)
+        task("javadoc").from(*sources).enhance &block
+      end
+
     end
 
-    # :call-seq:
-    #   compile(*sources) => CompileTask
-    #   compile(*sources) { |task| .. } => CompileTask
-    #
-    # The compile task does what its name suggests. This method returns the project's
-    # CompileTask. It also accepts a list of source directories and files to compile
-    # (equivalent to calling CompileTask#from on the task), and a block for any
-    # post-compilation work.
-    #
-    # The compile task will pick all the source files in the src/main/java directory,
-    # and unless specified, compile them into the target/classes directory. It will pick
-    # the default values for compiler options from the parent project's compile task.
-    #
-    # For example:
-    #   # Force target compatibility.
-    #   compile.options.source = "1.6"
-    #   # Include Apt-generated source files.
-    #   compile.from apt
-    #   # Include Log4J and the api sub-project artifacts.
-    #   compile.with "log4j:log4j:jar:1.2", project("api")
-    #   # Run the OpenJPA bytecode enhancer after compilation.
-    #   compile { open_jpa_enhance }
-    #
-    # For more information, see Java::CompileTask.
-    def compile(*sources, &block)
-      task("compile").from(sources).enhance &block
-    end
-
-    # :call-seq:
-    #   resources(*prereqs) => ResourcesTask
-    #   resources(*prereqs) { |task| .. } => ResourcesTask
-    #
-    # The resources task is executed by the compile task to copy resources files
-    # from the resource directory into the target directory.
-    #
-    # This method returns the project's resources task. It also accepts a list of
-    # prerequisites and a block, used to enhance the resources task.
-    #
-    # By default the resources task copies files from the src/main/resources into the
-    # same target directory as the #compile task. It does so using a filter that you
-    # can access by calling resources.filter (see Buildr::Filter).
-    #
-    # For example:
-    #   resources.from _("src/etc")
-    #   resources.filter.using "Copyright"=>"Acme Inc, 2007"
-    def resources(*prereqs, &block)
-      task("resources").enhance prereqs, &block
-    end
-
-    # :call-seq:
-    #   javadoc(*sources) => JavadocTask
-    #
-    # This method returns the project's Javadoc task. It also accepts a list of source files,
-    # directories and projects to include when generating the Javadocs.
-    #
-    # By default the Javadoc task uses all the source directories from compile.sources and generates
-    # Javadocs in the target/javadoc directory. This method accepts sources and adds them by calling
-    # JavadocsTask#from.
-    #
-    # For example, if you want to generate Javadocs for a given project that includes all source files
-    # in two of its sub-projects:
-    #   javadoc projects("myapp:foo", "myapp:bar").using(:windowtitle=>"Docs for foo and bar")
-    def javadoc(*sources, &block)
-      task("javadoc").from(*sources).enhance &block
-    end
-
-  end
-
-  Project.on_define do |project|
-    prepare = task("prepare")
-    # Resources task is a filter.
-    resources = Java::ResourcesTask.define_task("resources")
-    project.path_to("src/main/resources").tap { |dir| resources.from dir if File.exist?(dir) }
-    # Compile task requires prepare and performs resources, if anything compiled.
-    compile = Java::CompileTask.define_task("compile"=>[prepare, resources])
-    project.path_to("src/main/java").tap { |dir| compile.from dir if File.exist?(dir) }
-    compile.into project.path_to(:target, "classes")
-    resources.filter.into project.compile.target
-    Java::JavadocTask.define_task("javadoc"=>prepare).tap do |javadoc|
-      javadoc.into project.path_to(:target, "javadoc")
-      javadoc.using :windowtitle=>project.comment || project.name
-    end
-    project.recursive_task("compile")
-
-    project.enhance do |project|
-      # This comes last because the target path may change.
-      project.build project.compile.target
-      # This comes last so we can determine all the source paths and classpath dependencies.
-      project.javadoc.from project
-      project.clean { verbose(false) { rm_rf project.compile.target.to_s } }
-    end
   end
 
 

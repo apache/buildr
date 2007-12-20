@@ -1,10 +1,10 @@
 # This file is required twice when running spec test/*.
 unless defined?(Buildr)
 
+  require 'rubygems'
   #require "rake"
   $LOAD_PATH.unshift File.expand_path("#{File.dirname(__FILE__)}/../lib")
-  require "buildr"
-  #require File.join(File.dirname(__FILE__), "../lib", "buildr.rb")
+  require File.join(File.dirname(__FILE__), "../lib", "buildr.rb")
 
 
   # The local repository we use for testing is void of any artifacts, which will break given
@@ -20,7 +20,7 @@ unless defined?(Buildr)
 
     module Matchers
 
-      include BuildChecks::Matchers
+      include Checks::Matchers
 
       module ::Kernel #:nodoc:
         def warn(message)
@@ -267,7 +267,7 @@ unless defined?(Buildr)
         Rake.application.instance_eval { @original_dir = Dir.pwd }
         
         # Later on we'll want to lose all the on_define created during the test.
-        @sandbox[:on_define] = Project.class_eval { @on_define.dup }
+        @sandbox[:on_define] = Project.class_eval { (@on_define || []).dup }
 
         # Create a local repository we can play with. However, our local repository will be void
         # of some essential artifacts (e.g. JUnit artifacts required by build task), so we create
@@ -320,7 +320,9 @@ unless defined?(Buildr)
   end
 
   # Allow using matchers within the project definition.
-  class Buildr::Project ; include ::Spec::Matchers, ::Buildr::Matchers ; end
+  class Buildr::Project
+    include ::Spec::Matchers, ::Buildr::Matchers
+  end
 
   Spec::Runner.configure do |config|
     # Make all Buildr methods accessible from test cases, and add various helper methods.

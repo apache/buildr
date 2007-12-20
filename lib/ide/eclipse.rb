@@ -3,16 +3,22 @@ require "core/project"
 require "java/artifact"
 
 module Buildr
+  module Eclipse #:nodoc:
 
-  # Global task "eclipse" generates artifacts for all projects.
-  desc "Generate Eclipse artifacts for all projects"
-  Project.local_task "eclipse"=>"artifacts"
+    include Extension
+    
+    first_time do
+      # Global task "eclipse" generates artifacts for all projects.
+      desc "Generate Eclipse artifacts for all projects"
+      Project.local_task "eclipse"=>"artifacts"
+    end
 
-  Project.on_define do |project|
-    eclipse = project.recursive_task("eclipse")
+    before_define do |project|
+      project.recursive_task("eclipse")
+    end
 
-    project.enhance do |project|
-
+    after_define do |project|
+      eclipse = project.task("eclipse")
       # We need paths relative to the top project's base directory.
       root_path = lambda { |p| f = lambda { |p| p.parent ? f[p.parent] : p.base_dir } ; f[p] }[project]
 
@@ -149,7 +155,8 @@ module Buildr
           end
         end
       end
-    end
-  end
 
+    end
+
+  end
 end # module Buildr

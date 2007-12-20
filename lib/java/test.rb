@@ -568,12 +568,138 @@ module Buildr
 
     end
 
-    class TestTask ; include JUnit ; include TestNG ; end
+    class TestTask
+      include JUnit
+      include TestNG
+    end
 
   end
 
 
-  class Project
+  # The integration tests task. Buildr has one such task (see Buildr#integration) that runs
+  # all tests marked with :integration=>true, and has a setup/teardown tasks separate from
+  # the unit tests.
+  class IntegrationTestsTask < Rake::Task
+
+    def initialize(*args) #:nodoc:
+      super
+      @setup = task("#{name}:setup")
+      @teardown = task("#{name}:teardown")
+      enhance do
+        puts "Running integration tests..."  if verbose
+        TestTask.run_local_tests true
+      end
+    end
+
+    def execute() #:nodoc:
+      setup.invoke
+      begin
+        super
+      ensure
+        teardown.invoke
+      end
+    end
+
+    # :call-seq:
+    #   setup(*prereqs) => task
+    #   setup(*prereqs) { |task| .. } => task
+    #
+    # Returns the setup task. The setup task is executed before running the integration tests.
+    def setup(*prereqs, &block)
+      @setup.enhance prereqs, &block
+    end
+
+    # :call-seq:
+    #   teardown(*prereqs) => task
+    #   teardown(*prereqs) { |task| .. } => task
+    #
+    # Returns the teardown task. The teardown task is executed after running the integration tests.
+    def teardown(*prereqs, &block)
+      @teardown.enhance prereqs, &block
+    end
+
+  end
+
+
+  # Methods added to Project to support compilation and running of test cases.
+  module Test
+
+    include Extension
+
+    first_time do
+      desc "Run all test cases"
+      task("test") { TestTask.run_local_tests false }
+
+      # This rule takes a suffix and runs that test case in the current project. For example;
+      #   buildr test:MyTest
+      # will run the test case class com.example.MyTest, if found in the current project.
+      #
+      # If you want to run multiple test cases, separate tham with a comma. You can also use glob
+      # (* and ?) patterns to match multiple tests, e.g. com.example.* to run all test cases in
+      # a given package. If you don't specify a glob pattern, asterisks are added for you.
+      rule /^test:.*$/ do |task|
+        TestTask.only_run task.name.scan(/test:(.*)/)[0][0].split(",")
+        task("test").invoke
+      end
+
+      task "build" do |task|
+        # Make sure this happens as the last action on the build, so all other enhancements
+        # are made to run before starting the test cases.
+        task.enhance do
+          task("test").invoke unless Buildr.options.test == false
+        end
+      end
+
+      IntegrationTestsTask.define_task("integration")
+
+      # Similar to test:[pattern] but for integration tests.
+      rule /^integration:.*$/ do |task|
+        unless task.name.split(':')[1] =~ /^(setup|teardown)$/
+          TestTask.only_run task.name.scan(/integration:(.*)/)[0][0].split(",")
+          task("integration").invoke
+        end
+      end
+
+      # Anything that comes after local packaging (install, deploy) executes the integration tests,
+      # which do not conflict with integration invoking the project's own packaging (package=>
+      # integration=>foo:package is not circular, just confusing to debug.)
+      task "package" do |task|
+        task("integration").invoke if Buildr.options.test && Rake.application.original_dir == Dir.pwd
+      end
+    end
+    
+    before_define do |project|
+      # Define a recursive test task, and pass it a reference to the project so it can discover all other tasks.
+      Java::TestTask.define_task("test")
+      project.test.instance_eval { instance_variable_set :@project, project }
+      #project.recursive_task("test")
+      # Similar to the regular resources task but using different paths.
+      resources = Java::ResourcesTask.define_task("test:resources")
+      project.path_to("src/test/resources").tap { |dir| resources.from dir if File.exist?(dir) }
+      # Similar to the regular compile task but using different paths.
+      compile = Java::CompileTask.define_task("test:compile"=>[project.compile, task("test:prepare"), project.test.resources])
+      project.path_to("src/test/java").tap { |dir| compile.from dir if File.exist?(dir) }
+      compile.into project.path_to(:target, "test-classes")
+      resources.filter.into compile.target
+      project.test.enhance [compile]
+      # Define the JUnit task here, otherwise we get a normal task.
+      Java::JUnitTask.define_task("test:junit")
+      # Define these tasks once, otherwise we may get a namespace error.
+      project.test.setup ; project.test.teardown
+    end
+
+    after_define do |project|
+      # Copy the regular compile classpath over, and also include the generated classes, both of which
+      # can be used in the test cases. And don't forget the classpath required by the test framework (e.g. JUnit).
+      project.test.with project.compile.classpath, project.compile.target, project.test.requires
+      project.clean do
+        verbose(false) do
+          rm_rf project.test.compile.target.to_s
+          rm_rf project.test.report_to.to_s
+        end
+      end
+    end
+
 
     # :call-seq:
     #   test(*prereqs) => TestTask
@@ -600,39 +726,36 @@ module Buildr
       task("test").enhance prereqs, &block
     end
   
-  end
-      
-
-  Project.on_define do |project|
-    # Define a recursive test task, and pass it a reference to the project so it can discover all other tasks.
-    Java::TestTask.define_task("test")
-    project.test.instance_eval { instance_variable_set :@project, project }
-    #project.recursive_task("test")
-    # Similar to the regular resources task but using different paths.
-    resources = Java::ResourcesTask.define_task("test:resources")
-    project.path_to("src/test/resources").tap { |dir| resources.from dir if File.exist?(dir) }
-    # Similar to the regular compile task but using different paths.
-    compile = Java::CompileTask.define_task("test:compile"=>[project.compile, task("test:prepare"), project.test.resources])
-    project.path_to("src/test/java").tap { |dir| compile.from dir if File.exist?(dir) }
-    compile.into project.path_to(:target, "test-classes")
-    resources.filter.into compile.target
-    project.test.enhance [compile]
-    # Define the JUnit task here, otherwise we get a normal task.
-    Java::JUnitTask.define_task("test:junit")
-    # Define these tasks once, otherwise we may get a namespace error.
-    project.test.setup ; project.test.teardown
-
-    project.enhance do |project|
-      # Copy the regular compile classpath over, and also include the generated classes, both of which
-      # can be used in the test cases. And don't forget the classpath required by the test framework (e.g. JUnit).
-      project.test.with project.compile.classpath, project.compile.target, project.test.requires
-      project.clean do
-        verbose(false) do
-          rm_rf project.test.compile.target.to_s
-          rm_rf project.test.report_to.to_s
-        end
-      end
+    # :call-seq:
+    #   integration() { |task| .... }
+    #   integration() => IntegrationTestTask
+    #
+    # Use this method to return the integration tests task, or enhance it with a block to execute.
+    #
+    # There is one integration tests task you can execute directly, or as a result of running the package
+    # task (or tasks that depend on it, like install and deploy). It contains all the tests marked with
+    # :integration=>true, all other tests are considered unit tests and run by the test task before packaging.
+    # So essentially: build=>test=>packaging=>integration=>install/deploy.
+    #
+    # You add new test cases from projects that define integration tests using the regular test task,
+    # but with the following addition:
+    #   test.using :integration
+    #
+    # Use this method to enhance the setup and teardown tasks that are executed before (and after) all
+    # integration tests are run, for example, to start a Web server or create a database.
+    def integration(*deps, &block)
+      Rake::Task["rake:integration"].enhance deps, &block
     end
+
+  end
+
+    # :call-seq:
+    #   integration() { |task| .... }
+    #   integration() => IntegrationTestTask
+    #
+    # Use this method to return the integration tests task.
+  def integration(*deps, &block)
+    Rake::Task["rake:integration"].enhance deps, &block
   end
 
 
@@ -680,106 +803,6 @@ module Buildr
   end
 
 
-  desc "Run all test cases"
-  task("test") { TestTask.run_local_tests false }
-
-  # This rule takes a suffix and runs that test case in the current project. For example;
-  #   buildr test:MyTest
-  # will run the test case class com.example.MyTest, if found in the current project.
-  #
-  # If you want to run multiple test cases, separate tham with a comma. You can also use glob
-  # (* and ?) patterns to match multiple tests, e.g. com.example.* to run all test cases in
-  # a given package. If you don't specify a glob pattern, asterisks are added for you.
-  rule /^test:.*$/ do |task|
-    TestTask.only_run task.name.scan(/test:(.*)/)[0][0].split(",")
-    task("test").invoke
-  end
-
-  task "build" do |task|
-    # Make sure this happens as the last action on the build, so all other enhancements
-    # are made to run before starting the test cases.
-    task.enhance do
-      task("test").invoke unless Buildr.options.test == false
-    end
-  end
-
-
-  # The integration tests task. Buildr has one such task (see Buildr#integration) that runs
-  # all tests marked with :integration=>true, and has a setup/teardown tasks separate from
-  # the unit tests.
-  class IntegrationTestsTask < Rake::Task
-
-    def initialize(*args) #:nodoc:
-      super
-      task "#{name}-setup"
-      task "#{name}-teardown"
-      enhance { puts "Running integration tests..."  if verbose }
-    end
-
-    def execute() #:nodoc:
-      setup.invoke
-      begin
-        super
-      ensure
-        teardown.invoke
-      end
-    end
-
-    # :call-seq:
-    #   setup(*prereqs) => task
-    #   setup(*prereqs) { |task| .. } => task
-    #
-    # Returns the setup task. The setup task is executed before running the integration tests.
-    def setup(*prereqs, &block)
-      Rake::Task["rake:integration-setup"].enhance prereqs, &block
-    end
-
-    # :call-seq:
-    #   teardown(*prereqs) => task
-    #   teardown(*prereqs) { |task| .. } => task
-    #
-    # Returns the teardown task. The teardown task is executed after running the integration tests.
-    def teardown(*prereqs, &block)
-      Rake::Task["rake:integration-teardown"].enhance prereqs, &block
-    end
-
-  end
-
-  # :call-seq:
-  #   integration() { |task| .... }
-  #   integration() => IntegrationTestTask
-  #
-  # Use this method to return the integration tests task, or enhance it with a block to execute.
-  #
-  # There is one integration tests task you can execute directly, or as a result of running the package
-  # task (or tasks that depend on it, like install and deploy). It contains all the tests marked with
-  # :integration=>true, all other tests are considered unit tests and run by the test task before packaging.
-  # So essentially: build=>test=>packaging=>integration=>install/deploy.
-  #
-  # You add new test cases from projects that define integration tests using the regular test task,
-  # but with the following addition:
-  #   test.using :integration
-  #
-  # Use this method to enhance the setup and teardown tasks that are executed before (and after) all
-  # integration tests are run, for example, to start a Web server or create a database.
-  def integration(*deps, &block)
-    Rake::Task["rake:integration"].enhance deps, &block
-  end
-
-  IntegrationTestsTask.define_task("integration") { TestTask.run_local_tests true }
-
-  # Similar to test:[pattern] but for integration tests.
-  rule /^integration:.*$/ do |task|
-    TestTask.only_run task.name.scan(/integration:(.*)/)[0][0].split(",")
-    task("integration").invoke
-  end
-
-  # Anything that comes after local packaging (install, deploy) executes the integration tests,
-  # which do not conflict with integration invoking the project's own packaging (package=>
-  # integration=>foo:package is not circular, just confusing to debug.)
-  task "package" do |task|
-    integration.invoke if Buildr.options.test && Rake.application.original_dir == Dir.pwd
-  end
 
 
   task("help") do

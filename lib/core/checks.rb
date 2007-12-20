@@ -3,8 +3,8 @@ require "tasks/zip"
 require "spec"
 
 module Buildr
-
-  module BuildChecks #:nodoc:
+  # Methods added to Project to allow checking the build.
+  module Checks
 
     module Matchers
 
@@ -120,10 +120,31 @@ module Buildr
 
     end
 
-  end
 
+    include Extension
 
-  class Project
+    before_define do |project|
+      # The check task can do any sort of interesting things, but the most important is running expectations.
+      project.task("check") do |task|
+        project.expectations.inject(true) do |passed, expect|
+          begin
+            expect.run_against project
+            passed
+          rescue Exception=>error
+            if verbose
+              puts error.backtrace.detect { |line| line =~ /#{Rake.application.rakefile}/ } || ""
+              puts error
+            end
+            false
+          end
+        end or fail "Checks failed for project #{project.name} (see errors above)."
+      end
+      project.task("package").enhance do |task|
+        # Run all actions before checks.
+        task.enhance { project.task("check").invoke }
+      end
+    end
+
 
     # :call-seq:
     #    check(description) { ... }
@@ -154,7 +175,7 @@ module Buildr
     # During development you can write placeholder expectations by omitting the block. This will simply report
     # the expectation as pending.
     def check(*args, &block)
-      expectations << BuildChecks::Expectation.new(*args, &block)
+      expectations << Checks::Expectation.new(*args, &block)
     end
 
     # :call-seq:
@@ -165,28 +186,6 @@ module Buildr
       @expectations ||= []
     end
 
-  end
-
-  Project.on_define do |project|
-    # The check task can do any sort of interesting things, but the most important is running expectations.
-    project.task("check") do |task|
-      project.expectations.inject(true) do |passed, expect|
-        begin
-          expect.run_against project
-          passed
-        rescue Exception=>error
-          if verbose
-            puts error.backtrace.detect { |line| line =~ /#{Rake.application.rakefile}/ } || ""
-            puts error
-          end
-          false
-        end
-      end or fail "Checks failed for project #{project.name} (see errors above)."
-    end
-    project.task("package").enhance do |task|
-      # Run all actions before checks.
-      task.enhance { project.task("check").invoke }
-    end
   end
 
 end

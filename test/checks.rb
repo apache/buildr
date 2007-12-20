@@ -1,23 +1,7 @@
 require File.join(File.dirname(__FILE__), 'sandbox')
 
 
-module BuildChecks
-  def should_pass()
-    lambda { check }.should_not raise_error
-  end
-
-  def should_fail()
-    lambda { check }.should raise_error(RuntimeError, /Checks failed/)
-  end
-
-  def check()
-    project("foo").task("package").invoke
-  end
-end
-
-
 describe Project, " check task" do
-  include BuildChecks
 
   it "should execute last thing from package task" do
     task "action"
@@ -25,7 +9,7 @@ describe Project, " check task" do
       package :jar
       task("package").enhance { task("action").invoke }
     end
-    lambda { check }.should run_tasks(["foo:package", "action", "foo:check"])
+    lambda { project("foo").task("package").invoke }.should run_tasks(["foo:package", "action", "foo:check"])
   end
 
   it "should execute all project's expectations" do
@@ -33,12 +17,12 @@ describe Project, " check task" do
     define "foo", :version=>"1.0" do
       check  { task("expectation").invoke } 
     end
-    lambda { check }.should run_task("expectation")
+    lambda { project("foo").task("package").invoke }.should run_task("expectation")
   end
 
   it "should succeed if there are no expectations" do
     define "foo", :version=>"1.0"
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should succeed if all expectations passed" do
@@ -46,7 +30,7 @@ describe Project, " check task" do
       check { true }
       check { false }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail if any expectation failed" do
@@ -55,13 +39,12 @@ describe Project, " check task" do
       check { fail "sorry" } 
       check
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 end
 
 
 describe Project, "#check" do
-  include BuildChecks
 
   it "should add expectation" do
     define "foo" do
@@ -79,7 +62,7 @@ describe Project, "#check" do
         description.should eql(subject.to_s)
       end
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should treat single string argument as description, expectation against project" do
@@ -90,7 +73,7 @@ describe Project, "#check" do
         description.should eql("#{subject} should be project")
       end
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should treat single object argument as subject" do
@@ -101,7 +84,7 @@ describe Project, "#check" do
         description.should eql(subject.to_s)
       end
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should treat first object as subject, second object as description" do
@@ -112,20 +95,19 @@ describe Project, "#check" do
         description.should eql("#{subject} should exist")
       end
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should work without block" do
     define "foo" do
       check "implement later"
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 end
 
 
-describe BuildChecks::Expectation, " matchers" do
-  include BuildChecks
+describe Buildr::Checks::Expectation, " matchers" do
 
   it "should include Buildr matchers exist and contain" do
     define "foo" do
@@ -134,7 +116,7 @@ describe BuildChecks::Expectation, " matchers" do
         self.should respond_to(:contain)
       end
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should include RSpec matchers like be and eql" do
@@ -144,7 +126,7 @@ describe BuildChecks::Expectation, " matchers" do
         self.should respond_to(:eql)
       end
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should include RSpec predicates like be_nil and be_empty" do
@@ -154,27 +136,26 @@ describe BuildChecks::Expectation, " matchers" do
         [].should be_empty
       end
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 end
 
 
-describe BuildChecks::Expectation, " exist" do
-  include BuildChecks
+describe Buildr::Checks::Expectation, " exist" do
 
   it "should pass if file exists" do
     define "foo" do
       build file("test") { |task| write task.name }
       check(file("test")) { it.should exist }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail if file does not exist" do
     define "foo" do
       check(file("test")) { it.should exist }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should not attempt to invoke task" do
@@ -182,7 +163,7 @@ describe BuildChecks::Expectation, " exist" do
       file("test") { |task| write task.name }
       check(file("test")) { it.should exist }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should pass if ZIP path exists" do
@@ -191,7 +172,7 @@ describe BuildChecks::Expectation, " exist" do
       package(:jar).include("resources")
       check(package(:jar).path("resources")) { it.should exist }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail if ZIP path does not exist" do
@@ -200,7 +181,7 @@ describe BuildChecks::Expectation, " exist" do
       package(:jar).include("resources")
       check(package(:jar)) { it.path("not-resources").should exist }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should pass if ZIP entry exists" do
@@ -210,7 +191,7 @@ describe BuildChecks::Expectation, " exist" do
       check(package(:jar).entry("resources/test")) { it.should exist }
       check(package(:jar).path("resources").entry("test")) { it.should exist }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail if ZIP path does not exist" do
@@ -219,20 +200,19 @@ describe BuildChecks::Expectation, " exist" do
       package(:jar).include("resources")
       check(package(:jar).entry("resources/test")) { it.should exist }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 end
 
 
-describe BuildChecks::Expectation, " exist" do
-  include BuildChecks
+describe Buildr::Checks::Expectation, " exist" do
 
   it "should pass if file has no content" do
     define "foo" do
       build file("test") { write "test" }
       check(file("test")) { it.should be_empty }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail if file has content" do
@@ -240,14 +220,14 @@ describe BuildChecks::Expectation, " exist" do
       build file("test") { write "test", "something" }
       check(file("test")) { it.should be_empty }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should fail if file does not exist" do
     define "foo" do
       check(file("test")) { it.should be_empty }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should pass if directory is empty" do
@@ -255,7 +235,7 @@ describe BuildChecks::Expectation, " exist" do
       build file("test") { mkpath "test" }
       check(file("test")) { it.should be_empty }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail if directory has any files" do
@@ -263,7 +243,7 @@ describe BuildChecks::Expectation, " exist" do
       build file("test") { write "test/file" }
       check(file("test")) { it.should be_empty }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should pass if ZIP path is empty" do
@@ -272,7 +252,7 @@ describe BuildChecks::Expectation, " exist" do
       package(:jar).include("resources")
       check(package(:jar).path("resources")) { it.should be_empty }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail if ZIP path has any entries" do
@@ -281,7 +261,7 @@ describe BuildChecks::Expectation, " exist" do
       package(:jar).include("resources")
       check(package(:jar).path("resources")) { it.should be_empty }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should pass if ZIP entry has no content" do
@@ -291,7 +271,7 @@ describe BuildChecks::Expectation, " exist" do
       check(package(:jar).entry("resources/test")) { it.should be_empty }
       check(package(:jar).path("resources").entry("test")) { it.should be_empty }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail if ZIP entry has content" do
@@ -300,7 +280,7 @@ describe BuildChecks::Expectation, " exist" do
       package(:jar).include("resources")
       check(package(:jar).entry("resources/test")) { it.should be_empty }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should fail if ZIP entry does not exist" do
@@ -309,20 +289,19 @@ describe BuildChecks::Expectation, " exist" do
       package(:jar).include("resources")
       check(package(:jar).entry("resources/test")) { it.should be_empty }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 end
 
 
-describe BuildChecks::Expectation, " contain(file)" do
-  include BuildChecks
+describe Buildr::Checks::Expectation, " contain(file)" do
 
   it "should pass if file content matches string" do
     define "foo" do
       build file("test") { write "test", "something" }
       check(file("test")) { it.should contain("thing") }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should pass if file content matches pattern" do
@@ -330,7 +309,7 @@ describe BuildChecks::Expectation, " contain(file)" do
       build file("test") { write "test", "something\nor\nanother" }
       check(file("test")) { it.should contain(/or/) }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should pass if file content matches all arguments" do
@@ -338,7 +317,7 @@ describe BuildChecks::Expectation, " contain(file)" do
       build file("test") { write "test", "something\nor\nanother" }
       check(file("test")) { it.should contain(/or/, /other/) }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail unless file content matchs all arguments" do
@@ -346,7 +325,7 @@ describe BuildChecks::Expectation, " contain(file)" do
       build file("test") { write "test", "something" }
       check(file("test")) { it.should contain(/some/, /other/) }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should fail if file content does not match" do
@@ -354,27 +333,26 @@ describe BuildChecks::Expectation, " contain(file)" do
       build file("test") { write "test", "something" }
       check(file("test")) { it.should contain(/other/) }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should fail if file does not exist" do
     define "foo" do
       check(file("test")) { it.should contain(/anything/) }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 end
 
 
-describe BuildChecks::Expectation, " contain(directory)" do
-  include BuildChecks
+describe Buildr::Checks::Expectation, " contain(directory)" do
 
   it "should pass if directory contains file" do
     write "resources/test"
     define "foo" do
       check(file("resources")) { it.should contain("test") }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should pass if directory contains glob pattern" do
@@ -382,7 +360,7 @@ describe BuildChecks::Expectation, " contain(directory)" do
     define "foo" do
       check(file("resources")) { it.should contain("**/t*st") }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should pass if directory contains all arguments" do
@@ -390,7 +368,7 @@ describe BuildChecks::Expectation, " contain(directory)" do
     define "foo" do
       check(file("resources")) { it.should contain("**/test", "**/*") }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail unless directory contains all arguments" do
@@ -398,7 +376,7 @@ describe BuildChecks::Expectation, " contain(directory)" do
     define "foo" do
       check(file("resources")) { it.should contain("test", "or-not") }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should fail if directory is empty" do
@@ -406,20 +384,19 @@ describe BuildChecks::Expectation, " contain(directory)" do
     define "foo" do
       check(file("resources")) { it.should contain("test") }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should fail if directory does not exist" do
     define "foo" do
       check(file("resources")) { it.should contain }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 end
 
 
-describe BuildChecks::Expectation, " contain(zip.entry)" do
-  include BuildChecks
+describe Buildr::Checks::Expectation, " contain(zip.entry)" do
 
   it "should pass if ZIP entry content matches string" do
     write "resources/test", "something"
@@ -428,7 +405,7 @@ describe BuildChecks::Expectation, " contain(zip.entry)" do
       check(package(:jar).entry("resources/test")) { it.should contain("thing") }
       #check(package(:jar)) { it.entry("resources/test").should contain("thing") }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should pass if ZIP entry content matches pattern" do
@@ -438,7 +415,7 @@ describe BuildChecks::Expectation, " contain(zip.entry)" do
       check(package(:jar).entry("resources/test")) { it.should contain(/or/) }
       #check(package(:jar)) { it.entry("resources/test").should contain(/or/) }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should pass if ZIP entry content matches all arguments" do
@@ -448,7 +425,7 @@ describe BuildChecks::Expectation, " contain(zip.entry)" do
       check(package(:jar).entry("resources/test")) { it.should contain(/or/, /other/) }
       #check(package(:jar)) { it.entry("resources/test").should contain(/or/, /other/) }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail unless ZIP path contains all arguments" do
@@ -458,7 +435,7 @@ describe BuildChecks::Expectation, " contain(zip.entry)" do
       check(package(:jar).entry("resources/test")) { it.should contain(/some/, /other/) }
       #check(package(:jar)) { it.entry("resources/test").should contain(/some/, /other/) }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should fail if ZIP entry content does not match" do
@@ -468,7 +445,7 @@ describe BuildChecks::Expectation, " contain(zip.entry)" do
       check(package(:jar).entry("resources/test")) { it.should contain(/other/) }
       #check(package(:jar)) { it.entry("resources/test").should contain(/other/) }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should fail if ZIP entry does not exist" do
@@ -478,13 +455,12 @@ describe BuildChecks::Expectation, " contain(zip.entry)" do
       check(package(:jar).entry("resources/test")) { it.should contain(/anything/) }
       #check(package(:jar)) { it.entry("resources/test").should contain(/anything/) }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 end
 
 
-describe BuildChecks::Expectation, " contain(zip.path)" do
-  include BuildChecks
+describe Buildr::Checks::Expectation, " contain(zip.path)" do
 
   it "should pass if ZIP path contains file" do
     write "resources/test"
@@ -492,7 +468,7 @@ describe BuildChecks::Expectation, " contain(zip.path)" do
       package(:jar).include("resources")
       check(package(:jar).path("resources")) { it.should contain("test") }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should handle deep nesting" do
@@ -503,7 +479,7 @@ describe BuildChecks::Expectation, " contain(zip.path)" do
       check(package(:jar).path("resources")) { it.should contain("test/test2.efx") }
       check(package(:jar).path("resources/test")) { it.should contain("test2.efx") }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
 
@@ -513,7 +489,7 @@ describe BuildChecks::Expectation, " contain(zip.path)" do
       package(:jar).include("resources")
       check(package(:jar).path("resources")) { it.should contain("**/t*st") }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should pass if ZIP path contains all arguments" do
@@ -522,7 +498,7 @@ describe BuildChecks::Expectation, " contain(zip.path)" do
       package(:jar).include("resources")
       check(package(:jar).path("resources")) { it.should contain("**/test", "**/*") }
     end
-    should_pass
+    lambda { project("foo").task("package").invoke }.should_not raise_error
   end
 
   it "should fail unless ZIP path contains all arguments" do
@@ -531,7 +507,7 @@ describe BuildChecks::Expectation, " contain(zip.path)" do
       package(:jar).include("resources")
       check(package(:jar).path("resources")) { it.should contain("test", "or-not") }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 
   it "should fail if ZIP path is empty" do
@@ -540,6 +516,6 @@ describe BuildChecks::Expectation, " contain(zip.path)" do
       package(:jar).include("resources")
       check(package(:jar).path("resources")) { it.should contain("test") }
     end
-    should_fail
+    lambda { project("foo").task("package").invoke }.should raise_error(RuntimeError, /Checks failed/)
   end
 end
