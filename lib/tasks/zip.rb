@@ -345,7 +345,7 @@ module Buildr
       self
     end
 
-    def invoke_prerequisites() #:nodoc:
+    def invoke_prerequisites(args, chain) #:nodoc:
       @prepares.each { |prepare| prepare.call(self) }
       @prepares.clear
       @prerequisites |= @paths.collect { |name, path| path.sources }.flatten
@@ -467,7 +467,7 @@ module Buildr
 
     # Initialize with hash argument of the form target=>zip_file.
     def initialize(args)
-      @target, @zip_file = Rake.application.resolve_args(args)
+      @target, arg_names, @zip_file = Rake.application.resolve_args([args])
       @paths = {}
     end
 
@@ -647,7 +647,7 @@ module Buildr
   #   unzip("src"=>"test.zip").include("README", "LICENSE") 
   #   unzip("libs"=>"test.zip").from_path("libs")
   def unzip(args)
-    target, zip_file = Rake.application.resolve_args(args)
+    target, arg_names, zip_file = Rake.application.resolve_args([args])
     task = file(File.expand_path(target.to_s)=>zip_file)
     Unzip.new(task=>zip_file).tap do |setup|
       task.enhance { setup.extract }

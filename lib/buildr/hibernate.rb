@@ -105,7 +105,7 @@ module Buildr
     #     end
     #   end
     def hibernate_schemaexport(args, &block)
-      path, deps = Rake.application.resolve_args(args)
+      path, arg_names, deps = Rake.application.resolve_args([args])
       unless Rake::Task.task_defined?(path)
         class << file(path) ; attr_accessor :ant ; end
         file(path).enhance { |task| task.ant = Hibernate.schemaexport }

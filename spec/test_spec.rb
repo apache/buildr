@@ -20,7 +20,7 @@ describe Buildr::TestTask do
   it "should respond to :compile and return compile task" do
     define "foo" do
       test.compile.should be(task("test:compile"))
-      test.compile.should be_kind_of(Buildr::CompileTask)
+      test.compile.should be_kind_of(Buildr::Java::CompileTask)
     end
   end
 
@@ -580,15 +580,15 @@ end
 describe Buildr::Project, "test:resources" do
   it "should pick resources from src/test/resources if found" do
     mkpath "src/test/resources"
-    define("foo") { test.resources.source.should eql(file("src/test/resources")) }
+    define("foo") { test.resources.sources.should eql([file("src/test/resources")]) }
   end
 
   it "should ignore resources unless they exist" do
-    define("foo") { test.resources.source.should be_nil }
+    define("foo") { test.resources.sources.should be_empty }
   end
 
-  it "should copy to the compile target directory" do
-    define("foo", :target=>"targeted") { test.resources.target.should eql(file("targeted/test-classes")) }
+  it "should copy to the resources target directory" do
+    define("foo", :target=>"targeted") { test.resources.target.should eql(file("targeted/test-resources")) }
   end
 
   it "should execute alongside compile task" do

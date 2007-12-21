@@ -164,7 +164,7 @@ module Buildr
         enhance { run_tests }
       end
 
-      def execute() #:nodoc:
+      def execute(args) #:nodoc:
         setup.invoke
         begin
           super
@@ -591,7 +591,7 @@ module Buildr
       end
     end
 
-    def execute() #:nodoc:
+    def execute(args) #:nodoc:
       setup.invoke
       begin
         super
@@ -663,7 +663,7 @@ module Buildr
       # Anything that comes after local packaging (install, deploy) executes the integration tests,
       # which do not conflict with integration invoking the project's own packaging (package=>
       # integration=>foo:package is not circular, just confusing to debug.)
-      task "package" do |task|
+      task "package" do
         task("integration").invoke if Buildr.options.test && Rake.application.original_dir == Dir.pwd
       end
     end
@@ -674,13 +674,13 @@ module Buildr
       project.test.instance_eval { instance_variable_set :@project, project }
       #project.recursive_task("test")
       # Similar to the regular resources task but using different paths.
-      resources = Java::ResourcesTask.define_task("test:resources")
+      resources = ResourcesTask.define_task("test:resources")
       project.path_to("src/test/resources").tap { |dir| resources.from dir if File.exist?(dir) }
       # Similar to the regular compile task but using different paths.
       compile = Java::CompileTask.define_task("test:compile"=>[project.compile, task("test:prepare"), project.test.resources])
       project.path_to("src/test/java").tap { |dir| compile.from dir if File.exist?(dir) }
       compile.into project.path_to(:target, "test-classes")
-      resources.filter.into compile.target
+      resources.filter.into project.path_to(:target, "test-resources")
       project.test.enhance [compile]
       # Define the JUnit task here, otherwise we get a normal task.
       Java::JUnitTask.define_task("test:junit")

@@ -1,15 +1,18 @@
 h1. Contributing
 
-Step 1, join the "mailing list":mailing_lists.html.  It's the best place to ask questions, report
-"features", submit patches and let us know how you use Buildr in your own projects.
+Step 1, join the "mailing list":mailing_lists.html.  It's the best place to ask
+questions, report "features", submit patches and let us know how you use Buildr
+in your own projects.
 
-Step 2, checkout "Buildr from SVN":http://svn.apache.org/repos/asf/incubator/buildr:
+Step 2, checkout "Buildr from
+SVN":http://svn.apache.org/repos/asf/incubator/buildr:
 
 {{{!sh
 $ svn co http://svn.apache.org/repos/asf/incubator/buildr/trunk buildr
 }}}
 
-You can also search the "Buildr repository":http://svn.apache.org/repos/asf/incubator/buildr.
+You can also search the "Buildr
+repository":http://svn.apache.org/repos/asf/incubator/buildr.
 
 Step 3, install Buildr from your working copy:
 
@@ -20,8 +23,11 @@ $ rake install
 
 (@sudo rake install@ if you're running on Linux)
 
-Step 4, send a patch to the mailing list.  And please help us by providing a proper test case.  Buildr uses "RSpec":http://rspec.rubyforge.org/ , a behavior-driven development test framework.  Check out the existing test cases in the @test@ directory, and make sure all tests pass by running:
+Step 4, send a patch to the mailing list.  And please help us by providing a
+proper test case.  Buildr uses "RSpec":http://rspec.rubyforge.org/ , a
+behavior-driven development test framework.  Check out the existing tests
+(specs) in the @spec@ directory, and make sure they all pass by running:
 
 {{{!sh
-$ spec test
+$ rake spec
 }}}

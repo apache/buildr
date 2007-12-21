@@ -1,30 +1,15 @@
-require "core/rake_ext"
-require "core/common"
+require 'core/common'
 
 module Buildr
 
-  # An inherited attribute gets its value an accessor with the same name.
-  # But if the value is not set, it will obtain a value from the parent,
-  # so setting the value in the parent make it accessible to all the children
-  # that did not override it.
-  module InheritedAttributes
+  # *Deprecated*
+  module InheritedAttributes #:nodoc:
 
     def self.included(base)
       base.extend(self)
+      warn_deprecated 'InheritedAttributes are deprecated'
     end
 
-    # :call-seq:
-    #    inherited_attr(symbol, default?)
-    #    inherited_attr(symbol) { |obj| ... }
-    #
-    # Defines an inherited attribute. The first form can provide a default value
-    # for the top-level object, used if the attribute was not set. The second form
-    # provides a default value by calling the block.
-    #
-    # For example:
-    #   inherited_attr :version
-    #   inherited_attr :src_dir, "src"
-    #   inherited_attr(:created_on) { Time.now }
     def inherited_attr(symbol, default = nil, &block)
       block ||= proc { default }
       attr_accessor symbol
@@ -92,28 +77,28 @@ module Buildr
   # definition using #project. The order in which you define projects is not important,
   # project definitions are evaluated when you ask for them. Circular dependencies will not
   # work. Rake tasks are only created after the project is evaluated, so if you need to access
-  # a task (e.g. compile) use <code>project("foo").compile</code> instead of <code>task("foo:compile")</code>.
+  # a task (e.g. compile) use <code>project('foo').compile</code> instead of <code>task('foo:compile')</code>.
   #
   # For example:
-  #   define "myapp", :version=>"1.1" do
+  #   define 'myapp', :version=>'1.1' do
   #
-  #     define "wepapp" do
-  #       compile.with project("myapp:beans")
+  #     define 'wepapp' do
+  #       compile.with project('myapp:beans')
   #       package :war
   #     end
   #
-  #     define "beans" do
+  #     define 'beans' do
   #       compile.with DEPENDS
   #       package :jar
   #     end
   #   end
   #
   #   puts projects.map(&:name)
-  #   => [ "myapp", "myapp:beans", "myapp:webapp" ]
-  #   puts project("myapp:webapp").parent.name
-  #   => "myapp"
-  #   puts project("myapp:webapp").compile.classpath.map(&:to_spec)
-  #   => "myapp:myapp-beans:jar:1.1"
+  #   => [ 'myapp', 'myapp:beans', 'myapp:webapp' ]
+  #   puts project('myapp:webapp').parent.name
+  #   => 'myapp'
+  #   puts project('myapp:webapp').compile.classpath.map(&:to_spec)
+  #   => 'myapp:myapp-beans:jar:1.1'
   class Project < Rake::Task
 
     class << self
@@ -126,7 +111,7 @@ module Buildr
         # Make sure a sub-project is only defined within the parent project,
         # to prevent silly mistakes that lead to inconsistencies (e.g.
         # namespaces will be all out of whack).
-        Rake.application.current_scope == name.split(":")[0...-1] or
+        Rake.application.current_scope == name.split(':')[0...-1] or
           raise "You can only define a sub project (#{name}) within the definition of its parent project"
 
         @projects ||= {}
@@ -164,18 +149,18 @@ module Buildr
       def project(*args) #:nodoc:
         options = args.pop if Hash === args.last
         rake_check_options options, :scope if options
-        raise ArgumentError, "Only one project name at a time" unless args.size == 1
+        raise ArgumentError, 'Only one project name at a time' unless args.size == 1
         @projects ||= {}
         name = args.first
         if options && options[:scope]
           # We assume parent project is evaluated.
-          project = options[:scope].split(":").inject([[]]) { |scopes, scope| scopes << (scopes.last + [scope]) }.
-            map { |scope| @projects[(scope + [name]).join(":")] }.
+          project = options[:scope].split(':').inject([[]]) { |scopes, scope| scopes << (scopes.last + [scope]) }.
+            map { |scope| @projects[(scope + [name]).join(':')] }.
             select { |project| project }.last
         end
         unless project
           # Parent project not evaluated.
-          name.split(":").tap { |parts| @projects[parts.first].invoke if parts.size > 1 }
+          name.split(':').tap { |parts| @projects[parts.first].invoke if parts.size > 1 }
           project = @projects[name]
         end
         raise "No such project #{name}" unless project
@@ -207,7 +192,7 @@ module Buildr
           @projects.keys.map { |name| project(name) or raise "No such project #{name}" }.sort_by(&:name)
         else
           # Parent project(s) not evaluated, for the sub-projects we may need to find.
-          names.map { |name| name.split(":") }.select { |name| name.size > 1 }.map(&:first).uniq.each { |name| project(name) }
+          names.map { |name| name.split(':') }.select { |name| name.size > 1 }.map(&:first).uniq.each { |name| project(name) }
           names.uniq.map { |name| project(name) or raise "No such project #{name}" }.sort_by(&:name)
         end
       end
@@ -216,7 +201,7 @@ module Buildr
       #   clear()
       #
       # Discard all project definitions.
-      def clear()
+      def clear
         @projects.clear if @projects
       end
 
@@ -281,13 +266,22 @@ module Buildr
       #   task_in_parent_project(task_name) => task_name or nil
       #
       # Assuming the task name is prefixed with the current project, finds and returns a task with the
-      # same name in a parent project.  Call this with "foo:bar:test" will return "foo:test", but call
-      # this with "foo:test" will return nil.
-      def task_in_parent_project(task_name)
-        namespace = task_name.split(":")
+      # same name in a parent project.  Call this with 'foo:bar:test' will return 'foo:test', but call
+      # this with 'foo:test' will return nil.
+      def task_in_parent_project(task_name) #:nodoc:
+        namespace = task_name.split(':')
         last_name = namespace.pop
         namespace.pop
-        Rake.application.lookup((namespace + [last_name]).join(":"), []) unless namespace.empty?
+        Rake.application.lookup((namespace + [last_name]).join(':'), []) unless namespace.empty?
+      end
+
+      # :call-seq:
+      #   project_from_task(task) => project
+      #
+      # Figure out project associated to this task and return it.
+      def project_from_task(task) #:nodoc:
+        project = Rake.application.lookup('rake:' + task.to_s.gsub(/:[^:]*$/, ''))
+        project if Project === project
       end
 
       # Callback classes.
@@ -297,9 +291,8 @@ module Buildr
 
     end
 
-    include InheritedAttributes
 
-    # The project name. For example, "foo" for the top-level project, and "foo:bar"
+    # The project name. For example, 'foo' for the top-level project, and 'foo:bar'
     # for its sub-project.
     attr_reader :name
 
@@ -308,12 +301,12 @@ module Buildr
 
     def initialize(*args) #:nodoc:
       super
-      split = name.split(":")
+      split = name.split(':')
       if split.size > 1
         # Get parent project, but do not invoke it's definition to prevent circular
         # dependencies (it's being invoked right now, so calling project() will fail).
-        @parent = task(split[0...-1].join(":"))
-        raise "No parent project #{split[0...-1].join(":")}" unless @parent && Project === parent
+        @parent = task(split[0...-1].join(':'))
+        raise "No parent project #{split[0...-1].join(':')}" unless @parent && Project === parent
       end
       callbacks = Project.callbacks.uniq.map(&:new)
       @callbacks = [:before_define, :after_define].inject({}) do |hash, state|
@@ -332,37 +325,21 @@ module Buildr
     # a base directory that is one level down, with the same name as the sub-project.
     #
     # For example:
-    #   /home/foo/          <-- base_directory of project "foo"
-    #   /home/foo/Buildfile <-- builds "foo"
-    #   /home/foo/bar       <-- sub-project "foo:bar"
-    def base_dir()
+    #   /home/foo/          <-- base_directory of project 'foo'
+    #   /home/foo/Buildfile <-- builds 'foo'
+    #   /home/foo/bar       <-- sub-project 'foo:bar'
+    def base_dir
       if @base_dir.nil?
         if parent
           # For sub-project, a good default is a directory in the parent's base_dir,
           # using the same name as the project.
-          @base_dir = File.join(parent.base_dir, name.split(":").last)
+          @base_dir = File.join(parent.base_dir, name.split(':').last)
         else
           # For top-level project, a good default is the directory where we found the Buildfile.
           @base_dir = Dir.pwd
         end
       end
       @base_dir
-    end
-
-    # :call-seq:
-    #   base_dir = dir
-    #
-    # Sets the project's base directory. Allows you to specify a base directory by calling
-    # this accessor, or with the :base_dir property when calling #define.
-    #
-    # You can only set the base directory once for a given project, and only before accessing
-    # the base directory (for example, by calling #file or #path_to).
-    # Set the base directory. Note: you can only do this once for a project,
-    # and only before accessing the base directory. If you try reading the
-    # value with #base_dir, the base directory cannot be set again.
-    def base_dir=(dir)
-      raise "Cannot set base directory twice, or after reading its value" if @base_dir
-      @base_dir = File.expand_path(dir)
     end
 
     # :call-seq:
@@ -376,11 +353,11 @@ module Buildr
     # so you want to use #path_to to get the actual path within the project as a matter of practice.
     #
     # For example:
-    #   path_to("foo", "bar")
+    #   path_to('foo', 'bar')
     #   => /home/project1/foo/bar
-    #   path_to("/tmp")
+    #   path_to('/tmp')
     #   => /tmp
-    #   path_to(:base_dir, "foo") # same as path_to("foo")
+    #   path_to(:base_dir, 'foo') # same as path_to('foo")
     #   => /home/project1/foo
     def path_to(*names)
       File.expand_path(File.join(names.map { |name| Symbol === name ? send(name) : name.to_s }), base_dir)
@@ -388,11 +365,86 @@ module Buildr
     alias :_ :path_to
 
     # :call-seq:
-    #   define(name, properties?) { |project| ... } => project
+    #   file(path) => Task
+    #   file(path=>prereqs) => Task
+    #   file(path) { |task| ... } => Task
     #
-    # Define a new sub-project within this project. See Buildr#define.
-    def define(name, properties = nil, &block)
-      Project.define "#{self.name}:#{name}", properties, &block
+    # Creates and returns a new file task in the project. Similar to calling Rake's
+    # file method, but the path is expanded relative to the project's base directory,
+    # and the task executes in the project's base directory.
+    #
+    # For example:
+    #   define 'foo' do
+    #     define 'bar' do
+    #       file('src') { ... }
+    #     end
+    #   end
+    #
+    #   puts project('foo:bar').file('src').to_s
+    #   => '/home/foo/bar/src'
+    def file(*args, &block)
+      task_name, arg_names, deps = Rake.application.resolve_args(args)
+      task = Rake::FileTask.define_task(path_to(task_name))
+      task.set_arg_names(arg_names) unless arg_names.empty?
+      task.enhance Array(deps), &block
+    end
+
+    # :call-seq:
+    #   task(name) => Task
+    #   task(name=>prereqs) => Task
+    #   task(name) { |task| ... } => Task
+    #
+    # Creates and returns a new task in the project. Similar to calling Rake's task
+    # method, but prefixes the task name with the project name and executes the task
+    # in the project's base directory.
+    #
+    # For example:
+    #   define 'foo' do
+    #     task 'doda'
+    #   end
+    #
+    #   puts project('foo').task('doda').name
+    #   => 'foo:doda'
+    #
+    # When called from within the project definition, creates a new task if the task
+    # does not already exist. If called from outside the project definition, returns
+    # the named task and raises an exception if the task is not defined.
+    #
+    # As with Rake's task method, calling this method enhances the task with the
+    # prerequisites and optional block.
+    def task(*args, &block)
+      task_name, arg_names, deps = Rake.application.resolve_args(args)
+      if task_name =~ /^:/
+        Rake.application.instance_eval do
+          scope, @scope = @scope, []
+          begin
+            task = Rake::Task.define_task(task_name[1..-1])
+          ensure
+            @scope = scope
+          end
+        end
+      elsif Rake.application.current_scope == name.split(':')
+        task = Rake::Task.define_task(task_name)
+      else
+        unless task = Rake.application.lookup(task_name, name.split(':'))
+          raise "You cannot define a project task outside the project definition, and no task #{name}:#{task_name} defined in the project"
+        end
+      end
+      task.set_arg_names(arg_names) unless arg_names.empty?
+      task.enhance Array(deps), &block
+    end
+
+    # :call-seq:
+    #   recursive_task(name=>prereqs) { |task| ... }
+    #
+    # Define a recursive task. A recursive task executes itself and the same task
+    # in all the sub-projects.
+    def recursive_task(*args, &block)
+      task_name, arg_names, deps = Rake.application.resolve_args(args)
+      task = Buildr.options.parallel ? multitask(task_name) : task(task_name)
+      parent.task(task_name).enhance [task] if parent
+      task.set_arg_names(arg_names) unless arg_names.empty?
+      task.enhance Array(deps), &block
     end
 
     # :call-seq:
@@ -404,8 +456,8 @@ module Buildr
     #
     # When called on a project without a name, returns the project itself. You can use that when
     # setting project properties, for example:
-    #   define "foo" do
-    #     project.version = "1.0"
+    #   define 'foo' do
+    #     project.version = '1.0'
     #   end
     def project(*args)
       if Hash === args.last
@@ -434,97 +486,45 @@ module Buildr
       Project.projects *(args + [{ :scope=>self.name }.merge(options)])
     end
 
-    # :call-seq:
-    #   file(path) => Task
-    #   file(path=>prereqs) => Task
-    #   file(path) { |task| ... } => Task
-    #
-    # Creates and returns a new file task in the project. Similar to calling Rake's
-    # file method, but the path is expanded relative to the project's base directory,
-    # and the task executes in the project's base directory.
-    #
-    # For example:
-    #   define "foo" do
-    #     define "bar" do
-    #       file("src") { ... }
-    #     end
-    #   end
-    #
-    #   puts project("foo:bar").file("src").to_s
-    #   => "/home/foo/bar/src"
-    def file(args, &block)
-      task_name, deps = Rake.application.resolve_args(args)
-      deps = [deps] unless deps.respond_to?(:to_ary)
-      Rake::FileTask.define_task(path_to(task_name)=>deps, &block)
-    end
-
-    # :call-seq:
-    #   task(name) => Task
-    #   task(name=>prereqs) => Task
-    #   task(name) { |task| ... } => Task
-    #
-    # Creates and returns a new task in the project. Similar to calling Rake's task
-    # method, but prefixes the task name with the project name and executes the task
-    # in the project's base directory.
-    #
-    # For example:
-    #   define "foo" do
-    #     task "doda"
-    #   end
-    #
-    #   puts project("foo").task("doda").name
-    #   => "foo:doda"
-    #
-    # When called from within the project definition, creates a new task if the task
-    # does not already exist. If called from outside the project definition, returns
-    # the named task and raises an exception if the task is not defined.
-    #
-    # As with Rake's task method, calling this method enhances the task with the
-    # prerequisites and optional block.
-    def task(args, &block)
-      task_name, deps = Rake.application.resolve_args(args)
-      if task_name =~ /^:/
-        Rake.application.instance_eval do
-          scope, @scope = @scope, []
-          begin
-            Rake::Task.define_task(task_name[1..-1]=>deps, &block)
-          ensure
-            @scope = scope
-          end
-        end
-      elsif Rake.application.current_scope == name.split(":")
-        Rake::Task.define_task(task_name=>deps, &block)
-      else
-        if task = Rake.application.lookup(task_name, name.split(":"))
-          deps = [deps] unless deps.respond_to?(:to_ary)
-          task.enhance deps, &block
-        else
-          full_name = "#{name}:#{task_name}"
-          raise "You cannot define a project task outside the project definition, and no task #{full_name} defined in the project"
-        end
-      end
-    end
-
-    # :call-seq:
-    #   recursive_task(name=>prereqs) { |task| ... }
-    #
-    # Define a recursive task. A recursive task executes itself and the same task
-    # in all the sub-projects.
-    def recursive_task(args, &block)
-      task_name, deps = Rake.application.resolve_args(args)
-      deps = [deps] unless deps.respond_to?(:to_ary)
-      task = Buildr.options.parallel ? multitask(task_name) : task(task_name)
-      parent.task(task_name).enhance [task] if parent
-      task.enhance deps, &block
-    end
-
-    def execute() #:nodoc:
-      # Reset the namespace, so all tasks are automatically defined in the project's namespace.
-      Rake.application.in_namespace(":#{name}") { super }
-    end
-
-    def inspect() #:nodoc:
+    def inspect #:nodoc:
       %Q{project(#{name.inspect})}
+    end
+
+protected
+
+    # :call-seq:
+    #   base_dir = dir
+    #
+    # Sets the project's base directory. Allows you to specify a base directory by calling
+    # this accessor, or with the :base_dir property when calling #define.
+    #
+    # You can only set the base directory once for a given project, and only before accessing
+    # the base directory (for example, by calling #file or #path_to).
+    # Set the base directory. Note: you can only do this once for a project,
+    # and only before accessing the base directory. If you try reading the
+    # value with #base_dir, the base directory cannot be set again.
+    def base_dir=(dir)
+      raise 'Cannot set base directory twice, or after reading its value' if @base_dir
+      @base_dir = File.expand_path(dir)
+    end
+
+    # :call-seq:
+    #   define(name, properties?) { |project| ... } => project
+    #
+    # Define a new sub-project within this project. See Buildr#define.
+    def define(name, properties = nil, &block)
+      Project.define "#{self.name}:#{name}", properties, &block
+    end
+
+    def execute(args) #:nodoc:
+      begin
+        # Reset the namespace, so all tasks are automatically defined in the project's namespace.
+        scope = Rake.application.current_scope
+        Rake.application.instance_variable_set :@scope, name.split(':')
+        super
+      ensure
+        Rake.application.instance_variable_set :@scope, scope
+      end
     end
 
   private
@@ -582,7 +582,7 @@ module Buildr
   #     before_define do |project|
   #       # Define the loc task for this particular project.
   #       define_task 'loc' do |task|
-  #         lines = task.prerequisites.map { |path| Dir["#{path}/**/*"] }.flatten.uniq.
+  #         lines = task.prerequisites.map { |path| Dir['#{path}/**/*'] }.flatten.uniq.
   #           inject(0) { |total, file| total + File.readlines(file).count }
   #         puts "Project #{project.name} has #{lines} lines of code"
   #       end
@@ -683,17 +683,17 @@ module Buildr
   # related to the project.
   #
   # For example:
-  #   define "foo", :version=>"1.0" do
+  #   define 'foo', :version=>'1.0' do
   #
-  #     define "bar" do
-  #       compile.with "org.apache.axis2:axis2:jar:1.1"
+  #     define 'bar' do
+  #       compile.with 'org.apache.axis2:axis2:jar:1.1'
   #     end
   #   end
   #
-  #   puts project("foo").version
-  #   => "1.0"
-  #   puts project("foo:bar").compile.classpath.map(&:to_spec)
-  #   => "org.apache.axis2:axis2:jar:1.1"
+  #   puts project('foo').version
+  #   => '1.0'
+  #   puts project('foo:bar').compile.classpath.map(&:to_spec)
+  #   => 'org.apache.axis2:axis2:jar:1.1'
   #   % buildr build
   #   => Compiling 14 source files in foo:bar
   def define(name, properties = nil, &block) #:yields:project
@@ -706,9 +706,9 @@ module Buildr
   # Returns a project definition.
   #
   # When called from outside a project definition, must reference the project by its
-  # full name, e.g. "foo:bar" to access the sub-project "bar" in "foo". When called
-  # from inside a project, relative names are sufficient, e.g. <code>project("foo").project("bar")</code>
-  # will find the sub-project "bar" in "foo".
+  # full name, e.g. 'foo:bar' to access the sub-project 'bar' in 'foo'. When called
+  # from inside a project, relative names are sufficient, e.g. <code>project('foo').project('bar')</code>
+  # will find the sub-project 'bar' in 'foo'.
   #
   # You cannot reference a project before the project is defined. When working with
   # sub-projects, the project definition is stored by calling #define, and evaluated
@@ -720,21 +720,21 @@ module Buildr
   # or packages created by that project).
   #
   # For example:
-  #   define "myapp" do
-  #     self.version = "1.1"
+  #   define 'myapp' do
+  #     self.version = '1.1'
   #
-  #     define "webapp" do
+  #     define 'webapp' do
   #       # webapp is defined first, but beans is evaluated first
-  #       compile.with project("beans")
+  #       compile.with project('beans')
   #       package :war
   #     end
   #
-  #     define "beans" do
+  #     define 'beans' do
   #       package :jar
   #     end
   #   end
   #
-  #   puts project("myapp:beans").version
+  #   puts project('myapp:beans').version
   def project(*args)
     Project.project *args
   end
@@ -752,20 +752,22 @@ module Buildr
   # Be advised of circular dependencies.
   #
   # For example:
-  #   files = projects.map { |prj| FileList[prj.path_to("src/**/*.java") }.flatten
+  #   files = projects.map { |prj| FileList[prj.path_to('src/**/*.java') }.flatten
   #   puts "There are #{files.size} source files in #{projects.size} projects"
   #
-  #   puts projects("myapp:beans", "myapp:webapp").map(&:name)
+  #   puts projects('myapp:beans', 'myapp:webapp').map(&:name)
   # Same as:
-  #   puts project("myapp").projects.map(&:name)
+  #   puts project('myapp').projects.map(&:name)
   def projects(*args)
     Project.projects *args
   end
 
   # Forces all the projects to be evaluated before executing any other task.
   # If we don't do that, we don't get to have tasks available when running Rake.
-  task "buildr:initialize" do
-    projects
+  namespace 'buildr' do
+    task 'initialize' do
+      projects
+    end
   end
 
 end

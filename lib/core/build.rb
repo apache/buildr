@@ -39,9 +39,6 @@ module Buildr
       Project.local_task("uninstall") { |name| "Uninstalling packages from #{name}" }
       desc "Upload packages created by the project"
       Project.local_task("upload"=>"package") { |name| "Deploying packages from #{name}" }
-      task("deploy"=>"upload") do
-        warn_deprecated "Please use the 'upload' task instead of 'deploy'."
-      end
 
       desc "The default task it build"
       task "default"=>"build"

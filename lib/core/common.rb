@@ -67,127 +67,18 @@ class Hash
 end
 
 
+module Rake #:nodoc
+  class FileList
+    class << self
+      def recursive(*dirs)
+        FileList[dirs.map { |dir| File.join(dir, "/**/{*,.*}") }].reject { |file| File.basename(file) =~ /^[.]{1,2}$/ }
+      end
+    end
+  end
+end
+
+
 module Buildr
-
-  # Collection of options for controlling Buildr. For example for running builds without running
-  # test cases, using a proxy server, JVM arguments, etc. You access this object by calling options,
-  # for example:
-  #   options.proxy.http = "http://proxy.acme.com:8080"
-  #   options.java_args = "-Xmx512M"
-  class Options
-
-    # We use this to present environment variable as arrays.
-    class EnvArray < Array #:nodoc:
-    
-      def initialize(name)
-        @name = name.upcase
-        replace((ENV[@name] || ENV[@name.downcase] || "").split(/\s*,\s*/).reject(&:empty?))
-      end
-
-      (Array.instance_methods - Object.instance_methods - Enumerable.instance_methods).sort.each do |method|
-        class_eval %{def #{method}(*args, &block) ; result = super ; write ; result ; end}
-      end
-
-    private
-
-      def write()
-        ENV[@name.downcase] = nil
-        ENV[@name] = map(&:to_s).join(",")
-      end
-
-    end
-
-    # Wraps around the proxy environment variables:
-    # * :http -- HTTP_PROXY
-    # * :exclude -- NO_PROXY
-    class Proxies
-
-      # Returns the HTTP_PROXY URL.
-      def http()
-        ENV["HTTP_PROXY"] || ENV["http_proxy"]
-      end
-
-      # Sets the HTTP_PROXY URL.
-      def http=(url)
-        ENV["http_proxy"] = nil
-        ENV["HTTP_PROXY"] = url
-      end
-   
-      # Returns list of hosts to exclude from proxying (NO_PROXY). 
-      def exclude()
-        @exclude ||= EnvArray.new("NO_PROXY")
-      end
-
-      # Sets list of hosts to exclude from proxy (NO_PROXY). Accepts host name, array of names,
-      # or nil to clear the list.
-      def exclude=(url)
-        exclude.clear
-        exclude.concat [url].flatten if url
-        exclude
-      end
-
-    end
-
-    # :call-seq:
-    #   proxy() => options
-    #
-    # Returns the proxy options. Currently supported options are:
-    # * :http -- HTTP proxy for use when downloading.
-    # * :exclude -- Do not use proxy for these hosts/domains.
-    #
-    # For example:
-    #   options.proxy.http = "http://proxy.acme.com:8080"
-    # You can also set it using the environment variable HTTP_PROXY.
-    #
-    # You can exclude individual hosts from being proxied, or entire domains, for example:
-    #   options.proxy.exclude = "optimus"
-    #   options.proxy.exclude = ["optimus", "prime"]
-    #   options.proxy.exclude << "*.internal"
-    def proxy()
-      @proxy ||= Proxies.new
-    end
-
-  end
-
-  class << self
-
-    # :call-seq:
-    #   options() => Options
-    #
-    # Returns the Buildr options. See Options.
-    def options()
-      @options ||= Options.new
-    end
-
-  end
-
-  # :call-seq:
-  #   options() => Options
-  #
-  # Returns the Buildr options. See Options.
-  def options()
-    Buildr.options
-  end
-
-  # :call-seq:
-  #   environment() => string or nil
-  #
-  # Returns the environment name.  Use this when your build depends on the environment,
-  # for example, development, production, etc.  The value comes from the BUILDR_ENV environment variable.
-  # 
-  # For example:
-  #   buildr -e production
-  def environment()
-    ENV['BUILDR_ENV']
-  end
-
-  # :call-seq:
-  #   environment(env)
-  #
-  # Sets the environment name.
-  def environment=(env)
-    ENV['BUILDR_ENV'] = env
-  end
 
   # :call-seq:
   #   struct(hash) => Struct
@@ -290,7 +181,9 @@ module Buildr
   #
   # You can specify the mapping using a Hash, and it will map ${key} fields found in each source
   # file into the appropriate value in the target file. For example:
+  #
   #   filter.using "version"=>"1.2", "build"=>Time.now
+  #
   # will replace all occurrences of <tt>${version}</tt> with <tt>1.2</tt>, and <tt>${build}</tt>
   # with the current date/time.
   #
@@ -318,18 +211,6 @@ module Buildr
     # Returns the list of source directories (each being a file task).
     attr_reader :sources
 
-    # *Deprecated* Use #sources instead.
-    def source()
-      warn_deprecated "Please use sources instead."
-      @sources.first
-    end
-
-    # *Deprecated* Use #from instead.
-    def source=(dir)
-      warn_deprecated "Please use from instead."
-      from(dir)
-    end
-    
     # :call-seq:
     #   from(*sources) => self
     #

@@ -1,7 +1,9 @@
 require 'core/application'
 require 'core/project'
-require 'core/build'
+require 'core/environment'
 require 'core/help'
+require 'core/build'
+require 'core/compile'
 require 'core/generate'
 
 class Buildr::Project

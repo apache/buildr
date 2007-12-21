@@ -532,3 +532,41 @@ describe Hash, "#to_java_properties" do
     props.split("\n").should include("name3=double\\\\hash")
   end
 end
+
+
+describe Buildr, 'profiles' do
+  before :each do
+    Rake.application.instance_eval { @rakefile = File.expand_path('buildfile') }
+  end
+
+  it 'should return empty hash if no profiles file' do
+    Buildr.profiles.should == {}
+  end
+
+  it 'should load profiles from YAML file' do
+    write 'profiles.yaml', <<-YAML
+dev:
+  foo: bar
+test:
+  bar: baz
+    YAML
+    Buildr.profiles.should == { 'dev'=> { 'foo'=>'bar' }, 'test'=>{ 'bar'=>'baz' } }
+  end
+end
+
+
+describe Buildr, 'profile' do
+  before :each do
+    Rake.application.instance_eval { @rakefile = File.expand_path('buildfile') }
+  end
+
+  it 'should return profile for current environment' do
+    Buildr.environment = 'qa'
+    Buildr.profiles['qa'] = { 'foo'=>'bar' }
+    Buildr.profile.should == { 'foo'=>'bar' }
+  end
+
+  it 'should return empty hash if no proflie available' do
+    Buildr.profile.should == {}
+  end
+end

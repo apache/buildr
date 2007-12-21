@@ -60,10 +60,10 @@ unless defined?(Buildr)
 
 
       class ::Rake::Task
-        def execute_with_a_record()
+        def execute_with_a_record(args)
           $executed ||= []
           $executed << name
-          execute_without_a_record
+          execute_without_a_record args
         end
         alias_method_chain :execute, :a_record
       end
@@ -290,6 +290,7 @@ unless defined?(Buildr)
         Buildr.repositories.remote = nil
         Buildr.repositories.release_to = nil
         Buildr.options.proxy.http = nil
+        Buildr.instance_eval { @profiles = nil }
 
         # Get rid of all the projects and the on_define blocks we used.
         Project.clear
@@ -313,6 +314,8 @@ unless defined?(Buildr)
         # Restore options.
         Buildr.options.test = nil
         (ENV.keys - @sandbox[:env_keys]).each { |key| ENV.delete key }
+
+        Rake.application.instance_eval { @rakefile = nil }
       end
 
     end

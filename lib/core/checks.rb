@@ -6,7 +6,7 @@ module Buildr
   # Methods added to Project to allow checking the build.
   module Checks
 
-    module Matchers
+    module Matchers #:nodoc:
 
       class << self
 
@@ -267,94 +267,92 @@ module Zip #:nodoc:
 end
 
 
-module Buildr
-  class ArchiveTask
+class Buildr::ArchiveTask
 
-    class Path
+  class Path #:nodoc:
 
-      # :call-seq:
-      #   exist() => boolean
-      #
-      # Returns true if this path exists. This only works if the path has any entries in it,
-      # so exist on path happens to be the opposite of empty.
-      def exist?()
-        !entries.empty?
-      end
-
-      # :call-seq:
-      #   empty?() => boolean
-      #
-      # Returns true if this path is empty (has no other entries inside).
-      def empty?()
-        entries.all? { |entry| entry.empty? }
-      end
-
-      # :call-seq:
-      #   contain(file*) => boolean
-      #
-      # Returns true if this ZIP file path contains all the specified files. You can use relative
-      # file names and glob patterns (using *, **, etc).
-      def contain?(*files)
-        files.all? { |file| entries.detect { |entry| File.fnmatch(file, entry.to_s) } }
-      end
-
-      # :call-seq:
-      #   entry(name) => ZipEntry
-      #
-      # Returns a ZIP file entry. You can use this to check if the entry exists and its contents,
-      # for example:
-      #   package(:jar).path("META-INF").entry("LICENSE").should contain(/Apache Software License/)
-      def entry(name)
-        root.entry("#{@path}#{name}")
-      end
-
-    protected
-
-      def entries() #:nodoc:
-        return root.entries unless @path
-        @entries ||= root.entries.inject([]) { |selected, entry|
-          selected << entry.name.sub(@path, "") if entry.name.starts_with?(@path)
-          selected
-        }
-      end
-
+    # :call-seq:
+    #   exist() => boolean
+    #
+    # Returns true if this path exists. This only works if the path has any entries in it,
+    # so exist on path happens to be the opposite of empty.
+    def exist?()
+      !entries.empty?
     end
 
     # :call-seq:
     #   empty?() => boolean
     #
-    # Returns true if this ZIP file is empty (has no other entries inside).
+    # Returns true if this path is empty (has no other entries inside).
     def empty?()
-      path("").empty
+      entries.all? { |entry| entry.empty? }
     end
 
     # :call-seq:
     #   contain(file*) => boolean
     #
-    # Returns true if this ZIP file contains all the specified files. You can use absolute
+    # Returns true if this ZIP file path contains all the specified files. You can use relative
     # file names and glob patterns (using *, **, etc).
     def contain?(*files)
-      path("").contain?(*files)
+      files.all? { |file| entries.detect { |entry| File.fnmatch(file, entry.to_s) } }
     end
 
-  end
-
-
-  class ZipTask
-
     # :call-seq:
-    #   entry(name) => Entry
+    #   entry(name) => ZipEntry
     #
     # Returns a ZIP file entry. You can use this to check if the entry exists and its contents,
     # for example:
-    #   package(:jar).entry("META-INF/LICENSE").should contain(/Apache Software License/)
-    def entry(entry_name)
-      ::Zip::ZipEntry.new(name, entry_name)
+    #   package(:jar).path("META-INF").entry("LICENSE").should contain(/Apache Software License/)
+    def entry(name)
+      root.entry("#{@path}#{name}")
     end
 
+  protected
+
     def entries() #:nodoc:
-      @entries ||= Zip::ZipFile.open(name) { |zip| zip.entries }
+      return root.entries unless @path
+      @entries ||= root.entries.inject([]) { |selected, entry|
+        selected << entry.name.sub(@path, "") if entry.name.starts_with?(@path)
+        selected
+      }
     end
 
   end
+
+  # :call-seq:
+  #   empty?() => boolean
+  #
+  # Returns true if this ZIP file is empty (has no other entries inside).
+  def empty?()
+    path("").empty
+  end
+
+  # :call-seq:
+  #   contain(file*) => boolean
+  #
+  # Returns true if this ZIP file contains all the specified files. You can use absolute
+  # file names and glob patterns (using *, **, etc).
+  def contain?(*files)
+    path("").contain?(*files)
+  end
+
+end
+
+
+class Buildr::ZipTask #:nodoc:
+
+  # :call-seq:
+  #   entry(name) => Entry
+  #
+  # Returns a ZIP file entry. You can use this to check if the entry exists and its contents,
+  # for example:
+  #   package(:jar).entry("META-INF/LICENSE").should contain(/Apache Software License/)
+  def entry(entry_name)
+    ::Zip::ZipEntry.new(name, entry_name)
+  end
+
+  def entries() #:nodoc:
+    @entries ||= Zip::ZipFile.open(name) { |zip| zip.entries }
+  end
+
 end

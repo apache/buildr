@@ -13,9 +13,6 @@ module Buildr
     # Methods added to Project to support packaging.
     module Packaging
 
-      include InheritedAttributes
-
-
       # Adds support for MANIFEST.MF and other META-INF files.
       module WithManifest #:nodoc:
 

@@ -258,7 +258,7 @@ describe Project, "#package" do
       package(:jar, :classifier=>"srcs")
     end
     project("foo").packages.map(&:to_s).
-      each { |package| project("foo").task("package").prerequisites.should include(package) }
+      each { |package| project("foo").task("package").prerequisites.map(&:to_s).should include(package) }
   end
 
   it "should create task requiring a build" do
@@ -439,14 +439,6 @@ describe Rake::Task, " upload" do
       read("#{upload}.md5").split.first.should eql(Digest::MD5.hexdigest(read(package)))
       read("#{upload}.sha1").split.first.should eql(Digest::SHA1.hexdigest(read(package)))
     end
-  end
-end
-
-
-describe Rake::Task, " deploy" do
-  it "should delegate to upload task and warn" do
-    # Since a deprecated warning is only issued once.
-    lambda { lambda { task("deploy").invoke }.should run_task("upload") }.should warn_that(/deprecated/i)
   end
 end
 

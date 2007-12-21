@@ -64,9 +64,3 @@ namespace "help" do
   end
 
 end
-
-
-task "projects" do
-  warn_deprecated "Please run help:projects instead."
-  task("help:projects").invoke
-end

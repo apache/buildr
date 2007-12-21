@@ -211,12 +211,9 @@ module Buildr
         return classpath.any? { |path| application[path].timestamp > oldest }
       end
 
-      def prerequisites() #:nodoc:
-        super + classpath + sources
-      end
-
-      def invoke_prerequisites() #:nodoc:
-        prerequisites.each { |n| application[n, @scope].invoke }
+      def invoke_prerequisites(args, chain) #:nodoc:
+        @prerequisites |= classpath + sources
+        super
       end
 
       # Returns the files to compile. This list is derived from the list of sources,
@@ -241,79 +238,6 @@ module Buildr
     end
 
  
-    # The resources task is executed by the compile task to copy resource files over
-    # to the target directory. You can enhance this task in the normal way, but mostly
-    # you will use the task's filter.
-    #
-    # For example:
-    #   resources.filter.using "Copyright"=>"Acme Inc, 2007"
-    class ResourcesTask < Rake::Task
-
-      # Returns the filter used to copy resources over. See Buildr::Filter.
-      attr_reader :filter
-
-      def initialize(*args) #:nodoc:
-        super
-        @filter = Buildr::Filter.new
-        enhance { filter.run unless filter.sources.empty? }
-      end
-
-      # :call-seq:
-      #   include(*files) => self
-      #
-      # Includes the specified files in the filter and returns self.
-      def include(*files)
-        filter.include *files
-        self
-      end
-
-      # :call-seq:
-      #   exclude(*files) => self
-      #
-      # Excludes the specified files in the filter and returns self.
-      def exclude(*files)
-        filter.exclude *files
-        self
-      end
-
-      # :call-seq:
-      #   from(*sources) => self
-      #
-      # Adds additional directories from which to copy resources.
-      #
-      # For example:
-      #   resources.from _("src/etc")
-      def from(*sources)
-        filter.from *sources
-        self
-      end
-
-      # *Deprecated* Use #sources instead.
-      def source()
-        warn_deprecated "Please use sources instead."
-        filter.source
-      end
-
-      # Returns the list of source directories (each being a file task).
-      def sources()
-        filter.sources
-      end
-
-      # :call-seq:
-      #   target() => task
-      #
-      # Returns the filter's target directory as a file task.
-      def target()
-        filter.target
-      end
-
-      def prerequisites() #:nodoc:
-        super + filter.sources.flatten
-      end
-
-    end
-
-
     # A convenient task for creating Javadocs from the project's compile task. Minimizes all
     # the hard work to calling #from and #using.
     #
@@ -470,13 +394,13 @@ module Buildr
       before_define do |project|
         prepare = task("prepare")
         # Resources task is a filter.
-        resources = Java::ResourcesTask.define_task("resources")
+        resources = ResourcesTask.define_task("resources")
         project.path_to("src/main/resources").tap { |dir| resources.from dir if File.exist?(dir) }
         # Compile task requires prepare and performs resources, if anything compiled.
-        compile = Java::CompileTask.define_task("compile"=>[prepare, resources])
+        compile = Buildr::CompileTask.define_task("compile"=>[prepare, resources])
         project.path_to("src/main/java").tap { |dir| compile.from dir if File.exist?(dir) }
         compile.into project.path_to(:target, "classes")
-        resources.filter.into project.compile.target
+        resources.filter.into project.path_to(:target, "resources")
         Java::JavadocTask.define_task("javadoc"=>prepare).tap do |javadoc|
           javadoc.into project.path_to(:target, "javadoc")
           javadoc.using :windowtitle=>project.comment || project.name
