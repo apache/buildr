@@ -7,7 +7,7 @@
 * Changed: Compile extension and CompileTask are now separate from the Java module.  Multiple compilers can be used, either guessed from the project layout, or specified with compile.using(:name).
 * Changed: Test extension and TestTask are now separate from the Java module.  JUnit and TestNG are Java specific extensions picked using test.with(:name).
 * Changed: For compile and test, use dependencies instead of classpath (with works are before).
-* Changed: Test framework componentized along the same lines at the compilers.
+* Changed: Test framework componentized along the same lines as the compilers.
 * Removed: Prepare tasks removed.
 * Fixed: Artifact.pom resolves artifact without classifier, i.e org.testng:testng:jar:jdk15:5.1 uses org.testng:testng:pom:5.1 (Tommy).
 * Fixed: More patches towards JRuby support, courtesy of Vic Borja.

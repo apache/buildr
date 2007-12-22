@@ -9,28 +9,25 @@ require "highline/import"
 # &:symbol goodness.
 require "facet/symbol/to_proc"
 # blank? on string and nil
-require "facet/string/blank"
-require "facet/nilclass/blank"
-# x.in?(y) is better than y.include?(x)
-require "facet/kernel/in"
-# Allows binding[]
-require "facet/binding"
+require 'facet/string/blank'
+require 'facet/nilclass/blank'
 # What it says.
-require "facet/kernel/__DIR__"
-require "facet/kernel/instance_exec"
-require "facet/module/alias_method_chain"
-require "facet/module/memoize"
-require "facet/array/head"
-require "facet/string/starts_with"
-require "facet/openobject"
-require "facets/core/kernel/tap"
-require "facets/core/enumerable/uniq_by"
+require 'facet/kernel/__DIR__'
+require 'facet/module/alias_method_chain'
+require 'facet/module/memoize'
+require 'facet/array/head'
+require 'facet/string/starts_with'
+require 'facet/openobject'
+require 'facets/core/kernel/tap'
+require 'facets/core/enumerable/uniq_by'
 # A different kind of buildr, one we use to create XML.
-require "builder"
+require 'builder'
+require 'test/unit'
+require 'spec'
 
 
 module Buildr
-  VERSION = "1.2.11".freeze # unless const_defined?(:VERSION)
+  VERSION = '1.3.0'.freeze # unless const_defined?(:VERSION)
 
 end
 
