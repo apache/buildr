@@ -2,7 +2,12 @@
 * Added: Mechanism to simplify creating extensions (see Extension module).
 * Added: To run all test cases 'rake spec'.  Test coverage reports will show up in html/coverage.  To run failing tests against, 'rake failing'.
 * Changed: Upgraded to Rake 0.8 and RSpec 1.1.
-* Changed: Resources are now copied to target/resources instead of target/classes.
+* Changed: Resources are now copied to target/resources instead of target/classes, and target/test/resources instead of target/test-resources.
+* Changed: Test cases are not compiled into target/test/classes instead of target/test-classes.
+* Changed: Compile extension and CompileTask are now separate from the Java module.  Multiple compilers can be used, either guessed from the project layout, or specified with compile.using(:name).
+* Changed: Test extension and TestTask are now separate from the Java module.  JUnit and TestNG are Java specific extensions picked using test.with(:name).
+* Changed: For compile and test, use dependencies instead of classpath (with works are before).
+* Removed: Prepare tasks removed.
 * Fixed: Artifact.pom resolves artifact without classifier, i.e org.testng:testng:jar:jdk15:5.1 uses org.testng:testng:pom:5.1 (Tommy).
 * Fixed: More patches towards JRuby support, courtesy of Vic Borja.
 

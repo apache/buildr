@@ -3,13 +3,13 @@ require File.join(File.dirname(__FILE__), 'sandbox')
 
 describe Buildr::CompileTask do
   before do
-    @compile = define('foo').compile.using(:java)
     # Test files to compile and target directory to compile into.
     @src_dir = 'src/java'
     @sources = ['Test1.java', 'Test2.java'].map { |f| File.join(@src_dir, f) }.
       each { |src| write src, "class #{src.pathmap('%n')} {}" }
     # You can supply a relative path, but a full path is used everywhere else.
     @target = File.expand_path('classes')
+    @compile = define('foo').compile.using(:javac)
   end
 
   it 'should respond to from() and return self' do
@@ -73,12 +73,62 @@ describe Buildr::CompileTask do
 end
 
 
+describe Buildr::CompileTask, 'compiler' do
+  it 'should be nil if not identified' do
+    define('foo').compile.compiler.should be_nil
+  end
+  
+  it 'should be set by calling using' do
+    define('foo') { compile.using(:javac) }
+    project('foo').compile.compiler.should eql(:javac)
+  end
+
+  it 'should only support existing compiler' do
+    lambda { define('foo') { compile.using(:unknown) } }.should raise_error(ArgumentError, /unknown compiler/i)
+  end
+
+  it 'should only allow setting the compiler once' do
+    lambda { define('foo') { compile.using(:javac).using(:scalac) } }.should raise_error(RuntimeError, /already selected/i)
+  end
+
+  it 'should identify itself from source directories' do
+    write 'src/main/java/Test.java', 'class Test {}' 
+    define('foo').compile.compiler.should eql(:javac)
+  end
+
+  it 'should identify itself form project paths' do
+    write 'bar/Test.java', 'class Test {}' 
+    define('foo').compile.compiler.should be_nil
+    define('bar') { compile.from 'bar' }.compile.compiler.should eql(:javac)
+  end
+
+  it 'should have no source/target mapping unless selected' do
+    define('foo')
+    project('foo').compile.sources.should be_empty
+    project('foo').compile.target.should be_nil
+  end
+
+  it 'should set target directory' do
+    define('foo') { compile.using(:javac) }
+    project('foo').compile.sources.should be_empty
+    project('foo').compile.target.to_s.should eql(File.expand_path('target/classes'))
+  end
+
+  it 'should not over-ride exisitng source and target directories' do
+    define('foo') { compile.from('foo/java').into('classes').using(:javac) }
+    project('foo').compile.sources.should eql(['foo/java'])
+    project('foo').compile.target.to_s.should eql(File.expand_path('classes'))
+  end
+
+end
+
+
 describe Buildr::CompileTask, 'sources' do
   before do
     @src_dir = 'src/java'
     @sources = ['Test1.java', 'Test2.java'].map { |f| File.join(@src_dir, f) }.
       each { |src| write src, "class #{src.pathmap('%n')} {}" }
-    @compile = define('foo').compile.using(:java)
+    @compile = define('foo').compile.using(:javac)
     # Test files to compile and target directory to compile into.
   end
 
@@ -145,10 +195,10 @@ end
 
 describe Buildr::CompileTask, 'dependencies' do
   before do
-    @compile = define('foo').compile.using(:java)
+    @compile = define('foo').compile.using(:javac)
     @sources = ['Test1.java', 'Test2.java'].
       each { |src| write src, "class #{src.pathmap('%n')} {}" }
-    define('to_jar').compile.using(:java).from(@sources).into(Dir.pwd).invoke
+    define('to_jar').compile.using(:javac).from(@sources).into(Dir.pwd).invoke
     @jars = [ 'test1.jar', 'test2.jar' ]. # javac can't cope with empty jars
      each { |jar| zip(jar).include(@sources.map { |src| src.ext('class') }).invoke }
   end
@@ -219,7 +269,7 @@ end
 
 describe Buildr::CompileTask, 'target' do
   before do
-    @compile = define('foo').compile.using(:java)
+    @compile = define('foo').compile.using(:javac)
     write 'Test.java', 'class Test {}'
   end
 
@@ -400,23 +450,6 @@ def accessor_task_spec(name)
 end
 
 
-describe Project, '#prepare' do
-  accessor_task_spec :prepare
-
-  it 'should accept prerequisites' do
-    tasks = ['task1', 'task2'].each { |name| task(name) }
-    define('foo') { prepare *tasks }
-    lambda { project('foo').prepare.invoke }.should run_tasks(*tasks)
-  end
-
-  it 'should accept block' do
-    task 'action'
-    define('foo') { prepare { task('action').invoke } }
-    lambda { project('foo').prepare.invoke }.should run_task('action')
-  end
-end
-
-
 describe Project, '#compile' do
   accessor_task_spec :compile
 
@@ -478,11 +511,6 @@ describe Project, '#compile' do
     project('foo').compile.sources.should be_empty
   end
 
-  it 'should always set target directory' do
-    define 'foo'
-    project('foo').compile.target.should_not be_nil
-  end
-
   it 'should set target directory to target/classes' do
     make_sources
     define 'foo'
@@ -493,11 +521,6 @@ describe Project, '#compile' do
     make_sources
     define 'foo'
     file(File.expand_path('target/classes')).prerequisites.should include(project('foo').compile)
-  end
-
-  it 'should execute prepare task as pre-requisite' do
-    define('foo') { prepare }
-    lambda { project('foo').compile.invoke }.should run_task('foo:prepare')
   end
 
   it 'should execute resources task if compiling' do
@@ -594,7 +617,7 @@ describe Project, '#resources' do
         def run() ; task('filtering').invoke ; end
       end
     end
-    lambda { file(File.expand_path('target/classes')).invoke }.should run_task('filtering')
+    lambda { file(File.expand_path('target/resources')).invoke }.should run_task('filtering')
   end
 
   it 'should include all files in the resources directory' do
@@ -624,6 +647,8 @@ describe Project, '#resources' do
     project('foo').resources.invoke
     FileList['target/resources/**'].should include('target/resources/special')
   end
+
+  it 'should use current profile for filtering'
 end
 
 
@@ -775,4 +800,6 @@ describe Project, '#javadoc' do
     define('foo') { define 'bar' }
     lambda { suppress_stdout { task('javadoc').invoke } }.should run_task('foo:javadoc').but_not('foo:bar:javadoc')
   end
+
+  it 'should include prerequisites from compile task'
 end

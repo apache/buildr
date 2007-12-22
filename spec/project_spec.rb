@@ -55,13 +55,11 @@ describe Project do
     lambda { project("foo") }.should_not raise_error
   end
 
-=begin
   it "should detect circular dependency" do
     Buildr.define("baz") { define("bar") { project("foo:bar") } }
     Buildr.define("foo") { define("bar") { project("baz:bar") } }
     lambda { project("foo") }.should raise_error(RuntimeError, /Circular dependency/)
   end
-=end
 end
 
 
@@ -320,7 +318,6 @@ describe "Sub-project" do
     ordered.should eql(["foo", "foo:baz", "foo:bar"])
   end
 
-=begin
   it "should warn of circular dependency" do
     lambda do
       define "foo" do
@@ -329,7 +326,6 @@ describe "Sub-project" do
       end 
     end.should raise_error(RuntimeError, /Circular dependency/)
   end
-=end
 end
 
 

@@ -527,7 +527,7 @@ protected
       end
     end
 
-  private
+  protected
 
     # Call all callbacks for a particular state, e.g. :before_define, :after_define.
     def call_callbacks(state) #:nodoc:

@@ -12,7 +12,7 @@ unless defined?(Buildr)
   # repository and cache these across test cases.
   repositories.remote << "http://repo1.maven.org/maven2"
   Java.wrapper.load # Anything added to the classpath.
-  artifacts(TestTask::JUNIT_REQUIRES, TestTask::TESTNG_REQUIRES, TestTask::JMOCK_REQUIRES).each { |a| file(a).invoke }
+  artifacts(TestTask::JUNIT_REQUIRES, TestTask::TESTNG_REQUIRES, Java::JMock::JMOCK_REQUIRES).each { |a| file(a).invoke }
   task("buildr:initialize").invoke
 
 
@@ -265,6 +265,7 @@ unless defined?(Buildr)
         Dir.chdir @test_dir
         @sandbox[:original_dir] = Rake.application.original_dir 
         Rake.application.instance_eval { @original_dir = Dir.pwd }
+        Rake.application.instance_eval { @rakefile = File.join(Dir.pwd, 'buildfile') }
         
         # Later on we'll want to lose all the on_define created during the test.
         @sandbox[:on_define] = Project.class_eval { (@on_define || []).dup }
@@ -314,8 +315,6 @@ unless defined?(Buildr)
         # Restore options.
         Buildr.options.test = nil
         (ENV.keys - @sandbox[:env_keys]).each { |key| ENV.delete key }
-
-        Rake.application.instance_eval { @rakefile = nil }
       end
 
     end

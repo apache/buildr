@@ -75,6 +75,31 @@ module Rake #:nodoc
       end
     end
   end
+
+  class Task #:nodoc:
+    def invoke(*args)
+      task_args = TaskArguments.new(arg_names, args)
+      invoke_with_call_chain(task_args, Thread.current[:rake_chain] || InvocationChain::EMPTY)
+    end
+
+    def invoke_with_call_chain(task_args, invocation_chain)
+      new_chain = InvocationChain.append(self, invocation_chain)
+      @lock.synchronize do
+        if application.options.trace
+          puts "** Invoke #{name} #{format_trace_flags}"
+        end
+        return if @already_invoked
+        @already_invoked = true
+        invoke_prerequisites(task_args, new_chain)
+        begin
+          old_chain, Thread.current[:rake_chain] = Thread.current[:rake_chain], new_chain
+          execute(task_args) if needed?
+        ensure
+          Thread.current[:rake_chain] = nil
+        end
+      end
+    end
+  end
 end
 
 

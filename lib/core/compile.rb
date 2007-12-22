@@ -1,209 +1,103 @@
 require "core/common"
 
 module Buildr
-
-
   module Compiler
-
-    COMPILERS = []
 
     class << self
 
-      def select(compiler)
-        cls = COMPILERS.detect { |cls| cls.compiler_name == compiler.to_s }
-        raise "No #{compiler} compiler available. Did you install it?" unless cls
-        cls.new
+      # Select a compiler by its name.
+      def select(name)
+        raise ArgumentError, "No #{name} compiler available. Did you install it?" unless compilers.include?(name.to_sym)
+        compilers[name.to_sym]
       end
 
-      def identify(project)
-        cls = COMPILERS.detect { |compiler| compiler.identify?(project) }
-        cls && cls.new
+      # Identify which compiler applies based on one of two arguments:
+      # * :sources -- List of source directories, attempts to find applicable files there (e.g. Java source files).
+      # * :source -- The source directory (src/main, src/test), from which it will look up a particular source
+      #     directory (e.g. src/main/java).
+      def identify(from)
+        compilers.values.detect { |compiler| compiler.identify?(from) }
+      end
+
+      # Adds a compiler to the list of supported compiler.
+      def add(compiler)
+        compiler = compiler.new if Class === compiler
+        compilers[compiler.name.to_sym] = compiler
+      end
+
+    private
+
+      def compilers
+        @compilers ||= {}
       end
 
     end
 
 
-    class Base
+    # Base class for all compilers, with common functionality.  Extend and over-ride as you see fit
+    # (see Javac as an example).
+    class Base #:nodoc:
 
-      def self.compiler_name
-        name.split('::').last.downcase
+      def initialize(args = {})
+        args[:name] ||= self.class.name.split('::').last.downcase.to_sym
+        args[:language] ||= args[:name]
+        args[:source_path] ||= args[:language].to_s
+        args[:source_ext] ||= ".#{args[:language]}"
+        args.each { |name, value| instance_variable_set "@#{name}", value }
       end
 
-      def name
-        self.class.compiler_name
+      # Compiler name (e.g. :javac).
+      attr_reader :name
+      # Compiled language (e.g. :java).
+      attr_reader :language
+      # Common path for source files (e.g. 'java').
+      attr_reader :source_path
+      # Extension for source files (e.g. '.java').
+      attr_reader :source_ext
+      # Common path for target files (e.g. 'classes').
+      attr_reader :target_path
+      # Extension for target files (e.g. '.class').
+      attr_reader :target_ext
+
+      # Used by Compiler.identify to determine if this compiler applies to the current project.
+      # The default implementation looks for either the supplied source directories, or the
+      # #source_path directory, depending on arguments, for files with #source_ext extension.
+      def identify?(from)
+        paths = from[:sources] || Array(File.join(from[:source], source_path))
+        !Dir[*paths.map { |path| File.join(path, "**/*#{source_ext}") }].empty?
       end
 
-    end
-
-
-    class Java < Base
-
-      COMPILERS << self
-
-      def self.identify?(project)
-        !Dir[project.path_to('src/main/java/**/*.java')].empty?
+      # Once selected, this method is called to configured the task for this compiler.
+      # You can extend this to set up common source directories, the target directory,
+      # default compiler options, etc.  The default implementation adds the source directory
+      # from {source}/{source_path} and sets the target directory to {target}/{target_path}
+      # if not already set.
+      def configure(task, source, target)
+        task.from File.join(source, source_path) if task.sources.empty? && File.exist?(File.join(source, source_path))
+        task.into File.join(target, target_path) unless task.target
       end
 
-      def configure(task, project)
-        task.options.warnings ||= verbose
-        task.options.deprecation ||= false
-        task.options.lint ||= false
-        task.options.debug ||= Buildr.options.debug
-        task.from project.path_to('src/main/java') if task.sources.empty?
-        task.into project.path_to(:target, 'classes') unless task.target
-      end
-
-      def compile(sources, target, dependencies, options, name)
-        ::Buildr::Java.javac source_files(sources, target).keys, :sourcepath=>sources.map(&:to_s).select { |source| File.directory?(source) }.uniq,
-          :classpath=>dependencies, :output=>target, :javac_args=>javac_args_from(options), :name=>name
-      end
-
-      # Returns the files to compile. This list is derived from the list of sources,
-      # expanding directories into files, and includes only source files that are
-      # newer than the corresponding class file. Includes all files if one or more
-      # classpath dependency has been updated.
-      def source_files(sources, target)
-        @source_files ||= sources.map(&:to_s).inject({}) do |map, source|
-          raise "Compile task #{name} has source files, but no target directory" unless target
-          target_dir = target.to_s
+      # The compile map is a hash that associates source files with target files based
+      # on a list of source directories and target directory.  The compile task uses this
+      # to determine if there are source files to compile, and which source files to compile.
+      # The default method maps all files in the source directories with #source_ext into
+      # paths in the target directory with #target_ext (e.g. 'source/foo.java'=>'target/foo.class').
+      def compile_map(sources, target)
+        sources.inject({}) do |map, source|
           if File.directory?(source)
             base = Pathname.new(source)
-            FileList["#{source}/**/*.java"].reject { |file| File.directory?(file) }.
-              each { |file| map[file] = File.join(target_dir, Pathname.new(file).relative_path_from(base).to_s.ext('.class')) }
+            FileList["#{source}/**/*#{source_ext}"].reject { |file| File.directory?(file) }.
+              each { |file| map[file] = File.join(target, Pathname.new(file).relative_path_from(base).to_s.ext(target_ext)) }
           else
-            map[source] = File.join(target_dir, File.basename(source).ext('.class'))
+            map[source] = File.join(target, File.basename(source).ext(target_ext))
           end
           map
         end
       end
 
-      def javac_args_from(options)
-        args = []  
-        args << '-nowarn' unless options.warnings
-        args << '-verbose' if Rake.application.options.trace
-        args << '-g' if options.debug
-        args << '-deprecation' if options.deprecation
-        args << '-source' << options.source.to_s if options.source
-        args << '-target' << options.target.to_s if options.target
-        case options.lint
-          when Array; args << "-Xlint:#{options.lint.join(',')}"
-          when String; args << "-Xlint:#{options.lint}"
-          when true; args << '-Xlint'
-        end
-        options.other = options.other.map { |name, value| [ "-#{name}", value.to_s ] }.flatten if Hash === options.other
-        args + Array(options.other)
-      end
-
     end
 
   end
-
-
-
-
-=begin
-  # Compiler options, accessible from CompileTask#options.
-  #
-  # Supported options are:
-  # - warnings -- Generate warnings if true (opposite of -nowarn).
-  # - deprecation -- Output source locations where deprecated APIs are used.
-  # - source -- Source compatibility with specified release.
-  # - target -- Class file compatibility with specified release.
-  # - lint -- Value to pass to xlint argument. Use true to enable default lint
-  #   options, or pass a specific setting as string or array of strings.
-  # - debug -- Generate debugging info.
-  # - other -- Array of options to pass to the Java compiler as is.
-  #
-  # For example:
-  #   compile.options.warnings = true
-  #   compile.options.source = options.target = "1.6"
-  module Javac
-
-    def self.extended(base)
-      base.instance_variable_set(:@classpath, [])
-      base.options.warnings ||= verbose
-      base.options.deprecation ||= false
-      base.options.lint ||= false
-      base.options.debug ||= Buildr.options.debug
-    end
-
-    def self.recognize?(project)
-      File.exist?(project.path_to('src/main/java'))
-    end
-
-    def compile
-      Java.javac source_files.keys, :sourcepath=>sources.map(&:to_s).select { |source| File.directory?(source) }.uniq,
-        :classpath=>classpath, :output=>target, :javac_args=>javac_args, :name=>name
-    end
-
-    # Classpath dependencies.
-    attr_accessor :classpath
-
-    # :call-seq:
-    #   with(*artifacts) => self
-    #
-    # Adds files and artifacts as classpath dependencies, and returns self.
-    #
-    # Calls #artifacts on the arguments, so you can pass artifact specifications,
-    # tasks, projects, etc. Use this rather than setting the classpath directly.
-    #
-    # For example:
-    #   compile.with("module1.jar", "log4j:log4j:jar:1.0", project("foo"))
-    def with(*specs)
-      @classpath |= Buildr.artifacts(specs.flatten).uniq
-      self
-    end
-
-    def prerequisites #:nodoc:
-      super + classpath + sources
-    end
-
-    # Returns the files to compile. This list is derived from the list of sources,
-    # expanding directories into files, and includes only source files that are
-    # newer than the corresponding class file. Includes all files if one or more
-    # classpath dependency has been updated.
-    def source_files
-      @source_files ||= @sources.map(&:to_s).inject({}) do |map, source|
-        raise "Compile task #{name} has source files, but no target directory" unless target
-        target_dir = target.to_s
-        if File.directory?(source)
-          base = Pathname.new(source)
-          FileList["#{source}/**/*.java"].reject { |file| File.directory?(file) }.
-            each { |file| map[file] = File.join(target_dir, Pathname.new(file).relative_path_from(base).to_s.ext('.class')) }
-        else
-          map[source] = File.join(target_dir, File.basename(source).ext('.class'))
-        end
-        map
-      end
-    end
-
-    def needed? #:nodoc:
-      return false if source_files.empty?
-      return true unless File.exist?(target.to_s)
-      return true if source_files.any? { |j, c| !File.exist?(c) || File.stat(j).mtime > File.stat(c).mtime }
-      oldest = source_files.map { |j, c| File.stat(c).mtime }.min
-      return classpath.any? { |path| application[path].timestamp > oldest }
-    end
-
-    def javac_args
-      args = []  
-      args << '-nowarn' unless options.warnings
-      args << '-verbose' if Rake.application.options.trace
-      args << '-g' if options.debug
-      args << '-deprecation' if options.deprecation
-      args << '-source' << options.source.to_s if options.source
-      args << '-target' << options.target.to_s if options.target
-      case options.lint
-        when Array; args << "-Xlint:#{options.lint.join(',')}"
-        when String; args << "-Xlint:#{options.lint}"
-        when true; args << '-Xlint'
-      end
-      options.other = options.other.map { |name, value| [ "-#{name}", value.to_s ] }.flatten if Hash === options.other
-      args + Array(options.other)
-    end
-
-  end
-=end
 
 
   # Wraps Javac in a task that does all the heavy lifting.
@@ -211,8 +105,8 @@ module Buildr
   # Accepts multiple source directories that are invoked as prerequisites before compilation.
   # You can pass a task as a source directory, e.g. compile.from(apt).
   #
-  # Likewise, classpath dependencies are invoked before compiling. All classpath dependencies
-  # are evaluated as #artifacts, so you can pass artifact specifications and even projects.
+  # Likewise, dependencies are invoked before compiling. All dependencies are evaluated as
+  # #artifacts, so you can pass artifact specifications and even projects.
   #
   # Creates a file task for the target directory, so executing that task as a dependency will
   # execute the compile task first.
@@ -222,31 +116,52 @@ module Buildr
   # any classes itself, you can use it to set compile options for all its sub-projects.
   #
   # Normally, the project will take care of setting the source and target directory, and you
-  # only need to set options and classpath dependencies. See Project#compile.
+  # only need to set options and dependencies. See Project#compile.
   class CompileTask < Rake::Task
+
+    module OpenStructExtension #:nodoc:
+
+      def [](key)
+        @table[key]
+      end
+        
+      def []=(key, value)
+        @table[key] = value
+      end
+
+      def clear
+        @table.clear
+      end
+
+    end
 
     def initialize(*args) #:nodoc:
       super
       parent = Project.task_in_parent_project(name)
       @options = parent && parent.respond_to?(:options) && parent.options.clone || OpenStruct.new
+      @options.extend OpenStructExtension
       @sources = []
       @dependencies = []
 
-      project = Project.project_from_task(self)
-      @compiler = Compiler.identify(project)
-      compiler.configure(self, project) if compiler
-
       enhance do |task|
-        unless target.nil? || sources.empty?
-          raise "No compiler selected and can't determine default compiler to use" unless compiler
+        unless sources.empty?
+          raise 'No compiler selected and can\'t determine which compiler to use' unless compiler
+          raise 'No target directory specified' unless target
           mkpath target.to_s, :verbose=>false
-          compiler.compile(sources, target, dependencies, options, task.name)
+          files = compile_map.keys
+          unless files.empty?
+            puts "Compiling #{files.size} source files in #{task.name}" if verbose
+            @compiler.compile(files, task)
+          end
           # By touching the target we let other tasks know we did something,
           # and also prevent recompiling again for dependencies.
           touch target.to_s, :verbose=>false
         end
       end
     end
+
+    # Source directories.
+    attr_accessor :sources
 
     # :call-seq:
     #   from(*sources) => self
@@ -329,12 +244,17 @@ module Buildr
     # Returns the compiler if known.  The compiler is either automatically selected
     # based on existing source directories (e.g. src/main/java), or by requesting
     # a specific compiler (see #using).
-    attr_reader :compiler
+    def compiler
+      unless @compiler
+        compiler = Compiler.identify(:sources=>sources) unless sources.empty?
+        select(compiler) if compiler
+      end
+      @compiler && @compiler.name
+    end
 
-    def select(compiler) #:nodoc:
-      raise "#{compiler.name} already selected for this project" if @compiler
-      @compiler = Compiler.select(compiler.to_s)
-      self
+    # Returns the compiled language, if known.  See also #compiler.
+    def language
+      compiler && @compiler.language
     end
 
     def timestamp #:nodoc:
@@ -343,38 +263,48 @@ module Buildr
       target ? target.timestamp : Rake::EARLY
     end
 
-    def needed? #:nodoc:
-      return false if source_files.empty?
-      return true unless File.exist?(target.to_s)
-      return true if source_files.any? { |j, c| !File.exist?(c) || File.stat(j).mtime > File.stat(c).mtime }
-      oldest = source_files.map { |j, c| File.stat(c).mtime }.min
-      return dependencies.any? { |path| application[path].timestamp > oldest }
+  protected
+
+    # Selects which compiler to use.
+    def select(compiler) #:nodoc:
+      compiler = Compiler.select(compiler) unless Compiler::Base === compiler
+      unless @compiler == compiler
+        raise "#{@compiler} compiler already selected for this project" if @compiler
+        @compiler = compiler
+        @compiler.configure(self, @associate[:source], @associate[:target])
+      end
+      self
     end
 
-    def invoke_prerequisites(args, chain) #:nodoc:
-      @prerequisites |= dependencies + sources
-      super
+    def associate(source, target) #:nodoc:
+      @associate = { :source=>source, :target=>target }
+      compiler = Compiler.identify(:source=>source)
+      select(compiler) if compiler
     end
 
   private
 
-    # Returns the files to compile. This list is derived from the list of sources,
-    # expanding directories into files, and includes only source files that are
-    # newer than the corresponding class file. Includes all files if one or more
-    # dependency has been updated.
-    def source_files
-      @source_files ||= @sources.map(&:to_s).inject({}) do |map, source|
-        raise "Compile task #{name} has source files, but no target directory" unless target
-        target_dir = target.to_s
-        if File.directory?(source)
-          base = Pathname.new(source)
-          FileList["#{source}/**/*.java"].reject { |file| File.directory?(file) }.
-            each { |file| map[file] = File.join(target_dir, Pathname.new(file).relative_path_from(base).to_s.ext('.class')) }
-        else
-          map[source] = File.join(target_dir, File.basename(source).ext('.class'))
-        end
-        map
-      end
+    def needed? #:nodoc:
+      return false if Array(sources).empty?
+      # Fail during invoke.
+      return true unless @compiler && target
+      # No need to check further.
+      return false if compile_map.empty?
+      return true unless File.exist?(target.to_s)
+      return true if compile_map.any? { |source, target| !File.exist?(target) || File.stat(source).mtime > File.stat(target).mtime }
+      oldest = compile_map.map { |source, target| File.stat(target).mtime }.min
+      return dependencies.any? { |path| application[path].timestamp > oldest }
+      return true
+    end
+
+    def invoke_prerequisites(args, chain) #:nodoc:
+      @prerequisites |= dependencies + Array(sources)
+      super
+    end
+
+    # Creates and caches the compile map.
+    def compile_map #:nodoc:
+      @compile_map ||= @compiler.compile_map(@sources = Array(@sources).map(&:to_s).uniq, target.to_s)
     end
 
   end
@@ -385,7 +315,7 @@ module Buildr
   # you will use the task's filter.
   #
   # For example:
-  #   resources.filter.using "Copyright"=>"Acme Inc, 2007"
+  #   resources.filter.using 'Copyright'=>'Acme Inc, 2007'
   class ResourcesTask < Rake::Task
 
     # Returns the filter used to copy resources over. See Buildr::Filter.
@@ -421,7 +351,7 @@ module Buildr
     # Adds additional directories from which to copy resources.
     #
     # For example:
-    #   resources.from _("src/etc")
+    #   resources.from _("src/etc')
     def from(*sources)
       filter.from *sources
       self
@@ -442,6 +372,123 @@ module Buildr
 
     def prerequisites #:nodoc:
       super + filter.sources.flatten
+    end
+
+  end
+
+
+  # Methods added to Project for compiling, handling of resources and generating source documentation.
+  module Compile
+
+    include Extension
+
+    first_time do
+      desc 'Compile all projects'
+      Project.local_task('compile') { |name| "Compiling #{name}" }
+    end
+
+    before_define do |project|
+      resources = ResourcesTask.define_task('resources')
+      project.path_to('src/main/resources').tap { |dir| resources.from dir if File.exist?(dir) }
+      resources.filter.into project.path_to(:target, 'resources')
+      resources.filter.using Buildr.profile
+
+      compile = CompileTask.define_task('compile'=>resources)
+      compile.send :associate, project.path_to('src/main'), project.path_to(:target)
+      project.recursive_task('compile')
+    end
+
+    after_define do |project|
+      if project.compile.target
+        # This comes last because the target path is set inside the project definition.
+        project.build project.compile.target
+        project.clean do
+          verbose(false) do
+            rm_rf project.compile.target.to_s
+          end
+        end
+      end
+    end
+
+      
+    # :call-seq:
+    #   compile(*sources) => CompileTask
+    #   compile(*sources) { |task| .. } => CompileTask
+    #
+    # The compile task does what its name suggests. This method returns the project's
+    # CompileTask. It also accepts a list of source directories and files to compile
+    # (equivalent to calling CompileTask#from on the task), and a block for any
+    # post-compilation work.
+    #
+    # The compile task attempts to guess which compiler to use.  For example, if it finds
+    # any Java files in the src/main/java directory, it will use the Java compiler and
+    # create class files in the target/classes directory.
+    #
+    # You can also configure it yourself by telling it which compiler to use, pointing
+    # it as source directories and chooing a different target directory.
+    #
+    # For example:
+    #   # Include Log4J and the api sub-project artifacts.
+    #   compile.with 'log4j:log4j:jar:1.2', project('api')
+    #   # Include Apt-generated source files.
+    #   compile.from apt
+    #   # For JavaC, force target compatibility.
+    #   compile.options.source = '1.6'
+    #   # Run the OpenJPA bytecode enhancer after compilation.
+    #   compile { open_jpa_enhance }
+    #   # Pick a given compiler.
+    #   compile.using(:gcc).from('src')
+    #
+    # For more information, see Java::CompileTask.
+    def compile(*sources, &block)
+      task('compile').from(sources).enhance &block
+    end
+
+    # :call-seq:
+    #   resources(*prereqs) => ResourcesTask
+    #   resources(*prereqs) { |task| .. } => ResourcesTask
+    #
+    # The resources task is executed by the compile task to copy resources files
+    # from the resource directory into the target directory. By default the resources
+    # task copies files from the src/main/resources into the target/resources directory.
+    #
+    # This method returns the project's resources task. It also accepts a list of
+    # prerequisites and a block, used to enhance the resources task.
+    #
+    # Resources files are copied and filtered (see Buildr::Filter for more information).
+    # The default filter uses the profile properties for the current environment.
+    #
+    # For example:
+    #   resources.from _('src/etc')
+    #   resources.filter.using 'Copyright'=>'Acme Inc, 2007'
+    #
+    # Or in your profiles.yaml file:
+    #   common:
+    #     Copyright: Acme Inc, 2007
+    def resources(*prereqs, &block)
+      task('resources').enhance prereqs, &block
+    end
+
+  end
+
+
+  class Options
+
+    # Returns the debug option (environment variable DEBUG).
+    def debug()
+      (ENV["DEBUG"] || ENV["debug"]) !~ /(no|off|false)/
+    end
+
+    # Sets the debug option (environment variable DEBUG).
+    #
+    # You can turn this option off directly, or by setting the environment variable
+    # DEBUG to "no". For example:
+    #   buildr build DEBUG=no
+    #
+    # The release tasks runs a build with <tt>DEBUG=no</tt>.
+    def debug=(flag)
+      ENV["debug"] = nil
+      ENV["DEBUG"] = flag.to_s
     end
 
   end

@@ -2,25 +2,10 @@ require File.join(File.dirname(__FILE__), 'sandbox')
 
 
 describe Buildr::TestTask do
-  it "should respond to :prepare and return prepare task" do
-    define("foo") { test.prepare.should be(task("test:prepare")) }
-  end
-
-  it "should respond to :prepare and add prerequisites to test:prepare" do
-    define("foo") { test.prepare "prereq" }
-    project("foo").task("test:prepare").prerequisites.should include("prereq")
-  end
-
-  it "should respond to :prepare and add action for test:prepare" do
-    task "action"
-    define("foo") { test.prepare { task("action").invoke } }
-    lambda { project("foo").test.prepare.invoke }.should run_tasks("action")
-  end
-
   it "should respond to :compile and return compile task" do
     define "foo" do
       test.compile.should be(task("test:compile"))
-      test.compile.should be_kind_of(Buildr::Java::CompileTask)
+      test.compile.should be_kind_of(Buildr::CompileTask)
     end
   end
 
@@ -88,16 +73,16 @@ describe Buildr::TestTask do
     define("foo") { test.with.should be(test) }
   end
 
-  it "should respond to :with and add artifacfs to compile task classpath" do
+  it "should respond to :with and add artifacfs to compile task dependencies" do
     define("foo") { test.with "test.jar", "acme:example:jar:1.0" }
-    project("foo").test.compile.classpath.should include(File.expand_path("test.jar"))
-    project("foo").test.compile.classpath.should include(artifact("acme:example:jar:1.0"))
+    project("foo").test.compile.dependencies.should include(File.expand_path("test.jar"))
+    project("foo").test.compile.dependencies.should include(artifact("acme:example:jar:1.0"))
   end
 
-  it "should respond to :with and add artifacfs to task classpath" do
+  it "should respond to :with and add artifacfs to task dependencies" do
     define("foo") { test.with "test.jar", "acme:example:jar:1.0" }
-    project("foo").test.classpath.should include(File.expand_path("test.jar"))
-    project("foo").test.classpath.should include(artifact("acme:example:jar:1.0"))
+    project("foo").test.dependencies.should include(File.expand_path("test.jar"))
+    project("foo").test.dependencies.should include(artifact("acme:example:jar:1.0"))
   end
 
   it "should respond to :using and return self" do
@@ -147,18 +132,18 @@ describe Buildr::TestTask do
     project("foo").test.framework.should eql(:testng)
   end
 
-  it "should use the compile classpath" do
+  it "should use the compile dependencies" do
     define("foo") { compile.with "group:id:jar:1.0" }
-    project("foo").test.classpath.should include(artifact("group:id:jar:1.0"))
+    project("foo").test.dependencies.should include(artifact("group:id:jar:1.0"))
   end
 
-  it "should include the compile target in its classpath" do
-    define("foo")
-    project("foo").test.classpath.should include(project("foo").compile.target)
+  it "should include the compile target in its dependencies" do
+    define("foo") { compile.using(:javac) }
+    project("foo").test.dependencies.should include(project("foo").compile.target)
   end
 
-  it "should clean after itself (test classes)" do
-    define "foo"
+  it "should clean after itself (test files)" do
+    define("foo") { test.compile.using(:javac) }
     mkpath project("foo").test.compile.target.to_s
     lambda { task("clean").invoke }.should change { File.exist?(project("foo").test.compile.target.to_s) }.to(false)
   end
@@ -171,7 +156,7 @@ describe Buildr::TestTask do
 
   it "should pass baseDir property to test case" do
     define "foo", :base_dir=>"somewhere"
-    project("foo").test.stub!(:classes).and_return ["TestThis"] 
+    project("foo").test.stub!(:files).and_return ["TestThis"] 
     project("foo").test.should_receive(:junit_run) do |arg|
       arg[:properties]["baseDir"].should eql(project("foo").test.compile.target.to_s)
       []
@@ -183,7 +168,7 @@ describe Buildr::TestTask do
     define "foo" do
       test.using :environment=>{ "foo"=>"bar" }
     end
-    project("foo").test.stub!(:classes).and_return ["TestThis"] 
+    project("foo").test.stub!(:files).and_return ["TestThis"] 
     project("foo").test.should_receive(:junit_run) do |arg|
       arg[:environment]["foo"].should eql("bar")
       []
@@ -209,7 +194,7 @@ describe Buildr::TestTask, " with no tests" do
   
   it "should report no passed tests" do
     project("foo").test.invoke
-    project("foo").test.classes.should be_empty
+    project("foo").test.files.should be_empty
   end
 
   it "should execute teardown task" do
@@ -222,7 +207,7 @@ describe Buildr::TestTask, " with passing tests" do
   before do
     @tests = ["PassingTest1", "PassingTest2"]
     define "foo"
-    project("foo").test.stub!(:classes).and_return @tests
+    project("foo").test.stub!(:files).and_return @tests
     project("foo").test.stub!(:junit_run).and_return []
   end
 
@@ -250,7 +235,7 @@ describe Buildr::TestTask, " with failed test" do
   before do
     @tests = ["FailingTest1", "FailingTest2"]
     define "foo"
-    project("foo").test.stub!(:classes).and_return @tests
+    project("foo").test.stub!(:files).and_return @tests
     project("foo").test.stub!(:junit_run).and_return @tests
   end
 
@@ -285,29 +270,29 @@ describe Buildr::TestTask, " using junit" do
   end
 
   it "should include JUnit requirements" do
-    project("foo").test.requires.should include(TestTask::JUNIT_REQUIRES)
-    project("foo").test.compile.classpath.should include(artifact(TestTask::JUNIT_REQUIRES))
-    project("foo").test.classpath.should include(artifact(TestTask::JUNIT_REQUIRES))
+    project("foo").test.requires.should include(*TestTask::JUNIT_REQUIRES)
+    project("foo").test.compile.dependencies.should include(*artifacts(TestTask::JUNIT_REQUIRES))
+    project("foo").test.dependencies.should include(*artifacts(TestTask::JUNIT_REQUIRES))
   end
 
   it "should include JMock requirements" do
-    project("foo").test.requires.should include(TestTask::JMOCK_REQUIRES)
-    project("foo").test.compile.classpath.should include(artifact(TestTask::JMOCK_REQUIRES))
-    project("foo").test.classpath.should include(artifact(TestTask::JMOCK_REQUIRES))
+    project("foo").test.requires.should include(*TestTask::JMOCK_REQUIRES)
+    project("foo").test.compile.dependencies.should include(*artifacts(TestTask::JMOCK_REQUIRES))
+    project("foo").test.dependencies.should include(*artifacts(TestTask::JMOCK_REQUIRES))
   end
 
   it "should include classes starting with and ending with Test" do
     ["TestThis", "ThisTest", "ThisThat"].each do |name|
-      write "target/test-classes/#{name}.class"
+      write "target/test/classes/#{name}.class"
     end
-    project("foo").test.classes.map { |file| File.basename(file) }.should == ["TestThis", "ThisTest"]
+    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis", "ThisTest"]
   end
 
   it "should ignore inner classes" do
     ["TestThis", "TestThis$Innner"].each do |name|
-      write "target/test-classes/#{name}.class"
+      write "target/test/classes/#{name}.class"
     end
-    project("foo").test.classes.map { |file| File.basename(file) }.should == ["TestThis"]
+    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis"]
   end
 
   it "should pass when JUnit test case passes" do
@@ -369,29 +354,29 @@ describe Buildr::TestTask, " using testng" do
   end
 
   it "should include TestNG requirements" do
-    project("foo").test.requires.should include(TestTask::TESTNG_REQUIRES)
-    project("foo").test.compile.classpath.should include(artifact(TestTask::TESTNG_REQUIRES))
-    project("foo").test.classpath.should include(artifact(TestTask::TESTNG_REQUIRES))
+    project("foo").test.requires.should include(*TestTask::TESTNG_REQUIRES)
+    project("foo").test.compile.dependencies.should include(*artifacts(TestTask::TESTNG_REQUIRES))
+    project("foo").test.dependencies.should include(*artifacts(TestTask::TESTNG_REQUIRES))
   end
 
   it "should include TestNG requirements" do
-    project("foo").test.requires.should include(TestTask::JMOCK_REQUIRES)
-    project("foo").test.compile.classpath.should include(artifact(TestTask::JMOCK_REQUIRES))
-    project("foo").test.classpath.should include(artifact(TestTask::JMOCK_REQUIRES))
+    project("foo").test.requires.should include(*TestTask::JMOCK_REQUIRES)
+    project("foo").test.compile.dependencies.should include(*artifacts(TestTask::JMOCK_REQUIRES))
+    project("foo").test.dependencies.should include(*artifacts(TestTask::JMOCK_REQUIRES))
   end
 
   it "should include classes starting with and ending with Test" do
     ["TestThis", "ThisTest", "ThisThat"].each do |name|
       write File.join(project("foo").test.compile.target.to_s, name).ext("class")
     end
-    project("foo").test.classes.map { |file| File.basename(file) }.should == ["TestThis", "ThisTest"]
+    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis", "ThisTest"]
   end
 
   it "should ignore inner classes" do
     ["TestThis", "TestThis$Innner"].each do |name|
-      write "target/test-classes/#{name}.class"
+      write "target/test/classes/#{name}.class"
     end
-    project("foo").test.classes.map { |file| File.basename(file) }.should == ["TestThis"]
+    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis"]
   end
 
   it "should pass when TestNG test case passes" do
@@ -513,10 +498,6 @@ describe Rake::Task, "test" do
     lambda { task("test").invoke }.should run_tasks("foo:test", "foo:bar:test")
   end
 
-  it "should warn when calling junit" do
-    verbose(true) { lambda { define("foo") { test.junit } }.should warn_that(/deprecated/i) }
-  end
-
   it "should not execute teardown if setup task failed" do
     define("foo") { test.setup { fail } }
     lambda { project("foo").test.invoke rescue nil }.should_not run_task("foo:test:teardown")
@@ -534,38 +515,38 @@ describe Buildr::Project, "test:compile" do
 
   it "should pick sources from src/test/java if found" do
     mkpath "src/test/java"
-    define("foo") { test.compile.sources.should eql([_("src/test/java")]) }
+    define("foo") do
+      test.compile.using(:javac)
+      test.compile.sources.should eql([_("src/test/java")])
+    end
   end
 
   it "should ignore sources unless they exist" do
     define("foo") { test.compile.sources.should be_empty }
   end
 
-  it "should compile to :target/test-classes" do
-    define("foo", :target=>"targeted") { test.compile.target.should eql(file("targeted/test-classes")) }
-  end
-
-  it "should use the compile classpath" do
-    define("foo") { compile.with "group:id:jar:1.0" }
-    project("foo").test.compile.classpath.should include(artifact("group:id:jar:1.0"))
-  end
-
-  it "should include the compiled target in its classpath" do
-    define("foo") { compile.into "odd" }
-    project("foo").test.compile.classpath.should include(project("foo").file("odd"))
-  end
-
-  it "should include the test framework artifacts in its classpath" do
-    define "foo"
-    project("foo").test.compile.classpath.select { |path| path.respond_to?(:to_spec) }.map(&:to_spec).tap do |specs|
-      project("foo").test.requires.each { |spec| specs.should include(spec) }
+  it "should compile to :target/test/classes" do
+    define("foo", :target=>"targeted") do
+      test.compile.using(:javac)
+      test.compile.target.should eql(file("targeted/test/classes"))
     end
   end
 
-  it "should execute prepare task first" do
-    write "src/test/java/Nothing.java", "class Nothing {}"
+  it "should use compile dependencies" do
+    define("foo") { compile.with "group:id:jar:1.0" }
+    project("foo").test.compile.dependencies.should include(artifact("group:id:jar:1.0"))
+  end
+
+  it "should include the compiled target in its dependencies" do
+    define("foo") { compile.into "odd" }
+    project("foo").test.compile.dependencies.should include(project("foo").file("odd"))
+  end
+
+  it "should include the test framework artifacts in its dependencies" do
     define "foo"
-    lambda { project("foo").test.compile.invoke }.should run_tasks(["foo:test:prepare", "foo:test:compile"])
+    project("foo").test.compile.dependencies.select { |path| path.respond_to?(:to_spec) }.map(&:to_spec).tap do |specs|
+      project("foo").test.requires.each { |spec| specs.should include(spec) }
+    end
   end
 
   it "should clean after itself" do
@@ -588,7 +569,7 @@ describe Buildr::Project, "test:resources" do
   end
 
   it "should copy to the resources target directory" do
-    define("foo", :target=>"targeted") { test.resources.target.should eql(file("targeted/test-resources")) }
+    define("foo", :target=>"targeted") { test.resources.target.should eql(file("targeted/test/resources")) }
   end
 
   it "should execute alongside compile task" do
