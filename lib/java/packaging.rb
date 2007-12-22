@@ -1,8 +1,8 @@
 require "core/project"
+require "core/compile"
+require "core/test"
 require "java/artifact"
 require "java/java"
-require "java/compile"
-require "java/test"
 require "tasks/zip"
 require "tasks/tar"
 

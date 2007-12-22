@@ -154,27 +154,6 @@ describe Buildr::TestTask do
     lambda { task("clean").invoke }.should change { File.exist?(project("foo").test.report_to.to_s) }.to(false)
   end
 
-  it "should pass baseDir property to test case" do
-    define "foo", :base_dir=>"somewhere"
-    project("foo").test.stub!(:files).and_return ["TestThis"] 
-    project("foo").test.should_receive(:junit_run) do |arg|
-      arg[:properties]["baseDir"].should eql(project("foo").test.compile.target.to_s)
-      []
-    end
-    project("foo").test.invoke
-  end 
-
-  it "should pass environment variables to test case" do
-    define "foo" do
-      test.using :environment=>{ "foo"=>"bar" }
-    end
-    project("foo").test.stub!(:files).and_return ["TestThis"] 
-    project("foo").test.should_receive(:junit_run) do |arg|
-      arg[:environment]["foo"].should eql("bar")
-      []
-    end
-    project("foo").test.invoke
-  end 
 end
 
 
@@ -221,7 +200,7 @@ describe Buildr::TestTask, " with passing tests" do
   end
 
   it "should fail if only one test fails" do
-    project("foo").test.stub!(:junit_run).and_return [@tests.last]
+    TestFramework.frameworks[:junit].stub!(:run).and_return [@tests.last]
     lambda { project("foo").test.invoke }.should raise_error(RuntimeError, /Tests failed/)
   end
 
@@ -236,7 +215,7 @@ describe Buildr::TestTask, " with failed test" do
     @tests = ["FailingTest1", "FailingTest2"]
     define "foo"
     project("foo").test.stub!(:files).and_return @tests
-    project("foo").test.stub!(:junit_run).and_return @tests
+    TestFramework.frameworks[:junit].stub!(:run).and_return @tests
   end
 
   it "should fail" do
@@ -260,7 +239,7 @@ describe Buildr::TestTask, " with failed test" do
 end
 
 
-describe Buildr::TestTask, " using junit" do
+describe Buildr::TestFramework::JUnit do
   before do
     write "src/test/java/PassingTest.java", 
       "public class PassingTest extends junit.framework.TestCase { public void testNothing() {} }"
@@ -270,29 +249,29 @@ describe Buildr::TestTask, " using junit" do
   end
 
   it "should include JUnit requirements" do
-    project("foo").test.requires.should include(*TestTask::JUNIT_REQUIRES)
-    project("foo").test.compile.dependencies.should include(*artifacts(TestTask::JUNIT_REQUIRES))
-    project("foo").test.dependencies.should include(*artifacts(TestTask::JUNIT_REQUIRES))
+    project("foo").test.requires.should include(*TestFramework::JUnit::JUNIT_REQUIRES)
+    project("foo").test.compile.dependencies.should include(*artifacts(TestFramework::JUnit::JUNIT_REQUIRES))
+    project("foo").test.dependencies.should include(*artifacts(TestFramework::JUnit::JUNIT_REQUIRES))
   end
 
   it "should include JMock requirements" do
-    project("foo").test.requires.should include(*TestTask::JMOCK_REQUIRES)
-    project("foo").test.compile.dependencies.should include(*artifacts(TestTask::JMOCK_REQUIRES))
-    project("foo").test.dependencies.should include(*artifacts(TestTask::JMOCK_REQUIRES))
+    project("foo").test.requires.should include(*TestFramework::JMock::JMOCK_REQUIRES)
+    project("foo").test.compile.dependencies.should include(*artifacts(TestFramework::JMock::JMOCK_REQUIRES))
+    project("foo").test.dependencies.should include(*artifacts(TestFramework::JMock::JMOCK_REQUIRES))
   end
 
   it "should include classes starting with and ending with Test" do
     ["TestThis", "ThisTest", "ThisThat"].each do |name|
       write "target/test/classes/#{name}.class"
     end
-    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis", "ThisTest"]
+    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis.class", "ThisTest.class"]
   end
 
   it "should ignore inner classes" do
     ["TestThis", "TestThis$Innner"].each do |name|
       write "target/test/classes/#{name}.class"
     end
-    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis"]
+    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis.class"]
   end
 
   it "should pass when JUnit test case passes" do
@@ -303,6 +282,12 @@ describe Buildr::TestTask, " using junit" do
   it "should fail when JUnit test case fails" do
     project("foo").test.include "FailingTest"
     lambda { project("foo").test.invoke }.should raise_error(RuntimeError, /Tests failed/)
+  end
+
+  it 'should report failed test names' do
+    project("foo").test.include "FailingTest"
+    project("foo").test.invoke rescue
+    project("foo").test.failed_tests.should eql(['FailingTest'])
   end
 
   it "should report to reports/junit" do
@@ -354,29 +339,29 @@ describe Buildr::TestTask, " using testng" do
   end
 
   it "should include TestNG requirements" do
-    project("foo").test.requires.should include(*TestTask::TESTNG_REQUIRES)
-    project("foo").test.compile.dependencies.should include(*artifacts(TestTask::TESTNG_REQUIRES))
-    project("foo").test.dependencies.should include(*artifacts(TestTask::TESTNG_REQUIRES))
+    project("foo").test.requires.should include(*TestFramework::TestNG::TESTNG_REQUIRES)
+    project("foo").test.compile.dependencies.should include(*artifacts(TestFramework::TestNG::TESTNG_REQUIRES))
+    project("foo").test.dependencies.should include(*artifacts(TestFramework::TestNG::TESTNG_REQUIRES))
   end
 
   it "should include TestNG requirements" do
-    project("foo").test.requires.should include(*TestTask::JMOCK_REQUIRES)
-    project("foo").test.compile.dependencies.should include(*artifacts(TestTask::JMOCK_REQUIRES))
-    project("foo").test.dependencies.should include(*artifacts(TestTask::JMOCK_REQUIRES))
+    project("foo").test.requires.should include(*TestFramework::JMock::JMOCK_REQUIRES)
+    project("foo").test.compile.dependencies.should include(*artifacts(TestFramework::JMock::JMOCK_REQUIRES))
+    project("foo").test.dependencies.should include(*artifacts(TestFramework::JMock::JMOCK_REQUIRES))
   end
 
   it "should include classes starting with and ending with Test" do
     ["TestThis", "ThisTest", "ThisThat"].each do |name|
       write File.join(project("foo").test.compile.target.to_s, name).ext("class")
     end
-    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis", "ThisTest"]
+    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis.class", "ThisTest.class"]
   end
 
   it "should ignore inner classes" do
     ["TestThis", "TestThis$Innner"].each do |name|
       write "target/test/classes/#{name}.class"
     end
-    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis"]
+    project("foo").test.files.map { |file| File.basename(file) }.should == ["TestThis.class"]
   end
 
   it "should pass when TestNG test case passes" do
@@ -387,6 +372,12 @@ describe Buildr::TestTask, " using testng" do
   it "should fail when TestNG test case fails" do
     project("foo").test.include "FailingTest"
     lambda { project("foo").test.invoke }.should raise_error(RuntimeError, /Tests failed/)
+  end
+
+  it 'should report failed test names' do
+    project("foo").test.include "FailingTest"
+    project("foo").test.invoke rescue
+    project("foo").test.failed_tests.should eql(['FailingTest'])
   end
 
   it "should report to reports/testng" do
@@ -702,17 +693,17 @@ end
 describe Rake::Task, "junit:report" do
 
   it "should default to the target directory reports/junit" do
-    JUnit.report.target.should eql("reports/junit")
+    TestFramework::JUnit.report.target.should eql("reports/junit")
   end
 
   it "should generate report into the target directory" do
-    JUnit.report.target = "test-report"
-    lambda { task("junit:report").invoke }.should change { File.exist?(JUnit.report.target) }.to(true)
+    TestFramework::JUnit.report.target = "test-report"
+    lambda { task("junit:report").invoke }.should change { File.exist?(TestFramework::JUnit.report.target) }.to(true)
   end
 
   it "should clean after itself" do
-    mkpath JUnit.report.target
-    lambda { task("clean").invoke }.should change { File.exist?(JUnit.report.target) }.to(false)
+    mkpath TestFramework::JUnit.report.target
+    lambda { task("clean").invoke }.should change { File.exist?(TestFramework::JUnit.report.target) }.to(false)
   end
 
   it "should generate a consolidated XML report" do
@@ -720,17 +711,17 @@ describe Rake::Task, "junit:report" do
   end
 
   it "should default to generating a report with frames" do
-    JUnit.report.frames.should be_true
+    TestFramework::JUnit.report.frames.should be_true
   end
 
   it "should generate single page when frames is false" do
-    JUnit.report.frames = false
+    TestFramework::JUnit.report.frames = false
     task("junit:report").invoke
     file("reports/junit/html/junit-noframes.html").should exist
   end
 
   it "should generate frame page when frames is false" do
-    JUnit.report.frames = true
+    TestFramework::JUnit.report.frames = true
     task("junit:report").invoke
     file("reports/junit/html/index.html").should exist
   end
@@ -745,7 +736,7 @@ describe Rake::Task, "junit:report" do
   end
 
   after do
-    JUnit.instance_eval { @report = nil }
+    TestFramework::JUnit.instance_eval { @report = nil }
   end
 end
 

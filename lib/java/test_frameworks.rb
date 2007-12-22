@@ -1,11 +1,11 @@
 require 'core/build'
-require 'java/compile'
+require 'core/compile'
 require 'java/ant'
 require 'core/help'
 
 
 module Buildr
-  module Java
+  class TestFramework
 
     module JMock
       # JMock version..
@@ -14,14 +14,8 @@ module Buildr
       JMOCK_REQUIRES = ["jmock:jmock:jar:#{JMOCK_VERSION}"]
     end
 
-    # The JUnit test framework. This is the default test framework, but you can force it by
-    # adding the following to your project:
-    #   test.using :testng
-    #
-    # You can use the report method to control the junit:report task.
-    module JUnit
 
-      include JMock
+    class JUnit < Base
 
       # Used by the junit:report task. Access through JUnit#report if you want to set various
       # options for that task, for example:
@@ -72,17 +66,6 @@ module Buildr
 
       end
 
-      # JUnit version number.
-      JUNIT_VERSION = '4.3.1'
-      # JUnit specification.
-      JUNIT_REQUIRES = ["junit:junit:jar:#{JUNIT_VERSION}"] + JMOCK_REQUIRES
-      # Pattern for selecting JUnit test classes. Regardless of include/exclude patterns, only classes
-      # that match this pattern are used.
-      JUNIT_TESTS_PATTERN = [ 'Test*.class', '*Test.class' ]
-
-      # Ant-JUnit requires for JUnit and JUnit reports tasks.
-      Java.wrapper.setup { |jw| jw.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}" }
-
       class << self
 
         # :call-seq:
@@ -96,20 +79,35 @@ module Buildr
           @report ||= Report.new
         end
 
-        def included(mod)
-          mod::TEST_FRAMEWORKS << :junit
-        end
-        private :included
-
       end
 
-    private
 
-      def junit_run(args)
-        rm_rf report_to.to_s ; mkpath report_to.to_s
+      # Ant-JUnit requires for JUnit and JUnit reports tasks.
+      ::Buildr::Java.wrapper.setup { |jw| jw.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}" }
+
+      include JMock
+
+      # JUnit version number.
+      JUNIT_VERSION = '4.3.1'
+      # JUnit specification.
+      JUNIT_REQUIRES = ["junit:junit:jar:#{JUNIT_VERSION}"] + JMOCK_REQUIRES
+      # Pattern for selecting JUnit test classes. Regardless of include/exclude patterns, only classes
+      # that match this pattern are used.
+      JUNIT_TESTS_PATTERN = [ 'Test*.class', '*Test.class' ]
+
+      def initialize
+        super :requires=>JUNIT_REQUIRES, :patterns=>JUNIT_TESTS_PATTERN
+      end
+
+      def files(path)
+        # Ignore anonymous classes.
+        super(path).reject { |name| name =~ /\$/ }
+      end
+
+      def run(files, task, dependencies)
         # Use Ant to execute the Junit tasks, gives us performance and reporting.
         Buildr.ant('junit') do |ant|
-          case options[:fork]
+          case task.options[:fork]
           when false
             forking = {}
           when :each
@@ -119,32 +117,35 @@ module Buildr
           else
             fail 'Option fork must be :once, :each or false.'
           end
-          ant.junit forking.merge(:clonevm=>options[:clonevm] || false, :dir=>@project.path_to) do
-            ant.classpath :path=>args[:dependencies].map(&:to_s).each { |path| file(path).invoke }.join(File::PATH_SEPARATOR)
-            args[:properties].each { |key, value| ant.sysproperty :key=>key, :value=>value }
-            args[:environment].each { |key, value| ant.env :key=>key, :value=>value }
-            java_args = args[:java_args]
-            java_args = java_args.split(' ') if String === java_args
+          mkpath task.report_to.to_s
+          ant.junit forking.merge(:clonevm=>task.options[:clonevm] || false, :dir=>task.send(:project).path_to) do
+            ant.classpath :path=>dependencies.each { |path| file(path).invoke }.join(File::PATH_SEPARATOR)
+            (task.options[:properties] || []).each { |key, value| ant.sysproperty :key=>key, :value=>value }
+            (task.options[:environment] || []).each { |key, value| ant.env :key=>key, :value=>value }
+            java_args = task.options[:java_args] || Buildr.options.java_args
+            java_args = java_args.split(/\s+/) if String === java_args
             java_args.each { |value| ant.jvmarg :value=>value } if java_args
             ant.formatter :type=>'plain'
-            ant.formatter :type=>'xml'
             ant.formatter :type=>'plain', :usefile=>false # log test
             ant.formatter :type=>'xml'
-            ant.batchtest :todir=>report_to.to_s, :failureproperty=>'failed' do
-              ant.fileset :dir=>compile.target.to_s do
-                args[:files].each { |cls| ant.include :name=>cls.gsub('.', '/').ext('class') }
+            ant.batchtest :todir=>task.report_to.to_s, :failureproperty=>'failed' do
+              ant.fileset :dir=>task.compile.target.to_s do
+                files.each { |file| ant.include :name=>file }
               end
             end
           end
           return [] unless ant.project.getProperty('failed')
         end
         # But Ant doesn't tell us what went kaput, so we'll have to parse the test files.
-        args[:files].inject([]) do |failed, name|
-          if report = File.read(File.join(report_to.to_s, "TEST-#{name}.txt")) rescue nil
+        files.inject([]) do |failed, file|
+          test = file.ext('').gsub(File::SEPARATOR, '.')
+          report_file = File.join(task.report_to.to_s, "TEST-#{test}.txt")
+          if File.exist?(report_file)
+            report = File.read(report_file)
             # The second line (if exists) is the status line and we scan it for its values.
             status = (report.split("\n")[1] || '').scan(/(run|failures|errors):\s*(\d+)/i).
               inject(Hash.new(0)) { |hash, pair| hash[pair[0].downcase.to_sym] = pair[1].to_i ; hash }
-            failed << name if status[:failures] > 0 || status[:errors] > 0
+            failed << test if status[:failures] > 0 || status[:errors] > 0
           end
           failed
         end
@@ -154,7 +155,7 @@ module Buildr
         desc "Generate JUnit tests report in #{report.target}"
         task('report') do |task|
           report.generate Project.projects
-          puts "Generated JUnit tests report in #{report.target}"
+          puts "Generated JUnit tests report in #{report.target}" if verbose
         end
       end
 
@@ -162,10 +163,10 @@ module Buildr
 
     end
 
+    TestFramework.add JUnit
 
-    # The TestNG test framework. Use by adding the following to your project:
-    #   test.using :testng
-    module TestNG
+
+    class TestNG < Base
 
       include JMock
 
@@ -177,23 +178,21 @@ module Buildr
       # that match this pattern are used.
       TESTNG_TESTS_PATTERN = [ 'Test*.class', '*Test.class', '*TestCase.class' ]
 
-      class << self
-
-        def included(mod)
-          mod::TEST_FRAMEWORKS << :testng
-        end
-        private :included
-
+      def initialize
+        super :requires=>TESTNG_REQUIRES, :patterns=>TESTNG_TESTS_PATTERN
       end
 
-    private
+      def files(path)
+        # Ignore anonymous classes.
+        super(path).reject { |name| name =~ /\$/ }
+      end
 
-      def testng_run(args)
-        cmd_args = [ 'org.testng.TestNG', '-sourcedir', compile.sources.join(';'), '-suitename', @project.name ]
-        cmd_args << '-d' << report_to.to_s
-        cmd_options = args.only(:properties, :java_args)
-        cmd_options[:classpath] = args[:dependencies]
-        args[:files].inject([]) do |failed, test|
+      def run(files, task, dependencies)
+        cmd_args = [ 'org.testng.TestNG', '-sourcedir', task.compile.sources.join(';'), '-suitename', task.send(:project).name ]
+        cmd_args << '-d' << task.report_to.to_s
+        cmd_options = { :properties=>task.options[:properties], :java_args=>task.options[:java_args],
+                        :classpath=>dependencies }
+        files.map { |file| file.ext('').gsub(File::SEPARATOR, '.') }.inject([]) do |failed, test|
           begin
             Buildr.java cmd_args, '-testclass', test, cmd_options.merge(:name=>test)
             failed
@@ -205,11 +204,8 @@ module Buildr
 
     end
 
-  end
+    TestFramework.add TestNG
 
-  class TestTask
-    include Java::JUnit
-    include Java::TestNG
   end
 
 end

@@ -5,6 +5,52 @@ require 'core/compile'
 
 module Buildr
 
+  class TestFramework
+
+    class << self
+      def has?(name)
+        frameworks.has_key?(name)
+      end
+
+      def select(name)
+        raise ArgumentError, "No #{name} framework available. Did you install it?" unless frameworks.include?(name.to_sym)
+        frameworks[name.to_sym]
+      end
+
+      # Adds a test framework to the list of supported frameworks.
+      def add(framework)
+        framework = framework.new if Class === framework
+        frameworks[framework.name.to_sym] = framework
+      end
+
+      def frameworks #:nodoc:
+        @frameworks ||= {}
+      end
+
+    end
+
+    class Base
+
+      def initialize(args = {})
+        args[:name] ||= self.class.name.split('::').last.downcase.to_sym
+        args[:requires] ||= []
+        args[:patterns] ||= []
+        args.each { |name, value| instance_variable_set "@#{name}", value }
+      end
+
+      attr_accessor :name
+      attr_accessor :requires
+      attr_accessor :patterns
+
+      def files(path)
+        Dir[*Array(patterns).map { |pattern| "#{path}/**/#{pattern}" }]
+      end
+
+    end
+  
+  end
+
+
   # The test task controls the entire test lifecycle.
   #
   # You can use the test task in three ways. You can access and configure specific test tasks,
@@ -53,10 +99,6 @@ module Buildr
       end
     end
 
-    # List of supported test framework, first one being a default. Test frameworks are added by
-    # including them in TestTask (e.g. JUnit, TestNG).
-    TEST_FRAMEWORKS = []
-
     # Default options already set on each test task.
     DEFAULT_OPTIONS = { :fail_on_failure=>true, :fork=>:once, :properties=>{}, :environment=>{} }
 
@@ -68,6 +110,7 @@ module Buildr
       parent = Project.task_in_parent_project(name)
       @options = parent && parent.respond_to?(:options) ? parent.options.clone : DEFAULT_OPTIONS.clone
       enhance { run_tests }
+      select :junit
     end
 
     # The dependencies used for running the tests. Includes the compiled files (compile.target)
@@ -159,8 +202,8 @@ module Buildr
     # :call-seq:
     #   using(options) => self
     #
-    # Sets various test options and returns self. Accepts a hash of options, or symbols (a symbol sets that
-    # option to true). For example:
+    # Sets various test options from a hash and returns self.  Can also be used to select
+    # the test framework.  For example:
     #   test.using :testng, :fork=>:each, :properties=>{ 'url'=>'http://localhost:8080' }
     #
     # Currently supports the following options:
@@ -176,7 +219,13 @@ module Buildr
     # * false -- Do not fork, running all test cases in the same JVM.
     def using(*args)
       args.pop.each { |key, value| options[key.to_sym] = value } if Hash === args.last
-      args.each { |key| options[key.to_sym] = true }
+      args.each do |name|
+        if TestFramework.has?(name)
+          select name
+        else
+          options[name.to_sym] = true
+        end
+      end 
       self
     end
 
@@ -218,17 +267,18 @@ module Buildr
     # and reducing based on the include/exclude patterns.
     def files
       return [] unless compile.target
-      base = Pathname.new(compile.target.to_s)
-      patterns = self.class.const_get("#{framework.to_s.upcase}_TESTS_PATTERN").to_a
-      FileList[patterns.map { |pattern| "#{base}/**/#{pattern}" }].
-        map { |file| Pathname.new(file).relative_path_from(base).to_s.ext('').gsub(File::SEPARATOR, '.') }.
-        select { |name| include?(name) }.reject { |name| name =~ /\$/ }.sort
+      fail "No test framework selected" unless @framework
+      @files ||= begin
+        base = Pathname.new(compile.target.to_s)
+        @framework.files(compile.target.to_s).map { |file| Pathname.new(file).relative_path_from(base).to_s }.
+          select { |file| include?(file.ext('').gsub(File::SEPARATOR, '.')) }.sort
+      end
     end
 
     # *Deprecated*: Use files instead.
     def classes
       warn_deprecated 'Use files instead'
-      files
+      files.map { |file| file.ext('').gsub(File::SEPARATOR, '.') }
     end
 
     # List of failed tests. Set after running the tests.
@@ -249,7 +299,7 @@ module Buildr
     #
     # Returns the dependencies for the selected test frameworks. Necessary for compiling and running test cases.
     def requires
-      Array(self.class.const_get("#{framework.to_s.upcase}_REQUIRES"))
+      @framework ? Array(@framework.requires) : []
     end
 
     # :call-seq:
@@ -257,7 +307,7 @@ module Buildr
     #
     # Returns the test framework, e.g. :junit, :testng.
     def framework
-      @framework ||= TEST_FRAMEWORKS.detect { |name| options[name] } || TEST_FRAMEWORKS.first
+      @framework && @framework.name
     end
 
     # :call-seq:
@@ -273,22 +323,24 @@ module Buildr
 
   protected
 
+    attr_reader :project
+
+    def select(name)
+      @framework = TestFramework.select(name)
+    end
+
     # :call-seq:
     #   run_tests()
     #
     # Runs the test cases using the selected test framework. Executes as part of the task.
     def run_tests
+      rm_rf report_to.to_s
       files = self.files
       if files.empty?
         @failed_tests = []
       else
         puts "Running tests in #{@project.name}" if verbose
-        @failed_tests = send("#{framework}_run",
-          :files        => files,
-          :dependencies => @dependencies + [compile.target],
-          :properties   => { 'baseDir' => compile.target.to_s }.merge(options[:properties] || {}),
-          :environment  => options[:environment] || {},
-          :java_args    => options[:java_args] || Buildr.options.java_args)
+        @failed_tests = @framework.run(files, self, (@dependencies + [compile.target]).compact.map(&:to_s))
         unless @failed_tests.empty?
           warn "The following tests failed:\n#{@failed_tests.join('\n')}" if verbose
           fail 'Tests failed!'

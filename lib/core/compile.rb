@@ -25,9 +25,7 @@ module Buildr
         compilers[compiler.name.to_sym] = compiler
       end
 
-    private
-
-      def compilers
+      def compilers #:nodoc:
         @compilers ||= {}
       end
 

@@ -12,7 +12,7 @@ unless defined?(Buildr)
   # repository and cache these across test cases.
   repositories.remote << "http://repo1.maven.org/maven2"
   Java.wrapper.load # Anything added to the classpath.
-  artifacts(TestTask::JUNIT_REQUIRES, TestTask::TESTNG_REQUIRES, Java::JMock::JMOCK_REQUIRES).each { |a| file(a).invoke }
+  artifacts(TestFramework.frameworks.values.map(&:requires).flatten).each { |a| file(a).invoke }
   task("buildr:initialize").invoke
 
 

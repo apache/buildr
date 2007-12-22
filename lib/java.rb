@@ -1,5 +1,5 @@
-require 'java/compile'
-require 'java/test'
+require 'java/compilers'
+require 'java/test_frameworks'
 require 'java/packaging'
 
 class Buildr::Project
