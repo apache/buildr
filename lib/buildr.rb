@@ -22,8 +22,6 @@ require 'facets/core/kernel/tap'
 require 'facets/core/enumerable/uniq_by'
 # A different kind of buildr, one we use to create XML.
 require 'builder'
-require 'test/unit'
-require 'spec'
 
 
 module Buildr

@@ -1,6 +1,8 @@
-require "core/project"
-require "tasks/zip"
-require "spec"
+require 'core/project'
+require 'tasks/zip'
+require 'test/unit'
+require 'spec/matchers'
+require 'spec/expectations'
 
 module Buildr
   # Methods added to Project to allow checking the build.

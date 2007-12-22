@@ -162,7 +162,7 @@ module Buildr
           when Project
             self.enhance source.prerequisites
             self.include source.compile.sources
-            self.with source.compile.classpath 
+            self.with source.compile.dependencies 
           when Rake::Task, String
             self.include source
           else
