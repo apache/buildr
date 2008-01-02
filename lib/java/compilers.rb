@@ -7,6 +7,8 @@ require "java/java"
 module Buildr
   module Compiler
     class Javac < Base #:nodoc:
+      
+      OPTIONS = [:warnings, :debug, :deprecation, :source, :target, :lint, :other]
 
       def initialize
         super :language=>:java, :target_path=>'classes', :target_ext=>'.class'
@@ -14,6 +16,7 @@ module Buildr
 
       def configure(task, source, target)
         super
+        update_options_from_parent! task, OPTIONS
         task.options.warnings ||= verbose
         task.options.deprecation ||= false
         task.options.lint ||= false
@@ -21,6 +24,7 @@ module Buildr
       end
 
       def compile(files, task)
+        check_options task, OPTIONS
         ::Buildr::Java.javac files, :sourcepath=>task.sources.select { |source| File.directory?(source) },
           :classpath=>task.dependencies, :output=>task.target, :javac_args=>javac_args_from(task.options)
       end
@@ -200,7 +204,7 @@ module Buildr
 
     before_define do |project|
       JavadocTask.define_task('javadoc').tap do |javadoc|
-        javadoc.into project.path_to(:target, 'javadoc')
+        javadoc.into project.path_to(:target, :javadoc)
         javadoc.using :windowtitle=>project.comment || project.name
       end
     end

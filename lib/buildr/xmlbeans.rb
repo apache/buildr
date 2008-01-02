@@ -42,7 +42,7 @@ module Buildr
       # (the last FileList is there to deal with things like *.xsdconfig).
       files = args.flatten.map { |file| File.directory?(file) ? FileList["#{file}/*.xsd"] : FileList[file] }.flatten
       # Generate sources and add them to the compile task.
-      generated = file(path_to(:target, "generated/xmlbeans")=>files) do |task|
+      generated = file(path_to(:target, :generated, :xmlbeans)=>files) do |task|
         XMLBeans.compile args.flatten, :output=>task.name,
           :javasource=>compile.options.source, :xsb=>compile.target
       end

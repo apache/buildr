@@ -404,6 +404,9 @@ describe Buildr::CompileTask, 'options' do
     define('hash').compile.using(:other=>{ 'foo'=>'name', 'bar'=>'value'}).javac_args.should include('-foo', 'name', '-bar', 'value')
   end
 
+  it 'should accept unknown option'
+  it 'should complain about unknown option'
+
 
   it "should pass to javac" do
     src = "Test.java"

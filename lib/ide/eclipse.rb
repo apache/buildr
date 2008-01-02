@@ -101,8 +101,7 @@ module Buildr
               end
 
               # Main resources implicitly copied into project.compile.target
-              # TODO: find solution that uses project.test.resources.filter.sources
-              [ "src/main/resources" ].each do |path|
+              project.resources.sources.each do |path|
                 if File.exist? project.path_to(path)
                   xml.classpathentry :kind=>'src', :path=>path, :excluding=>excludes
                 end
@@ -117,8 +116,7 @@ module Buildr
               end
 
               # Test resources go in separate output directory as well
-              # TODO: find solution that uses project.test.resources.filter.sources
-              [ "src/test/resources" ].each do |path|
+              project.test.resources.sources.each do |path|
                 if File.exist? project.path_to(path)
                   xml.classpathentry :kind=>'src', :path=>path, :output => relative[project.test.compile.target], :excluding=>excludes
                 end

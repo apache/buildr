@@ -30,7 +30,7 @@ module Buildr
           unless project.compile.sources.empty?
             # Instrumented bytecode goes in a different directory. This task creates before running the test
             # cases and monitors for changes in the generate bytecode.
-            instrumented = project.file(project.path_to(:target, "instrumented")=>project.compile.target) do |task|
+            instrumented = project.file(project.path_to(:target, :instrumented, :classes)=>project.compile.target) do |task|
               Buildr.ant "cobertura" do |ant|
                 ant.taskdef :classpath=>requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
                 ant.send "cobertura-instrument", :todir=>task.to_s, :datafile=>data_file do

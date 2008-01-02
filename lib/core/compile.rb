@@ -93,6 +93,37 @@ module Buildr
         end
       end
 
+    private
+
+      # Use this to copy options used by this compiler from the parent, for example,
+      # if this task is 'foo:bar:compile', copy options set in the parent task 'foo:compile'.
+      #
+      # For example:
+      #   def configure(task, source, target)
+      #     super
+      #     update_options_from_parent! task, OPTIONS
+      #     . . .
+      #   end
+      def update_options_from_parent!(task, supported)
+        parent = Project.task_in_parent_project(task.name)
+        if parent.respond_to?(:options)
+          missing = supported.flatten - task.options.to_hash.keys
+          task.options.merge( missing.inject({}) { |hash, key| hash.update(key=>parent.options[key]) } )
+        end
+      end
+
+      # Use this to complain about CompileTask options not supported by this compiler.
+      #
+      # For example:
+      #   def compile(files, task)
+      #     check_options task, OPTIONS
+      #     . . .
+      #   end
+      def check_options(task, supported)
+        unsupported = task.options.to_hash.keys - supported.flatten
+        raise ArgumentError, "No such option: #{unsupported.join(' ')}" unless unsupported.empty?
+      end
+
     end
 
   end
@@ -117,27 +148,10 @@ module Buildr
   # only need to set options and dependencies. See Project#compile.
   class CompileTask < Rake::Task
 
-    module OpenStructExtension #:nodoc:
-
-      def [](key)
-        @table[key]
-      end
-        
-      def []=(key, value)
-        @table[key] = value
-      end
-
-      def clear
-        @table.clear
-      end
-
-    end
-
     def initialize(*args) #:nodoc:
       super
       parent = Project.task_in_parent_project(name)
-      @options = parent && parent.respond_to?(:options) && parent.options.clone || OpenStruct.new
-      @options.extend OpenStructExtension
+      @options = OpenObject.new#(parent.respond_to?(:options) && parent.options)
       @sources = []
       @dependencies = []
 
@@ -387,12 +401,12 @@ module Buildr
 
     before_define do |project|
       resources = ResourcesTask.define_task('resources')
-      project.path_to('src/main/resources').tap { |dir| resources.from dir if File.exist?(dir) }
-      resources.filter.into project.path_to(:target, 'resources')
+      project.path_to(:source, :main, :resources).tap { |dir| resources.from dir if File.exist?(dir) }
+      resources.filter.into project.path_to(:target, :main, :resources)
       resources.filter.using Buildr.profile
 
       compile = CompileTask.define_task('compile'=>resources)
-      compile.send :associate, project.path_to('src/main'), project.path_to(:target)
+      compile.send :associate, project.path_to(:source, :main), project.path_to(:target, :main)
       project.recursive_task('compile')
     end
 

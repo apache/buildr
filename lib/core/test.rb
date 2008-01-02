@@ -318,7 +318,7 @@ module Buildr
     # This is framework dependent, so unless you use the default test framework, call this method
     # after setting the test framework.
     def report_to
-      @report_to ||= file(@project.path_to(:reports, framework.to_s)=>self)
+      @report_to ||= file(@project.path_to(:reports, framework)=>self)
     end
 
   protected
@@ -340,7 +340,7 @@ module Buildr
         @failed_tests = []
       else
         puts "Running tests in #{@project.name}" if verbose
-        @failed_tests = @framework.run(files, self, (@dependencies + [compile.target]).compact.map(&:to_s))
+        @failed_tests = @framework.run(files, self, (@dependencies + [compile.target, resources.target]).compact.map(&:to_s))
         unless @failed_tests.empty?
           warn "The following tests failed:\n#{@failed_tests.join('\n')}" if verbose
           fail 'Tests failed!'
@@ -450,12 +450,12 @@ module Buildr
 
       # Similar to the regular resources task but using different paths.
       resources = ResourcesTask.define_task('test:resources')
-      project.path_to('src/test/resources').tap { |dir| resources.from dir if File.exist?(dir) }
-      resources.filter.into project.path_to(:target, 'test/resources')
+      project.path_to(:src, :test, :resources).tap { |dir| resources.from dir if File.exist?(dir) }
+      resources.filter.into project.path_to(:target, :test, :resources)
 
       # Similar to the regular compile task but using different paths.
       compile = CompileTask.define_task('test:compile'=>[project.compile, project.test.resources])
-      compile.send :associate, project.path_to('src/test'), project.path_to(:target, 'test')
+      compile.send :associate, project.path_to(:src, :test), project.path_to(:target, :test)
       project.test.enhance [compile]
 
       # Define these tasks once, otherwise we may get a namespace error.
@@ -465,7 +465,8 @@ module Buildr
     after_define do |project|
       # Copy the regular compile dependencies over, and also include the compiled files, both of which
       # can be used in the test cases. And don't forget the dependencies required by the test framework (e.g. JUnit).
-      project.test.with project.compile.dependencies, Array(project.compile.target), project.test.requires
+      project.test.with project.compile.dependencies, Array(project.compile.target), Array(project.resources.target),
+                        project.test.requires
       if project.test.compile.target
         project.clean do
           verbose(false) do

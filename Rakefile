@@ -28,17 +28,17 @@ def specify(platform)
     spec.executables = ['buildr']
 
     # Tested against these dependencies.
-    spec.add_dependency 'rake',                 '= 0.8.0'
-    spec.add_dependency 'facets',               '= 1.8.54'
-    spec.add_dependency 'builder',              '= 2.1.2'
-    spec.add_dependency 'net-ssh',              '= 1.1.2'
-    spec.add_dependency 'net-sftp',             '= 1.1.0'
-    spec.add_dependency 'rubyzip',              '= 0.9.1'
-    spec.add_dependency 'highline',             '= 1.4.0'
-    spec.add_dependency 'Antwrap',              '= 0.6.0'
-    spec.add_dependency 'rspec',                '= 1.1.1'
-    spec.add_dependency 'xml-simple',           '= 1.0.11'
-    spec.add_dependency 'archive-tar-minitar',  '= 0.5.1'
+    spec.add_dependency 'rake',                 '~> 0.8'
+    spec.add_dependency 'facets',               '~> 2.2'
+    spec.add_dependency 'builder',              '~> 2.1'
+    spec.add_dependency 'net-ssh',              '~> 1.1'
+    spec.add_dependency 'net-sftp',             '~> 1.1'
+    spec.add_dependency 'rubyzip',              '~> 0.9'
+    spec.add_dependency 'highline',             '~> 1.4'
+    spec.add_dependency 'Antwrap',              '~> 0.6'
+    spec.add_dependency 'rspec',                '~> 1.1'
+    spec.add_dependency 'xml-simple',           '~> 1.0'
+    spec.add_dependency 'archive-tar-minitar',  '~> 0.5'
     
     spec.platform = platform
 
@@ -46,7 +46,7 @@ def specify(platform)
   end
 end
 
-spec = specify(Gem::Platform::RUBY) { |spec| spec.add_dependency 'rjb', '>= 1.0.11' }
+spec = specify(Gem::Platform::RUBY) { |spec| spec.add_dependency 'rjb', '~> 1.1' }
 jruby_spec = specify('java')
 package = Rake::GemPackageTask.new(spec) do |pkg|
   pkg.need_tar = true

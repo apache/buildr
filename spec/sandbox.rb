@@ -269,6 +269,7 @@ unless defined?(Buildr)
         
         # Later on we'll want to lose all the on_define created during the test.
         @sandbox[:on_define] = Project.class_eval { (@on_define || []).dup }
+        @sandbox[:layout] = Layout.default.clone
 
         # Create a local repository we can play with. However, our local repository will be void
         # of some essential artifacts (e.g. JUnit artifacts required by build task), so we create
@@ -297,6 +298,7 @@ unless defined?(Buildr)
         Project.clear
         on_define = @sandbox[:on_define]
         Project.class_eval { @on_define = on_define }
+        Layout.default = @sandbox[:layout].clone
 
         # Switch back Rake directory.
         Dir.chdir @sandbox[:pwd]

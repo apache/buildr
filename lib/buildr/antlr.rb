@@ -37,7 +37,7 @@ module Buildr
       else
         in_package = []; token = nil
       end
-      file(path_to(:target, "generated/antlr")=>args.flatten) do |task|
+      file(path_to(:target, :generated, :antlr)=>args.flatten) do |task|
         args = {:output=>File.join(task.name, in_package)}
         args.merge!({:token=>File.join(task.name, token)}) if token
         ANTLR.antlr task.prerequisites, args

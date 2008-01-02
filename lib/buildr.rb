@@ -14,7 +14,6 @@ require 'facet/nilclass/blank'
 # What it says.
 require 'facet/kernel/__DIR__'
 require 'facet/module/alias_method_chain'
-require 'facet/module/memoize'
 require 'facet/array/head'
 require 'facet/string/starts_with'
 require 'facet/openobject'

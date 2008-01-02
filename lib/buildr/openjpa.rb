@@ -61,7 +61,7 @@ module Buildr
 
     def open_jpa_enhance(options = nil)
       jpa_options = { :output=>compile.target, :classpath=>compile.classpath,
-                      :properties=>path_to("src/main/resources/META-INF/persistence.xml") }
+                      :properties=>path_to(:source, :main, :resources, 'META-INF/persistence.xml') }
       OpenJPA.enhance jpa_options.merge(options || {})
     end
 

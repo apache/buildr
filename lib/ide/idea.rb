@@ -91,8 +91,10 @@ module Buildr
                     xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"true"
                   end
                 end
-                {"src/main/resources"=>false, "src/test/resources"=>true}.each do |key, value|
-                  xml.sourceFolder :url=>"file://$MODULE_DIR$/#{key}", :isTestSource=>"#{value}" if File.exist?(project.path_to(key))
+                [project.resources=>false, project.test.resources=>true].each do |resources, test|
+                  resources.sources.each do |path|
+                    xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>test.to_s
+                  end
                 end
                 xml.excludeFolder :url=>"file://$MODULE_DIR$/#{relative[project.compile.target]}"
               end

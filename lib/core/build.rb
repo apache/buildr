@@ -55,26 +55,28 @@ module Buildr
     end
 
 
-    # The target directory. By default, it's the "target" directory inside the project. Various tasks
-    # use it to determine where to place files, e.g. when compiling or packaging. The clean task
-    # nukes it.
-    def target()
-      @target ||= _("target")
+    # *Deprecated:* Use +path_to(:target)+ instead.
+    def target
+      warn_deprecated 'Use path_to(:target) instead'
+      layout.expand(:target)
     end
 
+    # *Deprecated:* Use Layout instead.
     def target=(dir)
-      @target = _(dir)
+      warn_deprecated 'Use Layout instead'
+      layout[:target] = _(dir)
     end
 
-    # The reports directory. By default, it's the "reports" directory inside the project. Various tasks
-    # use it to determine where to place reports, e.g. when running test cases or code analysis.
-    # The clean task nukes it.
+    # *Deprecated:* Use +path_to(:reports)+ instead.
     def reports()
-      @reports ||= _("reports")
+      warn_deprecated 'Use path_to(:reports) instead'
+      layout.expand(:reports)
     end
 
+    # *Deprecated:* Use Layout instead.
     def reports=(dir)
-      @reports = _(dir)
+      warn_deprecated 'Use Layout instead'
+      layout[:reports] = _(dir)
     end
 
     # :call-seq:

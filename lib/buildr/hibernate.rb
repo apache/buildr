@@ -101,7 +101,7 @@ module Buildr
     #   hibernate_schemaexport "derby.sql" do |task, ant|
     #     ant.schemaexport :properties=>"derby.properties", :output=>task.name,
     #       :delimiter=>";", :drop=>"no", :create=>"yes" do
-    #       fileset(:dir=>path_to(:java_src_dir)) { include :name=>"**/*.hbm.xml" } }
+    #       fileset(:dir=>compile.sources.first) { include :name=>"**/*.hbm.xml" } }
     #     end
     #   end
     def hibernate_schemaexport(args, &block)

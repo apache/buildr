@@ -26,6 +26,92 @@ module Buildr
   end
 
 
+  # Symbolic mapping for directory layout.  Used for both the default and custom layouts.
+  #
+  # For example, the default layout maps [:source, :main, :java] to 'src/main/java', and
+  # [:target, :main, :classes] to 'target/classes'.  You can use this to change the layout
+  # of your projects.
+  #
+  # To map [:source, :main] into the 'sources' directory:
+  #   my_layout = Layout.new
+  #   my_layout[:source, :main] = 'sources'
+  #
+  #   define 'foo', :layout=>my_layout do
+  #     ...
+  #   end
+  #
+  # To map [:source, :main, :java] to 'java/main':
+  #   class MainLast < Layout
+  #     def expand(*args)
+  #       if args[0..1] == [:source, :main]
+  #         super args[2], :main, *args[3,]
+  #       else
+  #         super
+  #       end
+  #     end
+  #   end
+  #
+  #   define 'foo', :layout=>MainLast do
+  #     ...
+  #   end
+  class Layout
+
+    class << self
+
+      # Default layout used by new projects.
+      attr_accessor :default
+
+    end
+
+    def initialize #:nodoc:
+      @mapping = {}
+    end
+
+    # Expands list of symbols and path names into a full path, for example:
+    #   puts default.expand(:source, :main, :java)
+    #   => "src/main/java"
+    def expand(*args)
+      return '' if args.empty?
+      @mapping[args] ||= File.join(*[expand(*args[0..-2]), args.last.to_s].reject(&:empty?)) if args.size > 1
+      return @mapping[args] || args.first.to_s
+    end
+
+    # Resolves a list of symbols into a path.
+    def [](*args)
+      @mapping[args.map(&:to_sym)]
+    end
+
+    # Specifies the path resolved from a list of symbols.
+    def []=(*args)
+      @mapping[args[0...-1].map(&:to_sym)] = args.last
+    end
+
+    def initialize_copy(copy)
+      copy.instance_variable_set :@mapping, @mapping.clone
+    end
+
+    # Default layout has the following properties:
+    # * :source maps to the 'src' directory.
+    # * Anything under :source maps verbatim (e.g. :source, :main becomes 'src/main')
+    # * :target maps to the 'target' directory.
+    # * :target, :main maps to the 'target' directory as well.
+    # * Anything under :target, :main maps verbatim (e.g. :target, :main, :classes becomes 'target/classes')
+    # * Anything else under :target also maps verbatim (e.g. :target, :test becomes 'target/test')
+    class Default < Layout
+
+      def initialize
+        super
+        self[:source] = 'src'
+        self[:target, :main] = 'target'
+      end
+
+    end
+
+    self.default = Default.new
+
+  end
+
+
   # A project definition is where you define all the tasks associated with
   # the project you're building.
   #
@@ -71,7 +157,12 @@ module Buildr
   #   |  |__resources      <-- Resources to copy (tests)
   #   |__target            <-- Packages created here
   #   |  |__classes        <-- Generated when compiling
-  #   |  |__test-classes   <-- Generated when compiling tests
+  #   |  |__resources      <-- Copied (and filtered) from resources
+  #   |  |__test/classes   <-- Generated when compiling tests
+  #   |  |__test/resources <-- Copied (and filtered) from resources
+  #   |__reports           <-- Test, coverage and other reports
+  #
+  # You can change the project layout by passing a new Layout to the project definition.
   #
   # You can only define a project once using #define. Afterwards, you can obtain the project
   # definition using #project. The order in which you define projects is not important,
@@ -136,7 +227,7 @@ module Buildr
           project.enhance { project.instance_eval &block } if block
 
           # Top-level project? Invoke the project definition. Sub-project? We don't invoke
-          # the project definiton yet (allow project() calls to establish order of evaluation),
+          # the project definiton yet (allow project calls to establish order of evaluation),
           # but must do so before the parent project's definition is done. 
           project.parent.enhance { project.invoke } if project.parent
         end
@@ -198,7 +289,7 @@ module Buildr
       end
 
       # :call-seq:
-      #   clear()
+      #   clear
       #
       # Discard all project definitions.
       def clear
@@ -304,7 +395,7 @@ module Buildr
       split = name.split(':')
       if split.size > 1
         # Get parent project, but do not invoke it's definition to prevent circular
-        # dependencies (it's being invoked right now, so calling project() will fail).
+        # dependencies (it's being invoked right now, so calling project will fail).
         @parent = task(split[0...-1].join(':'))
         raise "No parent project #{split[0...-1].join(':')}" unless @parent && Project === parent
       end
@@ -316,7 +407,7 @@ module Buildr
     end
 
     # :call-seq:
-    #   base_dir() => path
+    #   base_dir => path
     #
     # Returns the project's base directory.
     #
@@ -342,25 +433,33 @@ module Buildr
       @base_dir
     end
 
+    # Returns the layout associated with this project.
+    def layout
+      @layout ||= (parent ? parent.layout : Layout.default).clone
+    end
+
     # :call-seq:
     #   path_to(*names) => path
     #
     # Returns a path from a combination of name, relative to the project's base directory.
     # Essentially, joins all the supplied names and expands the path relative to #base_dir.
-    # Symbol arguments are converted to paths by calling the attribute accessor on the project.
+    # Symbol arguments are converted to paths based on the layout, so whenever possible stick
+    # to these.  For example:
+    #   path_to(:source, :main, :java)
+    #   => 'src/main/java'
     #
     # Keep in mind that all tasks are defined and executed relative to the Buildfile directory,
     # so you want to use #path_to to get the actual path within the project as a matter of practice.
     #
     # For example:
     #   path_to('foo', 'bar')
-    #   => /home/project1/foo/bar
+    #   => foo/bar
     #   path_to('/tmp')
     #   => /tmp
     #   path_to(:base_dir, 'foo') # same as path_to('foo")
     #   => /home/project1/foo
     def path_to(*names)
-      File.expand_path(File.join(names.map { |name| Symbol === name ? send(name) : name.to_s }), base_dir)
+      File.expand_path(layout.expand(*names), base_dir)
     end
     alias :_ :path_to
 
@@ -490,7 +589,7 @@ module Buildr
       %Q{project(#{name.inspect})}
     end
 
-protected
+  protected
 
     # :call-seq:
     #   base_dir = dir
@@ -506,6 +605,13 @@ protected
     def base_dir=(dir)
       raise 'Cannot set base directory twice, or after reading its value' if @base_dir
       @base_dir = File.expand_path(dir)
+    end
+
+    # Sets the project layout.  Accepts Layout object or class (or for that matter, anything
+    # that can expand).
+    def layout=(layout)
+      raise 'Cannot set directory layout twice, or after reading its value' if @layout
+      @layout = layout.is_a?(Class) ? layout.new : layout
     end
 
     # :call-seq:
@@ -526,8 +632,6 @@ protected
         Rake.application.instance_variable_set :@scope, scope
       end
     end
-
-  protected
 
     # Call all callbacks for a particular state, e.g. :before_define, :after_define.
     def call_callbacks(state) #:nodoc:

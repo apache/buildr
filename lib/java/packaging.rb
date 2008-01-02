@@ -490,7 +490,7 @@ module Buildr
               warn_deprecated "The :include option in package(:war) is deprecated, please use package(:war).include(files) instead."
               war.include options[:include]
             else
-              path_to("src/main/webapp").tap { |path| war.with path if File.exist?(path) }
+              path_to(:source, :main, :webapp).tap { |path| war.with path if File.exist?(path) }
             end
           end
         else
@@ -504,8 +504,8 @@ module Buildr
         unless Rake::Task.task_defined?(file_name)
           Java::Packaging::AarTask.define_task(file_name).tap do |aar|
             aar.with :manifest=>manifest, :meta_inf=>meta_inf
-            aar.with :wsdls=>path_to("src/main/axis2/*.wsdl")
-            aar.with :services_xml=>path_to("src/main/axis2/services.xml") 
+            aar.with :wsdls=>path_to(:source, :main, :axis2, '*.wsdl')
+            aar.with :services_xml=>path_to(:source, :main, :axis2, 'services.xml') 
             aar.with compile.target unless compile.sources.empty?
             aar.with resources.target unless resources.sources.empty?
             aar.with :libs=>compile.classpath
