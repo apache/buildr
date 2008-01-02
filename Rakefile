@@ -82,6 +82,7 @@ end
 
 desc 'Run all specs and generate reports in html directory'
 Spec::Rake::SpecTask.new('spec:report') do |task|
+  mkpath 'html'
   task.spec_files = FileList['spec/**/*_spec.rb']
   task.spec_opts << '--format' << 'html:html/report.html' << '--backtrace'
   task.rcov = true
@@ -106,7 +107,7 @@ begin
   end
 
   web_collection = Docter.collection.using('doc/web.toc.textile').include('doc/pages', 'CHANGELOG')
-  web_template = Docter.template('doc/web.haml').include('doc/css', 'doc/images')
+  web_template = Docter.template('doc/web.haml').include('doc/css', 'doc/images', 'html/report.html', 'html/coverage')
   print_collection = Docter.collection.using('doc/print.toc.textile').include('doc/pages')
   print_template = Docter.template('doc/print.haml').include('doc/css', 'doc/images')
 

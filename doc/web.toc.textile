@@ -8,6 +8,7 @@ h1. Buildr
 # packaging
 # testing
 # more_stuff
+# extending
 # "API":rdoc/index.html
 # "Printable PDF":buildr.pdf
 # mailing_lists
@@ -15,3 +16,5 @@ h1. Buildr
 # contributing
 # "License":http://apache.org/licenses/LICENSE-2.0.html
 # "Change Log":changelog.html
+# "Test Report":report.html
+# "Test Coverage":coverage/index.html

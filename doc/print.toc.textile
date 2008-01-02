@@ -8,4 +8,5 @@ h1. Buildr -- The build system that doesn't suck
 # packaging
 # testing
 # more_stuff
+# extending
 # contributing
