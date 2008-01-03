@@ -4,10 +4,10 @@
 require 'needle'
 require 'net/ssh'
 
-require "highline"
-require "highline/import"
+require 'highline'
+require 'highline/import'
 # &:symbol goodness.
-require "facet/symbol/to_proc"
+require 'facet/symbol/to_proc'
 # blank? on string and nil
 require 'facet/string/blank'
 require 'facet/nilclass/blank'

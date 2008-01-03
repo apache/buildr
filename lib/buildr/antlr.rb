@@ -5,7 +5,7 @@ module Buildr
   module ANTLR
     REQUIRES = [ "org.antlr:antlr:jar:3.0", "antlr:antlr:jar:2.7.7", "org.antlr:stringtemplate:jar:3.0" ]
 
-    Java.wrapper.classpath << REQUIRES
+    Java.classpath << REQUIRES
 
     class << self
       def antlr(*args)
@@ -19,13 +19,11 @@ module Buildr
           mkdir_p options[:token] 
           args = ["-lib",  options[:token]] + args 
         end
-        Java.wrapper do |wrapper|
-          antlr_class = wrapper.import("org.antlr.Tool")
-          antlr_tool = antlr_class.new_with_sig("[Ljava.lang.String;", args)
-          antlr_tool.process
-          #wrapper.import("org.antlr.Tool").main(args) == 0 or
-          #  fail "Failed to run ANTLR, see errors above."
-        end
+        antlr_class = Java.import("org.antlr.Tool")
+        antlr_tool = antlr_class.new_with_sig("[Ljava.lang.String;", args)
+        antlr_tool.process
+        #wrapper.import("org.antlr.Tool").main(args) == 0 or
+        #  fail "Failed to run ANTLR, see errors above."
       end
     end
 

@@ -1,6 +1,7 @@
 require 'rubygems'
 Gem::manage_gems
 require 'rake/gempackagetask'
+require 'rake/rdoctask'
 require 'spec/rake/spectask'
 
 
@@ -93,6 +94,7 @@ end
 # Documentation.
 begin
   require 'rake/rdoctask'
+  gem 'docter', '~>1.1'
   require 'docter'
   require 'docter/server'
   require 'docter/ultraviolet'
@@ -106,17 +108,21 @@ begin
     rdoc.rdoc_files.include spec.extra_rdoc_files
   end
 
-  web_collection = Docter.collection.using('doc/web.toc.textile').include('doc/pages', 'CHANGELOG')
-  web_template = Docter.template('doc/web.haml').include('doc/css', 'doc/images', 'html/report.html', 'html/coverage')
-  print_collection = Docter.collection.using('doc/print.toc.textile').include('doc/pages')
-  print_template = Docter.template('doc/print.haml').include('doc/css', 'doc/images')
+  web_docs = {
+    :collection => Docter.collection('Buildr').using('doc/web.toc.yaml').include('doc/pages', 'LICENSE', 'CHANGELOG'),
+    :template   => Docter.template('doc/web.haml').include('doc/css', 'doc/images', 'html/report.html', 'html/coverage')
+  }
+  print_docs = {
+    :collection => Docter.collection('Buildr &mdash; The build system that doesn\'t suck').using('doc/print.toc.yaml').include('doc/pages', 'LICENSE'),
+    :template   => Docter.template('doc/print.haml').include('doc/css', 'doc/images')
+  }
 
   Docter.filter_for(:footnote) do |html|
     html.gsub(/<p id="fn(\d+)">(.*?)<\/p>/, %{<p id="fn\\1" class="footnote">\\2</p>})
   end
 
   desc 'Produce PDF'
-  print = Docter::Rake.generate('print', print_collection, print_template, :one_page)
+  print = Docter::Rake.generate('print', print_docs[:collection], print_docs[:template], :one_page)
   pdf_file = file('html/buildr.pdf'=>print) do |task|
     mkpath 'html'
     sh *%W{prince #{print}/index.html -o #{task.name}} do |ok, res|
@@ -126,9 +132,9 @@ begin
   task('pdf'=>pdf_file) { |task| `kpdf #{File.expand_path(pdf_file.to_s)}` }
 
   desc 'Generate HTML documentation'
-  html = Docter::Rake.generate('html', web_collection, web_template)
+  html = Docter::Rake.generate('html', web_docs[:collection], web_docs[:template])
   desc 'Run Docter server'
-  Docter::Rake.serve :docter, web_collection, web_template, :port=>3000
+  Docter::Rake.serve :docter, web_docs[:collection], web_docs[:template], :port=>3000
 
   desc 'Generate all documentation merged into the html directory'
   task 'docs'=>[html, rdoc.name, pdf_file]
@@ -166,7 +172,7 @@ namespace :upload do
     require 'rubyforge'
 
     # Read the changes for this release.
-    pattern = /(^(\d+\.\d+(?:\.\d+)?)\s+\(\d+\/\d+\/\d+\)\s*((:?^[^\n]+\n)*))/
+    pattern = /(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/
     changelog = File.read(__FILE__.pathmap('%d/CHANGELOG'))
     changes = changelog.scan(pattern).inject({}) { |hash, set| hash[set[1]] = set[2] ; hash }
     current = changes[spec.version.to_s]

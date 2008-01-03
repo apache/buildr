@@ -1,8 +1,8 @@
 h1. Contributing
 
-Step 1, join the "mailing list":mailing_lists.html.  It's the best place to ask
-questions, report "features", submit patches and let us know how you use Buildr
-in your own projects.
+Step 1, join the "mailing list":mailing_lists.html.  It's the best place to
+ask questions, report "features", submit patches and let us know how you use
+Buildr in your own projects.
 
 Step 2, checkout "Buildr from
 SVN":http://svn.apache.org/repos/asf/incubator/buildr:

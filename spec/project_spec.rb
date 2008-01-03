@@ -732,7 +732,7 @@ describe InheritedAttributes do
 end
 
 
-describe Rake::Task, ' buildr:initialize' do
+describe Rake::Task, 'buildr:initialize' do
   it 'should be ready to run as the first task' do
     Rake.application.top_level_tasks.first.should eql('buildr:initialize')
   end
@@ -743,5 +743,3 @@ describe Rake::Task, ' buildr:initialize' do
     lambda { task('buildr:initialize').invoke }.should change { defined }.to(true)
   end
 end
-
-

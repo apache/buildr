@@ -7,8 +7,8 @@ module Buildr
 
       # Select a compiler by its name.
       def select(name)
-        raise ArgumentError, "No #{name} compiler available. Did you install it?" unless compilers.include?(name.to_sym)
-        compilers[name.to_sym]
+        raise ArgumentError, "No #{name} compiler available. Did you install it?" unless @compilers.has_key?(name.to_sym)
+        @compilers[name.to_sym]
       end
 
       # Identify which compiler applies based on one of two arguments:
@@ -16,17 +16,18 @@ module Buildr
       # * :source -- The source directory (src/main, src/test), from which it will look up a particular source
       #     directory (e.g. src/main/java).
       def identify(from)
-        compilers.values.detect { |compiler| compiler.identify?(from) }
+        @compilers.values.detect { |compiler| compiler.identify?(from) }
       end
 
       # Adds a compiler to the list of supported compiler.
       def add(compiler)
+        @compilers ||= {}
         compiler = compiler.new if Class === compiler
-        compilers[compiler.name.to_sym] = compiler
+        @compilers[compiler.name.to_sym] = compiler
       end
 
       def compilers #:nodoc:
-        @compilers ||= {}
+        @compilers.values.clone
       end
 
     end
@@ -129,13 +130,20 @@ module Buildr
   end
 
 
-  # Wraps Javac in a task that does all the heavy lifting.
+  # Compile task.
+  #
+  # Attempts to determine which compiler to use based on the project layout, for example,
+  # uses the Javac compiler if it finds any .java files in src/main/java.  You can also
+  # select the compiler explicitly:
+  #   compile.using(:scalac)
   #
   # Accepts multiple source directories that are invoked as prerequisites before compilation.
-  # You can pass a task as a source directory, e.g. compile.from(apt).
+  # You can pass a task as a source directory:
+  #   compile.from(apt)
   #
   # Likewise, dependencies are invoked before compiling. All dependencies are evaluated as
-  # #artifacts, so you can pass artifact specifications and even projects.
+  # #artifacts, so you can pass artifact specifications and even projects:
+  #   compile.with("module1.jar", "log4j:log4j:jar:1.0", project("foo"))
   #
   # Creates a file task for the target directory, so executing that task as a dependency will
   # execute the compile task first.
@@ -249,7 +257,7 @@ module Buildr
     #   compile.using(:scala)
     def using(*args)
       args.pop.each { |key, value| options.send "#{key}=", value } if Hash === args.last
-      select args.first unless args.empty?
+      select args.pop until args.empty?
       self
     end
 
@@ -449,9 +457,9 @@ module Buildr
     #   # Run the OpenJPA bytecode enhancer after compilation.
     #   compile { open_jpa_enhance }
     #   # Pick a given compiler.
-    #   compile.using(:gcc).from('src')
+    #   compile.using(:scalac).from('src/scala')
     #
-    # For more information, see Java::CompileTask.
+    # For more information, see CompileTask.
     def compile(*sources, &block)
       task('compile').from(sources).enhance &block
     end

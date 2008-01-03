@@ -279,23 +279,6 @@ describe "repositories.remote" do
 end
 
 
-describe "repositories.proxy" do
-  before do
-    repositories.remote = "http://example.com"
-  end
-
-  it "should be empty initially" do
-    repositories.proxy.should be_nil
-  end
-
-  it "should be used when downloading" do
-    repositories.proxy = "http://myproxy:8080"
-    Net::HTTP.should_receive(:start).with(anything, 80, "myproxy", 8080, nil, nil).twice
-    artifact("com.example:library:jar:all:2.0").invoke
-  end
-end
-
-
 describe "repositories.release_to" do
   it "should accept URL as first argument" do
     repositories.release_to = "http://example.com"
@@ -466,7 +449,7 @@ describe Builder, '#upload' do
   before do
     @spec = 'group:id:jar:1.0'
     write @file = 'test.jar'
-    repositories.deploy_to = 'sftp://example.com/base'
+    repositories.release_to = 'sftp://example.com/base'
   end
 
   it 'should return the upload task' do
@@ -486,25 +469,6 @@ describe Builder, '#upload' do
     URI.should_receive(:upload).once.
       with(URI.parse('sftp://example.com/base/group/id/1.0/id-1.0.pom'), artifact(@spec).pom.to_s, anything)
     upload.invoke
-  end
-end
-
-
-describe Buildr, "#deploy" do
-  before do
-    repositories.deploy_to = "sftp://example.com/base"
-    @file = file("README")
-    write @file.to_s
-  end
-
-  it "should deploy a file to a path using its basename" do
-    URI.should_receive(:upload).once.with(URI.parse("sftp://example.com/base/README"), @file.to_s, anything)
-    deploy @file
-  end
-
-  it "should deploy a file to specified path and basename" do
-    URI.should_receive(:upload).once.with(URI.parse("sftp://example.com/base/foo/bar/README"), @file.to_s, anything)
-    deploy @file, :path=>"foo/bar"
   end
 end
 

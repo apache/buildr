@@ -82,20 +82,24 @@ body {
 ol.toc {
   list-style: none;
   padding: 0;
-  margin-bottom: 2em; !important
+  margin-bottom: 2em !important;
 }
 
 ol.toc li {
-  margin-left: 0.5em;
-  margin-bottom: 0.3em;
+  padding: 0.3em 0 0.3em 0 !important;
+  margin: 0;
 }
 
-ol.toc ol {
+ol.toc ol.toc {
   list-style: none;
+  margin: 0.3em 0 0.5em 0;
   padding: 0;
-  margin-left: 1.3em;
-  margin-bottom: 0.3em;
 }
+
+ol.toc ol.toc li {
+  padding-left: 0.5em !important;
+}
+
 
 #content .footnote {
   margin-top: 2.5em;

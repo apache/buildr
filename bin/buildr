@@ -1,7 +1,7 @@
 begin
-  require "buildr"
+  require 'buildr'
 rescue LoadError
-  require "rubygems"
-  require "buildr"
+  require 'rubygems'
+  require 'buildr'
 end
 Rake.application.run

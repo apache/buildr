@@ -57,11 +57,6 @@ module Buildr
         self
       end
       
-      def onload(&block)
-        warn_deprecated "use setup { |wrapper| ... } instead"
-        setup &block
-      end
-
       def load(&block)
         @setup.each { |block| block.call self }
         @setup.clear
@@ -183,11 +178,9 @@ module Buildr
         unless Rake.application.options.dryrun
           puts "Running apt" if verbose
           puts (["apt"] + cmd_args).join(" ") if Rake.application.options.trace
-          Java.wrapper do |jw|
-            cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
-            jw.import("com.sun.tools.apt.Main").process(cmd_args) == 0 or
-              fail "Failed to process annotations, see errors above"
-          end
+          cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
+          Java.com.sun.tools.apt.Main.process(cmd_args) == 0 or
+            fail "Failed to process annotations, see errors above"
         end
       end
 
@@ -221,11 +214,9 @@ module Buildr
         unless Rake.application.options.dryrun
           puts "Compiling #{files.size} source files in #{name}" if verbose
           puts (["javac"] + cmd_args).join(" ") if Rake.application.options.trace
-          Java.wrapper do |jw|
-            cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
-            jw.import("com.sun.tools.javac.Main").compile(cmd_args) == 0 or 
-              fail "Failed to compile, see errors above"
-          end
+          cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
+          Java.com.sun.tools.javac.Main.compile(cmd_args) == 0 or 
+            fail "Failed to compile, see errors above"
         end
       end
 
@@ -273,49 +264,12 @@ module Buildr
         unless Rake.application.options.dryrun
           puts "Generating Javadoc for #{name}" if verbose
           puts (["javadoc"] + cmd_args).join(" ") if Rake.application.options.trace
-          Java.wrapper do |jw|
-            cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
-            jw.import("com.sun.tools.javadoc.Main").execute(cmd_args) == 0 or
-              fail "Failed to generate Javadocs, see errors above"
-          end
+          Java.load
+          cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
+          Java.import("com.sun.tools.javadoc.Main").execute(cmd_args) == 0 or
+            fail "Failed to generate Javadocs, see errors above"
         end
       end
-
-      # :call-seq:
-      #   junit(*classes, options) => [ passed, failed ]
-      #
-      # Runs JUnit test cases from the specified classes. Returns an array with two lists,
-      # one containing the names of all classes that passes, the other containing the names
-      # of all classes that failed.
-      #
-      # The last argument may be a Hash with additional options:
-      # * :classpath -- One or more file names, tasks or artifact specifications.
-      #   These are all expanded into artifacts, and all tasks are invoked.
-      # * :properties -- Hash of system properties (e.g. "path"=>base_dir).
-      # * :java_args -- Any additional arguments to pass (e.g. -hotspot, -xms)
-      # * :verbose -- If true, prints the command and all its argument.
-      #
-      # *Deprecated:* Please use JUnitTask instead.Use the test task to run JUnit and other test frameworks.
-      def junit(*args)
-        warn_deprecated "Use the test task to run JUnit and other test frameworks"
-        options = Hash === args.last ? args.pop : {}
-        options[:verbose] ||= Rake.application.options.trace || false
-        rake_check_options options, :verbose, :classpath, :properties, :java_args
-
-        classpath = classpath_from(options) + JUnitTask::requires
-        tests = args.flatten
-        failed = tests.inject([]) do |failed, test|
-          begin
-            java "junit.textui.TestRunner", test, :classpath=>classpath, :properties=>options[:properties],
-              :name=>"#{test}", :verbose=>options[:verbose], :java_args=>options[:java_args]
-            failed
-          rescue
-            failed << test
-          end
-        end
-        [ tests - failed, failed ]
-      end
-
 
       # :call-seq:
       #   wrapper() => JavaWrapper
@@ -346,11 +300,6 @@ module Buildr
         end
       end
 
-      def rjb(&block)
-        warn_deprecated "please use Java.wrapper() instead"
-        wrapper &block
-      end
-
       # :call-seq:
       #   path_to_bin(cmd?) => path
       #
@@ -372,8 +321,7 @@ module Buildr
       # Extracts the classpath from the options, expands it by calling artifacts, invokes
       # each of the artifacts and returns an array of paths.
       def classpath_from(options)
-        classpath = (options[:classpath] || []).collect
-        Buildr.artifacts(classpath).each { |t| t.invoke if t.respond_to?(:invoke) }.map(&:to_s)
+        Buildr.artifacts(options[:classpath] || []).map(&:to_s).each { |t| task(t).invoke }
       end
 
       def darwin?() #:nodoc:
@@ -387,21 +335,37 @@ module Buildr
       Java.java(*args)
     end
 
-    # :call-seq:
-    #   apt(*sources) => task
-    #
-    # Returns a task that will use Java#apt to generate source files in target/generated/apt,
-    # from all the source directories passed as arguments. Uses the compile.sources list if
-    # on arguments supplied.
-    #
-    # For example:
-    #
-    def apt(*sources)
-      sources = compile.sources if sources.empty?
-      file(path_to(:target, "generated/apt")=>sources) do |task|
-        Java.apt(sources.map(&:to_s) - [task.name], :output=>task.name,
-          :classpath=>compile.classpath, :source=>compile.options.source)
+    def self.classpath
+      wrapper.classpath
+    end
+
+    def self.load
+      wrapper.load
+    end
+
+
+    module Package #:nodoc:
+
+      def method_missing(sym, *args, &block)
+        begin
+          @package ||= []
+          ::Rjb.import((@package + [sym.to_s]).join('.'))
+        rescue NoClassDefFoundError
+          @packages ||= {}
+          @packages[sym.to_s] ||= Module.new.extend(Package).tap { |pkg| pkg.instance_variable_set :@package, (@package || []) + [sym.to_s] }
+        end
       end
+    end
+
+    module ::Rjb
+      extend Package
+    end
+
+    extend Package
+
+    def self.import(cls)
+      wrapper.load
+      cls.split('.').inject(wrapper) { |wrapper, name| wrapper.send(name) }
     end
 
   end

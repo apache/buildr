@@ -12,7 +12,7 @@ class Buildr::Project
   # Put first, so other extensions can over-ride Buildr methods.
   include Buildr
   include Buildr::Build
-  include Buildr::Checks
   include Buildr::Compile
   include Buildr::Test
+  include Buildr::Checks
 end

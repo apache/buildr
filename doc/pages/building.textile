@@ -1,4 +1,4 @@
-lding
+h1. Building
 
 To remove any confusion, Buildr's build task is actually called @build@.  It's also the default task that executes when you run @buildr@ without any task name.
 

@@ -310,6 +310,7 @@ module Buildr
       # and must return the same file task on each call.
       def package(type = :jar, options = nil)
         options = options.nil? ? {} : options.dup
+        rake_check_options options, *ActsAsArtifact::ARTIFACT_ATTRIBUTES
         options[:id] ||= self.id
         options[:group] ||= self.group
         options[:version] ||= self.version
@@ -318,7 +319,7 @@ module Buildr
 
         packager = method("package_as_#{type}") rescue
           fail("Don't know how to create a package of type #{type}")
-        package = packager.call(file_name, options) { warn_deprecated "Yielding from package_as_ no longer necessary." }
+        package = packager.call(file_name, options)
         unless packages.include?(package)
           # Make it an artifact using the specifications, and tell it how to create a POM.
           package.extend ActsAsArtifact
@@ -435,72 +436,34 @@ module Buildr
 
     protected
 
-      def package_as_jar(file_name, options) #:nodoc:
+      def package_as_jar(file_name, spec) #:nodoc:
         unless Rake::Task.task_defined?(file_name)
-          rake_check_options options, *PACKAGE_OPTIONS + [:manifest, :meta_inf, :include]
           Java::Packaging::JarTask.define_task(file_name).tap do |jar|
             jar.with :manifest=>manifest, :meta_inf=>meta_inf
-            [:manifest, :meta_inf].each do |option|
-              if options.has_key?(option)
-                warn_deprecated "The :#{option} option in package(:jar) is deprecated, please use package(:jar).with(:#{option}=>) instead."
-                jar.with option=>options[option]
-              end
-            end
-            if options[:include]
-              warn_deprecated "The :include option in package(:jar) is deprecated, please use package(:jar).include(files) instead."
-              jar.include options[:include]
-            else
-              jar.with compile.target unless compile.sources.empty?
-              jar.with resources.target unless resources.sources.empty?
-            end
+            jar.with compile.target unless compile.sources.empty?
+            jar.with resources.target unless resources.sources.empty?
           end
-        else
-          rake_check_options options, *PACKAGE_OPTIONS
         end
         file(file_name)
       end
 
-      def package_as_war(file_name, options) #:nodoc:
+      def package_as_war(file_name, spec) #:nodoc:
         unless Rake::Task.task_defined?(file_name)
-          rake_check_options options, *PACKAGE_OPTIONS + [:manifest, :meta_inf, :classes, :libs, :include]
           Java::Packaging::WarTask.define_task(file_name).tap do |war|
             war.with :manifest=>manifest, :meta_inf=>meta_inf
-            [:manifest, :meta_inf].each do |option|
-              if options.has_key?(option)
-                warn_deprecated "The :#{option} option in package :war is deprecated, please use package(:war).with(:#{option}=>) instead."
-                war.with option=>options[option]
-              end
-            end
             # Add libraries in WEB-INF lib, and classes in WEB-INF classes
-            if options.has_key?(:classes)
-              warn_deprecated "The :classes option in package(:war) is deprecated, please use package(:war).with(:classes=>) instead."
-              war.with :classes=>options[:classes]
-            else
-              war.with :classes=>compile.target unless compile.sources.empty?
-              war.with :classes=>resources.target unless resources.sources.empty?
-            end
-            if options.has_key?(:libs)
-              warn_deprecated "The :libs option in package(:war) is deprecated, please use package(:war).with(:libs=>) instead."
-              war.with :libs=>options[:libs].collect
-            else
-              war.with :libs=>compile.classpath
-            end
+            war.with :classes=>compile.target unless compile.sources.empty?
+            war.with :classes=>resources.target unless resources.sources.empty?
+            war.with :libs=>compile.dependencies
             # Add included files, or the webapp directory.
-            if options.has_key?(:include)
-              warn_deprecated "The :include option in package(:war) is deprecated, please use package(:war).include(files) instead."
-              war.include options[:include]
-            else
-              path_to(:source, :main, :webapp).tap { |path| war.with path if File.exist?(path) }
-            end
+            webapp = path_to(:source, :main, :webapp)
+            war.with webapp if File.exist?(webapp)
           end
-        else
-          rake_check_options options, *PACKAGE_OPTIONS
         end
         file(file_name)
       end
 
-      def package_as_aar(file_name, options) #:nodoc:
-        rake_check_options options, *PACKAGE_OPTIONS
+      def package_as_aar(file_name, spec) #:nodoc:
         unless Rake::Task.task_defined?(file_name)
           Java::Packaging::AarTask.define_task(file_name).tap do |aar|
             aar.with :manifest=>manifest, :meta_inf=>meta_inf
@@ -508,50 +471,39 @@ module Buildr
             aar.with :services_xml=>path_to(:source, :main, :axis2, 'services.xml') 
             aar.with compile.target unless compile.sources.empty?
             aar.with resources.target unless resources.sources.empty?
-            aar.with :libs=>compile.classpath
+            aar.with :libs=>compile.dependencies
           end
         end
         file(file_name)
       end
 
-      def package_as_zip(file_name, options) #:nodoc:
-        unless Rake::Task.task_defined?(file_name)
-          rake_check_options options, *PACKAGE_OPTIONS + [:include]
-          ZipTask.define_task(file_name).tap do |zip|
-            if options[:include]
-              warn_deprecated "The :include option in package(:zip) is deprecated, please use package(:zip).include(files) instead."
-              zip.include options[:include]
-            end
-          end
-        else
-          rake_check_options options, *PACKAGE_OPTIONS
-        end
-        file(file_name)
+      def package_as_zip(file_name, spec) #:nodoc:
+        ZipTask.define_task(file_name)
       end
 
-      def package_as_tar(file_name, options) #:nodoc:
-        rake_check_options options, *PACKAGE_OPTIONS
-        unless Rake::Task.task_defined?(file_name)
-          TarTask.define_task(file_name)
-        end
-        file(file_name)
+      def package_as_tar(file_name, spec) #:nodoc:
+        TarTask.define_task(file_name)
       end
       alias :package_as_tgz :package_as_tar
 
-      def package_as_sources(file_name, options) #:nodoc:
-        rake_check_options options, *PACKAGE_OPTIONS
-        options.merge!(:type=>:zip, :classifier=>"sources")
-        file_name = path_to(:target, Artifact.hash_to_file_name(options))
-        ZipTask.define_task(file_name).tap { |zip| zip.include :from=>compile.sources } unless Rake::Task.task_defined?(file_name)
+      def package_as_sources(file_name, spec) #:nodoc:
+        spec.merge!(:type=>:zip, :classifier=>"sources")
+        file_name = path_to(:target, Artifact.hash_to_file_name(spec))
+        unless Rake::Task.task_defined?(file_name)
+          ZipTask.define_task(file_name).tap do |zip|
+            zip.include :from=>compile.sources
+          end
+        end
         file(file_name)
       end
 
-      def package_as_javadoc(file_name, options) #:nodoc:
-        rake_check_options options, *PACKAGE_OPTIONS
-        options.merge!(:type=>:zip, :classifier=>"javadoc")
-        file_name = path_to(:target, Artifact.hash_to_file_name(options))
+      def package_as_javadoc(file_name, spec) #:nodoc:
+        spec.merge!(:type=>:zip, :classifier=>"javadoc")
+        file_name = path_to(:target, Artifact.hash_to_file_name(spec))
         unless Rake::Task.task_defined?(file_name)
-          ZipTask.define_task(file_name).tap { |zip| zip.include :from=>javadoc.target }
+          ZipTask.define_task(file_name).tap do |zip|
+            zip.include :from=>javadoc.target
+          end
           javadoc.options[:windowtitle] ||= project.comment || project.name
         end
         file(file_name)

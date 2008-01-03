@@ -10,26 +10,27 @@
 * Changed: For compile and test, use dependencies instead of classpath (with works are before).
 * Changed: Test framework componentized along the same lines as the compilers.
 * Removed: Prepare tasks removed.
+* Removed: All deprecated features since 1.1.  If you've seen warnings before, except the build to break.
 * Fixed: Artifact.pom resolves artifact without classifier, i.e org.testng:testng:jar:jdk15:5.1 uses org.testng:testng:pom:5.1 (Tommy).
 * Fixed: More patches towards JRuby support, courtesy of Vic Borja.
 
-1.2.10 (11/26/2007)
+1.2.10 (2007-11-26)
 * Changed: Resources sets permission on copied files to make them read/write-able.
 * Changed: Artifact download no longer generates destination directory if not downloaded (Antoine).
 * Fixed: EOL in MANIFEST.MF.
 * Fixed: Bunch of typos, courtesy of Merlyn Albery-Speyer and Soemirno Kartosoewito.
 
-1.2.9 (11/8/2007)
+1.2.9 (2007-11-08)
 * Changed: Upgraded to RJB 1.0.11.
 * Fixed: Backward compatibility in Java.rjb/wrapper.
 
-1.2.8 (11/1/2007)
+1.2.8 (2007-11-01)
 * Added: Resolving Maven snapshots from remote repository (Rhett Sutphin)
 * Changed: scala options.target now takes number, e.g. "1.5" instead of "jvm-1.5" (Nathan Hamblen)
 * Changed: Eclipse task uses updated Scala plugin nature and builder (Alex Boisvert)
 * Fixed: Bringing Buildr back to 1.0.9, XMLBeans fix.
 
-1.2.7 (10/29/2007)
+1.2.7 (2007-10-29)
 * Added: You can create an artifact from a given file using artifact(<spec>).from(<path>).  You can then install it into the local repository or upload it to the release server using install(<artifacts>) and upload(<artifacts>). (Idea: Shane Witbeck and Tommy Mason).
 * Added: ANTLR support.
 * Changed: Speed boost to ZIP packaging.
@@ -40,7 +41,7 @@
 * Fixed: Jetty task no longer sets "log4j.configuration" system property
 * Fixed: release task didn't work
 
-1.2.6 (9/26/2007)
+1.2.6 (2007-09-26)
 * Added: Option for setting environment name (-e) and attribute accessor (Buildr.environment).  Default taken from BUILDR_ENV environment variable.
 * Added: AAR packaging for Axis2 service archives (Alex Boisvert)
 * Added: Environment variable for JUnit tests (test.using :environment=>).
@@ -60,12 +61,12 @@
 * Fixed: archive.exclude doesn't work when including a directory using :from/:as option.
 * Fixed: JUnit/TestNG no longer run inner classes as test classes (Mark Feeney).
 
-1.2.5 (8/13/2007)
+1.2.5 (2007-08-13)
 * Fixed: Buildr not finding buildfile in parent directory, or switching to parent directory.
 * Fixed: checks.rb:103: warning: multiple values for a block parameter (2 for 1)
 * Fixed: ZIPs include empty META-INF directory.
 
-1.2.4 (8/3/2007)
+1.2.4 (2007-08-03)
 * Added: Forking option for JUnit test framework: :once to fork for each project, :each to fork for each test case, and false to not fork. (Tammo van Lessen)
 * Added: Path traversal in Zip, so zip.path("foo/bar").path("..") returns zip.path("foo").
 * Fixed: JUnit test framework output shows errors in console, more readable when forking is on (Tammo van Lessen).
@@ -82,21 +83,21 @@
 * Fixed: ZIP/JAR/WAR include directory entries in some cases and not others.
 * Fixed: Computation of relative paths in Eclipse project generation (Cameron Pope)
 
-1.2.3 (7/26/2007)
+1.2.3 (2007-07-26)
 * Added: Get your buildfile created form existing POM, just run buildr on existing Maven project (Anatol Pomozov).
 * Added: package(:tar), package(:tgz), TarballTask dn TarTask (Tommy Knowlton).
 * Changed: The ArchiveTask needs no introduction: it's a base task that provides common functionality for ZipTask, TarTask and friends.
 * Fixed: Release runs buildr instead of buildr.cmd on Windows (Chris Power).
 * Fixed: Cobertura reports broken (Anatol Pomozov).
 
-1.2.2 (7/18/2007)
+1.2.2 (2007-07-18)
 * Added: resources.using and filter.using now accepts a format as the first argument, default being :maven, but you can also use :ant, :ruby or pass a regular expression (http://groups.google.com/group/buildr-talk/browse_thread/thread/5216d5ae8bfff29b).
 * Fixed: Sleek upload with changelog for each release courtesy of Anatol Pomozov.
 * Fixed: Zip.path.contains fails on paths with more than one directory (http://groups.google.com/group/buildr-talk/browse_thread/thread/5d305bbeeb814d1).
 * Fixed: Speed of sorting entries when creating new Zip file (http://groups.google.com/group/buildr-talk/browse_thread/thread/8b4d1b0e983f32f).
 * Fixed: Uploading using SFTP creates directory for uploaded file (http://groups.google.com/group/buildr-talk/browse_thread/thread/80021d35cecfecdc).
 
-1.2.1 (7/12/2007)
+1.2.1 (2007-07-12)
 * Added: Proxy exclusion, use environment variable NO_PROXY, or options.proxy.exclude = <url> || [<url>] (http://groups.google.com/group/buildr-talk/t/9f1e988e0dbeea9f).
 * Added: You can now copy resources from multiple source directories, using resources.from (http://groups.google.com/group/buildr-talk/browse_thread/thread/4f2867a6dbbc19d4).
 * Added: Hash.from_java_properties(string) and hash.to_java_properties.
@@ -109,7 +110,7 @@
 * Fixed: Hibernate.schema_export not passing Ant task when yielding.
 * Fixed: IntelliJ Idea project files generation for projects more than two degrees deep.
 
-1.2.0 (6/6/2007)
+1.2.0 (2007-06-06)
 * Added: Artifact.list returns specs for all registered artifacts (those created with artifact or package).
 * Added: Buildr.option.java_args are used when creating the RJB JVM, when running a Java process (unless you override directly), and when running JUnit tests (again, unless override).
 * Added: TestNG support (test.using :testng).
@@ -157,13 +158,13 @@
 * Fixed: Gets JVM version number from system property java.version instead of calling java -version.
 * Fixed: Artifact downloads POM first, such that you can download/create/fake it youself.
 
-1.1.3 (6/12/2007)
+1.1.3 (2007-06-12)
 * Added: Long awaited idea project files generation. Very early code, the iml seems to be generated okay but needs testing. The ipr is still missing but will come in due time (and it's not always necessary anyway).
 *Fixed: Doc bug: unzip doesn't have an into(dir) method.
 *Fixed: File names don't always have a dot.
 *Fixed: For Jetty servers, http://foo//bar is not http://foo/bar
 
-1.1.2 (5/29/2007)
+1.1.2 (2007-05-29)
 * Added: Allow passing :java_args option to the junit task
 * Added: Hibernate XDoclet and SchemaExport tasks. (Requires buildr/hibernate)
 * Added: JDepend UI for seeing depenencies across all projects. (Requires buildr/jdepend)
@@ -171,13 +172,13 @@
 * Changed: tools_jar now returns empty array on OS/X, part of the ongoing Write Once/Test Everywere effort. (Credit Paul Brown)
 * Fixed: Work around keep_alive bug in Net::HTTP. (http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-core/10818)
 
-1.1.1 (5/16/2007)
+1.1.1 (2007-05-16)
 * Changed: Test case class names must end with Test, TestCase, Suite or TestSuite.
 * Changed: You can now run rake test:{foo,bar} to match against either foo or bar (requires \{..\} on UNIX).
 * Changed: JAVA_HOME now required on all platforms, along with more OS/X fixes. (Credit Paul Brown)
 * Fixed: You can now run rake test:<name> from any directory, and it will find just the right test cases.
 
-1.1.0 (5/13/2007)
+1.1.0 (2007-05-13)
 * Added: Proxy setting for downloading from remote repositories (use repositories.proxy = ...).
 * Added: projects task to list all the projects you can build.
 * Added: Project attribute target to specify the target directory.
@@ -194,7 +195,7 @@
 * Fixed: Manifest gets EOL to keep EOF company. (Credit Tommy Knowlton)
 * Fixed: Compile tasks clean after themselves when target directory changed. (Credit Lyle Johnson)
 
-1.0.0 (5/4/2007)
+1.0.0 (2007-05-04)
 * Added: buildr:freeze and buildr:unfreeze task. These set the Rakefile to use a particular version of Buildr, freezing by setting to the current version of Buildr, unfreeze to use the latest Gem.
 * Added: Buildr.options, with three options to start with: test, debug and parallel.
 * Added: Buildr.option.debug or environment variable DEBUG to control the compiler debug option. Defaults to yes, except when doing a release.
@@ -205,7 +206,7 @@
 * Changed: OpenJPA 0.9.7 no longer snapshoted.
 * Fixed: For Windows users: user's home directory, fu_check_options is now rake_check_options, java command works around funky system bbug.
 
-0.22 (4/26/2007)
+0.22 (2007-04-26)
 * Added: Calling projects(:in=>foo) returns only the sub-projects defined in foo.
 * Added: _() as shortcut for path_to().
 * Added: You can pass properties to java by setting the :properties options.
@@ -222,7 +223,7 @@
 * Removed: Tasks no longer use a base directory, always map paths directly using file, path_to or _().
 * Fixed: The artifacts task no longer downloads POMs for artifacts created by the Rakefile.
 
-0.21 (4/20/2007)
+0.21 (2007-04-20)
 * Added: Methods to read and write a file (shortcut for File.read/File.open.write).
 * Changed: Filter task now takes a source directory and target directory, and copies all included (sans excluded) files between the two.
 * Changed: Artifact type is now symbol instead of string (so :jar instead of "jar"). You can still specify a string, but the return value from #to_spec or #type is a symbol.
@@ -230,7 +231,7 @@
 * Changed: The test task will now run JUnit test cases from classes ending with Test or Suite. And the inclusion pattern is always set.
 * Fixed: Project property not inherited if false.
 
-0.20 (4/18/2007)
+0.20 (2007-04-18)
 * Added: JavadocTask to generate Javadoc documentation for the project, javadoc method on the project itself to return its javadoc task, and Java.javadoc to do all the heavy lifting.
 * Changed: Release code is now implemented as module instead of class. SVN copy made from working copy instead of double commit.
 * Removed: package :file_name options. Does not work with deployed artifacts or POMs.
@@ -238,7 +239,7 @@
 * Fixed: JARs and WARs include redundant META-INF directory.
 * Fixed: The local package task is now a dependency for install/deploy, and build is dependency for package.
 
-0.19 (4/13/2007)
+0.19 (2007-04-13)
 * Fixed: Eclipse task correctly handles FileTasks
 * Fixed: Eclipse task output directory is "target/classes" (Project.compile.target) instead of "/target"
 * Added: Set specific file permissions when uploading with SFTP transport with :permission option
@@ -283,7 +284,7 @@
 * Fixed: Eclipse task now executed whenever a change is made in the Rakefile, or any file it requires, include buildr.rb and task files.
 * Fixed: Circular dependency in release task.
 
-0.18 (3/26/2007)
+0.18 (2007-03-26)
 * Added: manifest attribute on project, used by default when packaging JAR/WAR.
 * Added: default manifest includes build-by, build-jdk and implementation-title.
 * Added: compile.from(sources) in the same vein as compile.with(classpath)
@@ -306,7 +307,7 @@
 * Fixed: compile task now properly detects when not all files compiled.
 * Fixed: bug that caused project file tasks to execute twice.
 
-0.17 (3/14/2007)
+0.17 (2007-03-14)
 * Added: project.task acts like Rake's task but can also fetch a task from
   a project using the project's namespace.
 * Added: project.file acts like Rake's file but resolve relative paths
@@ -328,7 +329,7 @@
 * Changed: cannot access a project before it's defined, but can do that with
   sub-projects to establish dependencies.
 
-0.16 (3/7/2007)
+0.16 (2007-03-07)
 * Added: zip.include :as=> to include file under specified name.
 * Added: zip.merge to include the (expanded) contents of one zip file in another.
 * Added: experimental test task using JUnit and JMock.
@@ -340,11 +341,11 @@
 * Fixed: release task now deletes old tagged copy and reports SVN usage.
 * Fixed: OpenJPA not including target directory in classpath.
 
-0.15 (2/28/2007)
+0.15 (2007-02-28)
 * Fixed: tasks fail unless deployment server specified.
 * Changed: deploy method executes deployment, instead of returning a task.
 
-0.14 (2/28/2007)
+0.14 (2007-02-28)
 * Added: check task that looks for obvious errors in the Rakefile.
 * Added: deploy task for managing deployment.
 * Added: release task that updates version numbers, commits and tags SVN.
@@ -359,7 +360,7 @@
 * Fixed: timing issues.
 * Fixed: Maven classifier now used properly.
 
-0.13 (2/26/2007)
+0.13 (2007-02-26)
 * Added: global java method.
 * Added: project build method.
 * Added: OpenJPA mapping_tool method.
@@ -371,7 +372,7 @@
   that does not map to any project.
 * Fixed: to work with Rake 0.7.2.
 
-0.12 (2/24/2007)
+0.12 (2007-02-24)
 * Added: call prepare with list of tasks to add them as prerequisites.
 * Added: project.id returns the compound name, e.g. foo, foo-bar, foo-bar-baz.
 * Added: JavaCC, XMLBeans schema compiler, OpenJPA enhancer, APT tasks.
@@ -386,7 +387,7 @@
 * Fixed: zip dependencies were all fucked up.
 * Fixed: package should not depend on build.
 
-0.11 (2/16/2007)
+0.11 (2007-02-16)
 * Added: test cases for unzip task
 * Added: prepare method to access prepare task
 * Added: prepare, compile and resources accept a block you can use to enhance the task
@@ -399,7 +400,7 @@
 * Changed: unzip now using UnzipTask with its own shorthand syntax.
 * Changed: filter task gets a consistent syntax to unzip
 
-0.10 (2/13/2007)
+0.10 (2007-02-13)
 * Added: modifier for artifacts
 * Added: ZipTask, WarTask
 * Added: get POM artifact directly from artifact
@@ -407,7 +408,7 @@
 * Changed: options for packaging, but not affecting current Rakefile
 * Remove: delete task
 
-0.9 (2/9/2007)
+0.9 (2007-02-09)
 * Added: attributes for configuring compile (sources, classpath, target, options)
 * Added: shorthand notation for specifying compilation (to, with, using)
 * Changed: copy task is dead (name conflict), instead we get the better filter
@@ -419,7 +420,7 @@
 * Changed: resources task now working as expected
 * Remove: global task artifacts was the root of all evil and got canned.
 
-0.8 (2/5/2007)
+0.8 (2007-02-05)
 * Added: release task and release_to configuration for repositories
 * Added: SFTP uploader for releases
 * Added: convenience method group() for specifying multiple artifacts in same
@@ -436,7 +437,7 @@
 * Changed: moved HTTP download logic to transports.rb
 * Removed: deprecated grouping with multiple artifacts under id key
 
-0.6 (2/1/2007)
+0.6 (2007-02-01)
 * Added:   Artifact resolution introduces the notion of a spec,
            which can be supported using ActsAsArtifact
 * Added:   You can now use a project as an artifact, resulting in all its
@@ -450,7 +451,7 @@
 * Changed: attributes now stored directly as instance variables
 * Changed: ANSI colors and progress bar now using Ruby Facets
 
-0.5 (1/24/2007)
+0.5 (2007-01-24)
 * Added: Build number for each top-level project, build_number method for accessing
   it and build:increment task for updating the build number file.
 * Added: to_path method on project to resolve paths relative to base_dir.
@@ -466,7 +467,7 @@
 * Changed: Directory structure, now split into rbs, rbs-java and tasks.
 * Removed: project.options. Using a different attributes mechanism.
 
-0.4 (1/23/2007)
+0.4 (2007-01-23)
 * Added: CopyTask now deals with files and directories, can copy multiple files,
   and applies filter to all of them. Filter can be a hash or a proc.
 * Added: Project gets resources_filter attribute that can be used to set the
@@ -475,19 +476,19 @@
 * Changed: Dependencies now check signatures for every file, if available,
   and show download progress.
 
-0.3 (1/22/2007)
+0.3 (2007-01-22)
 * Added: Dependencies loaded from Maven repositories if not existing or built by project.
   Use rake dependencies to force update, or let compilation take care of it.
 * Added: Copy task for copying one file to another, and filtering support.
 
-0.2 (1/21/2007)
+0.2 (2007-01-21)
 * Added: remove task to get rid of packages added to the local repository.
 * Changed: recompile project if any of its dependencies is newer than the source code.
   Will cause recompile if any of the dependencies was compiled and packaged again.
 * Changed: compile task depends on javac task and resource copy tasks.
   This might change when adding filtering later on.
 
-0.1 (1/19/2007)
+0.1 (2007-01-19)
 * Added: build and clean tasks
 * Added: resources are now copied over during compilation
 * Added: POM file generated in local repository (keep Maven happy)

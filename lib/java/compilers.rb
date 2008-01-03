@@ -6,15 +6,30 @@ require "java/java"
 
 module Buildr
   module Compiler
-    class Javac < Base #:nodoc:
+
+    # Javac compiler:
+    #   compile.using(:javac)
+    # Used by default if .java files are found in the src/main/java directory (or src/test/java)
+    # and sets the target directory to target/classes (or target/test/classes).
+    #
+    # Accepts the following options:
+    # * :wranings -- Issue warnings when compiling.  True when running in verbose mode.
+    # * :debug    -- Generates bytecode with debugging information.  Set from the debug environment
+    #                variable/global option.
+    # * :deprecation -- If true, shows deprecation messages.  False by default.
+    # * :source      -- Source code compatibility.
+    # * :target      -- Bytecode compatibility.
+    # * :lint        -- Lint option is one of true, false (default), name (e.g. 'cast') or array.
+    # * :other       -- Array of options passed to the compiler (e.g. '-implicit:none')
+    class Javac < Base
       
       OPTIONS = [:warnings, :debug, :deprecation, :source, :target, :lint, :other]
 
-      def initialize
+      def initialize #:nodoc:
         super :language=>:java, :target_path=>'classes', :target_ext=>'.class'
       end
 
-      def configure(task, source, target)
+      def configure(task, source, target) #:nodoc:
         super
         update_options_from_parent! task, OPTIONS
         task.options.warnings ||= verbose
@@ -23,13 +38,15 @@ module Buildr
         task.options.debug ||= Buildr.options.debug
       end
 
-      def compile(files, task)
+      def compile(files, task) #:nodoc:
         check_options task, OPTIONS
         ::Buildr::Java.javac files, :sourcepath=>task.sources.select { |source| File.directory?(source) },
           :classpath=>task.dependencies, :output=>task.target, :javac_args=>javac_args_from(task.options)
       end
 
-      def javac_args_from(options)
+    private
+
+      def javac_args_from(options) #:nodoc:
         args = []  
         args << '-nowarn' unless options.warnings
         args << '-verbose' if Rake.application.options.trace
@@ -42,13 +59,11 @@ module Buildr
           when String; args << "-Xlint:#{options.lint}"
           when true; args << '-Xlint'
         end
-        options.other = options.other.map { |name, value| [ "-#{name}", value.to_s ] }.flatten if Hash === options.other
         args + Array(options.other)
       end
 
     end
 
-    Compiler.add Javac
   end
 
 
@@ -231,4 +246,34 @@ module Buildr
     end
 
   end
+
+
+  # Methods added to Project to support the Java Annotation Processor.
+  module Apt
+
+    # :call-seq:
+    #   apt(*sources) => task
+    #
+    # Returns a task that will use Java#apt to generate source files in target/generated/apt,
+    # from all the source directories passed as arguments. Uses the compile.sources list if
+    # on arguments supplied.
+    #
+    # For example:
+    #
+    def apt(*sources)
+      sources = compile.sources if sources.empty?
+      file(path_to(:target, "generated/apt")=>sources) do |task|
+        Java.apt(sources.map(&:to_s) - [task.name], :output=>task.name,
+          :classpath=>compile.classpath, :source=>compile.options.source)
+      end
+    end
+
+  end
+
+end
+
+Buildr::Compiler.add Buildr::Compiler::Javac
+class Buildr::Project
+  include Buildr::Javadoc
+  include Buildr::Apt
 end

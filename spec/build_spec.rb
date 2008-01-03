@@ -1,22 +1,81 @@
 require File.join(File.dirname(__FILE__), 'sandbox')
 
-
-describe 'Local directory build task' do
-  it 'should execute build task for current project' do
+describe 'local task', :shared=>true do
+  it "should execute task for project in current directory" do
     define 'foobar'
-    lambda { task('build').invoke }.should run_task('foobar:build')
+    lambda { @task.invoke }.should run_task("foobar:#{@task.name}")
   end
 
-  it 'should not execute build task for other projects' do
+  it "should not execute task for projects in other directory" do
     define 'foobar', :base_dir=>'elsewhere'
     lambda { task('build').invoke }.should_not run_task('foobar:build')
   end
 end
 
 
-describe Project, ' build task' do
+describe 'build task' do
+  it_should_behave_like 'local task'
+  before(:each) { @task = task('build') }
+end
+
+describe 'clean task' do
+  it_should_behave_like 'local task'
+  before(:each) { @task = task('clean') }
+end
+
+describe 'package task' do
+  it_should_behave_like 'local task'
+  before(:each) { @task = task('package') }
+
+  it 'should execute build task as prerequisite' do
+    lambda { @task.invoke }.should run_task('build')
+  end
+end
+
+describe 'install task' do
+  it_should_behave_like 'local task'
+  before(:each) { @task = task('install') }
+
+  it 'should execute package task as prerequisite' do
+    lambda { @task.invoke }.should run_task('package')
+  end
+end
+
+describe 'uninstall task' do
+  it_should_behave_like 'local task'
+  before(:each) { @task = task('uninstall') }
+end
+
+describe 'upload task' do
+  it_should_behave_like 'local task'
+  before(:each) { @task = task('upload') }
+
+  it 'should execute package task as prerequisite' do
+    lambda { @task.invoke }.should run_task('package')
+  end
+end
+
+
+describe Project, '#build' do
+  it 'should return the project\'s build task' do
+    define('foo').build.should eql(task('foo:build'))
+  end
+
+  it 'should enhance the project\'s build task' do
+    task 'prereq'
+    task 'action'
+    define 'foo' do
+      build 'prereq' do
+        task('action').invoke
+      end
+    end
+    lambda { project('foo').build.invoke }.should run_tasks('prereq', 'action')
+  end
+
   it 'should execute build task for sub-project' do
-    define('foo') { define 'bar' }
+    define 'foo' do
+      define 'bar'
+    end
     lambda { task('foo:build').invoke }.should run_task('foo:bar:build')
   end
 
@@ -25,15 +84,57 @@ describe Project, ' build task' do
     define 'bar'
     lambda { task('foo:build').invoke }.should_not run_task('bar:build')
   end
+end
 
-  it 'should be accessible as build method' do
-    define 'boo'
-    project('boo').build.should be(task('boo:build'))
+
+describe Project, '#clean' do
+  it 'should return the project\'s clean task' do
+    define('foo').clean.should eql(task('foo:clean'))
+  end
+
+  it 'should enhance the project\'s clean task' do
+    task 'prereq'
+    task 'action'
+    define 'foo' do
+      clean 'prereq' do
+        task('action').invoke
+      end
+    end
+    lambda { project('foo').clean.invoke }.should run_tasks('prereq', 'action')
+  end
+
+  it 'should remove target directory' do
+    define 'foo' do
+      self.layout[:target] = 'targeted'
+    end
+    mkpath 'targeted'
+    lambda { project('foo').clean.invoke }.should change { File.exist?('targeted') }.from(true).to(false)
+  end
+
+  it 'should remove reports directory' do
+    define 'foo' do
+      self.layout[:reports] = 'reported'
+    end
+    mkpath 'reported'
+    lambda { project('foo').clean.invoke }.should change { File.exist?('reported') }.from(true).to(false)
+  end
+
+  it 'should execute clean task for sub-project' do
+    define 'foo' do
+      define 'bar'
+    end
+    lambda { task('foo:clean').invoke }.should run_task('foo:bar:clean')
+  end
+
+  it 'should not execute clean task of other projects' do
+    define 'foo'
+    define 'bar'
+    lambda { task('foo:clean').invoke }.should_not run_task('bar:clean')
   end
 end
 
 
-describe Project, 'target' do
+describe Project, '#target' do
   before :each do
     @project = define('foo', :layout=>Layout.new)
   end
@@ -54,7 +155,7 @@ describe Project, 'target' do
 end
 
 
-describe Project, 'reports' do
+describe Project, '#reports' do
   before :each do
     @project = define('foo', :layout=>Layout.new)
   end

@@ -8,27 +8,11 @@ module Buildr
   module Ant
 
     # Which version of Ant we're using by default.
-    VERSION = "1.7.0"
+    VERSION = "1.7.0" unless const_defined?('VERSION')
 
     # Libraries used by Ant.
     REQUIRES = [ "org.apache.ant:ant:jar:#{VERSION}", "org.apache.ant:ant-launcher:jar:#{VERSION}", "xerces:xercesImpl:jar:2.6.2" ]
-    Java.wrapper.setup { |jw| jw.classpath << REQUIRES }
-
-    class << self
-
-      # *Deprecated* Use ant { ... } instead.
-      def declarative(name, options = nil, &block)
-        warn_deprecated "Use ant { ... } instead."
-        Buildr.ant name, options, &block
-      end
-
-      # *Deprecated* Use ant { ... } instead.
-      def executable(name, options = nil, &block)
-        warn_deprecated "Use ant { ... } instead."
-        Buildr.ant name, options, &block
-      end
-
-    end
+    Java.classpath << REQUIRES
 
     # :call-seq:
     #   ant(name) { |AntProject| ... } => AntProject
@@ -45,17 +29,15 @@ module Buildr
     #       fileset :dir=>source, :includes=>"**/*.java"
     #     end
     #   end
-    def ant(name, options=nil, &block)
-      warn_deprecated "Options are ignored." if options
+    def ant(name, &block)
       options = { :name=>name, :basedir=>Dir.pwd, :declarative=>true }
       options.merge!(:logger=> Logger.new(STDOUT), :loglevel=> Logger::DEBUG) if Rake.application.options.trace
-      Java.wrapper do
-        AntProject.new(options).tap do |project|
-          # Set Ant logging level to debug (--trace), info (default) or error only (--quiet).
-          project.project.getBuildListeners().get(0).
-            setMessageOutputLevel((Rake.application.options.trace && 4) || (verbose && 2) || 0)
-          yield project if block_given?
-        end
+      Java.load
+      AntProject.new(options).tap do |project|
+        # Set Ant logging level to debug (--trace), info (default) or error only (--quiet).
+        project.project.getBuildListeners().get(0).
+          setMessageOutputLevel((Rake.application.options.trace && 4) || (verbose && 2) || 0)
+        yield project if block_given?
       end
     end
 

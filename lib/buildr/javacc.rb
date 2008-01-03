@@ -6,7 +6,7 @@ module Buildr
 
     REQUIRES = [ "net.java.dev.javacc:javacc:jar:4.0", "net.java.dev.javacc:javacc:jar:4.0" ]
 
-    Java.wrapper.classpath << REQUIRES
+    Java.classpath << REQUIRES
 
     class << self
 
@@ -16,10 +16,8 @@ module Buildr
 
         args = args.flatten.map(&:to_s).collect { |f| File.directory?(f) ? FileList[f + "/**/*.jj"] : f }.flatten
         args.unshift "-OUTPUT_DIRECTORY=#{options[:output]}" if options[:output]
-        Java.wrapper do |jw|
-          jw.import("org.javacc.parser.Main").mainProgram(args) == 0 or
-            fail "Failed to run JavaCC, see errors above."
-        end
+        Java.import("org.javacc.parser.Main").mainProgram(args) == 0 or
+          fail "Failed to run JavaCC, see errors above."
       end
 
       def jjtree(*args)
@@ -29,10 +27,8 @@ module Buildr
         args = args.flatten.map(&:to_s).collect { |f| File.directory?(f) ? FileList[f + "**/*.jjt"] : f }.flatten
         args.unshift "-OUTPUT_DIRECTORY=#{options[:output]}" if options[:output]
         args.unshift "-BUILD_NODE_FILES=#{options[:build_node_files] || false}"
-        Java.wrapper do |jw|
-          jw.import("org.javacc.jjtree.JJTree").new.main(args) == 0 or
-            fail "Failed to run JJTree, see errors above."
-        end
+        Java.import("org.javacc.jjtree.JJTree").new.main(args) == 0 or
+          fail "Failed to run JJTree, see errors above."
       end
 
     end

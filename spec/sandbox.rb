@@ -11,7 +11,7 @@ unless defined?(Buildr)
   # that the code requires several artifacts. So we establish them first using the real local
   # repository and cache these across test cases.
   repositories.remote << "http://repo1.maven.org/maven2"
-  Java.wrapper.load # Anything added to the classpath.
+  Java.load # Anything added to the classpath.
   artifacts(TestFramework.frameworks.values.map(&:requires).flatten).each { |a| file(a).invoke }
   task("buildr:initialize").invoke
 

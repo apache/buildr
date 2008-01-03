@@ -1,0 +1,26 @@
+- Main:  
+  - Welcome: index.html
+  - Download
+  - Printable PDF: buildr.pdf
+- Using Buildr:
+  - Getting Started: getting_started.html
+  - Projects: projects.html
+  - Building: building.html
+  - Artifcats: artifacts.html
+  - Packaging: packaging.html
+  - Testing: testing.html
+  - More Stuff: more_stuff.html
+  - Extending: extending.html
+- Reference:
+  - API: rdoc/index.html
+  - Rake: http://docs.rubyrake.org
+  - Antwrap: http://antwrap.rubyforge.org
+- Getting Involved:
+  - Mailing Lists: mailing_lists.html
+  - Issues/Bugs: http://issues.apache.org/jira/browse/Buildr
+  - Contributing: contributing.html
+- Project Status:
+  - License: license.html
+  - Change Log: changelog.html
+  - Test Report: report.html
+  - Test Coverage: coverage/index.html

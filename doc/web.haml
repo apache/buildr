@@ -2,7 +2,7 @@
 %html
   %head
     %meta{ 'http-equiv'=>'Content-Type', :content=>'text/html;charset=UTF-8' }/
-    %title= "#{collection.title} &#8211; #{page.title}"
+    %title= "#{collection.title} &mdash; #{page.title}"
     %link{ :rel=>'stylesheet', :type=>'text/css', :href=>'css/default.css' }
     %link{ :rel=>'stylesheet', :type=>'text/css', :href=>'css/eiffel.css' }
     %style{ :type=>'text/css', :media=>'print' }
@@ -18,7 +18,7 @@
           %img{ :src=>'images/buildr.png', :alt=>collection.title }
         .tagline= 'The build system that doesn\'t suck'
       #pages
-        = collection.toc.to_html
+        = collection.toc.to_html(:nested=>1, :class=>'toc')
         %form{ :id=>'searchbox_003673095760649043902:ogcgrzu0l2y', :action=>'http://www.google.com/cse' }
           %input{ :type=>'hidden', :name=>'cx', :value=>'003673095760649043902:ogcgrzu0l2y' }
           %input{ :type=>'hidden', :name=>'cof', :value=>'FORID:0' }

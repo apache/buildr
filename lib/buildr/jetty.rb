@@ -28,15 +28,15 @@ module Buildr
   class Jetty
 
     # Which version of Jetty we're using by default (change with options.jetty.version).
-    VERSION = "6.1.3"
+    VERSION = "6.1.3" unless const_defined?('VERSION')
     SLF4J_VERSION = "1.4.3"
     
     # Libraries used by Jetty.
     REQUIRES = [ "org.mortbay.jetty:jetty:jar:#{VERSION}", "org.mortbay.jetty:jetty-util:jar:#{VERSION}",
       "org.mortbay.jetty:servlet-api-2.5:jar:#{VERSION}", "org.slf4j:slf4j-api:jar:#{SLF4J_VERSION}", 
       "org.slf4j:slf4j-simple:jar:#{SLF4J_VERSION}", "org.slf4j:jcl104-over-slf4j:jar:#{SLF4J_VERSION}" ]
-      
-    Java.wrapper.setup { |jw| jw.classpath << REQUIRES << File.join(__DIR__, "jetty") }
+     
+    Java.classpath <<  REQUIRES << File.join(__DIR__, "jetty")
     
     # Default URL for Jetty (change with options.jetty.url).
     URL = "http://localhost:8080"
@@ -74,14 +74,12 @@ module Buildr
     # invoke the #use task instead.
     def start(sync = nil)
       begin
-        Java.wrapper do |jw|
-          puts "classpath #{jw.classpath.inspect}"
-          port = URI.parse(url).port
-          puts "Starting Jetty at http://localhost:#{port}" if verbose
-          jetty = jw.import("JettyWrapper").new(port)
-          sync << "Started" if sync
-          sleep # Forever
-        end
+        puts "classpath #{Java.classpath.inspect}"
+        port = URI.parse(url).port
+        puts "Starting Jetty at http://localhost:#{port}" if verbose
+        jetty = Java.import("JettyWrapper").new(port)
+        sync << "Started" if sync
+        sleep # Forever
       rescue Interrupt # Stopped from console
       rescue Exception=>error
         puts "#{error.class}: #{error.message}"

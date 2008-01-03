@@ -443,48 +443,6 @@ module Buildr
       end
     end
 
-    # *Deprecated* Please use options.proxy.http instead of repositories.proxy.
-    def proxy()
-      warn_deprecated "Please use options.proxy.http instead of repositories.proxy"
-      Buildr.options.proxy.http
-    end
-
-    # *Deprecated* Please use options.proxy.http = <url> instead of repositories.proxy.
-    def proxy=(proxy)
-      warn_deprecated "Please use options.proxy.http = <url> instead of repositories.proxy"
-      Buildr.options.proxy.http = proxy
-    end
-  
-    # *Deprecated* Just create an artifact and invoke it. 
-    def download(spec)
-      warn_deprecated "Just create and artifact and invoke it."
-      spec = Artifact.to_hash(spec) unless Hash === spec
-      filename = locate(spec)
-      
-      puts "Downloading #{Artifact.to_spec(spec)}" if Rake.application.options.trace
-      return filename if remote.any? do |repo_url|
-        repo_url = URI.parse(repo_url) unless URI === repo_url
-        repo_url.path += "/" unless repo_url.path[-1] == "/"
-        begin
-          path = spec[:group].gsub(".", "/") +
-            "/#{spec[:id]}/#{spec[:version]}/#{Artifact.hash_to_file_name(spec)}"
-          mkpath File.dirname(filename), :verbose=>false
-          # We absolutely need the POM, so make sure we download it before the artifact
-          # (unless the artifact is a POM).
-          URI.download repo_url + path.ext("pom"), filename.ext("pom")  unless type == :pom
-          URI.download repo_url + path, filename
-          true
-        rescue URI::NotFoundError
-          false
-        rescue Exception=>error
-          puts error if verbose
-          puts error.backtrace.join("\n") if Rake.application.options.trace
-          false
-        end
-      end
-      fail "Failed to download #{Artifact.to_spec(spec)}, tried the following repositories:\n#{remote.join("\n")}"
-    end
-
     # :call-seq:
     #   release_to = url
     #   release_to = hash
@@ -516,18 +474,6 @@ module Buildr
     #   repositories.release_to[:password] = "secret"
     def release_to()
       @release_to ||= {}
-    end
-
-    # *Deprecated* See release_to.
-    def deploy_to=(options)
-      warn_deprecated "Please use release_to instead."
-      self.release_to = options
-    end
-
-    # *Deprecated* See release_to.
-    def deploy_to()
-      warn_deprecated "Please use release_to instead."
-      self.release_to
     end
 
   end
@@ -698,39 +644,6 @@ module Buildr
       task.enhance &block if block
       task.enhance all do
         all.each { |artifact| artifact.upload }
-      end
-    end
-  end
-
-  # *Deprecated* For artifact, call it's upload method; for anything else, use URI.upload.
-  def deploy(*args)
-    warn_deprecated "If it's an artifact, call it's upload method directly. Otherwise, use URI.upload."
-    # Where do we release to?
-    options = Hash === args.last ? args.pop : {}
-    deploy_to = options[:url] ? options : repositories.release_to
-    fail "Don't know where to deploy, perhaps you forgot to set repositories.deploy_to" if deploy_to[:url].blank?
-
-    args.flatten.each { |arg| arg.invoke if arg.respond_to?(:invoke) }
-    # Set the upload URI, including mandatory slash (we expect it to be the base directory).
-    # Username/password may be part of URI, or separate entities.
-    uri = URI.parse(deploy_to[:url].clone)
-    uri.path = uri.path + "/" unless uri.path[-1] == "/"
-    uri.user = deploy_to[:username] if deploy_to[:username]
-    uri.password = deploy_to[:password] if deploy_to[:password]
-
-    args.each do |arg|
-      if arg.respond_to?(:to_spec)
-        # Upload artifact relative to base URL, need to create path before uploading.
-        puts "Deploying #{arg.to_spec}" if verbose
-        spec = arg.to_spec_hash
-        path = spec[:group].gsub(".", "/") + "/#{spec[:id]}/#{spec[:version]}/" + Artifact.hash_to_file_name(spec)
-        URI.upload uri + path, arg.to_s, :permissions=>deploy_to[:permissions]
-      else
-        # Upload file to URL.
-        puts "Deploying #{arg}" if verbose
-        path = File.basename(args.to_s)
-        path = File.join(options[:path], path) if options[:path]
-        URI.upload uri + path, arg.to_s, :permissions=>deploy_to[:permissions]
       end
     end
   end

@@ -742,15 +742,6 @@ describe Packaging, " zip" do
   define_method(:packaging) { :zip }
   it_should_behave_like "packaging"
 
-  it "should accept files from :include option" do
-    write "test"
-    define("foo", :version=>"1.0") { package(:zip, :include=>"test") }
-    project("foo").package(:zip).invoke
-    Zip::ZipFile.open(project("foo").package(:zip).to_s) do |zip|
-      zip.entries.map(&:to_s).should include("test")
-    end
-  end
-
   it "should not include META-INF directory" do
     define("foo", :version=>"1.0") { package(:zip) }
     project("foo").package(:zip).invoke
@@ -767,22 +758,6 @@ describe Packaging, " jar" do
   it_should_behave_like "package_with_manifest"
   define_method(:meta_inf)  { "MANIFEST.MF" }
   it_should_behave_like "package_with_meta_inf"
-
-  it "should accept files from :include option" do
-    write "test"
-    write "src/main/java/Test.java", "class Test {}"
-    define("foo", :version=>"1.0") { package(:jar, :include=>"test") }
-    project("foo").package(:jar).invoke
-    Zip::ZipFile.open(project("foo").package(:jar).to_s) do |jar|
-      jar.entries.map(&:to_s).sort.should include("META-INF/MANIFEST.MF", "test")
-    end
-  end
-
-  it "should warn that :include option is deprecated" do
-    define "foo", :version=>"1.0" do
-      verbose(true) { lambda { package(:jar, :include=>"test") }.should warn_that(/:include option .* is deprecated/) }
-    end
-  end
 
   it "should use files from compile directory if nothing included" do
     write "src/main/java/Test.java", "class Test {}"
@@ -850,19 +825,6 @@ describe Packaging, " war" do
     end
   end
 
-  it "should accept files from :include option" do
-    write "test"
-    write "src/main/webapp/test.html"
-    define("foo", :version=>"1.0") { package(:war, :include=>"test") }
-    inspect_war { |files| files.should include("META-INF/MANIFEST.MF", "test") }
-  end
-
-  it "should warn that :include option is deprecated" do
-    define "foo", :version=>"1.0" do
-      verbose(true) { lambda { package(:war, :include=>"test") }.should warn_that(/:include option .* is deprecated/) }
-    end
-  end
-
   it "should use files from webapp directory if nothing included" do
     write "src/main/webapp/test.html"
     define("foo", :version=>"1.0") { package(:war) }
@@ -877,14 +839,8 @@ describe Packaging, " war" do
   it "should accept files from :classes option" do
     write "src/main/java/Test.java", "class Test {}"
     write "classes/test"
-    define("foo", :version=>"1.0") { package(:war, :classes=>"classes") }
+    define("foo", :version=>"1.0") { package(:war).with(:classes=>"classes") }
     inspect_war { |files| files.should include("WEB-INF/classes/test") }
-  end
-
-  it "should warn that :classes option is deprecated" do
-    define "foo", :version=>"1.0" do
-      verbose(true) { lambda { package(:war, :classes=>"classes") }.should warn_that(/:classes option .* is deprecated/) }
-    end
   end
 
   it "should use files from compile directory if nothing included" do
@@ -919,19 +875,13 @@ describe Packaging, " war" do
 
   it "should accept file from :libs option" do
     make_jars
-    define("foo", :version=>"1.0") { package(:war, :libs=>"group:id:jar:1.0") }
+    define("foo", :version=>"1.0") { package(:war).with(:libs=>"group:id:jar:1.0") }
     inspect_war { |files| files.should include("META-INF/MANIFEST.MF", "WEB-INF/lib/id-1.0.jar") }
-  end
-
-  it "should warn that :libs option is deprecated" do
-    define "foo", :version=>"1.0" do
-      verbose(true) { lambda { package(:war, :libs=>"group:id:jar:1.0") }.should warn_that(/:libs option .* is deprecated/) }
-    end
   end
 
   it "should accept file from :libs option" do
     make_jars
-    define("foo", :version=>"1.0") { package(:war, :libs=>["group:id:jar:1.0", "group:id:jar:2.0"]) }
+    define("foo", :version=>"1.0") { package(:war).with(:libs=>["group:id:jar:1.0", "group:id:jar:2.0"]) }
     inspect_war { |files| files.should include("META-INF/MANIFEST.MF", "WEB-INF/lib/id-1.0.jar", "WEB-INF/lib/id-2.0.jar") }
   end
 
