@@ -80,7 +80,11 @@ end
 
 
 describe Buildr.method(:download) do
-  before { @content = "we has download!" }
+  before do
+    @content = "we has download!"
+    @http = mock('http')
+    @http.stub!(:request).and_return(Net::HTTPNotModified.new(nil, nil, nil))
+  end
 
   def tasks()
     [ download("http://localhost/download"), download("downloaded"=>"http://localhost/download") ]
@@ -155,19 +159,19 @@ describe Buildr.method(:download) do
   end
 
   it "should execute without a proxy if none specified" do
-    Net::HTTP.should_receive(:start).with("localhost", 80).twice
+    Net::HTTP.should_receive(:new).with("localhost", 80).twice.and_return(@http)
     tasks.each(&:invoke)
   end
 
   it "should pass Buildr proxy options" do
     Buildr.options.proxy.http = "http://proxy:8080"
-    Net::HTTP.should_receive(:start).with("localhost", 80, "proxy", 8080, nil, nil).twice
+    Net::HTTP.should_receive(:new).with("localhost", 80, "proxy", 8080, nil, nil).twice.and_return(@http)
     tasks.each(&:invoke)
   end
 
   it "should set HTTP proxy from HTTP_PROXY environment variable" do
     ENV["HTTP_PROXY"] = "http://proxy:8080"
-    Net::HTTP.should_receive(:start).with("localhost", 80, "proxy", 8080, nil, nil).twice
+    Net::HTTP.should_receive(:new).with("localhost", 80, "proxy", 8080, nil, nil).twice.and_return(@http)
     tasks.each(&:invoke)
   end
 end
@@ -440,6 +444,8 @@ describe Buildr::Options, " proxy.exclude" do
     @uri = URI("http://#{@host}")
     @no_proxy_args = [@host, 80]
     @proxy_args = @no_proxy_args + ["myproxy", 8080, nil, nil]
+    @http = mock('http')
+    @http.stub!(:request).and_return(Net::HTTPNotModified.new(nil, nil, nil))
   end
 
   it "should be an array" do
@@ -460,35 +466,35 @@ describe Buildr::Options, " proxy.exclude" do
   end
 
   it "should use proxy when not excluded" do
-    Net::HTTP.should_receive(:start).with(*@proxy_args)
+    Net::HTTP.should_receive(:new).with(*@proxy_args).and_return(@http)
     @uri.read :proxy=>options.proxy
   end
 
   it "should use proxy unless excluded" do
     options.proxy.exclude = "not.#{@domain}"
-    Net::HTTP.should_receive(:start).with(*@proxy_args)
+    Net::HTTP.should_receive(:new).with(*@proxy_args).and_return(@http)
     @uri.read :proxy=>options.proxy
   end
 
   it "should not use proxy if excluded" do
     options.proxy.exclude = @host
-    Net::HTTP.should_receive(:start).with(*@no_proxy_args)
+    Net::HTTP.should_receive(:new).with(*@no_proxy_args).and_return(@http)
     @uri.read :proxy=>options.proxy
   end
 
   it "should support multiple host names" do
     options.proxy.exclude = ["optimus", "prime"]
-    Net::HTTP.should_receive(:start).with("optimus", 80)
+    Net::HTTP.should_receive(:new).with("optimus", 80).and_return(@http)
     URI("http://optimus").read :proxy=>options.proxy
-    Net::HTTP.should_receive(:start).with("prime", 80)
+    Net::HTTP.should_receive(:new).with("prime", 80).and_return(@http)
     URI("http://prime").read :proxy=>options.proxy
-    Net::HTTP.should_receive(:start).with("bumblebee", *@proxy_args.tail)
+    Net::HTTP.should_receive(:new).with("bumblebee", *@proxy_args[1..-1]).and_return(@http)
     URI("http://bumblebee").read :proxy=>options.proxy
   end
 
   it "should support glob pattern on host name" do
     options.proxy.exclude = "*.#{@domain}"
-    Net::HTTP.should_receive(:start).with(*@no_proxy_args)
+    Net::HTTP.should_receive(:new).with(*@no_proxy_args).and_return(@http)
     @uri.read :proxy=>options.proxy
   end
 end

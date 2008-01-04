@@ -1,5 +1,4 @@
 require 'yaml'
-require 'facet/openobject'
 
 
 module Buildr

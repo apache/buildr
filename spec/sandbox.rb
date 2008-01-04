@@ -111,7 +111,7 @@ unless defined?(Buildr)
 
         def all_ran?()
           @remaining ||= $executed.inject(@expecting) do |expecting, executed|
-            expecting.map { |tasks| tasks.first == executed ? tasks.tail : tasks }.reject(&:empty?)
+            expecting.map { |tasks| tasks.first == executed ? tasks[1..-1] : tasks }.reject(&:empty?)
           end
           @remaining.empty?
         end

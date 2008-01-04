@@ -53,7 +53,7 @@ module Buildr
     #     :version=>"1.2" }
     def to_spec_hash()
       base = { :group=>group, :id=>id, :type=>type, :version=>version }
-      classifier.blank? ? base : base.merge(:classifier=>classifier)
+      classifier.to_s.blank? ? base : base.merge(:classifier=>classifier)
     end
     alias_method :to_hash, :to_spec_hash
 
@@ -65,7 +65,7 @@ module Buildr
     # or
     #   <group>:<artifact>:<type>:<classifier><:version>
     def to_spec()
-      classifier.blank? ? "#{group}:#{id}:#{type}:#{version}" : "#{group}:#{id}:#{type}:#{classifier}:#{version}"
+      classifier.to_s.blank? ? "#{group}:#{id}:#{type}:#{version}" : "#{group}:#{id}:#{type}:#{classifier}:#{version}"
     end
 
     # :call-seq:
@@ -108,7 +108,7 @@ module Buildr
       # Where do we release to?
       upload_to ||= Buildr.repositories.release_to
       upload_to = { :url=>upload_to } unless Hash === upload_to
-      raise ArgumentError, "Don't know where to upload, perhaps you forgot to set repositories.release_to" if upload_to[:url].blank?
+      raise ArgumentError, "Don't know where to upload, perhaps you forgot to set repositories.release_to" if upload_to[:url].to_s.blank?
 
       # Set the upload URI, including mandatory slash (we expect it to be the base directory).
       # Username/password may be part of URI, or separate entities.
@@ -203,10 +203,10 @@ module Buildr
           rake_check_options spec, :id, :group, :type, :classifier, :version
           # Sanitize the hash and check it's valid.
           spec = ARTIFACT_ATTRIBUTES.inject({}) { |h, k| h[k] = spec[k].to_s if spec[k] ; h }
-          fail "Missing group identifier for #{spec.inspect}" if spec[:group].blank?
-          fail "Missing artifact identifier for #{spec.inspect}" if spec[:id].blank?
-          fail "Missing version for #{spec.inspect}" if spec[:version].blank?
-          spec[:type] = spec[:type].blank? ? DEFAULT_TYPE : spec[:type].to_sym
+          fail "Missing group identifier for #{spec.inspect}" if spec[:group].to_s.blank?
+          fail "Missing artifact identifier for #{spec.inspect}" if spec[:id].to_s.blank?
+          fail "Missing version for #{spec.inspect}" if spec[:version].to_s.blank?
+          spec[:type] = spec[:type].to_s.blank? ? DEFAULT_TYPE : spec[:type].to_sym
           spec
         elsif String === spec
           group, id, type, version, *rest = spec.split(":")
@@ -228,8 +228,8 @@ module Buildr
       # a string, hash or any object that responds to to_spec.
       def to_spec(hash)
         hash = to_hash(hash) unless Hash === hash
-        version = ":#{hash[:version]}" unless hash[:version].blank?
-        classifier = ":#{hash[:classifier]}" unless hash[:classifier].blank?
+        version = ":#{hash[:version]}" unless hash[:version].to_s.blank?
+        classifier = ":#{hash[:classifier]}" unless hash[:classifier].to_s.blank?
         "#{hash[:group]}:#{hash[:id]}:#{hash[:type] || DEFAULT_TYPE}#{classifier}#{version}"
       end
 
@@ -238,8 +238,8 @@ module Buildr
       #
       # Convert a hash spec to a file name.
       def hash_to_file_name(hash)
-        version = "-#{hash[:version]}" unless hash[:version].blank?
-        classifier = "-#{hash[:classifier]}" unless hash[:classifier].blank?
+        version = "-#{hash[:version]}" unless hash[:version].to_s.blank?
+        classifier = "-#{hash[:classifier]}" unless hash[:classifier].to_s.blank?
         "#{hash[:id]}#{version}#{classifier}.#{hash[:type] || DEFAULT_TYPE}"
       end
 

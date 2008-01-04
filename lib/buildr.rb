@@ -6,19 +6,15 @@ require 'net/ssh'
 
 require 'highline'
 require 'highline/import'
-# &:symbol goodness.
-require 'facet/symbol/to_proc'
-# blank? on string and nil
-require 'facet/string/blank'
-require 'facet/nilclass/blank'
-# What it says.
-require 'facet/kernel/__DIR__'
-require 'facet/module/alias_method_chain'
-require 'facet/array/head'
-require 'facet/string/starts_with'
-require 'facet/openobject'
-require 'facets/core/kernel/tap'
-require 'facets/core/enumerable/uniq_by'
+require 'facets/symbol/to_proc'
+require 'facets/string/blank'
+require 'facets/kernel/__DIR__'
+require 'facets/module/alias_method_chain'
+require 'facets/string/starts_with'
+require 'facets/openobject'
+require 'facets/kernel/tap'
+require 'facets/enumerable/uniq_by'
+
 # A different kind of buildr, one we use to create XML.
 require 'builder'
 

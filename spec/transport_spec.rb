@@ -209,58 +209,60 @@ describe URI::HTTP, "#read" do
     @uri = URI("http://#{@host_domain}")
     @no_proxy_args = [@host_domain, 80]
     @proxy_args = @no_proxy_args + ["myproxy", 8080, "john", "smith"]
+    @http = mock('http')
+    @http.stub!(:request).and_return(Net::HTTPNotModified.new(nil, nil, nil))
   end
 
   it "should not use proxy unless proxy is set" do
-    Net::HTTP.should_receive(:start).with(*@no_proxy_args)
+    Net::HTTP.should_receive(:new).with(*@no_proxy_args).and_return(@http)
     @uri.read
   end
 
   it "should use proxy from environment variable HTTP_PROXY" do
     ENV["HTTP_PROXY"] = @proxy
-    Net::HTTP.should_receive(:start).with(*@proxy_args)
+    Net::HTTP.should_receive(:new).with(*@proxy_args).and_return(@http)
     @uri.read
   end
 
   it "should not use proxy for hosts from environment variable NO_PROXY" do
     ENV["HTTP_PROXY"] = @proxy
     ENV["NO_PROXY"] = @host_domain
-    Net::HTTP.should_receive(:start).with(*@no_proxy_args)
+    Net::HTTP.should_receive(:new).with(*@no_proxy_args).and_return(@http)
     @uri.read
   end
 
   it "should use proxy for hosts other than those specified by NO_PROXY" do
     ENV["HTTP_PROXY"] = @proxy
     ENV["NO_PROXY"] = "whatever"
-    Net::HTTP.should_receive(:start).with(*@proxy_args)
+    Net::HTTP.should_receive(:new).with(*@proxy_args).and_return(@http)
     @uri.read
   end
 
   it "should support comma separated list in environment variable NO_PROXY" do
     ENV["HTTP_PROXY"] = @proxy
     ENV["NO_PROXY"] = "optimus,prime"
-    Net::HTTP.should_receive(:start).with("optimus", 80)
+    Net::HTTP.should_receive(:new).with("optimus", 80).and_return(@http)
     URI("http://optimus").read
-    Net::HTTP.should_receive(:start).with("prime", 80)
+    Net::HTTP.should_receive(:new).with("prime", 80).and_return(@http)
     URI("http://prime").read
-    Net::HTTP.should_receive(:start).with("bumblebee", *@proxy_args.tail)
+    Net::HTTP.should_receive(:new).with("bumblebee", *@proxy_args[1..-1]).and_return(@http)
     URI("http://bumblebee").read
   end
 
   it "should support glob pattern in NO_PROXY" do
     ENV["HTTP_PROXY"] = @proxy
     ENV["NO_PROXY"] = "*.#{@domain}"
-    Net::HTTP.should_receive(:start).once.with(*@no_proxy_args)
+    Net::HTTP.should_receive(:new).once.with(*@no_proxy_args).and_return(@http)
     @uri.read
   end
 
   it "should support specific port in NO_PROXY" do
     ENV["HTTP_PROXY"] = @proxy
     ENV["NO_PROXY"] = "#{@host_domain}:80"
-    Net::HTTP.should_receive(:start).with(*@no_proxy_args)
+    Net::HTTP.should_receive(:new).with(*@no_proxy_args).and_return(@http)
     @uri.read
     ENV["NO_PROXY"] = "#{@host_domain}:800"
-    Net::HTTP.should_receive(:start).with(*@proxy_args)
+    Net::HTTP.should_receive(:new).with(*@proxy_args).and_return(@http)
     @uri.read
   end
 

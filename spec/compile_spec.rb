@@ -749,7 +749,7 @@ describe Project, '#javadoc' do
     make_sources
     define 'foo'
     project('foo').javadoc.exclude @sources.first
-    project('foo').javadoc.source_files.sort.should == @sources.tail #[1..-1]
+    project('foo').javadoc.source_files.sort.should == @sources[1..-1]
   end
 
   it 'should respond to using() and return self' do

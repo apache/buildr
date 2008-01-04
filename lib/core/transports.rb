@@ -1,12 +1,13 @@
 require "cgi"
 require "net/http"
+require "net/https"
 require "net/ssh"
 require "net/sftp"
 require "uri"
 require "uri/sftp"
 require "digest/md5"
 require "digest/sha1"
-require "facet/progressbar"
+require "facets/progressbar"
 require "highline"
 require "tempfile"
 require "uri/sftp"
@@ -309,54 +310,50 @@ module URI
     # See URI::Generic#read
     def read(options = nil, &block)
       options ||= {}
-
       headers = { "If-Modified-Since" => CGI.rfc1123_date(options[:modified].utc) } if options[:modified]
-      result = nil
-      request = lambda do |http|
-        puts "Requesting #{self}"  if Rake.application.options.trace
-        http.request_get(path, headers) do |response|
-          case response
-          when Net::HTTPNotModified
-            # No modification, nothing to do.
-            puts "Not modified since last download" if Rake.application.options.trace
-
-          when Net::HTTPRedirection
-            # Try to download from the new URI, handle relative redirects.
-            puts "Redirected to #{response['Location']}" if Rake.application.options.trace
-            result = (self + URI.parse(response["location"])).read(options, &block)
-
-          when Net::HTTPOK
-            puts "Downloading #{self}" if verbose
-            with_progress_bar options[:progress], path.split("/").last, response.content_length do |progress|
-              if block
-                response.read_body do |chunk|
-                  block.call chunk
-                  progress << chunk
-                end
-              else
-                result = ""
-                response.read_body do |chunk|
-                  result << chunk
-                  progress << chunk
-                end
-              end
-            end
-
-          when Net::HTTPNotFound
-            raise NotFoundError, "Looking for #{self} and all I got was a 404!"
-          else
-            raise RuntimeError, "Failed to download #{self}: #{response.message}"
-          end
-        end
-      end
 
       if proxy = proxy_uri
         proxy = URI.parse(proxy) if String === proxy
-        Net::HTTP.start(host, port, proxy.host, proxy.port, proxy.user, proxy.password) { |http| request[http] }
+        http = Net::HTTP.new(host, port, proxy.host, proxy.port, proxy.user, proxy.password)
       else
-        Net::HTTP.start(host, port) { |http| request[http] }
+        http = Net::HTTP.new(host, port)
       end
-      result
+      http.use_ssl = true if self.instance_of? URI::HTTPS
+
+      puts "Requesting #{self}"  if Rake.application.options.trace
+      request = Net::HTTP::Get.new(path.blank? ? '/' : path, headers)
+      request.basic_auth self.user, self.password if self.user
+      case response = http.request(request)
+      when Net::HTTPNotModified
+        # No modification, nothing to do.
+        puts "Not modified since last download" if Rake.application.options.trace
+        nil
+      when Net::HTTPRedirection
+        # Try to download from the new URI, handle relative redirects.
+        puts "Redirected to #{response['Location']}" if Rake.application.options.trace
+        (self + URI.parse(response["location"])).read(options, &block)
+      when Net::HTTPOK
+        puts "Downloading #{self}" if verbose
+        with_progress_bar options[:progress], path.split("/").last, response.content_length do |progress|
+          if block
+            response.read_body do |chunk|
+              block.call chunk
+              progress << chunk
+            end
+          else
+            result = ""
+            response.read_body do |chunk|
+              result << chunk
+              progress << chunk
+            end
+          end
+        end
+        result
+      when Net::HTTPNotFound
+        raise NotFoundError, "Looking for #{self} and all I got was a 404!"
+      else
+        raise RuntimeError, "Failed to download #{self}: #{response.message}"
+      end
     end
 
   end
@@ -455,7 +452,7 @@ module URI
     # See URI::Generic#read
     def read(options = nil, &block)
       options ||= {}
-      raise ArgumentError, "Either you're attempting to read a file from another host (which we don't support), or you used two slashes by mistake, where you should have file:///<path>." unless host.blank?
+      raise ArgumentError, "Either you're attempting to read a file from another host (which we don't support), or you used two slashes by mistake, where you should have file:///<path>." unless host.to_s.blank?
 
       path = real_path
       # TODO: complain about clunky URLs
@@ -482,7 +479,7 @@ module URI
   protected
 
     def write_internal(options, &block) #:nodoc:
-      raise ArgumentError, "Either you're attempting to write a file to another host (which we don't support), or you used two slashes by mistake, where you should have file:///<path>." unless host.blank?
+      raise ArgumentError, "Either you're attempting to write a file to another host (which we don't support), or you used two slashes by mistake, where you should have file:///<path>." unless host.to_s.blank?
       temp = nil
       Tempfile.open File.basename(path) do |temp|
         temp.binmode

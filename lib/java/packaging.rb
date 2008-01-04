@@ -17,7 +17,7 @@ module Buildr
       module WithManifest #:nodoc:
 
         def self.included(base)
-          base.alias_method_chain :initialize, :manifest
+          base.send :alias_method_chain, :initialize, :manifest
         end
 
         MANIFEST_HEADER = ["Manifest-Version: 1.0", "Created-By: Buildr"]

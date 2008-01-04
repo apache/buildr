@@ -16,7 +16,7 @@ module Buildr
       
       def initialize(root, path)
         @root = root
-        @path = path.blank? ? path : "#{path}/"
+        @path = path.to_s.blank? ? path : "#{path}/"
         @includes = FileList[]
         @excludes = []
         # Expand source files added to this path.
@@ -108,7 +108,7 @@ module Buildr
 
       # Returns a Path relative to this one.
       def path(path)
-        return self if path.blank?
+        return self if path.to_s.blank?
         return root.path(path[1..-1]) if path[0] == ?/
         root.path("#{@path}#{path}")
       end
@@ -215,7 +215,7 @@ module Buildr
           mkpath File.dirname(name), :verbose=>false
           begin
             @paths.each do |name, object|
-              @file_map[name] = nil unless name.blank?
+              @file_map[name] = nil unless name.to_s.blank?
               object.add_files(@file_map)
             end
             create_from @file_map
@@ -299,7 +299,7 @@ module Buildr
     #   path("foo").path("bar") == path("foo/bar")
     #   path("foo").root == root
     def path(name)
-      return @paths[""] if name.blank?
+      return @paths[""] if name.to_s.blank?
       normalized = name.split("/").inject([]) do |path, part|
         case part
         when ".", nil, ""
