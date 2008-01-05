@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'sandbox')
+require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
 describe Buildr::TestTask do
@@ -75,13 +75,13 @@ describe Buildr::TestTask do
 
   it "should respond to :with and add artifacfs to compile task dependencies" do
     define("foo") { test.with "test.jar", "acme:example:jar:1.0" }
-    project("foo").test.compile.dependencies.should include(File.expand_path("test.jar"))
+    project("foo").test.compile.dependencies.first.should point_to_path("test.jar")
     project("foo").test.compile.dependencies.should include(artifact("acme:example:jar:1.0"))
   end
 
   it "should respond to :with and add artifacfs to task dependencies" do
     define("foo") { test.with "test.jar", "acme:example:jar:1.0" }
-    project("foo").test.dependencies.should include(File.expand_path("test.jar"))
+    project("foo").test.dependencies.first.should point_to_path("test.jar")
     project("foo").test.dependencies.should include(artifact("acme:example:jar:1.0"))
   end
 
@@ -200,7 +200,7 @@ describe Buildr::TestTask, " with passing tests" do
   end
 
   it "should fail if only one test fails" do
-    TestFramework.frameworks[:junit].stub!(:run).and_return [@tests.last]
+    TestFramework.instance_variable_get(:@frameworks)[:junit].stub!(:run).and_return [@tests.last]
     lambda { project("foo").test.invoke }.should raise_error(RuntimeError, /Tests failed/)
   end
 
@@ -215,7 +215,7 @@ describe Buildr::TestTask, " with failed test" do
     @tests = ["FailingTest1", "FailingTest2"]
     define "foo"
     project("foo").test.stub!(:files).and_return @tests
-    TestFramework.frameworks[:junit].stub!(:run).and_return @tests
+    TestFramework.instance_variable_get(:@frameworks)[:junit].stub!(:run).and_return @tests
   end
 
   it "should fail" do
@@ -530,7 +530,7 @@ describe Buildr::Project, "test:compile" do
 
   it "should include the compiled target in its dependencies" do
     define("foo") { compile.into "odd" }
-    project("foo").test.compile.dependencies.should include(project("foo").file("odd"))
+    project("foo").test.compile.dependencies.should include(file('odd'))
   end
 
   it "should include the test framework artifacts in its dependencies" do

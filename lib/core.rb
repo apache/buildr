@@ -3,8 +3,10 @@ require 'core/project'
 require 'core/environment'
 require 'core/help'
 require 'core/build'
+require 'core/package'
 require 'core/compile'
 require 'core/test'
+require 'core/checks'
 require 'core/generate'
 
 class Buildr::Project
@@ -14,5 +16,6 @@ class Buildr::Project
   include Buildr::Build
   include Buildr::Compile
   include Buildr::Test
+  include Buildr::Package
   include Buildr::Checks
 end

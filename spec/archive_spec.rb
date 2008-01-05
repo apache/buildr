@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'sandbox')
+require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
 describe "ArchiveTask", :shared=>true do

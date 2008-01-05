@@ -424,7 +424,7 @@ module Buildr
         if parent
           # For sub-project, a good default is a directory in the parent's base_dir,
           # using the same name as the project.
-          @base_dir = File.join(parent.base_dir, name.split(':').last)
+          @base_dir = File.expand_path(name.split(':').last, parent.base_dir)
         else
           # For top-level project, a good default is the directory where we found the Buildfile.
           @base_dir = Dir.pwd

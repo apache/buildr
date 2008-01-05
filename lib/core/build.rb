@@ -23,8 +23,6 @@ module Buildr
 
   module Build
 
-    BUILD_TASKS = [ :build, :clean, :package, :install, :uninstall, :upload ]
-
     include Extension
 
     first_time do
@@ -32,21 +30,14 @@ module Buildr
       Project.local_task('build') { |name| "Building #{name}" }
       desc 'Clean files generated during a build'
       Project.local_task('clean') { |name| "Cleaning #{name}" }
-      desc 'Create packages'
-      Project.local_task('package'=>'build') { |name| "Packaging #{name}" }
-      desc 'Install packages created by the project'
-      Project.local_task('install'=>'package') { |name| "Installing packages from #{name}" }
-      desc 'Remove previously installed packages'
-      Project.local_task('uninstall') { |name| "Uninstalling packages from #{name}" }
-      desc 'Upload packages created by the project'
-      Project.local_task('upload'=>'package') { |name| "Deploying packages from #{name}" }
 
       desc 'The default task it build'
       task 'default'=>'build'
     end
 
     before_define do |project|
-      BUILD_TASKS.each { |name| project.recursive_task name }
+      project.recursive_task 'build'
+      project.recursive_task 'clean'
       project.clean do
         verbose(true) do
           rm_rf project.path_to(:target)

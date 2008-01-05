@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'sandbox')
+require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
 describe Project do
@@ -120,13 +120,12 @@ end
 
 describe Project, '#base_dir' do
   it 'should be pwd if not specified' do
-    foo = define('foo')
-    foo.base_dir.should eql(Dir.pwd)
+    define('foo').base_dir.should eql(Dir.pwd)
   end
 
   it 'should come from property, if specified' do
     foo = define('foo', :base_dir=>'tmp')
-    foo.base_dir.should eql(File.expand_path('tmp'))
+    foo.base_dir.should point_to_path('tmp')
   end
 
   it 'should be expanded path' do
@@ -135,8 +134,8 @@ describe Project, '#base_dir' do
   end
 
   it 'should be relative to parent project' do
-    define('foo') { define 'bar' }
-    project('foo:bar').base_dir.should eql(File.join(project('foo').base_dir, 'bar'))
+    define('foo') { define('bar') { define 'baz' } }
+    project('foo:bar:baz').base_dir.should point_to_path('bar/baz')
   end
 
   it 'should be settable only if not read' do
@@ -246,36 +245,41 @@ end
 
 
 describe Project, '#path_to' do
-  before do
-    @project = define('foo') { define('bar') }
-    @base_dir = @project.base_dir
+  it 'should return absolute paths as is' do
+    define('foo').path_to('/tmp').should eql('/tmp')
   end
 
-  it 'should return absolute paths as is' do
-    @project.path_to('/tmp').should eql('/tmp')
+  it 'should resolve empty path to project\'s base directory' do
+    define('foo').path_to.should eql(project('foo').base_dir)
   end
 
   it 'should resolve relative paths' do
-    @project.path_to().should eql(@project.base_dir)
-    @project.path_to('tmp').should eql("#{@base_dir}/tmp")
+    define('foo').path_to('tmp').should eql(File.expand_path('tmp'))
   end
 
   it 'should accept multiple arguments' do
-    @project.path_to('foo', 'bar').should eql("#{@base_dir}/foo/bar")
+    define('foo').path_to('foo', 'bar').should eql(File.expand_path('foo/bar'))
   end
 
   it 'should handle relative paths' do
-    @project.path_to('..', 'bar').should eql(File.join(@base_dir.pathmap('%d'), 'bar'))
+    define('foo').path_to('..', 'bar').should eql(File.expand_path('../bar'))
   end
 
   it 'should resolve symbols using layout' do
-    @project.layout[:foo] = 'bar'
-    @project.path_to(:foo).should eql(File.join(@base_dir, 'bar'))
-    @project.path_to(:foo, 'tmp').should eql(File.join(@base_dir, 'bar', 'tmp'))
+    define('foo').layout[:foo] = 'bar'
+    project('foo').path_to(:foo).should eql(File.expand_path('bar'))
+    project('foo').path_to(:foo, 'tmp').should eql(File.expand_path('bar/tmp'))
   end
 
   it 'should resolve path for sub-project' do
-    project('foo:bar').path_to('foo').should eql(File.join(project('foo:bar').base_dir, 'foo'))
+    define('foo') { define 'bar' }
+    project('foo:bar').path_to('foo').should eql(File.expand_path('foo', project('foo:bar').base_dir))
+  end
+
+  it 'should be idempotent for relative paths' do
+    define 'foo'
+    path = project('foo').path_to('bar')
+    project('foo').path_to(path).should eql(path)
   end
 end
 
@@ -668,7 +672,7 @@ describe Project, '#task' do
 
   it 'should create file task relative to project definition' do
     define('foo') { define 'bar' }
-    project('foo:bar').file('baz').name.should eql(File.expand_path('bar/baz'))
+    project('foo:bar').file('baz').name.should point_to_path('bar/baz')
   end
 
   it 'should execute task exactly once' do

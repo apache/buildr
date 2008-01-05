@@ -112,6 +112,10 @@ module Buildr
       super(path).reject { |name| name =~ /\$/ }
     end
 
+    def supports?(project) #:nodoc:
+      project.test.compile.language == :java
+    end
+
     def run(files, task, dependencies) #:nodoc:
       # Use Ant to execute the Junit tasks, gives us performance and reporting.
       Buildr.ant('junit') do |ant|
@@ -192,6 +196,10 @@ module Buildr
       super :requires=>REQUIRES, :patterns=>TESTS_PATTERN
     end
 
+    def supports?(project) #:nodoc:
+      project.test.compile.language == :java
+    end
+
     def files(path) #:nodoc:
       # Ignore anonymous classes.
       super(path).reject { |name| name =~ /\$/ }
@@ -217,5 +225,5 @@ module Buildr
 end
 
 
-Buildr::TestFramework.add Buildr::TestNG
 Buildr::TestFramework.add Buildr::JUnit
+Buildr::TestFramework.add Buildr::TestNG

@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'sandbox')
+require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
 describe Buildr.method(:struct) do
@@ -178,25 +178,25 @@ end
 
 
 describe Buildr.method(:filter) do
-  before do
-    @src = File.expand_path("src") 
+  def source
+    File.expand_path("src")
   end
   
   it "should return a Filter for the source" do
-    filter(@src).should be_kind_of(Filter)
+    filter(source).should be_kind_of(Filter)
   end
 
   it "should use the source directory" do
-    filter(@src).sources.should include(file(@src))
+    filter(source).sources.should include(file(source))
   end
 
   it "should use the source directories" do
     dirs = ["first", "second"]
-    filter("first", "second").sources.should include(*dirs.map { |dir| file(File.expand_path(dir)) })
+    filter("first", "second").sources.should include(*dirs.map { |dir| file(dir) })
   end
 
   it "should accept a file task" do
-    task = file(@src)
+    task = file(source)
     filter(task).sources.each { |source| source.should be(task) }
   end
 end
@@ -220,7 +220,7 @@ describe Buildr::Filter do
   it "should respond to :from and add source directories" do
     dirs = ["first", "second"]
     @filter.from(*dirs)
-    @filter.sources.should include(*dirs.map { |dir| file(File.expand_path(dir)) })
+    @filter.sources.should include(*dirs.map { |dir| file(dir) })
   end
 
   it "should return source directories as file task" do
@@ -228,7 +228,7 @@ describe Buildr::Filter do
   end
 
   it "should return source directories as expanded path" do
-    @filter.from("src").sources.each { |source| source.to_s.should eql(File.expand_path("src")) }
+    @filter.from("src").sources.each { |source| source.to_s.should eql("src") }
   end
 
   it "should respond to :into and return self" do
@@ -237,7 +237,7 @@ describe Buildr::Filter do
 
   it "should respond to :into and set target directory" do
     lambda { @filter.into("src") }.should change { @filter.target }
-    @filter.into("target").target.should be(file(File.expand_path("target")))
+    @filter.into("target").target.should be(file('target'))
   end
 
   it "should return target directory as file task" do
@@ -245,7 +245,7 @@ describe Buildr::Filter do
   end
 
   it "should return target directory as expanded path" do
-    @filter.into("target").target.to_s.should eql(File.expand_path("target"))
+    @filter.into("target").target.to_s.should eql('target')
   end
 
   it "should respond to :using and return self" do
@@ -541,10 +541,6 @@ end
 
 
 describe Buildr, 'profiles' do
-  before :each do
-    Rake.application.instance_eval { @rakefile = File.expand_path('buildfile') }
-  end
-
   it 'should return empty hash if no profiles file' do
     Buildr.profiles.should == {}
   end
@@ -562,10 +558,6 @@ end
 
 
 describe Buildr, 'profile' do
-  before :each do
-    Rake.application.instance_eval { @rakefile = File.expand_path('buildfile') }
-  end
-
   it 'should return profile for current environment' do
     Buildr.environment = 'qa'
     Buildr.profiles['qa'] = { 'foo'=>'bar' }

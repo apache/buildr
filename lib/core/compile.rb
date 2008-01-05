@@ -1,14 +1,22 @@
 require "core/common"
 
 module Buildr
+
+  # The underlying compiler used by CompileTask.
+  # To add a new compiler, extend Compiler::Base and add your compiler using:
+  #   Buildr::Compiler.add MyCompiler
   module Compiler
 
     class << self
 
+      # Returns true if the specified compiler exists.
+      def has?(name)
+        @compilers.has_key?(name.to_sym)
+      end
+
       # Select a compiler by its name.
       def select(name)
-        raise ArgumentError, "No #{name} compiler available. Did you install it?" unless @compilers.has_key?(name.to_sym)
-        @compilers[name.to_sym]
+        @compilers[name.to_sym] or raise ArgumentError, "No #{name} compiler available. Did you install it?"
       end
 
       # Identify which compiler applies based on one of two arguments:
@@ -20,17 +28,22 @@ module Buildr
       end
 
       # Adds a compiler to the list of supported compiler.
+      #   
+      # For example:
+      #   Buildr::Compiler.add Buildr::Javac
       def add(compiler)
-        @compilers ||= {}
         compiler = compiler.new if Class === compiler
         @compilers[compiler.name.to_sym] = compiler
       end
 
-      def compilers #:nodoc:
+      # Returns a list of available compilers.
+      def compilers
         @compilers.values.clone
       end
 
     end
+
+    @compilers = {}
 
 
     # Base class for all compilers, with common functionality.  Extend and over-ride as you see fit
@@ -57,6 +70,8 @@ module Buildr
       attr_reader :target_path
       # Extension for target files (e.g. '.class').
       attr_reader :target_ext
+      # The default packaging type (e.g. :jar).
+      attr_reader :packaging
 
       # Used by Compiler.identify to determine if this compiler applies to the current project.
       # The default implementation looks for either the supplied source directories, or the
@@ -109,7 +124,7 @@ module Buildr
         parent = Project.task_in_parent_project(task.name)
         if parent.respond_to?(:options)
           missing = supported.flatten - task.options.to_hash.keys
-          task.options.merge( missing.inject({}) { |hash, key| hash.update(key=>parent.options[key]) } )
+          missing.each { |option| task.options[option] = parent.options[option] }
         end
       end
 
@@ -159,7 +174,7 @@ module Buildr
     def initialize(*args) #:nodoc:
       super
       parent = Project.task_in_parent_project(name)
-      @options = OpenObject.new#(parent.respond_to?(:options) && parent.options)
+      @options = OpenObject.new
       @sources = []
       @dependencies = []
 
@@ -238,8 +253,7 @@ module Buildr
     #   compile(src_dir).into(target_dir).with(artifacts)
     # Both compile.invoke and file(target_dir).invoke will compile the source files.
     def into(path)
-      path = File.expand_path(path.to_s)
-      @target = file(path).enhance([self]) unless @target && @target.to_s == path
+      @target = file(path.to_s).enhance([self]) unless @target.to_s == path.to_s
       self
     end
 
@@ -257,7 +271,7 @@ module Buildr
     #   compile.using(:scala)
     def using(*args)
       args.pop.each { |key, value| options.send "#{key}=", value } if Hash === args.last
-      select args.pop until args.empty?
+      self.compiler = args.pop until args.empty?
       self
     end
 
@@ -265,16 +279,18 @@ module Buildr
     # based on existing source directories (e.g. src/main/java), or by requesting
     # a specific compiler (see #using).
     def compiler
-      unless @compiler
-        compiler = Compiler.identify(:sources=>sources) unless sources.empty?
-        select(compiler) if compiler
-      end
+      self.compiler = Compiler.identify(:sources=>sources) unless sources.empty? || @compiler
       @compiler && @compiler.name
     end
 
     # Returns the compiled language, if known.  See also #compiler.
     def language
       compiler && @compiler.language
+    end
+
+    # Returns the default packaging type for this compiler, if known.
+    def packaging
+      compiler && @compiler.packaging
     end
 
     def timestamp #:nodoc:
@@ -286,7 +302,8 @@ module Buildr
   protected
 
     # Selects which compiler to use.
-    def select(compiler) #:nodoc:
+    def compiler=(compiler) #:nodoc:
+      return self unless compiler
       compiler = Compiler.select(compiler) unless Compiler::Base === compiler
       unless @compiler == compiler
         raise "#{@compiler} compiler already selected for this project" if @compiler
@@ -298,8 +315,7 @@ module Buildr
 
     def associate(source, target) #:nodoc:
       @associate = { :source=>source, :target=>target }
-      compiler = Compiler.identify(:source=>source)
-      select(compiler) if compiler
+      self.compiler = Compiler.identify(:source=>source)
     end
 
   private
@@ -314,7 +330,6 @@ module Buildr
       return true if compile_map.any? { |source, target| !File.exist?(target) || File.stat(source).mtime > File.stat(target).mtime }
       oldest = compile_map.map { |source, target| File.stat(target).mtime }.min
       return dependencies.any? { |path| application[path].timestamp > oldest }
-      return true
     end
 
     def invoke_prerequisites(args, chain) #:nodoc:
@@ -419,6 +434,7 @@ module Buildr
     end
 
     after_define do |project|
+      file(project.resources.target.to_s => project.resources) if project.resources.target
       if project.compile.target
         # This comes last because the target path is set inside the project definition.
         project.build project.compile.target

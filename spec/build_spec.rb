@@ -1,4 +1,5 @@
-require File.join(File.dirname(__FILE__), 'sandbox')
+require File.join(File.dirname(__FILE__), 'spec_helpers')
+
 
 describe 'local task', :shared=>true do
   it "should execute task for project in current directory" do
@@ -145,7 +146,7 @@ describe Project, '#target' do
 
   it 'should set layout :target' do
     @project.target = 'bar'
-    @project.layout.expand(:target).should eql(File.expand_path('bar'))
+    @project.layout.expand(:target).should point_to_path('bar')
   end
 
   it 'should come from layout :target' do
@@ -166,7 +167,7 @@ describe Project, '#reports' do
 
   it 'should set layout :reports' do
     @project.reports = 'bar'
-    @project.layout.expand(:reports).should eql(File.expand_path('bar'))
+    @project.layout.expand(:reports).should point_to_path('bar')
   end
 
   it 'should come from layout :reports' do

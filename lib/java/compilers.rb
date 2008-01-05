@@ -26,7 +26,7 @@ module Buildr
       OPTIONS = [:warnings, :debug, :deprecation, :source, :target, :lint, :other]
 
       def initialize #:nodoc:
-        super :language=>:java, :target_path=>'classes', :target_ext=>'.class'
+        super :language=>:java, :target_path=>'classes', :target_ext=>'.class', :packaging=>:jar
       end
 
       def configure(task, source, target) #:nodoc:
@@ -91,7 +91,8 @@ module Buildr
         @files = FileList[]
         enhance do |task|
           rm_rf target.to_s, :verbose=>false
-          Java.javadoc source_files, options.merge(:classpath=>classpath, :sourcepath=>sourcepath, :name=>name, :output=>target.to_s)
+          Java.javadoc source_files, options.merge(:classpath=>classpath, :sourcepath=>sourcepath,
+            :name=>name, :output=>File.expand_path(target.to_s))
           touch target.to_s, :verbose=>false
         end
       end
@@ -108,8 +109,7 @@ module Buildr
       # For example:
       #   package :zip, :classifier=>"docs", :include=>javadoc.target
       def into(path)
-        path = File.expand_path(path.to_s)
-        @target = file(path).enhance([self]) unless @target && @target.to_s == path
+        @target = file(path.to_s).enhance([self]) unless @target && @target.to_s == path.to_s
         self
       end
 
@@ -264,7 +264,7 @@ module Buildr
       sources = compile.sources if sources.empty?
       file(path_to(:target, "generated/apt")=>sources) do |task|
         Java.apt(sources.map(&:to_s) - [task.name], :output=>task.name,
-          :classpath=>compile.classpath, :source=>compile.options.source)
+          :classpath=>compile.dependencies, :source=>compile.options.source)
       end
     end
 

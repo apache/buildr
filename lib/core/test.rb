@@ -5,30 +5,48 @@ require 'core/compile'
 
 module Buildr
 
+  # The underlying test framework used by TestTask.
+  # To add a new test framework, extend TestFramework::Base and add your framework using:
+  #   Buildr::TestFramework.add MyFramework
   class TestFramework
 
     class << self
+
+      # Returns true if the specified test framework exists.
       def has?(name)
-        frameworks.has_key?(name)
+        @frameworks.has_key?(name.to_sym)
       end
 
+      # Select a test framework by its name.
       def select(name)
-        raise ArgumentError, "No #{name} framework available. Did you install it?" unless frameworks.include?(name.to_sym)
-        frameworks[name.to_sym]
+        @frameworks[name.to_sym] or raise ArgumentError, "No #{name} framework available. Did you install it?"
+      end
+
+      # Identify which compiler applies for this project.
+      def identify_from(project)
+        @frameworks.values.detect { |framework| compiler.supports?(project) }
       end
 
       # Adds a test framework to the list of supported frameworks.
+      #   
+      # For example:
+      #   Buildr::TestFramework.add Buildr::JUnit
       def add(framework)
         framework = framework.new if Class === framework
-        frameworks[framework.name.to_sym] = framework
+        @frameworks[framework.name.to_sym] = framework
       end
 
-      def frameworks #:nodoc:
-        @frameworks ||= {}
+      # Returns a list of available test frameworks.
+      def frameworks
+        @frameworks.values.clone
       end
 
     end
 
+    @frameworks = {}
+
+    # Base class for all test frameworks, with common functionality.  Extend and over-ride as you see fit
+    # (see JUnit as an example).
     class Base
 
       def initialize(args = {})
@@ -44,6 +62,10 @@ module Buildr
 
       def files(path)
         Dir[*Array(patterns).map { |pattern| "#{path}/**/#{pattern}" }]
+      end
+
+      def supports?(project)
+        false
       end
 
     end
@@ -307,6 +329,7 @@ module Buildr
     #
     # Returns the test framework, e.g. :junit, :testng.
     def framework
+      @framework ||= TestFramework.identify_from(@project)
       @framework && @framework.name
     end
 
@@ -435,12 +458,6 @@ module Buildr
         end
       end
 
-      # Anything that comes after local packaging (install, deploy) executes the integration tests,
-      # which do not conflict with integration invoking the project's own packaging (package=>
-      # integration=>foo:package is not circular, just confusing to debug.)
-      task 'package' do
-        task('integration').invoke if Buildr.options.test && Rake.application.original_dir == Dir.pwd
-      end
     end
     
     before_define do |project|

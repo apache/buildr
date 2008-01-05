@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'sandbox')
+require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
 describe Project, "#group" do
@@ -106,7 +106,7 @@ describe Project, "#meta_inf" do
   it "should include LICENSE file if found" do
     write "LICENSE"
     define "foo"
-    project("foo").meta_inf.map(&:to_s).should eql([File.expand_path("LICENSE")])
+    project("foo").meta_inf.first.should point_to_path("LICENSE")
   end
 
   it "should be empty unless LICENSE exists" do
@@ -117,7 +117,7 @@ describe Project, "#meta_inf" do
   it "should inherit from parent project" do
     write "LICENSE"
     define("foo") { define "bar" }
-    project("foo:bar").meta_inf.map(&:to_s).should eql([File.expand_path("LICENSE")])
+    project("foo:bar").meta_inf.first.should point_to_path("LICENSE")
   end
 
   it "should expect LICENSE file parent project" do
@@ -176,10 +176,14 @@ describe Project, "#package" do
     pkg.type.should eql(:war)
   end
 
-  it "should assume :jar package type unless specified" do
-    pkg = nil
-    define("foo", :version=>"1.0") { pkg = package }
-    pkg.type.should eql(:jar)
+  it "should assume :zip package type unless specified" do
+    define("foo", :version=>"1.0")
+    project('foo').package.type.should eql(:zip)
+  end
+
+  it 'should infer packaging type from compiler' do
+    define("foo", :version=>"1.0") { compile.using(:javac) }
+    project('foo').package.type.should eql(:jar)
   end
 
   it "should default to no classifier" do
@@ -243,12 +247,11 @@ describe Project, "#package" do
     define("foo", :version=>"1.0") do
       package(:war)
       package(:jar, :id=>"bar")
-      package(:jar, :classifier=>"srcs")
+      package(:zip, :classifier=>"srcs")
     end
-    project("foo").packages.map(&:to_s).should eql([
-      File.expand_path("target/foo-1.0.war"),
-      File.expand_path("target/bar-1.0.jar"),
-      File.expand_path("target/foo-1.0-srcs.jar")])
+    project("foo").packages[0].should point_to_path("target/foo-1.0.war")
+    project("foo").packages[1].should point_to_path("target/bar-1.0.jar")
+    project("foo").packages[2].should point_to_path("target/foo-1.0-srcs.zip")
   end
 
   it "should create prerequisite for package task" do
@@ -330,7 +333,7 @@ describe Rake::Task, " package" do
       define("bar") { mkpath "bar/target/classes" ; package }
     end
     task("package").invoke
-    FileList["**/target/*.jar"].map.sort.should == ["bar/target/foo-bar-1.0.jar", "target/foo-1.0.jar"]
+    FileList["**/target/*.zip"].map.sort.should == ["bar/target/foo-bar-1.0.zip", "target/foo-1.0.zip"]
   end
 end
 
@@ -343,8 +346,8 @@ describe Rake::Task, " install" do
     end
     in_original_dir project("foo:bar").base_dir do
       task("install").invoke
-      artifacts("foo:foo:jar:1.0", "foo:foo:pom:1.0").each { |t| t.should_not exist }
-      artifacts("foo:foo-bar:jar:1.0", "foo:foo-bar:pom:1.0").each { |t| t.should exist }
+      artifacts("foo:foo:zip:1.0", "foo:foo:pom:1.0").each { |t| t.should_not exist }
+      artifacts("foo:foo-bar:zip:1.0", "foo:foo-bar:pom:1.0").each { |t| t.should exist }
     end
   end
 
@@ -354,7 +357,7 @@ describe Rake::Task, " install" do
       define("bar") { mkpath "bar/target/classes" ; package }
     end
     task("install").invoke
-    artifacts("foo:foo:jar:1.0", "foo:foo:pom:1.0", "foo:foo-bar:jar:1.0", "foo:foo-bar:pom:1.0").each { |t| t.should exist }
+    artifacts("foo:foo:zip:1.0", "foo:foo:pom:1.0", "foo:foo-bar:zip:1.0", "foo:foo-bar:pom:1.0").each { |t| t.should exist }
   end
 
   it "should create package in local repository" do
@@ -364,9 +367,9 @@ describe Rake::Task, " install" do
     end
     task("install").invoke
     FileList[repositories.local + "/**/*"].reject { |f| File.directory?(f) }.sort.should == [
-      File.expand_path("foo/foo/1.0/foo-1.0.jar", repositories.local),
+      File.expand_path("foo/foo/1.0/foo-1.0.zip", repositories.local),
       File.expand_path("foo/foo/1.0/foo-1.0.pom", repositories.local),
-      File.expand_path("foo/foo-bar/1.0/foo-bar-1.0.jar", repositories.local),
+      File.expand_path("foo/foo-bar/1.0/foo-bar-1.0.zip", repositories.local),
       File.expand_path("foo/foo-bar/1.0/foo-bar-1.0.pom", repositories.local)].sort
   end
 end
@@ -382,7 +385,7 @@ describe Rake::Task, " uninstall" do
     in_original_dir project("foo:bar").base_dir do
       task("uninstall").invoke
       FileList[repositories.local + "/**/*"].reject { |f| File.directory?(f) }.sort.should == [
-        File.expand_path("foo/foo/1.0/foo-1.0.jar", repositories.local),
+        File.expand_path("foo/foo/1.0/foo-1.0.zip", repositories.local),
         File.expand_path("foo/foo/1.0/foo-1.0.pom", repositories.local)].sort
     end
   end

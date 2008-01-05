@@ -244,7 +244,7 @@ module Buildr
     # For example:
     #   filter.from("src").into("target").using("build"=>Time.now)
     def from(*sources)
-      @sources |= sources.flatten.map { |dir| file(File.expand_path(dir.to_s)) }
+      @sources |= sources.flatten.map { |dir| file(dir.to_s) }
       self
     end
 
@@ -259,7 +259,7 @@ module Buildr
     # For example:
     #   filter.from("src").into("target").using("build"=>Time.now)
     def into(dir)
-      @target = file(File.expand_path(dir.to_s)) { |task| run if target == task && !sources.empty? }
+      @target = file(dir.to_s) { |task| run if target == task && !sources.empty? }
       self
     end
 
