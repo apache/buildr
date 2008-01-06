@@ -11,14 +11,16 @@
   - Testing: testing.html
   - More Stuff: more_stuff.html
   - Extending: extending.html
+  - Recipes: recipes.html
 - Reference:
   - API: rdoc/index.html
   - Rake: http://docs.rubyrake.org
   - Antwrap: http://antwrap.rubyforge.org
+  - Troubleshooting: troubleshooting.html
 - Getting Involved:
+  - Contributing: contributing.html
   - Mailing Lists: mailing_lists.html
   - Issues/Bugs: http://issues.apache.org/jira/browse/Buildr
-  - Contributing: contributing.html
 - Project Status:
   - License: license.html
   - Change Log: changelog.html
