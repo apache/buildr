@@ -1,14 +1,32 @@
 h1. Mailing Lists
 
-The following mailing-lists are open to anybody:
+*buildr-user*  For developers working with Buildr:
 
-| Mailing-List | Address | Subscribe |
-| Users | "buildr-user@incubator.apache.org":mailto:buildr-user@incubator.apache.org | "buildr-user-subscribe@incubator.apache.org":mailto:buildr-user-subscribe@incubator.apache.org |
-| Development | "buildr-dev@incubator.apache.org":mailto:buildr-dev@incubator.apache.org | "buildr-dev-subscribe@incubator.apache.org":mailto:buildr-dev-subscribe@incubator.apache.org |
-| Commits | "buildr-commits@incubator.apache.org":mailto:buildr-commits@incubator.apache.org | "buildr-commits-subscribe@incubator.apache.org":mailto:buildr-commits-subscribe@incubator.apache.org |
+* Send messages to
+"buildr-user@incubator.apache.org":mailto:buildr-user@incubator.apache.org
 
-The archives are available below:
+* Subscribe by sending a message to
+"buildr-user-subscribe@incubator.apache.org":mailto:buildr-user-subscribe@incubator.apache.org
 
-"http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/":http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/
-"http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/":http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/
-"http://mail-archives.apache.org/mod_mbox/incubator-buildr-commits/":http://mail-archives.apache.org/mod_mbox/incubator-buildr-commits/
+* View the "mailing list
+archives":http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/.
+
+*buildr-dev*  For development of Buildr itself:
+
+* Send messages to
+"buildr-dev@incubator.apache.org":mailto:buildr-dev@incubator.apache.org
+
+* Subscribe by sending a message to
+"buildr-dev-subscribe@incubator.apache.org":mailto:buildr-dev-subscribe@incubator.apache.org
+
+* View the "mailing list
+archives":http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/.
+
+*buildr-commits*  Commit messages from SVN and progress status from JIRA:
+
+* Subscribe by sending a message to
+"buildr-commits-subscribe@incubator.apache.org":mailto:buildr-commits-subscribe@incubator.apache.org
+
+* View the "mailing list
+archives":http://mail-archives.apache.org/mod_mbox/incubator-buildr-commits/.
+

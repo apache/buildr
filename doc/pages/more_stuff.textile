@@ -45,10 +45,10 @@ Here's an example @buildr.rb@, not one I actually use, but close enough:
 
 {{{!ruby
 # Only I should know that
-repositories.upload_to[:username] = "assaf"
-repositories.upload_to[:password] = "supersecret"
+repositories.upload_to[:username] = 'assaf'
+repositories.upload_to[:password] = 'supersecret'
 # Search here first, it's faster
-repositories.remote << "http://inside-the-firewall"
+repositories.remote << 'http://inside-the-firewall'
 }}} 
 
 Environment variables are another way to set personal settings.  Here's an
@@ -56,8 +56,8 @@ example for a Buildfile that will read the username/password from environment
 variables:
 
 {{{!ruby
-repositories.upload_to[:username] = ENV["USERNAME"]
-repositories.upload_to[:password] = ENV["PASSWORD"]
+repositories.upload_to[:username] = ENV['USERNAME']
+repositories.upload_to[:password] = ENV['PASSWORD']
 }}}
 
 Build itself uses several environment variables, some more common, some
@@ -66,7 +66,7 @@ specific to Buildr:
 *JAVA_HOME* -- Points to your JDK, required for running Buildr.
 
 *JAVA_OPTS/JAVA_OPTIONS* -- Command line options to pass to the JDK (e.g.
-@"-Xms1g"@)[1].
+@'-Xms1g'@)[1].
 
 *HTTP_PROXY* -- URL for HTTP proxy server (see "Specifying
 Repositories":artifacts.html#specifying_repositories).
@@ -176,8 +176,8 @@ don't include them by default.  If you want to use either one, you need to
 require it explicitly.  The proper way to do it in Ruby:
 
 {{{!ruby
-require "buildr/cobertura"
-require "buildr/jdepend"
+require 'buildr/cobertura'
+require 'buildr/jdepend'
 }}}
 
 You may want to add those to the Buildfile.  Alternatively, you can use these
@@ -210,10 +210,10 @@ any pre-canned task for setting file permissions.  But Ruby has a method for
 just, so it's just a matter of writing a task:
 
 {{{!ruby
-bins = file("target/bin"=>FileList[_("src/main/dist/bin/*")]) do |task|
+bins = file('target/bin'=>FileList[_('src/main/dist/bin/*')]) do |task|
   mkpath task.name
   cp task.prerequisites, task.name
-  chmod 0755, FileList[task.name + "/*.sh"], :verbose=>false
+  chmod 0755, FileList[task.name + '/*.sh'], :verbose=>false
 end
 }}}
 
@@ -225,15 +225,15 @@ method to define the common distribution:
 {{{!ruby
 def distro(project, id)
   project.package(:zip, :id=>id).path("#{id}-#{version}").tap do |zip|
-    zip.include meta_inf + ["RELEASE_NOTES", "README"].map { |f| path_to(f) }
-    zip.path("examples").include project.path_to("src/examples"), :as=>"."
-    zip.merge project("ode:tools-bin").package(:zip)
-    zip.path("lib").include artifacts(COMMONS.logging, COMMONS.codec,
+    zip.include meta_inf + ['RELEASE_NOTES', 'README'].map { |f| path_to(f) }
+    zip.path('examples').include project.path_to(:source, :examples), :as=>'.'
+    zip.merge project('ode:tools-bin').package(:zip)
+    zip.path('lib').include artifacts(COMMONS.logging, COMMONS.codec,
       COMMONS.httpclient, COMMONS.pool, COMMONS.collections, JAXEN, SAXON,
       LOG4J, WSDL4J, XALAN, XERCES)
-    project("ode").projects("utils", "tools", "bpel-compiler", "bpel-api",
-      "bpel-obj", "bpel-schemas").map(&:packages).flatten.each do |pkg|
-        zip.include(pkg.to_s, :as=>"#{pkg.id}.#{pkg.type}", :path=>"lib")
+    project('ode').projects('utils', 'tools', 'bpel-compiler', 'bpel-api',
+      'bpel-obj', 'bpel-schemas').map(&:packages).flatten.each do |pkg|
+        zip.include(pkg.to_s, :as=>"#{pkg.id}.#{pkg.type}", :path=>'lib')
       end
     yield zip
   end
@@ -243,9 +243,9 @@ end
 And then use it in the project definition:
 
 {{{!ruby
-define "distro-axis2" do
+define 'distro-axis2' do
   parent.distro(self, "#{parent.id}-war") { |zip|
-    zip.include project("ode:axis2-war").package(:war), :as=>"ode.war" }
+    zip.include project('ode:axis2-war').package(:war), :as=>'ode.war' }
 end
 }}}
 

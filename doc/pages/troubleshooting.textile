@@ -1,0 +1,25 @@
+h1. Troubleshooting
+
+Common troubleshooting tips collected from the mailing list.
+
+h2.  Buildfiles
+
+h3.  Bugs resulting from a dangling comma or period
+
+Ruby statements don't need a delimiter and can span multiple lines, which can
+lead to bugs resulting from dangling commas and periods left at the end of the
+line.  For example:
+
+{{{!ruby
+compile.with 'org.apache.axis2:axis2:jar:1.2',
+test.with 'log4j:log4j:jar:1.1'
+}}}
+
+This is actually a single method call with two arguments, separated by a comma.
+The second argument is the result of calling @test.with@, and makes the test
+task a pre-requisite of the compile task, leading to a circular dependency.
+
+As you can imagine this happens usually after editing, specifically for commas
+and periods which are small enough that you won't notice them from a cursory
+glance at the code, so if all else fails, search for lines that end with one of
+these characters.
