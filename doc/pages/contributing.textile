@@ -3,6 +3,7 @@ h1. Contributing
 Buildr is a community effort, and we welcome all contributors.  Here's your
 chance to get involved and help your fellow developers.
 
+
 h2.  Mailing Lists
 
 We don't talk much, but when we do, we have interesting things to say, so start
@@ -40,6 +41,15 @@ If it needs more attention, start a discussion over on the mailing list.  We
 will still use JIRA to log the progress, but the mailing list is a better place
 for talking things through.
 
+When reporting a bug, please tell us which version of Ruby, Buildr and Java you
+are using, and also which operating system you are on:
+
+{{{!sh
+$ ruby --version
+$ builder --version
+$ java --version
+}}}
+
 If you have a patch to submit, do it through
 "JIRA":http://issues.apache.org/jira/browse/Buildr.  We want to make sure
 Apache gets the right to use your contribution, and the JIRA upload form
@@ -72,7 +82,7 @@ $ rake install
 (Linux and OS/X, use @sudo rake install@)
 
 
-h2.  Testing
+h2.  Testing/Specs
 
 Obviously we won't turn down patches, but we'll love you even more if you
 include a test case.  One that will fail without the patch, and run

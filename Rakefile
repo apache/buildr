@@ -14,12 +14,11 @@ def specify(platform)
     spec.email        = 'buildr-user@incubator.apache.org'
     spec.homepage     = "http://incubator.apache.org/#{spec.name}/"
     spec.summary      = 'A build system that doesn\'t suck'
-    spec.files        = FileList['lib/**/*', 'CHANGELOG', 'README', 'LICENSE', 'NOTICE', 'DISCLAIMER',
+    spec.files        = FileList['lib/**/*', 'README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER',
                                  'Rakefile', 'spec/**/*', 'doc/**/*'].collect
     spec.require_path = 'lib'
-    spec.autorequire  = 'buildr.rb'
     spec.has_rdoc     = true
-    spec.extra_rdoc_files = ['README', 'CHANGELOG', 'LICENSE']
+    spec.extra_rdoc_files = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']
     spec.rdoc_options << '--title' << "Buildr -- #{spec.summary}" <<
                          '--main' << 'README' << '--line-numbers' << '--inline-source' << '-p' <<
                          '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'

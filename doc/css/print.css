@@ -65,6 +65,10 @@ pre {
   line-height: 1.3em;
 }
 
+#license+ol+pre {
+  page-break-inside: always !important;
+}
+
 a:link, a:visited {
   background: transparent;
   text-decoration: underline;
