@@ -49,7 +49,7 @@ describe 'javac compiler options' do
   end
 
   def javac_args
-    Compiler::Javac.new.send(:javac_args_from, compile_task.options)
+    Compiler::Javac.new(compile_task.options).send(:javac_args)
   end
 
   it 'should set warnings option to false by default' do

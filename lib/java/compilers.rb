@@ -22,48 +22,67 @@ module Buildr
     # * :lint        -- Lint option is one of true, false (default), name (e.g. 'cast') or array.
     # * :other       -- Array of options passed to the compiler (e.g. '-implicit:none')
     class Javac < Base
-      
+
       OPTIONS = [:warnings, :debug, :deprecation, :source, :target, :lint, :other]
 
-      def initialize #:nodoc:
-        super :language=>:java, :target_path=>'classes', :target_ext=>'.class', :packaging=>:jar
-      end
+      specify :language=>:java, :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
-      def configure(task, source, target) #:nodoc:
+      def initialize(options) #:nodoc:
         super
-        update_options_from_parent! task, OPTIONS
-        task.options.warnings ||= verbose
-        task.options.deprecation ||= false
-        task.options.lint ||= false
-        task.options.debug ||= Buildr.options.debug
+        { :warnings=>verbose, :deprecation=>false, :lint=>false, :debug=>Buildr.options.debug }.
+          each { |name, value| options[name] = value unless options.has_key?(name) }
       end
 
-      def compile(files, task) #:nodoc:
-        check_options task, OPTIONS
-        ::Buildr::Java.javac files, :sourcepath=>task.sources.select { |source| File.directory?(source) },
-          :classpath=>task.dependencies, :output=>task.target, :javac_args=>javac_args_from(task.options)
+      def compile(sources, target, dependencies) #:nodoc:
+        check_options options, OPTIONS
+        cmd_args = []
+        cmd_args << "-cp" << dependencies.join(File::PATH_SEPARATOR) unless dependencies.empty?
+        source_paths = sources.select { |source| File.directory?(source) }
+        cmd_args << "-sourcepath" << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
+        cmd_args << "-d" << target
+        cmd_args += javac_args
+        cmd_args += files_from_sources(sources)
+        unless Rake.application.options.dryrun
+          puts (["javac"] + cmd_args).join(" ") if Rake.application.options.trace
+          cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
+          Java.import('com.sun.tools.javac.Main').compile(cmd_args) == 0 or fail "Failed to compile, see errors above"
+        end
       end
 
     private
 
-      def javac_args_from(options) #:nodoc:
+      def javac_args #:nodoc:
         args = []  
-        args << '-nowarn' unless options.warnings
+        args << '-nowarn' unless options[:warnings]
         args << '-verbose' if Rake.application.options.trace
-        args << '-g' if options.debug
-        args << '-deprecation' if options.deprecation
-        args << '-source' << options.source.to_s if options.source
-        args << '-target' << options.target.to_s if options.target
-        case options.lint
-          when Array; args << "-Xlint:#{options.lint.join(',')}"
-          when String; args << "-Xlint:#{options.lint}"
-          when true; args << '-Xlint'
+        args << '-g' if options[:debug]
+        args << '-deprecation' if options[:deprecation]
+        args << '-source' << options[:source].to_s if options[:source]
+        args << '-target' << options[:target].to_s if options[:target]
+        case options[:lint]
+          when Array  then args << "-Xlint:#{options[:lint].join(',')}"
+          when String then args << "-Xlint:#{options[:lint]}"
+          when true   then args << '-Xlint'
         end
-        args + Array(options.other)
+        args + Array(options[:other])
       end
 
     end
 
+
+    # Scalac compiler:
+    #   compile.using(:scalac)
+    # Used by default if .scala files are found in the src/main/scala directory (or src/test/scala)
+    # and sets the target directory to target/classes (or target/test/classes).
+    #
+    # Accepts the following options:
+    class Scalac < Base
+
+      OPTIONS = []
+
+      specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
+
+    end
   end
 
 
@@ -272,7 +291,10 @@ module Buildr
 
 end
 
-Buildr::Compiler.add Buildr::Compiler::Javac
+module Buildr::Compiler
+  add Javac
+  add Scalac
+end
 class Buildr::Project
   include Buildr::Javadoc
   include Buildr::Apt

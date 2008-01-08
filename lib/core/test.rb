@@ -134,8 +134,8 @@ module Buildr
       @dependencies = []
       @include = []
       @exclude = []
-      parent = Project.task_in_parent_project(name)
-      @options = parent && parent.respond_to?(:options) ? parent.options.clone : DEFAULT_OPTIONS.clone
+      @parent_task = Project.parent_task(name)
+      @options = @parent_task.respond_to?(:options) ? @parent_task.options.clone : DEFAULT_OPTIONS.clone
       enhance { run_tests }
       select :junit
     end
@@ -353,6 +353,10 @@ module Buildr
 
     attr_reader :project
 
+    def associate_with(project)
+      @project = project
+    end
+
     def select(name)
       @framework = TestFramework.select(name)
     end
@@ -467,8 +471,8 @@ module Buildr
     
     before_define do |project|
       # Define a recursive test task, and pass it a reference to the project so it can discover all other tasks.
-      TestTask.define_task('test')
-      project.test.instance_eval { instance_variable_set :@project, project }
+      test = TestTask.define_task('test')
+      test.send :associate_with, project
 
       # Similar to the regular resources task but using different paths.
       resources = ResourcesTask.define_task('test:resources')
@@ -476,12 +480,12 @@ module Buildr
       resources.filter.into project.path_to(:target, :test, :resources)
 
       # Similar to the regular compile task but using different paths.
-      compile = CompileTask.define_task('test:compile'=>[project.compile, project.test.resources])
-      compile.send :associate, project.path_to(:src, :test), project.path_to(:target, :test)
-      project.test.enhance [compile]
+      compile = CompileTask.define_task('test:compile'=>[project.compile, resources])
+      compile.send :associate_with, project, :test
+      test.enhance [compile]
 
       # Define these tasks once, otherwise we may get a namespace error.
-      project.test.setup ; project.test.teardown
+      test.setup ; test.teardown
     end
 
     after_define do |project|

@@ -354,12 +354,11 @@ module Buildr
       end
 
       # :call-seq:
-      #   task_in_parent_project(task_name) => task_name or nil
+      #   parent_task(task_name) => task_name or nil
       #
-      # Assuming the task name is prefixed with the current project, finds and returns a task with the
-      # same name in a parent project.  Call this with 'foo:bar:test' will return 'foo:test', but call
-      # this with 'foo:test' will return nil.
-      def task_in_parent_project(task_name) #:nodoc:
+      # Returns a parent task, basically a task in a higher namespace.  For example, the parent
+      # of 'foo:test:compile' is 'foo:compile' and the parent of 'foo:compile' is 'compile'.
+      def parent_task(task_name) #:nodoc:
         namespace = task_name.split(':')
         last_name = namespace.pop
         namespace.pop

@@ -16,15 +16,7 @@ module Buildr
 
       # Select a compiler by its name.
       def select(name)
-        @compilers[name.to_sym] or raise ArgumentError, "No #{name} compiler available. Did you install it?"
-      end
-
-      # Identify which compiler applies based on one of two arguments:
-      # * :sources -- List of source directories, attempts to find applicable files there (e.g. Java source files).
-      # * :source -- The source directory (src/main, src/test), from which it will look up a particular source
-      #     directory (e.g. src/main/java).
-      def identify(from)
-        @compilers.values.detect { |compiler| compiler.identify?(from) }
+        @compilers[name.to_sym]
       end
 
       # Adds a compiler to the list of supported compiler.
@@ -32,8 +24,7 @@ module Buildr
       # For example:
       #   Buildr::Compiler.add Buildr::Javac
       def add(compiler)
-        compiler = compiler.new if Class === compiler
-        @compilers[compiler.name.to_sym] = compiler
+        @compilers[compiler.to_sym] = compiler
       end
 
       # Returns a list of available compilers.
@@ -50,83 +41,76 @@ module Buildr
     # (see Javac as an example).
     class Base #:nodoc:
 
-      def initialize(args = {})
-        args[:name] ||= self.class.name.split('::').last.downcase.to_sym
-        args[:language] ||= args[:name]
-        args[:source_path] ||= args[:language].to_s
-        args[:source_ext] ||= ".#{args[:language]}"
-        args.each { |name, value| instance_variable_set "@#{name}", value }
-      end
+      class << self
 
-      # Compiler name (e.g. :javac).
-      attr_reader :name
-      # Compiled language (e.g. :java).
-      attr_reader :language
-      # Common path for source files (e.g. 'java').
-      attr_reader :source_path
-      # Extension for source files (e.g. '.java').
-      attr_reader :source_ext
-      # Common path for target files (e.g. 'classes').
-      attr_reader :target_path
-      # Extension for target files (e.g. '.class').
-      attr_reader :target_ext
-      # The default packaging type (e.g. :jar).
-      attr_reader :packaging
-
-      # Used by Compiler.identify to determine if this compiler applies to the current project.
-      # The default implementation looks for either the supplied source directories, or the
-      # #source_path directory, depending on arguments, for files with #source_ext extension.
-      def identify?(from)
-        paths = from[:sources] || Array(File.join(from[:source], source_path))
-        !Dir[*paths.map { |path| File.join(path, "**/*#{source_ext}") }].empty?
-      end
-
-      # Once selected, this method is called to configured the task for this compiler.
-      # You can extend this to set up common source directories, the target directory,
-      # default compiler options, etc.  The default implementation adds the source directory
-      # from {source}/{source_path} and sets the target directory to {target}/{target_path}
-      # if not already set.
-      def configure(task, source, target)
-        task.from File.join(source, source_path) if task.sources.empty? && File.exist?(File.join(source, source_path))
-        task.into File.join(target, target_path) unless task.target
-      end
-
-      # The compile map is a hash that associates source files with target files based
-      # on a list of source directories and target directory.  The compile task uses this
-      # to determine if there are source files to compile, and which source files to compile.
-      # The default method maps all files in the source directories with #source_ext into
-      # paths in the target directory with #target_ext (e.g. 'source/foo.java'=>'target/foo.class').
-      def compile_map(sources, target)
-        sources.inject({}) do |map, source|
-          if File.directory?(source)
-            base = Pathname.new(source)
-            FileList["#{source}/**/*#{source_ext}"].reject { |file| File.directory?(file) }.
-              each { |file| map[file] = File.join(target, Pathname.new(file).relative_path_from(base).to_s.ext(target_ext)) }
-          else
-            map[source] = File.join(target, File.basename(source).ext(target_ext))
-          end
-          map
+        # The compiler's identifier (e.g. :javac).  Inferred from the class name.
+        def to_sym
+          @symbol
         end
+
+        # The compiled language (e.g. :java).
+        attr_reader :language
+        # Source directories to use if none were specified (e.g. 'java').  Defaults to #language.
+        attr_reader :sources
+        # Extension for source files (e.g. 'java').  Defaults to language.
+        attr_reader :source_ext
+        # The target path (e.g. 'classes')
+        attr_reader :target
+        # Extension for target files (e.g. 'class').
+        attr_reader :target_ext
+        # The default packaging type (e.g. :jar).
+        attr_reader :packaging
+        # Options to inherit from parent task.  Defaults to value of OPTIONS constant.
+        attr_reader :inherit_options
+
+        # Returns true if this compiler applies to any source code found in the listed source
+        # directories.  For example, Javac returns true if any of the source directories contains
+        # a .java file.  The default implementation looks to see if there are any files in the
+        # specified path with the extension #source_ext.
+        def applies_to?(paths)
+          paths.any? { |path| !Dir["#{path}/**/*.#{source_ext}"].empty? }
+        end
+
+        # Implementations can use this method to specify various compiler attributes.
+        # For example:
+        #   specify :language=>:java, :target=>'classes', :target_ext=>'class', :packaging=>:jar
+        def specify(attrs)
+          attrs[:symbol] ||= name.split('::').last.downcase.to_sym
+          attrs[:sources] ||= attrs[:language].to_s
+          attrs[:source_ext] ||= attrs[:language].to_s
+          attrs[:inherit_options] ||= const_get('OPTIONS').clone rescue []
+          attrs.each { |name, value| instance_variable_set("@#{name}", value) }
+        end
+
+      end
+
+      # Construct a new compiler with the specified options.  Note that options may
+      # changed before the compiler is run.
+      def initialize(options)
+        @options = options
+      end
+
+      # Options for this compiler.
+      attr_reader :options
+
+      # Determines if the compiler needs to run by checking if the target files exist,
+      # and if any source files or dependencies are newer than corresponding target files.
+      def needed?(sources, target, dependencies)
+        map = compile_map(sources, target)
+        return false if map.empty?
+        return true unless File.exist?(target.to_s)
+        return true if map.any? { |source, target| !File.exist?(target) || File.stat(source).mtime > File.stat(target).mtime }
+        oldest = map.map { |source, target| File.stat(target).mtime }.min
+        return dependencies.any? { |path| file(path).timestamp > oldest }
+      end
+
+      # Compile all files lists in sources (files and directories) into target using the
+      # specified dependencies.
+      def compile(sources, target, dependencies)
+        raise 'Not implemented'
       end
 
     private
-
-      # Use this to copy options used by this compiler from the parent, for example,
-      # if this task is 'foo:bar:compile', copy options set in the parent task 'foo:compile'.
-      #
-      # For example:
-      #   def configure(task, source, target)
-      #     super
-      #     update_options_from_parent! task, OPTIONS
-      #     . . .
-      #   end
-      def update_options_from_parent!(task, supported)
-        parent = Project.task_in_parent_project(task.name)
-        if parent.respond_to?(:options)
-          missing = supported.flatten - task.options.to_hash.keys
-          missing.each { |option| task.options[option] = parent.options[option] }
-        end
-      end
 
       # Use this to complain about CompileTask options not supported by this compiler.
       #
@@ -135,9 +119,36 @@ module Buildr
       #     check_options task, OPTIONS
       #     . . .
       #   end
-      def check_options(task, supported)
-        unsupported = task.options.to_hash.keys - supported.flatten
+      def check_options(options, *supported)
+        unsupported = options.to_hash.keys - supported.flatten
         raise ArgumentError, "No such option: #{unsupported.join(' ')}" unless unsupported.empty?
+      end
+
+      # Expands a list of source directories/files into a list of files that have the #source_ext extension.
+      def files_from_sources(sources)
+        sources.map { |source| File.directory?(source) ? FileList["#{source}/**/*.#{self.class.source_ext}"] : source }.
+          flatten.reject { |file| File.directory?(file) }.uniq
+      end
+
+      # The compile map is a hash that associates source files with target files based
+      # on a list of source directories and target directory.  The compile task uses this
+      # to determine if there are source files to compile, and which source files to compile.
+      # The default method maps all files in the source directories with #source_ext into
+      # paths in the target directory with #target_ext (e.g. 'source/foo.java'=>'target/foo.class').
+      def compile_map(sources, target)
+        source_ext = self.class.source_ext
+        target_ext = self.class.target_ext
+        sources.inject({}) do |map, source|
+          if File.directory?(source)
+            base = Pathname.new(source)
+            FileList["#{source}/**/*.#{source_ext}"].reject { |file| File.directory?(file) }.
+              each { |file| map[file] = File.join(target, Pathname.new(file).relative_path_from(base).to_s.ext(target_ext)) }
+          else
+            map[source] = File.join(target, File.basename(source).ext(target_ext))
+          end
+          map
+        end
+
       end
 
     end
@@ -173,21 +184,18 @@ module Buildr
 
     def initialize(*args) #:nodoc:
       super
-      parent = Project.task_in_parent_project(name)
+      @parent_task = Project.parent_task(name)
       @options = OpenObject.new
-      @sources = []
-      @dependencies = []
+      @sources = FileList[]
+      @dependencies = FileList[]
 
       enhance do |task|
         unless sources.empty?
           raise 'No compiler selected and can\'t determine which compiler to use' unless compiler
           raise 'No target directory specified' unless target
           mkpath target.to_s, :verbose=>false
-          files = compile_map.keys
-          unless files.empty?
-            puts "Compiling #{files.size} source files in #{task.name}" if verbose
-            @compiler.compile(files, task)
-          end
+          puts "Compiling #{task.name}" if verbose
+          @compiler.compile(sources.map(&:to_s), target.to_s, dependencies.map(&:to_s))
           # By touching the target we let other tasks know we did something,
           # and also prevent recompiling again for dependencies.
           touch target.to_s, :verbose=>false
@@ -279,18 +287,21 @@ module Buildr
     # based on existing source directories (e.g. src/main/java), or by requesting
     # a specific compiler (see #using).
     def compiler
-      self.compiler = Compiler.identify(:sources=>sources) unless sources.empty? || @compiler
-      @compiler && @compiler.name
+      unless @compiler
+        candidate = Compiler.compilers.detect { |cls| cls.applies_to?(sources) }
+        self.compiler = candidate if candidate
+      end
+      @compiler && @compiler.class.to_sym
     end
 
     # Returns the compiled language, if known.  See also #compiler.
     def language
-      compiler && @compiler.language
+      compiler && @compiler.class.language
     end
 
     # Returns the default packaging type for this compiler, if known.
     def packaging
-      compiler && @compiler.packaging
+      compiler && @compiler.class.packaging
     end
 
     def timestamp #:nodoc:
@@ -301,45 +312,44 @@ module Buildr
 
   protected
 
+    attr_reader :project
+
     # Selects which compiler to use.
-    def compiler=(compiler) #:nodoc:
-      return self unless compiler
-      compiler = Compiler.select(compiler) unless Compiler::Base === compiler
-      unless @compiler == compiler
-        raise "#{@compiler} compiler already selected for this project" if @compiler
-        @compiler = compiler
-        @compiler.configure(self, @associate[:source], @associate[:target])
-      end
+    def compiler=(name) #:nodoc:
+      raise "#{compiler} compiler already selected for this project" if @compiler
+      cls = Compiler.select(name) or raise ArgumentError, "No #{name} compiler available. Did you install it?"
+      cls.inherit_options.reject { |name| options.has_key?(name) }.
+        each { |name| options[name] = @parent_task.options[name] } if @parent_task.respond_to?(:options)
+      @compiler = cls.new(options)
+      from Array(cls.sources).map { |path| @project.path_to(:source, @usage, path) }.
+        select { |path| File.exist?(path) } if sources.empty?
+      into @project.path_to(:target, @usage, cls.target) unless target
       self
     end
 
-    def associate(source, target) #:nodoc:
-      @associate = { :source=>source, :target=>target }
-      self.compiler = Compiler.identify(:source=>source)
+    # Associates this task with project and particular usage (:main, :test).
+    def associate_with(project, usage) #:nodoc:
+      @project, @usage = project, usage
+      # Try to guess if we have a compiler to match source files.
+      candidate = Compiler.compilers.detect { |cls|
+        cls.applies_to?(Array(cls.sources).map { |path| @project.path_to(:source, @usage, path) }) }
+      self.compiler = candidate if candidate
     end
 
   private
 
     def needed? #:nodoc:
-      return false if Array(sources).empty?
+      return false if sources.empty?
       # Fail during invoke.
       return true unless @compiler && target
-      # No need to check further.
-      return false if compile_map.empty?
-      return true unless File.exist?(target.to_s)
-      return true if compile_map.any? { |source, target| !File.exist?(target) || File.stat(source).mtime > File.stat(target).mtime }
-      oldest = compile_map.map { |source, target| File.stat(target).mtime }.min
-      return dependencies.any? { |path| application[path].timestamp > oldest }
+      return @compiler.needed?(sources.map(&:to_s), target.to_s, dependencies.map(&:to_s))
     end
 
     def invoke_prerequisites(args, chain) #:nodoc:
-      @prerequisites |= dependencies + Array(sources)
+      @sources = Array(@sources).map(&:to_s).uniq
+      @dependencies = FileList[@dependencies.uniq]
+      @prerequisites |= @dependencies + @sources
       super
-    end
-
-    # Creates and caches the compile map.
-    def compile_map #:nodoc:
-      @compile_map ||= @compiler.compile_map(@sources = Array(@sources).map(&:to_s).uniq, target.to_s)
     end
 
   end
@@ -429,7 +439,7 @@ module Buildr
       resources.filter.using Buildr.profile
 
       compile = CompileTask.define_task('compile'=>resources)
-      compile.send :associate, project.path_to(:source, :main), project.path_to(:target, :main)
+      compile.send :associate_with, project, :main
       project.recursive_task('compile')
     end
 

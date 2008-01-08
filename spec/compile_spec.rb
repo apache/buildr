@@ -34,7 +34,7 @@ describe Buildr::CompileTask do
 
   it 'should respond to from() and add sources' do
     compile_task.from sources, File.dirname(sources.first)
-    compile_task.sources.should eql(sources + [File.dirname(sources.first)])
+    compile_task.sources.should == sources + [File.dirname(sources.first)]
   end
 
   it 'should respond to with() and return self' do
@@ -44,7 +44,7 @@ describe Buildr::CompileTask do
   it 'should respond to with() and add classpath dependencies' do
     jars = (1..3).map { |i| "test#{i}.jar" }
     compile_task.with *jars
-    compile_task.classpath.should eql(artifacts(jars))
+    compile_task.classpath.should == artifacts(jars)
   end
 
   it 'should respond to into() and return self' do
@@ -67,7 +67,7 @@ describe Buildr::CompileTask do
   end
 
   it 'should attempt to identify compiler' do
-    Compiler.compilers.first.should_receive(:identify?).at_least(:once)
+    Compiler.compilers.first.should_receive(:applies_to?).at_least(:once)
     define('foo')
   end
 
@@ -93,7 +93,7 @@ describe Buildr::CompileTask, '#compiler' do
 
   it 'should attempt to identify compiler if sources are specified' do
     define 'foo' do
-      Compiler.compilers.first.should_receive(:identify?)
+      Compiler.compilers.first.should_receive(:applies_to?)
       compile.from('sources').compiler
     end
   end
@@ -126,7 +126,7 @@ describe Buildr::CompileTask, '#sources' do
 
   it 'should be an array' do
     compile_task.sources += sources
-    compile_task.sources.should eql(sources)
+    compile_task.sources.should == sources
   end
 
   it 'should allow files' do
@@ -159,7 +159,7 @@ describe Buildr::CompileTask, '#dependencies' do
 
   it 'should be an array' do
     compile_task.dependencies += jars
-    compile_task.dependencies.should eql(jars)
+    compile_task.dependencies.should == jars
   end
 
   it 'should allow files' do
@@ -179,7 +179,7 @@ describe Buildr::CompileTask, '#dependencies' do
   it 'should allow projects' do
     define('bar', :version=>'1', :group=>'self') { package :jar }
     compile_task.with project('bar')
-    compile_task.dependencies.should eql(project('bar').packages)
+    compile_task.dependencies.should == project('bar').packages
   end
 
   it 'should be accessible as classpath' do
@@ -334,17 +334,24 @@ describe Buildr::CompileTask, '#invoke' do
 
   it 'should touch target if anything compiled' do
     mkpath compile_task.target.to_s
-    File.utime(Time.now - 1, Time.now - 1, compile_task.target.to_s)
+    File.utime(Time.now - 10, Time.now - 10, compile_task.target.to_s)
     compile_task.from(sources).invoke
     File.stat(compile_task.target.to_s).mtime.should be_close(Time.now, 2)
   end
 
   it 'should not touch target if nothing compiled' do
     mkpath compile_task.target.to_s
-    File.utime(Time.now - 1, Time.now - 1, compile_task.target.to_s)
-    Java.should_receive(:javac).and_raise(RuntimeError)
-    compile_task.from(sources).invoke rescue nil
-    File.stat(compile_task.target.to_s).mtime.should be_close(Time.now, 2)
+    File.utime(Time.now - 10, Time.now - 10, compile_task.target.to_s)
+    compile_task.invoke
+    File.stat(compile_task.target.to_s).mtime.should be_close(Time.now - 10, 2)
+  end
+
+  it 'should not touch target if failed to compile' do
+    mkpath compile_task.target.to_s
+    File.utime(Time.now - 10, Time.now - 10, compile_task.target.to_s)
+    write 'failed.java', 'not a class'
+    suppress_stdout { compile_task.from('failed.java').invoke rescue nil }
+    File.stat(compile_task.target.to_s).mtime.should be_close(Time.now - 10, 2)
   end
 end
 
