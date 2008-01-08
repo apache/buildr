@@ -1,0 +1,667 @@
+require File.join(File.dirname(__FILE__), 'spec_helpers')
+require File.join(File.dirname(__FILE__), 'packaging_helper')
+
+
+describe Project, '#manifest' do
+  it 'should include user name' do
+    ENV['USER'] = 'MysteriousJoe'
+    define('foo').manifest['Build-By'].should eql('MysteriousJoe')
+  end
+
+  it 'should include JDK version' do
+    Java.stub!(:version).and_return '1.6_6'
+    define('foo').manifest['Build-Jdk'].should eql('1.6_6')
+  end
+
+  it 'should include project comment' do
+    desc 'My Project'
+    define('foo').manifest['Implementation-Title'].should eql('My Project')
+  end
+
+  it 'should include project name if no comment' do
+    define('foo').manifest['Implementation-Title'].should eql('foo')
+  end
+
+  it 'should include project version' do
+    define('foo', :version=>'2.1').manifest['Implementation-Version'].should eql('2.1')
+  end
+
+  it 'should not include project version unless specified' do
+    define('foo').manifest['Implementation-Version'].should be_nil
+  end
+
+  it 'should inherit from parent project' do
+    define('foo', :version=>'2.1') { define 'bar' }
+    project('foo:bar').manifest['Implementation-Version'].should eql('2.1')
+  end
+
+end
+
+
+shared_examples_for 'package with manifest' do
+  @long_line = 'No line may be longer than 72 bytes (not characters), in its UTF8-encoded form. If a value would make the initial line longer than this, it should be continued on extra lines (each starting with a single SPACE).'
+
+  def package_with_manifest(manifest = nil)
+    packaging = @packaging
+    @project = define('foo', :version=>'1.2') do
+      package packaging
+      package(packaging).with(:manifest=>manifest) unless manifest.nil?
+    end
+  end
+
+  def inspect_manifest
+    package = project('foo').package(@packaging)
+    package.invoke
+    Zip::ZipFile.open(package.to_s) do |zip|
+      sections = zip.file.read('META-INF/MANIFEST.MF').split("\n\n").map do |section|
+          section.split("\n").each { |line| line.length.should < 72 }.
+            inject([]) { |merged, line|
+              if line[0] == 32
+                merged.last << line[1..-1]
+              else
+                merged << line
+              end
+              merged
+            }.map { |line| line.split(/: /) }.
+            inject({}) { |map, (name, value)| map.merge(name=>value) }
+        end
+      yield sections
+    end
+  end
+
+  it 'should include default header when no options specified' do
+    ENV['USER'] = 'MysteriousJoe'
+    package_with_manifest # Nothing for default.
+    inspect_manifest do |sections|
+      sections.size.should be(1)
+      sections.first.should == {
+        'Manifest-Version'        => '1.0',
+        'Created-By'              => 'Buildr',
+        'Implementation-Title'    =>@project.name,
+        'Implementation-Version'  =>'1.2',
+        'Build-Jdk'               =>Java.version,
+        'Build-By'                =>'MysteriousJoe'
+      }
+    end
+  end
+
+  it 'should not exist when manifest=false' do
+    package_with_manifest false
+    @project.package(@packaging).invoke
+    Zip::ZipFile.open(@project.package(@packaging).to_s) do |zip|
+      zip.file.exist?('META-INF/MANIFEST.MF').should be_false
+    end
+  end
+
+  it 'should map manifest from hash' do
+    package_with_manifest 'Foo'=>1, :bar=>'Bar'
+    inspect_manifest do |sections|
+      sections.size.should be(1)
+      sections.first['Manifest-Version'].should eql('1.0')
+      sections.first['Created-By'].should eql('Buildr')
+      sections.first['Foo'].should eql('1')
+      sections.first['bar'].should eql('Bar')
+    end
+  end
+
+  it 'should end hash manifest with EOL' do
+    package_with_manifest 'Foo'=>1, :bar=>'Bar'
+    package = project('foo').package(@packaging)
+    package.invoke
+    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF')[-1].should == ?\n }
+  end
+
+  it 'should break hash manifest lines longer than 72 characters using continuations' do
+    package_with_manifest 'foo'=>@long_line
+    package = project('foo').package(@packaging)
+    inspect_manifest do |sections|
+      sections.first['foo'].should == @long_line
+    end
+  end
+
+  it 'should map manifest from array' do
+    package_with_manifest [ { :foo=>'first' }, { :bar=>'second' } ]
+    inspect_manifest do |sections|
+      sections.size.should be(2)
+      sections.first['Manifest-Version'].should eql('1.0')
+      sections.first['foo'].should eql('first')
+      sections.last['bar'].should eql('second')
+    end
+  end
+
+  it 'should end array manifest with EOL' do
+    package_with_manifest [ { :foo=>'first' }, { :bar=>'second' } ]
+    package = project('foo').package(@packaging)
+    package.invoke
+    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF')[-1].should == ?\n }
+  end
+
+  it 'should break array manifest lines longer than 72 characters using continuations' do
+    package_with_manifest ['foo'=>@long_line]
+    package = project('foo').package(@packaging)
+    inspect_manifest do |sections|
+      sections.first['foo'].should == @long_line
+    end
+  end
+
+  it 'should put Name: at beginning of section' do
+    package_with_manifest [ {}, { 'Name'=>'first', :Foo=>'first', :bar=>'second' } ]
+    package = project('foo').package(@packaging)
+    package.invoke
+    Zip::ZipFile.open(package.to_s) do |zip|
+      sections = zip.file.read('META-INF/MANIFEST.MF').split(/\n\n/)
+      sections[1].split("\n").first.should =~ /^Name: first/
+    end
+  end
+
+  it 'should create manifest from proc' do
+    package_with_manifest lambda { 'Meta: data' }
+    inspect_manifest do |sections|
+      sections.size.should be(1)
+      sections.first['Manifest-Version'].should eql('1.0')
+      sections.first['Meta'].should eql('data')
+    end
+  end
+
+  it 'should create manifest from file' do
+    write 'MANIFEST.MF', 'Meta: data'
+    package_with_manifest 'MANIFEST.MF'
+    inspect_manifest do |sections|
+      sections.size.should be(1)
+      sections.first['Manifest-Version'].should eql('1.0')
+      sections.first['Meta'].should eql('data')
+    end
+  end
+
+  it 'should create manifest from task' do
+    file 'MANIFEST.MF' do |task|
+      write task.to_s, 'Meta: data'
+    end
+    package_with_manifest 'MANIFEST.MF'
+    inspect_manifest do |sections|
+      sections.size.should be(1)
+      sections.first['Manifest-Version'].should eql('1.0')
+      sections.first['Meta'].should eql('data')
+    end
+  end
+
+  it 'should respond to with() and accept manifest' do
+    write 'DISCLAIMER'
+    mkpath 'target/classes'
+    packaging = @packaging
+    define('foo', :version=>'1.0') { package(packaging).with :manifest=>{'Foo'=>'data'} }
+    inspect_manifest { |sections| sections.first['Foo'].should eql('data') }
+  end
+
+  it 'should include META-INF directory' do
+    packaging = @packaging
+    package = define('foo', :version=>'1.0') { package(packaging) }.packages.first
+    package.invoke
+    Zip::ZipFile.open(package.to_s) do |zip|
+      zip.entries.map(&:to_s).should include('META-INF/')
+    end
+  end
+end
+
+
+describe Project, '#meta_inf' do
+  it 'should by an array' do
+    define('foo').meta_inf.should be_kind_of(Array)
+  end
+
+  it 'should include LICENSE file if found' do
+    write 'LICENSE'
+    define('foo').meta_inf.first.should point_to_path('LICENSE')
+  end
+
+  it 'should be empty unless LICENSE exists' do
+    define('foo').meta_inf.should be_empty
+  end
+
+  it 'should inherit from parent project' do
+    write 'LICENSE'
+    define('foo') { define 'bar' }
+    project('foo:bar').meta_inf.first.should point_to_path('LICENSE')
+  end
+
+  it 'should expect LICENSE file parent project' do
+    write 'bar/LICENSE'
+    define('foo') { define 'bar' }
+    project('foo:bar').meta_inf.should be_empty
+  end
+end
+
+
+describe 'package with meta_inf', :shared=>true do
+
+  def package_with_meta_inf(meta_inf = nil)
+    packaging = @packaging
+    @project = Buildr.define('foo', :version=>'1.2') do
+      package packaging
+      package(packaging).with(:meta_inf=>meta_inf) if meta_inf
+    end
+  end
+
+  def inspect_meta_inf
+    package = project('foo').package(@packaging)
+    package.invoke
+    assumed = Array(@meta_inf)
+    Zip::ZipFile.open(package.to_s) do |zip|
+      entries = zip.entries.map(&:to_s).select { |f| File.dirname(f) == 'META-INF' }.map { |f| File.basename(f) }
+      assumed.each { |f| entries.should include(f) }
+      yield entries - assumed if block_given?
+    end
+  end
+
+  it 'should default to LICENSE file' do
+    write 'LICENSE'
+    package_with_meta_inf
+    inspect_meta_inf { |files| files.should eql(['LICENSE']) }
+  end
+
+  it 'should be empty if no LICENSE file' do
+    package_with_meta_inf
+    inspect_meta_inf { |files| files.should be_empty }
+  end
+
+  it 'should include file specified by :meta_inf option' do
+    write 'README'
+    package_with_meta_inf 'README'
+    inspect_meta_inf { |files| files.should eql(['README']) }
+  end
+
+  it 'should include files specified by :meta_inf option' do
+    files = ['README', 'DISCLAIMER'].each { |file| write file }
+    package_with_meta_inf files
+    inspect_meta_inf { |files| files.should eql(files) }
+  end
+
+  it 'should include file task specified by :meta_inf option' do
+    file('README') { |task| write task.to_s }
+    package_with_meta_inf file('README')
+    inspect_meta_inf { |files| files.should eql(['README']) }
+  end
+
+  it 'should include file tasks specified by :meta_inf option' do
+    files = ['README', 'DISCLAIMER'].each { |file| file(file) { |task| write task.to_s } }
+    package_with_meta_inf files.map { |f| file(f) }
+    inspect_meta_inf { |files| files.should eql(files) }
+  end
+
+  it 'should complain if cannot find file' do
+    package_with_meta_inf 'README'
+    lambda { inspect_meta_inf }.should raise_error(RuntimeError, /README/)
+  end
+
+  it 'should complain if cannot build task' do
+    file('README')  { fail 'Failed' }
+    package_with_meta_inf 'README'
+    lambda { inspect_meta_inf }.should raise_error(RuntimeError, /Failed/)
+  end
+
+  it 'should respond to with() and accept manifest and meta_inf' do
+    write 'DISCLAIMER'
+    mkpath 'target/classes'
+    packaging = @packaging
+    define('foo', :version=>'1.0') { package(packaging).with :meta_inf=>'DISCLAIMER' }
+    inspect_meta_inf { |files| files.should eql(['DISCLAIMER']) }
+  end
+end
+
+
+describe Packaging, 'jar' do
+  it_should_behave_like 'packaging'
+  before { @packaging = :jar }
+  it_should_behave_like 'package with manifest'
+  it_should_behave_like 'package with meta_inf'
+  before { @meta_inf = ['MANIFEST.MF'] }
+
+  it 'should use files from compile directory if nothing included' do
+    write 'src/main/java/Test.java', 'class Test {}'
+    define('foo', :version=>'1.0') { package(:jar) }
+    project('foo').package(:jar).invoke
+    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+      jar.entries.map(&:to_s).sort.should include('META-INF/MANIFEST.MF', 'Test.class')
+    end
+  end
+
+  it 'should use files from resources directory if nothing included' do
+    write 'src/main/resources/test/important.properties'
+    define('foo', :version=>'1.0') { package(:jar) }
+    project('foo').package(:jar).invoke
+    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+      jar.entries.map(&:to_s).sort.should include('test/important.properties')
+    end
+  end
+
+  it 'should include class directories' do
+    write 'src/main/java/code/Test.java', 'package code ; class Test {}'
+    define('foo', :version=>'1.0') { package(:jar) }
+    project('foo').package(:jar).invoke
+    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+      jar.entries.map(&:to_s).sort.should include('code/')
+    end
+  end
+
+  it 'should include resource files starting with dot' do
+    write 'src/main/resources/test/.config'
+    define('foo', :version=>'1.0') { package(:jar) }
+    project('foo').package(:jar).invoke
+    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+      jar.entries.map(&:to_s).sort.should include('test/.config')
+    end
+  end
+
+  it 'should include empty resource directories' do
+    mkpath 'src/main/resources/empty'
+    define('foo', :version=>'1.0') { package(:jar) }
+    project('foo').package(:jar).invoke
+    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+      jar.entries.map(&:to_s).sort.should include('empty/')
+    end
+  end
+end
+
+
+describe Packaging, 'war' do
+  it_should_behave_like 'packaging'
+  before { @packaging = :war }
+  it_should_behave_like 'package with manifest'
+  it_should_behave_like 'package with meta_inf'
+  before { @meta_inf = ['MANIFEST.MF'] }
+
+  def make_jars
+    artifact('group:id:jar:1.0') { |t| write t.to_s }
+    artifact('group:id:jar:2.0') { |t| write t.to_s }
+  end
+
+  def inspect_war
+    project('foo').package(:war).invoke
+    Zip::ZipFile.open(project('foo').package(:war).to_s) do |war|
+      yield war.entries.map(&:to_s).sort
+    end
+  end
+
+  it 'should use files from webapp directory if nothing included' do
+    write 'src/main/webapp/test.html'
+    define('foo', :version=>'1.0') { package(:war) }
+    inspect_war { |files| files.should include('test.html') }
+  end
+
+  it 'should ignore webapp directory if missing' do
+    define('foo', :version=>'1.0') { package(:war) }
+    inspect_war { |files| files.should eql(['META-INF/', 'META-INF/MANIFEST.MF']) }
+  end
+
+  it 'should accept files from :classes option' do
+    write 'src/main/java/Test.java', 'class Test {}'
+    write 'classes/test'
+    define('foo', :version=>'1.0') { package(:war).with(:classes=>'classes') }
+    inspect_war { |files| files.should include('WEB-INF/classes/test') }
+  end
+
+  it 'should use files from compile directory if nothing included' do
+    write 'src/main/java/Test.java', 'class Test {}'
+    define('foo', :version=>'1.0') { package(:war) }
+    inspect_war { |files| files.should include('WEB-INF/classes/Test.class') }
+  end
+
+  it 'should ignore compile directory if no source files to compile' do
+    define('foo', :version=>'1.0') { package(:war) }
+    inspect_war { |files| files.should_not include('target/classes') }
+  end
+
+  it 'should include only specified classes directories' do
+    write 'src/main/java'
+    define('foo', :version=>'1.0') { package(:war).with :classes=>_('additional') }
+    project('foo').package(:war).classes.should_not include(project('foo').file('target/classes'))
+    project('foo').package(:war).classes.should include(project('foo').file('additional'))
+  end
+
+  it 'should use files from resources directory if nothing included' do
+    write 'src/main/resources/test/important.properties'
+    define('foo', :version=>'1.0') { package(:war) }
+    inspect_war { |files| files.should include('WEB-INF/classes/test/important.properties') }
+  end
+
+  it 'should include empty resource directories' do
+    mkpath 'src/main/resources/empty'
+    define('foo', :version=>'1.0') { package(:war) }
+    inspect_war { |files| files.should include('WEB-INF/classes/empty/') }
+  end
+
+  it 'should accept file from :libs option' do
+    make_jars
+    define('foo', :version=>'1.0') { package(:war).with(:libs=>'group:id:jar:1.0') }
+    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
+  end
+
+  it 'should accept file from :libs option' do
+    make_jars
+    define('foo', :version=>'1.0') { package(:war).with(:libs=>['group:id:jar:1.0', 'group:id:jar:2.0']) }
+    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar', 'WEB-INF/lib/id-2.0.jar') }
+  end
+
+  it 'should use artifacts from compile classpath if no libs specified' do
+    make_jars
+    define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war) }
+    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar', 'WEB-INF/lib/id-2.0.jar') }
+  end
+
+  it 'should include only specified libraries' do
+    define 'foo', :version=>'1.0' do
+      compile.with 'group:id:jar:1.0'
+      package(:war).with :libs=>'additional:id:jar:1.0'
+    end
+    project('foo').package(:war).libs.should_not include(artifact('group:id:jar:1.0'))
+    project('foo').package(:war).libs.should include(artifact('additional:id:jar:1.0'))
+  end
+
+end
+
+
+describe Packaging, 'aar' do
+  it_should_behave_like 'packaging'
+  before { @packaging = :aar }
+  it_should_behave_like 'package with manifest'
+  it_should_behave_like 'package with meta_inf'
+  before { @meta_inf = ['MANIFEST.MF', 'services.xml'] }
+
+  setup { write 'src/main/axis2/services.xml' }
+
+  def make_jars
+    artifact('group:id:jar:1.0') { |t| write t.to_s }
+    artifact('group:id:jar:2.0') { |t| write t.to_s }
+  end
+
+  def inspect_aar
+    project('foo').package(:aar).invoke
+    Zip::ZipFile.open(project('foo').package(:aar).to_s) do |aar|
+      yield aar.entries.map(&:to_s).sort
+    end
+  end
+
+  it 'should automatically include services.xml and any *.wsdl files under src/main/axis2' do
+    write 'src/main/axis2/my-service.wsdl'
+    define('foo', :version=>'1.0') { package(:aar) }
+    inspect_aar { |files| files.should include('META-INF/MANIFEST.MF', 'META-INF/services.xml', 'META-INF/my-service.wsdl') }
+  end
+
+  it 'should accept files from :include option' do
+    write 'test'
+    define('foo', :version=>'1.0') { package(:aar).include 'test' }
+    inspect_aar { |files| files.should include('META-INF/MANIFEST.MF', 'test') }
+  end
+
+  it 'should use files from compile directory if nothing included' do
+    write 'src/main/java/Test.java', 'class Test {}'
+    define('foo', :version=>'1.0') { package(:aar) }
+    inspect_aar { |files| files.should include('Test.class') }
+  end
+
+  it 'should use files from resources directory if nothing included' do
+    write 'src/main/resources/test/important.properties'
+    define('foo', :version=>'1.0') { package(:aar) }
+    inspect_aar { |files| files.should include('test/important.properties') }
+  end
+
+  it 'should include empty resource directories' do
+    mkpath 'src/main/resources/empty'
+    define('foo', :version=>'1.0') { package(:aar) }
+    inspect_aar { |files| files.should include('empty/') }
+  end
+
+  it 'should accept file from :libs option' do
+    make_jars
+    define('foo', :version=>'1.0') { package(:aar).with :libs=>'group:id:jar:1.0' }
+    inspect_aar { |files| files.should include('META-INF/MANIFEST.MF', 'lib/id-1.0.jar') }
+  end
+
+  it 'should accept file from :libs option' do
+    make_jars
+    define('foo', :version=>'1.0') { package(:aar).with :libs=>['group:id:jar:1.0', 'group:id:jar:2.0'] }
+    inspect_aar { |files| files.should include('META-INF/MANIFEST.MF', 'lib/id-1.0.jar', 'lib/id-2.0.jar') }
+  end
+
+  it 'should NOT use artifacts from compile classpath if no libs specified' do
+    make_jars
+    define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:aar) }
+    inspect_aar { |files| files.should include('META-INF/MANIFEST.MF') }
+  end
+
+  it 'should return all libraries from libs attribute' do
+    define 'foo', :version=>'1.0' do
+      compile.with 'group:id:jar:1.0'
+      package(:aar).with :libs=>'additional:id:jar:1.0'
+    end
+    project('foo').package(:aar).libs.should_not include(artifact('group:id:jar:1.0'))
+    project('foo').package(:aar).libs.should include(artifact('additional:id:jar:1.0'))
+  end
+
+end
+
+
+describe Packaging, 'sources' do
+  it_should_behave_like 'packaging'
+  before { @packaging, @package_type = :sources, :zip }
+
+  it 'should create package of type :zip and classifier \'sources\'' do
+    define 'foo', :version=>'1.0' do
+      package(:sources).type.should eql(:zip)
+      package(:sources).classifier.should eql('sources')
+      package(:sources).name.should match(/foo-1.0-sources.zip$/)
+    end
+  end
+
+  it 'should contain source files' do
+    write 'src/main/java/Source.java'
+    define('foo', :version=>'1.0') { package(:sources) }
+    project('foo').task('package').invoke
+    project('foo').packages.first.should contain('Source.java')
+  end
+
+  it 'should be a ZipTask' do
+    define 'foo', :version=>'1.0' do
+      package(:javadoc).should be_kind_of(ZipTask)
+    end
+  end
+end
+
+
+describe Packaging, 'javadoc' do
+  it_should_behave_like 'packaging'
+  before { @packaging, @package_type = :javadoc, :zip }
+
+  it 'should create package of type :zip and classifier \'javadoc\'' do
+    define 'foo', :version=>'1.0' do
+      package(:javadoc).type.should eql(:zip)
+      package(:javadoc).classifier.should eql('javadoc')
+      package(:javadoc).name.pathmap('%f').should eql('foo-1.0-javadoc.zip')
+    end
+  end
+
+  it 'should contain Javadocs' do
+    write 'src/main/java/Source.java', 'public class Source {}'
+    define('foo', :version=>'1.0') { package(:javadoc) }
+    project('foo').task('package').invoke
+    project('foo').packages.first.should contain('Source.html', 'index.html')
+  end
+
+  it 'should use project description in window title' do
+    write 'src/main/java/Source.java', 'public class Source {}'
+    desc 'My Project'
+    define('foo', :version=>'1.0') { package(:javadoc) }
+    project('foo').task('package').invoke
+    project('foo').packages.first.entry('index.html').should contain('My Project')
+  end
+
+  it 'should be a ZipTask' do
+    define 'foo', :version=>'1.0' do
+      package(:javadoc).should be_kind_of(ZipTask)
+    end
+  end
+end
+
+
+shared_examples_for 'package_with_' do
+
+  def prepare(options = {})
+    packager = "package_with_#{@packaging}" 
+    write 'src/main/java/Source.java'
+    write 'baz/src/main/java/Source.java'
+    define 'foo', :version=>'1.0' do
+      send packager, options
+      define 'bar' ; define 'baz'
+    end
+  end
+
+  def applied_to
+    projects.select { |project| project.packages.first }.map(&:name)
+  end
+
+  it 'should create package of type zip with classifier' do
+    prepare
+    project('foo').packages.first.to_s.should =~ /foo-1.0-#{@packaging}.zip/
+  end
+
+  it 'should create package for projects that have source files' do
+    prepare
+    applied_to.should include('foo', 'foo:baz')
+  end
+
+  it 'should not create package for projects that have no source files' do
+    prepare
+    applied_to.should_not include('foo:bar')
+  end
+
+  it 'should limit to projects specified by :only' do
+    prepare :only=>'baz'
+    applied_to.should eql(['foo:baz'])
+  end
+
+  it 'should limit to projects specified by :only array' do
+    prepare :only=>['baz']
+    applied_to.should eql(['foo:baz'])
+  end
+
+  it 'should ignore project specified by :except' do
+    prepare :except=>'baz'
+    applied_to.should eql(['foo'])
+  end
+
+  it 'should ignore projects specified by :except array' do
+    prepare :except=>['baz']
+    applied_to.should eql(['foo'])
+  end
+end
+
+
+describe 'package_with_sources' do
+  it_should_behave_like 'package_with_'
+  before { @packaging = :sources }
+end
+
+describe 'package_with_javadoc' do
+  it_should_behave_like 'package_with_'
+  before { @packaging = :javadoc }
+end

@@ -2,6 +2,7 @@ require 'core/project'
 require 'core/compile'
 require 'java/artifact'
 
+
 module Buildr
   # Methods added to Project to support packaging and tasks for packaging,
   # installing and uploading packages.
@@ -110,9 +111,9 @@ module Buildr
     #   def package_as_sources_spec(spec) #:nodoc:
     #     { :type=>:zip, :classifier=>'sources' }.merge(spec)
     #   end
-    def package(type = nil, spec = nil)
-      spec = spec.nil? ? {} : spec.dup
-      type ||= compile.packaging || :zip
+    def package(*args)
+      spec = Hash === args.last ? args.pop.dup : {}
+      type = args.shift || compile.packaging || :zip
       rake_check_options spec, *ActsAsArtifact::ARTIFACT_ATTRIBUTES
       spec[:id] ||= self.id
       spec[:group] ||= self.group
@@ -124,7 +125,7 @@ module Buildr
       if packager.arity == 1
         spec = send("package_as_#{type}_spec", spec) if respond_to?("package_as_#{type}_spec")
         file_name = path_to(:target, Artifact.hash_to_file_name(spec))
-        package = Rake::Task[file_name] rescue packager.call(file_name)
+        package = packages.find { |pkg| pkg.name == file_name } || packager.call(file_name)
       else
         warn_deprecated "We changed the way package_as methods are implemented.  See the package method documentation for more details."
         file_name = path_to(:target, Artifact.hash_to_file_name(spec))
@@ -210,4 +211,9 @@ module Buildr
     end
 
   end
+end
+
+
+class Buildr::Project
+  include Buildr::Package
 end
