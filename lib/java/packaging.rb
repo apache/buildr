@@ -300,8 +300,10 @@ module Buildr
         Java::Packaging::WarTask.define_task(file_name).tap do |war|
           war.with :manifest=>manifest, :meta_inf=>meta_inf
           # Add libraries in WEB-INF lib, and classes in WEB-INF classes
-          war.with :classes=>compile.target unless compile.sources.empty?
-          war.with :classes=>resources.target unless resources.sources.empty?
+          classes = []
+          classes << compile.target unless compile.sources.empty?
+          classes << resources.target unless resources.sources.empty?
+          war.with :classes=>classes
           war.with :libs=>compile.dependencies
           # Add included files, or the webapp directory.
           webapp = path_to(:source, :main, :webapp)
