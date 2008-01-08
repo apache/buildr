@@ -7,7 +7,7 @@ module Buildr
   module Eclipse #:nodoc:
 
     include Extension
-    
+
     first_time do
       # Global task "eclipse" generates artifacts for all projects.
       desc "Generate Eclipse artifacts for all projects"
@@ -32,7 +32,7 @@ module Buildr
 
       # Check if project has scala facet
       scala = project.task("scalac") if Rake::Task.task_defined?(project.name+":"+"scalac")
-      
+
       # Only for projects that are Eclipse packagable.
       if project.packages.detect { |pkg| pkg.type.to_s =~ /(jar)|(war)|(rar)|(mar)|(aar)/ }
         eclipse.enhance [ file(project.path_to(".classpath")), file(project.path_to(".project")) ]
@@ -60,7 +60,7 @@ module Buildr
               cp = cp.uniq
 
               # Convert classpath elements into applicable Project objects
-              cp.collect! { |path| projects.detect { |prj| prj.packages.detect { |pkg| pkg.to_s == path } } || path }
+              cp.collect! { |path| Buildr.projects.detect { |prj| prj.packages.detect { |pkg| pkg.to_s == path } } || path }
 
               # project_libs: artifacts created by other projects
               project_libs, others = cp.partition { |path| path.is_a?(Project) }
@@ -76,12 +76,12 @@ module Buildr
 
               srcs = project.compile.sources
               srcs << scala.sources if scala
-              
+
               # hack until we have sunit task
               project.path_to("src/test/scala").tap do |dir|
                 srcs += dir if scala and File.exist?(dir)
               end
-              
+
               srcs = srcs.map { |src| relative[src] } + generated.map { |src| relative[src] }
               srcs.sort.uniq.each do |path|
                 xml.classpathentry :kind=>'src', :path=>path, :excluding=>excludes

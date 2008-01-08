@@ -57,7 +57,7 @@ module Buildr
         cp = project.test.compile.classpath.map(&:to_s) - [ project.compile.target.to_s ]
 
         # Convert classpath elements into applicable Project objects
-        cp.collect! { |path| projects.detect { |prj| prj.packages.detect { |pkg| pkg.to_s == path } } || path }
+        cp.collect! { |path| Buildr.projects.detect { |prj| prj.packages.detect { |pkg| pkg.to_s == path } } || path }
 
         # project_libs: artifacts created by other projects
         project_libs, others = cp.partition { |path| path.is_a?(Project) }
@@ -109,8 +109,8 @@ module Buildr
               end
 
               # Libraries
-              ext_libs = libs.map {|path| "$MODULE_DIR$/#{path.to_s}" } + 
-              m2_libs.map { |path| path.to_s.sub(m2repo, "$M2_REPO$") }                  
+              ext_libs = libs.map {|path| "$MODULE_DIR$/#{path.to_s}" } +
+              m2_libs.map { |path| path.to_s.sub(m2repo, "$M2_REPO$") }
               ext_libs.each do |path|
                 xml.orderEntry :type=>"module-library" do
                   xml.library do
