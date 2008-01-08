@@ -358,3 +358,8 @@ class Buildr::ZipTask #:nodoc:
   end
 
 end
+
+
+class Buildr::Project
+  include Buildr::Checks
+end

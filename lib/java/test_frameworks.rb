@@ -109,7 +109,20 @@ module Buildr
 
     def files(path) #:nodoc:
       # Ignore anonymous classes.
-      super(path).reject { |name| name =~ /\$/ }
+      candidates = super(path).reject { |name| name =~ /\$/ }
+=begin
+      # Ignore classes that do not extend junit.framework.TestCase.
+      urls = ["#{path}/"] + Buildr.artifacts(REQUIRES)
+      urls = urls.map { |url| Java.import('java.net.URL').new("file://#{url}") }
+      class_loader = Java.import('java.net.URLClassLoader').new(urls)
+      unit_test = class_loader.loadClass('junit.framework.TestCase')
+      base = Pathname.new(path)
+      super(path).select do |file|
+        class_name = Pathname.new(file).relative_path_from(base).to_s.ext('').gsub(File::SEPARATOR, ',')
+        java_class = class_loader.loadClass(class_name) 
+        unit_test.isAssignableFrom(java_class)
+      end
+=end
     end
 
     def supports?(project) #:nodoc:

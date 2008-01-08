@@ -383,6 +383,9 @@ module Buildr
     end
 
 
+    # Project has visibility to everything in the Buildr namespace.
+    include Buildr
+
     # The project name. For example, 'foo' for the top-level project, and 'foo:bar'
     # for its sub-project.
     attr_reader :name
@@ -873,5 +876,6 @@ module Buildr
       projects
     end
   end
+
 
 end

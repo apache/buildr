@@ -4,6 +4,7 @@ require "java/artifact"
 require 'stringio'
 require 'rexml/document'
 
+
 module Buildr
   module Idea #:nodoc:
 
@@ -165,3 +166,8 @@ module Buildr
 
   end
 end # module Buildr
+
+
+class Buildr::Project
+  include Buildr::Idea
+end

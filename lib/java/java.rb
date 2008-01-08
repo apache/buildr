@@ -365,7 +365,8 @@ module Buildr
 
     def self.import(cls)
       wrapper.load
-      cls.split('.').inject(wrapper) { |wrapper, name| wrapper.send(name) }
+      Rjb.import(cls)
+      #cls.split('.').inject(wrapper) { |wrapper, name| wrapper.send(name) }
     end
 
   end

@@ -2,6 +2,7 @@ require "pathname"
 require "core/project"
 require "java/artifact"
 
+
 module Buildr
   module Eclipse #:nodoc:
 
@@ -158,3 +159,8 @@ module Buildr
 
   end
 end # module Buildr
+
+
+class Buildr::Project
+  include Buildr::Eclipse
+end

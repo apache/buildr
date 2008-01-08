@@ -530,3 +530,8 @@ module Buildr
   end
 
 end
+
+
+class Buildr::Project
+  include Buildr::Compile
+end

@@ -1,6 +1,7 @@
 # This file gets loaded twice when running 'spec spec/*' and not with pleasent results,
 # so ignore the second attempt to load it.
 unless $LOADED_FEATURES.include?(__FILE__)
+
   require 'rubygems'
   $LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__))
   require 'buildr'

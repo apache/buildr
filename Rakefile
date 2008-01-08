@@ -15,7 +15,7 @@ def specify(platform)
     spec.homepage     = "http://incubator.apache.org/#{spec.name}/"
     spec.summary      = 'A build system that doesn\'t suck'
     spec.files        = FileList['lib/**/*', 'README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER',
-                                 'Rakefile', 'spec/**/*', 'doc/**/*'].collect
+                                 'Rakefile', 'spec/**/*', 'doc/**/*'].to_ary
     spec.require_path = 'lib'
     spec.has_rdoc     = true
     spec.extra_rdoc_files = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']

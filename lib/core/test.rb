@@ -22,9 +22,14 @@ module Buildr
         @frameworks[name.to_sym] or raise ArgumentError, "No #{name} framework available. Did you install it?"
       end
 
-      # Identify which compiler applies for this project.
+      # Identify which test framework applies for this project.
       def identify_from(project)
-        @frameworks.values.detect { |framework| compiler.supports?(project) }
+        # Look for a suitable test framework based on the compiled language,
+        # which may return multiple candidates, e.g. JUnit and TestNG for Java.
+        # Pick the one used in the parent project, if not, whichever comes first.
+        candidates = @frameworks.values.select { |framework| framework.supports?(project) }
+        parent = project.parent.test.framework if project.parent
+        candidates.detect { |framework| framework.name == parent } || candidates.first
       end
 
       # Adds a test framework to the list of supported frameworks.
@@ -608,4 +613,9 @@ To run integration tests:
     HELP
   end
 
+end
+
+
+class Buildr::Project
+  include Buildr::Test
 end
