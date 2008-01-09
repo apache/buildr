@@ -271,6 +271,84 @@ package(:aar).with(:services_xml=>_('target/services.xml'), :wsdls=>_('target/*.
 }}}
 
 
+h2.  Packaging EARs
+
+EAR packaging is slightly different from JAR/WAR packaging.  It's main purpose
+is to package components together, and so it includes special methods for
+handling component inclusion that take care to update application.xml and the
+component's classpath.
+
+EAR packages support four component types:
+
+* @:war@ -- J2EE Web Application (WAR).
+* @:ejb@ -- Enterprise Java Bean (JAR).
+* @:jar@ -- J2EE Application Client (JAR).
+* @:lib@ -- Shared library (JAR).
+
+This example shows two ways for adding components built by other projects:
+
+{{{!ruby
+package(:ear) << project('coolWebService').package(:war)
+package(:ear).add project('commonLib') # By default, the JAR package
+}}}
+
+Adding a WAR package assumes it's a WAR component and treats it as such, but
+JAR packages can be any of three component types, so by default they are all
+treated as shared libraries.  If you want to add an EJB or Application Client
+component, you need to say so explicitly, either passing @type=>package@, or by
+passing the component type in the @:type@ option.
+
+Here are three examples:
+
+{{{!ruby
+# Assumed to be a shared library.
+package(:ear).add 'org.springframework:spring:jar:2.6'
+# Component type mapped to package.
+package(:ear).add :ejb=>project('beanery')
+# Adding component with specific package type.
+package(:ear).add project('client'), :type=>:jar
+}}}
+
+By default, WAR components are all added under the @/war@ path, and likewise,
+EJB components are added under the @/ejb@ path, shared libraries under @/lib@
+and Application Client components under @/jar@.
+
+If you want to place components in different locations you can do so using the
+@:path@ option, or by specifying a different mapping between component type and
+its path.  The following two examples are equivalent:
+
+{{{!ruby
+# Specify once per component.
+package(:ear).add project('coolWebService').package(:war), :path=>'coolServices'
+# Configure once and apply to all added components.
+package(:ear).map[:war] = 'coolServices'
+package(:ear) << project('coolWebService').package(:war)
+}}}
+
+EAR packages include an @application.xml@ file in the @META-INF@ directory that
+describes the application and its component.  This file is created for you
+during packaging, by referencing all the components added to the EAR.  There
+are a couple of things you will typically want to change.
+
+* *display-name* -- The application's display name defaults to the project's
+identifier.  You can change that by setting the @display_name@ attribute.
+
+* *context-root* -- WAR components specify a context root, based on the package
+identifier, for example, "cool-web-1.0.war" will have the context root
+"cool-web".  To specify a different context root, add the WAR package with the
+@context_root@ option.
+
+Again, by example:
+
+{{{!ruby
+package(:ear).display_name = 'MyCoolWebService'
+package(:ear).add project('coolWebService').package(:war), :context-root=>'coolness'
+}}}
+
+If you need to disable the context root (e.g. for Portlets), set @context_root@
+to @false@.
+
+
 h2.  Packaging Tars and GZipped Tars
 
 Everything you know about working with ZIP files translates to Tar files, the

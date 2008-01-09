@@ -73,6 +73,7 @@ module Buildr
         self
       end
       alias :add :include
+      alias :<< :include
 
       # :call-seq:
       #   exclude(*files) => self
@@ -175,6 +176,7 @@ module Buildr
         @includes |= files
         self
       end
+      alias :<< :include
 
       def exclude(*files)
         @excludes |= files
@@ -264,6 +266,7 @@ module Buildr
       self
     end 
     alias :add :include
+    alias :<< :include
    
     # :call-seq:
     #   exclude(*files) => self

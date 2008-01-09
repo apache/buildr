@@ -45,5 +45,3 @@ shared_examples_for 'packaging' do
     end
   end
 end
-
-

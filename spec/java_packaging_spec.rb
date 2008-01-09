@@ -245,7 +245,7 @@ describe 'package with meta_inf', :shared=>true do
   def inspect_meta_inf
     package = project('foo').package(@packaging)
     package.invoke
-    assumed = Array(@meta_inf)
+    assumed = Array(@meta_inf_ignore)
     Zip::ZipFile.open(package.to_s) do |zip|
       entries = zip.entries.map(&:to_s).select { |f| File.dirname(f) == 'META-INF' }.map { |f| File.basename(f) }
       assumed.each { |f| entries.should include(f) }
@@ -314,7 +314,7 @@ describe Packaging, 'jar' do
   before { @packaging = :jar }
   it_should_behave_like 'package with manifest'
   it_should_behave_like 'package with meta_inf'
-  before { @meta_inf = ['MANIFEST.MF'] }
+  before { @meta_inf_ignore = 'MANIFEST.MF' }
 
   it 'should use files from compile directory if nothing included' do
     write 'src/main/java/Test.java', 'class Test {}'
@@ -368,7 +368,7 @@ describe Packaging, 'war' do
   before { @packaging = :war }
   it_should_behave_like 'package with manifest'
   it_should_behave_like 'package with meta_inf'
-  before { @meta_inf = ['MANIFEST.MF'] }
+  before { @meta_inf_ignore = 'MANIFEST.MF' }
 
   def make_jars
     artifact('group:id:jar:1.0') { |t| write t.to_s }
@@ -465,9 +465,10 @@ describe Packaging, 'aar' do
   before { @packaging = :aar }
   it_should_behave_like 'package with manifest'
   it_should_behave_like 'package with meta_inf'
-  before { @meta_inf = ['MANIFEST.MF', 'services.xml'] }
-
-  setup { write 'src/main/axis2/services.xml' }
+  before do
+    write 'src/main/axis2/services.xml'
+    @meta_inf_ignore = ['MANIFEST.MF', 'services.xml']
+  end
 
   def make_jars
     artifact('group:id:jar:1.0') { |t| write t.to_s }
@@ -538,6 +539,291 @@ describe Packaging, 'aar' do
     project('foo').package(:aar).libs.should include(artifact('additional:id:jar:1.0'))
   end
 
+end
+
+
+describe Packaging, 'ear' do
+  it_should_behave_like 'packaging'
+  before { @packaging = :ear }
+  it_should_behave_like 'package with manifest'
+  it_should_behave_like 'package with meta_inf'
+  before { @meta_inf_ignore = ['MANIFEST.MF', 'application.xml'] }
+
+  def inspect_ear
+    project('foo').package(:ear).invoke
+    Zip::ZipFile.open(project('foo').package(:ear).to_s) do |ear|
+      yield ear.entries.map(&:to_s).sort
+    end
+  end
+
+  def inspect_application_xml
+    project('foo').package(:ear).invoke
+    Zip::ZipFile.open(project('foo').package(:ear).to_s) do |ear|
+      yield REXML::Document.new(ear.read('META-INF/application.xml')).root
+    end
+  end
+
+  def inspect_classpath(package)
+    project('foo').package(:ear).invoke
+    Zip::ZipFile.open(project('foo').package(:ear).to_s) do |ear|
+      File.open('tmp.zip', 'w') do |tmp|
+        tmp.write ear.file.read(package)
+      end
+      Zip::ZipFile.open('tmp.zip') do |zip|
+        first_section = zip.file.read('META-INF/MANIFEST.MF').split("\n\n").first.
+          split("\n").each { |line| line.length.should < 72 }.
+          inject([]) { |merged, line|
+            if line[0] == 32
+              merged.last << line[1..-1]
+            else
+              merged << line
+            end
+            merged
+          }.map { |line| line.split(/: /) }.
+          inject({}) { |map, (name, value)| map.merge(name=>value) }
+        yield first_section['Class-Path'].to_s.split(' ')
+      end
+    end
+  end
+
+  it 'should set display name from project id' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).display_name.should eql('foo')
+      define 'bar' do
+        package(:ear).display_name.should eql('foo-bar')
+      end
+    end
+  end
+
+  it 'should set display name in application.xml' do
+    define 'foo', :version=>'1.0' do
+      package(:ear)
+    end
+    inspect_application_xml { |xml| xml.get_text('/application/display-name').should == 'foo' }
+  end
+
+  it 'should accept different display name' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).display_name = 'bar'
+    end
+    inspect_application_xml { |xml| xml.get_text('/application/display-name').should == 'bar' }
+  end
+
+  it 'should map WARs to /war directory' do
+    define 'foo', :version=>'1.0' do
+      package(:ear) << package(:war)
+    end
+    inspect_ear { |files| files.should include('war/foo-1.0.war') }
+  end
+
+  it 'should map EJBs to /ejb directory' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).add :ejb=>package(:jar)
+    end
+    inspect_ear { |files| files.should include('ejb/foo-1.0.jar') }
+  end
+
+  it 'should map JARs to /lib directory' do
+    define 'foo', :version=>'1.0' do
+      package(:ear) << package(:jar)
+    end
+    inspect_ear { |files| files.should include('lib/foo-1.0.jar') }
+  end
+
+  it 'should accept component type with :type option' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).add package(:jar), :type=>:ejb
+    end
+    inspect_ear { |files| files.should include('ejb/foo-1.0.jar') }
+  end
+
+  it 'should accept component and its type as type=>artiract' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).add :ejb=>package(:jar)
+    end
+    inspect_ear { |files| files.should include('ejb/foo-1.0.jar') }
+  end
+
+  it 'should map typed JARs to /jar directory' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).add :jar=>package(:jar)
+    end
+    inspect_ear { |files| files.should include('jar/foo-1.0.jar') }
+  end
+
+  it 'should complain about unknown component type' do
+    define 'foo', :version=>'1.0' do
+      lambda { package(:ear).add package(:zip) }.should raise_error(RuntimeError, /unknown ear component type/i)
+    end
+  end
+
+  it 'should allow unknown component types with explicit type' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).add :lib=>package(:zip)
+    end
+    inspect_ear { |files| files.should include('lib/foo-1.0.zip') }
+  end
+
+  it 'should accept alternative directory name' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).add package(:jar), :path=>'trash'
+    end
+    inspect_ear { |files| files.should include('trash/foo-1.0.jar') }
+  end
+
+  it 'should accept customization of directory map' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).map[:jar] = 'jarred'
+      package(:ear).add :jar=>package(:jar)
+    end
+    inspect_ear { |files| files.should include('jarred/foo-1.0.jar') }
+  end
+
+  it 'should accept customization of directory map with nil paths in application.xml' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).map[:war] = nil
+      package(:ear).add :war=>package(:war)
+      package(:ear).add package(:jar)
+    end
+    inspect_ear { |files| files.should include('foo-1.0.war') }
+    inspect_application_xml do |xml|
+      xml.get_text("/application/module[@id='foo']/web/web-uri").to_s.should eql('foo-1.0.war')
+    end
+  end
+
+  it 'should accept customization of directory map with nil paths in the classpath' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).map[:lib] = nil
+      package(:ear).add :war=>package(:war)
+      package(:ear) << package(:jar)
+    end
+    inspect_classpath 'war/foo-1.0.war' do |classpath|
+      classpath.should include('foo-1.0.jar')
+    end
+  end
+
+  it 'should list WAR components in application.xml' do
+    define 'foo', :version=>'1.0' do
+      package(:ear) << package(:war) << package(:war, :id=>'bar')
+    end
+    inspect_application_xml do |xml|
+      xml.get_elements("/application/module[@id='foo'][web]").should_not be_empty
+      xml.get_elements("/application/module[@id='bar'][web]").should_not be_empty
+    end
+  end
+
+  it 'should specify web-uri for WAR components in application.xml' do
+    define 'foo', :version=>'1.0' do
+      package(:ear) << package(:war)
+      package(:ear).add package(:war, :id=>'bar'), :path=>'ws'
+    end
+    inspect_application_xml do |xml|
+      xml.get_text("/application/module[@id='foo']/web/web-uri").to_s.should eql('war/foo-1.0.war')
+      xml.get_text("/application/module[@id='bar']/web/web-uri").to_s.should eql('ws/bar-1.0.war')
+    end
+  end
+
+  it 'should specify context-root for WAR components in application.xml' do
+    define 'foo', :version=>'1.0' do
+      package(:ear) << package(:war)
+      package(:ear).add package(:war, :id=>'bar')
+    end
+    inspect_application_xml do |xml|
+      xml.get_text("/application/module[@id='foo']/web/context-root").to_s.should eql('/foo')
+      xml.get_text("/application/module[@id='bar']/web/context-root").to_s.should eql('/bar')
+    end
+  end
+
+  it 'should accept context-root for WAR components in application.xml' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).add package(:war), :context_root=>'rooted'
+    end
+    inspect_application_xml do |xml|
+      xml.get_text("/application/module[@id='foo']/web/context-root").to_s.should eql('/rooted')
+    end
+  end
+
+  it 'should allow disabling the context root' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).add package(:war), :context_root=>false
+    end
+    inspect_application_xml do |xml|
+      xml.get_elements("/application/module[@id='foo']/web/context-root").should be_empty
+    end
+  end
+
+  it 'should list EJB components in application.xml' do
+    define 'foo', :version=>'1.0' do
+      package(:ear).add :ejb=>package(:jar)
+      package(:ear).add :ejb=>package(:jar, :id=>'bar')
+    end
+    inspect_application_xml do |xml|
+      xml.get_text("/application/module[@id='foo']/ejb").to_s.should eql('ejb/foo-1.0.jar')
+      xml.get_text("/application/module[@id='bar']/ejb").to_s.should eql('ejb/bar-1.0.jar')
+    end
+  end
+
+  it 'should list JAR components in application.xml' do
+    define 'foo', :version=>'1.0' do
+      package(:ear) << { :jar=>package(:jar) } << { :jar=>package(:jar, :id=>'bar') }
+    end
+    inspect_application_xml do |xml|
+      jars = xml.get_elements('/application/jar').map(&:texts).map(&:to_s)
+      jars.should include('jar/foo-1.0.jar', 'jar/bar-1.0.jar')
+    end
+  end
+
+  it 'should update WAR component classpath to include libraries' do
+    define 'foo', :version=>'1.0' do
+      package(:ear) << package(:jar, :id=>'lib1') << package(:jar, :id=>'lib2')
+      package(:ear).add package(:war)
+    end
+    inspect_classpath 'war/foo-1.0.war' do |classpath|
+      classpath.should include('lib/lib1-1.0.jar', 'lib/lib2-1.0.jar')
+    end
+  end
+
+  it 'should update WAR component classpath but skip internal libraries' do
+    define 'foo', :version=>'1.0' do
+      package(:ear) << package(:jar, :id=>'lib1') << package(:jar, :id=>'lib2')
+      package(:war).with(:libs=>package(:jar, :id=>'lib1'))
+      package(:ear).add package(:war)
+    end
+    inspect_classpath 'war/foo-1.0.war' do |classpath|
+      classpath.should_not include('lib/lib1-1.0.jar')
+      classpath.should include('lib/lib2-1.0.jar')
+    end
+  end
+
+  it 'should update EJB component classpath to include libraries' do
+    define 'foo', :version=>'1.0' do
+      package(:ear) << package(:jar, :id=>'lib1') << package(:jar, :id=>'lib2')
+      package(:ear).add :ejb=>package(:jar)
+    end
+    inspect_classpath 'ejb/foo-1.0.jar' do |classpath|
+      classpath.should include('lib/lib1-1.0.jar', 'lib/lib2-1.0.jar')
+    end
+  end
+
+  it 'should update JAR component classpath to include libraries' do
+    define 'foo', :version=>'1.0' do
+      package(:ear) << package(:jar, :id=>'lib1') << package(:jar, :id=>'lib2')
+      package(:ear).add :jar=>package(:jar)
+    end
+    inspect_classpath 'jar/foo-1.0.jar' do |classpath|
+      classpath.should include('lib/lib1-1.0.jar', 'lib/lib2-1.0.jar')
+    end
+  end
+
+  it 'should deal with very long classpaths' do
+    define 'foo', :version=>'1.0' do
+      20.times { |i| package(:ear) << package(:jar, :id=>"lib#{i}") }
+      package(:ear).add :jar=>package(:jar)
+    end
+    inspect_classpath 'jar/foo-1.0.jar' do |classpath|
+      classpath.should include('lib/lib1-1.0.jar', 'lib/lib2-1.0.jar')
+    end
+  end
 end
 
 

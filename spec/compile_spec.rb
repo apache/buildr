@@ -353,6 +353,13 @@ describe Buildr::CompileTask, '#invoke' do
     suppress_stdout { compile_task.from('failed.java').invoke rescue nil }
     File.stat(compile_task.target.to_s).mtime.should be_close(Time.now - 10, 2)
   end
+
+  it 'should complain if source directories and no compiler selected' do
+    mkpath 'sources'
+    define 'bar' do
+      lambda { compile.from('sources').invoke }.should raise_error(RuntimeError, /no compiler selected/i)
+    end
+  end
 end
 
 

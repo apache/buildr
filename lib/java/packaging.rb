@@ -29,12 +29,13 @@ module Buildr
           initialize_without_manifest *args
           @manifest = false
           @meta_inf = []
+          @dependencies = FileList[]
 
           prepare do
             @prerequisites << manifest if String === manifest || Rake::Task === manifest
             [meta_inf].flatten.map { |file| file.to_s }.uniq.each { |file| path('META-INF').include file }
           end
-
+        
           enhance do
             if manifest
               # Tempfiles gets deleted on garbage collection, so we're going to hold on to it
@@ -125,6 +126,7 @@ module Buildr
 
       end
 
+
       # Extends the JarTask to create a WAR file.
       #
       # Supports all the same options as JarTask, in additon to these two options:
@@ -162,6 +164,7 @@ module Buildr
         end
   
       end
+
 
       # Extends the JarTask to create an AAR file (Axis2 service archive).
       #
@@ -206,6 +209,205 @@ module Buildr
         def wsdls=(value) #:nodoc:
           @wsdls |= Array(value)
         end
+      end
+
+
+      # Extend the JarTask to create an EAR file.
+      #
+      # The following component types are supported by the EARTask:
+      #
+      # * :war -- A J2EE Web Application
+      # * :ejb -- An Enterprise Java Bean
+      # * :jar -- A J2EE Application Client.[1]
+      # * :lib -- An ear scoped shared library[2] (for things like logging,
+      #           spring, etc) common to the ear components
+      #
+      # The EarTask uses the "Mechanism 2: Bundled Optional Classes" as described on [2].
+      # All specified libraries are added to the EAR archive and the Class-Path manifiest entry is
+      # modified for each EAR component. Special care is taken with WebApplications, as they can
+      # contain libraries on their WEB-INF/lib directory, libraries already included in a war file
+      # are not referenced by the Class-Path entry of the war in order to avoid class collisions
+      #
+      # EarTask supports all the same options as JarTask, in additon to these two options:
+      #
+      # * :display_name -- The displayname to for this ear on application.xml
+      #
+      # * :map -- A Hash used to map component type to paths within the EAR.
+      #     By default each component type is mapped to a directory with the same name,
+      #     for example, EJBs are stored in the /ejb path.  To customize:
+      #                       package(:ear).dirs[:war] = 'web-applications' 
+      #                       package(:ear).dirs[:lib] = nil # store shared libraries on root of archive
+      #
+      # EAR components are added by means of the EarTask#add, EarTask#<<, EarTask#push methods
+      # Component type is determined from the artifact's type. 
+      #
+      #      package(:ear) << project('coolWebService').package(:war)
+      #
+      # The << method is just an alias for push, with the later you can add multiple components
+      # at the same time. For example.. 
+      #
+      #      package(:ear).push 'org.springframework:spring:jar:2.6', 
+      #                                   projects('reflectUtils', 'springUtils'),
+      #                                   project('coolerWebService').package(:war)
+      #
+      # The add method takes a single component with an optional hash. You can use it to override
+      # some component attributes.
+      #
+      # You can override the component type for a particular artifact. The following example
+      # shows how you can tell the EarTask to treat a JAR file as an EJB:
+      #
+      #      # will add an ejb entry for the-cool-ejb-2.5.jar in application.xml
+      #      package(:ear).add 'org.coolguys:the-cool-ejb:jar:2.5', :type=>:ejb
+      #      # A better syntax for this is: 
+      #      package(:ear).add :ejb=>'org.coolguys:the-cool-ejb:jar:2.5'
+      #
+      # By default, every JAR package is assumed to be a library component, so you need to specify
+      # the type when including an EJB (:ejb) or Application Client JAR (:jar).
+      #
+      # For WebApplications (:war)s, you can customize the context-root that appears in application.xml.
+      # The following example also specifies a different directory inside the EAR where to store the webapp.
+      #
+      #      package(:ear).add project(:remoteService).package(:war), 
+      #                                 :path => 'web-services', :context_root => '/Some/URL/Path'
+      #
+      # [1] http://java.sun.com/j2ee/sdk_1.2.1/techdocs/guides/ejb/html/Overview5.html#10106
+      # [2] http://java.sun.com/j2ee/verified/packaging.html
+      class EarTask < JarTask
+        
+        SUPPORTED_TYPES = [:war, :ejb, :jar, :rar, :lib]
+
+        # The display-name entry for application.xml
+        attr_accessor :display_name
+        # Map from component type to path inside the EAR.
+        attr_accessor :map
+
+        def initialize(*args)
+          super
+          @map = Hash.new { |h, k| k.to_s }
+          @libs, @components = [], []
+          prepare do
+            @components.each do |component|
+              path(component[:path]).include(component[:artifact])
+            end
+            path('META-INF').include(descriptor)
+          end
+        end
+
+        # Add an artifact to this EAR.
+        def add(*args)
+          options = Hash === args.last ? args.pop.clone : {}
+          if artifact = args.shift
+            type = options[:type]
+            unless type
+              type = artifact.respond_to?(:type) ? artifact.type : artifact.pathmap('%x').to_sym
+              type = :lib if type == :jar
+              raise "Unknown EAR component type: #{type}. Perhaps you may explicity tell what component type to use." unless
+                SUPPORTED_TYPES.include?(type)
+            end
+          else
+            type = SUPPORTED_TYPES.find { |type| options[type] }
+            artifact = Buildr.artifact(options[type])
+          end
+
+          component = options.merge(:artifact=>artifact, :type=>type,
+            :id=>artifact.respond_to?(:to_spec) ? artifact.id : artifact.to_s.pathmap('%n'),
+            :path=>options[:path] || map[type].to_s)
+          file(artifact.to_s).enhance do |task|
+            task.enhance { |task| update_classpath(task.name) }
+          end unless :lib == type
+          @components << component
+          self
+        end
+
+        def push(*artifacts)
+          artifacts.flatten.each { |artifact| add artifact }
+          self
+        end
+        alias_method :<<, :push
+
+      protected
+
+        def associate(project)
+          @project = project
+        end
+
+        def path_to(*args) #:nodoc:
+          @project.path_to(:target, :ear, *args)
+        end
+        alias_method :_, :path_to
+
+        def update_classpath(package)
+          Zip::ZipFile.open(package) do |zip|
+            # obtain the manifest file
+            manifest = zip.read('META-INF/MANIFEST.MF').split("\n\n")
+            manifest.first.gsub!(/([^\n]{71})\n /,"\\1")
+            manifest.first << "Class-Path: \n" unless manifest.first =~ /Class-Path:/
+            # Determine which libraries are already included.
+            included_libs = manifest.first[/^Class-Path:\s+(.*)$/, 1].split(/\s+/).map { |fn| File.basename(fn) }
+            included_libs += zip.entries.map(&:to_s).select { |fn| fn =~ /^WEB-INF\/lib\/.+/ }.map { |fn| File.basename(fn) }
+            # Include all other libraries in the classpath.
+            libs_classpath.reject { |path| included_libs.include?(File.basename(path)) }.each do |path|
+              manifest.first.sub!(/^Class-Path:/, "\\0 #{path}\n ")
+            end
+
+            Tempfile.open 'MANIFEST.MF' do |temp|
+              temp.write manifest.join("\n\n")
+              temp.flush
+              # Update the manifest.
+              if Buildr::Java.jruby?
+                Buildr.ant("update-jar") do |ant|
+                  ant.jar :destfile => task.name, :manifest => temp.path, 
+                          :update => 'yes', :whenmanifestonly => 'create'
+                end
+              else
+                zip.replace('META-INF/MANIFEST.MF', temp.path)
+              end
+            end
+          end
+        end
+  
+      private
+
+        # Classpath of all packages included as libraries (type :lib).
+        def libs_classpath
+          @classpath = @components.select { |comp| comp[:type] == :lib }.
+            map { |comp| File.expand_path(File.join(comp[:path], File.basename(comp[:artifact].to_s)), '/')[1..-1] }
+        end
+
+        # return a FileTask to build the ear application.xml file
+        def descriptor
+          @descriptor ||= file('META-INF/application.xml') do |task|
+            mkpath File.dirname(task.name), :verbose=>false
+            File.open task.name, 'w' do |file|
+              xml = Builder::XmlMarkup.new(:target=>file, :indent => 2)
+              xml.declare! :DOCTYPE, :application, :PUBLIC, 
+                           "-//Sun Microsystems, Inc.//DTD J2EE Application 1.2//EN",
+                           "http://java.sun.com/j2ee/dtds/application_1_2.dtd"
+              xml.application do
+                xml.tag! 'display-name', display_name
+                @components.each do |comp|
+                  uri = File.expand_path(File.join(comp[:path], File.basename(comp[:artifact].to_s)), '/')[1..-1]
+                  case comp[:type]
+                  when :war
+                    xml.module :id=>comp[:id] do
+                      xml.web do 
+                        xml.tag! 'web-uri', uri
+                        xml.tag! 'context-root', File.join('', (comp[:context_root] || comp[:id])) unless comp[:context_root] == false
+                      end
+                    end
+                  when :ejb
+                    xml.module :id=>comp[:id] do
+                      xml.ejb uri
+                    end
+                  when :jar
+                    xml.jar uri
+                  end
+                end
+              end
+            end
+          end
+        end
+
       end
 
 
@@ -319,6 +521,13 @@ module Buildr
           aar.with compile.target unless compile.sources.empty?
           aar.with resources.target unless resources.sources.empty?
           aar.with :libs=>compile.dependencies
+        end
+      end
+
+      def package_as_ear(file_name) #:nodoc:
+        Java::Packaging::EarTask.define_task(file_name).tap do |ear|
+          ear.send :associate, self
+          ear.with :display_name=>id, :manifest=>manifest, :meta_inf=>meta_inf
         end
       end
 
