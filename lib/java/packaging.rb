@@ -235,8 +235,8 @@ module Buildr
       # * :map -- A Hash used to map component type to paths within the EAR.
       #     By default each component type is mapped to a directory with the same name,
       #     for example, EJBs are stored in the /ejb path.  To customize:
-      #                       package(:ear).dirs[:war] = 'web-applications' 
-      #                       package(:ear).dirs[:lib] = nil # store shared libraries on root of archive
+      #                       package(:ear).map[:war] = 'web-applications' 
+      #                       package(:ear).map[:lib] = nil # store shared libraries on root of archive
       #
       # EAR components are added by means of the EarTask#add, EarTask#<<, EarTask#push methods
       # Component type is determined from the artifact's type. 
@@ -268,7 +268,7 @@ module Buildr
       # The following example also specifies a different directory inside the EAR where to store the webapp.
       #
       #      package(:ear).add project(:remoteService).package(:war), 
-      #                                 :path => 'web-services', :context_root => '/Some/URL/Path'
+      #                                 :path=>'web-services', :context_root=>'/Some/URL/Path'
       #
       # [1] http://java.sun.com/j2ee/sdk_1.2.1/techdocs/guides/ejb/html/Overview5.html#10106
       # [2] http://java.sun.com/j2ee/verified/packaging.html
