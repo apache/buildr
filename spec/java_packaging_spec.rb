@@ -673,7 +673,7 @@ describe Packaging, 'ear' do
 
   it 'should accept customization of directory map' do
     define 'foo', :version=>'1.0' do
-      package(:ear).map[:jar] = 'jarred'
+      package(:ear).dirs[:jar] = 'jarred'
       package(:ear).add :jar=>package(:jar)
     end
     inspect_ear { |files| files.should include('jarred/foo-1.0.jar') }
@@ -681,7 +681,7 @@ describe Packaging, 'ear' do
 
   it 'should accept customization of directory map with nil paths in application.xml' do
     define 'foo', :version=>'1.0' do
-      package(:ear).map[:war] = nil
+      package(:ear).dirs[:war] = nil
       package(:ear).add :war=>package(:war)
       package(:ear).add package(:jar)
     end
@@ -693,7 +693,7 @@ describe Packaging, 'ear' do
 
   it 'should accept customization of directory map with nil paths in the classpath' do
     define 'foo', :version=>'1.0' do
-      package(:ear).map[:lib] = nil
+      package(:ear).dirs[:lib] = nil
       package(:ear).add :war=>package(:war)
       package(:ear) << package(:jar)
     end

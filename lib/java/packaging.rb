@@ -279,11 +279,11 @@ module Buildr
         # The display-name entry for application.xml
         attr_accessor :display_name
         # Map from component type to path inside the EAR.
-        attr_accessor :map
+        attr_accessor :dirs
 
         def initialize(*args)
           super
-          @map = Hash.new { |h, k| k.to_s }
+          @dirs = Hash.new { |h, k| k.to_s }
           @libs, @components = [], []
           prepare do
             @components.each do |component|
@@ -311,7 +311,7 @@ module Buildr
 
           component = options.merge(:artifact=>artifact, :type=>type,
             :id=>artifact.respond_to?(:to_spec) ? artifact.id : artifact.to_s.pathmap('%n'),
-            :path=>options[:path] || map[type].to_s)
+            :path=>options[:path] || dirs[type].to_s)
           file(artifact.to_s).enhance do |task|
             task.enhance { |task| update_classpath(task.name) }
           end unless :lib == type

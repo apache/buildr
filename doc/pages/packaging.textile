@@ -314,14 +314,14 @@ EJB components are added under the @/ejb@ path, shared libraries under @/lib@
 and Application Client components under @/jar@.
 
 If you want to place components in different locations you can do so using the
-@:path@ option, or by specifying a different mapping between component type and
-its path.  The following two examples are equivalent:
+@:path@ option, or by specifying a different mapping between component types
+and their destination directory.  The following two examples are equivalent:
 
 {{{!ruby
 # Specify once per component.
 package(:ear).add project('coolWebService').package(:war), :path=>'coolServices'
 # Configure once and apply to all added components.
-package(:ear).map[:war] = 'coolServices'
+package(:ear).dirs[:war] = 'coolServices'
 package(:ear) << project('coolWebService').package(:war)
 }}}
 
