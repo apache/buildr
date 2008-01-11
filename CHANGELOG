@@ -4,7 +4,7 @@
 * Added: Layout class for controlling the project layout.  Also cleaned up places where paths were used instead of path names.
 * Added: HTTP Basic authentication support (Yuen-Chi Lian).
 * Added: EAR packaging (Victor Hugo Borja).
-* Changed: Upgraded to Rake 0.8 and RSpec 1.1.
+* Changed: Upgraded to Rake 0.8, RSpec 1.1, RJB 1.1 and Facets 2.2.
 * Changed: Resources are now copied to target/resources instead of target/classes, and target/test/resources instead of target/test-resources.
 * Changed: Test cases are not compiled into target/test/classes instead of target/test-classes.
 * Changed: Compile extension and CompileTask are now separate from the Java module.  Multiple compilers can be used, either guessed from the project layout, or specified with compile.using(:name).
@@ -13,6 +13,7 @@
 * Changed: Test framework componentized along the same lines as the compilers.
 * Changed: The way packaging is handled: package_as_[type] is now called once for a given package with the exact file name.  If packaging requires a change to the specifiction (e.g. a different file type than the package type), add a package_as_[type]_spec method.
 * Changed: The default packaging type is inferred from the compiler, and without a compiler, defaults to :zip.
+* Changed: JUnit test framework now runs on all classes that extend junit.framework.TestCase.
 * Removed: Prepare tasks removed.
 * Removed: All deprecated features since 1.1.  If you've seen warnings before, except the build to break.
 * Fixed: Artifact.pom resolves artifact without classifier, i.e org.testng:testng:jar:jdk15:5.1 uses org.testng:testng:pom:5.1 (Tommy).

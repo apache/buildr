@@ -255,4 +255,10 @@ namespace :setup do
       `javac -cp #{cp} JettyWrapper.java`
     end
   end
+
+  task :junit do
+    Dir.chdir 'lib/java' do
+      `javac org/apache/buildr/JUnitTestFilter.java`
+    end
+  end
 end

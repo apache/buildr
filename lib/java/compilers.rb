@@ -291,10 +291,8 @@ module Buildr
 
 end
 
-module Buildr::Compiler
-  add Javac
-  add Scalac
-end
+Buildr::Compiler << Buildr::Compiler::Javac
+Buildr::Compiler << Buildr::Compiler::Scalac
 class Buildr::Project
   include Buildr::Javadoc
   include Buildr::Apt

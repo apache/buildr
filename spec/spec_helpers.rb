@@ -37,6 +37,10 @@ unless $LOADED_FEATURES.include?(__FILE__)
       def failure_message
         $warning ? "Expected warning #{@expect.source}, found #{$warning}" : "Expected warning #{@expect.source}, no warning issued"
       end
+
+      def negative_failure_message
+        "Found unexpected #{$warning}"
+      end
     end
 
     # Tests if a warning was issued. You can use a string or regular expression.

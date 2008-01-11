@@ -344,24 +344,33 @@ module Buildr
     end
 
 
-    module Package #:nodoc:
+    class Package #:nodoc:
+
+      def initialize(name)
+        @name = name
+      end
+
+      attr_reader :name
 
       def method_missing(sym, *args, &block)
-        begin
-          @package ||= []
-          ::Rjb.import((@package + [sym.to_s]).join('.'))
-        rescue NoClassDefFoundError
-          @packages ||= {}
-          @packages[sym.to_s] ||= Module.new.extend(Package).tap { |pkg| pkg.instance_variable_set :@package, (@package || []) + [sym.to_s] }
-        end
+        return super unless args.empty? && !block_given?
+        return ::Rjb.import("#{name}.#{sym}") if sym.to_s =~ /^[[:upper:]]/
+        @packages ||= {}
+        @packages[sym] ||= Package.new("#{name}.#{sym}")
       end
+
+      def to_s
+        name
+      end
+  
     end
 
-    module ::Rjb
-      extend Package
+    def self.method_missing(sym, *args, &block)
+      return super unless args.empty? && !block_given?
+      return ::Rjb.import(sym.to_s) if sym.to_s =~ /^[[:upper:]]/
+      @packages ||= {}
+      @packages[sym] ||= Package.new(sym.to_s)
     end
-
-    extend Package
 
     def self.import(cls)
       wrapper.load

@@ -11,12 +11,12 @@ module Buildr
 
       # Returns true if the specified compiler exists.
       def has?(name)
-        @compilers.has_key?(name.to_sym)
+        compilers.any? { |compiler| compiler.to_sym == name.to_sym }
       end
 
       # Select a compiler by its name.
       def select(name)
-        @compilers[name.to_sym]
+        compilers.detect { |compiler| compiler.to_sym == name.to_sym }
       end
 
       # Adds a compiler to the list of supported compiler.
@@ -24,18 +24,17 @@ module Buildr
       # For example:
       #   Buildr::Compiler.add Buildr::Javac
       def add(compiler)
-        @compilers[compiler.to_sym] = compiler
+        @compilers ||= []
+        @compilers |= [compiler]
       end
+      alias :<< :add
 
       # Returns a list of available compilers.
       def compilers
-        @compilers.values.clone
+        @compilers ||= []
       end
 
     end
-
-    @compilers = {}
-
 
     # Base class for all compilers, with common functionality.  Extend and over-ride as you see fit
     # (see Javac as an example).

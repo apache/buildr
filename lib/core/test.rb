@@ -14,12 +14,12 @@ module Buildr
 
       # Returns true if the specified test framework exists.
       def has?(name)
-        @frameworks.has_key?(name.to_sym)
+        frameworks.any? { |framework| framework.name == name }
       end
 
       # Select a test framework by its name.
       def select(name)
-        @frameworks[name.to_sym] or raise ArgumentError, "No #{name} framework available. Did you install it?"
+        frameworks.detect { |framework| framework.name == name }
       end
 
       # Identify which test framework applies for this project.
@@ -27,7 +27,7 @@ module Buildr
         # Look for a suitable test framework based on the compiled language,
         # which may return multiple candidates, e.g. JUnit and TestNG for Java.
         # Pick the one used in the parent project, if not, whichever comes first.
-        candidates = @frameworks.values.select { |framework| framework.supports?(project) }
+        candidates = frameworks.select { |framework| framework.supports?(project) }
         parent = project.parent.test.framework if project.parent
         candidates.detect { |framework| framework.name == parent } || candidates.first
       end
@@ -38,17 +38,17 @@ module Buildr
       #   Buildr::TestFramework.add Buildr::JUnit
       def add(framework)
         framework = framework.new if Class === framework
-        @frameworks[framework.name.to_sym] = framework
+        @frameworks ||= []
+        @frameworks |= [framework]
       end
+      alias :<< :add
 
       # Returns a list of available test frameworks.
       def frameworks
-        @frameworks.values.clone
+        @frameworks ||= []
       end
 
     end
-
-    @frameworks = {}
 
     # Base class for all test frameworks, with common functionality.  Extend and over-ride as you see fit
     # (see JUnit as an example).
@@ -57,16 +57,14 @@ module Buildr
       def initialize(args = {})
         args[:name] ||= self.class.name.split('::').last.downcase.to_sym
         args[:requires] ||= []
-        args[:patterns] ||= []
         args.each { |name, value| instance_variable_set "@#{name}", value }
       end
 
       attr_accessor :name
       attr_accessor :requires
-      attr_accessor :patterns
 
-      def files(path)
-        Dir[*Array(patterns).map { |pattern| "#{path}/**/#{pattern}" }]
+      def tests(path)
+        Dir["#{path}/**/*"]
       end
 
       def supports?(project)
@@ -131,13 +129,16 @@ module Buildr
 
     def initialize(*args) #:nodoc:
       super
-      @dependencies = []
+      @dependencies = FileList[]
       @include = []
       @exclude = []
-      @parent_task = Project.parent_task(name)
-      @options = @parent_task.respond_to?(:options) ? @parent_task.options.clone : DEFAULT_OPTIONS.clone
+      @options = OpenObject.new
+      parent_task = Project.parent_task(name)
+      if parent_task.respond_to?(:options)
+        parent_task.options.each { |name, value| @options[name] = value unless @options.has_key?(name) }
+      end
+      DEFAULT_OPTIONS.each { |name, value| @options[name] = value unless @options.has_key?(name) }
       enhance { run_tests }
-      select :junit
     end
 
     # The dependencies used for running the tests. Includes the compiled files (compile.target)
@@ -236,7 +237,6 @@ module Buildr
     # Currently supports the following options:
     # * :fail_on_failure -- True to fail on test failure (default is true).
     # * :fork -- Fork test cases (JUnit only).
-    # * :java_args -- Java arguments when forking a new JVM.
     # * :properties -- System properties.
     # * :environment -- Environment variables.
     #
@@ -288,28 +288,30 @@ module Buildr
     end
 
     # :call-seq:
-    #    files() => strings
+    #    tests() => strings
     #
     # List of test files to run. Determined by finding all the test failes in the target directory,
     # and reducing based on the include/exclude patterns.
-    def files
+    def tests
       return [] unless compile.target
       fail "No test framework selected" unless @framework
       @files ||= begin
         base = Pathname.new(compile.target.to_s)
-        @framework.files(compile.target.to_s).map { |file| Pathname.new(file).relative_path_from(base).to_s }.
-          select { |file| include?(file.ext('').gsub(File::SEPARATOR, '.')) }.sort
+        @framework.tests(compile.target.to_s).select { |test| include?(test) }.sort
       end
     end
 
-    # *Deprecated*: Use files instead.
+    # *Deprecated*: Use tests instead.
     def classes
-      warn_deprecated 'Use files instead'
-      files.map { |file| file.ext('').gsub(File::SEPARATOR, '.') }
+      warn_deprecated 'Use tests instead'
+      tests
     end
 
     # List of failed tests. Set after running the tests.
     attr_reader :failed_tests
+
+    # List of passed tests. Set after running the tests.
+    attr_reader :passed_tests
 
     # :call-seq:
     #   include?(name) => boolean
@@ -326,7 +328,7 @@ module Buildr
     #
     # Returns the dependencies for the selected test frameworks. Necessary for compiling and running test cases.
     def requires
-      @framework ? Array(@framework.requires) : []
+      framework ? Array(@framework.requires) : []
     end
 
     # :call-seq:
@@ -367,12 +369,13 @@ module Buildr
     # Runs the test cases using the selected test framework. Executes as part of the task.
     def run_tests
       rm_rf report_to.to_s
-      files = self.files
-      if files.empty?
-        @failed_tests = []
+      tests = self.tests
+      if tests.empty?
+        @passed_tests, @failed_tests = [], []
       else
         puts "Running tests in #{@project.name}" if verbose
-        @failed_tests = @framework.run(files, self, (@dependencies + [compile.target, resources.target]).compact.map(&:to_s))
+        @failed_tests = @framework.run(tests, self, @dependencies.compact.map(&:to_s))
+        @passed_tests = tests - @failed_tests
         unless @failed_tests.empty?
           warn "The following tests failed:\n#{@failed_tests.join('\n')}" if verbose
           fail 'Tests failed!'
@@ -489,16 +492,20 @@ module Buildr
     end
 
     after_define do |project|
-      # Copy the regular compile dependencies over, and also include the compiled files, both of which
-      # can be used in the test cases. And don't forget the dependencies required by the test framework (e.g. JUnit).
-      project.test.with project.compile.dependencies, Array(project.compile.target), Array(project.resources.target),
-                        project.test.requires
-      if project.test.compile.target
-        project.clean do
-          verbose(false) do
-            rm_rf project.test.compile.target.to_s
-            rm_rf project.test.report_to.to_s
-          end
+      test = project.test
+      # Dependency on compiled code, its dependencies and resources.
+      test.with project.compile.dependencies, Array(project.compile.target) if project.compile.target
+      test.with Array(project.resources.target)
+      # Dependency on compiled test cases and resources.  Dependencies added using with.
+      test.dependencies.concat Array(test.compile.target) if test.compile.target
+      test.dependencies.concat Array(test.resources.target)
+      # Test framework dependency.
+      test.with test.requires
+
+      project.clean do
+        verbose(false) do
+          rm_rf test.compile.target.to_s if test.compile.target
+          rm_rf test.report_to.to_s
         end
       end
     end
