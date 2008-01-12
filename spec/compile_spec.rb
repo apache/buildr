@@ -93,7 +93,7 @@ describe Buildr::CompileTask, '#compiler' do
 
   it 'should attempt to identify compiler if sources are specified' do
     define 'foo' do
-      Compiler.compilers.first.should_receive(:applies_to?)
+      Compiler.compilers.first.should_receive(:applies_to?).at_least(:once)
       compile.from('sources').compiler
     end
   end

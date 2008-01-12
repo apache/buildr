@@ -29,8 +29,10 @@ module Buildr
 
       def initialize(options) #:nodoc:
         super
-        { :warnings=>verbose, :deprecation=>false, :lint=>false, :debug=>Buildr.options.debug }.
-          each { |name, value| options[name] = value unless options.has_key?(name) }
+        options[:debug] = Buildr.options.debug if options[:debug].nil?
+        options[:warnings] = verbose if options[:warnings].nil?
+        options[:deprecation] ||= false
+        options[:lint] ||= false
       end
 
       def compile(sources, target, dependencies) #:nodoc:

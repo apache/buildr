@@ -2,7 +2,14 @@ require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
 describe Buildr::JUnit do
-  it 'should be the default test framework when test cases are in java'
+  it 'should be the default test framework when test cases are in java' do
+    write 'src/test/java/com/exampe/FirstTest.java', <<-JAVA
+      package com.example;
+      public class FirstTest extends junit.framework.TestCase { }
+    JAVA
+    define 'foo'
+    project('foo').test.framework.should eql(:junit)
+  end
 
   it 'should be picked if the test language is Java' do
     define 'foo' do
@@ -24,14 +31,16 @@ describe Buildr::JUnit do
   end
 
   it 'should include public classes extending junit.framework.TestCase' do
-    write 'src/test/java/FirstTest.java', <<-JAVA
+    write 'src/test/java/com/example/FirstTest.java', <<-JAVA
+      package com.example;
       public class FirstTest extends junit.framework.TestCase { }
     JAVA
-    write 'src/test/java/AnotherOne.java', <<-JAVA
+    write 'src/test/java/com/example/AnotherOne.java', <<-JAVA
+      package com.example;
       public class AnotherOne extends junit.framework.TestCase { }
     JAVA
     define('foo').test.compile.invoke
-    project('foo').test.tests.should include('FirstTest', 'AnotherOne')
+    project('foo').test.tests.should include('com.example.FirstTest', 'com.example.AnotherOne')
   end
 
   it 'should ignore classes not extending junit.framework.TestCase' do
@@ -55,21 +64,31 @@ describe Buildr::JUnit do
 
   it 'should pass when JUnit test case passes' do
     write 'src/test/java/PassingTest.java', <<-JAVA
-      public class PassingTest extends junit.framework.TestCase { public void testNothing() {}  }
+      public class PassingTest extends junit.framework.TestCase {
+        public void testNothing() {}
+      }
     JAVA
     lambda { define('foo').test.invoke }.should_not raise_error
   end
 
   it 'should fail when JUnit test case fails' do
     write 'src/test/java/FailingTest.java', <<-JAVA
-      public class FailingTest extends junit.framework.TestCase { public void testFailure() { assertTrue(false); } }
+      public class FailingTest extends junit.framework.TestCase {
+        public void testFailure() {
+          assertTrue(false);
+        }
+      }
     JAVA
     lambda { define('foo').test.invoke }.should raise_error(RuntimeError, /Tests failed/) rescue nil
   end
 
   it 'should report failed test names' do
     write 'src/test/java/FailingTest.java', <<-JAVA
-      public class FailingTest extends junit.framework.TestCase { public void testFailure() { assertTrue(false); } }
+      public class FailingTest extends junit.framework.TestCase {
+        public void testFailure() {
+          assertTrue(false);
+        }
+      }
     JAVA
     define('foo').test.invoke rescue
     project('foo').test.failed_tests.should include('FailingTest')
@@ -77,7 +96,9 @@ describe Buildr::JUnit do
 
   it 'should report to reports/junit' do
     write 'src/test/java/PassingTest.java', <<-JAVA
-      public class PassingTest extends junit.framework.TestCase { public void testNothing() {} }
+      public class PassingTest extends junit.framework.TestCase {
+        public void testNothing() {}
+      }
     JAVA
     define 'foo' do
       test.report_to.should be(file('reports/junit'))
@@ -124,12 +145,18 @@ describe Buildr::JUnit do
     JAVA
     write 'src/test/java/TestCase1.java', <<-JAVA
       public class TestCase1 extends junit.framework.TestCase {
-        public void testSameVM() { assertFalse(Shared.flag); Shared.flag = true; }
+        public void testSameVM() {
+          assertFalse(Shared.flag);
+          Shared.flag = true;
+        }
       }
     JAVA
     write 'src/test/java/TestCase2.java', <<-JAVA
       public class TestCase2 extends junit.framework.TestCase {
-        public void testSameVM() { assertFalse(Shared.flag); Shared.flag = true; }
+        public void testSameVM() {
+          assertFalse(Shared.flag);
+          Shared.flag = true;
+        }
       }
     JAVA
     define 'foo' do
@@ -151,7 +178,6 @@ end
 
 
 describe Buildr::JUnit, 'report' do
-
   it 'should default to the target directory reports/junit' do
     JUnit.report.target.should eql('reports/junit')
   end
@@ -187,8 +213,11 @@ describe Buildr::JUnit, 'report' do
   end
 
   it 'should generate reports from all projects that ran test cases' do
-    write 'src/test/java/TestSomething.java',
-      'public class TestSomething extends junit.framework.TestCase { public void testNothing() {} }'
+    write 'src/test/java/TestSomething.java', <<-JAVA
+      public class TestSomething extends junit.framework.TestCase {
+        public void testNothing() {}
+      }
+    JAVA
     define 'foo'
     project('foo').test.invoke
     task('junit:report').invoke
@@ -202,65 +231,112 @@ end
 
 
 describe Buildr::TestNG do
-  before do
-    write 'src/test/java/PassingTest.java', 
-      'public class PassingTest { @org.testng.annotations.Test public void testNothing() {} }'
-    write 'src/test/java/FailingTest.java', 
-      'public class FailingTest { @org.testng.annotations.Test public void testNothing() { org.testng.AssertJUnit.assertTrue(false); } }'
-    define('foo') { test.using :testng }
+  it 'should be selectable in project' do
+    define 'foo' do
+      test.using(:testng)
+      test.framework.should eql(:testng)
+    end
   end
 
-
-  it 'should be selectable in parent project'
+  it 'should be selectable in parent project' do
+    write 'bar/src/test/java/TestCase.java'
+    define 'foo' do
+      test.using(:testng)
+      define 'bar'
+    end
+    project('foo:bar').test.framework.should eql(:testng)
+  end
 
   it 'should include TestNG dependencies' do
+    define('foo') { test.using :testng }
     project('foo').test.compile.dependencies.should include(*artifacts(TestNG::REQUIRES))
     project('foo').test.dependencies.should include(*artifacts(TestNG::REQUIRES))
   end
 
   it 'should include TestNG dependencies' do
+    define('foo') { test.using :testng }
     project('foo').test.compile.dependencies.should include(*artifacts(JMock::REQUIRES))
     project('foo').test.dependencies.should include(*artifacts(JMock::REQUIRES))
   end
 
   it 'should include classes starting with and ending with Test' do
-    ['TestThis', 'ThisTest', 'ThisThat'].each do |name|
-      write File.join(project('foo').test.compile.target.to_s, name).ext('class')
-    end
-    project('foo').test.tests.map { |file| File.basename(file) }.should == ['TestThis', 'ThisTest']
+    write 'src/test/java/com/example/TestThis.java', 'package com.example; public class TestThis {}'
+    write 'src/test/java/com/example/ThisTest.java', 'package com.example; public class ThisTest {}'
+    define('foo') { test.using(:testng) }
+    project('foo').test.compile.invoke
+    project('foo').test.tests.should include('com.example.TestThis', 'com.example.ThisTest')
+  end
+
+  it 'should ignore classes not using Test prefix or suffix' do
+    write 'src/test/java/NotATestClass.java', 'public class NotATestClass {}'
+    define('foo') { test.using(:testng) }
+    project('foo').test.compile.invoke
+    project('foo').test.tests.should be_empty
   end
 
   it 'should ignore inner classes' do
-    ['TestThis', 'TestThis$Innner'].each do |name|
-      write "target/test/classes/#{name}.class"
-    end
-    project('foo').test.tests.map { |file| File.basename(file) }.should == ['TestThis']
+    write 'src/test/java/InnerClassTest.java', <<-JAVA
+      public class InnerClassTest {
+        public class InnerTest {
+        }
+      }
+    JAVA
+    define('foo') { test.using(:testng) }
+    project('foo').test.compile.invoke
+    project('foo').test.tests.should eql(['InnerClassTest'])
   end
 
   it 'should pass when TestNG test case passes' do
-    project('foo').test.include 'PassingTest'
+    write 'src/test/java/PassingTest.java', <<-JAVA
+      public class PassingTest {
+        @org.testng.annotations.Test
+        public void testNothing() {}
+      }
+    JAVA
+    define('foo') { test.using(:testng) }
     lambda { project('foo').test.invoke }.should_not raise_error
   end
 
   it 'should fail when TestNG test case fails' do
-    project('foo').test.include 'FailingTest'
+    write 'src/test/java/FailingTest.java', <<-JAVA
+      public class FailingTest {
+        @org.testng.annotations.Test
+        public void testNothing() {
+          org.testng.AssertJUnit.assertTrue(false);
+        }
+      }
+    JAVA
+    define('foo') { test.using(:testng) }
     lambda { project('foo').test.invoke }.should raise_error(RuntimeError, /Tests failed/)
   end
 
   it 'should report failed test names' do
-    project('foo').test.include 'FailingTest'
-    project('foo').test.invoke rescue
-    project('foo').test.failed_tests.should eql(['FailingTest'])
+    write 'src/test/java/FailingTest.java', <<-JAVA
+      public class FailingTest {
+        @org.testng.annotations.Test
+        public void testNothing() {
+          org.testng.AssertJUnit.assertTrue(false);
+        }
+      }
+    JAVA
+    define('foo') { test.using(:testng) }
+    project('foo').test.invoke rescue nil
+    project('foo').test.failed_tests.should include('FailingTest')
   end
 
   it 'should report to reports/testng' do
+    define('foo') { test.using(:testng) }
     project('foo').test.report_to.should be(project('foo').file('reports/testng'))
   end
 
   it 'should generate reports' do
-    project('foo').test.include 'PassingTest'
-    lambda { project('foo').test.invoke }.should change { File.exist?(project('foo').test.report_to.to_s) }.to(true)
+    write 'src/test/java/PassingTest.java', <<-JAVA
+      public class PassingTest {
+        @org.testng.annotations.Test
+        public void testNothing() {}
+      }
+    JAVA
+    define('foo') { test.using(:testng) }
+    lambda { project('foo').test.invoke }.should change { File.exist?('reports/testng/foo/index.html') }.to(true)
   end
 end
-
-

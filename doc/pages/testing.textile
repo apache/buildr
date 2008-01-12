@@ -15,7 +15,7 @@ several tasks that do all the work, and a @test@ task coordinates all of that.
 
 The first two tasks to execute are @test.compile@ and @test.resources@.  They
 work similar to @compile@ and @resources@, but uses a different set of
-directories.  For example, Java test cases compile from the @src/test/java@
+directories.  For example, Java tests compile from the @src/test/java@
 directory into the @target/test/classes@ directory, while resources are copied
 from @src/test/resources@ into @target/test/resources@.
 
@@ -30,7 +30,7 @@ compiling) and @test.dependencies@ (for running).  You can manage these two
 dependency lists separately, but using @test.with@ is good enough in more
 cases.
 
-Once compiled, the @test@ task runs the test cases.
+Once compiled, the @test@ task runs all the tests.
 
 
 h2. Using JUnit
@@ -97,9 +97,9 @@ reports for TestNG.
 
 h2. Excluding Tests and Ignoring Failures
 
-If you have a lot of test cases that are failing or just hanging there
-collecting dusts, you can tell Buildr to ignore them.  You can either tell
-Buildr to only run specific tests, for example:
+If you have a lot of tests that are failing or just hanging there collecting
+dusts, you can tell Buildr to ignore them.  You can either tell Buildr to only
+run specific tests, for example:
 
 {{{!ruby
 test.include 'com.acme.tests.passing.*'
@@ -143,7 +143,7 @@ h2. Running Tests
 It's a good idea to run tests every time you change the source code, so we
 wired the @build@ task to run the @test@ task at the end of the build.  And
 conveniently enough, the @build@ task is the default task, so another way to
-build changes in your code and run your test cases:
+build changes in your code and run your tests:
 
 {{{!sh
 $ buildr
@@ -154,7 +154,7 @@ it, like @package@, @install@ and @upload@.  Each project also has its own
 @build@ task that does not invoke the @test@ task, so @buildr build@ will run
 the tests cases, but @buildr foo:build@ will not.
 
-While it's a good idea to always run your test cases, it's not always possible.
+While it's a good idea to always run your tests, it's not always possible.
 There are two ways you can get @build@ to not run the @test@ task.  You can set
 the environment variable @test@ to @no@ (but @skip@ and @off@ will also work).
 You can do that when running Buildr:
@@ -174,21 +174,20 @@ If you're feeling really adventurous, you can also disable tests from your
 Buildfile or @buildr.rb@ file, by setting @options.test = false@. We didn't say
 it's a good idea, we're just giving you the option.
 
-The @test@ task is just smart enough to run all the test cases it finds, but
-will accept include/exclude patterns.  Often enough you're only working on one
-broken test case and you only want to run that one test case.  Better than
-changing your Buildfile, you can run the @test@ task with a pattern.  For
-example:
+The @test@ task is just smart enough to run all the tests it finds, but will
+accept include/exclude patterns.  Often enough you're only working on one
+broken test and you only want to run that one test.  Better than changing your
+Buildfile, you can run the @test@ task with a pattern.  For example:
 
 {{{!sh
 $ buildr test:KillerAppTest
 }}}
 
-Buildr will then only run tests that contain the value @KillerAppTest@.  It
+Buildr will then run only tests that match the pattern @KillerAppTest@.  It
 uses pattern matching, so @test:Foo@ will run @com.acme.FooTest@ and
-@com.acme.FooBarTest@.  You can use a class name, or a package name to run all
-tests in that package, or any such combination.  In fact, you can specify
-several patterns separated with commas.  For example:
+@com.acme.FooBarTest@.  With Java, you can use this to pick a class name, or a
+package name to run all tests in that package, or any such combination.  In
+fact, you can specify several patterns separated with commas.  For example:
 
 {{{!sh
 $ buildr test:FooTest,BarTest
@@ -214,8 +213,8 @@ h2. Integration Tests
 
 So far we talked about unit tests.  Unit tests are run in isolation on the
 specific project they test, in an isolated environment, generally with minimal
-setup and teardown.  You get a sense of that when we told you test cases run
-after the @build@ task, and include JMock in the dependency list.
+setup and teardown.  You get a sense of that when we told you tests run after
+the @build@ task, and include JMock in the dependency list.
 
 In contrast, integration tests are run with a number of components, in an
 environment that resembles production, often with more complicates setup and
@@ -224,8 +223,8 @@ running unit and integration tests.
 
 You write integration tests much the same way as you write unit tests, using
 @test.compile@ and @test.resources@.  However, you need to tell Buildr that
-your test cases will execute during integration test.  To do so, add the
-following line in your project definition:
+your tests will execute during integration test.  To do so, add the following
+line in your project definition:
 
 {{{!ruby
 test.using :integration

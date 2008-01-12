@@ -8,15 +8,14 @@ module Buildr
 
   # JMock is available when using JUnit and TestNG.
   module JMock
-    # JMock version..
+    # JMock version.
     VERSION = '1.2.0' unless const_defined?('VERSION')
     # JMock specification.
     REQUIRES = ["jmock:jmock:jar:#{VERSION}"]
   end
 
 
-  # JUnit test framework, the default test framework for Java.
-  #   test.using :junit
+  # JUnit test framework, the default test framework for Java tests.
   #
   # Support the following options:
   # * :fork        -- If true/:once (default), fork for each test class.  If :each, fork for each individual
@@ -92,7 +91,7 @@ module Buildr
     end
 
 
-    # Ant-JUnit requires for JUnit and JUnit reports tasks.
+    # Ant-JUnit requires for JUnit and JUnit reports tasks.  Also requires JUnitTestFilter.
     Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}" << File.join(File.dirname(__FILE__))
 
     # JUnit version number.
@@ -100,27 +99,28 @@ module Buildr
     # JUnit specification.
     REQUIRES = ["junit:junit:jar:#{VERSION}"] + JMock::REQUIRES
 
-    def initialize #:nodoc:
-      super :requires=>REQUIRES
+    class << self
+
+      def applies_to?(project) #:nodoc:
+        project.test.compile.language == :java
+      end
+
     end
 
-    def tests(path) #:nodoc:
-      # Ignore anonymous classes.
-      base = Pathname.new(path)
-      candidates = super(path).map { |file| Pathname.new(file).relative_path_from(base).to_s.ext('').gsub(File::SEPARATOR, ',') }.
+    def tests(project) #:nodoc:
+      return [] unless project.test.compile.target
+      target = Pathname.new(project.test.compile.target.to_s)
+      candidates = Dir["#{target}/**/*.class"].
+        map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
         reject { |name| name =~ /\$/ }
-      classpath = [path + '/'] + Buildr.artifacts(REQUIRES).map(&:to_s)
+      classpath = [target.to_s + '/'] + Buildr.artifacts(dependencies).map(&:to_s)
       Java.org.apache.buildr.JUnitTestFilter.new(classpath).filter(candidates)
-    end
-
-    def supports?(project) #:nodoc:
-      project.test.compile.language == :java
     end
 
     def run(tests, task, dependencies) #:nodoc:
       # Use Ant to execute the Junit tasks, gives us performance and reporting.
       Buildr.ant('junit') do |ant|
-        case task.options[:fork]
+        case options[:fork]
         when false
           forking = {}
         when :each
@@ -131,11 +131,11 @@ module Buildr
           fail 'Option fork must be :once, :each or false.'
         end
         mkpath task.report_to.to_s
-        ant.junit forking.merge(:clonevm=>task.options[:clonevm] || false, :dir=>task.send(:project).path_to) do
+        ant.junit forking.merge(:clonevm=>options[:clonevm] || false, :dir=>task.send(:project).path_to) do
           ant.classpath :path=>dependencies.each { |path| file(path).invoke }.join(File::PATH_SEPARATOR)
-          (task.options[:properties] || []).each { |key, value| ant.sysproperty :key=>key, :value=>value }
-          (task.options[:environment] || []).each { |key, value| ant.env :key=>key, :value=>value }
-          java_args = task.options[:java_args] || Buildr.options.java_args
+          (options[:properties] || []).each { |key, value| ant.sysproperty :key=>key, :value=>value }
+          (options[:environment] || []).each { |key, value| ant.env :key=>key, :value=>value }
+          java_args = options[:java_args] || Buildr.options.java_args
           java_args = java_args.split(/\s+/) if String === java_args
           java_args.each { |value| ant.jvmarg :value=>value } if java_args
           ant.formatter :type=>'plain'
@@ -147,19 +147,19 @@ module Buildr
             end
           end
         end
-        return [] unless ant.project.getProperty('failed')
+        return tests unless ant.project.getProperty('failed')
       end
       # But Ant doesn't tell us what went kaput, so we'll have to parse the test files.
-      tests.inject([]) do |failed, test|
+      tests.inject([]) do |passed, test|
         report_file = File.join(task.report_to.to_s, "TEST-#{test}.txt")
         if File.exist?(report_file)
           report = File.read(report_file)
           # The second line (if exists) is the status line and we scan it for its values.
           status = (report.split("\n")[1] || '').scan(/(run|failures|errors):\s*(\d+)/i).
             inject(Hash.new(0)) { |hash, pair| hash[pair[0].downcase.to_sym] = pair[1].to_i ; hash }
-          failed << test if status[:failures] > 0 || status[:errors] > 0
+          passed << test if status[:failures] == 0 && status[:errors] == 0
         end
-        failed
+        passed
       end
     end
 
@@ -176,7 +176,7 @@ module Buildr
   end
 
 
-  # TestNG test framework.
+  # TestNG test framework.  To use in your project:
   #   test.using :testng
   #
   # Support the following options:
@@ -192,32 +192,34 @@ module Buildr
     # that match this pattern are used.
     TESTS_PATTERN = [ /^Test/, /Test$/, /TestCase$/ ]
 
-    def initialize #:nodoc:
-      super :requires=>REQUIRES
+    class << self
+
+      def applies_to?(project) #:nodoc:
+        project.test.compile.language == :java
+      end
+
     end
 
-    def supports?(project) #:nodoc:
-      project.test.compile.language == :java
-    end
-
-    def tests(path) #:nodoc:
-      # Ignore anonymous classes.
-      base = Pathname.new(path)
-      candidates = super(path).map { |file| Pathname.new(file).relative_path_from(base).to_s.ext('').gsub(File::SEPARATOR, ',') }.
-        reject { |name| name =~ /\$/ }.select { |name| TESTS_PATTERN.any? { |pattern| name =~ pattern } }
+    def tests(project) #:nodoc:
+      return [] unless project.test.compile.target
+      target = Pathname.new(project.test.compile.target.to_s)
+      Dir["#{target}/**/*.class"].
+        map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
+        reject { |name| name =~ /\$/ }.select { |name| cls_name = name.split('.').last
+                                                       TESTS_PATTERN.any? { |pattern| cls_name =~ pattern } }
     end
 
     def run(tests, task, dependencies) #:nodoc:
       cmd_args = [ 'org.testng.TestNG', '-sourcedir', task.compile.sources.join(';'), '-suitename', task.send(:project).name ]
       cmd_args << '-d' << task.report_to.to_s
-      cmd_options = { :properties=>task.options[:properties], :java_args=>task.options[:java_args],
+      cmd_options = { :properties=>options[:properties], :java_args=>options[:java_args],
                       :classpath=>dependencies }
-      tests.inject([]) do |failed, test|
+      tests.inject([]) do |passed, test|
         begin
           Buildr.java cmd_args, '-testclass', test, cmd_options.merge(:name=>test)
-          failed
+          passed << test
         rescue
-          failed << test
+          passed
         end
       end
     end

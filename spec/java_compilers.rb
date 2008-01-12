@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 describe 'javac compiler' do
   it 'should identify itself from source directories' do
-    write 'src/main/java/Test.java', 'class Test {}' 
+    write 'src/main/java/com/example/Test.java', 'package com.example; class Test {}' 
     define('foo').compile.compiler.should eql(:javac)
   end
 
@@ -192,17 +192,6 @@ describe 'javac compiler options' do
         compile.options.deprecation.should be_true
         compile.options.source.should eql('1.5')
         compile.options.target.should eql('1.4')
-      end
-    end
-  end
-
-  it 'should only inherit options it knows' do
-    define 'foo' do
-      compile.using(:warnings=>true, :errors=>true)
-      define 'bar' do
-        compile.using(:javac)
-        compile.options.warnings.should be_true
-        compile.options.errors.should be_nil
       end
     end
   end

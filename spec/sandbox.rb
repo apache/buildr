@@ -3,7 +3,7 @@
 # repository and cache these across test cases.
 repositories.remote << 'http://repo1.maven.org/maven2'
 Java.load # Anything added to the classpath.
-artifacts(TestFramework.frameworks.map(&:requires).flatten).each { |a| file(a).invoke }
+artifacts(TestFramework.frameworks.map(&:dependencies).flatten).each { |a| file(a).invoke }
 task('buildr:initialize').invoke
 
 # We need to run all tests inside a sandbox, tacking a snapshot of Rake/Buildr before the test,

@@ -142,7 +142,7 @@ unless $LOADED_FEATURES.include?(__FILE__)
     # For example:
     #   lambda { task('build').invoke }.should run_task('test')
     def run_task(task)
-      InvokeMatcher.new task.to_a.first
+      InvokeMatcher.new [task]
     end
 
     class UriPathMatcher

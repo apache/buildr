@@ -189,11 +189,6 @@ describe Buildr::TestTask do
     define('foo').test.dependencies.should include(project('foo').test.resources.target)
   end
 
-  it 'should include test framework dependencies' do
-    define('foo') {  test.using(:junit) }
-    project('foo').test.dependencies.should include(*artifacts(project('foo').test.requires))
-  end
-
   it 'should clean after itself (test files)' do
     define('foo') { test.compile.using(:javac) }
     mkpath project('foo').test.compile.target.to_s
@@ -218,17 +213,14 @@ describe Buildr::TestTask, 'with no tests' do
   end
   
   it 'should return no failed tests' do
-    define('foo').test.invoke
+    define('foo') { test.using(:junit) }
+    project('foo').test.invoke
     project('foo').test.failed_tests.should be_empty
   end
 
   it 'should return no passing tests' do
-    define('foo').test.invoke
-    project('foo').test.passed_tests.should be_empty
-  end
-
-  it 'should report no passed tests' do
-    define('foo').test.invoke
+    define('foo') { test.using(:junit) }
+    project('foo').test.invoke
     project('foo').test.passed_tests.should be_empty
   end
 
@@ -239,84 +231,95 @@ end
 
 
 describe Buildr::TestTask, 'with passing tests' do
-  before do
-    @tests = ['PassingTest1', 'PassingTest2']
-    define 'foo'
-    project('foo').test.stub!(:tests).and_return @tests
-    project('foo').test.instance_eval do
-      @framework.stub!(:run).and_return []
+  def tests
+    @tests ||= ['PassingTest1', 'PassingTest2']
+  end
+
+  def test_task
+    @test_task ||= begin
+      tests = self.tests
+      define 'foo' do
+        test.using(:junit)
+        test.stub!(:tests).and_return(tests.clone)
+        test.instance_eval { @framework.stub!(:run).and_return(tests.clone) }
+      end
+      project('foo').test
     end
   end
 
   it 'should pass' do
-    lambda { project('foo').test.invoke }.should_not raise_error
+    lambda { test_task.invoke }.should_not raise_error
   end
 
   it 'should report no failed tests' do
-    lambda { verbose(true) { project('foo').test.invoke } }.should_not warn_that(/fail/i)
+    lambda { verbose(true) { test_task.invoke } }.should_not warn_that(/fail/i)
   end
   
   it 'should return passed tests' do
-    project('foo').test.invoke
-    project('foo').test.passed_tests.should == @tests
+    test_task.invoke
+    test_task.passed_tests.should == tests
   end
 
   it 'should return no failed tests' do
-    project('foo').test.invoke
-    project('foo').test.failed_tests.should be_empty
+    test_task.invoke
+    test_task.failed_tests.should be_empty
   end
 
   it 'should execute teardown task' do
-    lambda { project('foo').test.invoke }.should run_task('foo:test:teardown')
+    lambda { test_task.invoke }.should run_task('foo:test:teardown')
   end
 end
 
 
 describe Buildr::TestTask, 'with failed test' do
-  before do
-    @tests = ['FailingTest1', 'FailingTest2']
-    define 'foo'
-    project('foo').test.stub!(:tests).and_return @tests
-    project('foo').test.instance_eval do
-      @framework.stub!(:run).and_return ['FailingTest1']
+  def test_task
+    @test_task ||= begin
+      define 'foo' do
+        test.using(:junit)
+        test.instance_eval do
+          @framework.stub!(:tests).and_return(['FailingTest', 'PassingTest'])
+          @framework.stub!(:run).and_return(['PassingTest'])
+        end
+      end
+      project('foo').test
     end
   end
 
   it 'should fail' do
-    lambda { project('foo').test.invoke }.should raise_error(RuntimeError, /Tests failed/)
+    lambda { test_task.invoke }.should raise_error(RuntimeError, /Tests failed/)
   end
 
   it 'should report failed tests' do
-    lambda { verbose(true) { project('foo').test.invoke rescue nil } }.should warn_that(/FailingTest1/)
+    lambda { verbose(true) { test_task.invoke rescue nil } }.should warn_that(/FailingTest/)
   end
 
   it 'should return failed tests' do
-    project('foo').test.invoke rescue nil
-    project('foo').test.failed_tests.should == ['FailingTest1']
+    test_task.invoke rescue nil
+    test_task.failed_tests.should == ['FailingTest']
   end
 
   it 'should return passing tests as well' do
-    project('foo').test.invoke rescue nil
-    project('foo').test.passed_tests.should == ['FailingTest2']
+    test_task.invoke rescue nil
+    test_task.passed_tests.should == ['PassingTest']
   end
 
   it 'should not fail if fail_on_failure is false' do
-    project('foo').test.using(:fail_on_failure=>false).invoke
-    lambda { project('foo').test.invoke }.should_not raise_error
+    test_task.using(:fail_on_failure=>false).invoke
+    lambda { test_task.invoke }.should_not raise_error
   end
 
   it 'should report failed tests even if fail_on_failure is false' do
-    project('foo').test.using(:fail_on_failure=>false)
-    lambda { verbose(true) { project('foo').test.invoke } }.should warn_that(/FailingTest1/)
+    test_task.using(:fail_on_failure=>false)
+    lambda { verbose(true) { test_task.invoke } }.should warn_that(/FailingTest/)
   end
 
   it 'should return failed tests even if fail_on_failure is false' do
-    project('foo').test.using(:fail_on_failure=>false).invoke
-    project('foo').test.failed_tests.should == ['FailingTest1']
+    test_task.using(:fail_on_failure=>false).invoke
+    test_task.failed_tests.should == ['FailingTest']
   end
 
   it 'should execute teardown task' do
-    lambda { project('foo').test.invoke rescue nil }.should run_task('foo:test:teardown')
+    lambda { test_task.invoke rescue nil }.should run_task('foo:test:teardown')
   end
 end
 
@@ -379,7 +382,7 @@ end
 
 describe Buildr::Project, '#test.compile' do
   it 'should identify compiler from project' do
-    write 'src/test/java/Test.java'
+    write 'src/test/java/com/example/Test.java'
     define('foo') do
       test.compile.compiler.should eql(:javac)
     end
@@ -418,8 +421,9 @@ describe Buildr::Project, '#test.compile' do
   it 'should include the test framework dependencies' do
     define 'foo' do
       test.compile.using(:javac)
+      test.using(:junit)
     end
-    project('foo').test.compile.dependencies.should include(*artifacts(project('foo').test.requires))
+    project('foo').test.compile.dependencies.should include(*artifacts(JUnit.dependencies))
   end
 
   it 'should clean after itself' do
@@ -525,35 +529,49 @@ describe 'test rule' do
   end
 
   it 'should reset tasks to specific pattern' do
-    define('foo') { define 'bar' }
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      define 'bar' do
+        test.using(:junit)
+        test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      end
+    end
     task('test:something').invoke
     ['foo', 'foo:bar'].map { |name| project(name) }.each do |project|
-      project.test.include?('something').should be_true
-      project.test.include?('nothing').should be_false
-      project.test.include?('SomeTest').should be_false
+      project.test.tests.should include('something')
+      project.test.tests.should_not include('nothing')
     end
   end
 
   it 'should apply *name* pattern' do
-    define 'foo'
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval { @framework.stub!(:tests).and_return(['prefix-something-suffix']) }
+    end
     task('test:something').invoke
-    project('foo').test.include?('prefix-something-suffix').should be_true
-    project('foo').test.include?('prefix-nothing-suffix').should be_false
+    project('foo').test.tests.should include('prefix-something-suffix')
   end
 
   it 'should not apply *name* pattern if asterisks used' do
-    define 'foo'
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval { @framework.stub!(:tests).and_return(['prefix-something', 'prefix-something-suffix']) }
+    end
     task('test:*something').invoke
-    project('foo').test.include?('prefix-something').should be_true
-    project('foo').test.include?('prefix-something-suffix').should be_false
+    project('foo').test.tests.should include('prefix-something')
+    project('foo').test.tests.should_not include('prefix-something-suffix')
   end
 
   it 'should accept multiple tasks separated by commas' do
-    define 'foo'
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval { @framework.stub!(:tests).and_return(['foo', 'bar', 'baz']) }
+    end
     task('test:foo,bar').invoke
-    project('foo').test.include?('foo').should be_true
-    project('foo').test.include?('bar').should be_true
-    project('foo').test.include?('baz').should be_false
+    project('foo').test.tests.should include('foo')
+    project('foo').test.tests.should include('bar')
+    project('foo').test.tests.should_not include('baz')
   end
 
   it 'should execute only the named tasts' do
@@ -727,11 +745,11 @@ describe Rake::Task, 'integration' do
   it 'should run test actions marked for integration' do
     task 'action'
     define 'foo' do
-      test.using :integration
-      test { task('action').invoke }
+      test.using :integration, :junit
     end
-    lambda { task('test').invoke }.should run_tasks().but_not('action')
-    lambda { task('integration').invoke }.should run_task('action')
+    lambda { task('test').invoke }.should_not change { project('foo').test.passed_tests }
+    lambda { task('integration').invoke }.should change { project('foo').test.passed_tests }
+    project('foo').test.passed_tests.should be_empty
   end
 
   it 'should not fail if test=all' do
@@ -772,43 +790,58 @@ end
 
 
 describe 'integration rule' do
-  before do
+  it 'should execute integration tests on local project' do
     define 'foo' do
-      test.using :integration
+      test.using :junit, :integration
       define 'bar'
     end
-  end
-
-  it 'should execute integration tests on local project' do
     lambda { task('integration:something').invoke }.should run_task('foo:test')
   end
 
   it 'should reset tasks to specific pattern' do
+    define 'foo' do
+      test.using :junit, :integration
+      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      define 'bar' do
+        test.using :junit, :integration
+        test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      end
+    end
     task('integration:something').invoke
     ['foo', 'foo:bar'].map { |name| project(name) }.each do |project|
-      project.test.include?('something').should be_true
-      project.test.include?('nothing').should be_false
-      project.test.include?('SomeTest').should be_false
+      project.test.tests.should include('something')
+      project.test.tests.should_not include('nothing')
     end
   end
 
   it 'should apply *name* pattern' do
+    define 'foo' do
+      test.using :junit, :integration
+      test.instance_eval { @framework.stub!(:tests).and_return(['prefix-something-suffix']) }
+    end
     task('integration:something').invoke
-    project('foo').test.include?('prefix-something-suffix').should be_true
-    project('foo').test.include?('prefix-nothing-suffix').should be_false
+    project('foo').test.tests.should include('prefix-something-suffix')
   end
 
   it 'should not apply *name* pattern if asterisks used' do
+    define 'foo' do
+      test.using :junit, :integration
+      test.instance_eval { @framework.stub!(:tests).and_return(['prefix-something', 'prefix-something-suffix']) }
+    end
     task('integration:*something').invoke
-    project('foo').test.include?('prefix-something').should be_true
-    project('foo').test.include?('prefix-something-suffix').should be_false
+    project('foo').test.tests.should include('prefix-something')
+    project('foo').test.tests.should_not include('prefix-something-suffix')
   end
 
   it 'should accept multiple tasks separated by commas' do
+    define 'foo' do
+      test.using :junit, :integration
+      test.instance_eval { @framework.stub!(:tests).and_return(['foo', 'bar', 'baz']) }
+    end
     task('integration:foo,bar').invoke
-    project('foo').test.include?('foo').should be_true
-    project('foo').test.include?('bar').should be_true
-    project('foo').test.include?('baz').should be_false
+    project('foo').test.tests.should include('foo')
+    project('foo').test.tests.should include('bar')
+    project('foo').test.tests.should_not include('baz')
   end
 
   it 'should execute only the named tasts' do

@@ -22,7 +22,7 @@ module Buildr
       # Adds a compiler to the list of supported compiler.
       #   
       # For example:
-      #   Buildr::Compiler.add Buildr::Javac
+      #   Buildr::Compiler << Buildr::Javac
       def add(compiler)
         @compilers ||= []
         @compilers |= [compiler]
@@ -44,7 +44,7 @@ module Buildr
 
         # The compiler's identifier (e.g. :javac).  Inferred from the class name.
         def to_sym
-          @symbol
+          @symbol ||= name.split('::').last.downcase.to_sym
         end
 
         # The compiled language (e.g. :java).
@@ -59,8 +59,6 @@ module Buildr
         attr_reader :target_ext
         # The default packaging type (e.g. :jar).
         attr_reader :packaging
-        # Options to inherit from parent task.  Defaults to value of OPTIONS constant.
-        attr_reader :inherit_options
 
         # Returns true if this compiler applies to any source code found in the listed source
         # directories.  For example, Javac returns true if any of the source directories contains
@@ -74,17 +72,15 @@ module Buildr
         # For example:
         #   specify :language=>:java, :target=>'classes', :target_ext=>'class', :packaging=>:jar
         def specify(attrs)
-          attrs[:symbol] ||= name.split('::').last.downcase.to_sym
           attrs[:sources] ||= attrs[:language].to_s
           attrs[:source_ext] ||= attrs[:language].to_s
-          attrs[:inherit_options] ||= const_get('OPTIONS').clone rescue []
           attrs.each { |name, value| instance_variable_set("@#{name}", value) }
         end
 
       end
 
       # Construct a new compiler with the specified options.  Note that options may
-      # changed before the compiler is run.
+      # change before the compiler is run.
       def initialize(options)
         @options = options
       end
@@ -183,8 +179,9 @@ module Buildr
 
     def initialize(*args) #:nodoc:
       super
-      @parent_task = Project.parent_task(name)
-      @options = OpenObject.new
+      parent_task = Project.parent_task(name)
+      inherit = lambda { |hash, key| parent_task.options[key] } if parent_task.respond_to?(:options)
+      @options = OpenObject.new &inherit
       @sources = FileList[]
       @dependencies = FileList[]
 
@@ -317,8 +314,6 @@ module Buildr
     def compiler=(name) #:nodoc:
       raise "#{compiler} compiler already selected for this project" if @compiler
       cls = Compiler.select(name) or raise ArgumentError, "No #{name} compiler available. Did you install it?"
-      cls.inherit_options.reject { |name| options.has_key?(name) }.
-        each { |name| options[name] = @parent_task.options[name] } if @parent_task.respond_to?(:options)
       @compiler = cls.new(options)
       from Array(cls.sources).map { |path| @project.path_to(:source, @usage, path) }.
         select { |path| File.exist?(path) } if sources.empty?
