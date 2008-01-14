@@ -312,9 +312,7 @@ module Buildr
           component = options.merge(:artifact=>artifact, :type=>type,
             :id=>artifact.respond_to?(:to_spec) ? artifact.id : artifact.to_s.pathmap('%n'),
             :path=>options[:path] || dirs[type].to_s)
-          file(artifact.to_s).enhance do |task|
-            task.enhance { |task| update_classpath(task.name) }
-          end unless :lib == type
+          update_classpath(file(artifact.to_s)) unless :lib == type
           @components << component
           self
         end
@@ -337,35 +335,23 @@ module Buildr
         alias_method :_, :path_to
 
         def update_classpath(package)
-          Zip::ZipFile.open(package) do |zip|
-            # obtain the manifest file
-            manifest = zip.read('META-INF/MANIFEST.MF').split("\n\n")
-            manifest.first.gsub!(/([^\n]{71})\n /,"\\1")
-            manifest.first << "Class-Path: \n" unless manifest.first =~ /Class-Path:/
-            # Determine which libraries are already included.
-            included_libs = manifest.first[/^Class-Path:\s+(.*)$/, 1].split(/\s+/).map { |fn| File.basename(fn) }
-            included_libs += zip.entries.map(&:to_s).select { |fn| fn =~ /^WEB-INF\/lib\/.+/ }.map { |fn| File.basename(fn) }
-            # Include all other libraries in the classpath.
-            libs_classpath.reject { |path| included_libs.include?(File.basename(path)) }.each do |path|
-              manifest.first.sub!(/^Class-Path:/, "\\0 #{path}\n ")
+          package.prepare do
+            header = case package.manifest
+              when Hash then package.manifest
+              when Array then package.manifest.first
             end
-
-            Tempfile.open 'MANIFEST.MF' do |temp|
-              temp.write manifest.join("\n\n")
-              temp.flush
-              # Update the manifest.
-              if Buildr::Java.jruby?
-                Buildr.ant("update-jar") do |ant|
-                  ant.jar :destfile => task.name, :manifest => temp.path, 
-                          :update => 'yes', :whenmanifestonly => 'create'
-                end
-              else
-                zip.replace('META-INF/MANIFEST.MF', temp.path)
-              end
+            if header
+              # Determine which libraries are already included.
+              class_path = header['Class-Path'].to_s.split
+              included_libs = class_path.map { |fn| File.basename(fn) }
+              included_libs += package.path('WEB-INF/lib').sources.map { |fn| File.basename(fn) }
+              # Include all other libraries in the classpath.
+              class_path += libs_classpath.reject { |path| included_libs.include?(File.basename(path)) }
+              header['Class-Path'] = class_path.join(' ')
             end
           end
         end
-  
+
       private
 
         # Classpath of all packages included as libraries (type :lib).
