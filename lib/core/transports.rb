@@ -1,16 +1,16 @@
-require "cgi"
-require "net/http"
-require "net/https"
-require "net/ssh"
-require "net/sftp"
-require "uri"
-require "uri/sftp"
-require "digest/md5"
-require "digest/sha1"
-require "facets/progressbar"
-require "highline"
-require "tempfile"
-require "uri/sftp"
+require 'cgi'
+require 'net/http'
+require 'net/https'
+require 'net/ssh'
+require 'net/sftp'
+require 'uri'
+require 'uri/sftp'
+require 'digest/md5'
+require 'digest/sha1'
+require 'facets/progressbar'
+require 'highline'
+require 'tempfile'
+require 'uri/sftp'
 
 
 # Monkeypatching: SFTP never defines the mkdir method on its session or the underlying
@@ -50,11 +50,11 @@ module URI
     # the second form yields to the block with each chunk of content (usually more than one).
     #
     # For example:
-    #   File.open "image.jpg", "w" do |file|
-    #     URI.read("http://example.com/image.jpg") { |chunk| file.write chunk }
+    #   File.open 'image.jpg', 'w' do |file|
+    #     URI.read('http://example.com/image.jpg') { |chunk| file.write chunk }
     #   end
     # Shorter version:
-    #   File.open("image.jpg", "w") { |file| file.write URI.read("http://example.com/image.jpg") }
+    #   File.open('image.jpg', 'w') { |file| file.write URI.read('http://example.com/image.jpg') }
     #
     # Supported options:
     # * :modified -- Only download if file modified since this timestamp. Returns nil if not modified.
@@ -87,11 +87,11 @@ module URI
     # block. Each yield should return up to the specified number of bytes, the last yield returns nil.
     #
     # For example:
-    #   File.open "killer-app.jar", "rb" do |file|
-    #     write("sftp://localhost/jars/killer-app.jar") { |chunk| file.read(chunk) }
+    #   File.open 'killer-app.jar', 'rb' do |file|
+    #     write('sftp://localhost/jars/killer-app.jar') { |chunk| file.read(chunk) }
     #   end
     # Or:
-    #   write "sftp://localhost/jars/killer-app.jar", File.read("killer-app.jar")
+    #   write 'sftp://localhost/jars/killer-app.jar', File.read('killer-app.jar')
     #
     # Supported options:
     # * :progress -- Show the progress bar while reading.
@@ -127,7 +127,7 @@ module URI
     #
     # For options, see URI::read.
     def read(options = nil, &block)
-      fail "This protocol doesn't support reading (yet, how about helping by implementing it?)"
+      fail 'This protocol doesn\'t support reading (yet, how about helping by implementing it?)'
     end
 
     # :call-seq:
@@ -159,7 +159,7 @@ module URI
         read({:progress=>verbose}.merge(options || {}).merge(:modified=>target.mtime)) { |chunk| target.write chunk }
         target.flush
       else
-        raise ArgumentError, "Expecting a target that is either a file name (string, task) or object that responds to write (file, pipe)." unless target.respond_to?(:write)
+        raise ArgumentError, 'Expecting a target that is either a file name (string, task) or object that responds to write (file, pipe).' unless target.respond_to?(:write)
         read({:progress=>verbose}.merge(options || {})) { |chunk| target.write chunk }
         target.flush
       end
@@ -178,7 +178,7 @@ module URI
       options = args.pop if Hash === args.last
       options ||= {}
       if String === args.first
-        ios = StringIO.new(args.first, "r")
+        ios = StringIO.new(args.first, 'r')
         write(options.merge(:size=>args.first.size)) { |bytes| ios.read(bytes) }
       elsif args.first.respond_to?(:read)
         size = args.first.size rescue nil
@@ -186,7 +186,7 @@ module URI
       elsif args.empty? && block
         write_internal options, &block
       else
-        raise ArgumentError, "Either give me the content, or pass me a block, otherwise what would I upload?"
+        raise ArgumentError, 'Either give me the content, or pass me a block, otherwise what would I upload?'
       end
     end
 
@@ -204,14 +204,14 @@ module URI
       source = source.name if Rake::Task === source
       options ||= {}
       if String === source
-        raise NotFoundError, "No source file/directory to upload." unless File.exist?(source)
+        raise NotFoundError, 'No source file/directory to upload.' unless File.exist?(source)
         if File.directory?(source)
           Dir.glob("#{source}/**/*").reject { |file| File.directory?(file) }.each do |file|
-            uri = self + (File.join(self.path, file.sub(source, "")))
+            uri = self + (File.join(self.path, file.sub(source, '')))
             uri.upload file, {:digests=>[]}.merge(options)
           end
         else
-          File.open(source, "rb") { |input| upload input, options }
+          File.open(source, 'rb') { |input| upload input, options }
         end
       elsif source.respond_to?(:read)
         digests = (options[:digests] || [:md5, :sha1]).
@@ -227,7 +227,7 @@ module URI
             (options).merge(:progress=>false)
         end
       else
-        raise ArgumentError, "Expecting source to be a file name (string, task) or any object that responds to read (file, pipe)."
+        raise ArgumentError, 'Expecting source to be a file name (string, task) or any object that responds to read (file, pipe).'
       end
     end
 
@@ -245,7 +245,7 @@ module URI
     # The block is yielded with a progress object that implements a single method.
     # Call << for each block of bytes down/uploaded.
     def with_progress_bar(enable, file_name, size) #:nodoc:
-      if enable && $stdout.isatty
+      if enable && $stdout.isatty && size
         progress_bar = Console::ProgressBar.new(file_name, size)
         # Extend the progress bar so we can display count/total.
         class << progress_bar
@@ -255,15 +255,15 @@ module URI
         end
         # Squeeze the filename into 30 characters.
         if file_name.size > 30
-          base, ext = file_name.split(".")
+          base, ext = file_name.split('.')
           truncated = "#{base[0..26-ext.to_s.size]}...#{ext}"
         else
           truncated = file_name
         end
         progress_bar.format = "#{truncated}: %3d%% %s %s/%s %s"
-        progress_bar.format = "%3d%% %s %s/%s %s"
+        progress_bar.format = '%3d%% %s %s/%s %s'
         progress_bar.format_arguments = [:percentage, :bar, :bytes, :total, :stat]
-        progress_bar.bar_mark = "."
+        progress_bar.bar_mark = '.'
 
         begin
           class << progress_bar
@@ -293,13 +293,13 @@ module URI
     def proxy_uri()
       proxy = ENV["#{scheme.upcase}_PROXY"]
       proxy = URI.parse(proxy) if String === proxy
-      excludes = (ENV["NO_PROXY"] || "").split(/\s*,\s*/).compact
+      excludes = ENV['NO_PROXY'].to_s.split(/\s*,\s*/).compact
       excludes = excludes.map { |exclude| exclude =~ /:\d+$/ ? exclude : "#{exclude}:*" }
       return proxy unless excludes.any? { |exclude| File.fnmatch(exclude, "#{host}:#{port}") }
     end
 
     def write_internal(options, &block) #:nodoc:
-      fail "This protocol doesn't support writing (yet, how about helping by implementing it?)"
+      fail 'This protocol doesn\'t support writing (yet, how about helping by implementing it?)'
     end
 
   end
@@ -310,7 +310,7 @@ module URI
     # See URI::Generic#read
     def read(options = nil, &block)
       options ||= {}
-      headers = { "If-Modified-Since" => CGI.rfc1123_date(options[:modified].utc) } if options[:modified]
+      headers = { 'If-Modified-Since' => CGI.rfc1123_date(options[:modified].utc) } if options[:modified]
 
       if proxy = proxy_uri
         proxy = URI.parse(proxy) if String === proxy
@@ -328,23 +328,23 @@ module URI
         #case response = http.request(request)
         when Net::HTTPNotModified
           # No modification, nothing to do.
-          puts "Not modified since last download" if Rake.application.options.trace
+          puts 'Not modified since last download' if Rake.application.options.trace
           return nil
         when Net::HTTPRedirection
           # Try to download from the new URI, handle relative redirects.
           puts "Redirected to #{response['Location']}" if Rake.application.options.trace
-          return (self + URI.parse(response["location"])).read(options, &block)
+          return (self + URI.parse(response['location'])).read(options, &block)
         when Net::HTTPOK
           puts "Downloading #{self}" if verbose
           result = nil
-          with_progress_bar options[:progress], path.split("/").last, response.content_length do |progress|
+          with_progress_bar options[:progress], path.split('/').last, response.content_length do |progress|
             if block
               response.read_body do |chunk|
                 block.call chunk
                 progress << chunk
               end
             else
-              result = ""
+              result = ''
               response.read_body do |chunk|
                 result << chunk
                 progress << chunk
@@ -385,7 +385,7 @@ module URI
       rescue Net::SSH::AuthenticationFailed=>ex
         # Only if running with console, prompt for password.
         if !ssh_options[:password] && $stdout.isatty
-          password = HighLine.new.ask("Password for #{host}:") { |q| q.echo = "*" }
+          password = HighLine.new.ask("Password for #{host}:") { |q| q.echo = '*' }
           ssh_options[:password] = password
           retry
         end
@@ -393,20 +393,20 @@ module URI
       end
 
       session.sftp.connect do |sftp|
-        puts "connected" if Rake.application.options.trace
+        puts 'connected' if Rake.application.options.trace
 
         # To create a path, we need to create all its parent. We use realpath to determine if
         # the path already exists, otherwise mkdir fails.
         puts "Creating path #{@base_path}" if Rake.application.options.trace
-        File.dirname(path).split("/").inject("") do |base, part|
+        File.dirname(path).split('/').inject('') do |base, part|
           combined = base + part
           sftp.realpath combined rescue sftp.mkdir combined, {}
           "#{combined}/"
         end
 
-        with_progress_bar options[:progress] && options[:size], path.split("/"), options[:size] || 0 do |progress|
+        with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
           puts "Uploading to #{path}" if Rake.application.options.trace
-          sftp.open_handle(path, "w") do |handle|
+          sftp.open_handle(path, 'w') do |handle|
             # Writing in chunks gives us the benefit of a progress bar,
             # but also require that we maintain a position in the file,
             # since write() with two arguments always writes at position 0.
@@ -443,7 +443,7 @@ module URI
         end
       end
       # Sadly, file://something really means file://something/ (something being server)
-      set_path "/" if path.empty?
+      set_path '/' if path.empty?
 
       # On windows, file://c:/something is not a valid URL, but people do it anyway, so if we see a drive-as-host,
       # we'll just be nice enough to fix it. (URI actually strips the colon here)
@@ -456,14 +456,14 @@ module URI
     # See URI::Generic#read
     def read(options = nil, &block)
       options ||= {}
-      raise ArgumentError, "Either you're attempting to read a file from another host (which we don't support), or you used two slashes by mistake, where you should have file:///<path>." unless host.to_s.blank?
+      raise ArgumentError, 'Either you\'re attempting to read a file from another host (which we don\'t support), or you used two slashes by mistake, where you should have file:///<path>.' unless host.to_s.blank?
 
       path = real_path
       # TODO: complain about clunky URLs
       raise NotFoundError, "Looking for #{self} and can't find it." unless File.exists?(path)
       raise NotFoundError, "Looking for the file #{self}, and it happens to be a directory." if File.directory?(path)
-      File.open path, "rb" do |input|
-        with_progress_bar options[:progress], path.split("/").last, input.stat.size do |progress|
+      File.open path, 'rb' do |input|
+        with_progress_bar options[:progress], path.split('/').last, input.stat.size do |progress|
           block ? block.call(input.read) : input.read
         end
       end
@@ -483,11 +483,11 @@ module URI
   protected
 
     def write_internal(options, &block) #:nodoc:
-      raise ArgumentError, "Either you're attempting to write a file to another host (which we don't support), or you used two slashes by mistake, where you should have file:///<path>." unless host.to_s.blank?
+      raise ArgumentError, 'Either you\'re attempting to write a file to another host (which we don\'t support), or you used two slashes by mistake, where you should have file:///<path>.' unless host.to_s.blank?
       temp = nil
       Tempfile.open File.basename(path) do |temp|
         temp.binmode
-        with_progress_bar options[:progress] && options[:size], path.split("/"), options[:size] || 0 do |progress|
+        with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
           while chunk = yield(32 * 4096)
             temp.write chunk
             progress << chunk
@@ -500,7 +500,7 @@ module URI
       end
     end
 
-    @@schemes["FILE"] = FILE
+    @@schemes['FILE'] = FILE
 
   end
 
