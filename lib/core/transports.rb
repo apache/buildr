@@ -323,36 +323,40 @@ module URI
       puts "Requesting #{self}"  if Rake.application.options.trace
       request = Net::HTTP::Get.new(path.blank? ? '/' : path, headers)
       request.basic_auth self.user, self.password if self.user
-      case response = http.request(request)
-      when Net::HTTPNotModified
-        # No modification, nothing to do.
-        puts "Not modified since last download" if Rake.application.options.trace
-        nil
-      when Net::HTTPRedirection
-        # Try to download from the new URI, handle relative redirects.
-        puts "Redirected to #{response['Location']}" if Rake.application.options.trace
-        (self + URI.parse(response["location"])).read(options, &block)
-      when Net::HTTPOK
-        puts "Downloading #{self}" if verbose
-        with_progress_bar options[:progress], path.split("/").last, response.content_length do |progress|
-          if block
-            response.read_body do |chunk|
-              block.call chunk
-              progress << chunk
-            end
-          else
-            result = ""
-            response.read_body do |chunk|
-              result << chunk
-              progress << chunk
+      http.request request do |response|
+        case response
+        #case response = http.request(request)
+        when Net::HTTPNotModified
+          # No modification, nothing to do.
+          puts "Not modified since last download" if Rake.application.options.trace
+          return nil
+        when Net::HTTPRedirection
+          # Try to download from the new URI, handle relative redirects.
+          puts "Redirected to #{response['Location']}" if Rake.application.options.trace
+          return (self + URI.parse(response["location"])).read(options, &block)
+        when Net::HTTPOK
+          puts "Downloading #{self}" if verbose
+          result = nil
+          with_progress_bar options[:progress], path.split("/").last, response.content_length do |progress|
+            if block
+              response.read_body do |chunk|
+                block.call chunk
+                progress << chunk
+              end
+            else
+              result = ""
+              response.read_body do |chunk|
+                result << chunk
+                progress << chunk
+              end
             end
           end
+          return result
+        when Net::HTTPNotFound
+          raise NotFoundError, "Looking for #{self} and all I got was a 404!"
+        else
+          raise RuntimeError, "Failed to download #{self}: #{response.message}"
         end
-        result
-      when Net::HTTPNotFound
-        raise NotFoundError, "Looking for #{self} and all I got was a 404!"
-      else
-        raise RuntimeError, "Failed to download #{self}: #{response.message}"
       end
     end
 
