@@ -1,8 +1,8 @@
-require "core/project"
-require "core/common"
-require "core/compile"
-require "java/artifact"
-require "java/java"
+require 'core/project'
+require 'core/common'
+require 'core/compile'
+require 'java/artifact'
+require 'java/java'
 
 module Buildr
   module Compiler
@@ -38,16 +38,17 @@ module Buildr
       def compile(sources, target, dependencies) #:nodoc:
         check_options options, OPTIONS
         cmd_args = []
-        cmd_args << "-cp" << dependencies.join(File::PATH_SEPARATOR) unless dependencies.empty?
+        cmd_args << '-cp' << dependencies.join(File::PATH_SEPARATOR) unless dependencies.empty?
         source_paths = sources.select { |source| File.directory?(source) }
-        cmd_args << "-sourcepath" << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
-        cmd_args << "-d" << target
+        cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
+        cmd_args << '-d' << target
         cmd_args += javac_args
         cmd_args += files_from_sources(sources)
         unless Rake.application.options.dryrun
-          puts (["javac"] + cmd_args).join(" ") if Rake.application.options.trace
-          cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
-          Java.import('com.sun.tools.javac.Main').compile(cmd_args) == 0 or fail "Failed to compile, see errors above"
+          puts (['javac'] + cmd_args).join(' ') if Rake.application.options.trace
+          #cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
+          Java.load
+          Java.com.sun.tools.javac.Main.compile(cmd_args.map(&:to_s)) == 0 or fail 'Failed to compile, see errors above'
         end
       end
 
@@ -95,12 +96,12 @@ module Buildr
     # the hard work to calling #from and #using.
     #
     # For example:
-    #   javadoc.from(projects("myapp:foo", "myapp:bar")).using(:windowtitle=>"My App")
+    #   javadoc.from(projects('myapp:foo', 'myapp:bar')).using(:windowtitle=>'My App')
     # Or, short and sweet:
-    #   desc "My App"
-    #   define "myapp" do
+    #   desc 'My App'
+    #   define 'myapp' do
     #     . . .
-    #     javadoc projects("myapp:foo", "myapp:bar")
+    #     javadoc projects('myapp:foo', 'myapp:bar')
     #   end
     class JavadocTask < Rake::Task
 
@@ -112,8 +113,7 @@ module Buildr
         @files = FileList[]
         enhance do |task|
           rm_rf target.to_s, :verbose=>false
-          Java.javadoc source_files, options.merge(:classpath=>classpath, :sourcepath=>sourcepath,
-            :name=>name, :output=>File.expand_path(target.to_s))
+          generate source_files, File.expand_path(target.to_s), options.merge(:classpath=>classpath, :sourcepath=>sourcepath)
           touch target.to_s, :verbose=>false
         end
       end
@@ -128,7 +128,7 @@ module Buildr
       # as a prerequisite to a file task on the target directory.
       #
       # For example:
-      #   package :zip, :classifier=>"docs", :include=>javadoc.target
+      #   package :zip, :classifier=>'docs', :include=>javadoc.target
       def into(path)
         @target = file(path.to_s).enhance([self]) unless @target && @target.to_s == path.to_s
         self
@@ -177,7 +177,7 @@ module Buildr
       # Sets the Javadoc options from a hash and returns self.
       #
       # For example:
-      #   javadoc.using :windowtitle=>"My application"
+      #   javadoc.using :windowtitle=>'My application'
       def using(*args)
         args.pop.each { |key, value| @options[key.to_sym] = value } if Hash === args.last
         args.each { |key| @options[key.to_sym] = true }
@@ -195,7 +195,7 @@ module Buildr
       # by that project and classpath dependencies used when compiling.
       #
       # For example:
-      #   javadoc.from projects("myapp:foo", "myapp:bar")
+      #   javadoc.from projects('myapp:foo', 'myapp:bar')
       def from(*sources)
         sources.flatten.each do |source|
           case source
@@ -226,6 +226,40 @@ module Buildr
         return false if source_files.empty?
         return true unless File.exist?(target.to_s)
         source_files.map { |src| File.stat(src.to_s).mtime }.max > File.stat(target.to_s).mtime
+      end
+
+    private
+
+      def generate(sources, target, options = {})
+        cmd_args = [ '-d', target, Rake.application.options.trace ? '-verbose' : '-quiet' ]
+        options.reject { |key, value| [:sourcepath, :classpath].include?(key) }.
+          each { |key, value| value.invoke if value.respond_to?(:invoke) }.
+          each do |key, value|
+            case value
+            when true, nil
+              cmd_args << "-#{key}"
+            when false
+              cmd_args << "-no#{key}"
+            when Hash
+              value.each { |k,v| cmd_args << "-#{key}" << k.to_s << v.to_s }
+            else
+              cmd_args += Array(value).map { |item| ["-#{key}", item.to_s] }.flatten
+            end
+          end
+        [:sourcepath, :classpath].each do |option|
+          Array(options[option]).flatten.tap do |paths|
+            cmd_args << "-#{option}" << paths.flatten.map(&:to_s).join(File::PATH_SEPARATOR) unless paths.empty?
+          end
+        end
+        cmd_args += sources.flatten.uniq
+        unless Rake.application.options.dryrun
+          puts "Generating Javadoc for #{name}" if verbose
+          puts (['javadoc'] + cmd_args).join(' ') if Rake.application.options.trace
+          Java.load
+          #cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
+          Java.com.sun.tools.javadoc.Main.execute(cmd_args.map(&:to_s)) == 0 or
+            fail 'Failed to generate Javadocs, see errors above'
+        end
       end
 
     end
@@ -283,9 +317,21 @@ module Buildr
     #
     def apt(*sources)
       sources = compile.sources if sources.empty?
-      file(path_to(:target, "generated/apt")=>sources) do |task|
-        Java.apt(sources.map(&:to_s) - [task.name], :output=>task.name,
-          :classpath=>compile.dependencies, :source=>compile.options.source)
+      file(path_to(:target, 'generated/apt')=>sources) do |task|
+        cmd_args = [ Rake.application.options.trace ? '-verbose' : '-nowarn' ]
+        cmd_args << '-nocompile' << '-s' << task.name
+        cmd_args << '-source' << compile.options.source if compile.options.source
+        classpath = Buildr.artifacts(compile.dependencies).map(&:to_s).each { |t| task(t).invoke }
+        cmd_args << '-cp' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cmd_args += (sources.map(&:to_s) - [task.name]).
+          map { |arg| File.directory?(file) ? FileList["#{file}/**/*.java"] : file }.flatten
+        unless Rake.application.options.dryrun
+          puts 'Running apt' if verbose
+          puts (['apt'] + cmd_args).join(' ') if Rake.application.options.trace
+          #cmd_args = cmd_args.to_java_array(Java.java.lang.String) if Java.jruby?
+          Java.com.sun.tools.apt.Main.process(cmd_args.map(&:to_s)) == 0 or
+            fail 'Failed to process annotations, see errors above'
+        end
       end
     end
 

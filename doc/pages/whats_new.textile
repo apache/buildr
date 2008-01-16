@@ -1,0 +1,191 @@
+h1.  What's New
+
+h2.  Buildr 1.3
+
+
+h4.  Multiple Languages
+
+The main focus of this release is supporting multiple languages for compiling
+and testing.
+
+For each project, Buildr will attempt to infer which compiler to use based on
+the source files it finds, for example, if it finds @.java@ files in the
+@src/main/java@ directory, it will switch to the javac compiler, if it finds
+@.scala@ files in the @src/main/scala@ directory, to the scalac compiler and so
+forth.
+
+Different compilers may use different target directory, @target/classes@ is
+picked for JVM compilers (Java, Scala, etc), so resources are not copied to
+their own directory, @target/resources@.  The prepare task has been removed.
+
+Not all languages have classpaths, so @compile.classpath@ is now known as
+@compile.dependencies@, but the old attribute still exists for backward
+compatibility.
+
+Also, for consistency, the test target directories have changed to
+@target/test/classes@ and @target/test/resources@, respectively.
+
+Speaking of tests, you can compile code in one language and use a different
+language to test it, say, if you're interested in compiling Java code and
+testing it with Ruby, or compiling Flash and running a Java test suite.
+
+As before, you can pick the test framework by calling
+@test.using(<framework>)@.  Buildr will attempt to pick one by default, for
+example, if the tests are written in Java, it will default to JUnit.
+
+And, since not all languages package to JARs, the default packaging is either
+inferred from the compiler (so @:jar@ when compiling Java code), otherwise to
+@:zip@.  All this defaulting means that @package()@ with no arguments does the
+right thing in more cases, and most probably won't break anyone's buildfiles.
+
+I've tried to keep the compiler API as simple as possible, making it easy to
+add new compilers; however, I had to change the test framework API to
+accommodate the new features, so old test frameworks will not work on 1.3.
+
+
+h4.  Packaging EARs
+
+EAR packages support four component types:
+
+* @:war@ -- J2EE Web Application (WAR).
+* @:ejb@ -- Enterprise Java Bean (JAR).
+* @:jar@ -- J2EE Application Client (JAR).
+* @:lib@ -- Shared library (JAR).
+
+This example shows two ways for adding components built by other projects:
+
+{{{!ruby
+package(:ear) << project('coolWebService').package(:war)
+package(:ear).add project('commonLib') # By default, the JAR package
+}}}
+
+EAR packages include an @application.xml@ file in the @META-INF@ directory that
+describes the application and its component.  This file is created for you
+during packaging, by referencing all the components added to the EAR.  There
+are a couple of things you will typically want to change.
+
+* *display-name* -- The application's display name defaults to the project's
+identifier.  You can change that by setting the @display_name@ attribute.
+
+* *context-root* -- WAR components specify a context root, based on the package
+identifier, for example, "cool-web-1.0.war" will have the context root
+"cool-web".  To specify a different context root, add the WAR package with the
+@context_root@ option.
+
+"Read more ...":packaging.html#packaging_ears
+
+
+h4.  New API for accessing Java libraries
+
+Java classes are accessed as static methods on the @Java@ module, for example:
+
+{{{!ruby
+str = Java.java.lang.String.new('hai!')
+str.toUpperCase
+=> 'HAI!'
+Java.java.lang.String.isInstance(str)
+=> true
+Java.com.sun.tools.javac.Main.compile(args)
+}}}
+
+The @classpath@ attribute allows Buildr to add JARs and directories to the
+classpath, for example, we use it to load Ant and various Ant tasks, code
+generators, test frameworks, and so forth.
+
+For example, Ant is loaded as follows:
+
+{{{!ruby
+Java.classpath << 'org.apache.ant:ant:jar:1.7.0'
+}}}
+
+Artifacts can only be downloaded after the Buildfile has loaded, giving it a
+chance to specify which remote repositories to use, so adding to classpath does
+not by itself load any libraries.  You must call @Java.load@ before accessing any
+Java classes to give Buildr a chance to load the libraries specified in the
+classpath.
+
+"Read more ...":extending.html#using_java_libraries
+
+
+h4.  Creating Extensions
+
+A module defines instance methods that are then mixed into the project and
+become instance methods of the project.  There are two general ways for
+extending projects.  You can extend all projects by including the module in
+Project:
+
+{{{!ruby
+class Project
+  include MyExtension
+end
+}}}
+
+You can also extend a given project instance and only that instance by
+extending it with the module:
+
+{{{!ruby
+define 'foo' do
+  extend MyExtension
+end
+}}}
+
+Some extensions require tighter integration with the project, specifically for
+setting up tasks and properties, or for configuring tasks based on the project
+definition.  You can do that by adding callbacks to the process.
+
+"Read more ...":extending.html#creating_extensions
+
+
+h4.  Using Alternative Layouts
+
+Buildr follows a common convention for project layouts: Java source files
+appear in @src/main/java@ and compile to @target/classes@, resources are
+copied over from @src/main/resources@ and so forth.  Not all projects follow
+this convention, so it's now possible to specify an alternative project
+layout.
+
+A layout is an object that implements the @expand@ method.  The easiest way to
+define a custom layout is to create a new @Layout@ object and specify mapping
+between names used by Buildr and actual paths within the project.
+
+"Read more ...":extending.html#using_alternative_layouts
+
+
+h4.  Other
+
+* Buildr 1.3 upgrades to Rake 0.8, RSpec 1.1, RJB 1.1, Facets 2.2 and OpenJPA
+1.0.1.
+
+* JUnit tests now operate on all compiled test classes that extend
+junit.framework.TestCase and match the include/exclude patterns.  Test cases no
+longer have to end or start with Test, and including non-test classes simply
+ignores them.
+
+* Remote repositories now support HTTP Basic Authentication.
+
+* The prepare task has been removed, if you need to, simply add a prerequisite
+to the compile task.
+
+
+h4.  Documentation
+
+* The "What's new?":whats_new.html page (this one, actually), summarizes all
+the important new features and changes in each release.
+
+* The "Recipes":recipes.html page (also available in the PDF) lists recipes for
+using Buildr, collected from the mailing list.  Feel free to contribute tips,
+tricks and techniques.
+
+* The "Troubleshooting":troubleshooting.html page (also available in the PDF)
+collects troubleshooting ideas from the mailing list.
+
+* The "Download and installation":download.html has been rewritten to cover all
+you need to know about downloading and installing Buildr for various operating
+systems and configurations.
+
+* A new "Contributing":contributing.html page has more details on how to file
+bugs, policy for submitting patches, running Buildr test cases, and helping
+with the documentation.
+
+* The site also includes "RSpec test report":report.html and "Test coverage
+report":coverage/index.html.

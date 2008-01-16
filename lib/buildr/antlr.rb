@@ -19,11 +19,9 @@ module Buildr
           mkdir_p options[:token] 
           args = ["-lib",  options[:token]] + args 
         end
-        antlr_class = Java.import("org.antlr.Tool")
-        antlr_tool = antlr_class.new_with_sig("[Ljava.lang.String;", args)
-        antlr_tool.process
-        #wrapper.import("org.antlr.Tool").main(args) == 0 or
-        #  fail "Failed to run ANTLR, see errors above."
+        Java.load
+        #Java.org.antlr.Tool.new_with_sig("[Ljava.lang.String;", args).process
+        Java.org.antlr.Tool.new(args.map(&:to_s)).process
       end
     end
 

@@ -247,18 +247,17 @@ task :report do |task|
   end
 end
 
-namespace :setup do
-  task :jetty do
-    cp = ['jetty-6.1.1.jar', 'jetty-util-6.1.1.jar', 'servlet-api-2.5-6.1.1'].
-      map { |jar| `locate #{jar}`.split.first }.join(File::PATH_SEPARATOR)
-    Dir.chdir 'lib/buildr/jetty' do
-      `javac -cp #{cp} JettyWrapper.java`
-    end
+
+task 'compile' do
+  # RJB, JUnit and friends.
+  Dir.chdir 'lib/java' do
+    `javac -Xlint:all org/apache/buildr/*.java`
   end
 
-  task :junit do
-    Dir.chdir 'lib/java' do
-      `javac org/apache/buildr/JUnitTestFilter.java`
-    end
+  # Jetty server.
+  cp = ['jetty-6.1.1.jar', 'jetty-util-6.1.1.jar', 'servlet-api-2.5-6.1.1'].
+    map { |jar| `locate #{jar}`.split.first }.join(File::PATH_SEPARATOR)
+  Dir.chdir 'lib/buildr/jetty' do
+    `javac -Xlint:all -cp #{cp} JettyWrapper.java`
   end
 end

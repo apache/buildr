@@ -1,6 +1,6 @@
 # This file gets loaded twice when running 'spec spec/*' and not with pleasent results,
 # so ignore the second attempt to load it.
-unless $LOADED_FEATURES.include?(__FILE__)
+unless self.class.const_defined?('SpecHelpers')
 
   require 'rubygems'
   $LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__))
@@ -260,4 +260,5 @@ unless $LOADED_FEATURES.include?(__FILE__)
     # Sanbdox Rake/Buildr for each test.
     config.include Sandbox
   end
+
 end

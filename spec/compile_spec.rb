@@ -41,10 +41,10 @@ describe Buildr::CompileTask do
     compile_task.with('test.jar').should be(compile_task)
   end
 
-  it 'should respond to with() and add classpath dependencies' do
+  it 'should respond to with() and add dependencies' do
     jars = (1..3).map { |i| "test#{i}.jar" }
     compile_task.with *jars
-    compile_task.classpath.should == artifacts(jars)
+    compile_task.dependencies.should == artifacts(jars)
   end
 
   it 'should respond to into() and return self' do

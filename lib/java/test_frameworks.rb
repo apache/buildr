@@ -92,7 +92,8 @@ module Buildr
 
 
     # Ant-JUnit requires for JUnit and JUnit reports tasks.  Also requires JUnitTestFilter.
-    Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}" << File.join(File.dirname(__FILE__))
+    Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}"
+    Java.classpath << File.join(File.dirname(__FILE__))
 
     # JUnit version number.
     VERSION = '4.3.1' unless const_defined?('VERSION')
@@ -114,6 +115,7 @@ module Buildr
         map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
         reject { |name| name =~ /\$/ }
       classpath = [target.to_s + '/'] + Buildr.artifacts(dependencies).map(&:to_s)
+      Java.load
       Java.org.apache.buildr.JUnitTestFilter.new(classpath).filter(candidates)
     end
 
@@ -135,9 +137,6 @@ module Buildr
           ant.classpath :path=>dependencies.each { |path| file(path).invoke }.join(File::PATH_SEPARATOR)
           (options[:properties] || []).each { |key, value| ant.sysproperty :key=>key, :value=>value }
           (options[:environment] || []).each { |key, value| ant.env :key=>key, :value=>value }
-          java_args = options[:java_args] || Buildr.options.java_args
-          java_args = java_args.split(/\s+/) if String === java_args
-          java_args.each { |value| ant.jvmarg :value=>value } if java_args
           ant.formatter :type=>'plain'
           ant.formatter :type=>'plain', :usefile=>false # log test
           ant.formatter :type=>'xml'
@@ -216,7 +215,7 @@ module Buildr
                       :classpath=>dependencies }
       tests.inject([]) do |passed, test|
         begin
-          Buildr.java cmd_args, '-testclass', test, cmd_options.merge(:name=>test)
+          Java::Commands.java cmd_args, '-testclass', test, cmd_options.merge(:name=>test)
           passed << test
         rescue
           passed

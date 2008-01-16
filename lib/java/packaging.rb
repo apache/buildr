@@ -5,10 +5,10 @@ require 'tasks/tar'
 
 
 module Buildr
-  module Java
+  module Packaging
 
     # Adds packaging for Java projects: JAR, WAR, AAR, EAR, Javadoc.
-    module Packaging
+    module Java
 
       # Adds support for MANIFEST.MF and other META-INF files.
       module WithManifest #:nodoc:
@@ -400,8 +400,9 @@ module Buildr
       include Extension
 
       before_define do |project|
+        ::Java.load
         project.manifest ||= project.parent && project.parent.manifest ||
-          { 'Build-By'=>ENV['USER'], 'Build-Jdk'=>Java.version,
+          { 'Build-By'=>ENV['USER'], 'Build-Jdk'=>ENV_JAVA['java.version'],
             'Implementation-Title'=>project.comment || project.name,
             'Implementation-Version'=>project.version }
         project.meta_inf ||= project.parent && project.parent.meta_inf ||
@@ -477,7 +478,7 @@ module Buildr
     protected
 
       def package_as_jar(file_name) #:nodoc:
-        Java::Packaging::JarTask.define_task(file_name).tap do |jar|
+        Java::JarTask.define_task(file_name).tap do |jar|
           jar.with :manifest=>manifest, :meta_inf=>meta_inf
           jar.with compile.target unless compile.sources.empty?
           jar.with resources.target unless resources.sources.empty?
@@ -485,7 +486,7 @@ module Buildr
       end
 
       def package_as_war(file_name) #:nodoc:
-        Java::Packaging::WarTask.define_task(file_name).tap do |war|
+        Java::WarTask.define_task(file_name).tap do |war|
           war.with :manifest=>manifest, :meta_inf=>meta_inf
           # Add libraries in WEB-INF lib, and classes in WEB-INF classes
           classes = []
@@ -500,7 +501,7 @@ module Buildr
       end
 
       def package_as_aar(file_name) #:nodoc:
-        Java::Packaging::AarTask.define_task(file_name).tap do |aar|
+        Java::AarTask.define_task(file_name).tap do |aar|
           aar.with :manifest=>manifest, :meta_inf=>meta_inf
           aar.with :wsdls=>path_to(:source, :main, :axis2, '*.wsdl')
           aar.with :services_xml=>path_to(:source, :main, :axis2, 'services.xml') 
@@ -511,7 +512,7 @@ module Buildr
       end
 
       def package_as_ear(file_name) #:nodoc:
-        Java::Packaging::EarTask.define_task(file_name).tap do |ear|
+        Java::EarTask.define_task(file_name).tap do |ear|
           ear.send :associate, self
           ear.with :display_name=>id, :manifest=>manifest, :meta_inf=>meta_inf
         end
@@ -535,5 +536,5 @@ end
 
 
 class Buildr::Project
-  include Buildr::Java::Packaging
+  include Buildr::Packaging::Java
 end

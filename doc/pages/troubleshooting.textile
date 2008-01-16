@@ -2,6 +2,30 @@ h1. Troubleshooting
 
 Common troubleshooting tips collected from the mailing list.
 
+h2.  Building
+
+h3.  Running out of heap space
+
+You can give the JVM more heap space by setting the @JAVA_OPTS@ environment
+variables.  This environment variable provides arguments for staring the JVM.
+For example, to set the heap space to 1GB:
+
+{{{!sh
+$ export "JAVA_OPTS=-Xms1g -Xmx1g"
+$ buildr compile
+}}}
+
+If you're sharing the build with other developers, you'll want to specify these
+options in the Buildfile itself.  You can set the environment variable within
+the Buildfile, but make sure to do so at the very top of the Buildfile.
+
+For example:
+
+{{{!ruby
+ENV['JAVA_OPTS'] = '-Xms1g -Xmx1g'
+}}}
+
+
 h2.  Buildfiles
 
 h3.  Bugs resulting from a dangling comma or period

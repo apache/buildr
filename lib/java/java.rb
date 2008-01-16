@@ -1,117 +1,19 @@
-require "rjb" if RUBY_PLATFORM != 'java'
-require "java" if RUBY_PLATFORM == 'java'
-require "core/project"
+require 'core/project'
+#ENV['JAVA_HOME'] = '...' if RUBY_PLATFORM =~ /darwin/i
+if PLATFORM == 'java'
+  require File.join(File.dirname(__FILE__), 'jruby')
+else
+  require File.join(File.dirname(__FILE__), 'rjb')
+end
 
-module Buildr
 
-  # Base module for all things Java.
-  module Java
+# Base module for all things Java.
+module Java
 
-    # Options accepted by #java and other methods here.
-    JAVA_OPTIONS = [ :verbose, :classpath, :name, :java_args, :properties ]
+  # JDK commands: java, javac, javadoc, etc.
+  module Commands
 
-    # Returned by Java#wrapper, you can use this object to set the classpath, specify blocks to be invoked
-    # after loading RJB, and load RJB itself.
-    #
-    # RJB can be loaded exactly once, and once loaded, you cannot change its classpath. Of course you can
-    # call libraries that manage their own classpath, but the lazy way is to just tell RJB of all the
-    # classpath dependencies you need in advance, before loading it.
-    #
-    # For that reason, you should not load RJB until the moment you need it. You can call #load or call
-    # Java#wrapper with a block. For the same reason, you may need to specify code to execute when loading
-    # (see #setup).
-    #
-    # JRuby doesn't have the above limitation, but uses the same API regardless.
-    class JavaWrapper #:nodoc:
-
-      include Singleton
-
-      def initialize() #:nodoc:
-        @classpath = [Java.tools_jar].compact
-        if Java.jruby?
-          # in order to get a complete picture, we need to add a few jars to the list.
-          @classpath += java.lang.System.getProperty('java.class.path').split(':').compact
-        end
-        @setup = []
-
-        setup do
-          setup do
-            cp = Buildr.artifacts(@classpath).map(&:to_s)
-            cp.each { |path| file(path).invoke }
-
-            if Java.jruby?
-              cp.each do |jlib|
-                require jlib
-              end
-            else
-              ::Rjb.load cp.join(File::PATH_SEPARATOR), Buildr.options.java_args.flatten
-            end
-          end
-        end
-      end
-
-      attr_accessor :classpath
-
-      def setup(&block)
-        @setup << block
-        self
-      end
-      
-      def load(&block)
-        @setup.each { |block| block.call self }
-        @setup.clear
-      end
-
-      def import(jlib)
-        if Java.jruby?
-          ::Java.instance_eval(jlib)
-        else
-          ::Rjb.import jlib
-        end
-      end
-
-      def method_missing(sym, *args, &block) #:nodoc:
-        # these aren't the same, but depending on method_missing while
-        # supporting two unrelated systems is asking for trouble anyways.
-        if Java.jruby?
-          ::Java.send sym, *args, &block
-        else
-          ::Rjb.send sym, *args, &block
-        end
-      end
-    end
-    
     class << self
-
-      # :call-seq:
-      #   version() => string
-      #
-      # Returns the version number of the JVM.
-      #
-      # For example:
-      #   puts Java.version
-      #   => 1.5.0_10
-      def version()
-        @version ||= Java.wrapper { |jw| jw.import("java.lang.System").getProperty("java.version") }
-      end
-
-      # :call-seq:
-      #   tools_jar() => path
-      #
-      # Returns a path to tools.jar. On OS/X which has not tools.jar, returns an empty array,
-      # on all other platforms, fails if it doesn't find tools.jar.
-      def tools_jar()
-        return [] if darwin?
-        @tools ||= [File.join(home, "lib/tools.jar")] or raise "I need tools.jar to compile, can't find it in #{home}/lib"
-      end
-
-      # :call-seq:
-      #   home() => path
-      #
-      # Returns JAVA_HOME, fails if JAVA_HOME not set.
-      def home()
-        @home ||= ENV["JAVA_HOME"] or fail "Are we forgetting something? JAVA_HOME not set."
-      end
 
       # :call-seq:
       #   java(class, *args, options?)
@@ -122,31 +24,31 @@ module Buildr
       # * :classpath -- One or more file names, tasks or artifact specifications.
       #   These are all expanded into artifacts, and all tasks are invoked.
       # * :java_args -- Any additional arguments to pass (e.g. -hotspot, -xms)
-      # * :properties -- Hash of system properties (e.g. "path"=>base_dir).
+      # * :properties -- Hash of system properties (e.g. 'path'=>base_dir).
       # * :name -- Shows this name, otherwise shows the first argument (the class name).
       # * :verbose -- If true, prints the command and all its argument.
       def java(*args, &block)
         options = Hash === args.last ? args.pop : {}
         options[:verbose] ||= Rake.application.options.trace || false
-        rake_check_options options, *JAVA_OPTIONS
+        rake_check_options options, :classpath, :java_args, :properties, :name, :verbose
 
         name = options[:name] || "java #{args.first}"
-        cmd_args = [path_to_bin("java")]
+        cmd_args = [path_to_bin('java')]
         classpath = classpath_from(options)
-        cmd_args << "-cp" << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cmd_args << '-cp' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         options[:properties].each { |k, v| cmd_args << "-D#{k}=#{v}" } if options[:properties]
-        cmd_args += (options[:java_args] || Buildr.options.java_args).flatten
+        cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
         cmd_args += args.flatten.compact
         unless Rake.application.options.dryrun
           puts "Running #{name}" if verbose
           block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
-          puts cmd_args.join(" ") if Rake.application.options.trace
-          system(cmd_args.map { |arg| %Q{"#{arg}"} }.join(" ")).tap do |ok|
+          puts cmd_args.join(' ') if Rake.application.options.trace
+          system(cmd_args.map { |arg| %Q{"#{arg}"} }.join(' ')).tap do |ok|
             block.call ok, $?
           end
         end
       end
-
+  
       # :call-seq:
       #   apt(*files, options)
       #
@@ -165,22 +67,22 @@ module Buildr
 
         files = args.flatten.map(&:to_s).
           collect { |arg| File.directory?(arg) ? FileList["#{arg}/**/*.java"] : arg }.flatten
-        cmd_args = [ Rake.application.options.trace ? "-verbose" : "-nowarn" ]
+        cmd_args = [ Rake.application.options.trace ? '-verbose' : '-nowarn' ]
         if options[:compile]
-          cmd_args << "-d" << options[:output].to_s
+          cmd_args << '-d' << options[:output].to_s
         else
-          cmd_args << "-nocompile" << "-s" << options[:output].to_s
+          cmd_args << '-nocompile' << '-s' << options[:output].to_s
         end
-        cmd_args << "-source" << options[:source] if options[:source]
+        cmd_args << '-source' << options[:source] if options[:source]
         classpath = classpath_from(options)
-        cmd_args << "-cp" << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cmd_args << '-cp' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         cmd_args += files
         unless Rake.application.options.dryrun
-          puts "Running apt" if verbose
-          puts (["apt"] + cmd_args).join(" ") if Rake.application.options.trace
-          cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
-          Java.com.sun.tools.apt.Main.process(cmd_args) == 0 or
-            fail "Failed to process annotations, see errors above"
+          puts 'Running apt' if verbose
+          puts (['apt'] + cmd_args).join(' ') if Rake.application.options.trace
+          #cmd_args = cmd_args.to_java_array(Java.java.lang.String) if Java.jruby?
+          Java.com.sun.tools.apt.Main.process(cmd_args.map(&:to_s)) == 0 or
+            fail 'Failed to process annotations, see errors above'
         end
       end
 
@@ -206,17 +108,17 @@ module Buildr
 
         cmd_args = []
         classpath = classpath_from(options)
-        cmd_args << "-cp" << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
-        cmd_args << "-sourcepath" << options[:sourcepath].join(File::PATH_SEPARATOR) if options[:sourcepath]
-        cmd_args << "-d" << options[:output].to_s if options[:output]
+        cmd_args << '-cp' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cmd_args << '-sourcepath' << options[:sourcepath].join(File::PATH_SEPARATOR) if options[:sourcepath]
+        cmd_args << '-d' << options[:output].to_s if options[:output]
         cmd_args += options[:javac_args].flatten if options[:javac_args]
         cmd_args += files
         unless Rake.application.options.dryrun
           puts "Compiling #{files.size} source files in #{name}" if verbose
-          puts (["javac"] + cmd_args).join(" ") if Rake.application.options.trace
-          cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
-          Java.com.sun.tools.javac.Main.compile(cmd_args) == 0 or 
-            fail "Failed to compile, see errors above"
+          puts (['javac'] + cmd_args).join(' ') if Rake.application.options.trace
+          #cmd_args = cmd_args.to_java_array(Java.java.lang.String) if Java.jruby?
+          Java.com.sun.tools.javac.Main.compile(cmd_args.map(&:to_s)) == 0 or 
+            fail 'Failed to compile, see errors above'
         end
       end
 
@@ -234,12 +136,12 @@ module Buildr
       # All other options are passed to Javadoc as following:
       # * true -- As is, for example, :author=>true becomes -author
       # * false -- Prefixed, for example, :index=>false becomes -noindex
-      # * string -- Option with value, for example, :windowtitle=>"My project" becomes -windowtitle "My project"
+      # * string -- Option with value, for example, :windowtitle=>'My project' becomes -windowtitle "My project"
       # * array -- Option with set of values separated by spaces.
       def javadoc(*args)
         options = Hash === args.last ? args.pop : {}
 
-        cmd_args = [ "-d", options[:output], Rake.application.options.trace ? "-verbose" : "-quiet" ]
+        cmd_args = [ '-d', options[:output], Rake.application.options.trace ? '-verbose' : '-quiet' ]
         options.reject { |key, value| [:output, :name, :sourcepath, :classpath].include?(key) }.
           each { |key, value| value.invoke if value.respond_to?(:invoke) }.
           each do |key, value|
@@ -263,57 +165,24 @@ module Buildr
         name = options[:name] || Dir.pwd
         unless Rake.application.options.dryrun
           puts "Generating Javadoc for #{name}" if verbose
-          puts (["javadoc"] + cmd_args).join(" ") if Rake.application.options.trace
+          puts (['javadoc'] + cmd_args).join(' ') if Rake.application.options.trace
           Java.load
-          cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
-          Java.import("com.sun.tools.javadoc.Main").execute(cmd_args) == 0 or
-            fail "Failed to generate Javadocs, see errors above"
+          cmd_args = cmd_args.to_java_array(Java.java.lang.String) if Java.jruby?
+          Java.com.sun.tools.javadoc.Main.execute(cmd_args.map(&:to_s)) == 0 or
+            fail 'Failed to generate Javadocs, see errors above'
         end
       end
 
-      # :call-seq:
-      #   wrapper() => JavaWrapper
-      #   wrapper() { ... }
-      #
-      # This method can be used in two ways. Without a block, returns the
-      # JavaWrapper object which you can use to configure the classpath or call
-      # other methods. With a block, loads RJB or sets up JRuby and yields to
-      # the block, returning its result.
-      #
-      # For example:
-      #   # Add class path dependency.
-      #   Java.wrapper.classpath << REQUIRES
-      #   # Require AntWrap when loading RJB/JRuby.
-      #   Java.wrapper.setup { require "antwrap" }
-      #
-      #  def execute(name, options)
-      #    options = options.merge(:name=>name, :base_dir=>Dir.pwd, :declarative=>true)
-      #    # Load RJB/JRuby and run AntWrap.
-      #    Java.wrapper { AntProject.new(options) }
-      #  end
-      def wrapper()
-        if block_given?
-          JavaWrapper.instance.load
-          yield JavaWrapper.instance
-        else
-          JavaWrapper.instance
-        end
-      end
+    protected
 
       # :call-seq:
       #   path_to_bin(cmd?) => path
       #
       # Returns the path to the specified Java command (with no argument to java itself).
-      def path_to_bin(name = "java")
-        File.join(home, "bin", name)
+      def path_to_bin(name = nil)
+        home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
+        File.join(home, 'bin', name.to_s)
       end
-
-      # return true if we a running on c-ruby and must use rjb
-      def rjb?; RUBY_PLATFORM != "java"; end
-      # return true if we are running on jruby
-      def jruby?; RUBY_PLATFORM == "java"; end
-
-  protected
 
       # :call-seq:
       #    classpath_from(options) => files
@@ -324,89 +193,6 @@ module Buildr
         Buildr.artifacts(options[:classpath] || []).map(&:to_s).each { |t| task(t).invoke }
       end
 
-      def darwin?() #:nodoc:
-        RUBY_PLATFORM =~ /darwin/i
-      end
-
-    end
-
-    # See Java#java.
-    def java(*args)
-      Java.java(*args)
-    end
-
-    def self.classpath
-      wrapper.classpath
-    end
-
-    def self.load
-      wrapper.load
-    end
-
-
-    class Package #:nodoc:
-
-      def initialize(name)
-        @name = name
-      end
-
-      attr_reader :name
-
-      def method_missing(sym, *args, &block)
-        return super unless args.empty? && !block_given?
-        return ::Rjb.import("#{name}.#{sym}") if sym.to_s =~ /^[[:upper:]]/
-        @packages ||= {}
-        @packages[sym] ||= Package.new("#{name}.#{sym}")
-      end
-
-      def to_s
-        name
-      end
-  
-    end
-
-    def self.method_missing(sym, *args, &block)
-      return super unless args.empty? && !block_given?
-      return ::Rjb.import(sym.to_s) if sym.to_s =~ /^[[:upper:]]/
-      @packages ||= {}
-      @packages[sym] ||= Package.new(sym.to_s)
-    end
-
-    def self.import(cls)
-      wrapper.load
-      Rjb.import(cls)
-      #cls.split('.').inject(wrapper) { |wrapper, name| wrapper.send(name) }
-    end
-
-  end
-
-  include Java
-
-  class Options
-
-    # :call-seq:
-    #   java_args => array
-    #
-    # Returns the Java arguments.
-    def java_args()
-      @java_args ||= (ENV["JAVA_OPTS"] || ENV["JAVA_OPTIONS"] || "").split(" ")
-    end
-
-    # :call-seq:
-    #   java_args = array|string|nil
-    #
-    # Sets the Java arguments. These arguments are used when creating a JVM, including for use with RJB
-    # for most tasks (e.g. Ant, compile) and when forking a separate JVM (e.g. JUnit tests). You can also
-    # use the JAVA_OPTS environment variable.
-    #
-    # For example:
-    #   options.java_args = "-verbose"
-    # Or:
-    #   $ set JAVA_OPTS = "-Xms1g"
-    #   $ buildr
-    def java_args=(args)
-      args = args.split if String === args
-      @java_args = args.to_a
     end
 
   end
@@ -414,15 +200,118 @@ module Buildr
 end
 
 
-if Buildr::Java.jruby?
-  
-  # Convert a RubyArray to a Java Object[] array of the specified element_type
-  class Array #:nodoc:
-    def to_java_array(element_type)
-      java_array = ::Java.java.lang.reflect.Array.newInstance(element_type, self.size)
-      self.each_index { |i| java_array[i] = self[i] }
-      return java_array
+module Java
+
+  # *Deprecated:* In earlier versions, Java.wrapper served as a wrapper around RJB/JRuby.
+  # From this version forward, we apply with JRuby style for importing Java classes:
+  #   Java.java.lang.String.new('hai!')
+  # You still need to call Java.load before using any Java code: it resolves, downloads
+  # and installs various dependencies that are required on the classpath before calling
+  # any Java code (e.g. Ant and its tasks).
+  class Wrapper
+
+    include Singleton
+
+    # *Deprecated:* Append to Java.classpath directly.
+    def classpath
+      warn_deprecated 'Append to Java.classpath directly.'
+      Java.classpath
     end
+
+    def classpath=(paths)
+      fail 'Deprecated: Append to Java.classpath, you cannot replace the classpath.'
+    end
+
+    # *Deprecated:* No longer necessary.
+    def setup
+      fail 'Deprecated: This method does not work with the new API'
+    end
+    
+    # *Deprecated:* Use Java.load instead.
+    def load
+      warn_deprecated 'Use Java.load instead.'
+      Java.load
+    end
+
+    # *Deprecated:* Use Java.pkg.pkg.ClassName to import a Java class.
+    def import(class_name)
+      warn_deprecated 'Use Java.pkg.pkg.ClassName to import a Java class.'
+      Java.instance_eval(class_name)
+    end
+  end
+
+
+  class << self
+
+    # *Deprecated*: Use Java::Commands.java instead.
+    def java(*args, &block)
+      warn_deprecated 'Use Java::Commands.java instead'
+      Commands.java(*args, &block)
+    end
+
+    # *Deprecated*: Use Java::Commands.apt instead.
+    def apt(*args)
+      warn_deprecated 'Use Java::Commands.apt instead'
+      Commands.apt(*args)
+    end
+
+    # *Deprecated*: Use Java::Commands.javac instead.
+    def javac(*args)
+      warn_deprecated 'Use Java::Commands.javac instead'
+      Commands.javac(*args)
+    end
+
+    # *Deprecated*: Use Java::Commands.javadoc instead.
+    def javadoc(*args)
+      warn_deprecated 'Use Java::Commands.javadoc instead'
+      Commands.javadoc(*args)
+    end
+
+    # *Deprecated:* Use ENV_JAVA['java.version'] instead.
+    def version
+      warn_deprecated "Use ENV_JAVA['java.version'] instead"
+      Java.load
+      ENV_JAVA['java.version']
+    end
+
+    # *Deprecated:* Use ENV['JAVA_HOME'] instead
+    def home
+      warn_deprecated "Use ENV['JAVA_HOME'] instead"
+      ENV['JAVA_HOME']
+    end
+
+    # *Deprecated:* In earlier versions, Java.wrapper served as a wrapper around RJB/JRuby.
+    # From this version forward, we apply with JRuby style for importing Java classes:
+    #   Java.java.lang.String.new('hai!')
+    # You still need to call Java.load before using any Java code: it resolves, downloads
+    # and installs various dependencies that are required on the classpath before calling
+    # any Java code (e.g. Ant and its tasks).
+    def wrapper
+      if block_given?
+        Java.load
+        yield JavaWrapper.instance
+      else
+        JavaWrapper.instance
+      end
+    end
+
+  end
+
+
+  class Options
+
+    # *Deprecated:* Use ENV['JAVA_OPTS'] instead.
+    def java_args
+      warn_deprecated "Use ENV['JAVA_OPTS'] instead"
+      (ENV["JAVA_OPTS"] || ENV["JAVA_OPTIONS"]).to_s.split
+    end
+
+    # *Deprecated:* Use ENV['JAVA_OPTS'] instead.
+    def java_args=(args)
+      warn_deprecated "Use ENV['JAVA_OPTS'] instead"
+      ENV['JAVA_OPTS'] = Array(args).join(' ')
+    end
+
   end
 
 end

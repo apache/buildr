@@ -164,7 +164,10 @@ module Buildr
             [ installed, pom ].map(&:to_s).each { |file| rm file if File.exist?(file) } 
           end
         end
-        task('upload') { package.pom.invoke ; package.pom.upload ; package.upload }
+        task 'upload'=>[package.pom] do
+          package.pom.upload
+          package.upload
+        end
 
         # Add the package to the list of packages created by this project, and
         # register it as an artifact. The later is required so if we look up the spec

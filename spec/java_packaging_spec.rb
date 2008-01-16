@@ -9,8 +9,7 @@ describe Project, '#manifest' do
   end
 
   it 'should include JDK version' do
-    Java.stub!(:version).and_return '1.6_6'
-    define('foo').manifest['Build-Jdk'].should eql('1.6_6')
+    define('foo').manifest['Build-Jdk'].should =~ /^1\.\d+\.\w+$/
   end
 
   it 'should include project comment' do
@@ -75,11 +74,11 @@ shared_examples_for 'package with manifest' do
     inspect_manifest do |sections|
       sections.size.should be(1)
       sections.first.should == {
-        'Manifest-Version'        => '1.0',
-        'Created-By'              => 'Buildr',
+        'Manifest-Version'        =>'1.0',
+        'Created-By'              =>'Buildr',
         'Implementation-Title'    =>@project.name,
         'Implementation-Version'  =>'1.2',
-        'Build-Jdk'               =>Java.version,
+        'Build-Jdk'               =>ENV_JAVA['java.version'],
         'Build-By'                =>'MysteriousJoe'
       }
     end

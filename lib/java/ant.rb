@@ -1,17 +1,17 @@
-require "core/project"
-require "java/java"
-require "antwrap"
-require "core/help"
+require 'core/project'
+require 'java/java'
+require 'antwrap'
+require 'core/help'
 
 
 module Buildr
   module Ant
 
     # Which version of Ant we're using by default.
-    VERSION = "1.7.0" unless const_defined?('VERSION')
+    VERSION = '1.7.0' unless const_defined?('VERSION')
 
     # Libraries used by Ant.
-    REQUIRES = [ "org.apache.ant:ant:jar:#{VERSION}", "org.apache.ant:ant-launcher:jar:#{VERSION}", "xerces:xercesImpl:jar:2.6.2" ]
+    REQUIRES = [ "org.apache.ant:ant:jar:#{VERSION}", "org.apache.ant:ant-launcher:jar:#{VERSION}", 'xerces:xercesImpl:jar:2.6.2' ]
     Java.classpath << REQUIRES
 
     # :call-seq:
@@ -21,12 +21,12 @@ module Buildr
     # Ant tasks, and executes each task as it's defined.
     #
     # For example:
-    #   ant("hibernatedoclet") do |doclet|
-    #     doclet.taskdef :name=>"hibernatedoclet",
-    #       :classname=>"xdoclet.modules.hibernate.HibernateDocletTask", :classpath=>DOCLET
-    #     doclet.hibernatedoclet :destdir=>dest_dir, :force=>"true" do
-    #       hibernate :version=>"3.0"
-    #       fileset :dir=>source, :includes=>"**/*.java"
+    #   ant("hibernatedoclet') do |doclet|
+    #     doclet.taskdef :name=>'hibernatedoclet',
+    #       :classname=>'xdoclet.modules.hibernate.HibernateDocletTask', :classpath=>DOCLET
+    #     doclet.hibernatedoclet :destdir=>dest_dir, :force=>'true' do
+    #       hibernate :version=>'3.0'
+    #       fileset :dir=>source, :includes=>'**/*.java'
     #     end
     #   end
     def ant(name, &block)
@@ -45,7 +45,7 @@ module Buildr
 
   include Ant
 
-  task("help") do
+  task('help') do
     puts
     puts "Using Java #{Java.version}, Ant #{Ant::VERSION}."
   end

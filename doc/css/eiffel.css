@@ -1,5 +1,4 @@
 pre.eiffel .EmbeddedSource {
-   background-color: #6597F6;
 }
 pre.eiffel .LibraryObject {
    font-weight: bold;
@@ -36,7 +35,6 @@ pre.eiffel .FunctionParameter {
    font-style: italic;
 }
 pre.eiffel .MarkupTag {
-   color: #1C02FF;
 }
 pre.eiffel {
    background-color: #FFFFFF;
@@ -60,7 +58,7 @@ pre.eiffel .MarkupQuote {
    font-style: italic;
 }
 pre.eiffel .MarkupNameOfTag {
-   font-weight: bold;
+   color: #1C02FF;
 }
 pre.eiffel .InvalidTrailingWhitespace {
    background-color: #FFD0D0;

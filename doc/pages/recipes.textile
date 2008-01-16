@@ -1,3 +1,34 @@
 h1. Recipes
 
 Commond recipes for Buildr, collected from the mailing list.
+
+
+h2.  Configuration
+
+h4.  Keeping your Profiles.yaml file DRY
+
+YAML allows you to write an object (map, array, etc) once and reference it in
+several places using anchors and aliases (@&@ and @*@).  For example, if you
+have several profiles, all with the same information, you can write this:
+
+{{{!yaml
+development: &common
+  db: oracle
+  port: 8080
+test: *common
+production: *common
+}}}
+
+You can use the merge key (@<<@) to create a name/value map that merges default
+values from another name/value map, for example:
+
+{{{!yaml
+common: &common
+  db: oracle
+  port: 8080
+development:
+  <<: *common
+  db: hsql
+test: *common
+production: *common
+}}}

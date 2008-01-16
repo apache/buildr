@@ -3,11 +3,7 @@ require 'yaml'
 
 module Buildr
 
-  # Collection of options for controlling Buildr. For example for running builds without running
-  # test cases, using a proxy server, JVM arguments, etc. You access this object by calling options,
-  # for example:
-  #   options.proxy.http = 'http://proxy.acme.com:8080'
-  #   options.java_args = '-Xmx512M'
+  # Collection of options for controlling Buildr.
   class Options
 
     # We use this to present environment variable as arrays.
@@ -38,7 +34,7 @@ module Buildr
     class Proxies
 
       # Returns the HTTP_PROXY URL.
-      def http()
+      def http
         ENV['HTTP_PROXY'] || ENV['http_proxy']
       end
 
@@ -49,7 +45,7 @@ module Buildr
       end
    
       # Returns list of hosts to exclude from proxying (NO_PROXY). 
-      def exclude()
+      def exclude
         @exclude ||= EnvArray.new('NO_PROXY')
       end
 
@@ -64,14 +60,14 @@ module Buildr
     end
 
     # :call-seq:
-    #   proxy() => options
+    #   proxy => options
     #
     # Returns the proxy options. Currently supported options are:
     # * :http -- HTTP proxy for use when downloading.
     # * :exclude -- Do not use proxy for these hosts/domains.
     #
     # For example:
-    #   options.proxy.http = "http://proxy.acme.com:8080"
+    #   options.proxy.http = 'http://proxy.acme.com:8080'
     # You can also set it using the environment variable HTTP_PROXY.
     #
     # You can exclude individual hosts from being proxied, or entire domains, for example:
@@ -88,7 +84,7 @@ module Buildr
   class << self
 
     # :call-seq:
-    #   options() => Options
+    #   options => Options
     #
     # Returns the Buildr options. See Options.
     def options
@@ -98,7 +94,7 @@ module Buildr
   end
 
   # :call-seq:
-  #   options() => Options
+  #   options => Options
   #
   # Returns the Buildr options. See Options.
   def options
@@ -106,15 +102,16 @@ module Buildr
   end
 
   # :call-seq:
-  #   environment() => string or nil
+  #   environment => string or nil
   #
   # Returns the environment name.  Use this when your build depends on the environment,
-  # for example, development, production, etc.  The value comes from the BUILDR_ENV environment variable.
+  # for example, development, production, etc.  The value comes from the BUILDR_ENV
+  # environment variable, and defaults to 'development'.
   # 
   # For example:
   #   buildr -e production
   def environment
-    ENV['BUILDR_ENV']
+    ENV['BUILDR_ENV'] ||= 'development'
   end
 
   # :call-seq:
@@ -139,8 +136,9 @@ module Buildr
   # Returns all the profiles loaded from the profiles.yaml file.
   def profiles
     unless @profiles
-      filename = File.expand_path('profiles.yaml', File.dirname(Rake.application.rakefile))
-      @profiles = File.exist?(filename) ? YAML::load(File.read(filename)) : {}
+      filename = ['Profiles.yaml', 'profiles.yaml'].map { |fn| File.expand_path(fn, File.dirname(Rake.application.rakefile)) }.
+        detect { |filename| File.exist?(filename) }
+      @profiles = filename ? YAML::load(File.read(filename)) : {}
     end
     @profiles
   end

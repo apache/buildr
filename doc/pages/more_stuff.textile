@@ -1,5 +1,6 @@
 h1. More Stuff
 
+
 h2. Help Tasks
 
 Buildr includes a number of informative tasks.  Currently that number stands
@@ -27,21 +28,106 @@ maintain your code, right?  To describe a project, or a task, call the @desc@
 method before the project or task definition.
 
 
-h2. Personal Settings and Environment Variables
+h2. Environment and Personal Settings
+
+In many cases you will want to customize your build to deal with different
+environments and configurations, customize how it runs on your machine, and
+even control the build each time you run the @buildr@ command.  The following
+sections will show you how to do that.
+
+
+h4. Environments
+
+One common use case is adapting the build to different environments.  For
+example, to compile code with debugging information during development and
+testing, but strip it for production.  Another example is using different
+databases for development, testing and production, or using services at
+different URLs.
+
+So let's start by talking about the build environment.  Buildr has a global
+attributes that indicates which environment it's running in, accessible from the
+@environment@ method.  You can set the current build environment in one of two
+ways.  Using the @-e@ command line option:
+
+{{{!sh
+$ buildr -e test
+(in /home/john/project, test)
+}}}
+
+Or by setting the environment variable @BUILDR_ENV@:
+
+{{{!
+$ export BUILDR_ENV=production
+$ buildr
+(in /home/john/project, production)
+}}}
+
+The default environment is "development".
+
+Here's a simple example for handling different environments within the
+Buildfile:
+
+{{{!ruby
+project 'db-module' do
+  db = (environment == 'production' ? 'oracle' : 'hsql')
+  resources.from(_(:source, :main, db))
+end
+}}}
+
+
+h4.  Profiles
+
+Different environments may require different configurations, and you can handle
+a lot of that by using the profile file.  The profile file is a YAML file
+called @profile.yaml@ that you place in the same directory as the Buildfile.
+We selected YAML because it's easier to read and edit than XML.
+
+For example, to support three different database configurations, we could write:
+
+{{{!yaml
+development:
+  db: hsql
+test:
+  db: oracle
+production:
+  db: oracle
+}}}
+
+And change the Buildfile to use the profile:
+
+{{{!ruby
+project 'db-module' do
+  db = profile['db']
+  resources.from(_(:source, :main, db))
+end
+}}}
+
+The @profile@ method returns a profile that matches the current environment.
+For the development environment, it returns a hash with the name/value pair
+@'db'=>'hsql'@.
+
+You can "learn more about YAML here":http://www.yaml.org, and use this handy
+"YAML quick reference":http://www.yaml.org/refcard.html.
+
+
+h4. Personal Settings
 
 Some things clearly do not belong in the Buildfile.  For example, the
 username/password you use to upload releases.  If you're working in a team or
-making the source code available, you'd want to keep these in a separate
-place.  You may want to pick a different location for the local repository, or
-use a different remote repository than everyone else, etc.
+on an open source project, you'd want to keep these in a separate place.
 
-Besides loading the Buildfile, Buildr will also attempt to load two
-@buildr.rb@ files.  It looks for the first @buildr.rb@ file in your home
-directory.  That's the file you would use to define personal settings.  It
-then looks for the second @buildr.rb@ file in the project directory.  You can
-use that one to over-ride settings specific to that project.
+You may want to use personal settings for picking up a different location for
+the local repository, or use a different set of preferred remote repositories,
+and so forth.
 
-Here's an example @buildr.rb@, not one I actually use, but close enough:
+Before loading the Buildfile, Buildr will attempt to load two @buildr.rb@
+files.  First, the @buildr.rb@ file it finds in your home directory, and then
+the @buildr.rb@ file it finds in the build directory.  That order is important,
+it allows you to place global settings that affect all your builds in your home
+directory's @buildr.rb@, but also over-ride those with settings for a given
+project.
+
+Here's an example @buildr.rb@:
 
 {{{!ruby
 # Only I should know that
@@ -51,67 +137,78 @@ repositories.upload_to[:password] = 'supersecret'
 repositories.remote << 'http://inside-the-firewall'
 }}} 
 
-Environment variables are another way to set personal settings.  Here's an
-example for a Buildfile that will read the username/password from environment
-variables:
 
-{{{!ruby
-repositories.upload_to[:username] = ENV['USERNAME']
-repositories.upload_to[:password] = ENV['PASSWORD']
+h4.  Environment Variables
+
+Buildr uses several environment variables that help you control how it works.
+Environment variables are used in addition to profiles and personal settings in
+two cases:
+
+* When you need to control the build from the command line, for example,
+specifying the build environment using @BUILDR_ENV@, or skipping tests using
+@test=no@.
+
+* For commonly used environment variables, such as @JAVA_HOME@, @JAVA_OPTS@ and
+@HTTP_PROXY@.
+
+Some environment variables you will only set once or change infrequently.
+Other environment variables may change more often, for example, running a build
+with different versions of the JDK, or disabling tests.  You can change these
+variables when running Buildr by adding @name=value@ as a command line argument.
+
+For example:
+
+{{{!sh
+$ buildr test=no
 }}}
 
-Build itself uses several environment variables, some more common, some
-specific to Buildr:
+You can also change environment variables from within the Buildfile.  For
+example, if your build needs more JVM heap space than the default, you can add
+a line like this to your Buildfile:
+
+{{{!ruby
+# This project builds a lot of code.
+ENV['JAVA_OPTS'] = '-Xms1g -Xmx1g'
+}}}
+
+Make sure to set environment variables at the very top of the Buildfile, above
+any @requires@ or other Ruby statements.
+
+Buildr uses the following environment variables.
+
+*BUILDR_ENV* -- Environment name that you can also set using the @-e@ command
+line option.
+
+*DEBUG* -- Set to @off@ if you want Buildr to compile without debugging
+information (default when running @release@, see
+"Compiling":building.html#compiling).
+
+*HTTP_PROXY* -- URL for HTTP proxy server (see "Specifying
+Repositories":artifacts.html#specifying_repositories).
 
 *JAVA_HOME* -- Points to your JDK, required for running Buildr.
 
 *JAVA_OPTS/JAVA_OPTIONS* -- Command line options to pass to the JDK (e.g.
 @'-Xms1g'@)[1].
 
-*HTTP_PROXY* -- URL for HTTP proxy server (see "Specifying
-Repositories":artifacts.html#specifying_repositories).
-
 *NO_PROXY* -- Comma separated list of hosts and domain that should not be
 proxied (see "Specifying
 Repositories":artifacts.html#specifying_repositories).
-
-*DEBUG* -- Set to @off@ if you want Buildr to compile without debugging
-information (default when running @release@, see
-"Compiling":building.html#compiling).
 
 *TEST* -- Set to @off@ to tell Buildr to skip tests, or @all@ to tell Buildr
 to run all tests and ignore failures (see "Running
 Tests":testing.html#running_tests).
 
-*BUILDR_ENV* -- Environment name that you can also set using the @-e@ command
-line option.
+*USER* -- Tasks that need your user name, for example to log to remote serers,
+will use this environment variable.
 
-Some Buildfiles depend on the environment in which they are running, and may
-work differently in development, QA, production, etc.  Setting the environment
-name is a simple mechanism to control the Buildfile behavior.
-
-You set the environment name either using the @BUILDR_ENV@ environment
-variable, or the @-e@ command line option.  For example:
-
-{{{!sh
-$ export BUILDR_ENV=development
-$ buildr
-(in /home/john/project, development)
-. . .
-$ buildr -e production
-(in /home/john/project, production)
-. . .
-}}}
-
-From the Buildfile, you can access the environment name using
-@Buildr.environment@, and in some contexts, simply by calling @environment@.
-For example:
+If you need to, you can always use more environment variables.  This example
+uses two environment variables for specifying the username and password for
+uploading artifacts:
 
 {{{!ruby
-project 'db-module' do
-  db = (environment == 'production' ? 'oracle' : 'hsql')
-  resources.filter.using :database=>db
-end
+repositories.upload_to[:username] = ENV['USERNAME']
+repositories.upload_to[:password] = ENV['PASSWORD']
 }}}
 
 

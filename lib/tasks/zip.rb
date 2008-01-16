@@ -336,13 +336,8 @@ module Buildr
       options.each do |key, value|
         begin
           send "#{key}=", value
-        rescue NameError
-          if respond_to?(:[]=) # Backward compatible with Buildr 1.1.
-            warn_deprecated "The []= method is deprecated, please use attribute accessors instead."
-            self[key] = value
-          else
-            raise ArgumentError, "This task does not support the option #{key}."
-          end
+        rescue NoMethodError
+          raise ArgumentError, "#{self.class.name} does not support the option #{key}"
         end
       end
       self
