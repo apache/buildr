@@ -50,7 +50,7 @@ module Java
       raise ArgumentError, 'No arguments expected' unless args.empty?
       name = "#{@name}.#{sym}"
       return ::Rjb.import(name) if sym.to_s =~ /^[[:upper:]]/
-      Java.send :__package__, name
+      ::Java.send :__package__, name
     end
 
   end
@@ -104,11 +104,11 @@ module Java
 
     def __package__(name) #:nodoc:
       const = name.split('.').map { |part| part.gsub(/^./) { |char| char.upcase } }.join
-      return Java.const_get(const) if Java.const_defined?(const)
+      return const_get(const) if const_defined?(const)
       package = Module.new
       package.extend Package
       package.instance_variable_set :@name, name
-      Java.const_set(const, package)
+      const_set(const, package)
     end
 
   end

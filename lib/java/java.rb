@@ -1,5 +1,5 @@
 require 'core/project'
-#ENV['JAVA_HOME'] = '...' if RUBY_PLATFORM =~ /darwin/i
+ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Home' if RUBY_PLATFORM =~ /darwin/i
 if PLATFORM == 'java'
   require File.join(File.dirname(__FILE__), 'jruby')
 else
@@ -245,6 +245,7 @@ module Java
 
     # *Deprecated*: Use Java::Commands.java instead.
     def java(*args, &block)
+      return send(:method_missing, :java) if args.empty?
       warn_deprecated 'Use Java::Commands.java instead'
       Commands.java(*args, &block)
     end
