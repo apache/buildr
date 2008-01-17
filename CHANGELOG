@@ -16,6 +16,7 @@
 * Changed: The way packaging is handled: package_as_[type] is now called once for a given package with the exact file name.  If packaging requires a change to the specifiction (e.g. a different file type than the package type), add a package_as_[type]_spec method.
 * Changed: The default packaging type is inferred from the compiler, and without a compiler, defaults to :zip.
 * Changed: JUnit test framework now runs on all classes that extend junit.framework.TestCase.
+* Changed: Scalac compiler now used by the regular compile task, the scalac task is deprecated.
 * Removed: Prepare tasks removed.
 * Removed: All deprecated features since 1.1.  If you've seen warnings before, except the build to break.
 * Fixed: Artifact.pom resolves artifact without classifier, i.e org.testng:testng:jar:jdk15:5.1 uses org.testng:testng:pom:5.1 (Tommy).

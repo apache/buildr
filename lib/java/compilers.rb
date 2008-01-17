@@ -13,9 +13,9 @@ module Buildr
     # and sets the target directory to target/classes (or target/test/classes).
     #
     # Accepts the following options:
-    # * :wranings -- Issue warnings when compiling.  True when running in verbose mode.
-    # * :debug    -- Generates bytecode with debugging information.  Set from the debug environment
-    #                variable/global option.
+    # * :wranings    -- Issue warnings when compiling.  True when running in verbose mode.
+    # * :debug       -- Generates bytecode with debugging information.  Set from the debug
+    #                   environment variable/global option.
     # * :deprecation -- If true, shows deprecation messages.  False by default.
     # * :source      -- Source code compatibility.
     # * :target      -- Bytecode compatibility.
@@ -79,11 +79,68 @@ module Buildr
     # and sets the target directory to target/classes (or target/test/classes).
     #
     # Accepts the following options:
+    # * :warnings    -- Generate warnings if true (opposite of -nowarn).
+    # * :deprecation -- Output source locations where deprecated APIs are used.
+    # * :source      -- Source compatibility with specified release.
+    # * :target      -- Class file compatibility with specified release.
+    # * :lint        -- Value to pass to xlint argument. Use true to enable default lint
+    #                   options, or pass a specific setting as string or array of strings.
+    # * :debug       -- Generate debugging info.
+    # * :other       -- Array of options to pass to the Scalac compiler as is.
     class Scalac < Base
 
-      OPTIONS = []
+      OPTIONS = [:warnings, :deprecation, :source, :target, :lint, :debug, :other]
 
       specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
+
+      def initialize(options) #:nodoc:
+        super
+      end
+
+      def compile(sources, target, dependencies) #:nodoc:
+        check_options options, OPTIONS
+        home = ENV['SCALA_HOME'] or fail 'Missing SCALA_HOME environment variable'
+        fail 'Invalid SCALA_HOME environment variable' unless File.directory?(home)
+
+        cmd_args = []
+        cmd_args << '-cp' << (dependencies + FileList["#{home}/lib/*"]).join(File::PATH_SEPARATOR)
+        use_fsc = !(ENV["USE_FSC"] =~ /^(no|off|false)$/i)
+        source_paths = sources.select { |source| File.directory?(source) }
+        cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
+        cmd_args << '-d' << File.expand_path(target)
+        cmd_args += scalac_args
+        cmd_args += files_from_sources(sources)
+
+        unless Rake.application.options.dryrun
+          puts (['scalac'] + cmd_args).join(' ') if Rake.application.options.trace
+          if use_fsc
+            system(([File.expand_path('bin/fsc', home)] + cmd_args).join(' '))
+          else
+            Java.load
+            Java.scala.tools.nsc.Main.main(cmd_args.to_java(Java.java.lang.String)) == 0 or
+              fail 'Failed to compile, see errors above'
+          end
+        end
+      end
+
+    private
+
+      # Returns Scalac command line arguments from the set of options.
+      def scalac_args #:nodoc:
+        args = []
+        args << "-nowarn" unless options[:warnings]
+        args << "-verbose" if Rake.application.options.trace
+        args << "-g" if options[:debug]
+        args << "-deprecation" if options[:deprecation]
+        args << "-source" << options[:source].to_s if options[:source]
+        args << "-target:jvm-" + options[:target].to_s if options[:target]
+        case options[:lint]
+          when Array  then args << "-Xlint:#{options[:lint].join(',')}"
+          when String then args << "-Xlint:#{options[:lint]}"
+          when true   then args << "-Xlint"
+        end
+        args + Array(options[:other])
+      end
 
     end
   end

@@ -134,7 +134,7 @@ end
 
 module Buildr
   class ZipTask
-    # RubyZip doesn't work on JRuby.
+    # RubyZip doesn't work on JRuby, so we'll use java.util.zip instead.
     def create_from(file_map) #:nodoc:
       out = Java.java.io.FileOutputStream.new(name)
       zip = Java.java.util.zip.ZipOutputStream.new(out)
