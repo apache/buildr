@@ -488,7 +488,8 @@ module Buildr
       # If you want to run multiple test, separate tham with a comma. You can also use glob
       # (* and ?) patterns to match multiple tests, see the TestTask#include method.
       rule /^test:.*$/ do |task|
-        TestTask.only_run task.name.scan(/test:(.*)/)[0][0].split(',')
+        # The map works around a JRuby bug whereby the string looks fine, but fails in fnmatch.
+        TestTask.only_run task.name.scan(/test:(.*)/)[0][0].split(',').map { |t| "#{t}" }
         task('test').invoke
       end
 
