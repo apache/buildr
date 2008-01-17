@@ -65,31 +65,22 @@ module Java
           $CLASSPATH << lib
         end
       end
-      load_java_tools      
+      load_java_tools unless RUBY_PLATFORM =~ /darwin/i
       @loaded = true
       self
     end
 
     def load_java_tools
-      unless RUBY_PLATFORM =~ /darwin/i
-        home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
-        tools = File.expand_path('lib/tools.jar', home)
-        raise "Missing #{tools}, perhaps your JAVA_HOME is not correclty set" unless File.file?(tools)
-        require tools
-      end
-      
-      str_args = lambda do |obj, method_name|
-        (class << obj; self; end).module_eval <<-RUBY
-          alias_method :#{method_name}_native, :#{method_name}
-          def #{method_name}(args)
-            #{method_name}_native(args.to_java(java.lang.String))
-          end
-        RUBY
-      end
-      #str_args.call(com.sun.tools.javac.Main, :compile)
-      #str_args.call(com.sun.tools.javadoc.Main, :execute)
-      #str_args.call(com.sun.tools.apt.Main, :process)
-      com.sun.tools.doclets.standard.Standard.new # just load the class
+      home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
+      tools = File.expand_path('lib/tools.jar', home)
+      raise "Missing #{tools}, perhaps your JAVA_HOME is not correclty set" unless File.file?(tools)
+      sysloader = java.lang.ClassLoader.getSystemClassLoader
+      add_url_method = java.lang.Class.forName('java.net.URLClassLoader').
+        getDeclaredMethod('addURL', [java.net.URL].to_java(java.lang.Class))
+      add_url_method.setAccessible(true)
+      list = java.util.ArrayList.new
+      list.add(java.io.File.new(tools).toURL)
+      add_url_method.invoke(sysloader, list.toArray)
     end
 
   end
