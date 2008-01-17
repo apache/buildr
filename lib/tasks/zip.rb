@@ -1,5 +1,5 @@
-require "zip/zip"
-require "zip/zipfilesystem"
+require 'zip/zip'
+require 'zip/zipfilesystem'
 
 
 module Buildr
@@ -57,18 +57,18 @@ module Buildr
           sans_path = options.reject { |k,v| k == :path }
           path(options[:path]).include *files + [sans_path]
         elsif options[:as]
-          raise "You can only use the :as option in combination with the :path option" unless options.size == 1
-          raise "You can only use one file with the :as option" unless files.size == 1
+          raise 'You can only use the :as option in combination with the :path option' unless options.size == 1
+          raise 'You can only use one file with the :as option' unless files.size == 1
           include_as files.first.to_s, options[:as]
         elsif options[:from]
-          raise "You can only use the :from option in combination with the :path option" unless options.size == 1
-          raise "You canont use the :from option with file names" unless files.empty?
-          [options[:from]].flatten.each { |path| include_as path.to_s, "." }
+          raise 'You can only use the :from option in combination with the :path option' unless options.size == 1
+          raise 'You canont use the :from option with file names' unless files.empty?
+          [options[:from]].flatten.each { |path| include_as path.to_s, '.' }
         elsif options[:merge]
-          raise "You can only use the :merge option in combination with the :path option" unless options.size == 1
+          raise 'You can only use the :merge option in combination with the :path option' unless options.size == 1
           files.each { |file| merge file }
         else
-          raise "Unrecognized option #{options.keys.join(", ")}"
+          raise "Unrecognized option #{options.keys.join(', ')}"
         end
         self
       end
@@ -136,8 +136,8 @@ module Buildr
           unless excluded?(file)
             if File.directory?(file)
               in_directory file do |file, rel_path|
-                path = rel_path.split("/")[1..-1]
-                path.unshift as unless as == "."
+                path = rel_path.split('/')[1..-1]
+                path.unshift as unless as == '.'
                 dest = "#{@path}#{path.join('/')}"
                 puts "Adding #{dest}" if Rake.application.options.trace
                 file_map[dest] = file
@@ -151,9 +151,9 @@ module Buildr
       end
 
       def in_directory(dir)
-        prefix = Regexp.new("^" + Regexp.escape(File.dirname(dir) + File::SEPARATOR))
+        prefix = Regexp.new('^' + Regexp.escape(File.dirname(dir) + File::SEPARATOR))
         FileList.recursive(dir).reject { |file| excluded?(file) }.
-          each { |file| yield file, file.sub(prefix, "") }
+          each { |file| yield file, file.sub(prefix, '') }
       end
 
       def excluded?(file)
@@ -184,7 +184,7 @@ module Buildr
       end
 
       def expand(file_map, path)
-        @includes = ["*"] if @includes.empty?
+        @includes = ['*'] if @includes.empty?
         Zip::ZipFile.open(@zip_file) do |source|
           source.entries.reject { |entry| entry.directory? }.each do |entry|
             if @includes.any? { |pattern| File.fnmatch(pattern, entry.name) } &&
@@ -202,14 +202,14 @@ module Buildr
 
     def initialize(*args) #:nodoc:
       super
-      @paths = { ""=>Path.new(self, "") }
+      @paths = { ''=>Path.new(self, '') }
       @prepares = []
 
       # Make sure we're the last enhancements, so other enhancements can add content.
       enhance do
         @file_map = {}
         enhance do
-          send "create" if respond_to?(:create)
+          send 'create' if respond_to?(:create)
           # We're here because the archive file does not exist, or one of the files is newer than the archive contents;
           # we need to make sure the archive doesn't exist (e.g. opening an existing Zip will add instead of create).
           # We also want to protect against partial updates.
@@ -240,29 +240,29 @@ module Buildr
     #
     # The first form accepts a list of files, directories and glob patterns and adds them to the archive.
     # For example, to include the file foo, directory bar (including all files in there) and all files under baz:
-    #   zip(..).include("foo", "bar", "baz/*")
+    #   zip(..).include('foo', 'bar', 'baz/*')
     #
     # The second form is similar but adds files/directories under the specified path. For example,
     # to add foo as bar/foo:
-    #   zip(..).include("foo", :path=>"bar")
+    #   zip(..).include('foo', :path=>'bar')
     # The :path option is the same as using the path method:
-    #   zip(..).path("bar").include("foo")
+    #   zip(..).path('bar').include('foo')
     # All other options can be used in combination with the :path option.
     #
     # The third form adds a file or directory under a different name. For example, to add the file foo under the
     # name bar:
-    #   zip(..).include("foo", :as=>"bar")
+    #   zip(..).include('foo', :as=>'bar')
     #
     # The fourth form adds the contents of a directory using the directory as a prerequisite:
-    #   zip(..).include(:from=>"foo")
-    # Unlike <code>include("foo")</code> it includes the contents of the directory, not the directory itself.
-    # Unlike <code>include("foo/*")</code>, it uses the directory timestamp for dependency management.
+    #   zip(..).include(:from=>'foo')
+    # Unlike <code>include('foo')</code> it includes the contents of the directory, not the directory itself.
+    # Unlike <code>include('foo/*')</code>, it uses the directory timestamp for dependency management.
     #
     # The fifth form includes the contents of another archive by expanding it into this archive. For example:
-    #   zip(..).include("foo.zip", :merge=>true).include("bar.zip")
+    #   zip(..).include('foo.zip', :merge=>true).include('bar.zip')
     # You can also use the method #merge.
     def include(*files)
-      @paths[""].include *files
+      @paths[''].include *files
       self
     end 
     alias :add :include
@@ -273,7 +273,7 @@ module Buildr
     # 
     # Excludes files and returns self. Can be used in combination with include to prevent some files from being included.
     def exclude(*files)
-      @paths[""].exclude *files
+      @paths[''].exclude *files
       self
     end 
 
@@ -285,34 +285,34 @@ module Buildr
     #
     # Returns an object that supports two methods: include and exclude. You can use these methods to merge
     # only specific files. For example:
-    #   zip(..).merge("src.zip").include("module1/*")
+    #   zip(..).merge('src.zip').include('module1/*')
     def merge(*files)
-      @paths[""].merge *files
+      @paths[''].merge *files
     end 
 
     # :call-seq:
     #   path(name) => Path
     #
     # Returns a path object. Use the path object to include files under a path, for example, to include
-    # the file "foo" as "bar/foo":
-    #   zip(..).path("bar").include("foo")
+    # the file 'foo' as 'bar/foo':
+    #   zip(..).path('bar').include('foo')
     #
     # Returns a Path object. The Path object implements all the same methods, like include, exclude, merge
     # and so forth. It also implements path and root, so that:
-    #   path("foo").path("bar") == path("foo/bar")
-    #   path("foo").root == root
+    #   path('foo').path('bar') == path('foo/bar')
+    #   path('foo').root == root
     def path(name)
-      return @paths[""] if name.to_s.blank?
-      normalized = name.split("/").inject([]) do |path, part|
+      return @paths[''] if name.to_s.blank?
+      normalized = name.split('/').inject([]) do |path, part|
         case part
-        when ".", nil, ""
+        when '.', nil, ''
           path
-        when ".."
+        when '..'
           path[0...-1]
         else
           path << part
         end
-      end.join("/")
+      end.join('/')
       @paths[normalized] ||= Path.new(self, normalized)
     end
 
@@ -331,7 +331,7 @@ module Buildr
     # the WarTask supports options like :manifest, :libs and :classes.
     #
     # For example:
-    #   package(:jar).with(:manifest=>"MANIFEST_MF")
+    #   package(:jar).with(:manifest=>'MANIFEST_MF')
     def with(options)
       options.each do |key, value|
         begin
@@ -353,8 +353,8 @@ module Buildr
     def needed?() #:nodoc:
       return true unless File.exist?(name)
       # You can do something like:
-      #   include("foo", :path=>"foo").exclude("foo/bar", path=>"foo").
-      #     include("foo/bar", :path=>"foo/bar")
+      #   include('foo', :path=>'foo').exclude('foo/bar', path=>'foo').
+      #     include('foo/bar', :path=>'foo/bar')
       # This will play havoc if we handled all the prerequisites together
       # under the task, so instead we handle them individually for each path.
       #
@@ -388,13 +388,21 @@ module Buildr
   # use exclusion patterns, and include files into specific directories.
   #
   # For example:
-  #   zip("test.zip").tap do |task|
-  #     task.include "srcs"
-  #     task.include "README", "LICENSE"
+  #   zip('test.zip').tap do |task|
+  #     task.include 'srcs'
+  #     task.include 'README', 'LICENSE'
   #   end
   #
   # See Buildr#zip and ArchiveTask.
   class ZipTask < ArchiveTask
+
+    # Compression leve for this Zip.
+    attr_accessor :compression_level
+
+    def initialize(*args) #:nodoc:
+      self.compression_level = Zlib::NO_COMPRESSION
+      super
+    end
 
   private
 
@@ -402,23 +410,23 @@ module Buildr
       Zip::ZipOutputStream.open name do |zip|
         seen = {}
         mkpath = lambda do |dir|
-          unless dir == "." || seen[dir]
+          unless dir == '.' || seen[dir]
             mkpath.call File.dirname(dir)
-            zip.put_next_entry dir + '/'
+            zip.put_next_entry(dir + '/', compression_level)
             seen[dir] = true
           end
         end
-      
+
         file_map.each do |path, content|
           mkpath.call File.dirname(path)
           if content.respond_to?(:call)
-            zip.put_next_entry path
+            zip.put_next_entry(path, compression_level)
             content.call zip
           elsif content.nil? || File.directory?(content.to_s)
             mkpath.call path
           else
-            zip.put_next_entry path
-            File.open content.to_s, "rb" do |is|
+            zip.put_next_entry(path, compression_level)
+            File.open content.to_s, 'rb' do |is|
               while data = is.read(4096)
                 zip << data
               end
@@ -439,9 +447,9 @@ module Buildr
   # directories.
   #
   # For example:
-  #   zip("test.zip").tap do |task|
-  #     task.include "srcs"
-  #     task.include "README", "LICENSE"
+  #   zip('test.zip').tap do |task|
+  #     task.include 'srcs'
+  #     task.include 'README', 'LICENSE'
   #   end
   def zip(file)
     ZipTask.define_task(file)
@@ -485,7 +493,7 @@ module Buildr
       # specified. Nothing will happen unless we include all files.
       if @paths.empty?
         @paths[nil] = FromPath.new(self, nil)
-        @paths[nil].include "*"
+        @paths[nil].include '*'
       end
 
       # Otherwise, empty unzip creates target as a file when touching.
@@ -549,11 +557,11 @@ module Buildr
     # Expands the file relative to that path.
     #
     # For example:
-    #   unzip(Dir.pwd=>"test.jar").from_path("etc").include("LICENSE")
+    #   unzip(Dir.pwd=>'test.jar').from_path('etc').include('LICENSE')
     # will unzip etc/LICENSE into ./LICENSE.
     #
     # This is different from:
-    #  unzip(Dir.pwd=>"test.jar").include("etc/LICENSE")
+    #  unzip(Dir.pwd=>'test.jar').include('etc/LICENSE')
     # which unzips etc/LICENSE into ./etc/LICENSE.
     def from_path(name)
       @paths[name] ||= FromPath.new(self, name)
@@ -579,9 +587,9 @@ module Buildr
       def initialize(unzip, path)
         @unzip = unzip
         if path
-          @path = path[-1] == ?/ ? path : path + "/"
+          @path = path[-1] == ?/ ? path : path + '/'
         else
-          @path = ""
+          @path = ''
         end
       end
 
@@ -600,10 +608,10 @@ module Buildr
       end
 
       def map(entries)
-        includes = @include || ["*"]
+        includes = @include || ['*']
         excludes = @exclude || []
         entries.inject({}) do |map, entry|
-          short = entry.name.sub(@path, "")
+          short = entry.name.sub(@path, '')
           if includes.any? { |pat| File.fnmatch(pat, short) } &&
              !excludes.any? { |pat| File.fnmatch(pat, short) }
             map[short] = entry
@@ -641,9 +649,9 @@ module Buildr
   # you overlay additional work on top of the file task.
   #
   # For example:
-  #   unzip("all"=>"test.zip")
-  #   unzip("src"=>"test.zip").include("README", "LICENSE") 
-  #   unzip("libs"=>"test.zip").from_path("libs")
+  #   unzip('all'=>'test.zip')
+  #   unzip('src'=>'test.zip').include('README', 'LICENSE') 
+  #   unzip('libs'=>'test.zip').from_path('libs')
   def unzip(args)
     target, arg_names, zip_file = Rake.application.resolve_args([args])
     task = file(File.expand_path(target.to_s)=>zip_file)

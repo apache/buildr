@@ -35,7 +35,7 @@ module Sandbox
     # Create a temporary directory where we can create files, e.g,
     # for projects, compilation. We need a place that does not depend
     # on the current directory.
-    @test_dir = File.expand_path('tmp', File.dirname(__FILE__))
+    @test_dir = File.expand_path('../tmp', File.dirname(__FILE__))
     FileUtils.mkpath @test_dir
     # Move to the work directory and make sure Rake thinks of it as the Rakefile directory.
     @sandbox[:pwd] = Dir.pwd

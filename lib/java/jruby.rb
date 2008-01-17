@@ -130,3 +130,48 @@ end
 class IO #:nodoc:
   alias :isatty :isatty?
 end
+
+
+module Buildr
+  class ZipTask
+    # RubyZip doesn't work on JRuby.
+    def create_from(file_map) #:nodoc:
+      out = Java.java.io.FileOutputStream.new(name)
+      zip = Java.java.util.zip.ZipOutputStream.new(out)
+      begin
+        zip.setLevel compression_level
+
+        seen = {}
+        mkpath = lambda do |dir|
+          unless dir == '.' || seen[dir]
+            mkpath.call File.dirname(dir)
+            zip.putNextEntry(Java.java.util.zip.ZipEntry.new(dir + '/'))
+            seen[dir] = true
+          end
+        end
+
+        mkpath.call '' if file_map.empty?
+        file_map.each do |path, content|
+          mkpath.call File.dirname(path)
+          if content.nil? || File.directory?(content.to_s)
+            mkpath.call path
+          else
+            if content.respond_to?(:call)
+              io = StringIO.new
+              content.call io
+              data = io.string.to_java_bytes
+            else
+              data = File.read(content.to_s).to_java_bytes
+            end
+            entry = Java.java.util.zip.ZipEntry.new(path)
+            entry.setSize(data.length)
+            zip.putNextEntry(entry)
+            zip.write data
+          end
+        end
+      ensure
+        zip.close
+      end
+    end
+  end
+end
