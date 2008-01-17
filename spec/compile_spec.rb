@@ -541,7 +541,7 @@ describe Project, '#javadoc' do
     task.should be(project('foo').javadoc)
   end
 
-  it 'should respond to info() and change target directory' do
+  it 'should respond to into() and change target directory' do
     define('foo') { javadoc.into('docs') }
     project('foo').javadoc.should_receive(:invoke_prerequisites)
     file('docs').invoke

@@ -80,8 +80,7 @@ module Java
         unless Rake.application.options.dryrun
           puts 'Running apt' if verbose
           puts (['apt'] + cmd_args).join(' ') if Rake.application.options.trace
-          #cmd_args = cmd_args.to_java_array(Java.java.lang.String) if Java.jruby?
-          Java.com.sun.tools.apt.Main.process(cmd_args.map(&:to_s)) == 0 or
+          Java.com.sun.tools.apt.Main.process(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to process annotations, see errors above'
         end
       end
@@ -116,8 +115,7 @@ module Java
         unless Rake.application.options.dryrun
           puts "Compiling #{files.size} source files in #{name}" if verbose
           puts (['javac'] + cmd_args).join(' ') if Rake.application.options.trace
-          #cmd_args = cmd_args.to_java_array(Java.java.lang.String) if Java.jruby?
-          Java.com.sun.tools.javac.Main.compile(cmd_args.map(&:to_s)) == 0 or 
+          Java.com.sun.tools.javac.Main.compile(cmd_args.to_java(Java.java.lang.String)) == 0 or 
             fail 'Failed to compile, see errors above'
         end
       end
@@ -167,8 +165,7 @@ module Java
           puts "Generating Javadoc for #{name}" if verbose
           puts (['javadoc'] + cmd_args).join(' ') if Rake.application.options.trace
           Java.load
-          cmd_args = cmd_args.to_java_array(Java.java.lang.String) if Java.jruby?
-          Java.com.sun.tools.javadoc.Main.execute(cmd_args.map(&:to_s)) == 0 or
+          Java.com.sun.tools.javadoc.Main.execute(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to generate Javadocs, see errors above'
         end
       end

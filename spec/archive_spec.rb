@@ -325,10 +325,10 @@ describe Unzip do
   it "should touch target directory" do
     with_zip do
       mkdir @target
-      File.utime(Time.now - 100, Time.now - 100, @target)
+      File.utime(Time.now - 10, Time.now - 10, @target)
       unzip(@target=>@zip).target.invoke
     end
-    File.stat(@target).mtime.should be_close(Time.now, 5)
+    File.stat(@target).mtime.should be_close(Time.now, 2)
   end
 
   it "should expand files" do

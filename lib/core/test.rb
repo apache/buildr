@@ -155,7 +155,7 @@ module Buildr
         tests = tests.map { |name| name =~ /\*/ ? name : "*#{name}*" }
         # Since the tests may reside in a sub-project, we need to set the include/exclude pattern on
         # all sub-projects, but only invoke test on the local project.
-        Project.projects.each { |project| project.test.instance_eval { @include = tests ; @exclude.clear } }
+        Project.projects.each { |project| project.test.send :only_run, tests }
       end
     end
 
@@ -418,6 +418,12 @@ module Buildr
       end
     end
 
+    # Limit running tests to specific list.
+    def only_run(tests)
+      @include = Array(tests)
+      @exclude.clear
+    end
+
   end
 
 
@@ -499,7 +505,8 @@ module Buildr
       # Similar to test:[pattern] but for integration tests.
       rule /^integration:.*$/ do |task|
         unless task.name.split(':')[1] =~ /^(setup|teardown)$/
-          TestTask.only_run task.name.scan(/integration:(.*)/)[0][0].split(',')
+          # The map works around a JRuby bug whereby the string looks fine, but fails in fnmatch.
+          TestTask.only_run task.name[/integration:(.*)/, 1].split(',').map { |t| "#{t}" }
           task('integration').invoke
         end
       end

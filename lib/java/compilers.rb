@@ -41,14 +41,14 @@ module Buildr
         cmd_args << '-cp' << dependencies.join(File::PATH_SEPARATOR) unless dependencies.empty?
         source_paths = sources.select { |source| File.directory?(source) }
         cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
-        cmd_args << '-d' << target
+        cmd_args << '-d' << File.expand_path(target)
         cmd_args += javac_args
         cmd_args += files_from_sources(sources)
         unless Rake.application.options.dryrun
           puts (['javac'] + cmd_args).join(' ') if Rake.application.options.trace
-          #cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
           Java.load
-          Java.com.sun.tools.javac.Main.compile(cmd_args.map(&:to_s)) == 0 or fail 'Failed to compile, see errors above'
+          Java.com.sun.tools.javac.Main.compile(cmd_args.to_java(Java.java.lang.String)) == 0 or
+            fail 'Failed to compile, see errors above'
         end
       end
 
@@ -256,8 +256,7 @@ module Buildr
           puts "Generating Javadoc for #{name}" if verbose
           puts (['javadoc'] + cmd_args).join(' ') if Rake.application.options.trace
           Java.load
-          #cmd_args = cmd_args.to_java_array(::Java.java.lang.String) if Java.jruby?
-          Java.com.sun.tools.javadoc.Main.execute(cmd_args.map(&:to_s)) == 0 or
+          Java.com.sun.tools.javadoc.Main.execute(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to generate Javadocs, see errors above'
         end
       end
@@ -328,8 +327,7 @@ module Buildr
         unless Rake.application.options.dryrun
           puts 'Running apt' if verbose
           puts (['apt'] + cmd_args).join(' ') if Rake.application.options.trace
-          #cmd_args = cmd_args.to_java_array(Java.java.lang.String) if Java.jruby?
-          Java.com.sun.tools.apt.Main.process(cmd_args.map(&:to_s)) == 0 or
+          Java.com.sun.tools.apt.Main.process(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to process annotations, see errors above'
         end
       end

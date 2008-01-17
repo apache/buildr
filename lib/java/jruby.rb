@@ -56,21 +56,77 @@ module Java
     # used in the build, giving the Buildfile a chance to load all extensions
     # that append to the classpath and specify which remote repositories to use.
     def load
-      return self unless @loaded
+      return self if @loaded
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
-      $LOAD_PATH.concat cp
+      cp.each do |lib|
+        if File.file?(lib)
+          require lib # JRuby can load jars in runtime
+        else
+          $CLASSPATH << lib
+        end
+      end
+      load_java_tools      
+      @loaded = true
       self
+    end
+
+    def load_java_tools
+      unless RUBY_PLATFORM =~ /darwin/i
+        home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
+        tools = File.expand_path('lib/tools.jar', home)
+        raise "Missing #{tools}, perhaps your JAVA_HOME is not correclty set" unless File.file?(tools)
+        require tools
+      end
+      
+      str_args = lambda do |obj, method_name|
+        (class << obj; self; end).module_eval <<-RUBY
+          alias_method :#{method_name}_native, :#{method_name}
+          def #{method_name}(args)
+            #{method_name}_native(args.to_java(java.lang.String))
+          end
+        RUBY
+      end
+      #str_args.call(com.sun.tools.javac.Main, :compile)
+      #str_args.call(com.sun.tools.javadoc.Main, :execute)
+      #str_args.call(com.sun.tools.apt.Main, :process)
+      com.sun.tools.doclets.standard.Standard.new # just load the class
     end
 
   end
 
 end
 
-# Convert a RubyArray to a Java Object[] array of the specified element_type
-class Array #:nodoc:
-  def to_java_array(element_type)
-    java_array = ::Java.java.lang.reflect.Array.newInstance(element_type, self.size)
-    self.each_index { |i| java_array[i] = self[i] }
-    return java_array
+
+module FileUtils
+  def touch(list, options = {})
+    fu_check_options options, OPT_TABLE['touch']
+    list = fu_list(list)
+    created = nocreate = options[:nocreate]
+    t = options[:mtime]
+    if options[:verbose]
+      fu_output_message "touch #{nocreate ? ' -c' : ''}#{t ? t.strftime(' -t %Y%m%d%H%M.%S') : ''}#{list.join ' '}"
+    end
+    t ||= Time.now # Otherwise JRuby breaks, and not in a nice way.
+    return if options[:noop]
+    list.each do |path|
+      created = nocreate
+      begin
+        File.utime(t, t, path)
+      rescue Errno::ENOENT
+        raise if created
+        File.open(path, 'a') {
+          ;
+        }
+        created = true
+        retry if t
+      end
+    end
   end
+  module_function :touch
+end
+
+
+# Misnamed in RC1.
+class IO #:nodoc:
+  alias :isatty :isatty?
 end

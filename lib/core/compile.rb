@@ -122,7 +122,7 @@ module Buildr
       # Expands a list of source directories/files into a list of files that have the #source_ext extension.
       def files_from_sources(sources)
         sources.map { |source| File.directory?(source) ? FileList["#{source}/**/*.#{self.class.source_ext}"] : source }.
-          flatten.reject { |file| File.directory?(file) }.uniq
+          flatten.reject { |file| File.directory?(file) }.map { |file| File.expand_path(file) }.uniq
       end
 
       # The compile map is a hash that associates source files with target files based
@@ -312,8 +312,9 @@ module Buildr
 
     # Selects which compiler to use.
     def compiler=(name) #:nodoc:
-      raise "#{compiler} compiler already selected for this project" if @compiler
       cls = Compiler.select(name) or raise ArgumentError, "No #{name} compiler available. Did you install it?"
+      return self if cls === @compiler
+      raise "#{compiler} compiler already selected for this project" if @compiler
       @compiler = cls.new(options)
       from Array(cls.sources).map { |path| @project.path_to(:source, @usage, path) }.
         select { |path| File.exist?(path) } if sources.empty?

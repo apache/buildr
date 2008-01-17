@@ -115,8 +115,9 @@ module Buildr
         map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
         reject { |name| name =~ /\$/ }
       classpath = [target.to_s + '/'] + Buildr.artifacts(dependencies).map(&:to_s)
-      Java.load
-      Java.org.apache.buildr.JUnitTestFilter.new(classpath).filter(candidates)
+      Java.load # JRuby necessiated casting.
+      Java.org.apache.buildr.JUnitTestFilter.new(classpath.map(&:to_s).to_java(Java.java.lang.String)).
+        filter(candidates.to_java(Java.java.lang.String)).map(&:to_s)
     end
 
     def run(tests, task, dependencies) #:nodoc:

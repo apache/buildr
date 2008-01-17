@@ -372,7 +372,7 @@ describe Buildr::Filter do
   it 'should touch target directory' do
     mkpath 'target' ; File.utime @early, @early, 'target'
     @filter.from('src').into('target').run
-    File.mtime('target').should be_close(Time.now, 10)
+    File.stat('target').mtime.should be_close(Time.now, 10)
   end
 
   it 'should not touch target directory unless running' do
@@ -413,7 +413,7 @@ describe Buildr::Filter do
     Dir['target/*'].sort.each do |file|
       File.readable?(file).should be_true
       File.writable?(file).should be_true
-      (File.stat(file).mode & 0x0fff).should be(0664)
+      (File.stat(file).mode & 0x0fff).should == 0664
     end
   end
 end

@@ -72,7 +72,7 @@ module Java
     # used in the build, giving the Buildfile a chance to load all extensions
     # that append to the classpath and specify which remote repositories to use.
     def load
-      return self unless @loaded
+      return self if @loaded
       unless RUBY_PLATFORM =~ /darwin/i
         home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
         tools = File.expand_path('lib/tools.jar', home)
@@ -113,4 +113,12 @@ module Java
 
   end
 
+end
+
+
+class Array
+  # JRuby requires casting an array, so we fake it.
+  def to_java(cls)
+    map { |item| cls.new(item) }
+  end
 end
