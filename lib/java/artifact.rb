@@ -213,7 +213,7 @@ module Buildr
           unless rest.empty?
             # Optional classifier comes before version.
             classifier, version = version, rest.shift
-            fail "Expecting <project:id:type:version> or <project:id:type:classifier:version>, found <#{spec}>" unless rest.empty?
+            fail "Expecting <group:id:type:version> or <group:id:type:classifier:version>, found <#{spec}>" unless rest.empty?
           end
           to_hash :group=>group, :id=>id, :type=>type, :version=>version, :classifier=>classifier
         else

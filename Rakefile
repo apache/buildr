@@ -41,29 +41,45 @@ def specify(platform)
     spec.add_dependency 'archive-tar-minitar',  '~> 0.5'
     
     spec.platform = platform
-
-    yield spec if block_given?
+    spec.add_dependency 'rjb', '~> 1.1' unless platform == 'java'
   end
 end
 
-spec = specify(Gem::Platform::RUBY) { |spec| spec.add_dependency 'rjb', '~> 1.1' }
+ruby_spec = specify(Gem::Platform::RUBY)
 jruby_spec = specify('java')
-package = Rake::GemPackageTask.new(spec) do |pkg|
+ruby_package = Rake::GemPackageTask.new(ruby_spec) do |pkg|
   pkg.need_tar = true
   pkg.need_zip = true
 end
-jruby_package = Rake::GemPackageTask.new(jruby_spec)
+jruby_package = Rake::GemPackageTask.new(jruby_spec) do |pkg|
+  pkg.need_tar = false
+  pkg.need_zip = false
+end
 
 desc 'Install the package locally'
 task :install=>:package do |task|
-  install = RUBY_PLATFORM == 'java' ? jruby_package : package
-  system 'gem', 'install', File.expand_path(install.gem_file, install.package_dir)
+  if RUBY_PLATFORM =~ /java/ 
+    cmd = %w(jruby -S gem install)
+    pkg = jruby_package
+  else 
+    cmd = %w(gem install)
+    pkg = ruby_package
+  end
+  cmd << File.expand_path(pkg.gem_file, pkg.package_dir)
+  system *cmd
 end
 
 desc 'Uninstall previously installed packaged'
 task :uninstall do |task|
-  install = RUBY_PLATFORM == 'java' ? jruby_package : package
-  system 'gem', 'uninstall', install.name, '-v', install.version.to_s
+  if RUBY_PLATFORM =~ /java/ 
+    cmd = %w(jruby -S gem uninstall)
+    pkg = jruby_package
+  else 
+    cmd = %w(gem uninstall)
+    pkg = ruby_package
+  end
+  cmd << File.expand_path(pkg.gem_file, pkg.package_dir)
+  system *cmd
 end
 
 
@@ -89,6 +105,10 @@ Spec::Rake::SpecTask.new('spec:report') do |task|
   task.rcov_dir = 'html/coverage'
 end
 
+task 'spec:jruby' do
+  system 'jruby -S rake spec'
+end
+
 
 # Documentation.
 begin
@@ -101,10 +121,10 @@ begin
   desc 'Generate RDoc documentation'
   rdoc = Rake::RDocTask.new(:rdoc) do |rdoc|
     rdoc.rdoc_dir = 'html/rdoc'
-    rdoc.title    = spec.name
-    rdoc.options  = spec.rdoc_options
+    rdoc.title    = ruby_spec.name
+    rdoc.options  = ruby_spec.rdoc_options
     rdoc.rdoc_files.include('lib/**/*.rb')
-    rdoc.rdoc_files.include spec.extra_rdoc_files
+    rdoc.rdoc_files.include ruby_spec.extra_rdoc_files
   end
 
   web_docs = {
@@ -156,15 +176,15 @@ namespace :svn do
   
   task :tag do |task|
     cur_url = `svn info`.scan(/URL: (.*)/)[0][0]
-    new_url = cur_url.sub(/(trunk$)|(branches\/\w*)$/, "tags/#{spec.version.to_s}")
-    system 'svn', 'copy', cur_url, new_url, '-m', "Release #{spec.version.to_s}"
+    new_url = cur_url.sub(/(trunk$)|(branches\/\w*)$/, "tags/#{ruby_spec.version.to_s}")
+    system 'svn', 'copy', cur_url, new_url, '-m', "Release #{ruby_spec.version.to_s}"
   end
 end
 
 namespace :upload do
 
   task :docs=>'rake:docs' do |task|
-    sh %{rsync -r --del --progress html/*  people.apache.org:/www/incubator.apache.org/#{spec.rubyforge_project.downcase}/}
+    sh %{rsync -r --del --progress html/*  people.apache.org:/www/incubator.apache.org/#{ruby_spec.rubyforge_project.downcase}/}
   end
 
   task :packages=>['rake:docs', 'rake:package'] do |task|
@@ -174,21 +194,21 @@ namespace :upload do
     pattern = /(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/
     changelog = File.read(__FILE__.pathmap('%d/CHANGELOG'))
     changes = changelog.scan(pattern).inject({}) { |hash, set| hash[set[1]] = set[2] ; hash }
-    current = changes[spec.version.to_s]
-    if !current && spec.version.to_s =~ /\.0$/
-      current = changes[spec.version.to_s.split('.')[0..-2].join('.')] 
+    current = changes[ruby_spec.version.to_s]
+    if !current && ruby_spec.version.to_s =~ /\.0$/
+      current = changes[ruby_spec.version.to_s.split('.')[0..-2].join('.')] 
     end
-    fail "No changeset found for version #{spec.version}" unless current
+    fail "No changeset found for version #{ruby_spec.version}" unless current
 
-    puts "Uploading #{spec.name} #{spec.version}"
+    puts "Uploading #{ruby_spec.name} #{ruby_spec.version}"
     files = Dir.glob('pkg/*.{gem,tgz,zip}')
     rubyforge = RubyForge.new
     rubyforge.login    
     File.open('.changes', 'w'){|f| f.write(current)}
     rubyforge.userconfig.merge!('release_changes' => '.changes',  'preformatted' => true)
-    rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version, *files
+    rubyforge.add_release ruby_spec.rubyforge_project.downcase, ruby_spec.name.downcase, ruby_spec.version, *files
     rm '.changes'
-    puts "Release #{spec.version} uploaded"
+    puts "Release #{ruby_spec.version} uploaded"
   end
 end
 
@@ -197,7 +217,7 @@ namespace :release do
     require 'highline'
     require 'highline/import'
 
-    puts "This version: #{spec.version}"
+    puts "This version: #{ruby_spec.version}"
     puts
     puts "Top 4 lines form CHANGELOG:'
     puts File.readlines('CHANGELOG')[0..3].map { |l| "  #{l}" }
@@ -207,8 +227,7 @@ namespace :release do
   end
 
   task :post do
-    # Practical example of functional read but not comprehend code:
-    next_version = spec.version.to_ints.zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
+    next_version = ruby_spec.version.to_ints.zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
     puts "Updating lib/buildr.rb to next version number: #{next_version}"
     buildr_rb = File.read(__FILE__.pathmap('%d/lib/buildr.rb')).
       sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" } 
@@ -218,7 +237,7 @@ namespace :release do
     File.open(__FILE__.pathmap('%d/CHANGELOG'), 'w') { |file| file.write "#{next_version} (Pending)\n\n#{changelog}" }
   end
 
-  task :meat=>['clobber', 'svn:clean?', 'spec:report', 'upload:packages', 'upload:docs', 'svn:tag']
+  task :meat=>['clobber', 'svn:clean?', 'spec:jruby', 'spec:report', 'upload:packages', 'upload:docs', 'svn:tag']
 end
 
 desc 'Upload release to RubyForge including docs, tag SVN'
@@ -227,9 +246,9 @@ task :release=>[ 'release:ready?', 'release:meat', 'release:post' ]
 
 # Misc, may not survive so don't rely on these.
 task :report do |task|
-  puts "#{spec.name} #{spec.version}"
-  puts spec.summary
-  sources = (spec.files + FileList['spec/**/*.rb']).reject { |f| File.directory?(f) }
+  puts "#{ruby_spec.name} #{ruby_spec.version}"
+  puts ruby_spec.summary
+  sources = (ruby_spec.files + FileList['ruby_spec/**/*.rb']).reject { |f| File.directory?(f) }
   sources.inject({}) do |lists, file|
     File.readlines(file).each_with_index do |line, i|
       if line =~ /(TODO|FIXME|NOTE):\s*(.*)/

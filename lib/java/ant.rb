@@ -47,7 +47,7 @@ module Buildr
 
   task('help') do
     puts
-    puts "Using Java #{Java.version}, Ant #{Ant::VERSION}."
+    puts "Using Java #{ENV_JAVA['java.version']}, Ant #{Ant::VERSION}."
   end
 
 end
