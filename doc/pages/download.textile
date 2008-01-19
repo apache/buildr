@@ -1,37 +1,14 @@
 h1. Download and Installation
 
-The current release of Buildr works with Ruby 1.8 and JRuby 1.1RC1.  We do not yet support Ruby 1.9.
+The current release of Buildr works with Ruby 1.8 and JRuby 1.1RC1.  We do not
+yet support Ruby 1.9 yet.
+
+The installation instructions are slightly different for each operating system.
+If you are using Ruby, pick the one that best matches your operating system.
+If you are using JRuby, see the instructions for "JRuby":#jruby and also read
+about using "JRuby and Ruby side by side":#using_jruby_and_ruby.
 
  
-h2. JRuby (Java)
-
-If you don't already have JRuby 1.1RC1 or later installed, you can download it
-from the "JRuby site":http://dist.codehaus.org/jruby/.
-
-After uncompressing JRuby, make sure you set the @JAVA_HOME@ environment
-variable to point to your JDK distribution, and @JRUBY_HOME@ to point to the
-directory containing the uncompressed JRuby installation.
-
-Finally update your @PATH@ to include both JRuby and Java executables, so you
-can run JRuby with the command @jruby@.
-
-For Windows:
-
-{{{!sh
-> set PATH=%JRUBY_HOME%/bin;%JAVA_HOME%/bin;%PATH
-> jruby -S gem install buildr
-}}}
-
-And for Unix:
-
-{{{!sh
-$ export PATH=$JRUBY_HOME/bin:$JAVA_HOME/bin:$PATH
-$ jruby -S gem install buildr
-}}}
-
-Once installed, you will find the @buildr@ exectuable in the @JRUBY_HOME/bin@ directory.
-
-
 h2.  Linux, BSD, Cygwin
 
 To get started you will need a recent version of Ruby, Ruby Gems and build
@@ -133,6 +110,86 @@ To install a specific version of Buildr:
 {{{!sh
 > gem install buildr -v 1.3.0
 }}}
+
+
+h2. JRuby
+
+If you don't already have JRuby 1.1RC1 or later installed, you can download it
+from the "JRuby site":http://dist.codehaus.org/jruby/.
+
+After uncompressing JRuby, make sure you set the @JAVA_HOME@ environment
+variable to point to your JDK distribution.
+
+Finally update your @PATH@ to include both JRuby and Java executables, so you
+can run JRuby with the command @jruby@.
+
+For Windows:
+
+{{{!sh
+> set JRUBY_HOME=<path to JRuby>
+> set PATH=%JRUBY_HOME%/bin;%JAVA_HOME%/bin;%PATH%
+> gem install buildr
+}}}
+
+And for Unix:
+
+{{{!sh
+$ export JRUBY_HOME=<path to JRuby>
+$ export PATH=$JRUBY_HOME/bin:$JAVA_HOME/bin:$PATH
+$ gem install buildr
+}}}
+
+Once installed, you will find the @buildr@ exectuable in the @JRUBY_HOME/bin@
+directory.
+
+To upgrade to a new version of Buildr:
+
+{{{!sh
+$ sudo gem update buildr
+}}}
+
+To install a specific version of Buildr:
+
+{{{!sh
+$ sudo gem install buildr -v 1.3.0
+}}}
+
+
+h2.  Using JRuby and Ruby
+
+Ruby and JRuby maintain separate Gem repositories, and in fact install slightly
+different versions of the Buildr Gem (same functionality, different
+dependencies).  If you want to use Buildr with both, you must install it
+separately for each one.
+
+If you installed JRuby but don't have Ruby installed on your machine, the @gem@
+command will install Buildr for JRuby, and the @buildr@ command will run Buildr
+using JRuby.
+
+Note that some operating systems, specifically OS/X and various flavors of
+Linux, come with Ruby pre-installed, you can check this out by running the
+@ruby@ command.
+
+You can use the @PATH@ environment variable to determine which one is used by
+default.  The instructions above show you how to place JRuby first on the
+@PATH@, afterwhich you can install and use Buildr for JRuby.
+
+If you need to use both versions together, you can pick Ruby or JRuby and run
+the various commands using the @-S@ argument.  For example, to install and run
+Buildr for JRuby, even though Ruby appears first on the @PATH@:
+
+{{{!
+$ jruby -S gem install buildr
+$ jruby -S buildr
+}}}
+
+To find out which version you are currently running:
+
+{{{!
+$ buildr help
+}}}
+
+When running on JRuby you will see @(JRuby)@ next to Buildr version number.
 
 
 h2.  Binaries and Source Code

@@ -75,6 +75,15 @@ identifier, for example, "cool-web-1.0.war" will have the context root
 "Read more ...":packaging.html#packaging_ears
 
 
+h4.  JRuby Support
+
+We now offer two versions of Buildr, one for Ruby and one for JRuby.  They're
+exactly the same, except the Ruby version will also install RJB (Ruby Java
+Bridge), the JRuby version obviously can do well without it.
+
+"Read more ...":download.html#jruby
+
+
 h4.  New API for accessing Java libraries
 
 Java classes are accessed as static methods on the @Java@ module, for example:

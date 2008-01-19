@@ -1,4 +1,5 @@
 require 'java'
+require 'rbconfig'
 
 
 # Buildr runs along side a JVM, using either RJB or JRuby.  The Java module allows
@@ -65,7 +66,7 @@ module Java
           $CLASSPATH << lib
         end
       end
-      load_java_tools unless RUBY_PLATFORM =~ /darwin/i
+      load_java_tools unless Config::CONFIG['host_os'] =~ /darwin/i
       @loaded = true
       self
     end
@@ -117,10 +118,10 @@ module FileUtils
 end
 
 
-# Misnamed in RC1.
+# Misnamed in RC1, but fixed before 1.1.
 class IO #:nodoc:
   alias :isatty :isatty?
-end
+end unless IO.public_instance_methods.include?('isatty')
 
 
 module Buildr

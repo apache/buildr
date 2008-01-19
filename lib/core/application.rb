@@ -117,7 +117,7 @@ module Buildr
       end
 
       def usage()
-        puts "Buildr #{Buildr::VERSION}"
+        puts "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby)'}"
         puts
         puts "Usage:"
         puts "  buildr [-f buildfile] {options} targets..."

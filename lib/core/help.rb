@@ -1,6 +1,66 @@
 require "core/common"
 require "core/project"
 
+module Buildr
+  module Help
+
+    class Topic
+
+      def initialize(content = nil, &proc)
+        @content, @proc = content, @proc
+      end
+
+      def content
+        @content ||= @proc.call if @proc
+      end
+
+      def content=(content)
+        @content = content
+      end
+
+      def match(against)
+        nil
+      end
+
+    end
+
+    class Main < Topic
+     
+      def initialize
+        @texters = []
+      end
+
+      def content
+        @texters.each { |texter| texter.call }.join("\n")
+      end
+
+      def <<(&texter)
+        @texters << texter
+      end
+
+    end
+
+    class << self
+
+      def topics
+        @topics ||= { 'main'=>Main.new }
+      end
+
+      def topic(name)
+        topics[name]
+      end
+
+      def match(against)
+        topic = topics[against]
+        content = [topic && topic.content]
+        topics.inject(content) { |content, (name, topic)| topic.match(aginst) }.compact
+      end
+
+    end
+
+  end
+end
+
 
 task "help" do
   # Greeater.
@@ -36,7 +96,7 @@ module Buildr
   # Use this to enhance the help task, e.g. to print some important information about your build,
   # configuration options, build instructions, etc.
   def help(&block)
-    Rake.application["help"].enhance &block
+    Buildr.help.topics['main'] << block
   end
 
 end
