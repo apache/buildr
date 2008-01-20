@@ -25,6 +25,12 @@ $ sudo apt-get install libopenssl-ruby
 
 Other distributions may use different package manages, like @yum@ and @emerge@.
 
+We recommend you first upgrade to the latest version of Ruby gems:
+
+{{{!sh
+$ sudo gem update --system
+}}}
+
 Before installing Buildr, please set the @JAVA_HOME@ environment variable to
 point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
 
@@ -57,6 +63,19 @@ using Tiger or an older release of OS/X, we recommend you first install a
 recent version of Ruby and Ruby Gems (see "Building Ruby on
 OS/X":http://hivelogic.com/narrative/articles/ruby-rails-mongrel-mysql-osx)
 
+We recommend you first upgrade to the latest version of Ruby gems:
+
+{{{!sh
+$ sudo gem update --system
+}}}
+
+Before installing Buildr, please set the @JAVA_HOME@ environment variable to
+point to your JDK distribution, typically with:
+
+{{{!sh
+$ export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home
+}}}
+
 To install Buildr:
 
 {{{!sh
@@ -86,6 +105,12 @@ h2. Windows
 If you don't already have Ruby installed, now is the time to do it.  The
 easiest way to install Ruby is using the "one-click
 installer":http://rubyinstaller.rubyforge.org/.
+
+We recommend you first upgrade to the latest version of Ruby gems:
+
+{{{!sh
+$ sudo gem update --system
+}}}
 
 Before installing Buildr, please set the @JAVA_HOME@ environment variable to
 point to your JDK distribution.  Next, use Ruby Gem to install Buildr:

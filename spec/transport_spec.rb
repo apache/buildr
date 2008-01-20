@@ -200,7 +200,6 @@ describe URI::FILE, '#write' do
 end
 
 
-
 describe URI::HTTP, '#read' do
   before do
     @proxy = 'http://john:smith@myproxy:8080'
@@ -272,5 +271,13 @@ describe URI::HTTP, '#read' do
     @http.stub!(:request).and_yield(ok)
     Net::HTTP.should_receive(:new).and_return(@http)
     @uri.read :progress=>true
+  end
+
+  it 'should use HTTP Basic authentication' do
+    Net::HTTP.should_receive(:new).and_return(@http)
+    request = mock('request')
+    Net::HTTP::Get.should_receive(:new).and_return(request)
+    request.should_receive(:basic_auth).with('john', 'secret')
+    URI("http://john:secret@#{@host_domain}").read
   end
 end

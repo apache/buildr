@@ -380,7 +380,7 @@ module Buildr
         classpath = Buildr.artifacts(compile.dependencies).map(&:to_s).each { |t| task(t).invoke }
         cmd_args << '-cp' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         cmd_args += (sources.map(&:to_s) - [task.name]).
-          map { |arg| File.directory?(file) ? FileList["#{file}/**/*.java"] : file }.flatten
+          map { |file| File.directory?(file) ? FileList["#{file}/**/*.java"] : file }.flatten
         unless Rake.application.options.dryrun
           puts 'Running apt' if verbose
           puts (['apt'] + cmd_args).join(' ') if Rake.application.options.trace

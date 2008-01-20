@@ -1,7 +1,6 @@
 require 'core/build'
 require 'core/compile'
 require 'java/ant'
-require 'core/help'
 
 
 module Buildr

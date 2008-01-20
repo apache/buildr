@@ -42,7 +42,7 @@ module Buildr
             # We now have two target directories with bytecode. It would make sense to remove compile.target
             # and add instrumented instead, but apparently Cobertura only creates some of the classes, so
             # we need both directories and instrumented must come first.
-            project.test.classpath.unshift instrumented
+            project.test.dependencies.unshift instrumented
             project.test.with requires
             project.test.options[:properties]["net.sourceforge.cobertura.datafile"] = data_file
             project.clean { rm_rf instrumented.to_s, :verbose=>false }

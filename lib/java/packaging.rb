@@ -480,8 +480,8 @@ module Buildr
       def package_as_jar(file_name) #:nodoc:
         Java::JarTask.define_task(file_name).tap do |jar|
           jar.with :manifest=>manifest, :meta_inf=>meta_inf
-          jar.with compile.target unless compile.sources.empty?
-          jar.with resources.target unless resources.sources.empty?
+          jar.with compile.target if compile.target
+          jar.with resources.target if resources.target
         end
       end
 
@@ -490,8 +490,8 @@ module Buildr
           war.with :manifest=>manifest, :meta_inf=>meta_inf
           # Add libraries in WEB-INF lib, and classes in WEB-INF classes
           classes = []
-          classes << compile.target unless compile.sources.empty?
-          classes << resources.target unless resources.sources.empty?
+          classes << compile.target if compile.target
+          classes << resources.target if resources.target
           war.with :classes=>classes
           war.with :libs=>compile.dependencies
           # Add included files, or the webapp directory.
@@ -505,8 +505,8 @@ module Buildr
           aar.with :manifest=>manifest, :meta_inf=>meta_inf
           aar.with :wsdls=>path_to(:source, :main, :axis2, '*.wsdl')
           aar.with :services_xml=>path_to(:source, :main, :axis2, 'services.xml') 
-          aar.with compile.target unless compile.sources.empty?
-          aar.with resources.target unless resources.sources.empty?
+          aar.with compile.target if compile.target
+          aar.with resources.target if resources.target
           aar.with :libs=>compile.dependencies
         end
       end

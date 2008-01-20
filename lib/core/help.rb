@@ -1,68 +1,42 @@
-require "core/common"
-require "core/project"
+require 'core/common'
+require 'core/project'
 
 module Buildr
-  module Help
 
-    class Topic
-
-      def initialize(content = nil, &proc)
-        @content, @proc = content, @proc
-      end
-
-      def content
-        @content ||= @proc.call if @proc
-      end
-
-      def content=(content)
-        @content = content
-      end
-
-      def match(against)
-        nil
-      end
-
-    end
-
-    class Main < Topic
-     
-      def initialize
-        @texters = []
-      end
-
-      def content
-        @texters.each { |texter| texter.call }.join("\n")
-      end
-
-      def <<(&texter)
-        @texters << texter
-      end
-
-    end
-
+  module Help #:nodoc:
     class << self
 
-      def topics
-        @topics ||= { 'main'=>Main.new }
+      def <<(arg)
+        if arg.respond_to?(:call) 
+          texters << arg
+        else
+          texters << lambda { arg }
+        end
       end
 
-      def topic(name)
-        topics[name]
+      def to_s
+        texters.map(&:call).join("\n")
       end
 
-      def match(against)
-        topic = topics[against]
-        content = [topic && topic.content]
-        topics.inject(content) { |content, (name, topic)| topic.match(aginst) }.compact
+    protected
+      def texters
+        @texters ||= []
       end
 
     end
-
   end
+
+  class << self
+    def help(&block)
+      Help << block if block_given?
+      Help
+    end
+  end
+
 end
 
 
-task "help" do
+task 'help' do
   # Greeater.
   Rake.application.usage
   puts
@@ -70,7 +44,7 @@ task "help" do
   # Show only the top-level projects.
   projects.reject(&:parent).tap do |top_level|
     unless top_level.empty?
-      puts "Top-level projects (buildr help:projects for full list):"
+      puts 'Top-level projects (buildr help:projects for full list):'
       width = [top_level.map(&:name).map(&:size), 20].flatten.max
       top_level.each do |project|
         puts project.comment.blank? ? project.name : ("  %-#{width}s  # %s" % [project.name, project.comment])
@@ -80,11 +54,12 @@ task "help" do
   end
 
   # Show all the top-level tasks, excluding projects.
-  puts "Common tasks:"
-  task("help:tasks").invoke
+  puts 'Common tasks:'
+  task('help:tasks').invoke
   puts
-  puts "For help on command line options:"
-  puts "  buildr --help"
+  puts 'For help on command line options:'
+  puts '  buildr --help'
+  puts Buildr.help.to_s
 end
 
 
@@ -96,24 +71,24 @@ module Buildr
   # Use this to enhance the help task, e.g. to print some important information about your build,
   # configuration options, build instructions, etc.
   def help(&block)
-    Buildr.help.topics['main'] << block
+    Buildr.help << block
   end
 
 end
 
 
-namespace "help" do
+namespace 'help' do
 
-  desc "List all projects defined by this buildfile"
-  task "projects" do
+  desc 'List all projects defined by this buildfile'
+  task 'projects' do
     width = projects.map(&:name).map(&:size).max
     projects.each do |project|
       puts project.comment.blank? ? "  #{project.name}" : ("  %-#{width}s  # %s" % [project.name, project.comment])
     end
   end
 
-  desc "List all tasks available from this buildfile"
-  task "tasks" do
+  desc 'List all tasks available from this buildfile'
+  task 'tasks' do
     Rake.application.tasks.select(&:comment).reject { |task| Project === task }.tap do |tasks|
       width = [tasks.map(&:name).map(&:size), 20].flatten.max
       tasks.each do |task|

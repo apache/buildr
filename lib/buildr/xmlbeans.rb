@@ -46,7 +46,7 @@ module Buildr
         XMLBeans.compile args.flatten, :output=>task.name,
           :javasource=>compile.options.source, :xsb=>compile.target
       end
-      compile.from(generated).with(STAX, XMLBEANS)
+      compile.using(:javac).from(generated).with(STAX, XMLBEANS)
       # Once compiled, we need to copy the generated XSB/XSD and one (magical?) class file
       # into the target directory, or the rest is useless.
       compile do |task|

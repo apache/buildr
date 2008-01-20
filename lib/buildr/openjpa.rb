@@ -7,7 +7,7 @@ module Buildr
 
     VERSION = "1.0.1"
 
-    REQUIRES = [ "org.apache.openjpa:openjpa-all:jar:#{VERSION}",
+    REQUIRES = [ "org.apache.openjpa:openjpa:jar:#{VERSION}",
       "commons-collections:commons-collections:jar:3.1",
       "commons-dbcp:commons-dbcp:jar:1.2.1", 
       "commons-lang:commons-lang:jar:2.1",
@@ -60,7 +60,7 @@ module Buildr
     end
 
     def open_jpa_enhance(options = nil)
-      jpa_options = { :output=>compile.target, :classpath=>compile.classpath,
+      jpa_options = { :output=>compile.target, :classpath=>compile.dependencies,
                       :properties=>path_to(:source, :main, :resources, 'META-INF/persistence.xml') }
       OpenJPA.enhance jpa_options.merge(options || {})
     end

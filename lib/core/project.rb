@@ -874,6 +874,25 @@ module Buildr
     task 'initialize' do
       projects
     end
+
+    desc "Freezes the Buildfile so it always uses Buildr version #{Buildr::VERSION}"
+    task 'freeze' do
+      puts "Freezing the Buildfile so it always uses Buildr version #{Buildr::VERSION}"
+      original = File.read(Rake.application.rakefile)
+      if original =~ /gem\s*(["'])buildr\1/
+        modified = original.sub(/gem\s*(["'])buildr\1\s*,\s*(["']).*\2/, %{gem "buildr", "#{Buildr::VERSION}"})
+      else
+        modified = %{gem "buildr", "#{Buildr::VERSION}"\n} + original
+      end
+      File.open(Rake.application.rakefile, "w") { |file| file.write modified }
+    end
+
+    desc 'Unfreezes the Buildfile to use the latest version of Buildr'
+    task 'unfreeze' do
+      puts 'Unfreezing the Buildfile to use the latest version of Buildr from your Gems repository.'
+      modified = File.read(Rake.application.rakefile).sub(/^\s*gem\s*(["'])buildr\1.*\n/, "")
+      File.open(Rake.application.rakefile, "w") { |file| file.write modified }
+    end
   end
 
 

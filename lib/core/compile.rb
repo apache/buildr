@@ -190,7 +190,7 @@ module Buildr
           raise 'No compiler selected and can\'t determine which compiler to use' unless compiler
           raise 'No target directory specified' unless target
           mkpath target.to_s, :verbose=>false
-          puts "Compiling #{task.name}" if verbose
+          puts "Compiling #{task.name.gsub(/:[^:]*$/, '')}" if verbose
           @compiler.compile(sources.map(&:to_s), target.to_s, dependencies.map(&:to_s))
           # By touching the target we let other tasks know we did something,
           # and also prevent recompiling again for dependencies.
@@ -439,7 +439,11 @@ module Buildr
     end
 
     after_define do |project|
-      file(project.resources.target.to_s => project.resources) if project.resources.target
+      if project.resources.target
+        file project.resources.target.to_s=>project.resources do |task|
+          mkpath task.name, :verbose=>false
+        end
+      end
       if project.compile.target
         # This comes last because the target path is set inside the project definition.
         project.build project.compile.target

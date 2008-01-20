@@ -205,7 +205,7 @@ module Java
   # You still need to call Java.load before using any Java code: it resolves, downloads
   # and installs various dependencies that are required on the classpath before calling
   # any Java code (e.g. Ant and its tasks).
-  class Wrapper
+  class JavaWrapper
 
     include Singleton
 
@@ -221,7 +221,7 @@ module Java
 
     # *Deprecated:* No longer necessary.
     def setup
-      fail 'Deprecated: This method does not work with the new API'
+      fail 'Deprecated: This method does not work with the new API and is no longer necessary.'
     end
     
     # *Deprecated:* Use Java.load instead.
@@ -229,6 +229,8 @@ module Java
       warn_deprecated 'Use Java.load instead.'
       Java.load
     end
+
+    alias :onload :setup
 
     # *Deprecated:* Use Java.pkg.pkg.ClassName to import a Java class.
     def import(class_name)

@@ -653,9 +653,7 @@ module Buildr
 
   end
 
-  task('help') do
-    puts <<-HELP
-
+  Buildr.help << <<-HELP
 To run a full build without running any tests:
   buildr test=no
 To run specific test:
@@ -663,7 +661,6 @@ To run specific test:
 To run integration tests:
   buildr integration
     HELP
-  end
 
 end
 
