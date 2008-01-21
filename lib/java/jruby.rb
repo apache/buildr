@@ -1,5 +1,4 @@
 require 'java'
-require 'rbconfig'
 
 
 # Buildr runs along side a JVM, using either RJB or JRuby.  The Java module allows

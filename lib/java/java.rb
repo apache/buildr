@@ -1,5 +1,6 @@
 require 'core/project'
-ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Home' if RUBY_PLATFORM =~ /darwin/i
+require 'rbconfig'
+ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Home' if Config::CONFIG['host_os'] =~ /darwin/i
 if PLATFORM == 'java'
   require File.join(File.dirname(__FILE__), 'jruby')
 else
