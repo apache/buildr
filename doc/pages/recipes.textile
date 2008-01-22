@@ -74,3 +74,51 @@ development:
 test: *common
 production: *common
 }}}
+
+
+h2.  Continuous Integration
+
+h4.  Atlassian Bamboo
+
+This recipe outlines how to configure a new Bamboo project to use Buildr.  The
+following steps assume that you have logged-on to Bamboo as an Administrator.
+
+*1. Configure a Builder*
+
+* Select the Administration tab from the Bamboo toolbar.
+* Select the Builders area (first option) from the Administration menu.
+* Using the Add Builder dialog, configure a custom builder for Buildr with the
+following options:
+** Label: @buildr@
+** Type:  @Custom Command@
+** Path:  @/path/to/buildr@ (typically "/usr/bin/buildr")
+
+*2. Create a Plan*
+
+* Select the Create Plan tab from the Bamboo toolbar to enter the Create Plan
+wizard.
+* In "1. Plan Details", define your build plan including project name, project
+key, build plan name and build plan key.
+* In "2. Source Repository", specify your source code repository settings (CVS
+or SVN).
+* In "3. Builder Configuration", specify the "buildr" builder that you defined
+above, along with the following:
+** Argument: @"test=all"@ (ensures that all tests are run through even if
+failures are encountered)
+** Test Results Directory: @"**/reports/junit/*.xml"@ (or your path to test
+results, if different).
+* The remaining wizard sections may be either skipped or configured with your
+preferred settings.
+
+*3. Trigger a Build*
+
+A build should occur automatically at the point of project creation. It can
+also be manually triggered at any time
+
+* Navigate to the project summary page (located at:
+@http://YOUR_BAMBOO_URL/browse/PROJECTKEY-YOURPLAN@).
+* Click on the small arrow to the left of the label "Build Actions"
+* Select "Checkout and Build" from the pop-up menu to force a build.
+
+The project page will contain full status information for previous builds and
+the results tabs will integrate the results from your JUnit tests.

@@ -62,6 +62,15 @@ blockquote {
 	border-left: 1px solid #3c78b5;
 }
 
+ul {
+  list-style-type: disc;
+}
+
+ul ul {
+  list-style-type: disc;
+  padding-left: 1em;
+}
+
 table {
   border: none;
   margin: auto;
