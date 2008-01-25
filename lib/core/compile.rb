@@ -364,7 +364,10 @@ module Buildr
     def initialize(*args) #:nodoc:
       super
       @filter = Buildr::Filter.new
-      enhance { filter.run unless filter.sources.empty? }
+      enhance do
+        mkpath target.to_s, :verbose=>false
+        filter.run unless filter.sources.empty?
+      end
     end
 
     # :call-seq:

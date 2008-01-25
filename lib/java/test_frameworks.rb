@@ -107,16 +107,20 @@ module Buildr
 
     end
 
-    def tests(project) #:nodoc:
-      return [] unless project.test.compile.target
-      target = Pathname.new(project.test.compile.target.to_s)
+    def tests(task, dependencies) #:nodoc:
+      return [] unless task.compile.target
+      target = Pathname.new(task.compile.target.to_s)
       candidates = Dir["#{target}/**/*.class"].
         map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
         reject { |name| name =~ /\$/ }
-      classpath = [target.to_s + '/'] + Buildr.artifacts(dependencies).map(&:to_s)
-      Java.load # JRuby necessiated casting.
-      Java.org.apache.buildr.JUnitTestFilter.new(classpath.map(&:to_s).to_java(Java.java.lang.String)).
-        filter(candidates.to_java(Java.java.lang.String)).map(&:to_s)
+      begin
+        Java.load
+        Java.org.apache.buildr.JUnitTestFilter.new(dependencies.to_java(Java.java.lang.String)).
+          filter(candidates.to_java(Java.java.lang.String)).map(&:to_s)
+      rescue =>ex
+        puts "#{ex.class}: #{ex.message}" if verbose
+        raise
+      end
     end
 
     def run(tests, task, dependencies) #:nodoc:
@@ -134,7 +138,7 @@ module Buildr
         end
         mkpath task.report_to.to_s
         ant.junit forking.merge(:clonevm=>options[:clonevm] || false, :dir=>task.send(:project).path_to) do
-          ant.classpath :path=>dependencies.each { |path| file(path).invoke }.join(File::PATH_SEPARATOR)
+          ant.classpath :path=>dependencies.join(File::PATH_SEPARATOR)
           (options[:properties] || []).each { |key, value| ant.sysproperty :key=>key, :value=>value }
           (options[:environment] || []).each { |key, value| ant.env :key=>key, :value=>value }
           ant.formatter :type=>'plain'
@@ -199,9 +203,9 @@ module Buildr
 
     end
 
-    def tests(project) #:nodoc:
-      return [] unless project.test.compile.target
-      target = Pathname.new(project.test.compile.target.to_s)
+    def tests(task, dependencies) #:nodoc:
+      return [] unless task.compile.target
+      target = Pathname.new(task.compile.target.to_s)
       Dir["#{target}/**/*.class"].
         map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
         reject { |name| name =~ /\$/ }.select { |name| cls_name = name.split('.').last
@@ -230,3 +234,9 @@ end
 
 Buildr::TestFramework << Buildr::JUnit
 Buildr::TestFramework << Buildr::TestNG
+
+# Backward compatibility crap.
+Buildr::JUnit::JUNIT_REQUIRES = Buildr::JUnit::REQUIRES
+Buildr::TestNG::TestNG_REQUIRES = Buildr::TestNG::REQUIRES
+Java::JUnit = Buildr::JUnit
+Java::TestNG = Buildr::TestNG

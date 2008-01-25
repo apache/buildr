@@ -1,8 +1,8 @@
-require "tempfile"
-require "pathname"
-require "core/transports"
-require "open-uri"
-require "uri/open-sftp"
+require 'tempfile'
+require 'pathname'
+require 'core/transports'
+require 'open-uri'
+require 'uri/open-sftp'
 
 
 class Hash
@@ -13,13 +13,13 @@ class Hash
     #   Hash.from_java_properties(string)
     #
     # Returns a hash from a string in the Java properties file format. For example:
-    #   str = "foo=bar\nbaz=fab"
+    #   str = 'foo=bar\nbaz=fab'
     #   Hash.from_properties(str)
-    #   => { "foo"=>"bar", "baz"=>"fab" }.to_properties
+    #   => { 'foo'=>'bar', 'baz'=>'fab' }.to_properties
     def from_java_properties(string)
-      string.gsub(/\\\n/, "").split("\n").select { |line| line =~ /^[^#].*=.*/ }.
+      string.gsub(/\\\n/, '').split("\n").select { |line| line =~ /^[^#].*=.*/ }.
         map { |line| line.gsub(/\\[trnf\\]/) { |escaped| {?t=>"\t", ?r=>"\r", ?n=>"\n", ?f=>"\f", ?\\=>"\\"}[escaped[1]] } }.
-        map { |line| line.split("=") }.
+        map { |line| line.split('=') }.
         inject({}) { |hash, (name, value)| hash.merge(name=>value) }
     end
 
@@ -51,13 +51,13 @@ class Hash
   end
 
   # :call-seq:
-  #   to_java_properties() => string
+  #   to_java_properties => string
   #
   # Convert hash to string format used for Java properties file. For example:
-  #   { "foo"=>"bar", "baz"=>"fab" }.to_properties
+  #   { 'foo'=>'bar', 'baz'=>'fab' }.to_properties
   #   => foo=bar
   #      baz=fab
-  def to_java_properties()
+  def to_java_properties
     keys.sort.map { |key|
       value = self[key].gsub(/[\t\r\n\f\\]/) { |escape| "\\" + {"\t"=>"t", "\r"=>"r", "\n"=>"n", "\f"=>"f", "\\"=>"\\"}[escape] }
       "#{key}=#{value}"
@@ -71,7 +71,7 @@ module Rake #:nodoc
   class FileList
     class << self
       def recursive(*dirs)
-        FileList[dirs.map { |dir| File.join(dir, "/**/{*,.*}") }].reject { |file| File.basename(file) =~ /^[.]{1,2}$/ }
+        FileList[dirs.map { |dir| File.join(dir, '/**/{*,.*}') }].reject { |file| File.basename(file) =~ /^[.]{1,2}$/ }
       end
     end
   end
@@ -112,9 +112,9 @@ module Buildr
   #
   # For example:
   #   COMMONS             = struct(
-  #     :collections      =>"commons-collections:commons-collections:jar:3.1",
-  #     :lang             =>"commons-lang:commons-lang:jar:2.1",
-  #     :logging          =>"commons-logging:commons-logging:jar:1.0.3",
+  #     :collections      =>'commons-collections:commons-collections:jar:3.1',
+  #     :lang             =>'commons-lang:commons-lang:jar:2.1',
+  #     :logging          =>'commons-logging:commons-logging:jar:1.0.3',
   #   )
   #
   #   compile.with COMMONS.logging
@@ -129,16 +129,16 @@ module Buildr
   # Write the contents into a file. The second form calls the block and writes the result.
   #
   # For example:
-  #   write "TIMESTAMP", Time.now
-  #   write("TIMESTAMP") { Time.now }
+  #   write 'TIMESTAMP', Time.now
+  #   write('TIMESTAMP') { Time.now }
   #
   # Yields to the block before writing the file, so you can chain read and write together.
   # For example:
-  #   write("README") { read("README").sub("${build}", Time.now) }
+  #   write('README') { read('README').sub("${build}", Time.now) }
   def write(name, content = nil)
     mkpath File.dirname(name), :verbose=>false
     content = yield if block_given?
-    File.open(name.to_s, "wb") { |file| file.write content.to_s }
+    File.open(name.to_s, 'wb') { |file| file.write content.to_s }
     content.to_s
   end
 
@@ -150,8 +150,8 @@ module Buildr
   # the result of the block.
   #
   # For example:
-  #   puts read("README")
-  #   read("README") { |text| puts text }
+  #   puts read('README')
+  #   read('README') { |text| puts text }
   def read(name)
     contents = File.open(name.to_s) { |f| f.read }
     if block_given?
@@ -175,7 +175,7 @@ module Buildr
   # checksums on the server it will verify the download before saving it.
   #
   # For example:
-  #   download "image.jpg"=>"http://example.com/theme/image.jpg"
+  #   download 'image.jpg'=>'http://example.com/theme/image.jpg'
   def download(args)
     args = URI.parse(args) if String === args
     if URI === args
@@ -184,7 +184,7 @@ module Buildr
       temp = Tempfile.open(File.basename(args.to_s))
       file(temp.path).tap do |task|
         # Since temporary file exists, force a download.
-        class << task ; def needed?() ; true ; end ; end
+        class << task ; def needed? ; true ; end ; end
         task.sources << args
         task.enhance { args.download temp }
       end
@@ -207,7 +207,7 @@ module Buildr
   # You can specify the mapping using a Hash, and it will map ${key} fields found in each source
   # file into the appropriate value in the target file. For example:
   #
-  #   filter.using "version"=>"1.2", "build"=>Time.now
+  #   filter.using 'version'=>'1.2', 'build'=>Time.now
   #
   # will replace all occurrences of <tt>${version}</tt> with <tt>1.2</tt>, and <tt>${build}</tt>
   # with the current date/time.
@@ -221,13 +221,13 @@ module Buildr
   # A filter has one target directory, but you can specify any number of source directories,
   # either when creating the filter or calling #from. Include/exclude patterns are specified
   # relative to the source directories, so:
-  #   filter.include "*.png"
+  #   filter.include '*.png'
   # will only include PNG files from any of the source directories.
   #
   # See Buildr#filter.
   class Filter
 
-    def initialize() #:nodoc:
+    def initialize #:nodoc:
       @include = []
       @exclude = []
       @sources = []
@@ -242,7 +242,7 @@ module Buildr
     # Adds additional directories from which to copy resources.
     #
     # For example:
-    #   filter.from("src").into("target").using("build"=>Time.now)
+    #   filter.from('src').into('target').using('build'=>Time.now)
     def from(*sources)
       @sources |= sources.flatten.map { |dir| file(dir.to_s) }
       self
@@ -257,7 +257,7 @@ module Buildr
     # Sets the target directory into which files are copied and returns self.
     #
     # For example:
-    #   filter.from("src").into("target").using("build"=>Time.now)
+    #   filter.from('src').into('target').using('build'=>Time.now)
     def into(dir)
       @target = file(dir.to_s) { |task| run if target == task && !sources.empty? }
       self
@@ -293,7 +293,7 @@ module Buildr
 
     # :call-seq:
     #   using(mapping) => self
-    #   using() { |file_name, contents| ... } => self
+    #   using { |file_name, contents| ... } => self
     #
     # Specifies the mapping to use and returns self.
     #
@@ -306,9 +306,9 @@ module Buildr
     # * Regexp -- Maps the matched data (e.g. <code>/=(.*?)=/</code>
     #
     # For example:
-    #   filter.using "version"=>"1.2"
+    #   filter.using 'version'=>'1.2'
     # Is the same as:
-    #   filter.using :maven, "version"=>"1.2"
+    #   filter.using :maven, 'version'=>'1.2'
     #
     # You can also pass a proc or method. It will be called with the file name and content,
     # to return the mapped content.
@@ -319,26 +319,26 @@ module Buildr
       when Hash # Maven hash mapping
         using :maven, *args
       when Symbol # Mapping from a method
-        raise ArgumentError, "Expected mapper type followed by mapping hash" unless args.size == 2 && Hash === args[1]
+        raise ArgumentError, 'Expected mapper type followed by mapping hash' unless args.size == 2 && Hash === args[1]
         @mapper, @mapping = *args
       when Regexp # Mapping using a regular expression
-        raise ArgumentError, "Expected regular expression followed by mapping hash" unless args.size == 2 && Hash === args[1]
+        raise ArgumentError, 'Expected regular expression followed by mapping hash' unless args.size == 2 && Hash === args[1]
         @mapper, @mapping = *args
       else
-        raise ArgumentError, "Expected proc, method or a block" if args.size > 1 || (args.first && block)
+        raise ArgumentError, 'Expected proc, method or a block' if args.size > 1 || (args.first && block)
         @mapping = args.first || block
       end
       self
     end
 
     # :call-seq:
-    #    run() => boolean
+    #    run => boolean
     #
     # Runs the filter.
-    def run()
-      raise "No source directory specified, where am I going to find the files to filter?" if sources.empty?
+    def run
+      raise 'No source directory specified, where am I going to find the files to filter?' if sources.empty?
       sources.each { |source| raise "Source directory #{source} doesn't exist" unless File.exist?(source.to_s) }
-      raise "No target directory specified, where am I going to copy the files to?" if target.nil?
+      raise 'No target directory specified, where am I going to copy the files to?' if target.nil?
 
       copy_map = sources.flatten.map(&:to_s).inject({}) do |map, source|
         base = Pathname.new(source)
@@ -365,17 +365,17 @@ module Buildr
             mkpath File.dirname(dest)
             case mapping
             when Proc, Method # Call on input, accept output.
-              mapped = mapping.call(path, File.open(source, "rb") { |file| file.read })
-              File.open(dest, "wb") { |file| file.write mapped }
+              mapped = mapping.call(path, File.open(source, 'rb') { |file| file.read })
+              File.open(dest, 'wb') { |file| file.write mapped }
             when Hash # Map ${key} to value
-              content = File.open(source, "rb") { |file| file.read }
+              content = File.open(source, 'rb') { |file| file.read }
               if Symbol === @mapper
                 mapped = send("#{@mapper}_mapper", content) { |key| mapping[key] }
               else
                 mapped = regexp_mapper(content) { |key| mapping[key] }
               end
                 #gsub(/\$\{[^}]*\}/) { |str| mapping[str[2..-2]] || str }
-              File.open(dest, "wb") { |file| file.write mapped }
+              File.open(dest, 'wb') { |file| file.write mapped }
             when nil # No mapping.
               cp source, dest
               File.chmod(0664, dest)
@@ -390,7 +390,7 @@ module Buildr
     end
 
     # Returns the target directory. 
-    def to_s()
+    def to_s
       @target.to_s
     end
 
@@ -424,10 +424,10 @@ module Buildr
   # A filter is not a task, you must call the Filter#run method to execute it.
   #
   # For example, to copy all files from one directory to another:
-  #   filter("src/files").into("target/classes").run
+  #   filter('src/files').into('target/classes').run
   # To include only the text files, and replace each instance of <tt>${build}</tt> with the current
   # date/time:
-  #   filter("src/files").into("target/classes").include("*.txt").using("build"=>Time.now).run
+  #   filter('src/files').into('target/classes').include('*.txt').using('build'=>Time.now).run
   def filter(*sources)
     Filter.new.from(*sources)
   end
@@ -448,11 +448,11 @@ module Kernel #:nodoc:
   #   warn_deprecated(message)
   #
   # Use with deprecated methods and classes. This method automatically adds the file name and line number,
-  # and the text "Deprecated" before the message, and eliminated duplicate warnings. It only warns when
+  # and the text 'Deprecated' before the message, and eliminated duplicate warnings. It only warns when
   # running in verbose mode.
   #
   # For example:
-  #   warn_deprecated "Please use new_foo instead of foo."
+  #   warn_deprecated 'Please use new_foo instead of foo.'
   def warn_deprecated(message) #:nodoc:
     return unless verbose
     "#{caller[1]}: Deprecated: #{message}".tap do |message|

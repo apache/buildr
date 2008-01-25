@@ -329,24 +329,16 @@ module Buildr
       self
     end
 
-    # :call-seq:
-    #    tests => strings
-    #
-    # List the tests that this task will run.
-    def tests
-      fail "No test framework selected" unless framework
-      @tests ||= @framework.tests(@project).select { |test| include?(test) }.sort
-    end
-
     # *Deprecated*: Use tests instead.
     def classes
       warn_deprecated 'Call tests instead of classes'
       tests
     end
 
+    # After running the task, returns all tests selected to run, based on availability and include/exclude pattern.
+    attr_reader :tests
     # After running the task, returns all the tests that failed, empty array if all tests passed.
     attr_reader :failed_tests
-
     # After running the task, returns all the tests that passed, empty array if no tests passed.
     attr_reader :passed_tests
 
@@ -356,9 +348,11 @@ module Buildr
     # Returns the test framework, e.g. :junit, :testng.
     def framework
       unless @framework
-        frameworks = TestFramework.frameworks.select { |cls| cls.applies_to?(@project) }
-        candidate = @project.parent && frameworks.detect { |framework| framework.to_sym == @project.parent.test.framework } ||
-          frameworks.first
+        # Start with all frameworks that apply (e.g. JUnit and TestNG for Java),
+        # and pick the first (default) one, unless already specified in parent project.
+        candidates = TestFramework.frameworks.select { |cls| cls.applies_to?(@project) }
+        candidate = @project.parent && candidates.detect { |framework| framework.to_sym == @project.parent.test.framework } ||
+          candidates.first
         self.framework = candidate if candidate
       end
       @framework && @framework.class.to_sym
@@ -389,7 +383,7 @@ module Buildr
       #  each { |name| options[name] = @parent_task.options[name] } if @parent_task.respond_to?(:options)
       @framework = cls.new(options)
       # Test framework dependency.
-      with @framework.class.dependencies
+      with @framework.dependencies
     end
 
     # :call-seq:
@@ -404,13 +398,15 @@ module Buildr
 
     # Runs the tests using the selected test framework.
     def run_tests
+      dependencies = Buildr.artifacts(self.dependencies).map(&:to_s).uniq
       rm_rf report_to.to_s
-      if tests.empty?
+      @tests = @framework.tests(self, dependencies).select { |test| include?(test) }.sort
+      if @tests.empty?
         @passed_tests, @failed_tests = [], []
       else
         puts "Running tests in #{@project.name}" if verbose
-        @passed_tests = @framework.run(tests, self, @dependencies.compact.map(&:to_s))
-        @failed_tests = tests - @passed_tests
+        @passed_tests = @framework.run(@tests, self, dependencies)
+        @failed_tests = @tests - @passed_tests
         unless @failed_tests.empty?
           warn "The following tests failed:\n#{@failed_tests.join('\n')}" if verbose
           fail 'Tests failed!'
@@ -422,6 +418,11 @@ module Buildr
     def only_run(tests)
       @include = Array(tests)
       @exclude.clear
+    end
+
+    def invoke_prerequisites(args, chain) #:nodoc:
+      @prerequisites |= FileList[@dependencies.uniq]
+      super
     end
 
   end
@@ -540,7 +541,7 @@ module Buildr
       test.with Array(project.resources.target)
       # Dependency on compiled tests and resources.  Dependencies added using with.
       test.dependencies.concat Array(test.compile.target) if test.compile.target
-      test.dependencies.concat Array(test.resources.target)
+      test.dependencies.concat Array(test.resources.target) if test.resources.sources
       # Picking up the test frameworks adds further dependencies.
       test.framework
 

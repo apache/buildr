@@ -33,13 +33,17 @@ describe Buildr::JUnit do
   it 'should include public classes extending junit.framework.TestCase' do
     write 'src/test/java/com/example/FirstTest.java', <<-JAVA
       package com.example;
-      public class FirstTest extends junit.framework.TestCase { }
+      public class FirstTest extends junit.framework.TestCase {
+        public void testNothing() { }
+      }
     JAVA
     write 'src/test/java/com/example/AnotherOne.java', <<-JAVA
       package com.example;
-      public class AnotherOne extends junit.framework.TestCase { }
+      public class AnotherOne extends junit.framework.TestCase {
+        public void testNothing() { }
+      }
     JAVA
-    define('foo').test.compile.invoke
+    define('foo').test.invoke
     project('foo').test.tests.should include('com.example.FirstTest', 'com.example.AnotherOne')
   end
 
@@ -47,18 +51,21 @@ describe Buildr::JUnit do
     write 'src/test/java/NotATest.java', <<-JAVA
       public class NotATest { }
     JAVA
-    define('foo').test.compile.invoke
+    define('foo').test.invoke
     project('foo').test.tests.should be_empty
   end
 
   it 'should ignore inner classes' do
     write 'src/test/java/InnerClassTest.java', <<-JAVA
       public class InnerClassTest extends junit.framework.TestCase {
+        public void testNothing() { }
+
         public class InnerTest extends junit.framework.TestCase {
+          public void testNothing() { }
         }
       }
     JAVA
-    define('foo').test.compile.invoke
+    define('foo').test.invoke
     project('foo').test.tests.should eql(['InnerClassTest'])
   end
 
@@ -263,14 +270,14 @@ describe Buildr::TestNG do
     write 'src/test/java/com/example/TestThis.java', 'package com.example; public class TestThis {}'
     write 'src/test/java/com/example/ThisTest.java', 'package com.example; public class ThisTest {}'
     define('foo') { test.using(:testng) }
-    project('foo').test.compile.invoke
+    project('foo').test.invoke
     project('foo').test.tests.should include('com.example.TestThis', 'com.example.ThisTest')
   end
 
   it 'should ignore classes not using Test prefix or suffix' do
     write 'src/test/java/NotATestClass.java', 'public class NotATestClass {}'
     define('foo') { test.using(:testng) }
-    project('foo').test.compile.invoke
+    project('foo').test.invoke
     project('foo').test.tests.should be_empty
   end
 
@@ -282,7 +289,7 @@ describe Buildr::TestNG do
       }
     JAVA
     define('foo') { test.using(:testng) }
-    project('foo').test.compile.invoke
+    project('foo').test.invoke
     project('foo').test.tests.should eql(['InnerClassTest'])
   end
 

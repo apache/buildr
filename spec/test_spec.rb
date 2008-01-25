@@ -231,17 +231,14 @@ end
 
 
 describe Buildr::TestTask, 'with passing tests' do
-  def tests
-    @tests ||= ['PassingTest1', 'PassingTest2']
-  end
-
   def test_task
     @test_task ||= begin
-      tests = self.tests
       define 'foo' do
         test.using(:junit)
-        test.stub!(:tests).and_return(tests.clone)
-        test.instance_eval { @framework.stub!(:run).and_return(tests.clone) }
+        test.instance_eval do
+          @framework.stub!(:tests).and_return(['PassingTest1', 'PassingTest2'])
+          @framework.stub!(:run).and_return(['PassingTest1', 'PassingTest2'])
+        end
       end
       project('foo').test
     end
@@ -257,7 +254,7 @@ describe Buildr::TestTask, 'with passing tests' do
   
   it 'should return passed tests' do
     test_task.invoke
-    test_task.passed_tests.should == tests
+    test_task.passed_tests.should == ['PassingTest1', 'PassingTest2']
   end
 
   it 'should return no failed tests' do

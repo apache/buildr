@@ -387,11 +387,6 @@ describe Packaging, 'war' do
     inspect_war { |files| files.should include('test.html') }
   end
 
-  it 'should ignore webapp directory if missing' do
-    define('foo', :version=>'1.0') { package(:war) }
-    inspect_war { |files| files.should eql(['META-INF/', 'META-INF/MANIFEST.MF']) }
-  end
-
   it 'should accept files from :classes option' do
     write 'src/main/java/Test.java', 'class Test {}'
     write 'classes/test'

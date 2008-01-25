@@ -1,5 +1,7 @@
 package org.apache.buildr;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.MalformedURLException;
@@ -9,10 +11,15 @@ public class JUnitTestFilter {
 
   private ClassLoader _loader;
 
-  public JUnitTestFilter(String[] paths) throws MalformedURLException {
+  public JUnitTestFilter(String[] paths) throws IOException {
     URL[] urls = new URL[paths.length];
-    for (int i = 0 ; i < paths.length ; ++i)
-      urls[i] = new URL("file://" + paths[i]);
+    for (int i = 0 ; i < paths.length ; ++i) {
+      File file = new File(paths[i]).getCanonicalFile();
+      if (file.exists())
+        urls[i] = file.toURL();
+      else
+        throw new IOException("No file or directory with the name " + file);
+    }
     _loader = new URLClassLoader(urls, getClass().getClassLoader());
   }
 
