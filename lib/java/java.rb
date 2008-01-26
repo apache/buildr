@@ -212,7 +212,7 @@ module Java
 
     # *Deprecated:* Append to Java.classpath directly.
     def classpath
-      warn_deprecated 'Append to Java.classpath directly.'
+      warn_deprecated 'Append to Java.classpath instead.'
       Java.classpath
     end
 
@@ -222,7 +222,8 @@ module Java
 
     # *Deprecated:* No longer necessary.
     def setup
-      fail 'Deprecated: This method does not work with the new API and is no longer necessary.'
+      warn_deprecated 'See documentation for new way to access Java code.'
+      yield self if block_given?
     end
     
     # *Deprecated:* Use Java.load instead.
@@ -246,38 +247,38 @@ module Java
     # *Deprecated*: Use Java::Commands.java instead.
     def java(*args, &block)
       return send(:method_missing, :java) if args.empty?
-      warn_deprecated 'Use Java::Commands.java instead'
+      warn_deprecated 'Use Java::Commands.javadoc instead.'
       Commands.java(*args, &block)
     end
 
     # *Deprecated*: Use Java::Commands.apt instead.
     def apt(*args)
-      warn_deprecated 'Use Java::Commands.apt instead'
+      warn_deprecated 'Use Java::Commands.javadoc instead.'
       Commands.apt(*args)
     end
 
     # *Deprecated*: Use Java::Commands.javac instead.
     def javac(*args)
-      warn_deprecated 'Use Java::Commands.javac instead'
+      warn_deprecated 'Use Java::Commands.javadoc instead.'
       Commands.javac(*args)
     end
 
     # *Deprecated*: Use Java::Commands.javadoc instead.
     def javadoc(*args)
-      warn_deprecated 'Use Java::Commands.javadoc instead'
+      warn_deprecated 'Use Java::Commands.javadoc instead.'
       Commands.javadoc(*args)
     end
 
     # *Deprecated:* Use ENV_JAVA['java.version'] instead.
     def version
-      warn_deprecated "Use ENV_JAVA['java.version'] instead"
+      warn_deprecated 'Use ENV_JAVA[\'java.version\'] instead.'
       Java.load
       ENV_JAVA['java.version']
     end
 
     # *Deprecated:* Use ENV['JAVA_HOME'] instead
     def home
-      warn_deprecated "Use ENV['JAVA_HOME'] instead"
+      warn_deprecated 'Use ENV[\'JAVA_HOME\'] instead.'
       ENV['JAVA_HOME']
     end
 
@@ -288,6 +289,7 @@ module Java
     # and installs various dependencies that are required on the classpath before calling
     # any Java code (e.g. Ant and its tasks).
     def wrapper
+      warn_deprecated 'See documentation for new way to access Java code.'
       if block_given?
         Java.load
         yield JavaWrapper.instance
@@ -295,6 +297,8 @@ module Java
         JavaWrapper.instance
       end
     end
+
+    alias :rjb :wrapper
 
   end
 
