@@ -18,11 +18,11 @@ We run two mailing lists, the
 "archive":http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/) for
 developers working with Buildr, and the
 "buildr-dev":mailto:buildr-dev@incubator.apache.org mailing list
-("subscribe":buildr-dev-subscribe@incubator.apache.org,
+("subscribe":mailto:buildr-dev-subscribe@incubator.apache.org,
 "archive":http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/) for
 developement of Buildr itself.  We also have a
-"commits":buildr-commits@incubator.apache.org mailing list
-("subscribe":buildr-commits-subscribe@incubator.apache.org) if you want to
+"commits":mailto:buildr-commits@incubator.apache.org mailing list
+("subscribe":mailto:buildr-commits-subscribe@incubator.apache.org) if you want to
 stalk us.
 
 
@@ -94,7 +94,6 @@ We test using "RSpec":http://rspec.info/, a Behavior-Driven Development test
 framework.  The main difference between RSpec and xUnit is that RSpec helps you
 formulate test cases in terms of specifications: you describe how the code
 should behave, and run RSpec to make sure it matches that specification.
-"Here's an example":http://rspec.info/examples.html.
 
 You can run an individual specifications using the @spec@ command, for example:
 
@@ -147,10 +146,19 @@ Web site, simple run @rake html@ .
 If you're thinking of editing the docs, and using @rake html@ to see what the
 HTML looks like, you may want to try something simpler.  Start by running the
 Docter Web server with @rake docter@ and then point your browser at
-"http://localhost:3000":http://localhost:3000.  To see your edits, simply
-refresh the page.
+@http://localhost:3000@.  To see your edits, simply refresh the page.
 
 Generating the PDF is a bit more tricky, we use the HTML in combination with
 print media CSS stylesheets and run them through the wonderful
 "PrinceXML":http://www.princexml.com/, so you'll need to install PrinceXML
 first before you can @rake pdf@.
+
+
+h2.  Contributors
+
+Here is the list of people who are actively working and committing on Buildr:
+
+|_.Name          |_.ID        |_.Organization                      |_. Role                  |
+| Assaf Arkin   | assaf     | "Intalio":http://intalio.com      | Developer & PMC       |
+| Alex Boisvert | boisvert  | "Intalio":http://intalio.com      | Developer & PMC       |
+| Matthieu Riou | mriou     | "Intalio":http://intalio.com      | Developer & PMC Chair |

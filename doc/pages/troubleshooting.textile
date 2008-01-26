@@ -2,9 +2,8 @@ h1. Troubleshooting
 
 Common troubleshooting tips collected from the mailing list.
 
-h2.  Building
 
-h3.  Running out of heap space
+h4.  Running out of heap space
 
 You can give the JVM more heap space by setting the @JAVA_OPTS@ environment
 variables.  This environment variable provides arguments for staring the JVM.
@@ -26,9 +25,40 @@ ENV['JAVA_OPTS'] = '-Xms1g -Xmx1g'
 }}}
 
 
-h2.  Buildfiles
+h4.  RJB fails to compile
 
-h3.  Bugs resulting from a dangling comma or period
+On Linux, BSD and Cygwin, RJB locates the JDK headers files -- which it uses to
+compile a native C extension -- based on the @JAVA_HOME@ environment variable.
+Make sure @JAVA_HOME@ points to the JDK, not JRE.
+
+If you are using @sudo gem install@, note that some environments do not pass
+the @JAVA_HOME@ environment variable over to @sudo@.  To get around this, run
+@gem@ with the @env JAVA_HOME=$JAVA_HOME@ option:
+
+{{{!sh
+$ sudo env JAVA_HOME=$JAVA_HOME gem install buildr
+}}}
+
+
+h4.  Segmentation Fault when running Java code
+
+This is most likely a JVM inconsistency, for example, when part of the RJB
+library uses JDK 1.6, the other part uses JDK 1.5.
+
+During installation RJB builds a native C extension using header files supplied by
+the JVM, and compiles a Java bridge class using the Javac.  It is possible for RJB
+to use two different versions of the JVM, for example, if @JAVA_HOME@ points to
+JDK 1.5, but @/usr/bin/javac@ points to JDK 1.6.
+
+Make sure @JAVA_HOME@ and @/usr/bin/javac@ both point to the same JDK:
+
+{{{!sh
+echo $JAVA_HOME
+ls -l /usr/bin/javac
+}}}
+
+
+h4.  Bugs resulting from a dangling comma or period
 
 Ruby statements don't need a delimiter and can span multiple lines, which can
 lead to bugs resulting from dangling commas and periods left at the end of the
@@ -49,36 +79,3 @@ glance at the code, so if all else fails, search for lines that end with one of
 these characters.
 
 
-h2.  RJB
-
-h3.  RJB fails to compile
-
-On Linux, BSD and Cygwin, RJB locates the JDK headers files -- which it uses to
-compile a native C extension -- based on the @JAVA_HOME@ environment variable.
-Make sure @JAVA_HOME@ points to the JDK, not JRE.
-
-If you are using @sudo gem install@, note that some environments do not pass
-the @JAVA_HOME@ environment variable over to @sudo@.  To get around this, run
-@gem@ with the @env JAVA_HOME=$JAVA_HOME@ option:
-
-{{{!sh
-$ sudo env JAVA_HOME=$JAVA_HOME gem install buildr
-}}}
-
-
-h3.  Segmentation Fault when running Java code
-
-This is most likely a JVM inconsistency, for example, when part of the RJB
-library uses JDK 1.6, the other part uses JDK 1.5.
-
-During installation RJB builds a native C extension using header files supplied by
-the JVM, and compiles a Java bridge class using the Javac.  It is possible for RJB
-to use two different versions of the JVM, for example, if @JAVA_HOME@ points to
-JDK 1.5, but @/usr/bin/javac@ points to JDK 1.6.
-
-Make sure @JAVA_HOME@ and @/usr/bin/javac@ both point to the same JDK:
-
-{{{!sh
-echo $JAVA_HOME
-ls -l /usr/bin/javac
-}}}

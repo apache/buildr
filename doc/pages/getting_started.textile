@@ -2,8 +2,7 @@ h1. Getting Started
 
 h2.  Installing Buildr
 
-More information about "downloading and installing
-Buildr":http://incubator.apache.org/buildr/downloading.html.
+More information about "downloading and installing Buildr":downloading.html.
 
 
 h2. Conventions

@@ -3,8 +3,6 @@ h1. Recipes
 Commond recipes for Buildr, collected from the mailing list.
 
 
-h2.  Java
-
 h4.  Creating a classpath
 
 For Java, the classpath argument is simply a list of paths joined with an
@@ -45,8 +43,6 @@ cp = Buildr.artifacts(specs).each(&:invoke).map(&:name).join(File::PATH_SEPARATO
 }}}
 
 
-h2.  Configuration
-
 h4.  Keeping your Profiles.yaml file DRY
 
 YAML allows you to write an object (map, array, etc) once and reference it in
@@ -76,9 +72,7 @@ production: *common
 }}}
 
 
-h2.  Continuous Integration
-
-h4.  Atlassian Bamboo
+h4.  Continuous Integration with Atlassian Bamboo
 
 This recipe outlines how to configure a new Bamboo project to use Buildr.  The
 following steps assume that you have logged-on to Bamboo as an Administrator.

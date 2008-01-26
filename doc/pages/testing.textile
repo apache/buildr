@@ -364,9 +364,8 @@ you create a package with different specifications (for example, you specify a
 classifier) your checks must call @package@ with the same qualifying arguments
 to return the very same package task.
 
-Buildr expectations are based on RSpec.  Check the "RSpec
-documentation":http://rspec.rubyforge.org/ if want to see all the supported
-matchers, or want to write your own.
+Buildr expectations are based on RSpec.  Check the RSpec documentation if want
+to see all the supported matchers, or want to write your own.
 
 We're almost done, but there's "a few more things":more_stuff.html you'll want
 to learn.
@@ -379,5 +378,5 @@ effects, for example, you can use an environment variable called build with
 values like "dev", "stage", "deploy" to change how your build works in
 different settings.
 
-fn2. "RSpec":http://rspec.rubyforge.org/ is the behavior-driven development
+fn2. "RSpec":http://rspec.info/ is the behavior-driven development
 framework we use to test Buildr itself. 

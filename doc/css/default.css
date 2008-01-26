@@ -72,19 +72,19 @@ ul ul {
 }
 
 table {
-  border: none;
-  margin: auto;
+  border-spacing: 0.2em 0;
 }
 
 th, td {
-  padding: 1em;
-  border: 1px solid #C0C0C0;
+  padding: 0.3em 0.5em 0.3em 0.5em;
+  border-bottom: 1px solid #D8D8D8;
   vertical-align: top;
   background-color: #FFFFFF;
 }
 
 th {
-  background-color: #F5F5F5;
+  border-bottom: none;
+  background-color: #E5E5E5;
 }
 
 
