@@ -81,20 +81,23 @@ module Buildr
     # Accepts the following options:
     # * :warnings    -- Generate warnings if true (opposite of -nowarn).
     # * :deprecation -- Output source locations where deprecated APIs are used.
+    # * :optimise    -- Generates faster bytecode by applying optimisations to the program.
     # * :source      -- Source compatibility with specified release.
     # * :target      -- Class file compatibility with specified release.
-    # * :lint        -- Value to pass to xlint argument. Use true to enable default lint
-    #                   options, or pass a specific setting as string or array of strings.
     # * :debug       -- Generate debugging info.
-    # * :other       -- Array of options to pass to the Scalac compiler as is.
+    # * :other       -- Array of options to pass to the Scalac compiler as is, e.g. -Xprint-types
     class Scalac < Base
 
-      OPTIONS = [:warnings, :deprecation, :source, :target, :lint, :debug, :other]
+      OPTIONS = [:warnings, :deprecation, :optimise, :source, :target, :debug, :other]
 
       specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
       def initialize(options) #:nodoc:
         super
+        options[:debug] = Buildr.options.debug if options[:debug].nil?
+        options[:warnings] = verbose if options[:warnings].nil?
+        options[:deprecation] ||= false
+        options[:optimise] ||= false
       end
 
       def compile(sources, target, dependencies) #:nodoc:
@@ -132,13 +135,9 @@ module Buildr
         args << "-verbose" if Rake.application.options.trace
         args << "-g" if options[:debug]
         args << "-deprecation" if options[:deprecation]
+        args << "-optimise" if options[:optimise]
         args << "-source" << options[:source].to_s if options[:source]
         args << "-target:jvm-" + options[:target].to_s if options[:target]
-        case options[:lint]
-          when Array  then args << "-Xlint:#{options[:lint].join(',')}"
-          when String then args << "-Xlint:#{options[:lint]}"
-          when true   then args << "-Xlint"
-        end
         args + Array(options[:other])
       end
 
