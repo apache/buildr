@@ -13,7 +13,7 @@ module Buildr
     # and sets the target directory to target/classes (or target/test/classes).
     #
     # Accepts the following options:
-    # * :wranings    -- Issue warnings when compiling.  True when running in verbose mode.
+    # * :warnings    -- Issue warnings when compiling.  True when running in verbose mode.
     # * :debug       -- Generates bytecode with debugging information.  Set from the debug
     #                   environment variable/global option.
     # * :deprecation -- If true, shows deprecation messages.  False by default.
