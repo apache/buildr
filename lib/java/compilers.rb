@@ -89,8 +89,20 @@ module Buildr
     # * :debug       -- Generate debugging info.
     # * :other       -- Array of options to pass to the Scalac compiler as is, e.g. -Xprint-types
     class Scalac < Base
+      class << self
+        def scala_home
+          home = ENV['SCALA_HOME'] or fail 'Missing SCALA_HOME environment variable'
+          fail 'Invalid SCALA_HOME environment variable' unless File.directory?(home)
+          home
+        end
+
+        def dependencies
+          FileList["#{scala_home}/lib/*"]
+        end
+      end
 
       OPTIONS = [:warnings, :deprecation, :optimise, :source, :target, :debug, :other]
+      REQUIRES = Scalac.dependencies
 
       specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
@@ -104,11 +116,10 @@ module Buildr
 
       def compile(sources, target, dependencies) #:nodoc:
         check_options options, OPTIONS
-        home = ENV['SCALA_HOME'] or fail 'Missing SCALA_HOME environment variable'
-        fail 'Invalid SCALA_HOME environment variable' unless File.directory?(home)
+        home = Scalac.scala_home
 
         cmd_args = []
-        cmd_args << '-cp' << (dependencies + FileList["#{home}/lib/*"]).join(File::PATH_SEPARATOR)
+        cmd_args << '-cp' << (dependencies + Scalac.dependencies).join(File::PATH_SEPARATOR)
         use_fsc = !(ENV["USE_FSC"] =~ /^(no|off|false)$/i)
         source_paths = sources.select { |source| File.directory?(source) }
         cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
