@@ -77,6 +77,13 @@ module Buildr
           attrs.each { |name, value| instance_variable_set("@#{name}", value) }
         end
 
+        # Returns additional dependencies required by this language.  For example, since the
+        # test framework picks on these, you can use the JUnit framework with Scala.
+        # Defaults to obtaining a list of artifact specifications from the REQUIRES constant.
+        def dependencies
+          @dependencies ||= FileList[*(const_get('REQUIRES') rescue [])]
+        end
+
       end
 
       # Construct a new compiler with the specified options.  Note that options may
@@ -103,6 +110,12 @@ module Buildr
       # specified dependencies.
       def compile(sources, target, dependencies)
         raise 'Not implemented'
+      end
+
+      # Returns additional dependencies required by this language.  For example, since the
+      # test framework picks on these, you can use the JUnit framework with Scala.
+      def dependencies
+        self.class.dependencies
       end
 
     private
@@ -320,6 +333,7 @@ module Buildr
       from Array(cls.sources).map { |path| @project.path_to(:source, @usage, path) }.
         select { |path| File.exist?(path) } if sources.empty?
       into @project.path_to(:target, @usage, cls.target) unless target
+      with @compiler.dependencies
       self
     end
 
