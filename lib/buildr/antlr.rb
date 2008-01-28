@@ -21,7 +21,7 @@ module Buildr
         end
         Java.load
         #Java.org.antlr.Tool.new_with_sig("[Ljava.lang.String;", args).process
-        Java.org.antlr.Tool.new(args.map(&:to_s)).process
+        Java.org.antlr.Tool.new(args.to_java(Java.java.lang.String)).process
       end
     end
 

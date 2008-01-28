@@ -306,9 +306,10 @@ module Buildr
       target ? target.timestamp : Rake::EARLY
     end
 
-  protected
-
+    # The project this task belongs to.
     attr_reader :project
+
+  protected
 
     # Selects which compiler to use.
     def compiler=(name) #:nodoc:

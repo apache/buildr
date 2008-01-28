@@ -31,7 +31,7 @@ describe 'javac compiler' do
     end
   end
 
-  it 'should include as classpath dependency' do
+  it 'should include classpath dependencies' do
     write 'src/dependency/Dependency.java', 'class Dependency {}'
     define 'dependency', :version=>'1.0' do
       compile.from('src/dependency').into('target/dependency')

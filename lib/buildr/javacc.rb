@@ -17,7 +17,7 @@ module Buildr
         args = args.flatten.map(&:to_s).collect { |f| File.directory?(f) ? FileList[f + "/**/*.jj"] : f }.flatten
         args.unshift "-OUTPUT_DIRECTORY=#{options[:output]}" if options[:output]
         Java.load
-        Java.org.javacc.parser.Main.mainProgram(args) == 0 or
+        Java.org.javacc.parser.Main.mainProgram(args.to_java(Java.java.lang.String)) == 0 or
           fail "Failed to run JavaCC, see errors above."
       end
 
@@ -29,7 +29,7 @@ module Buildr
         args.unshift "-OUTPUT_DIRECTORY=#{options[:output]}" if options[:output]
         args.unshift "-BUILD_NODE_FILES=#{options[:build_node_files] || false}"
         Java.load
-        Java.org.javacc.jjtree.JJTree.new.main(args) == 0 or
+        Java.org.javacc.jjtree.JJTree.new.main(args.to_java(Java.java.lang.String)) == 0 or
           fail "Failed to run JJTree, see errors above."
       end
 

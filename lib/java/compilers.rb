@@ -38,6 +38,8 @@ module Buildr
       def compile(sources, target, dependencies) #:nodoc:
         check_options options, OPTIONS
         cmd_args = []
+        tools = File.expand_path('lib/tools.jar', ENV['JAVA_HOME']) if ENV['JAVA_HOME']
+        dependencies << tools if tools && File.exist?(tools)
         cmd_args << '-cp' << dependencies.join(File::PATH_SEPARATOR) unless dependencies.empty?
         source_paths = sources.select { |source| File.directory?(source) }
         cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?

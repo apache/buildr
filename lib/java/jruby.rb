@@ -1,4 +1,5 @@
 require 'java'
+require 'jruby'
 
 
 # Buildr runs along side a JVM, using either RJB or JRuby.  The Java module allows
@@ -48,7 +49,7 @@ module Java
     # For example, Ant is loaded as follows:
     #   Java.classpath << 'org.apache.ant:ant:jar:1.7.0'
     def classpath
-      @classpath ||= java.lang.System.getProperty('java.class.path').split(':').compact
+      @classpath ||= []
     end
 
     # Loads the JVM and all the libraries listed on the classpath.  Call this
@@ -58,30 +59,34 @@ module Java
     def load
       return self if @loaded
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
-      cp.each do |lib|
-        if File.file?(lib)
-          require lib # JRuby can load jars in runtime
-        else
-          $CLASSPATH << lib
-        end
-      end
-      load_java_tools unless Config::CONFIG['host_os'] =~ /darwin/i
-      @loaded = true
-      self
-    end
-
-    def load_java_tools
-      home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
-      tools = File.expand_path('lib/tools.jar', home)
-      raise "Missing #{tools}, perhaps your JAVA_HOME is not correclty set" unless File.file?(tools)
+      #cp ||= java.lang.System.getProperty('java.class.path').split(':').compact
+      # Use system ClassLoader to add classpath.
       sysloader = java.lang.ClassLoader.getSystemClassLoader
       add_url_method = java.lang.Class.forName('java.net.URLClassLoader').
         getDeclaredMethod('addURL', [java.net.URL].to_java(java.lang.Class))
       add_url_method.setAccessible(true)
-      list = java.util.ArrayList.new
-      list.add(java.io.File.new(tools).toURL)
-      add_url_method.invoke(sysloader, list.toArray)
+      add_path = lambda { |path| add_url_method.invoke(sysloader, [java.io.File.new(path).toURL].to_java(java.net.URL)) }
+      # Include tools (compiler, Javadoc, etc) for all platforms except OS/X.
+      unless Config::CONFIG['host_os'] =~ /darwin/i
+        home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
+        tools = File.expand_path('lib/tools.jar', home)
+        raise "Missing #{tools}, perhaps your JAVA_HOME is not correclty set" unless File.file?(tools)
+        add_path[tools]
+      end
+      cp.each { |path| add_path[path] }
+      @loaded = true
+      self
     end
+
+=begin
+    def load_java_tools
+      home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
+      tools = File.expand_path('lib/tools.jar', home)
+      raise "Missing #{tools}, perhaps your JAVA_HOME is not correclty set" unless File.file?(tools)
+      loader = JRuby.runtime.get_jruby_class_loader
+      loader.add_url(java.io.File.new(tools).toURL)
+    end
+=end
 
   end
 

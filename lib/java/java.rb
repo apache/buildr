@@ -76,11 +76,14 @@ module Java
         end
         cmd_args << '-source' << options[:source] if options[:source]
         classpath = classpath_from(options)
+        tools = File.expand_path('lib/tools.jar', ENV['JAVA_HOME']) if ENV['JAVA_HOME']
+        classpath << tools if tools && File.exist?(tools)
         cmd_args << '-cp' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         cmd_args += files
         unless Rake.application.options.dryrun
           puts 'Running apt' if verbose
           puts (['apt'] + cmd_args).join(' ') if Rake.application.options.trace
+          Java.load
           Java.com.sun.tools.apt.Main.process(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to process annotations, see errors above'
         end
@@ -116,6 +119,7 @@ module Java
         unless Rake.application.options.dryrun
           puts "Compiling #{files.size} source files in #{name}" if verbose
           puts (['javac'] + cmd_args).join(' ') if Rake.application.options.trace
+          Java.load
           Java.com.sun.tools.javac.Main.compile(cmd_args.to_java(Java.java.lang.String)) == 0 or 
             fail 'Failed to compile, see errors above'
         end
@@ -213,7 +217,7 @@ module Java
     # *Deprecated:* Append to Java.classpath directly.
     def classpath
       warn_deprecated 'Append to Java.classpath instead.'
-      Java.classpath
+      ::Java.classpath
     end
 
     def classpath=(paths)
@@ -229,7 +233,7 @@ module Java
     # *Deprecated:* Use Java.load instead.
     def load
       warn_deprecated 'Use Java.load instead.'
-      Java.load
+      ::Java.load
     end
 
     alias :onload :setup
@@ -237,7 +241,7 @@ module Java
     # *Deprecated:* Use Java.pkg.pkg.ClassName to import a Java class.
     def import(class_name)
       warn_deprecated 'Use Java.pkg.pkg.ClassName to import a Java class.'
-      Java.instance_eval(class_name)
+      ::Java.instance_eval(class_name)
     end
   end
 

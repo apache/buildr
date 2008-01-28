@@ -369,9 +369,10 @@ module Buildr
       @report_to ||= file(@project.path_to(:reports, framework)=>self)
     end
 
-  protected
-
+    # The project this task belongs to.
     attr_reader :project
+
+  protected
 
     def associate_with(project)
       @project = project
