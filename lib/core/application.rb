@@ -1,3 +1,6 @@
+require 'benchmark'
+
+
 module Buildr
 
   # When running from +rake+, we already have an Application setup and must plug into it,
@@ -42,12 +45,20 @@ module Buildr
         collect_tasks
         top_level_tasks.unshift 'buildr:initialize'
       end
-
       def run()
-        standard_exception_handling do
-          find_buildfile
-          load_buildfile
-          top_level
+        times = Benchmark.measure do
+          standard_exception_handling do
+            find_buildfile
+            load_buildfile
+            top_level
+          end
+        end
+        if verbose
+          real = []
+          real << ("%ih" % (times.real / 3600)) if times.real >= 3600
+          real << ("%im" % ((times.real / 60) % 60)) if times.real >= 60
+          real << ("%.3fs" % (times.real % 60))
+          puts "Completed in #{real.join} seconds"
         end
       end
 

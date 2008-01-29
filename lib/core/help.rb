@@ -47,7 +47,7 @@ task 'help' do
       puts 'Top-level projects (buildr help:projects for full list):'
       width = [top_level.map(&:name).map(&:size), 20].flatten.max
       top_level.each do |project|
-        puts project.comment.blank? ? project.name : ("  %-#{width}s  # %s" % [project.name, project.comment])
+        puts project.comment.to_s.blank? ? project.name : ("  %-#{width}s  # %s" % [project.name, project.comment])
       end
       puts
     end
