@@ -81,7 +81,7 @@ module Buildr
         # test framework picks on these, you can use the JUnit framework with Scala.
         # Defaults to obtaining a list of artifact specifications from the REQUIRES constant.
         def dependencies
-          @dependencies ||= FileList[*(const_get('REQUIRES') rescue [])]
+          []
         end
 
       end
@@ -333,7 +333,7 @@ module Buildr
       from Array(cls.sources).map { |path| @project.path_to(:source, @usage, path) }.
         select { |path| File.exist?(path) } if sources.empty?
       into @project.path_to(:target, @usage, cls.target) unless target
-      with @compiler.dependencies
+      with Array(@compiler.dependencies)
       self
     end
 

@@ -38,8 +38,8 @@ module Buildr
       def compile(sources, target, dependencies) #:nodoc:
         check_options options, OPTIONS
         cmd_args = []
-        tools = File.expand_path('lib/tools.jar', ENV['JAVA_HOME']) if ENV['JAVA_HOME']
-        dependencies << tools if tools && File.exist?(tools)
+        #tools = File.expand_path('lib/tools.jar', ENV['JAVA_HOME']) if ENV['JAVA_HOME']
+        #dependencies << tools if tools && File.exist?(tools)
         cmd_args << '-cp' << dependencies.join(File::PATH_SEPARATOR) unless dependencies.empty?
         source_paths = sources.select { |source| File.directory?(source) }
         cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
@@ -91,13 +91,11 @@ module Buildr
     class Scalac < Base
       class << self
         def scala_home
-          home = ENV['SCALA_HOME'] or fail 'Missing SCALA_HOME environment variable'
-          fail 'Invalid SCALA_HOME environment variable' unless File.directory?(home)
-          home
+          @home ||= ENV['SCALA_HOME']
         end
 
         def dependencies
-          FileList["#{scala_home}/lib/*.jar"]
+          FileList[scala_home && "#{scala_home}/lib/*.jar"].compact
         end
 
         def use_fsc
@@ -106,7 +104,7 @@ module Buildr
       end
 
       OPTIONS = [:warnings, :deprecation, :optimise, :source, :target, :debug, :other]
-      Java.classpath << dependencies if ENV['SCALA_HOME']
+      Java.classpath << dependencies unless use_fsc
 
       specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
@@ -130,6 +128,7 @@ module Buildr
         cmd_args += files_from_sources(sources)
 
         unless Rake.application.options.dryrun
+          Scalac.scala_home or fail 'Are we forgetting something? SCALA_HOME not set.'
           puts (['scalac'] + cmd_args).join(' ') if Rake.application.options.trace
           if Scalac.use_fsc
             system(([File.expand_path('bin/fsc', Scalac.scala_home)] + cmd_args).join(' '))

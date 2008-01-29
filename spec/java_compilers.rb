@@ -41,6 +41,15 @@ describe 'javac compiler' do
     define('foo').compile.from('src/test').with(project('dependency')).invoke
     file('target/classes/DependencyTest.class').should exist
   end
+
+  it 'should include tools.jar dependency' do
+    write 'src/main/java/UseApt.java', <<-JAVA
+      import com.sun.mirror.apt.AnnotationProcessor;
+      public class UseApt { }
+    JAVA
+    define('foo').compile.invoke
+    file('target/classes/UseApt.class').should exist
+  end
 end
 
 
