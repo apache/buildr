@@ -97,12 +97,16 @@ module Buildr
         end
 
         def dependencies
-          FileList["#{scala_home}/lib/*"]
+          FileList["#{scala_home}/lib/*.jar"]
+        end
+
+        def use_fsc
+          !(ENV["USE_FSC"] =~ /^(no|off|false)$/i)
         end
       end
 
       OPTIONS = [:warnings, :deprecation, :optimise, :source, :target, :debug, :other]
-      REQUIRES = Scalac.dependencies
+      Java.classpath << dependencies if ENV['SCALA_HOME']
 
       specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
@@ -116,11 +120,9 @@ module Buildr
 
       def compile(sources, target, dependencies) #:nodoc:
         check_options options, OPTIONS
-        home = Scalac.scala_home
 
         cmd_args = []
         cmd_args << '-cp' << (dependencies + Scalac.dependencies).join(File::PATH_SEPARATOR)
-        use_fsc = !(ENV["USE_FSC"] =~ /^(no|off|false)$/i)
         source_paths = sources.select { |source| File.directory?(source) }
         cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
         cmd_args << '-d' << File.expand_path(target)
@@ -129,8 +131,8 @@ module Buildr
 
         unless Rake.application.options.dryrun
           puts (['scalac'] + cmd_args).join(' ') if Rake.application.options.trace
-          if use_fsc
-            system(([File.expand_path('bin/fsc', home)] + cmd_args).join(' '))
+          if Scalac.use_fsc
+            system(([File.expand_path('bin/fsc', Scalac.scala_home)] + cmd_args).join(' '))
           else
             Java.load
             Java.scala.tools.nsc.Main.main(cmd_args.to_java(Java.java.lang.String)) == 0 or

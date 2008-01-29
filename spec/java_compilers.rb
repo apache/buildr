@@ -38,7 +38,8 @@ describe 'javac compiler' do
       package(:jar)
     end
     write 'src/test/DependencyTest.java', 'class DependencyTest { Dependency _var; }'
-    lambda { define('foo').compile.from('src/test').with(project('dependency')).invoke }.should run_task('foo:compile')
+    define('foo').compile.from('src/test').with(project('dependency')).invoke
+    file('target/classes/DependencyTest.class').should exist
   end
 end
 
