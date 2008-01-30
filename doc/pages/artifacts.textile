@@ -138,7 +138,7 @@ $ export HTTP_PROXY = 'http://myproxy:8080'
 $ export NO_PROXY = '*.mycompany.com,localhost,special:800'
 }}}
 
-Alternatively you acn use the Buildr options @proxy.http@ and @proxy.exclude@:
+Alternatively you can use the Buildr options @proxy.http@ and @proxy.exclude@:
 
 {{{!ruby
 options.proxy.http = 'http://myproxy:8080'
