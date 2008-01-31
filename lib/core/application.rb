@@ -58,7 +58,7 @@ module Buildr
           real << ("%ih" % (times.real / 3600)) if times.real >= 3600
           real << ("%im" % ((times.real / 60) % 60)) if times.real >= 60
           real << ("%.3fs" % (times.real % 60))
-          puts "Completed in #{real.join} seconds"
+          puts "Completed in #{real.join}"
         end
       end
 

@@ -59,7 +59,7 @@ describe 'javac compiler options' do
   end
 
   def javac_args
-    Compiler::Javac.new(compile_task.options).send(:javac_args)
+    compile_task.instance_eval { @compiler }.send(:javac_args)
   end
 
   it 'should set warnings option to false by default' do
@@ -212,3 +212,198 @@ describe 'javac compiler options' do
     ENV.delete "DEBUG"
   end
 end
+
+
+describe Project, '#javadoc' do
+  def sources
+    @sources ||= (1..3).map { |i| "Test#{i}" }.
+      each { |name| write "src/main/java/foo/#{name}.java", "package foo; public class #{name}{}" }.
+      map { |name| "src/main/java/foo/#{name}.java" }
+  end
+
+  it 'should return the project\'s Javadoc task' do
+    define('foo') { compile.using(:javac) }
+    project('foo').javadoc.name.should eql('foo:javadoc')
+  end
+
+  it 'should return a Javadoc task' do
+    define('foo') { compile.using(:javac) }
+    project('foo').javadoc.should be_kind_of(Javadoc::JavadocTask)
+  end
+
+  it 'should set target directory to target/javadoc' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.target.to_s.should point_to_path('target/javadoc')
+    end
+  end
+
+  it 'should create file task for target directory' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.should_receive(:invoke_prerequisites)
+    end
+    project('foo').file('target/javadoc').invoke
+  end
+
+  it 'should respond to into() and return self' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.into('docs').should be(javadoc)
+    end
+  end
+
+  it 'should respond to into() and change target directory' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.into('docs')
+      javadoc.should_receive(:invoke_prerequisites)
+    end
+    file('docs').invoke
+  end
+
+  it 'should respond to from() and return self' do
+    task = nil
+    define('foo') { task = javadoc.from('srcs') }
+    task.should be(project('foo').javadoc)
+  end
+
+  it 'should respond to from() and add sources' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.from('srcs').should be(javadoc)
+    end
+  end
+
+  it 'should respond to from() and add file task' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.from('srcs').should be(javadoc)
+    end
+    project('foo').javadoc.source_files.first.should point_to_path('srcs')
+  end
+
+  it 'should respond to from() and add project\'s sources and dependencies' do
+    write 'bar/src/main/java/Test.java'
+    define 'foo' do
+      compile.using(:javac)
+      define('bar') { compile.using(:javac).with 'group:id:jar:1.0' }
+      javadoc.from project('foo:bar')
+    end
+    project('foo').javadoc.source_files.first.should point_to_path('bar/src/main/java/Test.java')
+    project('foo').javadoc.classpath.map(&:to_spec).should include('group:id:jar:1.0')
+  end
+
+  it 'should generate javadocs from project' do
+    sources
+    define('foo') { compile.using(:javac) }
+    project('foo').javadoc.source_files.sort.should == sources.sort.map { |f| File.expand_path(f) }
+  end
+
+  it 'should include compile dependencies' do
+    define('foo') { compile.using(:javac).with 'group:id:jar:1.0' }
+    project('foo').javadoc.classpath.map(&:to_spec).should include('group:id:jar:1.0')
+  end
+
+  it 'should respond to include() and return self' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.include('srcs').should be(javadoc)
+    end
+  end
+
+  it 'should respond to include() and add files' do
+    included = sources.first
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.include included
+    end
+    project('foo').javadoc.source_files.should include(included)
+  end
+
+  it 'should respond to exclude() and return self' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.exclude('srcs').should be(javadoc)
+    end
+  end
+
+  it 'should respond to exclude() and ignore files' do
+    excluded = sources.first
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.exclude excluded
+    end
+    sources
+    project('foo').javadoc.source_files.sort.should == sources[1..-1].map { |f| File.expand_path(f) }
+  end
+
+  it 'should respond to using() and return self' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.using(:windowtitle=>'Fooing').should be(javadoc)
+    end
+  end
+
+  it 'should respond to using() and accept options' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.using :windowtitle=>'Fooing'
+    end
+    project('foo').javadoc.options[:windowtitle].should eql('Fooing')
+  end
+
+  it 'should pick -windowtitle from project name' do
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.options[:windowtitle].should eql('foo')
+
+      define 'bar' do
+        compile.using(:javac)
+        javadoc.options[:windowtitle].should eql('foo:bar')
+      end
+    end
+  end
+
+  it 'should pick -windowtitle from project description' do
+    desc 'My App'
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.options[:windowtitle].should eql('My App')
+    end
+  end
+
+  it 'should produce documentation' do
+    sources
+    define('foo') { compile.using(:javac) }
+    project('foo').javadoc.invoke
+    (1..3).map { |i| "target/javadoc/foo/Test#{i}.html" }.each { |f| file(f).should exist }
+  end
+
+  it 'should fail on error' do
+    write 'Test.java', 'class Test {}'
+    define 'foo' do
+      compile.using(:javac)
+      javadoc.include 'Test.java'
+    end
+    lambda { project('foo').javadoc.invoke }.should raise_error(RuntimeError, /Failed to generate Javadocs/)
+  end
+
+  it 'should be local task' do
+    define 'foo' do
+      define('bar') { compile.using(:javac) }
+    end
+    project('foo:bar').javadoc.should_receive(:invoke_prerequisites)
+    in_original_dir(project('foo:bar').base_dir) { task('javadoc').invoke }
+  end
+
+  it 'should not recurse' do
+    define 'foo' do
+      compile.using(:javac)
+      define('bar') { compile.using(:javac) }
+    end
+    project('foo:bar').javadoc.should_not_receive(:invoke_prerequisites)
+    project('foo').javadoc.invoke
+  end
+end
+

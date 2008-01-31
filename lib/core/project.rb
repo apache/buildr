@@ -641,6 +641,10 @@ module Buildr
       methods.each { |method| method.call(project) }
     end
 
+    def add_callback(callback)
+      @callbacks[:after_define] << callback.method(:after_define) if callback.respond_to?(:after_define)
+    end
+
   end
 
 
@@ -730,9 +734,9 @@ module Buildr
       def extended(base) #:nodoc:
         # When extending project, add instance and call before_define.
         if Project === base
-          callbacks = self.callbacks.new
-          callbacks.before_define if callbacks.respond_to?(:before_define)
-          base.callbacks << callbacks
+          callbacks = self.send(:callbacks).new
+          callbacks.before_define(base) if callbacks.respond_to?(:before_define)
+          base.send :add_callback, callbacks
         end
       end
 

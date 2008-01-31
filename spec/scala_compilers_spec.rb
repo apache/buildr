@@ -38,7 +38,8 @@ describe 'scalac compiler' do
       package(:jar)
     end
     write 'src/test/DependencyTest.scala', 'class DependencyTest { var d: Dependency = _ }'
-    lambda { define('foo').compile.from('src/test').with(project('dependency')).invoke }.should run_task('foo:compile')
+    define('foo').compile.from('src/test').with(project('dependency')).invoke
+    file('target/classes/DependencyTest.class').should exist
   end
 end
 
@@ -49,7 +50,7 @@ describe 'scalac compiler options' do
   end
 
   def scalac_args
-    Compiler::Scalac.new(compile_task.options).send(:scalac_args)
+    compile_task.instance_eval { @compiler }.send(:scalac_args)
   end
 
   it 'should set warnings option to false by default' do

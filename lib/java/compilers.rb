@@ -27,7 +27,7 @@ module Buildr
 
       specify :language=>:java, :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
-      def initialize(options) #:nodoc:
+      def initialize(project, options) #:nodoc:
         super
         options[:debug] = Buildr.options.debug if options[:debug].nil?
         options[:warnings] = verbose if options[:warnings].nil?
@@ -38,8 +38,8 @@ module Buildr
       def compile(sources, target, dependencies) #:nodoc:
         check_options options, OPTIONS
         cmd_args = []
-        #tools = File.expand_path('lib/tools.jar', ENV['JAVA_HOME']) if ENV['JAVA_HOME']
-        #dependencies << tools if tools && File.exist?(tools)
+        tools = File.expand_path('lib/tools.jar', ENV['JAVA_HOME']) if ENV['JAVA_HOME']
+        dependencies << tools if tools && File.exist?(tools)
         cmd_args << '-cp' << dependencies.join(File::PATH_SEPARATOR) unless dependencies.empty?
         source_paths = sources.select { |source| File.directory?(source) }
         cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
@@ -108,7 +108,7 @@ module Buildr
 
       specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
-      def initialize(options) #:nodoc:
+      def initialize(project, options) #:nodoc:
         super
         options[:debug] = Buildr.options.debug if options[:debug].nil?
         options[:warnings] = verbose if options[:warnings].nil?
@@ -210,7 +210,7 @@ module Buildr
       # Includes additional source files and directories when generating the documentation
       # and returns self. When specifying a directory, includes all .java files in that directory.
       def include(*files)
-        @files.include *files
+        @files.include *files.flatten.compact
         self
       end
 

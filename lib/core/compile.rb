@@ -88,7 +88,8 @@ module Buildr
 
       # Construct a new compiler with the specified options.  Note that options may
       # change before the compiler is run.
-      def initialize(options)
+      def initialize(project, options)
+        @project = project
         @options = options
       end
 
@@ -329,7 +330,7 @@ module Buildr
       cls = Compiler.select(name) or raise ArgumentError, "No #{name} compiler available. Did you install it?"
       return self if cls === @compiler
       raise "#{compiler} compiler already selected for this project" if @compiler
-      @compiler = cls.new(options)
+      @compiler = cls.new(project, options)
       from Array(cls.sources).map { |path| @project.path_to(:source, @usage, path) }.
         select { |path| File.exist?(path) } if sources.empty?
       into @project.path_to(:target, @usage, cls.target) unless target

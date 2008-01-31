@@ -186,6 +186,71 @@ $ buildr compile
 }}}
 
 
+h3. Java
+
+The Java compiler looks for source files in the project's @src/main/java@
+directory, and defaults to compiling them into the @target/classes@ directory.
+It looks for test cases in the project's @src/test/java@ and defaults to
+compile them into the @target/test/classes@ directory.
+
+If you point the @compile@ task at any other source directory, it will use the
+Java compiler if any of these directories contains files with the extension
+@.java@.
+
+When using the Java compiler, if you don't specify the packaging type, it
+defaults to JAR.  If you don't specify the test framework, it defaults to
+JUnit.
+
+The Java compiler supports the following options:
+
+* @:debug@ -- Generates bytecode with debugging information.  You can also
+override this by setting the environment variable @debug@ to @off@.
+* @:deprecation@ -- If true, shows deprecation messages.  False by default.
+* @:lint@ -- Defaults to false.  Set this option to true to use all lint
+options, or specify a specific lint option (e.g. @:lint=>'cast'@).
+* @:other@ -- Array of options passed to the compiler (e.g.
+@:other=>'-implicit:none'@).
+* @:source@ -- Source code compatibility (e.g. '1.5').
+* @:target@ -- Bytecode compatibility (e.g. '1.4').
+* @:warnings@ -- Issue warnings when compiling.  True when running in verbose
+mode.
+
+
+h3. Scala
+
+Before using the Scala compiler, you must first set the environment variable
+@SCALA_HOME@.
+
+The Scala compiler looks for source files in the project's @src/main/scala@
+directory, and defaults to compiling them into the @target/classes@ directory.
+It looks for test cases in the project's @src/test/scala@ and defaults to
+compile them into the @target/test/classes@ directory.
+
+If you point the @compile@ task at any other source directory, it will use the
+Scala compiler if any of these directories contains files with the extension
+@.scala@.
+
+When using the Scala compiler, if you don't specify the packaging type, it
+defaults to JAR.
+
+The Scala compiler supports the following options:
+
+* @:debug@ -- Generates bytecode with debugging information.  You can also
+override this by setting the environment variable @debug@ to @off@.
+* @:deprecation@ -- If true, shows deprecation messages.  False by default.
+* @:optimise@ -- Generates faster bytecode by applying optimisations to the program.
+* @:other@ -- Array of options passed to the compiler (e.g.
+@:other=>'-Xprint-types'@).
+* @:source@ -- Source code compatibility (e.g. '1.5').
+* @:target@ -- Bytecode compatibility (e.g. '1.4').
+* @:warnings@ -- Issue warnings when compiling.  True when running in verbose
+mode.
+
+By default Buildr uses FSC, the Fast Offline Compiler.  You can switch to use
+the Scala native compiler by setting the environment variable @USE_FSC@ to
+@no@.
+
+
 h2. Resources
 
 The @compile@ task comes bundled with a @resources@ task.  It copies files from
