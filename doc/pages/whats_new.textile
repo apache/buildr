@@ -18,6 +18,8 @@ Different compilers may use different target directory, @target/classes@ is
 picked for JVM compilers (Java, Scala, etc), so resources are not copied to
 their own directory, @target/resources@.  The prepare task has been removed.
 
+"Read more about Javac and Scalac":building.html#compiling_java
+
 Not all languages have classpaths, so @compile.classpath@ is now known as
 @compile.dependencies@, but the old attribute still exists for backward
 compatibility.

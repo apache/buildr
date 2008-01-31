@@ -538,7 +538,8 @@ module Buildr
     after_define do |project|
       test = project.test
       # Dependency on compiled code, its dependencies and resources.
-      test.with project.compile.dependencies, Array(project.compile.target) if project.compile.target
+      test.with project.compile.dependencies
+      test.with Array(project.compile.target) if project.compile.target
       test.with Array(project.resources.target)
       # Dependency on compiled tests and resources.  Dependencies added using with.
       test.dependencies.concat Array(test.compile.target) if test.compile.target

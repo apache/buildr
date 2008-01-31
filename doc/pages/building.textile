@@ -186,7 +186,7 @@ $ buildr compile
 }}}
 
 
-h3. Java
+h3. Compiling Java
 
 The Java compiler looks for source files in the project's @src/main/java@
 directory, and defaults to compiling them into the @target/classes@ directory.
@@ -216,7 +216,7 @@ options, or specify a specific lint option (e.g. @:lint=>'cast'@).
 mode.
 
 
-h3. Scala
+h3. Compiling Scala
 
 Before using the Scala compiler, you must first set the environment variable
 @SCALA_HOME@.

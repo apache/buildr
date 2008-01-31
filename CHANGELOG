@@ -6,6 +6,7 @@
 * Added: EAR packaging (Victor Hugo Borja).
 * Added: Profiles(.yaml), based on the code provided by Yanko Ivanov.
 * Added: Consolidated API for RJB and JRuby, replacing the now deprecated JavaWrapper.
+* Added: JRuby 1.1 support (Victor Hugo Borja, Nick Sieger).
 * Changed: Upgraded to Rake 0.8, RSpec 1.1, RJB 1.1, Facets 2.2, OpenJPA 1.0.1.
 * Changed: Resources are now copied to target/resources instead of target/classes, and target/test/resources instead of target/test-resources.
 * Changed: Test cases are not compiled into target/test/classes instead of target/test-classes.
