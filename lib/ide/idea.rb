@@ -33,9 +33,9 @@ module Buildr
 
       # Find a path relative to the project's root directory.
       relative = lambda do |path|
-        msg = [:to_path, :to_str, :to_s].find { |msg| path.respond_to? msg }
-        path = path.__send__(msg)
-        Pathname.new(path).relative_path_from(Pathname.new(project.path_to)).to_s
+p path.to_s
+p project.path_to
+        Pathname.new(path.to_s).relative_path_from(Pathname.new(project.path_to)).to_s
       end
 
       m2repo = Buildr::Repositories.instance.local
@@ -54,13 +54,13 @@ module Buildr
         idea_types["war"] = "J2EE_WEB_MODULE"
 
         # Note: Use the test classpath since Eclipse compiles both "main" and "test" classes using the same classpath
-        cp = project.test.compile.classpath.map(&:to_s) - [ project.compile.target.to_s ]
+        deps = project.test.compile.dependencies.map(&:to_s) - [ project.compile.target.to_s ]
 
         # Convert classpath elements into applicable Project objects
-        cp.collect! { |path| Buildr.projects.detect { |prj| prj.packages.detect { |pkg| pkg.to_s == path } } || path }
+        deps.collect! { |path| Buildr.projects.detect { |prj| prj.packages.detect { |pkg| pkg.to_s == path } } || path }
 
         # project_libs: artifacts created by other projects
-        project_libs, others = cp.partition { |path| path.is_a?(Project) }
+        project_libs, others = deps.partition { |path| path.is_a?(Project) }
 
         # Separate artifacts from Maven2 repository
         m2_libs, others = others.partition { |path| path.to_s.index(m2repo) == 0 }
@@ -71,59 +71,61 @@ module Buildr
         File.open(task.name, "w") do |file|
           xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
           # Project type is going to be the first package type
-          xml.module(:version=>"4", :relativePaths=>"false", :type=>idea_types[project.packages.first.type.to_s]) do
+          if package = project.packages.first
+            xml.module(:version=>"4", :relativePaths=>"false", :type=>idea_types[package.first.type.to_s]) do
 
-            xml.component :name=>"ModuleRootManager"
-            xml.component "name"=>"NewModuleRootManager", "inherit-compiler-output"=>"false" do
-              xml.output :url=>"file://$MODULE_DIR$/#{relative[project.compile.target]}"
-              xml.tag! "exclude-output"
+              xml.component :name=>"ModuleRootManager"
+              xml.component "name"=>"NewModuleRootManager", "inherit-compiler-output"=>"false" do
+                xml.output :url=>"file://$MODULE_DIR$/#{relative[project.compile.target.to_s]}"
+                xml.tag! "exclude-output"
 
-              # TODO project.test.target isn't recognized, what's the proper way to get the test compile path?
-              xml.tag! "output-test", :url=>"file://$MODULE_DIR$/target/test-classes"
+                # TODO project.test.target isn't recognized, what's the proper way to get the test compile path?
+                xml.tag! "output-test", :url=>"file://$MODULE_DIR$/target/test-classes"
 
-              xml.content(:url=>"file://$MODULE_DIR$") do
-                srcs = project.compile.sources.map { |src| relative[src] } + generated.map { |src| relative[src] }
-                srcs.sort.uniq.each do |path|
-                  xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"false"
-                end
-                test_sources = project.test.compile.sources.map { |src| relative[src] }
-                test_sources.each do |paths|
-                  paths.sort.uniq.each do |path|
-                    xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"true"
+                xml.content(:url=>"file://$MODULE_DIR$") do
+                  srcs = project.compile.sources.map { |src| relative[src.to_s] } + generated.map { |src| relative[src.to_s] }
+                  srcs.sort.uniq.each do |path|
+                    xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"false"
                   end
-                end
-                [project.resources=>false, project.test.resources=>true].each do |resources, test|
-                  resources.sources.each do |path|
-                    xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>test.to_s
-                  end
-                end
-                xml.excludeFolder :url=>"file://$MODULE_DIR$/#{relative[project.compile.target]}"
-              end
-
-              xml.orderEntry :type=>"sourceFolder", :forTests=>"false"
-              xml.orderEntry :type=>"inheritedJdk"
-
-              # Classpath elements from other projects
-              project_libs.map(&:id).sort.uniq.each do |project_id|
-                xml.orderEntry :type=>'module', "module-name"=>project_id
-              end
-
-              # Libraries
-              ext_libs = libs.map {|path| "$MODULE_DIR$/#{path.to_s}" } +
-              m2_libs.map { |path| path.to_s.sub(m2repo, "$M2_REPO$") }
-              ext_libs.each do |path|
-                xml.orderEntry :type=>"module-library" do
-                  xml.library do
-                    xml.CLASSES do
-                      xml.root :url=>"jar://#{path}!/"
+                  test_sources = project.test.compile.sources.map { |src| relative[src.to_s] }
+                  test_sources.each do |paths|
+                    paths.sort.uniq.each do |path|
+                      xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"true"
                     end
-                    xml.JAVADOC
-                    xml.SOURCES
+                  end
+                  [project.resources=>false, project.test.resources=>true].each do |resources, test|
+                    resources.sources.each do |path|
+                      xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>test.to_s
+                    end
+                  end
+                  xml.excludeFolder :url=>"file://$MODULE_DIR$/#{relative[project.compile.target.to_s]}"
+                end
+
+                xml.orderEntry :type=>"sourceFolder", :forTests=>"false"
+                xml.orderEntry :type=>"inheritedJdk"
+
+                # Classpath elements from other projects
+                project_libs.map(&:id).sort.uniq.each do |project_id|
+                  xml.orderEntry :type=>'module', "module-name"=>project_id
+                end
+
+                # Libraries
+                ext_libs = libs.map {|path| "$MODULE_DIR$/#{path.to_s}" } +
+                m2_libs.map { |path| path.to_s.sub(m2repo, "$M2_REPO$") }
+                ext_libs.each do |path|
+                  xml.orderEntry :type=>"module-library" do
+                    xml.library do
+                      xml.CLASSES do
+                        xml.root :url=>"jar://#{path}!/"
+                      end
+                      xml.JAVADOC
+                      xml.SOURCES
+                    end
                   end
                 end
-              end
 
-              xml.orderEntryProperties
+                xml.orderEntryProperties
+              end
             end
           end
         end
