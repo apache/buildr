@@ -23,7 +23,7 @@ module Buildr
     after_define do |project|
       idea = project.task("idea")
       # We need paths relative to the top project's base directory.
-      root_path = lambda { |p| f = lambda { |p| p.parent ? f[p.parent] : p.base_dir } ; f[p] }[project]
+      root_path = lambda { |p| f = lambda { |p| p.parent ? f[p.parent] : p.base_dir }; f[p] }[project]
       # We want the Eclipse files changed every time the Buildfile changes, but also anything loaded by
       # the Buildfile (buildr.rb, separate file listing dependencies, etc), so we add anything required
       # after the Buildfile. So which don't know where Buildr shows up exactly, ignore files that show
@@ -33,8 +33,6 @@ module Buildr
 
       # Find a path relative to the project's root directory.
       relative = lambda do |path|
-p path.to_s
-p project.path_to
         Pathname.new(path.to_s).relative_path_from(Pathname.new(project.path_to)).to_s
       end
 
@@ -68,37 +66,43 @@ p project.path_to
         # Generated: classpath elements in the project are assumed to be generated
         generated, libs = others.partition { |path| path.to_s.index(project.path_to.to_s) == 0 }
 
-        File.open(task.name, "w") do |file|
-          xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
-          # Project type is going to be the first package type
-          if package = project.packages.first
-            xml.module(:version=>"4", :relativePaths=>"false", :type=>idea_types[package.first.type.to_s]) do
+        # Project type is going to be the first package type
+        if package = project.packages.first
+          File.open(task.name, "w") do |file|
+            xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
 
+            xml.module(:version=>"4", :relativePaths=>"false", :type=>idea_types[package.type.to_s]) do
               xml.component :name=>"ModuleRootManager"
               xml.component "name"=>"NewModuleRootManager", "inherit-compiler-output"=>"false" do
-                xml.output :url=>"file://$MODULE_DIR$/#{relative[project.compile.target.to_s]}"
+                has_compile_sources = project.compile.target.to_s.size > 0
+                xml.output :url=>"file://$MODULE_DIR$/#{relative[project.compile.target.to_s]}" if has_compile_sources
                 xml.tag! "exclude-output"
 
                 # TODO project.test.target isn't recognized, what's the proper way to get the test compile path?
                 xml.tag! "output-test", :url=>"file://$MODULE_DIR$/target/test-classes"
 
                 xml.content(:url=>"file://$MODULE_DIR$") do
-                  srcs = project.compile.sources.map { |src| relative[src.to_s] } + generated.map { |src| relative[src.to_s] }
-                  srcs.sort.uniq.each do |path|
-                    xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"false"
-                  end
-                  test_sources = project.test.compile.sources.map { |src| relative[src.to_s] }
-                  test_sources.each do |paths|
-                    paths.sort.uniq.each do |path|
-                      xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"true"
+                  if has_compile_sources
+                    srcs = project.compile.sources.map { |src| relative[src.to_s] } + generated.map { |src| relative[src.to_s] }
+                    srcs.sort.uniq.each do |path|
+                      xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"false"
+                    end
+
+                    test_sources = project.test.compile.sources.map { |src| relative[src.to_s] }
+                    test_sources.each do |paths|
+                      paths.sort.uniq.each do |path|
+                        xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"true"
+                      end
                     end
                   end
                   [project.resources=>false, project.test.resources=>true].each do |resources, test|
-                    resources.sources.each do |path|
-                      xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>test.to_s
+                    resources.each do |path|
+                      path[0].sources.each do |srcpath|
+                        xml.sourceFolder :url=>"file://#{srcpath}", :isTestSource=>path[1].to_s
+                      end
                     end
                   end
-                  xml.excludeFolder :url=>"file://$MODULE_DIR$/#{relative[project.compile.target.to_s]}"
+                  xml.excludeFolder :url=>"file://$MODULE_DIR$/#{relative[project.compile.target.to_s]}" if has_compile_sources
                 end
 
                 xml.orderEntry :type=>"sourceFolder", :forTests=>"false"
@@ -111,7 +115,7 @@ p project.path_to
 
                 # Libraries
                 ext_libs = libs.map {|path| "$MODULE_DIR$/#{path.to_s}" } +
-                m2_libs.map { |path| path.to_s.sub(m2repo, "$M2_REPO$") }
+                    m2_libs.map { |path| path.to_s.sub(m2repo, "$M2_REPO$") }
                 ext_libs.each do |path|
                   xml.orderEntry :type=>"module-library" do
                     xml.library do
@@ -151,7 +155,9 @@ p project.path_to
                 path = "#{module_path}/#{module_name}.iml"
                 xml.module :fileurl=>"file://$PROJECT_DIR$/#{path}", :filepath=>"$PROJECT_DIR$/#{path}"
               end
-              xml.module :fileurl=>"file://$PROJECT_DIR$/#{project.name}.iml", :filepath=>"$PROJECT_DIR$/#{project.name}.iml"
+              if package = project.packages.first
+                xml.module :fileurl=>"file://$PROJECT_DIR$/#{project.name}.iml", :filepath=>"$PROJECT_DIR$/#{project.name}.iml"
+              end
             end
           end
 
@@ -164,9 +170,9 @@ p project.path_to
         end
       end
 
-    end
+    end #after define
 
-  end
+  end #module Idea
 end # module Buildr
 
 
