@@ -64,7 +64,8 @@ module Buildr
         # directories.  For example, Javac returns true if any of the source directories contains
         # a .java file.  The default implementation looks to see if there are any files in the
         # specified path with the extension #source_ext.
-        def applies_to?(paths)
+        def applies_to?(project, task)
+          paths = task.sources + Array(project.path_to(:source, task.usage, sources.to_sym))
           paths.any? { |path| !Dir["#{path}/**/*.#{source_ext}"].empty? }
         end
 
@@ -298,7 +299,7 @@ module Buildr
     # a specific compiler (see #using).
     def compiler
       unless @compiler
-        candidate = Compiler.compilers.detect { |cls| cls.applies_to?(sources) }
+        candidate = Compiler.compilers.detect { |cls| cls.applies_to?(project, self) }
         self.compiler = candidate if candidate
       end
       @compiler && @compiler.class.to_sym
@@ -323,6 +324,9 @@ module Buildr
     # The project this task belongs to.
     attr_reader :project
 
+    # The usage, one of :main or :test.
+    attr_reader :usage
+
   protected
 
     # Selects which compiler to use.
@@ -331,9 +335,9 @@ module Buildr
       return self if cls === @compiler
       raise "#{compiler} compiler already selected for this project" if @compiler
       @compiler = cls.new(project, options)
-      from Array(cls.sources).map { |path| @project.path_to(:source, @usage, path) }.
+      from Array(cls.sources).map { |path| project.path_to(:source, usage, path) }.
         select { |path| File.exist?(path) } if sources.empty?
-      into @project.path_to(:target, @usage, cls.target) unless target
+      into project.path_to(:target, usage, cls.target) unless target
       with Array(@compiler.dependencies)
       self
     end
@@ -342,8 +346,7 @@ module Buildr
     def associate_with(project, usage) #:nodoc:
       @project, @usage = project, usage
       # Try to guess if we have a compiler to match source files.
-      candidate = Compiler.compilers.detect { |cls|
-        cls.applies_to?(Array(cls.sources).map { |path| @project.path_to(:source, @usage, path) }) }
+      candidate = Compiler.compilers.detect { |cls| cls.applies_to?(project, self) }
       self.compiler = candidate if candidate
     end
 

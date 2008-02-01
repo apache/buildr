@@ -45,6 +45,7 @@ module Buildr
         collect_tasks
         top_level_tasks.unshift 'buildr:initialize'
       end
+
       def run()
         times = Benchmark.measure do
           standard_exception_handling do
@@ -106,11 +107,23 @@ module Buildr
         load_imports
       end
 
+      def collect_tasks
+        @top_level_tasks = []
+        ARGV.each do |arg|
+          if arg =~ /^(\w+)=(.*)$/
+            ENV[$1.upcase] = $2
+          else
+            @top_level_tasks << arg
+          end
+        end
+        @top_level_tasks.push("default") if @top_level_tasks.size == 0
+      end
+
       def usage()
         puts "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby)'}"
         puts
         puts 'Usage:'
-        puts '  buildr [-f buildfile] {options} targets...'
+        puts '  buildr [options] [tasks] [name=value]'
       end
 
       def help()
