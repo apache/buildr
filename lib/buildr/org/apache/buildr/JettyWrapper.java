@@ -48,7 +48,7 @@ public class JettyWrapper {
 
     private class BuildrHandler extends AbstractHandler {
 
-        private HashMap<String,WebAppContext> _apps = new HashMap<String,WebAppContext>();
+        private HashMap _apps = new HashMap();
 
         public void handle(String string, HttpServletRequest request,
                            HttpServletResponse response, int i) throws IOException, ServletException {

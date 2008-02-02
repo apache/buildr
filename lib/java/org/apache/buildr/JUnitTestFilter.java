@@ -24,8 +24,8 @@ public class JUnitTestFilter {
   }
 
   public String[] filter(String[] names) throws ClassNotFoundException {
-    Vector<String> testCases = new Vector<String>();
-    Class<?> testCase = _loader.loadClass("junit.framework.TestCase");
+    Vector testCases = new Vector();
+    Class testCase = _loader.loadClass("junit.framework.TestCase");
     for (int i = 0 ; i < names.length ; ++i) {
       Class cls = _loader.loadClass(names[i]);
       if (testCase.isAssignableFrom(cls))

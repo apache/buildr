@@ -935,7 +935,6 @@ shared_examples_for 'package_with_' do
   end
 end
 
-
 describe 'package_with_sources' do
   it_should_behave_like 'package_with_'
   before { @packaging = :sources }

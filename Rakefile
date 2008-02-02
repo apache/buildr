@@ -103,6 +103,7 @@ Spec::Rake::SpecTask.new('spec:report') do |task|
   task.spec_opts << '--format' << 'html:html/report.html' << '--backtrace'
   task.rcov = true
   task.rcov_dir = 'html/coverage'
+  task.rcov_opts = ['--exclude', 'spec,bin']
 end
 
 task 'spec:jruby' do
@@ -270,13 +271,13 @@ end
 task 'compile' do
   # RJB, JUnit and friends.
   Dir.chdir 'lib/java' do
-    `javac -Xlint:all org/apache/buildr/*.java`
+    `javac -source 1.4 -target 1.4 -Xlint:all org/apache/buildr/*.java`
   end
 
   # Jetty server.
   cp = ['jetty-6.1.1.jar', 'jetty-util-6.1.1.jar', 'servlet-api-2.5-6.1.1'].
     map { |jar| `locate #{jar}`.split.first }.join(File::PATH_SEPARATOR)
-  Dir.chdir 'lib/buildr/jetty' do
-    `javac -Xlint:all -cp #{cp} JettyWrapper.java`
+  Dir.chdir 'lib/buildr' do
+    `javac -source 1.4 -target 1.4 -Xlint:all -cp #{cp} org/apache/buildr/*.java`
   end
 end

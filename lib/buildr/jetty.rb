@@ -37,7 +37,7 @@ module Buildr
       "org.slf4j:slf4j-simple:jar:#{SLF4J_VERSION}", "org.slf4j:jcl104-over-slf4j:jar:#{SLF4J_VERSION}" ]
      
     Java.classpath <<  REQUIRES
-    Java.classpath << File.join(__DIR__, "jetty")
+    Java.classpath << File.join(__DIR__)
     
     # Default URL for Jetty (change with options.jetty.url).
     URL = "http://localhost:8080"
@@ -79,7 +79,7 @@ module Buildr
         port = URI.parse(url).port
         puts "Starting Jetty at http://localhost:#{port}" if verbose
         Java.load
-        jetty = Java.JettyWrapper.new(port)
+        jetty = Java.org.apache.buildr.JettyWrapper.new(port)
         sync << "Started" if sync
         sleep # Forever
       rescue Interrupt # Stopped from console

@@ -7,6 +7,27 @@ describe 'javac compiler' do
     define('foo').compile.compiler.should eql(:javac)
   end
 
+  it 'should identify from source directories using custom layout' do
+    write 'src/com/example/Code.java', 'package com.example; class Code {}' 
+    write 'testing/com/example/Test.java', 'package com.example; class Test {}' 
+    custom = Layout.new
+    custom[:source, :main, :java] = 'src'
+    custom[:source, :test, :java] = 'testing'
+    define 'foo', :layout=>custom do
+      compile.compiler.should eql(:javac)
+      test.compile.compiler.should eql(:javac)
+    end
+  end
+
+  it 'should identify from compile source directories' do
+    write 'src/com/example/Code.java', 'package com.example; class Code {}' 
+    write 'testing/com/example/Test.java', 'package com.example; class Test {}' 
+    define 'foo' do
+      lambda { compile.from 'src' }.should change { compile.compiler }.to(:javac)
+      lambda { test.compile.from 'testing' }.should change { test.compile.compiler }.to(:javac)
+    end
+  end
+
   it 'should report the language as :java' do
     define('foo').compile.using(:javac).language.should eql(:java)
   end
