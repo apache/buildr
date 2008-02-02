@@ -151,53 +151,6 @@ end
 }}}
 
 
-h2.  Using Java Libraries
-
-Buildr runs along side a JVM, using either RJB or JRuby.  The Java module
-allows you to access Java classes and create Java objects.
-
-Java classes are accessed as static methods on the @Java@ module, for example:
-
-{{{!ruby
-str = Java.java.lang.String.new('hai!')
-str.toUpperCase
-=> 'HAI!'
-Java.java.lang.String.isInstance(str)
-=> true
-Java.com.sun.tools.javac.Main.compile(args)
-}}}
-
-The @classpath@ attribute allows Buildr to add JARs and directories to the
-classpath, for example, we use it to load Ant and various Ant tasks, code
-generators, test frameworks, and so forth.
-
-When using an artifact specification, Buildr will automatically download and
-install the artifact before adding it to the classpath.
-
-For example, Ant is loaded as follows:
-
-{{{!ruby
-Java.classpath << 'org.apache.ant:ant:jar:1.7.0'
-}}}
-
-Artifacts can only be downloaded after the Buildfile has loaded, giving it a
-chance to specify which remote repositories to use, so adding to classpath does
-not by itself load any libraries.  You must call @Java.load@ before accessing any
-Java classes to give Buildr a chance to load the libraries specified in the
-classpath.
-
-When building an extension, make sure to follow these rules:
-
-# Add to the @classpath@ when the extension is loaded (i.e. in module or class
-definition), so the first call to @Java.load@ anywhere in the code will include
-the libraries you specify.
-# Call @Java.load@ once before accessing any Java classes, allowing Buildr to
-set up the classpath.
-# Only call @Java.load@ when invoked, otherwise you may end up loading the JVM
-with a partial classpath, or before all remote repositories are listed.
-# Check on a clean build with empty local repository.
-
-
 h2.  Using Alternative Layouts
 
 Buildr follows a common convention for project layouts: Java source files

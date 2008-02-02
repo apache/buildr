@@ -163,7 +163,7 @@ You can do that when running Buildr:
 $ buildr test=no
 }}}
 
-Or set it once in your environment[1]:
+Or set it once in your environment:
 
 {{{!sh
 $ export TEST=no
@@ -364,19 +364,10 @@ you create a package with different specifications (for example, you specify a
 classifier) your checks must call @package@ with the same qualifying arguments
 to return the very same package task.
 
-Buildr expectations are based on RSpec.  Check the RSpec documentation if want
-to see all the supported matchers, or want to write your own.
+Buildr expectations are based on RSpec.  "RSpec":http://rspec.info/ is the
+behavior-driven development framework we use to test Buildr itself.  Check the
+RSpec documentation if want to see all the supported matchers, or want to write
+your own.
 
-We're almost done, but there's "a few more things":more_stuff.html you'll want
-to learn.
-
-
-fn1.  When Buildr sees @foo=bar@ on the command line, it sets the environment
-variable @foo@ to the value "bar".  Environment variables are available from
-the @ENV@ global variable and are case sensitive.  You can use that to other
-effects, for example, you can use an environment variable called build with
-values like "dev", "stage", "deploy" to change how your build works in
-different settings.
-
-fn2. "RSpec":http://rspec.info/ is the behavior-driven development
-framework we use to test Buildr itself. 
+Next, let's talk about "customizing your environment and using
+profiles":settings_profiles.html

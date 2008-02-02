@@ -1,215 +1,51 @@
 h1. More Stuff
 
 
-h2. Help Tasks
+h2.  Using Java Libraries
 
-Buildr includes a number of informative tasks.  Currently that number stands
-at two, but we'll be adding more tasks in future releases.
+Buildr runs along side a JVM, using either RJB or JRuby.  The Java module
+allows you to access Java classes and create Java objects.
 
-To start with, type:
-
-{{{!sh
-$ buildr help
-}}}
-
-You can list the name and description of all your projects using the
-@help:projects@ task.  For example:
-
-{{{!sh
-$ buildr help:projects
-killer-app                 # Code. Build. ??? Profit!
-killer-app:teh-api         # Abstract classes and interfaces
-killer-app:teh-impl        # All those implementation details
-killer-app:la-web          # What our users see
-}}}
-
-You are, of course, describing your projects for the sake of those who will
-maintain your code, right?  To describe a project, or a task, call the @desc@
-method before the project or task definition.
-
-
-h2. Environment and Personal Settings
-
-In many cases you will want to customize your build to deal with different
-environments and configurations, customize how it runs on your machine, and
-even control the build each time you run the @buildr@ command.  The following
-sections will show you how to do that.
-
-
-h4. Environments
-
-One common use case is adapting the build to different environments.  For
-example, to compile code with debugging information during development and
-testing, but strip it for production.  Another example is using different
-databases for development, testing and production, or using services at
-different URLs.
-
-So let's start by talking about the build environment.  Buildr has a global
-attributes that indicates which environment it's running in, accessible from the
-@environment@ method.  You can set the current build environment in one of two
-ways.  Using the @-e@ command line option:
-
-{{{!sh
-$ buildr -e test
-(in /home/john/project, test)
-}}}
-
-Or by setting the environment variable @BUILDR_ENV@:
-
-{{{!
-$ export BUILDR_ENV=production
-$ buildr
-(in /home/john/project, production)
-}}}
-
-The default environment is "development".
-
-Here's a simple example for handling different environments within the
-Buildfile:
+Java classes are accessed as static methods on the @Java@ module, for example:
 
 {{{!ruby
-project 'db-module' do
-  db = (environment == 'production' ? 'oracle' : 'hsql')
-  resources.from(_(:source, :main, db))
-end
+str = Java.java.lang.String.new('hai!')
+str.toUpperCase
+=> 'HAI!'
+Java.java.lang.String.isInstance(str)
+=> true
+Java.com.sun.tools.javac.Main.compile(args)
 }}}
 
+The @classpath@ attribute allows Buildr to add JARs and directories to the
+classpath, for example, we use it to load Ant and various Ant tasks, code
+generators, test frameworks, and so forth.
 
-h4.  Profiles
+When using an artifact specification, Buildr will automatically download and
+install the artifact before adding it to the classpath.
 
-Different environments may require different configurations, and you can handle
-a lot of that by using the profile file.  The profile file is a YAML file
-called @profile.yaml@ that you place in the same directory as the Buildfile.
-We selected YAML because it's easier to read and edit than XML.
-
-For example, to support three different database configurations, we could write:
-
-{{{!yaml
-development:
-  db: hsql
-test:
-  db: oracle
-production:
-  db: oracle
-}}}
-
-And change the Buildfile to use the profile:
+For example, Ant is loaded as follows:
 
 {{{!ruby
-project 'db-module' do
-  db = profile['db']
-  resources.from(_(:source, :main, db))
-end
+Java.classpath << 'org.apache.ant:ant:jar:1.7.0'
 }}}
 
-The @profile@ method returns a profile that matches the current environment.
-For the development environment, it returns a hash with the name/value pair
-@'db'=>'hsql'@.
+Artifacts can only be downloaded after the Buildfile has loaded, giving it a
+chance to specify which remote repositories to use, so adding to classpath does
+not by itself load any libraries.  You must call @Java.load@ before accessing any
+Java classes to give Buildr a chance to load the libraries specified in the
+classpath.
 
-You can "learn more about YAML here":http://www.yaml.org, and use this handy
-"YAML quick reference":http://www.yaml.org/refcard.html.
+When building an extension, make sure to follow these rules:
 
-
-h4. Personal Settings
-
-Some things clearly do not belong in the Buildfile.  For example, the
-username/password you use to upload releases.  If you're working in a team or
-on an open source project, you'd want to keep these in a separate place.
-
-You may want to use personal settings for picking up a different location for
-the local repository, or use a different set of preferred remote repositories,
-and so forth.
-
-Before loading the Buildfile, Buildr will attempt to load two @buildr.rb@
-files.  First, the @buildr.rb@ file it finds in your home directory, and then
-the @buildr.rb@ file it finds in the build directory.  That order is important,
-it allows you to place global settings that affect all your builds in your home
-directory's @buildr.rb@, but also over-ride those with settings for a given
-project.
-
-Here's an example @buildr.rb@:
-
-{{{!ruby
-# Only I should know that
-repositories.upload_to[:username] = 'assaf'
-repositories.upload_to[:password] = 'supersecret'
-# Search here first, it's faster
-repositories.remote << 'http://inside-the-firewall'
-}}} 
-
-
-h4.  Environment Variables
-
-Buildr uses several environment variables that help you control how it works.
-Environment variables are used in addition to profiles and personal settings in
-two cases:
-
-* When you need to control the build from the command line, for example,
-specifying the build environment using @BUILDR_ENV@, or skipping tests using
-@test=no@.
-
-* For commonly used environment variables, such as @JAVA_HOME@, @JAVA_OPTS@ and
-@HTTP_PROXY@.
-
-Some environment variables you will only set once or change infrequently.
-Other environment variables may change more often, for example, running a build
-with different versions of the JDK, or disabling tests.  You can change these
-variables when running Buildr by adding @name=value@ as a command line argument.
-
-For example:
-
-{{{!sh
-$ buildr test=no
-}}}
-
-You can also change environment variables from within the Buildfile.  For
-example, if your build needs more JVM heap space than the default, you can add
-a line like this to your Buildfile:
-
-{{{!ruby
-# This project builds a lot of code.
-ENV['JAVA_OPTS'] = '-Xms1g -Xmx1g'
-}}}
-
-Make sure to set environment variables at the very top of the Buildfile, above
-any @requires@ or other Ruby statements.
-
-Buildr uses the following environment variables.
-
-*BUILDR_ENV* -- Environment name that you can also set using the @-e@ command
-line option.
-
-*DEBUG* -- Set to @off@ if you want Buildr to compile without debugging
-information (default when running @release@, see
-"Compiling":building.html#compiling).
-
-*HTTP_PROXY* -- URL for HTTP proxy server (see "Specifying
-Repositories":artifacts.html#specifying_repositories).
-
-*JAVA_HOME* -- Points to your JDK, required for running Buildr.
-
-*JAVA_OPTS/JAVA_OPTIONS* -- Command line options to pass to the JDK (e.g.
-@'-Xms1g'@)[1].
-
-*NO_PROXY* -- Comma separated list of hosts and domain that should not be
-proxied (see "Specifying
-Repositories":artifacts.html#specifying_repositories).
-
-*TEST* -- Set to @off@ to tell Buildr to skip tests, or @all@ to tell Buildr
-to run all tests and ignore failures (see "Running
-Tests":testing.html#running_tests).
-
-*USER* -- Tasks that need your user name, for example to log to remote serers,
-will use this environment variable.
-
-If you need to, you can always use more environment variables.  This example
-uses two environment variables for specifying the username and password for
-uploading artifacts:
-
-{{{!ruby
-repositories.upload_to[:username] = ENV['USERNAME']
-repositories.upload_to[:password] = ENV['PASSWORD']
-}}}
+# Add to the @classpath@ when the extension is loaded (i.e. in module or class
+definition), so the first call to @Java.load@ anywhere in the code will include
+the libraries you specify.
+# Call @Java.load@ once before accessing any Java classes, allowing Buildr to
+set up the classpath.
+# Only call @Java.load@ when invoked, otherwise you may end up loading the JVM
+with a partial classpath, or before all remote repositories are listed.
+# Check on a clean build with empty local repository.
 
 
 h2. Eclipse, IDEA
@@ -359,4 +195,3 @@ puts "That contain #{lines} lines"
 }}}
 
 
-fn1. Buildr does not check any of the arguments in @JAVA_OPTS@.  A common mistake is to pass an option like @mx512mb@, where it should be @Xmx512mb@.  Make sure to double check @JAVA_OPTS@.

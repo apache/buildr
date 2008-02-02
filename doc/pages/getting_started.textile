@@ -42,21 +42,78 @@ $ buildr
 You use Buildr by running the @buildr@ command:
 
 {{{!sh
-buildr [-f buildfile] {options} targets...
+$ buildr [options] [tasks] [name=value]
 }}}
 
 There are several options you can use, for a full list of options type:
 
 {{{!sh
-buildr --help
+$ buildr --help
 }}}
 
-Once you have a Buildfile ready, you can find out even more information by
-running the _help_ task:
+|_. Option                  |_. Description                                           |
+| @-f/--buildfile [file]@   | Specify the buildfile.                                  |
+| @-e/--environment [name]@ | Environment name (e.g. development, test, production).  |
+| @-h/--help@               | Display this help message.                              |
+| @-n/--nosearch@           | Do not search parent directories for the buildfile.     |
+| @-q/--quiet@              | Do not log messages to standard output.                 |
+| @-r/--require [file]@     | Require MODULE before executing buildfile.              |
+| @-t/--trace@              | Turn on invoke/execute tracing, enable full backtrace.  |
+| @-v/--version@            | Display the program version.                            |
+
+You can tell Buildr to run specific tasks and the order to run them.  For
+example:
 
 {{{!sh
-buildr help
+# Clean and rebuild
+buildr clean build
+# Package and install
+buildr install
 }}}
+
+If you don't specify a task, Buildr will run the "@build@ task":building.html,
+compiling source code and running test cases.  Running a task may run other
+tasks as well, for example, running the @install@ task will also run @package@.
+
+There are several "environment
+variables":settings_profiles.html#environment_variables that let you control
+how Buildr works, for example, to skip test cases during a build, or specify
+options for the JVM.  Depending on the variable, you may want to set it once in
+your environment, or set a different value each time you run Buildr.
+
+For example:
+
+{{{!sh
+$ export JAVA_OPTS='-Xms1g -Xmx1g'
+$ buildr TEST=no
+}}}
+
+
+h2. Help Tasks
+
+Buildr includes a number of informative tasks.  Currently that number stands
+at two, but we'll be adding more tasks in future releases.
+
+To start with, type:
+
+{{{!sh
+$ buildr help
+}}}
+
+You can list the name and description of all your projects using the
+@help:projects@ task.  For example:
+
+{{{!sh
+$ buildr help:projects
+killer-app                 # Code. Build. ??? Profit!
+killer-app:teh-api         # Abstract classes and interfaces
+killer-app:teh-impl        # All those implementation details
+killer-app:la-web          # What our users see
+}}}
+
+You are, of course, describing your projects for the sake of those who will
+maintain your code, right?  To describe a project, or a task, call the @desc@
+method before the project or task definition.
 
 
 h2. More Info

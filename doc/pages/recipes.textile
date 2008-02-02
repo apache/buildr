@@ -3,7 +3,7 @@ h1. Recipes
 Commond recipes for Buildr, collected from the mailing list.
 
 
-h4.  Creating a classpath
+h2.  Creating a classpath
 
 For Java, the classpath argument is simply a list of paths joined with an
 OS-specific path separator:
@@ -43,11 +43,11 @@ cp = Buildr.artifacts(specs).each(&:invoke).map(&:name).join(File::PATH_SEPARATO
 }}}
 
 
-h4.  Keeping your Profiles.yaml file DRY
+h2.  Keeping your Profiles.yaml file DRY
 
-YAML allows you to write an object (map, array, etc) once and reference it in
-several places using anchors and aliases (@&@ and @*@).  For example, if you
-have several profiles, all with the same information, you can write this:
+YAML allows you to use anchors (@&@), similar to ID attributes in XML, and
+reference them later on (@*@).  For example, if you have two profiles that are
+identical, you can tell YAML that one is an alias for the other:
 
 {{{!yaml
 development: &common
@@ -57,22 +57,31 @@ test: *common
 production: *common
 }}}
 
-You can use the merge key (@<<@) to create a name/value map that merges default
-values from another name/value map, for example:
+If you have two elements that are almost identical, you can merge the values of
+one element into another (@<<@), for example:
 
 {{{!yaml
-common: &common
-  db: oracle
-  port: 8080
-development:
-  <<: *common
+development: &common
   db: hsql
-test: *common
-production: *common
+  jdbc: hsqldb:mem:devdb
+test:
+  <<: *common
+  jdbc: hsqldb:file:testdb
 }}}
 
 
-h4.  Continuous Integration with Atlassian Bamboo
+h2.  Speeding JRuby
+
+When using JRuby you will notice that Buildr takes a few seconds to start up.
+To speed it up, we recommend switching to Java 1.6 and running the JVM in
+client mode:
+
+{{{!
+$ export JAVA_OPTS=-client
+}}}
+
+
+h2.  Continuous Integration with Atlassian Bamboo
 
 This recipe outlines how to configure a new Bamboo project to use Buildr.  The
 following steps assume that you have logged-on to Bamboo as an Administrator.

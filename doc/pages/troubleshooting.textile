@@ -3,7 +3,7 @@ h1. Troubleshooting
 Common troubleshooting tips collected from the mailing list.
 
 
-h4.  Running out of heap space
+h2.  Running out of heap space
 
 You can give the JVM more heap space by setting the @JAVA_OPTS@ environment
 variables.  This environment variable provides arguments for staring the JVM.
@@ -25,7 +25,7 @@ ENV['JAVA_OPTS'] = '-Xms1g -Xmx1g'
 }}}
 
 
-h4.  RJB fails to compile
+h2.  RJB fails to compile
 
 On Linux, BSD and Cygwin, RJB locates the JDK headers files -- which it uses to
 compile a native C extension -- based on the @JAVA_HOME@ environment variable.
@@ -40,7 +40,7 @@ $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr
 }}}
 
 
-h4.  Segmentation Fault when running Java code
+h2.  Segmentation Fault when running Java code
 
 This is most likely a JVM inconsistency, for example, when part of the RJB
 library uses JDK 1.6, the other part uses JDK 1.5.
@@ -58,7 +58,7 @@ ls -l /usr/bin/javac
 }}}
 
 
-h4.  Bugs resulting from a dangling comma or period
+h2.  Bugs resulting from a dangling comma or period
 
 Ruby statements don't need a delimiter and can span multiple lines, which can
 lead to bugs resulting from dangling commas and periods left at the end of the

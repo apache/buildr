@@ -86,6 +86,37 @@ Bridge), the JRuby version obviously can do well without it.
 "Read more ...":download.html#jruby
 
 
+h4.  Profiles
+
+Different environments may require different configurations, some you will want
+to control with code, others you will want to specify in the profiles file.
+
+The profiles file is a YAML file called @profiles.yaml@ that you place in the
+same directory as the Buildfile.  We selected YAML because it's easier to read
+and edit than XML.
+
+For example, to support three different database configurations, we could write:
+
+{{{!yaml
+# HSQL, don't bother storing to disk.
+development:
+  db: hsql
+  jdbc: hsqldb:mem:devdb
+
+# Make sure we're not messing with bigstrong.
+test:
+  db: oracle
+  jdbc: oracle:thin:@localhost:1521:test
+
+# The real deal.
+production:
+  db: oracle
+  jdbc: oracle:thin:@bigstrong:1521:mighty
+}}}
+
+"Read more ...":settings_profiles.html#profiles
+
+
 h4.  New API for accessing Java libraries
 
 Java classes are accessed as static methods on the @Java@ module, for example:
@@ -115,7 +146,7 @@ not by itself load any libraries.  You must call @Java.load@ before accessing an
 Java classes to give Buildr a chance to load the libraries specified in the
 classpath.
 
-"Read more ...":extending.html#using_java_libraries
+"Read more ...":more_stuff.html#using_java_libraries
 
 
 h4.  Creating Extensions
@@ -197,6 +228,11 @@ systems and configurations.
 * A new "Contributing":contributing.html page has more details on how to file
 bugs, policy for submitting patches, running Buildr test cases, and helping
 with the documentation.
+
+* A new page for "Settings and Profiles":settings_profiles.html.
+
+* The "Extending Buildr":extending.html page that deals with writing your own
+tasks, creating extensions and specifying alternative layouts.
 
 * The site also includes "RSpec test report":report.html and "Test coverage
 report":coverage/index.html.

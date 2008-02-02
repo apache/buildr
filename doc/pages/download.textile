@@ -179,6 +179,14 @@ To install a specific version of Buildr:
 $ sudo gem install buildr -v 1.3.0
 }}}
 
+When using JRuby you will notice that Buildr takes a few seconds to start up.
+To speed it up, we recommend switching to Java 1.6 and running the JVM in
+client mode:
+
+{{{!
+$ export JAVA_OPTS=-client
+}}}
+
 
 h2.  Using JRuby and Ruby
 
