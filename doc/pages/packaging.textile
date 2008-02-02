@@ -125,7 +125,7 @@ control over these arrays, you can always work with them directly, for example:
 # Add an artifact to the existing set:
 package(:war).libs += artifacts(MYSQL_JDBC)
 # Remove an artifact from the existing set:
-package(:war).libs += artifacts(LOG4J)
+package(:war).libs -= artifacts(LOG4J)
 # List all the artifacts:
 puts 'Artifacts included in WAR package:'
 puts package(:war).libs.map(&:to_spec)
