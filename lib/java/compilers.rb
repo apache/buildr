@@ -104,7 +104,7 @@ module Buildr
       end
 
       OPTIONS = [:warnings, :deprecation, :optimise, :source, :target, :debug, :other]
-      Java.classpath << dependencies unless use_fsc
+      Java.classpath << dependencies unless Scalac.use_fsc
 
       specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
@@ -131,7 +131,8 @@ module Buildr
           Scalac.scala_home or fail 'Are we forgetting something? SCALA_HOME not set.'
           puts (['scalac'] + cmd_args).join(' ') if Rake.application.options.trace
           if Scalac.use_fsc
-            system(([File.expand_path('bin/fsc', Scalac.scala_home)] + cmd_args).join(' '))
+            system(([File.expand_path('bin/fsc', Scalac.scala_home)] + cmd_args).join(' ')) or
+              fail 'Failed to compile, see errors above'
           else
             Java.load
             Java.scala.tools.nsc.Main.main(cmd_args.to_java(Java.java.lang.String)) == 0 or
