@@ -62,6 +62,10 @@ AXIOM  = group('axiom-api', 'axiom-impl', 'axiom-dom',
   :under=>'org.apache.ws.commons.axiom', :version=>'1.2.4')
 }}}
 
+*Note:* Buildr projects also define a @group@ attribute which can lead to some 
+confusion.  If you want to define an artifact group within a project definition,
+you should use the explicit qualifier @Buildr::group@.
+
 If you have several artifacts you always use together, consider placing them in
 an array.  Methods that accept lists of artifacts also accept arrays.  For
 example:
