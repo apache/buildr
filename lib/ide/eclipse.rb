@@ -31,10 +31,11 @@ module Buildr
       sources << File.expand_path(Rake.application.rakefile, root_path) if Rake.application.rakefile
 
       # Check if project has scala facet
-      scala = project.task("scalac") if Rake::Task.task_defined?(project.name+":"+"scalac")
+      scala = project.compile.language == :scala
 
       # Only for projects that are Eclipse packagable.
-      if project.packages.detect { |pkg| pkg.type.to_s =~ /(jar)|(war)|(rar)|(mar)|(aar)/ }
+      supported_packaging = %w(jar war rar mar aar)
+      if project.packages.detect { |pkg| supported_packaging.include?(pkg.type.to_s) } || supported_packaging.include?(project.compile.packaging.to_s)
         eclipse.enhance [ file(project.path_to(".classpath")), file(project.path_to(".project")) ]
 
         # The only thing we need to look for is a change in the Buildfile.
@@ -55,8 +56,7 @@ module Buildr
             xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
             xml.classpath do
               # Note: Use the test classpath since Eclipse compiles both "main" and "test" classes using the same classpath
-              cp = project.test.compile.classpath.map(&:to_s) - [ project.compile.target.to_s ]
-              cp += scala.classpath.map(&:to_s) if scala
+              cp = project.test.compile.dependencies.map(&:to_s) - [ project.compile.target.to_s ]
               cp = cp.uniq
 
               # Convert classpath elements into applicable Project objects
@@ -75,12 +75,6 @@ module Buildr
               xml.classpathentry :kind=>'con', :path=>'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER' if scala
 
               srcs = project.compile.sources
-              srcs << scala.sources if scala
-
-              # hack until we have sunit task
-              project.path_to("src/test/scala").tap do |dir|
-                srcs += dir if scala and File.exist?(dir)
-              end
 
               srcs = srcs.map { |src| relative[src] } + generated.map { |src| relative[src] }
               srcs.sort.uniq.each do |path|
@@ -140,15 +134,15 @@ module Buildr
                 end
                 if scala
                   xml.buildCommand do
-                    #xml.name "ch.epfl.lamp.sdt.core.scalabuilder"
-                    xml.name "scala.plugin.scalabuilder"
+                    xml.name "ch.epfl.lamp.sdt.core.scalabuilder"
+                    #xml.name "scala.plugin.scalabuilder"
                   end
                 end
               end
               xml.natures do
                 xml.nature "org.eclipse.jdt.core.javanature"
-                #xml.nature "ch.epfl.lamp.sdt.core.scalanature" if scala
-                xml.nature "scala.plugin.scalanature" if scala
+                xml.nature "ch.epfl.lamp.sdt.core.scalanature" if scala
+                #xml.nature "scala.plugin.scalanature" if scala
               end
             end
           end
