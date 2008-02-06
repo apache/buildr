@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 describe 'scalac compiler' do
   it 'should identify itself from source directories' do
-    write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test {}' 
+    write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }' 
     define('foo').compile.compiler.should eql(:scalac)
   end
 
@@ -38,9 +38,32 @@ describe 'scalac compiler' do
       package(:jar)
     end
     write 'src/test/DependencyTest.scala', 'class DependencyTest { var d: Dependency = _ }'
-    define('foo').compile.from('src/test').with(project('dependency')).invoke
+    lambda { define('foo').compile.from('src/test').with(project('dependency')).invoke }.should run_task('foo:compile')
     file('target/classes/DependencyTest.class').should exist
   end
+
+  def define_test1_project
+    write 'src/main/scala/com/example/Test1.scala', 'package com.example; class Test1 { val i = 1 }'
+    define 'test1', :version=>'1.0' do
+      package(:jar)
+    end
+  end
+  
+  it 'should compile a simple .scala file into a .class file' do
+    define_test1_project
+    task('test1:compile').invoke
+    file('target/classes/com/example/Test1.class').should exist
+  end
+
+  it 'should package .class into a .jar file' do
+    define_test1_project
+    task('test1:package').invoke
+    file('target/test1-1.0.jar').should exist
+    Zip::ZipFile.open(project('test1').package(:jar).to_s) do |zip|
+      zip.file.exist?('com/example/Test1.class').should be_true
+    end
+  end
+
 end
 
 
