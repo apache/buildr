@@ -99,7 +99,7 @@ module Buildr
         end
 
         def use_fsc
-          !(ENV["USE_FSC"] =~ /^(no|off|false)$/i)
+          ENV["USE_FSC"] =~ /^(yes|on|true)$/i
         end
       end
 
@@ -135,8 +135,8 @@ module Buildr
               fail 'Failed to compile, see errors above'
           else
             Java.load
-            Java.scala.tools.nsc.Main.main(cmd_args.to_java(Java.java.lang.String)) == 0 or
-              fail 'Failed to compile, see errors above'
+            Java.scala.tools.nsc.Main.process(cmd_args.to_java(Java.java.lang.String))
+            fail 'Failed to compile, see errors above' if Java.scala.tools.nsc.Main.reporter.hasErrors
           end
         end
       end
