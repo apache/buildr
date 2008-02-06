@@ -246,9 +246,10 @@ override this by setting the environment variable @debug@ to @off@.
 * @:warnings@ -- Issue warnings when compiling.  True when running in verbose
 mode.
 
-By default Buildr uses FSC, the Fast Offline Compiler.  You can switch to use
-the Scala native compiler by setting the environment variable @USE_FSC@ to
-@no@.
+You may use @fsc@, the Fast Scala Compiler, which submits compilation jobs to a
+compilation daemon, by setting the environment variable @USE_FSC@ to @yes@.   Note
+that @fsc@ _may_ cache class libraries -- don't forget to run @fsc -reset@ if you 
+upgrade a library.
 
 
 h2. Resources
