@@ -33,9 +33,11 @@ module Buildr
       # Check if project has scala facet
       scala = project.compile.language == :scala
 
-      # Only for projects that are Eclipse packagable.
+      # Only for projects that we support
+      supported_languages = [:java, :scala]
       supported_packaging = %w(jar war rar mar aar)
-      if project.packages.detect { |pkg| supported_packaging.include?(pkg.type.to_s) } || supported_packaging.include?(project.compile.packaging.to_s)
+      if (supported_languages.include? project.compile.language || 
+          project.packages.detect { |pkg| supported_packaging.include?(pkg.type.to_s) })
         eclipse.enhance [ file(project.path_to(".classpath")), file(project.path_to(".project")) ]
 
         # The only thing we need to look for is a change in the Buildfile.
@@ -44,6 +46,7 @@ module Buildr
 
           # Find a path relative to the project's root directory.
           relative = lambda do |path|
+            path or throw "Invalid path #{path}"
             msg = [:to_path, :to_str, :to_s].find { |msg| path.respond_to? msg }
             path = path.__send__(msg)
             Pathname.new(File.expand_path(path)).relative_path_from(Pathname.new(project.path_to)).to_s
@@ -56,7 +59,7 @@ module Buildr
             xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
             xml.classpath do
               # Note: Use the test classpath since Eclipse compiles both "main" and "test" classes using the same classpath
-              cp = project.test.compile.dependencies.map(&:to_s) - [ project.compile.target.to_s ]
+              cp = project.test.compile.dependencies.map(&:to_s) - [ project.compile.target.to_s, project.resources.target.to_s ]
               cp = cp.uniq
 
               # Convert classpath elements into applicable Project objects
@@ -71,9 +74,6 @@ module Buildr
               # Generated: classpath elements in the project are assumed to be generated
               generated, libs = others.partition { |path| path.to_s.index(project.path_to.to_s) == 0 }
 
-              xml.classpathentry :kind=>'con', :path=>'org.eclipse.jdt.launching.JRE_CONTAINER'
-              xml.classpathentry :kind=>'con', :path=>'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER' if scala
-
               srcs = project.compile.sources
 
               srcs = srcs.map { |src| relative[src] } + generated.map { |src| relative[src] }
@@ -81,22 +81,9 @@ module Buildr
                 xml.classpathentry :kind=>'src', :path=>path, :excluding=>excludes
               end
 
-              { :output => relative[project.compile.target],
-                :lib    => libs.map(&:to_s),
-                :var    => m2_libs.map { |path| path.to_s.sub(m2repo, 'M2_REPO') }
-              }.each do |kind, paths|
-                paths.sort.uniq.each do |path|
-                  xml.classpathentry :kind=>kind, :path=>path
-                end
-              end
-
-              # Classpath elements from other projects
-              project_libs.map(&:id).sort.uniq.each do |project_id|
-                xml.classpathentry :kind=>'src', :combineaccessrules=>"false", :path=>"/#{project_id}"
-              end
-
               # Main resources implicitly copied into project.compile.target
-              project.resources.sources.each do |path|
+              main_resource_sources = project.resources.sources.map { |src| relative[src] }
+              main_resource_sources.each do |path|
                 if File.exist? project.path_to(path)
                   xml.classpathentry :kind=>'src', :path=>path, :excluding=>excludes
                 end
@@ -113,9 +100,26 @@ module Buildr
               # Test resources go in separate output directory as well
               project.test.resources.sources.each do |path|
                 if File.exist? project.path_to(path)
-                  xml.classpathentry :kind=>'src', :path=>path, :output => relative[project.test.compile.target], :excluding=>excludes
+                  xml.classpathentry :kind=>'src', :path=>relative[path], :output => relative[project.test.compile.target], :excluding=>excludes
                 end
               end
+
+              # Classpath elements from other projects
+              project_libs.map(&:id).sort.uniq.each do |project_id|
+                xml.classpathentry :kind=>'src', :combineaccessrules=>"false", :path=>"/#{project_id}" 
+              end
+
+              { :output => relative[project.compile.target],
+                :lib    => libs.map(&:to_s),
+                :var    => m2_libs.map { |path| path.to_s.sub(m2repo, 'M2_REPO') }
+              }.each do |kind, paths|
+                paths.sort.uniq.each do |path|
+                  xml.classpathentry :kind=>kind, :path=>path
+                end
+              end
+
+              xml.classpathentry :kind=>'con', :path=>'org.eclipse.jdt.launching.JRE_CONTAINER'
+              xml.classpathentry :kind=>'con', :path=>'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER' if scala
             end
           end
         end
