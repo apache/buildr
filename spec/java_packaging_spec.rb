@@ -692,7 +692,7 @@ describe Packaging, 'ear' do
       package(:ear) << package(:jar)
     end
     inspect_classpath 'war/foo-1.0.war' do |classpath|
-      classpath.should include('foo-1.0.jar')
+      classpath.should include('../foo-1.0.jar')
     end
   end
 
@@ -773,7 +773,7 @@ describe Packaging, 'ear' do
       package(:ear).add package(:war)
     end
     inspect_classpath 'war/foo-1.0.war' do |classpath|
-      classpath.should include('lib/lib1-1.0.jar', 'lib/lib2-1.0.jar')
+      classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
     end
   end
 
@@ -784,8 +784,8 @@ describe Packaging, 'ear' do
       package(:ear).add package(:war)
     end
     inspect_classpath 'war/foo-1.0.war' do |classpath|
-      classpath.should_not include('lib/lib1-1.0.jar')
-      classpath.should include('lib/lib2-1.0.jar')
+      classpath.should_not include('../lib/lib1-1.0.jar')
+      classpath.should include('../lib/lib2-1.0.jar')
     end
   end
 
@@ -795,7 +795,7 @@ describe Packaging, 'ear' do
       package(:ear).add :ejb=>package(:jar)
     end
     inspect_classpath 'ejb/foo-1.0.jar' do |classpath|
-      classpath.should include('lib/lib1-1.0.jar', 'lib/lib2-1.0.jar')
+      classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
     end
   end
 
@@ -805,7 +805,7 @@ describe Packaging, 'ear' do
       package(:ear).add :jar=>package(:jar)
     end
     inspect_classpath 'jar/foo-1.0.jar' do |classpath|
-      classpath.should include('lib/lib1-1.0.jar', 'lib/lib2-1.0.jar')
+      classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
     end
   end
 
@@ -815,9 +815,48 @@ describe Packaging, 'ear' do
       package(:ear).add :jar=>package(:jar)
     end
     inspect_classpath 'jar/foo-1.0.jar' do |classpath|
-      classpath.should include('lib/lib1-1.0.jar', 'lib/lib2-1.0.jar')
+      classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
     end
   end
+
+
+  it 'should generate relative classpaths for top level EJB' do 
+    define 'foo', :version => '1.0' do
+      package(:ear).add package(:jar, :id => 'one'), :path => '.'
+      package(:ear).add package(:jar, :id => 'two'), :path => 'dos'
+      package(:ear).add package(:jar, :id => 'three'), :path => 'tres'
+      package(:ear).add :ejb => package(:jar, :id => 'ejb1'), :path => '.'
+    end
+    inspect_classpath 'ejb1-1.0.jar' do |classpath|
+      classpath.should include(*%w{ one-1.0.jar dos/two-1.0.jar tres/three-1.0.jar })
+    end
+  end
+
+  it 'should generate relative classpaths for second level EJB' do 
+    define 'foo', :version => '1.0' do
+      package(:ear).add package(:jar, :id => 'one'), :path => '.'
+      package(:ear).add package(:jar, :id => 'two'), :path => 'dos'
+      package(:ear).add package(:jar, :id => 'three'), :path => 'tres'
+      package(:ear).add :ejb => package(:jar, :id => 'ejb2'), :path => 'dos'
+    end
+    inspect_classpath 'dos/ejb2-1.0.jar' do |classpath|
+      classpath.should include(*%w{ ../one-1.0.jar two-1.0.jar ../tres/three-1.0.jar })
+    end
+  end
+
+  it 'should generate relative classpaths for nested EJB' do 
+    define 'foo', :version => '1.0' do
+      package(:ear).add package(:jar, :id => 'one'), :path => '.'
+      package(:ear).add package(:jar, :id => 'two'), :path => 'dos'
+      package(:ear).add package(:jar, :id => 'three'), :path => 'dos/tres'
+      package(:ear).add package(:jar, :id => 'four'), :path => 'dos/cuatro'
+      package(:ear).add :ejb => package(:jar, :id => 'ejb4'), :path => 'dos/cuatro'
+    end
+    inspect_classpath 'dos/cuatro/ejb4-1.0.jar' do |classpath|
+      classpath.should include(*%w{ ../../one-1.0.jar ../two-1.0.jar ../tres/three-1.0.jar four-1.0.jar })
+    end
+  end
+
 end
 
 

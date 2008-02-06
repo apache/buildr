@@ -312,7 +312,7 @@ module Buildr
           component = options.merge(:artifact=>artifact, :type=>type,
             :id=>artifact.respond_to?(:to_spec) ? artifact.id : artifact.to_s.pathmap('%n'),
             :path=>options[:path] || dirs[type].to_s)
-          update_classpath(file(artifact.to_s)) unless :lib == type
+          update_classpath(component) unless :lib == type
           @components << component
           self
         end
@@ -334,7 +334,9 @@ module Buildr
         end
         alias_method :_, :path_to
 
-        def update_classpath(package)
+        def update_classpath(component)
+          package = file(component[:artifact].to_s)
+          package.manifest = package.manifest.dup # avoid mofifying parent projects manifest
           package.prepare do
             header = case package.manifest
               when Hash then package.manifest
@@ -346,7 +348,7 @@ module Buildr
               included_libs = class_path.map { |fn| File.basename(fn) }
               included_libs += package.path('WEB-INF/lib').sources.map { |fn| File.basename(fn) }
               # Include all other libraries in the classpath.
-              class_path += libs_classpath.reject { |path| included_libs.include?(File.basename(path)) }
+              class_path += libs_classpath(component).reject { |path| included_libs.include?(File.basename(path)) }
               header['Class-Path'] = class_path.join(' ')
             end
           end
@@ -354,46 +356,77 @@ module Buildr
 
       private
 
-        # Classpath of all packages included as libraries (type :lib).
-        def libs_classpath
-          @classpath = @components.select { |comp| comp[:type] == :lib }.
-            map { |comp| File.expand_path(File.join(comp[:path], File.basename(comp[:artifact].to_s)), '/')[1..-1] }
+        # :call-seq:
+        #   relative_path(to_component, from_component = nil)
+        #
+        def relative_path(to, from = ".")
+          to = File.join(to[:path].to_s, File.basename(to[:artifact].to_s)) if to.kind_of?(Hash)
+          from = from[:path].to_s if from.kind_of?(Hash)
+          to, from = File.expand_path(to, "/"), File.expand_path(from, "/")
+          require 'pathname'
+          Pathname.new(to).relative_path_from(Pathname.new(from)).to_s
         end
 
-        # return a FileTask to build the ear application.xml file
-        def descriptor
-          @descriptor ||= file('META-INF/application.xml') do |task|
-            mkpath File.dirname(task.name), :verbose=>false
-            File.open task.name, 'w' do |file|
-              xml = Builder::XmlMarkup.new(:target=>file, :indent => 2)
-              xml.declare! :DOCTYPE, :application, :PUBLIC, 
-                           "-//Sun Microsystems, Inc.//DTD J2EE Application 1.2//EN",
-                           "http://java.sun.com/j2ee/dtds/application_1_2.dtd"
-              xml.application do
-                xml.tag! 'display-name', display_name
-                @components.each do |comp|
-                  uri = File.expand_path(File.join(comp[:path], File.basename(comp[:artifact].to_s)), '/')[1..-1]
-                  case comp[:type]
-                  when :war
-                    xml.module :id=>comp[:id] do
-                      xml.web do 
-                        xml.tag! 'web-uri', uri
-                        xml.tag! 'context-root', File.join('', (comp[:context_root] || comp[:id])) unless comp[:context_root] == false
-                      end
-                    end
-                  when :ejb
-                    xml.module :id=>comp[:id] do
-                      xml.ejb uri
-                    end
-                  when :jar
-                    xml.jar uri
+        # Classpath of all packages included as libraries (type :lib).
+        def libs_classpath(component)
+          @classpath = @components.select { |comp| comp[:type] == :lib }.
+            map { |comp| relative_path(comp, component) }
+        end
+
+        def descriptor_xml
+          buffer = ""
+          xml = Builder::XmlMarkup.new(:target=>buffer, :indent => 2)
+          xml.declare! :DOCTYPE, :application, :PUBLIC, 
+          "-//Sun Microsystems, Inc.//DTD J2EE Application 1.2//EN",
+          "http://java.sun.com/j2ee/dtds/application_1_2.dtd"
+          xml.application do
+            xml.tag! 'display-name', display_name
+            @components.each do |comp|
+              uri = relative_path(comp)
+              case comp[:type]
+              when :war
+                xml.module :id=>comp[:id] do
+                  xml.web do 
+                    xml.tag! 'web-uri', uri
+                    xml.tag! 'context-root', File.join('', (comp[:context_root] || comp[:id])) unless comp[:context_root] == false
                   end
                 end
+              when :ejb
+                xml.module :id=>comp[:id] do
+                  xml.ejb uri
+                end
+              when :jar
+                xml.jar uri
               end
             end
           end
+          buffer
         end
+        
+        # return a FileTask to build the ear application.xml file
+        def descriptor
+          return @descriptor if @descriptor
+          descriptor_path = path_to(:target, "#{id}/META-INF/application.xml")
+          @descriptor = file(descriptor_path) do |task|
+            puts "Creating EAR Descriptor: #{task.to_s}" if Rake.application.options.trace
+            mkpath File.dirname(task.name), :verbose=>false
+            File.open(task.name, 'w') { |file| file.print task.xml }
+          end
+          class << @descriptor
+            attr_accessor :ear
 
+            def xml
+              @xml ||= ear.send :descriptor_xml
+            end
+            
+            def needed?
+              super || xml != File.read(self.to_s) rescue true
+            end
+          end
+          @descriptor.ear = self
+          @descriptor
+        end
+        
       end
 
 
