@@ -23,6 +23,7 @@
 * Fixed: Artifact.pom resolves artifact without classifier, i.e org.testng:testng:jar:jdk15:5.1 uses org.testng:testng:pom:5.1 (Tommy).
 * Fixed: More patches towards JRuby support, courtesy of Vic Borja.
 * Fixed: Error when downloading a file from a server which answers with a response with no content length.
+* Fixed: Improved the Eclipse task (BUILDR-17): removed resources target directory from the source directories, made the main resource directories relative to the project directory and reordered project elements 
 
 1.2.10 (2007-11-26)
 * Changed: Resources sets permission on copied files to make them read/write-able (Shane Witbeck).
