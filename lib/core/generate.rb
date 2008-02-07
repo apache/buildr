@@ -85,7 +85,7 @@ EOF
         if root
           script = HEADER.split("\n")
 
-          settings_file = ENV["M2_SETTINGS"] || File.join(Gem::user_home, ".m2/settings.xml")
+          settings_file = ENV["M2_SETTINGS"] || File.join(ENV['HOME'], ".m2/settings.xml")
           settings = XmlSimple.xml_in(IO.read(settings_file)) if File.exists?(settings_file)
 
           if settings

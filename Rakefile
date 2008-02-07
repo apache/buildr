@@ -126,6 +126,7 @@ begin
     rdoc.options  = ruby_spec.rdoc_options
     rdoc.rdoc_files.include('lib/**/*.rb')
     rdoc.rdoc_files.include ruby_spec.extra_rdoc_files
+    rdoc.template = File.join(Gem.default_path, 'gems/allison-2.0.3/lib/allison.rb')
   end
 
   web_docs = {
@@ -145,11 +146,11 @@ begin
   print = Docter::Rake.generate('print', print_docs[:collection], print_docs[:template], :one_page)
   pdf_file = file('html/buildr.pdf'=>print) do |task|
     mkpath 'html'
-    sh *%W{prince #{print}/index.html --baseurl=http://incubator.apache.org/buildr/ -o #{task.name}} do |ok, res|
+    sh *%W{prince #{print}/index.html --baseurl=http://incubator.apache.org/buildr/ -o #{task.name} --media=print} do |ok, res|
       fail 'Failed to create PDF, see errors above' unless ok
     end
   end
-  task('pdf'=>pdf_file) { |task| `kpdf #{File.expand_path(pdf_file.to_s)}` }
+  task('pdf'=>pdf_file) { |task| `open #{File.expand_path(pdf_file.to_s)}` }
 
   desc 'Generate HTML documentation'
   html = Docter::Rake.generate('html', web_docs[:collection], web_docs[:template])

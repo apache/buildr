@@ -2,6 +2,9 @@ require File.join(File.dirname(__FILE__), 'spec_helpers')
 require File.join(File.dirname(__FILE__), 'packaging_helper')
 
 
+MANIFEST_LINE_SEP = /\r\n|\n|\r[^\n]/
+MANIFEST_SECTION_SEP = /(#{MANIFEST_LINE_SEP}){2}/
+
 describe Project, '#manifest' do
   it 'should include user name' do
     ENV['USER'] = 'MysteriousJoe'
@@ -52,17 +55,18 @@ shared_examples_for 'package with manifest' do
     package = project('foo').package(@packaging)
     package.invoke
     Zip::ZipFile.open(package.to_s) do |zip|
-      sections = zip.file.read('META-INF/MANIFEST.MF').split("\n\n").map do |section|
-          section.split("\n").each { |line| line.length.should < 72 }.
-            inject([]) { |merged, line|
-              if line[0] == 32
-                merged.last << line[1..-1]
-              else
-                merged << line
-              end
-              merged
-            }.map { |line| line.split(/: /) }.
-            inject({}) { |map, (name, value)| map.merge(name=>value) }
+      sections = zip.file.read('META-INF/MANIFEST.MF').split(MANIFEST_SECTION_SEP).
+        reject { |s| s.chomp == "" }.map do |section|
+        section.split(MANIFEST_LINE_SEP).each { |line| line.length.should < 72 }.
+          inject([]) { |merged, line|
+            if line[0] == 32
+              merged.last << line[1..-1]
+            else
+              merged << line
+            end
+            merged
+          }.map { |line| line.split(/: /) }.
+          inject({}) { |map, (name, value)| map.merge(name=>value) }
         end
       yield sections
     end
@@ -107,7 +111,7 @@ shared_examples_for 'package with manifest' do
     package_with_manifest 'Foo'=>1, :bar=>'Bar'
     package = project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF')[-1].should == ?\n }
+    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF').should =~ /#{MANIFEST_LINE_SEP}$/ }
   end
 
   it 'should break hash manifest lines longer than 72 characters using continuations' do
@@ -147,9 +151,8 @@ shared_examples_for 'package with manifest' do
     package_with_manifest [ {}, { 'Name'=>'first', :Foo=>'first', :bar=>'second' } ]
     package = project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) do |zip|
-      sections = zip.file.read('META-INF/MANIFEST.MF').split(/\n\n/)
-      sections[1].split("\n").first.should =~ /^Name: first/
+    inspect_manifest do |sections|
+      sections[1]["Name"].should == "first"
     end
   end
 
@@ -560,12 +563,13 @@ describe Packaging, 'ear' do
   def inspect_classpath(package)
     project('foo').package(:ear).invoke
     Zip::ZipFile.open(project('foo').package(:ear).to_s) do |ear|
-      File.open('tmp.zip', 'w') do |tmp|
+      File.open('tmp.zip', 'wb') do |tmp|
         tmp.write ear.file.read(package)
       end
       Zip::ZipFile.open('tmp.zip') do |zip|
-        first_section = zip.file.read('META-INF/MANIFEST.MF').split("\n\n").first.
-          split("\n").each { |line| line.length.should < 72 }.
+        first_section = zip.file.read('META-INF/MANIFEST.MF').split(MANIFEST_SECTION_SEP).
+          reject { |s| s.chomp == "" }.first.
+          split(MANIFEST_LINE_SEP).each { |line| line.length.should < 72 }.
           inject([]) { |merged, line|
             if line[0] == 32
               merged.last << line[1..-1]

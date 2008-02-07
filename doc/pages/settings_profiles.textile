@@ -45,11 +45,14 @@ Another way to set this is using the @-e@ command line option. |
 | @DEBUG@       | Set to @no/off@ if you want Buildr to compile without
 debugging information (default when running the @release@ task, see
 "Compiling":building.html#compiling). |
+| @HOME@        | Your home directory. |
 | @HTTP_PROXY@  | URL for HTTP proxy server (see "Specifying
 Repositories":artifacts.html#specifying_repositories). |
 | @JAVA_HOME@   | Points to your JDK, required when using Java and Ant. |
 | @JAVA_OPTS@   | Command line options to pass to the JDK[2] (e.g.
 @'-Xms1g'@). |
+| @M2_REPO@     | Location of the Maven2 local repository.  Defaults to the
+@.m2@ directory in your home directory (@ENV['HOME']@). |
 | @NO_PROXY@    | Comma separated list of hosts and domain that should not be
 proxied (see "Specifying Repositories":artifacts.html#specifying_repositories).  |
 | @TEST@        | Set to @no/off@ to tell Buildr to skip tests, or @all@ to

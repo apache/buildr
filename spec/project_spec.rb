@@ -246,7 +246,7 @@ end
 
 describe Project, '#path_to' do
   it 'should return absolute paths as is' do
-    define('foo').path_to('/tmp').should eql('/tmp')
+    define('foo').path_to('/tmp').should eql(File.expand_path('/tmp'))
   end
 
   it 'should resolve empty path to project\'s base directory' do
@@ -637,7 +637,7 @@ describe Project, '#task' do
 
   it 'should create file task with absolute path' do
     define('foo') { file('/tmp') }
-    Rake.application.lookup('/tmp').should_not be_nil
+    Rake.application.lookup(File.expand_path('/tmp')).should_not be_nil
   end
 
   it 'should create file task relative to project base directory' do

@@ -3,6 +3,9 @@ require 'benchmark'
 
 module Buildr
 
+  # Gem::user_home is nice, but ENV['HOME'] lets you override from the environment.
+  ENV["HOME"] ||= File.expand_path(Gem::user_home)
+
   # When running from +rake+, we already have an Application setup and must plug into it,
   # since the top-level tasks come from there. When running from +buildr+, we get to load
   # Rake and set everything up, and we use our own Application full of cool Buildr features.
@@ -160,8 +163,8 @@ module Buildr
     def load_tasks_and_local_files() #:nodoc:
       return false if @build_files
       # Load the settings files.
-      @build_files = [ File.expand_path('buildr.rb', Gem::user_home), 'buildr.rb' ].select { |file| File.exist?(file) }
-      @build_files += [ File.expand_path('buildr.rake', Gem::user_home), File.expand_path('buildr.rake') ].
+      @build_files = [ File.expand_path('buildr.rb', ENV['HOME']), 'buildr.rb' ].select { |file| File.exist?(file) }
+      @build_files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
         select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
       #Load local tasks that can be used in the Buildfile.
       @build_files += Dir["#{Dir.pwd}/tasks/*.rake"]

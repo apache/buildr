@@ -129,10 +129,12 @@ describe Buildr::JUnit do
 
   it 'should set current directory' do
     mkpath 'baz'
+    expected = File.expand_path('baz')
+    expected.gsub!('/', '\\') if expected =~ /^[A-Z]:/ # Java returns back slashed paths for windows
     write 'baz/src/test/java/CurrentDirectoryTest.java', <<-JAVA
       public class CurrentDirectoryTest extends junit.framework.TestCase {
         public void testCurrentDirectory() throws Exception {
-          assertEquals("#{File.expand_path('baz')}", new java.io.File(".").getCanonicalPath());
+          assertEquals(#{expected.inspect}, new java.io.File(".").getCanonicalPath());
         }
       }
     JAVA

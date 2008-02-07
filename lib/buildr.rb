@@ -14,9 +14,7 @@ require 'facets/string/starts_with'
 require 'facets/openobject'
 require 'facets/kernel/tap'
 require 'facets/enumerable/uniq_by'
-
-# A different kind of buildr, one we use to create XML.
-require 'builder'
+require 'builder' # A different kind of buildr, one we use to create XML.
 
 
 module Buildr
