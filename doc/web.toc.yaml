@@ -1,5 +1,5 @@
 - Main:  
-  - Welcome: index.html
+  - Welcome: /
   - Download and Installation: download.html
   - Printable PDF: buildr.pdf
   - New: whats_new.html
@@ -15,7 +15,7 @@
   - Extending: extending.html
   - Recipes: recipes.html
 - Reference:
-  - API: rdoc/index.html
+  - API: rdoc
   - Rake: http://docs.rubyrake.org
   - Antwrap: http://antwrap.rubyforge.org
   - Troubleshooting: troubleshooting.html
@@ -27,4 +27,4 @@
   - License: license.html
   - Change Log: changelog.html
   - Test Report: report.html
-  - Test Coverage: coverage/index.html
+  - Test Coverage: coverage

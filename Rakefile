@@ -118,20 +118,21 @@ begin
   require 'docter'
   require 'docter/server'
   require 'docter/ultraviolet'
+  require 'allison'
 
   desc 'Generate RDoc documentation'
   rdoc = Rake::RDocTask.new(:rdoc) do |rdoc|
     rdoc.rdoc_dir = 'html/rdoc'
     rdoc.title    = ruby_spec.name
-    rdoc.options  = ruby_spec.rdoc_options
+    rdoc.options  = ruby_spec.rdoc_options + ['--promiscuous']
     rdoc.rdoc_files.include('lib/**/*.rb')
     rdoc.rdoc_files.include ruby_spec.extra_rdoc_files
-    rdoc.template = File.join(Gem.default_path, 'gems/allison-2.0.3/lib/allison.rb')
+    rdoc.template = File.expand_path('lib/allison.rb', Gem.loaded_specs['allison'].full_gem_path)
   end
 
   web_docs = {
     :collection => Docter.collection('Buildr').using('doc/web.toc.yaml').include('doc/pages', 'LICENSE', 'CHANGELOG'),
-    :template   => Docter.template('doc/web.haml').include('doc/css', 'doc/images', 'html/report.html', 'html/coverage')
+    :template   => Docter.template('doc/web.haml').include('doc/css', 'doc/images', 'html/report.html', 'html/coverage', 'html/rdoc')
   }
   print_docs = {
     :collection => Docter.collection('Buildr &mdash; The build system that doesn\'t suck').using('doc/print.toc.yaml').include('doc/pages', 'LICENSE'),
@@ -164,8 +165,7 @@ begin
 rescue LoadError=>error
   puts error
   puts 'To create the Buildr documentation you need to:'
-  puts '  gem install docter'
-  puts '  gem install ultraviolet'
+  puts '  gem install docter ultraviolet allison'
 end
 
 
