@@ -296,31 +296,54 @@ module Buildr
         # Add an artifact to this EAR.
         def add(*args)
           options = Hash === args.last ? args.pop.clone : {}
-          if artifact = args.shift
-            type = options[:type]
-            unless type
-              type = artifact.respond_to?(:type) ? artifact.type : artifact.pathmap('%x').to_sym
-              type = :lib if type == :jar
+          args.flatten!
+          args.map! do |pkg|
+            case pkg
+            when Project
+              pkg.packages.select { |pp| JarTask === pp && SUPPORTED_TYPES.include?(pp.type) }
+            when Rake::FileTask
+              pkg # add the explicitly provided file
+            when Hash
+              Buildr.artifact(pkg)
+            when String
+              begin
+                Buildr.artifact(pkg)
+              rescue # not an artifact spec, it must me a filename
+                file(pkg)
+              end
+            else 
+              raise "Invalid EAR component #{pkg.class}: #{pkg}"
+            end
+          end
+          args.flatten!
+          args.compact!
+          if args.empty?
+            raise ":type must not be specified for type=>component argument style" if options.key?(:type)
+            raise ":as must not be specified for type=>component argument style" if options.key?(:as)
+            comps = {}
+            options.delete_if { |k, v| comps[k] = v if SUPPORTED_TYPES.include?(k) }
+            raise "You must specify at least one valid component to add" if comps.empty?
+            comps.each { |k, v| add(v, {:as => k}.merge(options)) }
+          else
+            args.each do |artifact|
+              type = options[:as] || options[:type]
+              unless type
+                type = artifact.respond_to?(:type) ? artifact.type : artifact.to_s.pathmap('%x').to_sym
+                type = :lib if type == :jar
+              end
               raise "Unknown EAR component type: #{type}. Perhaps you may explicity tell what component type to use." unless
                 SUPPORTED_TYPES.include?(type)
+              component = options.merge(:artifact => artifact, :type => type, 
+                :id=>artifact.respond_to?(:to_spec) ? artifact.id : artifact.to_s.pathmap('%n'),
+                :path=>options[:path] || dirs[type].to_s)
+              update_classpath(component) unless :lib == type
+              @components << component
             end
-          else
-            type = SUPPORTED_TYPES.find { |type| options[type] }
-            artifact = Buildr.artifact(options[type])
           end
-
-          component = options.merge(:artifact=>artifact, :type=>type,
-            :id=>artifact.respond_to?(:to_spec) ? artifact.id : artifact.to_s.pathmap('%n'),
-            :path=>options[:path] || dirs[type].to_s)
-          update_classpath(component) unless :lib == type
-          @components << component
           self
         end
-
-        def push(*artifacts)
-          artifacts.flatten.each { |artifact| add artifact }
-          self
-        end
+        
+        alias_method :push, :add
         alias_method :<<, :push
 
       protected

@@ -649,9 +649,49 @@ describe Packaging, 'ear' do
     inspect_ear { |files| files.should include('jar/foo-1.0.jar') }
   end
 
+  it 'should add multiple components at a time using the type=>component style' do
+    define 'bar', :version => '1.5' do
+      package(:war) # must be added as a webapp
+      package(:jar) # must be added as a shared lib
+      package(:zip) # this one should be excluded
+    end
+    define 'baz', :version => '1.5' do
+      package(:jar, :id => 'one')
+      package(:jar, :id => 'two')
+    end
+    define 'foo', :version => '1.0' do 
+      package(:ear).add :lib => project('baz'),
+                        :war => project('bar').package(:war),
+                        :ejb => project('bar').package(:jar)
+    end
+    inspect_ear do |files| 
+      files.should include(*%w{ lib/one-1.5.jar lib/two-1.5.jar war/bar-1.5.war ejb/bar-1.5.jar  })
+      files.should_not satisfy { files.any? { |f| f =~ /\.zip$/ } }
+    end
+  end
+
+  it 'should add all EAR supported packages when given a project argument' do
+    define 'bar', :version => '1.5' do
+      package(:war) # must be added as a webapp
+      package(:jar) # must be added as a shared lib
+      package(:zip) # this one should be excluded
+    end
+    define 'baz', :version => '1.5' do
+      package(:war)
+      package(:jar)
+    end
+    define 'foo', :version => '1.0' do 
+      package(:ear).add projects(:bar, :baz)
+    end
+    inspect_ear do |files| 
+      files.should include('war/bar-1.5.war', 'lib/bar-1.5.jar', 'lib/baz-1.5.jar', 'war/baz-1.5.war')
+      files.should_not satisfy { files.any? { |f| f =~ /\.zip$/ } }
+    end
+  end
+
   it 'should complain about unknown component type' do
     define 'foo', :version=>'1.0' do
-      lambda { package(:ear).add package(:zip) }.should raise_error(RuntimeError, /unknown ear component type/i)
+      lambda { package(:ear).add package(:zip) }.should raise_error(RuntimeError, /ear component/i)
     end
   end
 
