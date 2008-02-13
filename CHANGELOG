@@ -19,12 +19,14 @@
 * Changed: The default packaging type is inferred from the compiler, and without a compiler, defaults to :zip.
 * Changed: JUnit test framework now runs on all classes that extend junit.framework.TestCase.
 * Changed: Scalac compiler now used by the regular compile task, the scalac task is deprecated.
+* Changed: RDoc are now generated using Allison (http://blog.evanweaver.com/files/doc/fauna/allison).
 * Removed: Prepare tasks removed.
 * Removed: All deprecated features since 1.1.  If you've seen warnings before, except the build to break.
 * Fixed: Artifact.pom resolves artifact without classifier, i.e org.testng:testng:jar:jdk15:5.1 uses org.testng:testng:pom:5.1 (Tommy).
 * Fixed: More patches towards JRuby support, courtesy of Vic Borja.
 * Fixed: Error when downloading a file from a server which answers with a response with no content length.
 * Fixed: Improved the Eclipse task (BUILDR-17): removed resources target directory from the source directories, made the main resource directories relative to the project directory and reordered project elements (Thomas Marek).
+* Fixed: When compiling Scala only include scala-library and scala-compiler JARs (John Layton).
 
 1.2.10 (2007-11-26)
 * Changed: Resources sets permission on copied files to make them read/write-able (Shane Witbeck).

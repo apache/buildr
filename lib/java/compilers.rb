@@ -95,7 +95,7 @@ module Buildr
         end
 
         def dependencies
-          FileList[scala_home && "#{scala_home}/lib/*.jar"].compact
+          [ 'scala-library.jar', 'scala-compiler.jar'].map { |jar| File.expand_path("lib/#{jar}", scala_home) }
         end
 
         def use_fsc
