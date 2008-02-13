@@ -1,3 +1,5 @@
+package org.apache.buildr;
+ 
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Handler;
