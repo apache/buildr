@@ -191,7 +191,7 @@ describe Buildr.method(:filter) do
 
   it 'should use the source directories' do
     dirs = ['first', 'second']
-    filter('first', 'second').sources.should include(*dirs.map { |dir| file(dir) })
+    filter('first', 'second').sources.should include(*dirs.map { |dir| file(File.expand_path(dir)) })
   end
 
   it 'should accept a file task' do
@@ -219,7 +219,7 @@ describe Buildr::Filter do
   it 'should respond to :from and add source directories' do
     dirs = ['first', 'second']
     @filter.from(*dirs)
-    @filter.sources.should include(*dirs.map { |dir| file(dir) })
+    @filter.sources.should include(*dirs.map { |dir| file(File.expand_path(dir)) })
   end
 
   it 'should return source directories as file task' do
@@ -227,7 +227,7 @@ describe Buildr::Filter do
   end
 
   it 'should return source directories as expanded path' do
-    @filter.from('src').sources.each { |source| source.to_s.should eql('src') }
+    @filter.from('src').sources.each { |source| source.to_s.should eql(File.expand_path('src')) }
   end
 
   it 'should respond to :into and return self' do
