@@ -65,16 +65,18 @@ module Buildr
         # a .java file.  The default implementation looks to see if there are any files in the
         # specified path with the extension #source_ext.
         def applies_to?(project, task)
-          paths = task.sources + Array(project.path_to(:source, task.usage, sources.to_sym))
-          paths.any? { |path| !Dir["#{path}/**/*.#{source_ext}"].empty? }
+          paths = task.sources + [sources].flatten.map { |src| Array(project.path_to(:source, task.usage, src.to_sym)) }
+          paths.flatten!
+          ext_glob = source_ext.ergo { |ext| Array === ext ? "{#{ext.join(',')}}" : ext }
+          paths.any? { |path| !Dir["#{path}/**/*.#{ext_glob}"].empty? }
         end
 
         # Implementations can use this method to specify various compiler attributes.
         # For example:
         #   specify :language=>:java, :target=>'classes', :target_ext=>'class', :packaging=>:jar
         def specify(attrs)
-          attrs[:sources] ||= attrs[:language].to_s
-          attrs[:source_ext] ||= attrs[:language].to_s
+          attrs[:sources] ||= attrs[:language].ergo { |lang| Array === lang ? lang.map(&:to_s) : lang.to_s }
+          attrs[:source_ext] ||= attrs[:language].ergo { |lang| Array === lang ? lang.map(&:to_s) : lang.to_s }
           attrs.each { |name, value| instance_variable_set("@#{name}", value) }
         end
 
@@ -136,7 +138,8 @@ module Buildr
 
       # Expands a list of source directories/files into a list of files that have the #source_ext extension.
       def files_from_sources(sources)
-        sources.map { |source| File.directory?(source) ? FileList["#{source}/**/*.#{self.class.source_ext}"] : source }.
+        ext_glob = self.class.source_ext.ergo { |ext| Array === ext ? "{#{ext.join(',')}}" : ext }
+        sources.flatten.map { |source| File.directory?(source) ? FileList["#{source}/**/*.#{ext_glob}"] : source }.
           flatten.reject { |file| File.directory?(file) }.map { |file| File.expand_path(file) }.uniq
       end
 
@@ -148,10 +151,11 @@ module Buildr
       def compile_map(sources, target)
         source_ext = self.class.source_ext
         target_ext = self.class.target_ext
-        sources.inject({}) do |map, source|
+        ext_glob = self.class.source_ext.ergo { |ext| Array === ext ? "{#{ext.join(',')}}" : ext }
+        sources.flatten.inject({}) do |map, source|
           if File.directory?(source)
             base = Pathname.new(source)
-            FileList["#{source}/**/*.#{source_ext}"].reject { |file| File.directory?(file) }.
+            FileList["#{source}/**/*.#{ext_glob}"].reject { |file| File.directory?(file) }.
               each { |file| map[file] = File.join(target, Pathname.new(file).relative_path_from(base).to_s.ext(target_ext)) }
           else
             map[source] = File.join(target, File.basename(source).ext(target_ext))
