@@ -30,6 +30,7 @@ write code using variables, functions and objects.
 h4.  Buildr 1.3
 
 * Building Scala projects
+* Building Groovy projects
 * Running on JRuby
 * EAR packaging
 * New API for accessing Java libraries

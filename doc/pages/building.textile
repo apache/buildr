@@ -28,6 +28,11 @@ if it finds any Java source files in the @src/main/java@ directory, it selects
 the Javac compiler and generates bytecode in the @target/classes@ directories.
 If it finds Scala source files in the @src/main/scala@ directory it selects the
 Scalac compiler, and so forth.
+A single project cannot use multiple compilers at the same time, hence you may 
+prefer creating subprojects by programming language. 
+Some compilers like Groovy's are joint-compilers, this means they can handle 
+several languages. When the Groovy compiler is selected for a project, .groovy 
+and .java files are compiled by groovyc.
 
 Most often, that's just good enough and the only change you need to make is
 adding compile dependencies.  You can use @compile.dependencies@ to get the
@@ -250,6 +255,48 @@ You may use @fsc@, the Fast Scala Compiler, which submits compilation jobs to a
 compilation daemon, by setting the environment variable @USE_FSC@ to @yes@.   Note
 that @fsc@ _may_ cache class libraries -- don't forget to run @fsc -reset@ if you 
 upgrade a library.
+
+h3. Compiling Groovy
+
+Before using the Groovy compiler, you must first require it on your buildfile:
+
+{{{!ruby
+   require 'java/groovyc'
+}}}
+
+Once loaded, the groovyc compiler will be automatically selected if any .groovy
+source files are found under @src/main/groovy@ directory, compiling them by 
+default into the @target/classes@ directory. 
+If the project has java sources in @src/main/java@ they will get compiled using 
+the groovyc joint compiler.
+
+Sources found in @src/test/groovy@ are compiled into the @target/test/classes@.
+
+If you don't specify the packaging type, it defaults to JAR.
+
+The Groovy compiler supports the following options:
+ * @encoding@ -- Encoding of source files
+ * @verbose@ -- Asks the compiler for verbose output, true when running in 
+     verbose mode.
+ * @fork@ -- Whether to execute groovyc using a spawned instance of the JVM; 
+     defaults to no
+ * @memoryInitialSize@ -- The initial size of the memory for the underlying VM, 
+     if using fork mode; ignored otherwise. 
+     Defaults to the standard VM memory setting. (Examples: 83886080, "81920k", or "80m")
+ * @memoryMaximumSize@ -- The maximum size of the memory for the underlying VM, 
+     if using fork mode; ignored otherwise. 
+     Defaults to the standard VM memory setting. (Examples: 83886080, "81920k", or "80m")
+ * @listfiles@ -- Indicates whether the source files to be compiled will be listed; 
+     defaults to no
+ * @stacktrace@ -- If true each compile error message will contain a stacktrace
+ * @warnings@ -- Issue warnings when compiling.  True when running in verbose mode.
+ * @debug@ -- Generates bytecode with debugging information.  Set from the debug
+     environment variable/global option.
+ * @deprecation@ -- If true, shows deprecation messages.  False by default.
+ * @optimise@ -- Generates faster bytecode by applying optimisations to the program.
+ * @source@ -- Source code compatibility.
+ * @target@ -- Bytecode compatibility.
+ * @javac@ -- Hash of options passed to the ant javac task
 
 
 h2. Resources
