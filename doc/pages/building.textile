@@ -208,17 +208,18 @@ JUnit.
 
 The Java compiler supports the following options:
 
-* @:debug@ -- Generates bytecode with debugging information.  You can also
-override this by setting the environment variable @debug@ to @off@.
-* @:deprecation@ -- If true, shows deprecation messages.  False by default.
-* @:lint@ -- Defaults to false.  Set this option to true to use all lint
-options, or specify a specific lint option (e.g. @:lint=>'cast'@).
-* @:other@ -- Array of options passed to the compiler (e.g.
-@:other=>'-implicit:none'@).
-* @:source@ -- Source code compatibility (e.g. '1.5').
-* @:target@ -- Bytecode compatibility (e.g. '1.4').
-* @:warnings@ -- Issue warnings when compiling.  True when running in verbose
-mode.
+|_. Option        |_. Usage |
+| @:debug@        | Generates bytecode with debugging information.  You can
+also override this by setting the environment variable @debug@ to @off@. |
+| @:deprecation@  | If true, shows deprecation messages.  False by default. |
+| @:lint@         | Defaults to false.  Set this option to true to use all lint
+options, or specify a specific lint option (e.g. @:lint=>'cast'@). |
+| @:other@        | Array of options passed to the compiler (e.g.
+@:other=>'-implicit:none'@). |
+| @:source@       | Source code compatibility (e.g. '1.5'). |
+| @:target@       | Bytecode compatibility (e.g. '1.4'). |
+| @:warnings@     | Issue warnings when compiling.  True when running in
+verbose mode. |
 
 
 h3. Compiling Scala
@@ -240,16 +241,18 @@ defaults to JAR.
 
 The Scala compiler supports the following options:
 
-* @:debug@ -- Generates bytecode with debugging information.  You can also
-override this by setting the environment variable @debug@ to @off@.
-* @:deprecation@ -- If true, shows deprecation messages.  False by default.
-* @:optimise@ -- Generates faster bytecode by applying optimisations to the program.
-* @:other@ -- Array of options passed to the compiler (e.g.
-@:other=>'-Xprint-types'@).
-* @:source@ -- Source code compatibility (e.g. '1.5').
-* @:target@ -- Bytecode compatibility (e.g. '1.4').
-* @:warnings@ -- Issue warnings when compiling.  True when running in verbose
-mode.
+|_. Option        |_. Usage |
+| @:debug@        | Generates bytecode with debugging information.  You can
+also override this by setting the environment variable @debug@ to @off@. |
+| @:deprecation@  | If true, shows deprecation messages.  False by default. |
+| @:optimise@     | Generates faster bytecode by applying optimisations to the
+program. |
+| @:other@        | Array of options passed to the compiler (e.g.
+@:other=>'-Xprint-types'@). |
+| @:source@       | Source code compatibility (e.g. '1.5'). |
+| @:target@       | Bytecode compatibility (e.g. '1.4'). |
+| @:warnings@     | Issue warnings when compiling.  True when running in verbose
+mode. |
 
 You may use @fsc@, the Fast Scala Compiler, which submits compilation jobs to a
 compilation daemon, by setting the environment variable @USE_FSC@ to @yes@.   Note
@@ -265,9 +268,10 @@ Before using the Groovy compiler, you must first require it on your buildfile:
 }}}
 
 Once loaded, the groovyc compiler will be automatically selected if any .groovy
-source files are found under @src/main/groovy@ directory, compiling them by 
+source files are found under @src/main/groovy@ directory, compiling them by
 default into the @target/classes@ directory. 
-If the project has java sources in @src/main/java@ they will get compiled using 
+
+If the project has java sources in @src/main/java@ they will get compiled using
 the groovyc joint compiler.
 
 Sources found in @src/test/groovy@ are compiled into the @target/test/classes@.
@@ -275,28 +279,34 @@ Sources found in @src/test/groovy@ are compiled into the @target/test/classes@.
 If you don't specify the packaging type, it defaults to JAR.
 
 The Groovy compiler supports the following options:
- * @encoding@ -- Encoding of source files
- * @verbose@ -- Asks the compiler for verbose output, true when running in 
-     verbose mode.
- * @fork@ -- Whether to execute groovyc using a spawned instance of the JVM; 
-     defaults to no
- * @memoryInitialSize@ -- The initial size of the memory for the underlying VM, 
-     if using fork mode; ignored otherwise. 
-     Defaults to the standard VM memory setting. (Examples: 83886080, "81920k", or "80m")
- * @memoryMaximumSize@ -- The maximum size of the memory for the underlying VM, 
-     if using fork mode; ignored otherwise. 
-     Defaults to the standard VM memory setting. (Examples: 83886080, "81920k", or "80m")
- * @listfiles@ -- Indicates whether the source files to be compiled will be listed; 
-     defaults to no
- * @stacktrace@ -- If true each compile error message will contain a stacktrace
- * @warnings@ -- Issue warnings when compiling.  True when running in verbose mode.
- * @debug@ -- Generates bytecode with debugging information.  Set from the debug
-     environment variable/global option.
- * @deprecation@ -- If true, shows deprecation messages.  False by default.
- * @optimise@ -- Generates faster bytecode by applying optimisations to the program.
- * @source@ -- Source code compatibility.
- * @target@ -- Bytecode compatibility.
- * @javac@ -- Hash of options passed to the ant javac task
+
+|_. Option        |_. Usage |
+| @encoding@          | Encoding of source files. |
+| @verbose@           | Asks the compiler for verbose output, true when running
+in verbose mode. |
+| @fork@              | Whether to execute groovyc using a spawned instance of
+the JVM.  Defaults to no. |
+| @memoryInitialSize@ | The initial size of the memory for the underlying VM,
+if using fork mode, ignored otherwise.  Defaults to the standard VM memory
+setting. (Examples: @83886080@, @81920k@, or @80m@) |
+| @memoryMaximumSize@ | The maximum size of the memory for the underlying VM,
+if using fork mode, ignored otherwise.  Defaults to the standard VM memory
+setting. (Examples: @83886080@, @81920k@, or @80m@) |
+| @listfiles@         | Indicates whether the source files to be compiled will
+be listed.  Defaults to no. |
+| @stacktrace@        | If true each compile error message will contain a
+stacktrace. |
+| @warnings@          | Issue warnings when compiling.  True when running in
+verbose mode. |
+| @debug@             | Generates bytecode with debugging information.  Set
+from the debug environment variable/global option. |
+| @deprecation@       | If true, shows deprecation messages.  False by default.
+|
+| @optimise@          | Generates faster bytecode by applying optimisations to
+the program. |
+| @source@            | Source code compatibility. |
+| @target@            | Bytecode compatibility. |
+| @javac@             | Hash of options passed to the ant javac task. |
 
 
 h2. Resources
@@ -319,11 +329,12 @@ resources.filter.using 'version'=>version,
 You can specify a different format by passing it as the first argument.
 Supported formats include:
 
-* @:ant@ -- Map from <code>@key@</code> to value.
-* @:maven@ -- Map from @${key}@ to value (default).
-* @:ruby@ -- Map from @#{key}@ to value.
-* @Regexp@ -- Map using the matched value of the regular expression (e.g.
-@/=(.*?)=/@).
+|_. Format  |_. Usage |
+| @:ant@    | Map from <code>@key@</code> to value. |
+| @:maven@  | Map from @${key}@ to value (default). |
+| @:ruby@   | Map from @#{key}@ to value. |
+| @Regexp@  | Map using the matched value of the regular expression (e.g.
+@/=(.*?)=/@). |
 
 For example, using the @:ruby@ format instead of the default @:maven@ format:
 
@@ -425,10 +436,11 @@ package(:zip).include db
 Much better.  We're using the same task twice, but since we're using Rake here,
 it will only execute once.  In fact, it will only execute if we don't already
 have a Derby database, or if it detects a change to the SQL file and needs to
-recreate the database.  (Note: @Derby.create@ is not part of Buildr, you can
-get
+recreate the database.
+
+p(tip). @Derby.create@ is not part of Buildr, you can get
 "derby.rake":http://svn.apache.org/repos/asf/incubator/ode/trunk/tasks/derby.rake
-here).
+here.
 
 Here's another example.  We want to copy some files over as part of the build,
 and apply a filter to them.  This time, we're going to extend the @build@ task:

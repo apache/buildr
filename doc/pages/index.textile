@@ -40,9 +40,11 @@ h4.  Buildr 1.3
 
 Check out "what's new in Buildr 1.3":whats_new.html.
 
-h4.  Disclaimer
+p(tip). The Apache Software Foundation is a non-profit organization, consider
+"sponsoring":http://www.apache.org/foundation/sponsorship.html and check the
+"thanks":http://www.apache.org/foundation/thanks.html page.
 
-Apache Buildr is an effort undergoing incubation at The Apache
+p(note).  Apache Buildr is an effort undergoing incubation at The Apache
 Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is
 required of all newly accepted projects until a further review indicates that
 the infrastructure, communications, and decision making process have stabilized

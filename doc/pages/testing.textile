@@ -358,7 +358,7 @@ file.  And as you can see in the examples above, you can also run them against
 a path in a ZIP file, checking its contents as if it was a directory, or
 against an entry in a ZIP file, checking the content of that file.
 
-*Note:* The @package@ method returns a package task based on packaging type,
+p(note). The @package@ method returns a package task based on packaging type,
 identifier, group, version and classifier.  The last four are inferred, but if
 you create a package with different specifications (for example, you specify a
 classifier) your checks must call @package@ with the same qualifying arguments

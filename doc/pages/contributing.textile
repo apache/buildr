@@ -159,7 +159,8 @@ h2.  Contributors
 
 Here is the list of people who are actively working and committing on Buildr:
 
-|_.Name          |_.ID        |_.Organization                      |_. Role                  |
-| Assaf Arkin   | assaf     | "Intalio":http://intalio.com      | Developer & PMC       |
-| Alex Boisvert | boisvert  | "Intalio":http://intalio.com      | Developer & PMC       |
-| Matthieu Riou | mriou     | "Intalio":http://intalio.com      | Developer & PMC Chair |
+|_.Name             |_.ID       |_.Organization                     |_. Role                |
+| Assaf Arkin       | assaf     | "Intalio":http://intalio.com      | Developer & PMC       |
+| Alex Boisvert     | boisvert  | "Intalio":http://intalio.com      | Developer & PMC       |
+| Matthieu Riou     | mriou     | "Intalio":http://intalio.com      | Developer & PMC Chair |
+| Victor Hugo Borja | vborja    |                                   | Developer             |

@@ -34,8 +34,12 @@ space, and you want all other team members to run with the same settings:
 ENV['JAVA_OPTS'] ||= '-Xms1g -Xmx1g'
 }}}
 
-Make sure to set any environment variables at the very top of the Buildfile[1],
+Make sure to set any environment variables at the very top of the Buildfile,
 above any Ruby statement (even @require@).
+
+p(tip).  Using @||=@ sets the environment variable, if not already set, so
+it's still possible for other developers to override this environment variable
+without modifying the Buildfile.
 
 Buildr supports the following environment variables:
 
@@ -49,8 +53,7 @@ debugging information (default when running the @release@ task, see
 | @HTTP_PROXY@  | URL for HTTP proxy server (see "Specifying
 Repositories":artifacts.html#specifying_repositories). |
 | @JAVA_HOME@   | Points to your JDK, required when using Java and Ant. |
-| @JAVA_OPTS@   | Command line options to pass to the JDK[2] (e.g.
-@'-Xms1g'@). |
+| @JAVA_OPTS@   | Command line options to pass to the JDK (e.g. @'-Xms1g'@). |
 | @M2_REPO@     | Location of the Maven2 local repository.  Defaults to the
 @.m2@ directory in your home directory (@ENV['HOME']@). |
 | @NO_PROXY@    | Comma separated list of hosts and domain that should not be
@@ -60,6 +63,10 @@ tell Buildr to run all tests and ignore failures (see "Running
 Tests":testing.html#running_tests). |
 | @USER@        | Tasks that need your user name, for example to log to remote
 servers, will use this environment variable. |
+
+p(note). Buildr does not check any of the arguments in @JAVA_OPTS@.  A common
+mistake is to pass an option like @mx512mb@, where it should be @Xmx512mb@.
+Make sure to double check @JAVA_OPTS@.
 
 Some extensions may use additional environment variables, and of course, you
 can always add your own.  This example uses two environment variables for
@@ -219,12 +226,3 @@ test:
 
 You can "learn more about YAML here":http://www.yaml.org, and use this
 handy "YAML quick reference":http://www.yaml.org/refcard.html.
-
-
-fn1.  Using @||=@ sets the environment variable, if not already set, so it's
-still possible for other developers to override this environment variable
-without modifying the Buildfile.
-
-fn2. Buildr does not check any of the arguments in @JAVA_OPTS@.  A common
-mistake is to pass an option like @mx512mb@, where it should be @Xmx512mb@.
-Make sure to double check @JAVA_OPTS@.

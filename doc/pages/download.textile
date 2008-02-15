@@ -1,14 +1,15 @@
 h1. Download and Installation
 
-The current release of Buildr works with Ruby 1.8 and JRuby 1.1RC1.  We do not
-yet support Ruby 1.9 yet.
-
 The installation instructions are slightly different for each operating system.
 If you are using Ruby, pick the one that best matches your operating system.
 If you are using JRuby, see the instructions for "JRuby":#jruby and also read
 about using "JRuby and Ruby side by side":#using_jruby_and_ruby.
 
- 
+
+p(note). The current release of Buildr works with Ruby 1.8 and JRuby 1.1RC1.
+We do not yet support Ruby 1.9 yet.
+  
+
 h2.  Linux, BSD, Cygwin
 
 To get started you will need a recent version of Ruby, Ruby Gems and build

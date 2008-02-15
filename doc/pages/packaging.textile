@@ -26,8 +26,13 @@ $ buildr package
 
 The @package@ task runs the @build@ task (remember: @compile@ and @test@) and
 then runs each of the packaging tasks, creating packages in the projects'
-target directories[1].
+target directories.
 
+p(tip). The @package@ task and @package@ methods are related, but that relation is
+different from other task/method pairs.  The @package@ method creates a file
+task that points to the package in the @target@ directory and knows how to
+create it.  It then adds itself as a prerequisite to the @package@ task.
+Translation: you can create multiple packages from the same project.
 
 
 h2. Packaging JARs
@@ -172,7 +177,7 @@ package(:zip).include 'target/docs', :path=>"#{id}-#{version}"
 }}}
 
 If you need to use the @:path@ option repeatedly, consider using the @path@
-method instead.  For example[2]:
+method instead.  For example:
 
 {{{!ruby
 package(:zip).path("#{id}-#{version}").tap do |path|
@@ -181,7 +186,11 @@ package(:zip).path("#{id}-#{version}").tap do |path|
 end
 }}}
 
-*Note:* To allow you to spread files across different paths, the
+p(tip). The @tap@ method is not part of the core library, but a very useful
+extension.  It takes an object, yields to the block with that object, and then
+returns that object.
+
+p(note). To allow you to spread files across different paths, the
 include/exclude patterns are specific to a path.  So in the above example, if
 you want to exclude some files from the "target/docs" directory, make sure to
 call @exclude@ on the path, not on the ZIP task itself.
@@ -483,13 +492,18 @@ end
 
 You can get all the packages created by a project and filter them yourself.
 Let's illustrate that with an example that prints artifact specifications for
-all the packages we generate through our projects[3]:
+all the packages we generate through our projects:
 
 {{{!ruby
 puts projects.map(&:packages).flatten.map(&:to_spec).join(', ')
 => acme:killer-app:zip:sources:1.0, acme:killer-app-teh-api:jar:1.0,
    acme:killer-app-teh-impl:jar:1.0, acme:killer-app-la-web:war:1.0
 }}}
+
+p(tip). The @map@ method takes an array, runs the block with each item, and
+returns a new array.  The @&:@ shortcut is not a standard part of Ruby but a
+useful convenience that calls this method on each instance.  So
+@map(&:packages)@ is just a shorter way of saying @map { |obj| obj.packages }@.
 
 Now reduce it to only use the JAR packages:
 
@@ -561,19 +575,3 @@ package_with_javadoc :except=>'la-web'
 
 We packaged the code, but will it actually work? Let's see "what the tests
 say":testing.html.
-
-
-fn1. The @package@ task and @package@ methods are related, but that relation is
-different from other task/method pairs.  The @package@ method creates a file
-task that points to the package in the @target@ directory and knows how to
-create it.  It then adds itself as a prerequisite to the @package@ task.
-Translation: you can create multiple packages from the same project.
-
-fn2. The @tap@ method is not part of the core library, but a very useful
-extension.  It takes an object, yields to the block with that object, and then
-returns that object.
-
-fn3. The @map@ method takes an array, runs the block with each item, and
-returns a new array.  The @&:@ shortcut is not a standard part of Ruby but a
-useful convenience that calls this method on each instance.  So
-@map(&:packages)@ is just a shorter way of saying @map { |obj| obj.packages }@.

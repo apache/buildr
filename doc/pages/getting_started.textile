@@ -2,7 +2,7 @@ h1. Getting Started
 
 h2.  Installing Buildr
 
-More information about "downloading and installing Buildr":downloading.html.
+More information about "downloading and installing Buildr":download.html.
 
 
 h2. Conventions
@@ -33,11 +33,16 @@ You need a *Buildfile*, a build script that tells Buildr all about the projects
 it's building, what they contain, what to produce, and so on.  The Buildfile
 resides in the root directory of your project.  We'll talk more about it in
 "the next chapter":projects.html.  If you don't already have one, ask Buildr to
-create it[1]:
+create it:
 
 {{{!sh
 $ buildr
 }}}
+
+p(tip). You'll notice that Buildr creates a file called @buildfile@.  It's
+case sensitive, but Buildr will look for either @buildfile@ or @Buildfile@.
+You can also use @Rakefile@ or @rakefile@ for compatibility with previous
+versions of Buildr.
 
 You use Buildr by running the @buildr@ command:
 
@@ -115,17 +120,21 @@ You are, of course, describing your projects for the sake of those who will
 maintain your code, right?  To describe a project, or a task, call the @desc@
 method before the project or task definition.
 
+So next let's talk about "projects":projects.html.
+
 
 h2. More Info
 
-*API* The "Buildr API":http://incubator.apache.org/buildr/rdoc/index.html documentation.
+*API* The "Buildr API":http://incubator.apache.org/buildr/rdoc/index.html
+documentation.
 
-*Rake* Buildr is based on Rake, a Ruby build system that handles tasks and dependencies.  Check out the "Rake documentation":http://docs.rubyrake.org/ for more information.
+*Rake* Buildr is based on Rake, a Ruby build system that handles tasks and
+dependencies.  Check out the "Rake documentation":http://docs.rubyrake.org/ for
+more information.
 
-*AntWrap* Buildr uses AntWrap, for configuring and running Ant tasks.  You can learn more from the "Antwrap documentation":http://antwrap.rubyforge.org/.
+*AntWrap* Buildr uses AntWrap, for configuring and running Ant tasks.  You can
+learn more from the "Antwrap documentation":http://antwrap.rubyforge.org/.
 
-*YAML* Buildr uses YAML for its profiles.  You can "learn more about YAML here":http://www.yaml.org, and use this handy
-"YAML quick reference":http://www.yaml.org/refcard.html.
-
-
-fn1. You'll notice that Buildr creates a file called @buildfile@.  It's case sensitive, but Buildr will look for either @buildfile@ or @Buildfile@.  You can also use @Rakefile@ or @rakefile@ for compatibility with previous versions of Buildr.
+*YAML* Buildr uses YAML for its profiles.  You can "learn more about YAML
+here":http://www.yaml.org, and use this handy "YAML quick
+reference":http://www.yaml.org/refcard.html.
