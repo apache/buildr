@@ -63,7 +63,8 @@ module Buildr
       
       Java.classpath << dependencies
       
-      specify :language => [:groovy, :java], :target => 'classes', :target_ext => 'class', :packaging => :jar
+      specify :language => :groovy, :sources => [:groovy, :java], :source_ext => [:groovy, :java], 
+              :target => 'classes', :target_ext => 'class', :packaging => :jar
 
       def initialize(project, options) #:nodoc:
         super

@@ -53,7 +53,7 @@ describe 'groovyc compiler' do
   end
 
   it 'should report the multi-language as :groovy, :java' do
-    define('foo').compile.using(:groovyc).language.should == [:groovy, :java]
+    define('foo').compile.using(:groovyc).language.should == :groovy
   end
 
   it 'should set the target directory to target/classes' do

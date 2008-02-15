@@ -75,8 +75,8 @@ module Buildr
         # For example:
         #   specify :language=>:java, :target=>'classes', :target_ext=>'class', :packaging=>:jar
         def specify(attrs)
-          attrs[:sources] ||= attrs[:language].ergo { |lang| Array === lang ? lang.map(&:to_s) : lang.to_s }
-          attrs[:source_ext] ||= attrs[:language].ergo { |lang| Array === lang ? lang.map(&:to_s) : lang.to_s }
+          attrs[:sources] ||= attrs[:language].to_s
+          attrs[:source_ext] ||= attrs[:language].to_s
           attrs.each { |name, value| instance_variable_set("@#{name}", value) }
         end
 
