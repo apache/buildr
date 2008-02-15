@@ -56,7 +56,7 @@ There are several options you can use, for a full list of options type:
 $ buildr --help
 }}}
 
-|_. Option                  |_. Description                                           |
+|_. Option                  |_. Usage |
 | @-f/--buildfile [file]@   | Specify the buildfile.                                  |
 | @-e/--environment [name]@ | Environment name (e.g. development, test, production).  |
 | @-h/--help@               | Display this help message.                              |

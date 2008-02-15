@@ -259,6 +259,7 @@ compilation daemon, by setting the environment variable @USE_FSC@ to @yes@.   No
 that @fsc@ _may_ cache class libraries -- don't forget to run @fsc -reset@ if you 
 upgrade a library.
 
+
 h3. Compiling Groovy
 
 Before using the Groovy compiler, you must first require it on your buildfile:

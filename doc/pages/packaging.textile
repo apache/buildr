@@ -289,10 +289,11 @@ component's classpath.
 
 EAR packages support four component types:
 
-* @:war@ -- J2EE Web Application (WAR).
-* @:ejb@ -- Enterprise Java Bean (JAR).
-* @:jar@ -- J2EE Application Client (JAR).
-* @:lib@ -- Shared library (JAR).
+|_. Argument  |_. Component                     |
+| @:war@      | J2EE Web Application (WAR).     |
+| @:ejb@      | Enterprise Java Bean (JAR).     |
+| @:jar@      | J2EE Application Client (JAR).  |
+| @:lib@      | Shared library (JAR).           |
 
 This example shows two ways for adding components built by other projects:
 

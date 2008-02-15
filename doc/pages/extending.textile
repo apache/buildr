@@ -99,17 +99,17 @@ definition.  You can do that by adding callbacks to the process.
 
 The easiest way to add callbacks is by incorporating the Extension module in
 your own extension, and using the various class methods to define callback
-behavior:
+behavior.
 
-* @first_time@ -- This block will be called once for any particular extension.
-You can use this to setup top-level and local tasks.
-* @before_define@ -- This block is called once for the project with the
-project instance, right before running the project definition.  You can use
-this to add tasks and set properties that will be used in the project
-definition.
-* @after_define@ -- This block is called once for the project with the project
+|_. Method        |_. Usage |
+| @first_time@    | This block will be called once for any particular
+extension.  You can use this to setup top-level and local tasks. |
+| @before_define@ | This block is called once for the project with the project
+instance, right before running the project definition.  You can use this to add
+tasks and set properties that will be used in the project definition. |
+| @after_define@  | This block is called once for the project with the project
 instance, right after running the project definition.  You can use this to do
-any post-processing that depends on the project definition.
+any post-processing that depends on the project definition. |
 
 This example illustrates how to write a simple extension:
 
@@ -195,18 +195,19 @@ API documentation.
 The built-in tasks expand lists of symbols into relative paths, using the
 following convention:
 
-* @:source, :main, <lang/usage>@ --  Directory containing source files for a
-given language or usage, for example, @:java@, @:resources@, @:webapp@.
-* @:source, :test, <lang/usage>@ -- Directory containing test files for a
-given language or usage, for example, @:java@, @:resources@.
-* @:target, :generated@ -- Target directory for generated code (typically
-source code).
-* @:target, :main, <lang/usage>@ -- Target directory for compiled code, for
-example, @:classes@, @:resources@.
-* @:target, :test, <lang/usage>@ -- Target directory for compile test cases,
-for example, @:classes@, @:resources@.
-* @:reports, <framework/usage>@ -- Target directory for generated reports, for
-example, @:junit@, @:coverage@.
+|_. Path                          |_. Expands to |
+| @:source, :main, <lang/usage>@  |  Directory containing source files for a
+given language or usage, for example, @:java@, @:resources@, @:webapp@. |
+| @:source, :test, <lang/usage>@  | Directory containing test files for a given
+language or usage, for example, @:java@, @:resources@. |
+| @:target, :generated@           | Target directory for generated code
+(typically source code). |
+| @:target, :main, <lang/usage>@  | Target directory for compiled code, for
+example, @:classes@, @:resources@. |
+| @:target, :test, <lang/usage>@  | Target directory for compile test cases,
+for example, @:classes@, @:resources@. |
+| @:reports, <framework/usage>@   | Target directory for generated reports, for
+example, @:junit@, @:coverage@. |
 
 All tasks are encouraged to use the same convention, and whenever possible, we
 recommend using the project's @path_to@ method to expand a list of symbols
