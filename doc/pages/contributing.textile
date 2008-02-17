@@ -165,4 +165,9 @@ Here is the list of people who are actively working and committing on Buildr:
 
 *"Matthieu Riou":http://offthelip.org*
 
-*Victor Hugo Borja*
+*Victor Hugo Borja* (vborja at apache.org)	
+Currently a Java Developer at http://jwmsolutions.com, Victor has been enjoying
+and using Apache's software since 1999 when he started with Java, now he prefers
+programming Ruby and is happy to help on Apache's first ruby project. 
+
+
