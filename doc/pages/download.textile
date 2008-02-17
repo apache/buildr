@@ -6,7 +6,7 @@ If you are using JRuby, see the instructions for "JRuby":#jruby and also read
 about using "JRuby and Ruby side by side":#using_jruby_and_ruby.
 
 
-p(note). The current release of Buildr works with Ruby 1.8 and JRuby 1.1RC1.
+p(note). The current release of Buildr works with Ruby 1.8 and JRuby 1.1RC2.
 We do not yet support Ruby 1.9 yet.
   
 
@@ -140,7 +140,7 @@ To install a specific version of Buildr:
 
 h2. JRuby
 
-If you don't already have JRuby 1.1RC1 or later installed, you can download it
+If you don't already have JRuby 1.1RC2 or later installed, you can download it
 from the "JRuby site":http://dist.codehaus.org/jruby/.
 
 After uncompressing JRuby, make sure you set the @JAVA_HOME@ environment
