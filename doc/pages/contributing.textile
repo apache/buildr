@@ -46,7 +46,7 @@ are using, and also which operating system you are on:
 
 {{{!sh
 $ ruby --version
-$ builder --version
+$ buildr --version
 $ java --version
 }}}
 
