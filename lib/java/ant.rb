@@ -33,7 +33,7 @@ module Buildr
       options = { :name=>name, :basedir=>Dir.pwd, :declarative=>true }
       options.merge!(:logger=> Logger.new(STDOUT), :loglevel=> Logger::DEBUG) if Rake.application.options.trace
       Java.load
-      AntProject.new(options).tap do |project|
+      Antwrap::AntProject.new(options).tap do |project|
         # Set Ant logging level to debug (--trace), info (default) or error only (--quiet).
         project.project.getBuildListeners().get(0).
           setMessageOutputLevel((Rake.application.options.trace && 4) || (verbose && 2) || 0)
