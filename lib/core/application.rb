@@ -75,7 +75,7 @@ module Buildr
           @rakefiles.clear
           @rakefiles << value
         when '--version'
-          puts "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby)'}"
+          puts "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby '+JRUBY_VERSION+')'}"
           exit
         when '--environment'
           ENV['BUILDR_ENV'] = value
