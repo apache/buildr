@@ -110,7 +110,7 @@ installer":http://rubyinstaller.rubyforge.org/.
 We recommend you first upgrade to the latest version of Ruby gems:
 
 {{{!sh
-$ sudo gem update --system
+> gem update --system
 }}}
 
 Before installing Buildr, please set the @JAVA_HOME@ environment variable to
