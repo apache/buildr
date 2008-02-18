@@ -140,7 +140,7 @@ dependencies into arrays and structures.
 
 You can use Ruby to perform ad hoc tasks.  For example, Buildr doesn't have
 any pre-canned task for setting file permissions.  But Ruby has a method for
-just, so it's just a matter of writing a task:
+that, so it's just a matter of writing a task:
 
 {{{!ruby
 bins = file('target/bin'=>FileList[_('src/main/dist/bin/*')]) do |task|

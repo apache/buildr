@@ -22,7 +22,7 @@ group:id:type:classifier:version
 For example, @'org.apache.axis2:axis2:jar:1.2'@ refers to an artifact with
 group identifier org.apache.axis2, artifact identifier axis2, a JAR file with
 version 1.2.  Classifiers are typically used to distinguish between similar
-file types, for example, a source distribution and binary distribution that
+file types, for example, a source distribution and a binary distribution that
 otherwise have the same identifier and are both ZIP files.
 
 
@@ -103,7 +103,7 @@ require '../shared/artifacts'
 }}}
 
 When you use @require@, Ruby always looks for a filename with the @.rb@
-extension, so in this case if expects to find @artifacts.rb@ in the @shared@
+extension, so in this case it expects to find @artifacts.rb@ in the @shared@
 directory.
 
 One last thing.  You can also treat artifact specifications as hashes.  For

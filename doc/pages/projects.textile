@@ -10,7 +10,7 @@ The only thing you need to do is specify the parts that are specific to your
 project, like the classpath dependencies, whether you're packaging a JAR or a
 WAR, etc.
 
-The reminder of this guide deals with what it takes to build a project.  But
+The remainder of this guide deals with what it takes to build a project.  But
 first, let's pick up a sample project to work with.  We'll call it
 _killer-app_:
 
@@ -95,7 +95,7 @@ will compile to @target/flash@.  Throughout this document we will show examples
 using mostly Java, but you can imagine how this pattern applies to other
 languages.
 
-When projects grow big, you split them own into smaller projects by nesting
+When projects grow big, you split them into smaller projects by nesting
 projects inside each other.  Each sub-project has a sub-directory under the
 parent project and follows the same internal directory structure.  You can, of
 course, change all of that to suite your needs, but if you follow these
@@ -143,8 +143,8 @@ Notice the @buildfile@ at the top.  That's your project build script, the one
 Buildr runs.
 
 When you run the @buildr@ command, it picks up the @buildfile@ (which here
-we'll just call _Buildfile_) from the current directory, or it not there, from
-the closest parent directory.  So you can run @buildr@ form any directory
+we'll just call _Buildfile_) from the current directory, or if not there, from
+the closest parent directory.  So you can run @buildr@ from any directory
 inside your project, and it will always pick up the same Buildfile.  That also
 happens to be the base directory for the top project.  If you have any
 sub-projects, Buildr assumes they reflect sub-directories under their parent.
@@ -181,7 +181,10 @@ or raise an error.  You can also call it with no arguments and it will return
 the project itself.  It's syntactic sugar that's useful when accessing project
 properties.
 
-The @projects@ method takes a list of names and returns a list of projects.  If you call it with no arguments on a project, it returns all its sub-projects.  If you call it with no argument in any other context, it returns all the projects defined so far.
+The @projects@ method takes a list of names and returns a list of projects.  If
+you call it with no arguments on a project, it returns all its sub-projects.  
+If you call it with no argument in any other context, it returns all the
+projects defined so far.
 
 Let's illustrate this with a few examples:
 

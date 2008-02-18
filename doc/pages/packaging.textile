@@ -8,7 +8,7 @@ package :jar
 }}}
 
 We just told the project to create a JAR file in the @target@ directory,
-including all the classes (and resources) that we previously complied into
+including all the classes (and resources) that we previously compiled into
 @target/classes@.  Or we can create a WAR file:
 
 {{{!ruby
@@ -159,7 +159,7 @@ use file pattern to match multiple files and directories.  File patterns
 include asterisk (@*@) to match any file name or part of a file name, double
 asterisk (@**@) to match directories recursively, question mark (@?@) to match
 any character, square braces (@[]@) to match a set of characters, and curly
-braces (@{}@) to one of several names.
+braces (@{}@) to match one of several names.
 
 And the same way you @include@, you can also @exclude@ specific files you don't
 want showing up in the ZIP.  For example, to exclude @.draft@ and @.raw@ files:
@@ -176,7 +176,7 @@ files under a given path using the @:path@ option:
 package(:zip).include 'target/docs', :path=>"#{id}-#{version}"
 }}}
 
-If you need to use the @:path@ option repeatedly, consider using the @path@
+If you need to use the @:path@ option repeatedly, consider using the @tap@
 method instead.  For example:
 
 {{{!ruby
@@ -218,7 +218,7 @@ anything interesting.  Your ZIP will come up empty.  The second file includes
 the directory itself, but strips the path during inclusion.  You can define it
 now, create these files later, and then ZIP them all up.
 
-For example, when @package :jar@ decides to include all the files form
+For example, when @package :jar@ decides to include all the files from
 @target/classes@, it's still working on the project definition, and has yet to
 compile anything.  Since @target/classes@ may be empty, may not even exist, it
 uses @:as=>'.'@.
@@ -256,9 +256,9 @@ by default.
 
 The @services_xml@ attribute points to an Axis2 services configuration file
 called @services.xml@ that will be placed in the @META-INF@ directory inside
-the archive.  the default behavior is to point to the @services.xml@ file in
+the archive.  The default behavior is to point to the @services.xml@ file in
 the project's @src/main/axis2@ directory.  In the second example above we set
-it explicitly, 
+it explicitly.
 
 The @wsdls@ attribute is a collection of file names or glob patterns for WSDL
 files that get included in the @META-INF@ directory.  In the second example we
@@ -305,7 +305,7 @@ package(:ear).add project('commonLib') # By default, the JAR package
 Adding a WAR package assumes it's a WAR component and treats it as such, but
 JAR packages can be any of three component types, so by default they are all
 treated as shared libraries.  If you want to add an EJB or Application Client
-component, you need to say so explicitly, either passing @type=>package@, or by
+component, you need to say so explicitly, either passing @:type=>package@, or by
 passing the component type in the @:type@ option.
 
 Here are three examples:
@@ -336,7 +336,7 @@ package(:ear) << project('coolWebService').package(:war)
 }}}
 
 EAR packages include an @application.xml@ file in the @META-INF@ directory that
-describes the application and its component.  This file is created for you
+describes the application and its components.  This file is created for you
 during packaging, by referencing all the components added to the EAR.  There
 are a couple of things you will typically want to change.
 
@@ -371,9 +371,7 @@ package(:tgz).include _('target/docs'), 'README'
 }}}
 
 The first line creates a Tar archive with the extension @.tar@, the second
-creates a GZipped Tar archive with the extension @.tgz@.  The first creates a
-Tar archive with the extension @.tar@, the second creates a GZipped Tar archive
-with the extension @.tgz@.
+creates a GZipped Tar archive with the extension @.tgz@.
 
 In addition to packaging that includes the archive in the list of
 installed/released files, you can use the method @tar@ to create a @TarTask@.

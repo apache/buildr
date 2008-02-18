@@ -20,7 +20,7 @@ developers working with Buildr, and the
 "buildr-dev":mailto:buildr-dev@incubator.apache.org mailing list
 ("subscribe":mailto:buildr-dev-subscribe@incubator.apache.org,
 "archive":http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/) for
-developement of Buildr itself.  We also have a
+development of Buildr itself.  We also have a
 "commits":mailto:buildr-commits@incubator.apache.org mailing list
 ("subscribe":mailto:buildr-commits-subscribe@incubator.apache.org) if you want to
 stalk us.
@@ -111,7 +111,7 @@ $ rake spec
 We always @rake spec@ before making a release.
 
 You can also check out the "RSpec report":report.html and "test coverage
-report":coverage/index.html for the current version of Buildr.  And if you want to help us on the journey to 100% test coverage, we'll be ever so greatful!
+report":coverage/index.html for the current version of Buildr.  And if you want to help us on the journey to 100% test coverage, we'll be ever so grateful!
 
 
 h2.  Documentation

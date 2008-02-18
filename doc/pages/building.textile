@@ -128,7 +128,7 @@ We use method pairs to give you finer control over the compiler, but also a way
 to easily configure it.  Methods like @dependencies@ and @sources@ give you a
 live array you can manipulate, or iterate over.  On the other hand, methods
 like @with@ and @from@ accept a wider set of arguments and clean them up for
-you.  The also all return the same task you're calling, so you can chain
+you.  They also all return the same task you're calling, so you can chain
 methods together.
 
 For example:

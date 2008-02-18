@@ -17,7 +17,7 @@ Compare this:
 
 {{{!ruby
 file('derby.sql') do
-  requires = [
+  REQUIRES = [
     'org.apache.openjpa:openjpa-all:jar:0.9.7-incubating',
     'commons-collections:commons-collections:jar:3.1',
     . . . 
@@ -26,12 +26,11 @@ file('derby.sql') do
     ant.taskdef :name=>'mapping',
       :classname=>'org.apache.openjpa.jdbc.ant.MappingToolTask',
       :classpath=>REQUIRES.join(File::PATH_SEPARATOR)
-      ant.mapping :schemaAction=>'build', :sqlFile=>task.name,
-        :ignoreErrors=>true do
+    ant.mapping :schemaAction=>'build', :sqlFile=>task.name,
+      :ignoreErrors=>true do
         ant.config :propertiesFile=>_(:source, :main, :sql, 'derby.xml')
         ant.classpath :path=>projects('store', 'utils' ).
           flatten.map(&:to_s).join(File::PATH_SEPARATOR)
-      end
     end
   end
 end
