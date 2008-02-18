@@ -202,8 +202,7 @@ module Buildr
 
     def initialize(*args) #:nodoc:
       super
-      @paths = { ''=>Path.new(self, '') }
-      @prepares = []
+      clean
 
       # Make sure we're the last enhancements, so other enhancements can add content.
       enhance do
@@ -227,6 +226,22 @@ module Buildr
           end
         end
       end
+    end
+
+    # :call-seq:
+    #   clean => self
+    # 
+    # Removes all previously added content from this archive. 
+    # Use this method if you want to remove default content from a package.
+    # For example, package(:jar) by default includes compiled classes and resources,
+    # using this method, you can create an empty jar and afterwards add the
+    # desired content to it.
+    # 
+    #    package(:jar).clean.include path_to('desired/content')
+    def clean
+      @paths = { '' => Path.new(self, '') }
+      @prepares = []
+      self
     end
 
     # :call-seq:
