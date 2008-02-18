@@ -344,8 +344,8 @@ module Buildr
         base = Pathname.new(source)
         files = FileList.recursive(source).
           map { |file| Pathname.new(file).relative_path_from(base).to_s }.
-          select { |file| @include.empty? || @include.any? { |pattern| File.fnmatch(pattern, file) } }.
-          reject { |file| @exclude.any? { |pattern| File.fnmatch(pattern, file) } }
+          select { |file| @include.empty? || @include.any? { |pattern| File.fnmatch(pattern, file, File::FNM_PATHNAME) } }.
+          reject { |file| @exclude.any? { |pattern| File.fnmatch(pattern, file, File::FNM_PATHNAME) } }
         files.each do |file|
           src, dest = File.expand_path(file, source), File.expand_path(file, target.to_s)
           map[file] = src if !File.exist?(dest) || File.stat(src).mtime > File.stat(dest).mtime

@@ -235,7 +235,7 @@ the expanded ZIP.  For example:
 
 {{{!ruby
 # Everything but the libs
-package(:zip).merge('bigbad.war').exclude('libs/*')
+package(:zip).merge('bigbad.war').exclude('libs/**/*')
 }}}
 
 

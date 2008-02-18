@@ -44,6 +44,11 @@ describe "ArchiveTask", :shared=>true do
     inspect_archive { |archive| archive.should be_empty }
   end
 
+  it "should create empty archive if called #clean method" do
+    archive(@archive).include(@files).clean.invoke
+    inspect_archive { |archive| archive.should be_empty }
+  end
+
   it "should archive all included files" do
     archive(@archive).include(@files).invoke
     inspect_archive { |archive| @files.each { |f| archive[File.basename(f)].should eql(content_for(f)) } }
@@ -176,15 +181,21 @@ describe "ArchiveTask", :shared=>true do
     create_for_merge do |src|
       archive(@archive).merge(src).include(File.basename(@files.first))
       archive(@archive).invoke
-      inspect_archive { |archive| archive[File.basename(@files.first)].should eql(content_for(@files.first)) }
+      inspect_archive do |archive| 
+        archive[File.basename(@files.first)].should eql(content_for(@files.first))
+        archive[File.basename(@files.last)].should be_nil
+      end
     end
   end
-
+  
   it "should expand another archive file with exclude pattern" do
     create_for_merge do |src|
       archive(@archive).merge(src).exclude(File.basename(@files.first))
       archive(@archive).invoke
-      inspect_archive { |archive| @files[1..-1].each { |f| archive[File.basename(f)].should eql(content_for(f)) } }
+      inspect_archive do |archive| 
+        @files[1..-1].each { |f| archive[File.basename(f)].should eql(content_for(f)) } 
+        archive[File.basename(@files.first)].should be_nil
+      end
     end
   end
 
@@ -375,7 +386,7 @@ describe Unzip do
       FileList[File.join(@target, "test/path/*")].size.should be(1)
 
       Rake::Task.clear ; rm_rf @target
-      unzip(@target=>@zip).include("test/**").target.invoke
+      unzip(@target=>@zip).include("test/**/*").target.invoke
       FileList[File.join(@target, "test/path/*")].size.should be(2)
     end
   end

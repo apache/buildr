@@ -88,23 +88,18 @@ module Buildr
       #   merge(*files) => Merge
       #   merge(*files, :path=>name) => Merge
       def merge(*args)
-        options = args.pop if Hash === args.last
+        options = Hash === args.last ? args.pop : {}
         files = args.flatten
-
-        if options.nil? || options.empty?
-          files.collect do |file|
-            @sources << proc { file.to_s }
-            expander = ZipExpander.new(file)
-            @actions << proc { |file_map| expander.expand(file_map, @path) }
-            expander
-          end.first
-        elsif options[:path]
-          sans_path = options.reject { |k,v| k == :path }
-          path(options[:path]).merge *files + [sans_path]
-          self
-        else
-          raise "Unrecognized option #{options.keys.join(", ")}"
+        rake_check_options options, :path
+        raise ArgumentError, "Expected at least one file to merge" if files.empty?
+        path = options[:path] || @path
+        expanders = files.collect do |file|
+          @sources << proc { file.to_s }
+          expander = ZipExpander.new(file)
+          @actions << proc { |file_map| expander.expand(file_map, path) }
+          expander
         end
+        Merge.new(expanders)
       end
 
       # Returns a Path relative to this one.
@@ -157,9 +152,23 @@ module Buildr
       end
 
       def excluded?(file)
-        @excludes.any? { |exclude| File.fnmatch(exclude, file) }
+        @excludes.any? { |exclude| File.fnmatch(exclude, file, File::FNM_PATHNAME) }
       end
 
+    end
+
+    class Merge
+      def initialize(expanders)
+        @expanders = expanders
+      end
+      def include(*files)
+        @expanders.each { |expander| expander.include(*files) }
+      end
+      alias :<< :include
+      
+      def exclude(*files)
+        @expanders.each { |expander| expander.exclude(*files) }
+      end
     end
 
 
@@ -187,9 +196,10 @@ module Buildr
         @includes = ['*'] if @includes.empty?
         Zip::ZipFile.open(@zip_file) do |source|
           source.entries.reject { |entry| entry.directory? }.each do |entry|
-            if @includes.any? { |pattern| File.fnmatch(pattern, entry.name) } &&
-               !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name) }
-              dest = "#{path}#{entry.name}"
+            if @includes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) } &&
+               !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) }
+              dest = Pathname.new(File.expand_path(path + "/" + entry.name, '/')).
+                              relative_path_from(Pathname.new(File.expand_path('/'))).to_s
               puts "Adding #{dest}" if Rake.application.options.trace
               file_map[dest] = lambda { |output| output.write source.read(entry) }
             end
@@ -627,8 +637,8 @@ module Buildr
         excludes = @exclude || []
         entries.inject({}) do |map, entry|
           short = entry.name.sub(@path, '')
-          if includes.any? { |pat| File.fnmatch(pat, short) } &&
-             !excludes.any? { |pat| File.fnmatch(pat, short) }
+          if includes.any? { |pat| File.fnmatch(pat, short, File::FNM_PATHNAME) } &&
+             !excludes.any? { |pat| File.fnmatch(pat, short, File::FNM_PATHNAME) }
             map[short] = entry
           end
           map

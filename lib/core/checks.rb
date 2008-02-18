@@ -296,7 +296,7 @@ class Buildr::ArchiveTask
     # Returns true if this ZIP file path contains all the specified files. You can use relative
     # file names and glob patterns (using *, **, etc).
     def contain?(*files)
-      files.all? { |file| entries.detect { |entry| File.fnmatch(file, entry.to_s) } }
+      files.all? { |file| entries.detect { |entry| File.fnmatch(file, entry.to_s, File::FNM_PATHNAME) } }
     end
 
     # :call-seq:
