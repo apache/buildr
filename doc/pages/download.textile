@@ -200,34 +200,28 @@ different versions of the Buildr Gem (same functionality, different
 dependencies).  If you want to use Buildr with both, you must install it
 separately for each one.
 
-If you installed JRuby but don't have Ruby installed on your machine, the @gem@
-command will install Buildr for JRuby, and the @buildr@ command will run Buildr
-using JRuby.
+If you installed JRuby on your machine and do not have Ruby installed, the
+@gem@ and @buildr@ commands will default to using JRuby.  However, you may
+already have Ruby installed (some operating systems come with Ruby
+pre-installed), in which case these commands will default to whichever is first
+on the path.
 
-Note that some operating systems, specifically OS/X and various flavors of
-Linux, come with Ruby pre-installed, you can check this out by running the
-@ruby@ command.
-
-You can use the @PATH@ environment variable to determine which one is used by
-default.  The instructions above show you how to place JRuby first on the
-@PATH@, afterwhich you can install and use Buildr for JRuby.
-
-If you need to use both versions together, you can pick Ruby or JRuby and run
-the various commands using the @-S@ argument.  For example, to install and run
-Buildr for JRuby, even though Ruby appears first on the @PATH@:
+To work exclusively with JRuby, make sure it shows first on the path, for example,
+by setting @PATH=/opt/jruby/bin:$PATH@.  Alternatively, you can run scripts with a particular version
+of Ruby using the @-S@ command line argument.  For example:
 
 {{{!
+$ # with Ruby
+$ ruby -S gem install buildr
+$ ruby -S buildr
+$ # with JRuby
 $ jruby -S gem install buildr
 $ jruby -S buildr
 }}}
 
-To find out which version you are currently running:
-
-{{{!
-$ buildr help
-}}}
-
-When running on JRuby you will see @(JRuby)@ next to Buildr version number.
+To find out which version of Buildr you are using by default, run @buildr
+--help@.  Buildr reports the version number and adds @(JRuby)@ next to it when
+running on JRuby.
 
 
 h2.  Binaries and Source Code

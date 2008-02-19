@@ -11,9 +11,9 @@ if [ -z `which jruby` ] ; then
   rm jruby-bin-${version}.tar.gz
   export PATH=$PATH:${target}
   if [ -e ~/.bash_profile ] ; then
-    echo "export PATH=\$PATH:${target}/bin" >> ~/.bash_profile
+    echo "export PATH=${target}/bin:\$PATH" >> ~/.bash_profile
   elif [ -e ~/.profile ] ; then
-    echo "export PATH=\$PATH:${target}/bin" >> ~/.profile
+    echo "export PATH=${target}/bin:\$PATH" >> ~/.profile
   else
     echo "You need to add ${target}/bin to the PATH"
   fi
