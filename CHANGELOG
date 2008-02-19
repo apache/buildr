@@ -1,4 +1,8 @@
 1.3.0 (Pending)
+* Fixed: More typos/documentation fixes by Lacton
+* Changed: Upgraded to Antwrap 0.7.0, thanks to Caleb Powel for relicensing under Apache License.
+* Added: ArchiveTask#clean can be used to remove content from a package. 
+* Added: Groovy compiler.
 * Added: Mechanism to simplify creating extensions (see Extension module).
 * Added: To run all test cases 'rake spec'.  Test coverage reports will show up in html/coverage.  To run failing tests against, 'rake failing'.
 * Added: Layout class for controlling the project layout.  Also cleaned up places where paths were used instead of path names.
@@ -10,7 +14,7 @@
 * Added: IDEA 7 task: use buildr idea7x (Shane Witbeck).
 * Changed: Upgraded to Rake 0.8, RSpec 1.1, RJB 1.1, Facets 2.2, OpenJPA 1.0.1.
 * Changed: Resources are now copied to target/resources instead of target/classes, and target/test/resources instead of target/test-resources.
-* Changed: Test cases are not compiled into target/test/classes instead of target/test-classes.
+* Changed: Test cases are now compiled into target/test/classes instead of target/test-classes.
 * Changed: Compile extension and CompileTask are now separate from the Java module.  Multiple compilers can be used, either guessed from the project layout, or specified with compile.using(:name).
 * Changed: Test extension and TestTask are now separate from the Java module.  JUnit and TestNG are Java specific extensions picked using test.with(:name).
 * Changed: For compile and test, use dependencies instead of classpath (with works are before).
