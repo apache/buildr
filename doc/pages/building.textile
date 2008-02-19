@@ -407,7 +407,7 @@ these tasks as prerequisites.  Call @build@ with a block, and it adds that
 block as an action.  Again, a common idiom you'll see elsewhere in Buildr and
 Rake.
 
-Let's look at a simple example.  Say we want to generate a Derby database form
+Let's look at a simple example.  Say we want to generate a Derby database from
 an SQL file and include it in the ZIP package:
 
 {{{!ruby
