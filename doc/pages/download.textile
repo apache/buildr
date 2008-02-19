@@ -6,30 +6,39 @@ If you are using JRuby, see the instructions for "JRuby":#jruby and also read
 about using "JRuby and Ruby side by side":#using_jruby_and_ruby.
 
 
-p(note). The current release of Buildr works with Ruby 1.8 and JRuby 1.1RC2.
-We do not yet support Ruby 1.9 yet.
-  
+p(note).  At the moment it seems that Buildr will not work with Java 6, and can
+only be used with Java 1.5 or earlier.  If you prefer to use Java 6, consider
+installing and using "Buildr for JRuby":jruby.
 
-h2.  Linux, BSD, Cygwin
+
+h2.  Linux
 
 To get started you will need a recent version of Ruby, Ruby Gems and build
 tools for compiling native libraries (Make and GCC).
 
-On Ubuntu you can setup your environment by installing the following packages:
+On RedHat/Fedora you can use yum to install Ruby and RubyGems, and then upgrade
+to the most recent version of RubyGems:
 
 {{{!sh
-$ sudo apt-get install ruby-full
-$ sudo apt-get install ruby1.8-dev
-$ sudo apt-get install build-essential
-$ sudo apt-get install libopenssl-ruby
+$ sudo yum install ruby rubygems ruby-devel gcc
+$ sudo gem update --system
 }}}
 
-Other distributions may use different package manages, like @yum@ and @emerge@.
-
-We recommend you first upgrade to the latest version of Ruby gems:
+On Ubuntu you have to install several packages:
 
 {{{!sh
-$ sudo gem update --system
+$ sudo apt-get install ruby-full ruby1.8-dev libopenssl-ruby build-essential 
+}}}
+
+The Debian package for @rubygems@ will not allow you to install Buildr, so you
+need to install RubyGems from source:
+
+{{{!sh
+$ curl -OL http://rubyforge.org/frs/download.php/29548/rubygems-1.0.1.tgz
+$ tar xzf rubygems-1.0.1.tgz
+$ cd rubygems-1.0.1
+$ sudo ruby setup.rb
+$ sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
 }}}
 
 Before installing Buildr, please set the @JAVA_HOME@ environment variable to
@@ -143,11 +152,8 @@ h2. JRuby
 If you don't already have JRuby 1.1RC2 or later installed, you can download it
 from the "JRuby site":http://dist.codehaus.org/jruby/.
 
-After uncompressing JRuby, make sure you set the @JAVA_HOME@ environment
-variable to point to your JDK distribution.
-
-Finally update your @PATH@ to include both JRuby and Java executables, so you
-can run JRuby with the command @jruby@.
+After uncompressing JRuby, update your @PATH@ to include both JRuby and Java
+executables, so you can run JRuby with the command @jruby@.
 
 For Windows:
 
@@ -180,13 +186,11 @@ To install a specific version of Buildr:
 $ sudo gem install buildr -v 1.3.0
 }}}
 
-When using JRuby you will notice that Buildr takes a few seconds to start up.
-To speed it up, we recommend switching to Java 1.6 and running the JVM in
-client mode:
-
-{{{!
-$ export JAVA_OPTS=-client
-}}}
+You can also use this script "to install Buildr for
+JRuby":scripts/install-jruby.sh.  The script will either install or upgrade
+Buildr to the latest version.  If you do not already have JRuby installed, it
+will install JRuby 1.1RC2 in @/opt/jruby@ and update the PATH in
+@~/.bash_profile@ or @~/.profile@.
 
 
 h2.  Using JRuby and Ruby

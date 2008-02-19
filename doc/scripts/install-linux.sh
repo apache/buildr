@@ -1,14 +1,15 @@
 #!/bin/sh
 if [ -z `which ruby` ] ; then
   echo "You do not have Ruby 1.8.6 ..."
+  # yum comes first since some people have apt-get installed in addition to yum.
   if [ `which yum` ] ; then
     echo "Installing Ruby using yum"
-    sudo yum install ruby rubygems 
+    sudo yum install ruby rubygems ruby-devel gcc
   elif [ `which apt-get` ] ; then
     echo "Installing Ruby using apt-get"
     # ruby package does not contain RDoc, IRB, etc; ruby-full is a meta-package.
     # build-essentials not installed by default in Ubuntu, required for C extensions.
-    sudo apt-get install ruby-full ruby1.8-dev build-essential libopenssl-ruby
+    sudo apt-get install ruby-full ruby1.8-dev libopenssl-ruby build-essential 
     # RubyGems broken on Ubunutu, installing directly from source.
     echo "Installing RubyGems from RubyForge"
     curl -OL http://rubyforge.org/frs/download.php/29548/rubygems-1.0.1.tgz
@@ -20,7 +21,7 @@ if [ -z `which ruby` ] ; then
     # ruby is same as ruby1.8, we need gem that is same as gem1.8
     sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
   else
-    echo "Can only install Ruby 1.8.6 using either yum or apt-get, and can't find either one"
+    echo "Can only install Ruby 1.8.6 using apt-get or yum, and can't find either one"
     exit 1
   fi
   echo
