@@ -87,8 +87,12 @@ files.
 Other than that, @package :jar@ includes the contents of the compiler's target
 directory and resources, which most often is exactly what you intend it to do.
 If you want to include other files in the JAR, instead or in addition, you can
-do so using the @include@ and @exclude@ methods.  We'll tell you more about
-them when we talk about "Packaging Zips":#packaging_zips.
+do so using the @include@ and @exclude@ methods.  If you do not want the target
+directory included in your JAR, simply call the @clean@ method on it.
+
+{{{!ruby
+package(:jar).clean.include( only_these_files )
+}}}
 
 
 h2. Packaging WARs
@@ -222,6 +226,10 @@ For example, when @package :jar@ decides to include all the files from
 @target/classes@, it's still working on the project definition, and has yet to
 compile anything.  Since @target/classes@ may be empty, may not even exist, it
 uses @:as=>'.'@.
+
+If you need to get rid of all the included files, call the @clean@ method.
+Some packaging types default to adding various files and directories, for
+example, JAR packaging will include all the compiled classes and resources.
 
 You can also merge two ZIP files together, expanding the content of one ZIP
 into the other.  For example:
