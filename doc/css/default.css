@@ -1,7 +1,7 @@
 body {
   background-color: #fff;
   color: #000;
-  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-family: "DejaVu Sans", Verdana, Helvetica, sans-serif;
   text-align: center;
 	line-height: 1.5em;
 }
@@ -19,10 +19,8 @@ img {
   border: none;
 }
 
-pre {
-	font-family: "Courier New";
-  padding: 1em;
-}
+pre, code { font-family: "DejaVu Sans Mono", "Courier New", "Courier"; }
+pre { padding: 1em; }
 pre.wrapped {
   white-space: pre-wrap;       /* css-3 */
   white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
@@ -62,8 +60,8 @@ blockquote {
 	border-left: 1px solid #3c78b5;
 }
 
-ul {
-  list-style-type: disc;
+ul { 
+  list-style-ty pe: disc;
 }
 
 ul ul {
@@ -177,6 +175,13 @@ ol.toc ol.toc li {
 }
 
 
+#content p.tip, #content p.note {
+  margin: 0.9em 0 0 0;
+  padding: 0 0 2em 4em;
+}
+#content p.tip { background: url("../images/tip.png") 0 0 no-repeat; }
+#content p.note { background: url("../images/note.png") 0 0 no-repeat; }
+ 
 #content .footnote {
   margin-top: 2.5em;
 }
@@ -196,23 +201,10 @@ ol.toc ol.toc li {
 #content .footnote-links dd { }
 
 
-#navigation {
-  padding: 2em 0 1em 0;
-}
-#navigation .prev {
-  display: block;
-  float: left;
-}
-#navigation .next {
-  display: block;
-  float: right;
-}
-
-
 #footer {
-  border-top: 1px solid #ccc;
+  border-top: 1px solid #444;
   font-size: 0.9em;
   padding: 0.3em;
+  margin: 2em 0 3em 0em;
   clear: both;
-  margin: 0 0 3em 0em;
 }

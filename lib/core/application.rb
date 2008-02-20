@@ -123,7 +123,7 @@ module Buildr
       end
 
       def usage()
-        puts "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby)'}"
+        puts "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby '+JRUBY_VERSION+')'}"
         puts
         puts 'Usage:'
         puts '  buildr [options] [tasks] [name=value]'

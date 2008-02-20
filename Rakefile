@@ -1,5 +1,4 @@
 require 'rubygems'
-Gem::manage_gems
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'spec/rake/spectask'
@@ -35,7 +34,7 @@ def specify(platform)
     spec.add_dependency 'net-sftp',             '~> 1.1'
     spec.add_dependency 'rubyzip',              '~> 0.9'
     spec.add_dependency 'highline',             '~> 1.4'
-    spec.add_dependency 'Antwrap',              '~> 0.6'
+    spec.add_dependency 'Antwrap',              '~> 0.7'
     spec.add_dependency 'rspec',                '~> 1.1'
     spec.add_dependency 'xml-simple',           '~> 1.0'
     spec.add_dependency 'archive-tar-minitar',  '~> 0.5'
@@ -45,6 +44,9 @@ def specify(platform)
   end
 end
 
+
+# Packaging and local installation.
+#
 ruby_spec = specify(Gem::Platform::RUBY)
 jruby_spec = specify('java')
 ruby_package = Rake::GemPackageTask.new(ruby_spec) do |pkg|
@@ -84,6 +86,7 @@ end
 
 
 # Testing is everything.
+#
 desc 'Run all specs'
 Spec::Rake::SpecTask.new('spec') do |task|
   task.spec_files = FileList['spec/**/*_spec.rb']
@@ -112,30 +115,38 @@ end
 
 
 # Documentation.
+#
+desc 'Generate RDoc documentation'
+rdoc = Rake::RDocTask.new(:rdoc) do |rdoc|
+  rdoc.rdoc_dir = 'html/rdoc'
+  rdoc.title    = ruby_spec.name
+  rdoc.options  = ruby_spec.rdoc_options + ['--promiscuous']
+  rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.rdoc_files.include ruby_spec.extra_rdoc_files
+  begin
+    gem 'allison'
+    rdoc.template = File.expand_path('lib/allison.rb', Gem.loaded_specs['allison'].full_gem_path)
+  rescue Exception 
+  end
+end
+
+desc 'Generate all documentation merged into the html directory'
+task 'docs'=>[rdoc.name]
+
 begin
-  require 'rake/rdoctask'
-  gem 'docter', '~>1.1'
   require 'docter'
   require 'docter/server'
   require 'docter/ultraviolet'
-  require 'allison'
-
-  desc 'Generate RDoc documentation'
-  rdoc = Rake::RDocTask.new(:rdoc) do |rdoc|
-    rdoc.rdoc_dir = 'html/rdoc'
-    rdoc.title    = ruby_spec.name
-    rdoc.options  = ruby_spec.rdoc_options + ['--promiscuous']
-    rdoc.rdoc_files.include('lib/**/*.rb')
-    rdoc.rdoc_files.include ruby_spec.extra_rdoc_files
-    rdoc.template = File.expand_path('lib/allison.rb', Gem.loaded_specs['allison'].full_gem_path)
-  end
 
   web_docs = {
-    :collection => Docter.collection('Buildr').using('doc/web.toc.yaml').include('doc/pages', 'LICENSE', 'CHANGELOG'),
-    :template   => Docter.template('doc/web.haml').include('doc/css', 'doc/images', 'html/report.html', 'html/coverage', 'html/rdoc')
+    :collection => Docter.collection('Buildr').using('doc/web.toc.yaml').
+      include('doc/pages', 'LICENSE', 'CHANGELOG'),
+    :template   => Docter.template('doc/web.haml').
+      include('doc/css', 'doc/images', 'doc/scripts', 'html/report.html', 'html/coverage', 'html/rdoc')
   }
   print_docs = {
-    :collection => Docter.collection('Buildr &mdash; The build system that doesn\'t suck').using('doc/print.toc.yaml').include('doc/pages', 'LICENSE'),
+    :collection => Docter.collection('Buildr &mdash; The build system that doesn\'t suck').using('doc/print.toc.yaml').
+      include('doc/pages', 'LICENSE'),
     :template   => Docter.template('doc/print.haml').include('doc/css', 'doc/images')
   }
 
@@ -143,33 +154,34 @@ begin
     html.gsub(/<p id="fn(\d+)">(.*?)<\/p>/, %{<p id="fn\\1" class="footnote">\\2</p>})
   end
 
-  desc 'Produce PDF'
-  print = Docter::Rake.generate('print', print_docs[:collection], print_docs[:template], :one_page)
-  pdf_file = file('html/buildr.pdf'=>print) do |task|
-    mkpath 'html'
-    sh *%W{prince #{print}/index.html --baseurl=http://incubator.apache.org/buildr/ -o #{task.name} --media=print} do |ok, res|
-      fail 'Failed to create PDF, see errors above' unless ok
-    end
-  end
-  task('pdf'=>pdf_file) { |task| `open #{File.expand_path(pdf_file.to_s)}` }
-
   desc 'Generate HTML documentation'
   html = Docter::Rake.generate('html', web_docs[:collection], web_docs[:template])
   desc 'Run Docter server'
   Docter::Rake.serve :docter, web_docs[:collection], web_docs[:template], :port=>3000
+  task('docs').enhance [html]
+  task('clobber') { rm_rf html.to_s }
 
-  desc 'Generate all documentation merged into the html directory'
-  task 'docs'=>[html, rdoc.name, pdf_file]
-  task('clobber') { rm_rf [html, print].map(&:to_s) }
+  if `which prince` =~ /prince/ 
+    desc 'Produce PDF'
+    print = Docter::Rake.generate('print', print_docs[:collection], print_docs[:template], :one_page)
+    pdf = file('html/buildr.pdf'=>print) do |task|
+      mkpath 'html'
+      sh *%W{prince #{print}/index.html -o #{task.name} --media=print} do |ok, res|
+        fail 'Failed to create PDF, see errors above' unless ok
+      end
+    end
+    task('pdf'=>pdf) { |task| `open #{File.expand_path(pdf.to_s)}` }
+    task('docs').enhance [pdf]
+    task('clobber') { rm_rf print.to_s }
+  end
 
-rescue LoadError=>error
-  puts error
-  puts 'To create the Buildr documentation you need to:'
-  puts '  gem install docter ultraviolet allison'
+rescue LoadError
+  puts "To generate the site documentation and PDF, gem install docter ultraviolet"
 end
 
 
 # Commit to SVN, upload and do the release cycle.
+#
 namespace :svn do
   task :clean? do |task|
     status = `svn status`.reject { |line| line =~ /\s(pkg|html)$/ }
@@ -184,7 +196,6 @@ namespace :svn do
 end
 
 namespace :upload do
-
   task :docs=>'rake:docs' do |task|
     sh %{rsync -r --del --progress html/*  people.apache.org:/www/incubator.apache.org/#{ruby_spec.rubyforge_project.downcase}/}
   end
@@ -246,39 +257,26 @@ desc 'Upload release to RubyForge including docs, tag SVN'
 task :release=>[ 'release:ready?', 'release:meat', 'release:post' ]
 
 
-# Misc, may not survive so don't rely on these.
-task :report do |task|
-  puts "#{ruby_spec.name} #{ruby_spec.version}"
-  puts ruby_spec.summary
-  sources = (ruby_spec.files + FileList['ruby_spec/**/*.rb']).reject { |f| File.directory?(f) }
-  sources.inject({}) do |lists, file|
-    File.readlines(file).each_with_index do |line, i|
-      if line =~ /(TODO|FIXME|NOTE):\s*(.*)/
-        list = lists[$1] ||= []
-        list << sprintf('%s (%d): %s', file, i, $2)
-      end
-    end
-    lists
-  end.each_pair do |type, list|
-    unless list.empty?
-      puts
-      puts "#{type}:"
-      list.each { |line| puts line }
-    end
-  end
-end
-
-
+# Handles Java libraries that are part of Buildr.
+#
 task 'compile' do
+  $LOAD_PATH.unshift File.expand_path('lib')
+  require 'buildr'
+  require 'buildr/jetty'
+
   # RJB, JUnit and friends.
   Dir.chdir 'lib/java' do
     `javac -source 1.4 -target 1.4 -Xlint:all org/apache/buildr/*.java`
   end
 
   # Jetty server.
-  cp = ['jetty-6.1.1.jar', 'jetty-util-6.1.1.jar', 'servlet-api-2.5-6.1.1'].
-    map { |jar| `locate #{jar}`.split.first }.join(File::PATH_SEPARATOR)
+  cp = artifacts(Buildr::Jetty::REQUIRES).each { |task| task.invoke }.map(&:name).join(File::PATH_SEPARATOR)
   Dir.chdir 'lib/buildr' do
     `javac -source 1.4 -target 1.4 -Xlint:all -cp #{cp} org/apache/buildr/*.java`
   end
 end
+
+
+# Apache release:
+# - Create MD5/SHA1/PGP signatures
+# - Upload to people.apache.org:/www/www.apache.org/dist/incubator/buildr

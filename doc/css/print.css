@@ -23,8 +23,21 @@ body {
   background: white;
 }
 
-title { string-set: doctitle content(); }
-h1 { string-set: pagetitle content(); }
+h1 {
+  string-set: pagetitle content();
+  page-break-before: always;
+}
+h1:first-child { page-break-before: avoid; }
+pre, p, blockquote { page-break-inside: avoid; }
+pre {
+  font-size: 85% !important;
+  line-height: 1.3em;
+}
+a:link, a:visited {
+  background: transparent;
+  text-decoration: underline;
+}
+
 
 #wrap, #content, #footer {
   float: none !important;
@@ -55,21 +68,7 @@ ol.toc a:after { content: leader('.') target-counter(attr(href), page); }
 
 #footer { margin-top: 5%; }
 
-h1 { page-break-before: always; }
-h1:first-child { page-break-before: avoid; }
-
-pre, p, blockquote { page-break-inside: avoid; }
-
-pre {
-  font-size: 85% !important;
-  line-height: 1.3em;
-}
-
-#license+ol+pre {
+#license+pre {
+  page-break-before: none !important;
   page-break-inside: always !important;
-}
-
-a:link, a:visited {
-  background: transparent;
-  text-decoration: underline;
 }

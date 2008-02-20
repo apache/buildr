@@ -6,7 +6,7 @@
     %style{ :type=>'text/css' }
       @import 'css/default.css';
       @import 'css/eiffel.css';
-      @import 'css/print.css';
+      @import 'css/print.css' print;
     %meta{ :name=>'subject', :content=>'Official Buildr documentation from the people in the know' }
   %body
     #wrap
@@ -20,5 +20,3 @@
           %h1{ :id=>page.id }= page.title
           = page.toc.to_html(:nested, :class=>'toc')
           ~ collect_links(renumber_footnotes(page.content))
-        %h1 References
-        ~ list_links('footnote-links')
