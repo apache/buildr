@@ -145,7 +145,7 @@ begin
       include('doc/css', 'doc/images', 'doc/scripts', 'html/report.html', 'html/coverage', 'html/rdoc')
   }
   print_docs = {
-    :collection => Docter.collection('Buildr &mdash; The build system that doesn\'t suck').using('doc/print.toc.yaml').
+    :collection => Docter.collection('Buildr').using('doc/print.toc.yaml').
       include('doc/pages', 'LICENSE'),
     :template   => Docter.template('doc/print.haml').include('doc/css', 'doc/images')
   }
@@ -226,6 +226,10 @@ namespace :upload do
 end
 
 namespace :release do
+
+  # TODO:  Check that we're using allison.
+  # TODO:  Check that we can generate PDFs.
+
   task :ready? do
     require 'highline'
     require 'highline/import'

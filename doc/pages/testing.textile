@@ -43,16 +43,16 @@ test classes from the project by looking for classes that either start with
 @LogicTest@.
 
 There are benefits to running test cases in separate VMs.  The default forking
-mode is @:once@, and you can change it by setting the @:fork@ option.  It
-accepts the following values:
+mode is @:once@, and you can change it by setting the @:fork@ option.
 
-*@:once@* – Create one VM to run all test classes in the project, separate VMs
-for each project.
-*@:each@* – Create one VM for each test case class.  Slow but provides the best
-isolation between test classes.
-*@false@* –  Without forking, Buildr runs all test cases in a single VM.  This
+|_. :fork=> |_. Behavior |
+| @:once@   | Create one VM to run all test classes in the project, separate
+VMs for each project. |
+| @:each@   | Create one VM for each test case class.  Slow but provides the
+best isolation between test classes. |
+| @false@   | Without forking, Buildr runs all test cases in a single VM.  This
 option runs fastest, but at the risk of running out of memory and causing test
-cases to interfere with each other.
+cases to interfere with each other. |
 
 You can see your tests running in the console, and if any tests fail, Buildr
 will show a list of the failed test classes.  In addition, JUnit produces text
@@ -345,12 +345,13 @@ what @should_not@ does in the same case.
 
 Buildr provides the following matchers:
 
-*exist* – Given a file task checks that the file (or directory) exists.
-*empty* – Given a file task checks that the file (or directory) is empty.
-*contain* – Given a file task referencing a file, checks its contents, using
+|_. Method |_. Checks that ... |
+| @exist@   | Given a file task checks that the file (or directory) exists. |
+| @empty@   | Given a file task checks that the file (or directory) is empty. |
+| @contain@ | Given a file task referencing a file, checks its contents, using
 string or regular expression.  For a file task referencing a directory, checks
 that it contains the specified files; global patterns using @*@ and @**@ are
-allowed.
+allowed. |
 
 All these matchers operate against a file task.  If you run them against a
 ZipTask (including JAR, WAR, etc) they can also check the contents of the ZIP

@@ -1,19 +1,19 @@
-@page { margin: 1in 0.5in 2in 0.5in; }
+@page { margin: 1in 0.75in 1in 0.75in; }
 @page:left {
-  @bottom-left { content: counter(page); }
-  @bottom-right { content: string(pagetitle); }
-  @top-right { content: string(doctitle); }
+  @top-left { content: counter(page); }
+  @top-right { content: string(pagetitle); }
 }
 @page:right {
-  @bottom-right { content: counter(page); }
-  @bottom-left { content: string(pagetitle); }
-  @top-left { content: string(doctitle); }
+  @top-left { content: string(pagetitle); }
+  @top-right { content: counter(page); }
 }
 @page:first {
-  @bottom-left { content: normal }
-  @bottom-right { content: normal }
   @top-left { content: normal }
   @top-right { content: normal }
+}
+
+title {
+  string-set: doctitle content();
 }
 
 body {
@@ -30,8 +30,10 @@ h1 {
 h1:first-child { page-break-before: avoid; }
 pre, p, blockquote { page-break-inside: avoid; }
 pre {
-  font-size: 85% !important;
   line-height: 1.3em;
+  white-space: pre-wrap; /* css-3 */
+  padding: 0.3em 0 0.9em 0.6em;
+  margin: 0;
 }
 a:link, a:visited {
   background: transparent;
@@ -44,7 +46,7 @@ a:link, a:visited {
   color: black;
   background: transparent;
   width: auto !important;
-  margin: 0 5%;
+  margin: 0;
   padding: 0;
   border: 0;
 }
@@ -68,7 +70,8 @@ ol.toc a:after { content: leader('.') target-counter(attr(href), page); }
 
 #footer { margin-top: 5%; }
 
-#license+pre {
+#license {
+  padding-top: 1in;
   page-break-before: none !important;
   page-break-inside: always !important;
 }

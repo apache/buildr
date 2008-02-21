@@ -308,5 +308,10 @@ install bean
 upload bean
 }}}
 
+p(tip).  Calling the @install@ (and likewise @upload@) method on an artifact
+does not install the artifact, it simply adds a task that will execute when you
+run @buildr install@.  If you need to download and install an artifact, invoke
+the task directly with @install(<artifact>).invoke@.
+
 
 Next we're going to "package some artifacts":packaging.html.

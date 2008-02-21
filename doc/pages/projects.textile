@@ -14,7 +14,7 @@ The remainder of this guide deals with what it takes to build a project.  But
 first, let's pick up a sample project to work with.  We'll call it
 _killer-app_:
 
-{{{!ruby,lines
+{{{!ruby
 require 'buildr'
  
 VERSION_NUMBER = '1.0'

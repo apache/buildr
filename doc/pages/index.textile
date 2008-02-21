@@ -27,7 +27,10 @@ write code using variables, functions and objects.
 * Simple way to upgrade to new versions.
 * Did we mention fast?
 
-h4.  Buildr 1.3
+
+h2.  News
+
+Check out "all that's new in Buildr 1.3":whats_new.html.
 
 * Building Scala projects
 * Building Groovy projects
@@ -38,19 +41,21 @@ h4.  Buildr 1.3
 * More documentation
 * Other features and bug fixes.
 
-Check out "what's new in Buildr 1.3":whats_new.html.
 
-p(tip). The Apache Software Foundation is a non-profit organization, consider
+h2.  Notices
+
+The Apache Software Foundation is a non-profit organization, consider
 "sponsoring":http://www.apache.org/foundation/sponsorship.html and check the
 "thanks":http://www.apache.org/foundation/thanks.html page.
 
-p(note).  Apache Buildr is an effort undergoing incubation at The Apache
-Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is
-required of all newly accepted projects until a further review indicates that
-the infrastructure, communications, and decision making process have stabilized
-in a manner consistent with other successful ASF projects. While incubation
-status is not necessarily a reflection of the completeness or stability of the
-code, it does indicate that the project has yet to be fully endorsed by the
-ASF.
+Apache Buildr is an effort undergoing incubation at The Apache Software
+Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of
+all newly accepted projects until a further review indicates that the
+infrastructure, communications, and decision making process have stabilized in
+a manner consistent with other successful ASF projects. While incubation status
+is not necessarily a reflection of the completeness or stability of the code,
+it does indicate that the project has yet to be fully endorsed by the ASF.
 
-"So let's get started":getting_started.html.
+"ColorCons":http://www.mouserunner.com/Spheres_ColoCons1_Free_Icons.html,
+copyright of Ken Saunders.  "DejaVu fonts":http://dejavu.sourceforge.net,
+copyright of Bitstream, Inc.

@@ -57,6 +57,10 @@ echo $JAVA_HOME
 ls -l /usr/bin/javac
 }}}
 
+*Note:*  It seems that RJB works with Java 6, except when it doesn't, and for a
+few people it doesn't.  In that case, either switch to Java 1.5, or simply run
+Buildr on JRuby using Java 6.
+
 
 h2.  Bugs resulting from a dangling comma or period
 
