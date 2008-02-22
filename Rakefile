@@ -48,15 +48,10 @@ end
 # Packaging and local installation.
 #
 ruby_spec = specify(Gem::Platform::RUBY)
+ruby_package = Rake::GemPackageTask.new(ruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = true }
+
 jruby_spec = specify('java')
-ruby_package = Rake::GemPackageTask.new(ruby_spec) do |pkg|
-  pkg.need_tar = true
-  pkg.need_zip = true
-end
-jruby_package = Rake::GemPackageTask.new(jruby_spec) do |pkg|
-  pkg.need_tar = false
-  pkg.need_zip = false
-end
+jruby_package = Rake::GemPackageTask.new(jruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = false }
 
 desc 'Install the package locally'
 task :install=>:package do |task|
@@ -93,24 +88,30 @@ Spec::Rake::SpecTask.new('spec') do |task|
   task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failing'
 end
 
-desc 'Run all failing examples'
+desc 'Run all failing examples from previous run'
 Spec::Rake::SpecTask.new('failing') do |task|
   task.spec_files = FileList['spec/**/*_spec.rb']
   task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failing' << '--example' << 'failing'
 end
 
-desc 'Run all specs and generate reports in html directory'
-Spec::Rake::SpecTask.new('spec:report') do |task|
-  mkpath 'html'
-  task.spec_files = FileList['spec/**/*_spec.rb']
-  task.spec_opts << '--format' << 'html:html/report.html' << '--backtrace'
-  task.rcov = true
-  task.rcov_dir = 'html/coverage'
-  task.rcov_opts = ['--exclude', 'spec,bin']
-end
+namespace 'spec' do
 
-task 'spec:jruby' do
-  system 'jruby -S rake spec'
+  desc 'Run all specs and generate test/coverage reports in html directory'
+  Spec::Rake::SpecTask.new('report') do |task|
+    mkpath 'html'
+    task.spec_files = FileList['spec/**/*_spec.rb']
+    task.spec_opts << '--format' << 'html:html/report.html' << '--backtrace'
+    task.rcov = true
+    task.rcov_dir = 'html/coverage'
+    task.rcov_opts = ['--exclude', 'spec,bin']
+  end
+
+  desc 'Run all specs specifically with Ruby'
+  task('ruby') { system 'ruby -S rake spec' }
+
+  desc 'Run all specs specifically with JRuby'
+  task('jruby') { system 'jruby -S rake spec' }
+
 end
 
 
@@ -150,14 +151,14 @@ begin
     :template   => Docter.template('doc/print.haml').include('doc/css', 'doc/images')
   }
 
-  Docter.filter_for(:footnote) do |html|
-    html.gsub(/<p id="fn(\d+)">(.*?)<\/p>/, %{<p id="fn\\1" class="footnote">\\2</p>})
-  end
+  #Docter.filter_for(:footnote) do |html|
+  #  html.gsub(/<p id="fn(\d+)">(.*?)<\/p>/, %{<p id="fn\\1" class="footnote">\\2</p>})
+  #end
 
   desc 'Generate HTML documentation'
   html = Docter::Rake.generate('html', web_docs[:collection], web_docs[:template])
   desc 'Run Docter server'
-  Docter::Rake.serve :docter, web_docs[:collection], web_docs[:template], :port=>3000
+  Docter::Rake.serve 'docter', web_docs[:collection], web_docs[:template], :port=>3000
   task('docs').enhance [html]
   task('clobber') { rm_rf html.to_s }
 
@@ -284,3 +285,39 @@ end
 # Apache release:
 # - Create MD5/SHA1/PGP signatures
 # - Upload to people.apache.org:/www/www.apache.org/dist/incubator/buildr
+#
+namespace 'release' do
+
+  task 'prepare'=>'clobber'
+
+  # Check that all source files have licenses.
+  task 'prepare' do
+    puts 'Checking that files contain the Apache license'
+    directories = 'lib', 'spec', 'docs', 'bin'
+    ignore = 'class', 'opts'
+    FileList['lib/**/*', 'spec/**/*', 'bin/**', 'doc/css/*', 'doc/scripts/*'].
+      exclude('doc/css/eiffel.css').reject { |file| File.directory?(file) || ignore.include?(file[/[^.]*$/]) }.each do |file|
+      comments = File.read(file).scan(/(\/\*(.*?)\*\/)|^#\s+(.*?)$|<!--(.*?)-->/m).
+        map { |match| match.reject(&:nil?) }.flatten.join("\n")
+      fail "File #{file} missing Apache License, please add it before making a release!" unless
+        comments =~ /Licensed to the Apache Software Foundation/ && comments =~ /http:\/\/www.apache.org\/licenses\/LICENSE-2.0/
+    end
+  end
+
+  # Compile Java libraries.
+  task 'prepare'=>'compile' do
+    FileList['lib/**/*.java'].each { |src| fail "Can't find .class file for #{src}!" unless File.exist?(src.ext('class')) }
+  end
+
+  # Make sure we have RDoc template, Docter and PDF genereation.
+  task 'prepare'=>[rdoc.template, pdf] do
+    fail 'Release requires the Allison RDoc template, please gem install allison!' unless rdoc.template =~ /allison.rb/
+    fail 'No PDF generated, you need to install PrinceXML!' unless File.exist?('html/buildr.pdf')
+  end
+
+  # Run specs on Ruby and JRuby, make sure we generate test/coverage reports.
+  task 'prepare'=>['spec:jruby', 'spec:report'] do
+    fail 'No test reports in html directory!' unless File.exist?('html/report.html') 
+    fail 'No coverage reports in html directory!' unless File.exist?('html/coverage/index.html')
+  end
+end
