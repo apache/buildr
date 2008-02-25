@@ -177,13 +177,16 @@ module Buildr
       def initialize(expanders)
         @expanders = expanders
       end
+
       def include(*files)
         @expanders.each { |expander| expander.include(*files) }
+        self
       end
       alias :<< :include
-      
+
       def exclude(*files)
         @expanders.each { |expander| expander.exclude(*files) }
+        self
       end
     end
 
