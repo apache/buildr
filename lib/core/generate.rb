@@ -30,7 +30,7 @@ module Buildr
       end
        
       if script    
-        buildfile = File.expand_path("buildfile")
+        buildfile = File.expand_path(Rake.application.instance_variable_get(:@rakefiles).first)
         File.open(buildfile, "w") { |file| file.write script }
         puts "Created #{buildfile}"
       end        
