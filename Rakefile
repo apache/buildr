@@ -82,6 +82,8 @@ end
 
 # Testing is everything.
 #
+task('clobber') { rm 'failing' rescue nil }
+
 desc 'Run all specs'
 Spec::Rake::SpecTask.new('spec') do |task|
   task.spec_files = FileList['spec/**/*_spec.rb']
@@ -94,15 +96,18 @@ Spec::Rake::SpecTask.new('failing') do |task|
   task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failing' << '--example' << 'failing'
 end
 
+
 namespace 'spec' do
 
-  desc 'Run all specs and generate test/coverage reports in html directory'
-  Spec::Rake::SpecTask.new('report') do |task|
-    mkpath 'html'
+  directory('reports')
+  Rake::Task['rake:clobber'].enhance { rm_rf 'reports' }
+
+  desc 'Run all specs and generate specification and test coverage reports in html directory'
+  Spec::Rake::SpecTask.new('full'=>'reports') do |task|
     task.spec_files = FileList['spec/**/*_spec.rb']
-    task.spec_opts << '--format' << 'html:html/report.html' << '--backtrace'
+    task.spec_opts << '--format' << 'html:reports/specs.html' << '--backtrace'
     task.rcov = true
-    task.rcov_dir = 'html/coverage'
+    task.rcov_dir = 'reports/coverage'
     task.rcov_opts = ['--exclude', 'spec,bin']
   end
 
@@ -119,7 +124,7 @@ end
 #
 desc 'Generate RDoc documentation'
 rdoc = Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'html/rdoc'
+  rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = ruby_spec.name
   rdoc.options  = ruby_spec.rdoc_options + ['--promiscuous']
   rdoc.rdoc_files.include('lib/**/*.rb')
@@ -143,7 +148,7 @@ begin
     :collection => Docter.collection('Buildr').using('doc/web.toc.yaml').
       include('doc/pages', 'LICENSE', 'CHANGELOG'),
     :template   => Docter.template('doc/web.haml').
-      include('doc/css', 'doc/images', 'doc/scripts', 'html/report.html', 'html/coverage', 'html/rdoc')
+      include('doc/css', 'doc/images', 'doc/scripts', 'reports/specs.html', 'reports/coverage', 'rdoc')
   }
   print_docs = {
     :collection => Docter.collection('Buildr').using('doc/print.toc.yaml').
@@ -157,6 +162,8 @@ begin
 
   desc 'Generate HTML documentation'
   html = Docter::Rake.generate('html', web_docs[:collection], web_docs[:template])
+  html.enhance ['spec:full']
+
   desc 'Run Docter server'
   Docter::Rake.serve 'docter', web_docs[:collection], web_docs[:template], :port=>3000
   task('docs').enhance [html]
@@ -181,118 +188,32 @@ rescue LoadError
 end
 
 
-# Commit to SVN, upload and do the release cycle.
-#
-namespace :svn do
-  task :clean? do |task|
-    status = `svn status`.reject { |line| line =~ /\s(pkg|html)$/ }
-    fail "Cannot release unless all local changes are in SVN:\n#{status}" unless status.empty?
-  end
-  
-  task :tag do |task|
-    cur_url = `svn info`.scan(/URL: (.*)/)[0][0]
-    new_url = cur_url.sub(/(trunk$)|(branches\/\w*)$/, "tags/#{ruby_spec.version.to_s}")
-    system 'svn', 'copy', cur_url, new_url, '-m', "Release #{ruby_spec.version.to_s}"
-  end
-end
-
-namespace :upload do
-  task :docs=>'rake:docs' do |task|
-    sh %{rsync -r --del --progress html/*  people.apache.org:/www/incubator.apache.org/#{ruby_spec.rubyforge_project.downcase}/}
-  end
-
-  task :packages=>['rake:docs', 'rake:package'] do |task|
-    require 'rubyforge'
-
-    # Read the changes for this release.
-    pattern = /(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/
-    changelog = File.read(__FILE__.pathmap('%d/CHANGELOG'))
-    changes = changelog.scan(pattern).inject({}) { |hash, set| hash[set[1]] = set[2] ; hash }
-    current = changes[ruby_spec.version.to_s]
-    if !current && ruby_spec.version.to_s =~ /\.0$/
-      current = changes[ruby_spec.version.to_s.split('.')[0..-2].join('.')] 
-    end
-    fail "No changeset found for version #{ruby_spec.version}" unless current
-
-    puts "Uploading #{ruby_spec.name} #{ruby_spec.version}"
-    files = Dir.glob('pkg/*.{gem,tgz,zip}')
-    rubyforge = RubyForge.new
-    rubyforge.login    
-    File.open('.changes', 'w'){|f| f.write(current)}
-    rubyforge.userconfig.merge!('release_changes' => '.changes',  'preformatted' => true)
-    rubyforge.add_release ruby_spec.rubyforge_project.downcase, ruby_spec.name.downcase, ruby_spec.version, *files
-    rm '.changes'
-    puts "Release #{ruby_spec.version} uploaded"
-  end
-end
-
-namespace :release do
-
-  # TODO:  Check that we're using allison.
-  # TODO:  Check that we can generate PDFs.
-
-  task :ready? do
-    require 'highline'
-    require 'highline/import'
-
-    puts "This version: #{ruby_spec.version}"
-    puts
-    puts "Top 4 lines form CHANGELOG:'
-    puts File.readlines('CHANGELOG')[0..3].map { |l| "  #{l}" }
-    puts
-    ask('Top-entry in CHANGELOG file includes today\'s date?') =~ /yes/i or
-      fail 'Please update CHANGELOG to include the right date'
-  end
-
-  task :post do
-    next_version = ruby_spec.version.to_ints.zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
-    puts "Updating lib/buildr.rb to next version number: #{next_version}"
-    buildr_rb = File.read(__FILE__.pathmap('%d/lib/buildr.rb')).
-      sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" } 
-    File.open(__FILE__.pathmap('%d/lib/buildr.rb'), 'w') { |file| file.write buildr_rb }
-    puts 'Adding entry to CHANGELOG'
-    changelog = File.read(__FILE__.pathmap('%d/CHANGELOG'))
-    File.open(__FILE__.pathmap('%d/CHANGELOG'), 'w') { |file| file.write "#{next_version} (Pending)\n\n#{changelog}" }
-  end
-
-  task :meat=>['clobber', 'svn:clean?', 'spec:jruby', 'spec:report', 'upload:packages', 'upload:docs', 'svn:tag']
-end
-
-desc 'Upload release to RubyForge including docs, tag SVN'
-task :release=>[ 'release:ready?', 'release:meat', 'release:post' ]
-
-
-# Handles Java libraries that are part of Buildr.
-#
-task 'compile' do
-  $LOAD_PATH.unshift File.expand_path('lib')
-  require 'buildr'
-  require 'buildr/jetty'
-
-  # RJB, JUnit and friends.
-  Dir.chdir 'lib/java' do
-    `javac -source 1.4 -target 1.4 -Xlint:all org/apache/buildr/*.java`
-  end
-
-  # Jetty server.
-  cp = artifacts(Buildr::Jetty::REQUIRES).each { |task| task.invoke }.map(&:name).join(File::PATH_SEPARATOR)
-  Dir.chdir 'lib/buildr' do
-    `javac -source 1.4 -target 1.4 -Xlint:all -cp #{cp} org/apache/buildr/*.java`
-  end
-end
-
-
-# Apache release:
-# - Create MD5/SHA1/PGP signatures
-# - Upload to people.apache.org:/www/www.apache.org/dist/incubator/buildr
-#
 namespace 'release' do
+  require 'highline'
+  require 'highline/import'
+  Kernel.def_delegators :$terminal, :color
 
-  task 'prepare'=>'clobber'
+  # This task does all prerequisites checks before starting the release, for example,
+  # that we have Groovy and Scala to run all the test cases, or that we have Allison
+  # and PrinceXML to generate the full documentation.
+  task 'check'
+  # This task does all the preparation work before making a release and also checks
+  # that we generate all the right material, for example, that we compiled Java sources,
+  # created the PDF, have coverage report.
+  task 'prepare'=>['clobber', 'check']
 
-  # Check that all source files have licenses.
-  task 'prepare' do
-    puts 'Checking that files contain the Apache license'
+  # Does CHANGELOG reflects current release?
+  task 'check' do
+    say 'Checking that CHANGELOG indicates most recent version and today\'s date ... '
+    expecting = "#{ruby_spec.version} (#{Time.now.strftime('%Y-%m-%d')})"
+    header = File.readlines('CHANGELOG').first
+    fail "Expecting CHANGELOG to start with #{expecting}, but found #{header} instead" unless expecting == header
+    say 'OK'
+  end
+
+  # License requirement.
+  task 'check' do
+    say 'Checking that files contain the Apache license ... '
     directories = 'lib', 'spec', 'docs', 'bin'
     ignore = 'class', 'opts'
     FileList['lib/**/*', 'spec/**/*', 'bin/**', 'doc/css/*', 'doc/scripts/*'].
@@ -302,22 +223,167 @@ namespace 'release' do
       fail "File #{file} missing Apache License, please add it before making a release!" unless
         comments =~ /Licensed to the Apache Software Foundation/ && comments =~ /http:\/\/www.apache.org\/licenses\/LICENSE-2.0/
     end
+    say 'OK'
+  end
+
+  # No local changes.
+  task 'check' do
+    status = `svn status`
+    fail "Cannot release unless all local changes are in SVN:\n#{status}" unless status.empty?
   end
 
   # Compile Java libraries.
-  task 'prepare'=>'compile' do
+  task 'prepare' do
+    say 'Compiling Java libraries ... '
+    FileList['lib/**/*.class'].each { |file| rm file }
+    `buildr compile`
     FileList['lib/**/*.java'].each { |src| fail "Can't find .class file for #{src}!" unless File.exist?(src.ext('class')) }
+    say 'OK'
   end
 
-  # Make sure we have RDoc template, Docter and PDF genereation.
-  task 'prepare'=>[rdoc.template, pdf] do
+  # Tests, specs and coverage reports.
+  task 'check' do
+    say 'Checking that we have JRuby, Scala and Groovy available ... '
+    fail 'Full testing requires JRuby!' if `which jruby`.empty?
+    fail 'Full testing requires Scala!' if `which scalac`.empty? || ENV['SCALA_HOME'].to_s.empty?
+    fail 'Full testing requires Groovy!' if `which groovyc`.empty?
+    say 'OK'
+  end
+  task 'prepare' do
+    say 'Running test suite using JRuby ...'
+    task('spec:jruby').invoke
+    say 'Running test suite using Ruby ...'
+    task('spec:ruby').invoke
+    say 'Done'
+  end
+
+  # Documentation (derived from above).
+  task 'check' do
+    say 'Checking that we can use Allison and PrinceXML ... '
     fail 'Release requires the Allison RDoc template, please gem install allison!' unless rdoc.template =~ /allison.rb/
+    fail 'Release requires PrinceXML to generate PDF documentation!' if `which prince`.empty?
+    say 'OK'
+  end
+  task 'prepare'=>'spec:full' do
+    say 'Generating RDocs and PDF ...'
+    task('docs').invoke
+    say 'Done'
+
+    say 'Checking that we have PDF, RDoc, specs and coverage report ... '
+    fail 'No RDocs if html/rdoc!' unless File.exist?('html/rdoc/files/lib/buildr_rb.html')
     fail 'No PDF generated, you need to install PrinceXML!' unless File.exist?('html/buildr.pdf')
+    fail 'No specifications in html directory!' unless File.exist?('html/specs.html') 
+    fail 'No coverage reports in html/coverage directory!' unless File.exist?('html/coverage/index.html')
+    say 'OK'
   end
 
-  # Run specs on Ruby and JRuby, make sure we generate test/coverage reports.
-  task 'prepare'=>['spec:jruby', 'spec:report'] do
-    fail 'No test reports in html directory!' unless File.exist?('html/report.html') 
-    fail 'No coverage reports in html directory!' unless File.exist?('html/coverage/index.html')
+  task 'check' do
+    require 'rubyforge' rescue fail 'RubyForge required, please gem install rubyforge!'
+    fail 'GnuPG required to create signatures!' if `which gpg`.empty?
+    gpg_user = ENV['GPG_USER'] or fail 'Please set GPG_USER (--local-user) environment variable so we know which key to use.'
+    sh('gpg', '--list-key', gpg_user) { |ok, res| ok or fail "No key matches for GPG_USER=#{gpg_user}" }
   end
+
+ 
+  # Cut the release: upload Gem to RubyForge before updating site (fail safe).
+  task 'cut'=>['upload:rubyforge', 'upload:site']
+
+
+  namespace 'upload' do
+    # Upload site (html directory) to Apache.
+    task 'site'=>'rake:docs' do
+      say 'Uploading Web site to people.apache.org ... '
+      args = Dir.glob('html/*') + ['people.apache.org:/www/incubator.apache.org/' + ruby_spec.rubyforge_project.downcase]
+      verbose(false) { sh 'rsync ', '-r', '--del', '--progress', *files }
+      say 'Done'
+    end
+
+    # Upload Gems to RubyForge.
+    task 'rubyforge'=>['rake:docs', 'rake:package'] do
+      require 'rubyforge'
+
+      # Read the changes for this release.
+      say 'Looking for changes between this release and previous one ... '
+      pattern = /(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/
+      changelog = File.read(__FILE__.pathmap('%d/CHANGELOG'))
+      changes = changelog.scan(pattern).inject({}) { |hash, set| hash[set[1]] = set[2] ; hash }
+      current = changes[ruby_spec.version.to_s]
+      current = changes[ruby_spec.version.to_s.split('.')[0..-2].join('.')] if !current && ruby_spec.version.to_s =~ /\.0$/
+      fail "No changeset found for version #{ruby_spec.version}" unless current
+      say 'OK'
+
+      say "Uploading #{ruby_spec.version} to RubyForge ... "
+      files = Dir.glob('pkg/*.{gem,tgz,zip}')
+      rubyforge = RubyForge.new
+      rubyforge.login    
+      File.open('.changes', 'w'){|f| f.write(current)}
+      rubyforge.userconfig.merge!('release_changes' => '.changes',  'preformatted' => true)
+      rubyforge.add_release ruby_spec.rubyforge_project.downcase, ruby_spec.name.downcase, ruby_spec.version, *files
+      rm '.changes'
+      say 'Done'
+    end
+
+    task 'apache'=>['rake:package'] do
+      require 'md5'
+      require 'sha1'
+
+      gpg_user = ENV['GPG_USER'] or fail 'Please set GPG_USER (--local-user) environment variable so we know which key to use.'
+      say 'Creating -incubating packages ... '
+      rm_rf 'incubating'
+      mkpath 'incubating'
+      packages = FileList['pkg/*.{gem,zip,tgz}'].map do |package|
+        package.pathmap('incubating/%n-incubating%x').tap do |incubating|
+          cp package, incubating
+        end
+      end
+      say 'Done'
+
+      say 'Signing -incubating packages ... '
+      files = packages.each do |package|
+        binary = File.read(package)
+        File.open(package + '.md5', 'w') { |file| file.write MD5.hexdigest(binary) << ' ' << package }
+        File.open(package + '.sha1', 'w') { |file| file.write SHA1.hexdigest(binary) << ' ' << package }
+        sh 'gpg', '--local-user', gpg_user, '--armor', '--output', package + '.asc', '--detach-sig', package, :verbose=>true
+        [package, package + '.md5', package + '.sha1', package + '.asc']
+      end
+      say 'Done'
+
+      say 'Uploading packages to Apache dist ... '
+      args = files.flatten << 'KEYS' << 'people.apache.org:/www.apache.org/dist/incubator/buildr/'
+      verbose(false) { sh 'rsync', '-progress', *args }
+      say 'Done'
+    end
+    Rake::Task['rake:clobber'].enhance { rm_rf 'incubating' }
+
+  end
+
+
+  # Tag this release in SVN.
+  task 'tag' do
+    say "Tagging release as tags/#{ruby_spec.version} ... "
+    cur_url = `svn info`.scan(/URL: (.*)/)[0][0]
+    new_url = cur_url.sub(/(trunk$)|(branches\/\w*)$/, "tags/#{ruby_spec.version.to_s}")
+    sh 'svn', 'copy', cur_url, new_url, '-m', "Release #{ruby_spec.version.to_s}", :verbose=>false
+    say "OK"
+  end
+
+  # Update lib/buildr.rb to next vesion number, add new entry in CHANGELOG.
+  task 'next_version'=>'tag' do
+    next_version = ruby_spec.version.to_ints.zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
+    say "Updating lib/buildr.rb to next version number (#{next_version}) ... "
+    buildr_rb = File.read(__FILE__.pathmap('%d/lib/buildr.rb')).
+      sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" } 
+    File.open(__FILE__.pathmap('%d/lib/buildr.rb'), 'w') { |file| file.write buildr_rb }
+    say "OK"
+
+    say 'Adding new entry to CHANGELOG ... '
+    changelog = File.read(__FILE__.pathmap('%d/CHANGELOG'))
+    File.open(__FILE__.pathmap('%d/CHANGELOG'), 'w') { |file| file.write "#{next_version} (Pending)\n\n#{changelog}" }
+    say "OK"
+  end
+
+  # Wrapup comes after cut, and does things like tagging in SVN, updating Buildr version number, etc.
+  task 'wrapup'=>['tag', 'next_version']
 end
+
+task 'release'=>['release:prepare', 'release:cut', 'release:wrapup']
