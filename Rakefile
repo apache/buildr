@@ -69,7 +69,7 @@ task 'install'=>'package' do |task|
     cmd = %w(gem install)
     pkg = ruby_package
   end
-  cmd << File.expand_path(pkg.gem_file, pkg.package_dir)
+  cmd << '--ignore-dependencies' << File.expand_path(pkg.gem_file, pkg.package_dir)
   system *cmd
 end
 
