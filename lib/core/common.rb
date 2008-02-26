@@ -275,7 +275,7 @@ module Buildr
     # For example:
     #   filter.from('src').into('target').using('build'=>Time.now)
     def into(dir)
-      @target = file(dir.to_s) { |task| run if target == task && !sources.empty? }
+      @target = file(File.expand_path(dir.to_s)) { |task| run if target == task && !sources.empty? }
       self
     end
 

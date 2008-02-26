@@ -252,7 +252,7 @@ describe Buildr::Filter do
 
   it 'should respond to :into and set target directory' do
     lambda { @filter.into('src') }.should change { @filter.target }
-    @filter.into('target').target.should be(file('target'))
+    @filter.into('target').target.should be(file(File.expand_path('target')))
   end
 
   it 'should return target directory as file task' do
@@ -260,7 +260,7 @@ describe Buildr::Filter do
   end
 
   it 'should return target directory as expanded path' do
-    @filter.into('target').target.to_s.should eql('target')
+    @filter.into('target').target.to_s.should eql(File.expand_path('target'))
   end
 
   it 'should respond to :using and return self' do
