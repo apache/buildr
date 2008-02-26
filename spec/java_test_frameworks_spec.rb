@@ -298,15 +298,28 @@ describe Buildr::TestNG do
     project('foo').test.dependencies.should include(*artifacts(JMock::REQUIRES))
   end
 
-  it 'should include classes starting with and ending with Test' do
-    write 'src/test/java/com/example/TestThis.java', 'package com.example; public class TestThis {}'
-    write 'src/test/java/com/example/ThisTest.java', 'package com.example; public class ThisTest {}'
+  it 'should include classes using TestNG annotations' do
+    write 'src/test/java/com/example/AnnotatedClass.java', <<-JAVA
+      package com.example;
+      import org.testng.annotations.Test
+      @Test
+      public class AnnotatedClass {
+      }
+    JAVA
+    write 'src/test/java/com/example/AnnotatedMethod.java', <<-JAVA
+      package com.example;
+      import org.testng.annotations.Test
+      public class AnnotatedMethod {
+        @Test
+        publid void annotated {};
+      }
+    JAVA
     define('foo') { test.using(:testng) }
     project('foo').test.invoke
-    project('foo').test.tests.should include('com.example.TestThis', 'com.example.ThisTest')
+    project('foo').test.tests.should include('com.example.AnnotatedClass', 'com.example.AnnotatedMethod')
   end
 
-  it 'should ignore classes not using Test prefix or suffix' do
+  it 'should ignore classes not using TestNG annotations' do
     write 'src/test/java/NotATestClass.java', 'public class NotATestClass {}'
     define('foo') { test.using(:testng) }
     project('foo').test.invoke
@@ -315,6 +328,8 @@ describe Buildr::TestNG do
 
   it 'should ignore inner classes' do
     write 'src/test/java/InnerClassTest.java', <<-JAVA
+      import org.testng.annotations.Test;
+      @Test
       public class InnerClassTest {
         public class InnerTest {
         }
