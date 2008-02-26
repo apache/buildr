@@ -1,4 +1,6 @@
 1.3.0 (Pending)
+* Added: Cobertura tasks can be invoked for a single project using project name as prefix to cobetura tasks.
+* Added: Cobertura can exclude specified classes from instrumentation.
 * Fixed: More typos/documentation fixes by Lacton
 * Changed: Upgraded to Antwrap 0.7.0, thanks to Caleb Powel for relicensing under Apache License.
 * Added: ArchiveTask#clean can be used to remove content from a package. 

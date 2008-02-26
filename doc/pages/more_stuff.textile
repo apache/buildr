@@ -94,6 +94,26 @@ $ buildr test cobertura:html
 
 As you can guess, the other task is @cobertura:xml@.
 
+If you want to generate cobertura reports only for a specific project, you
+can do so by using the project name as prefix to cobertura tasks. 
+
+{{{!sh
+$ buildr subModule:cobertura:html
+}}}
+
+Each project can specify which classes to include or exclude from cobertura
+instrumentation by giving a class-name regexp to the @cobertura.include@ or 
+@cobertura.exclude@ methods:
+
+{{{!ruby
+define 'someModule' do 
+  cobertura.include 'some.package.*'
+  cobertura.include /some.(foo|bar).*/
+  cobertura.exclude 'some.foo.util.SimpleUtil'
+  cobertura.exclude /*.Const(ants)?/i
+end
+}}}
+
 You can use "JDepend":http://clarkware.com/software/JDepend.html on to
 generate design quality metrics.  There are three tasks this time, the eye
 candy one:
