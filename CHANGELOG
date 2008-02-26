@@ -12,7 +12,8 @@
 * Added: Consolidated API for RJB and JRuby, replacing the now deprecated JavaWrapper.
 * Added: JRuby 1.1 support (Victor Hugo Borja, Nick Sieger).
 * Added: IDEA 7 task: use buildr idea7x (Shane Witbeck).
-* Changed: Upgraded to Antwrap 0.7.0, thanks to Caleb Powel for relicensing under Apache License.
+* Changed: JUnit/TestNG test cases are selected by superClass or annotations, not by class-name pattern.
+* Changed: Upgraded to Antwrap 0.7.0, thanks to Caleb Powell for relicensing under Apache License.
 * Changed: Upgraded to Rake 0.8, RSpec 1.1, RJB 1.1, Facets 2.2, OpenJPA 1.0.1.
 * Changed: Resources are now copied to target/resources instead of target/classes, and target/test/resources instead of target/test-resources.
 * Changed: Test cases are now compiled into target/test/classes instead of target/test-classes.

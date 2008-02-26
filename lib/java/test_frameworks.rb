@@ -106,7 +106,7 @@ module Buildr
     end
 
 
-    # Ant-JUnit requires for JUnit and JUnit reports tasks.  Also requires JUnitTestFilter.
+    # Ant-JUnit requires for JUnit and JUnit reports tasks.  Also requires JavaTestFilter.
     Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}"
     Java.classpath << File.join(File.dirname(__FILE__))
 
@@ -131,7 +131,10 @@ module Buildr
         reject { |name| name =~ /\$/ }
       begin
         Java.load
-        Java.org.apache.buildr.JUnitTestFilter.new(dependencies.to_java(Java.java.lang.String)).
+        Java.org.apache.buildr.JavaTestFilter.new(dependencies.to_java(Java.java.lang.String)).
+          add_interfaces(['junit.framework.TestCase'].to_java(Java.java.lang.String)).
+          add_class_annotations(['org.junit.Test'].to_java(Java.java.lang.String)).
+          add_method_annotations(['org.junit.Test'].to_java(Java.java.lang.String)).
           filter(candidates.to_java(Java.java.lang.String)).map(&:to_s)
       rescue =>ex
         puts "#{ex.class}: #{ex.message}" if verbose
@@ -207,9 +210,6 @@ module Buildr
     VERSION = '5.5' unless const_defined?('VERSION')
     # TestNG specification.
     REQUIRES = ["org.testng:testng:jar:jdk15:#{VERSION}"] + JMock::REQUIRES
-    # Pattern for selecting TestNG test classes. Regardless of include/exclude patterns, only classes
-    # that match this pattern are used.
-    TESTS_PATTERN = [ /^Test/, /Test$/, /TestCase$/ ]
 
     class << self
 
@@ -222,10 +222,19 @@ module Buildr
     def tests(task, dependencies) #:nodoc:
       return [] unless task.compile.target
       target = Pathname.new(task.compile.target.to_s)
-      Dir["#{target}/**/*.class"].
+      candidates = Dir["#{target}/**/*.class"].
         map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
-        reject { |name| name =~ /\$/ }.select { |name| cls_name = name.split('.').last
-                                                       TESTS_PATTERN.any? { |pattern| cls_name =~ pattern } }
+        reject { |name| name =~ /\$/ }
+      begin
+        Java.load
+        Java.org.apache.buildr.JavaTestFilter.new(dependencies.to_java(Java.java.lang.String)).
+          add_class_annotations(['org.testng.annotations.Test'].to_java(Java.java.lang.String)).
+          add_method_annotations(['org.testng.annotations.Test'].to_java(Java.java.lang.String)).
+          filter(candidates.to_java(Java.java.lang.String)).map(&:to_s)
+      rescue =>ex
+        puts "#{ex.class}: #{ex.message}" if verbose
+        raise
+      end
     end
 
     def run(tests, task, dependencies) #:nodoc:

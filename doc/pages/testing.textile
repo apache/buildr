@@ -38,9 +38,8 @@ h2. Using JUnit
 The default test framework for Java projects is JUnit 4.
 
 When you use JUnit, the dependencies includes JUnit, and Buildr picks up all
-test classes from the project by looking for classes that either start with
-@Test@, end with @Test@ or end with @TestCase@.  For example, @TestMyCode@ and
-@LogicTest@.
+test classes from the project by looking for classes that either subclass 
+@junit.framework.TestCase@ or include methods annotated with @org.junit.Test@.
 
 There are benefits to running test cases in separate VMs.  The default forking
 mode is @:once@, and you can change it by setting the @:fork@ option.
@@ -90,7 +89,8 @@ frameworks in the same project.  (And yes, @test.using :junit@ will switch a
 project back to using JUnit)
 
 TestNG works much like JUnit, it gets included in the dependency list, Buildr
-picks test classes that start or end with @Test@, and generates test reports in
+picks test classes that contain methods annotated with 
+@org.testng.annotations.Test@, and generates test reports in
 the @reports/testng@ directory.  At the moment we don't have consolidated HTML
 reports for TestNG.
 
