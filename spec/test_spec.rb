@@ -49,8 +49,9 @@ describe Buildr::TestTask do
   end
 
   it 'should respond to :resources and add prerequisites to test:resources' do
+    file('prereq').should_receive :invoke_prerequisites
     test_task.resources 'prereq'
-    test_task.resources.prerequisites.should include('prereq')
+    test_task.compile.invoke
   end
 
   it 'should respond to :resources and add action for test:resources' do
@@ -188,6 +189,7 @@ describe Buildr::TestTask do
   end
 
   it 'should include the main resources target in its dependencies' do
+    write 'src/main/resources/test'
     define('foo').test.dependencies.should include(project('foo').resources.target)
   end
 
@@ -202,6 +204,7 @@ describe Buildr::TestTask do
   end
 
   it 'should include the test resources target in its dependencies' do
+    write 'src/test/resources/test'
     define('foo').test.dependencies.should include(project('foo').test.resources.target)
   end
 
@@ -450,7 +453,7 @@ end
 
 describe Buildr::Project, 'test:resources' do
   it 'should ignore resources unless they exist' do
-    define('foo') { test.resources.sources.should be_empty }
+    define('foo').test.resources.sources.should be_empty
   end
 
   it 'should pick resources from src/test/resources if found' do
@@ -459,7 +462,9 @@ describe Buildr::Project, 'test:resources' do
   end
 
   it 'should copy to the resources target directory' do
-    define('foo', :target=>'targeted') { test.resources.target.should eql(file('targeted/test/resources')) }
+    write 'src/test/resources/foo', 'Foo'
+    define('foo', :target=>'targeted').test.invoke
+    file('targeted/test/resources/foo').should contain('Foo')
   end
 
   it 'should execute alongside compile task' do
@@ -587,7 +592,7 @@ describe 'test rule' do
     project('foo').test.tests.should_not include('baz')
   end
 
-  it 'should execute only the named tasts' do
+  it 'should execute only the named tests' do
     write 'src/test/java/TestSomething.java',
       'public class TestSomething extends junit.framework.TestCase { public void testNothing() {} }'
     write 'src/test/java/TestFails.java', 'class TestFails {}'

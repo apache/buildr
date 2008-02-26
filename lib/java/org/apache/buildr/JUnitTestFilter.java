@@ -17,6 +17,7 @@
 
 package org.apache.buildr;
 
+import java.lang.reflect.Method;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -43,10 +44,20 @@ public class JUnitTestFilter {
   public String[] filter(String[] names) throws ClassNotFoundException {
     Vector testCases = new Vector();
     Class testCase = _loader.loadClass("junit.framework.TestCase");
-    for (int i = 0 ; i < names.length ; ++i) {
+    Class annotation = _loader.loadClass("org.junit.Test");
+    for (int i = names.length ; i-- > 0 ;) {
       Class cls = _loader.loadClass(names[i]);
-      if (testCase.isAssignableFrom(cls))
+      if (testCase.isAssignableFrom(cls)) {
         testCases.add(names[i]);
+      } else {
+        Method[] methods = cls.getMethods();
+        for (int j = methods.length ; j-- > 0 ;) {
+          if (methods[j].getAnnotation(annotation) != null) {
+            testCases.add(names[i]);
+            break;
+          }
+        }
+      }
     }
     String[] result = new String[testCases.size()];
     testCases.toArray(result);

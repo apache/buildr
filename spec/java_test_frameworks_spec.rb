@@ -63,6 +63,20 @@ describe Buildr::JUnit do
     project('foo').test.tests.should include('com.example.FirstTest', 'com.example.AnotherOne')
   end
 
+  it 'should include public classes with annotated test cases' do
+    write 'src/test/java/com/example/FirstTest.java', <<-JAVA
+      package com.example;
+      import org.junit.Test;
+      public class FirstTest {
+        public void utilityMethod() { }
+        @Test
+        public void annotated() { }
+      }
+    JAVA
+    define('foo').test.invoke
+    project('foo').test.tests.should include('com.example.FirstTest')
+  end
+
   it 'should ignore classes not extending junit.framework.TestCase' do
     write 'src/test/java/NotATest.java', <<-JAVA
       public class NotATest { }

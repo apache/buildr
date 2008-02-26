@@ -47,6 +47,13 @@ end
 
 # Packaging and local installation.
 #
+task 'compile' do
+  say 'Compiling Java libraries ... '
+  `buildr compile`
+  say 'OK'
+end
+task 'package'=>'compile'
+
 ruby_spec = specify(Gem::Platform::RUBY)
 ruby_package = Rake::GemPackageTask.new(ruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = true }
 
@@ -54,7 +61,7 @@ jruby_spec = specify('java')
 jruby_package = Rake::GemPackageTask.new(jruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = false }
 
 desc 'Install the package locally'
-task :install=>:package do |task|
+task 'install'=>'package' do |task|
   if RUBY_PLATFORM =~ /java/ 
     cmd = %w(jruby -S gem install)
     pkg = jruby_package
@@ -67,7 +74,7 @@ task :install=>:package do |task|
 end
 
 desc 'Uninstall previously installed packaged'
-task :uninstall do |task|
+task 'uninstall' do |task|
   if RUBY_PLATFORM =~ /java/ 
     cmd = %w(jruby -S gem uninstall)
     pkg = jruby_package
@@ -230,15 +237,6 @@ namespace 'release' do
   task 'check' do
     status = `svn status`
     fail "Cannot release unless all local changes are in SVN:\n#{status}" unless status.empty?
-  end
-
-  # Compile Java libraries.
-  task 'prepare' do
-    say 'Compiling Java libraries ... '
-    FileList['lib/**/*.class'].each { |file| rm file }
-    `buildr compile`
-    FileList['lib/**/*.java'].each { |src| fail "Can't find .class file for #{src}!" unless File.exist?(src.ext('class')) }
-    say 'OK'
   end
 
   # Tests, specs and coverage reports.

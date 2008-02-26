@@ -474,6 +474,10 @@ describe Project, '#resources' do
     define('foo').resources.sources.first.should point_to_path('src/main/resources')
   end
 
+  it 'should include src/main/resources directory only if it exists' do
+    define('foo').resources.sources.should be_empty
+  end
+
   it 'should accept prerequisites' do
     tasks = ['task1', 'task2'].each { |name| task(name) }
     define('foo') { resources 'task1', 'task2' }
@@ -509,6 +513,7 @@ describe Project, '#resources' do
   end
 
   it 'should set target directory to target/resources' do
+    write 'src/main/resources/foo'
     define('foo').resources.target.to_s.should point_to_path('target/resources')
   end
 
@@ -518,8 +523,21 @@ describe Project, '#resources' do
   end
 
   it 'should create file task for target directory' do
-    define('foo').resources.should_receive(:execute)
+    write 'src/main/resources/foo'
+    define 'foo'
     project('foo').file('target/resources').invoke
+    file('target/resources/foo').should exist
+  end
+
+  it 'should copy resources to target directory' do
+    write 'src/main/resources/foo', 'Foo'
+    define('foo').compile.invoke
+    file('target/resources/foo').should contain('Foo')
+  end
+
+  it 'should not create target directory unless there are resources' do
+    define('foo').compile.invoke
+    file('target/resources').should_not exist
   end
 
   it 'should not be recursive' do

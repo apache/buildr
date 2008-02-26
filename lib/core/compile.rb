@@ -14,7 +14,7 @@
 # the License.
 
 
-require "core/common"
+require 'core/common'
 
 module Buildr
 
@@ -199,7 +199,7 @@ module Buildr
   #
   # Likewise, dependencies are invoked before compiling. All dependencies are evaluated as
   # #artifacts, so you can pass artifact specifications and even projects:
-  #   compile.with("module1.jar", "log4j:log4j:jar:1.0", project("foo"))
+  #   compile.with('module1.jar', 'log4j:log4j:jar:1.0', project('foo'))
   #
   # Creates a file task for the target directory, so executing that task as a dependency will
   # execute the compile task first.
@@ -243,7 +243,7 @@ module Buildr
     # Adds source directories and files to compile, and returns self.
     #
     # For example:
-    #   compile.from("src/java").into("classes").with("module1.jar")
+    #   compile.from('src/java').into('classes').with('module1.jar')
     def from(*sources)  
       @sources |= sources.flatten
       self
@@ -273,7 +273,7 @@ module Buildr
     # tasks, projects, etc. Use this rather than setting the dependencies array directly.
     #
     # For example:
-    #   compile.with("module1.jar", "log4j:log4j:jar:1.0", project("foo"))
+    #   compile.with('module1.jar', 'log4j:log4j:jar:1.0', project('foo'))
     def with(*specs)
       @dependencies |= Buildr.artifacts(specs.flatten).uniq
       self
@@ -306,7 +306,7 @@ module Buildr
     # select the compiler.
     #
     # For example:
-    #   compile.using(:warnings=>true, :source=>"1.5")
+    #   compile.using(:warnings=>true, :source=>'1.5')
     #   compile.using(:scala)
     def using(*args)
       args.pop.each { |key, value| options.send "#{key}=", value } if Hash === args.last
@@ -404,8 +404,7 @@ module Buildr
       super
       @filter = Buildr::Filter.new
       enhance do
-        mkpath target.to_s, :verbose=>false
-        filter.run unless filter.sources.empty?
+        filter.run if target && !sources.empty?
       end
     end
 
@@ -433,7 +432,7 @@ module Buildr
     # Adds additional directories from which to copy resources.
     #
     # For example:
-    #   resources.from _("src/etc')
+    #   resources.from _('src/etc')
     def from(*sources)
       filter.from *sources
       self
@@ -445,15 +444,23 @@ module Buildr
     end
 
     # :call-seq:
-    #   target() => task
+    #   target => task
     #
     # Returns the filter's target directory as a file task.
     def target
+      filter.into @project.path_to(:target, @usage, :resources) unless filter.target || sources.empty?
       filter.target
     end
 
+  protected
+
     def prerequisites #:nodoc:
       super + filter.sources.flatten
+    end
+
+    # Associates this task with project and particular usage (:main, :test).
+    def associate_with(project, usage) #:nodoc:
+      @project, @usage = project, usage
     end
 
   end
@@ -471,8 +478,8 @@ module Buildr
 
     before_define do |project|
       resources = ResourcesTask.define_task('resources')
+      resources.send :associate_with, project, :main
       project.path_to(:source, :main, :resources).tap { |dir| resources.from dir if File.exist?(dir) }
-      resources.filter.into project.path_to(:target, :main, :resources)
       resources.filter.using Buildr.profile
 
       compile = CompileTask.define_task('compile'=>resources)
@@ -481,11 +488,12 @@ module Buildr
     end
 
     after_define do |project|
-      if project.resources.target
-        file project.resources.target.to_s=>project.resources do |task|
-          mkpath task.name, :verbose=>false
-        end
-      end
+      # TODO: Is this necessary?
+      #if project.resources.target
+      #  file project.resources.target.to_s=>project.resources do |task|
+      #    mkpath task.name, :verbose=>false
+      #  end
+      #end
       if project.compile.target
         # This comes last because the target path is set inside the project definition.
         project.build project.compile.target
@@ -562,20 +570,20 @@ module Buildr
   class Options
 
     # Returns the debug option (environment variable DEBUG).
-    def debug()
-      (ENV["DEBUG"] || ENV["debug"]) !~ /(no|off|false)/
+    def debug
+      (ENV['DEBUG'] || ENV['debug']) !~ /(no|off|false)/
     end
 
     # Sets the debug option (environment variable DEBUG).
     #
     # You can turn this option off directly, or by setting the environment variable
-    # DEBUG to "no". For example:
+    # DEBUG to +no+. For example:
     #   buildr build DEBUG=no
     #
     # The release tasks runs a build with <tt>DEBUG=no</tt>.
     def debug=(flag)
-      ENV["debug"] = nil
-      ENV["DEBUG"] = flag.to_s
+      ENV['debug'] = nil
+      ENV['DEBUG'] = flag.to_s
     end
 
   end

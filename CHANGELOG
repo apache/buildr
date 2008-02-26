@@ -1,8 +1,6 @@
 1.3.0 (Pending)
 * Added: Cobertura tasks can be invoked for a single project using project name as prefix to cobetura tasks.
 * Added: Cobertura can exclude specified classes from instrumentation.
-* Fixed: More typos/documentation fixes by Lacton
-* Changed: Upgraded to Antwrap 0.7.0, thanks to Caleb Powel for relicensing under Apache License.
 * Added: ArchiveTask#clean can be used to remove content from a package. 
 * Added: Groovy compiler.
 * Added: Mechanism to simplify creating extensions (see Extension module).
@@ -14,6 +12,7 @@
 * Added: Consolidated API for RJB and JRuby, replacing the now deprecated JavaWrapper.
 * Added: JRuby 1.1 support (Victor Hugo Borja, Nick Sieger).
 * Added: IDEA 7 task: use buildr idea7x (Shane Witbeck).
+* Changed: Upgraded to Antwrap 0.7.0, thanks to Caleb Powel for relicensing under Apache License.
 * Changed: Upgraded to Rake 0.8, RSpec 1.1, RJB 1.1, Facets 2.2, OpenJPA 1.0.1.
 * Changed: Resources are now copied to target/resources instead of target/classes, and target/test/resources instead of target/test-resources.
 * Changed: Test cases are now compiled into target/test/classes instead of target/test-classes.
@@ -26,8 +25,10 @@
 * Changed: JUnit test framework now runs on all classes that extend junit.framework.TestCase.
 * Changed: Scalac compiler now used by the regular compile task, the scalac task is deprecated.
 * Changed: RDoc are now generated using Allison (http://blog.evanweaver.com/files/doc/fauna/allison).
+* Changed: Resource tasks no longer generate target directory if there are no resources to copy over.
 * Removed: Prepare tasks removed.
 * Removed: All deprecated features since 1.1.  If you've seen warnings before, except the build to break.
+* Fixed: More typos/documentation fixes by Lacton
 * Fixed: Artifact.pom resolves artifact without classifier, i.e org.testng:testng:jar:jdk15:5.1 uses org.testng:testng:pom:5.1 (Tommy).
 * Fixed: More patches towards JRuby support, courtesy of Vic Borja.
 * Fixed: Error when downloading a file from a server which answers with a response with no content length.

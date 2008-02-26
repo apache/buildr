@@ -539,8 +539,8 @@ module Buildr
 
       # Similar to the regular resources task but using different paths.
       resources = ResourcesTask.define_task('test:resources')
+      resources.send :associate_with, project, :test
       project.path_to(:src, :test, :resources).tap { |dir| resources.from dir if File.exist?(dir) }
-      resources.filter.into project.path_to(:target, :test, :resources)
 
       # Similar to the regular compile task but using different paths.
       compile = CompileTask.define_task('test:compile'=>[project.compile, resources])
@@ -555,11 +555,9 @@ module Buildr
       test = project.test
       # Dependency on compiled code, its dependencies and resources.
       test.with project.compile.dependencies
-      test.with Array(project.compile.target) if project.compile.target
-      test.with Array(project.resources.target)
+      test.with [project.compile.target, project.resources.target].compact
       # Dependency on compiled tests and resources.  Dependencies added using with.
-      test.dependencies.concat Array(test.compile.target) if test.compile.target
-      test.dependencies.concat Array(test.resources.target) if test.resources.sources
+      test.dependencies.concat [test.compile.target, test.resources.target].compact
       # Picking up the test frameworks adds further dependencies.
       test.framework
 
