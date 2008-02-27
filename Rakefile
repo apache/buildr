@@ -49,7 +49,11 @@ end
 #
 task 'compile' do
   say 'Compiling Java libraries ... '
-  `buildr compile`
+  cmd = [ RUBY_PLATFORM =~ /java/ ? 'jruby' : 'ruby' ] <<
+    '-I' << File.join(File.dirname(__FILE__), 'lib') <<
+    File.join(File.dirname(__FILE__), 'bin', 'buildr') <<
+    'compile'
+  system *cmd
   say 'OK'
 end
 task 'package'=>'compile'
