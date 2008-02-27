@@ -545,5 +545,15 @@ describe Project, '#resources' do
     lambda { project('foo').resources.invoke }.should_not run_task('foo:bar:resources')
   end
 
-  it 'should use current profile for filtering'
+  it 'should use current profile for filtering' do
+    write 'profiles.yaml', <<-YAML
+development:
+  foo: bar
+test:
+  foo: baz
+    YAML
+    write 'src/main/resources/foo', '${foo}'
+    define('foo').compile.invoke
+    file('target/resources/foo').should contain('bar')
+  end
 end

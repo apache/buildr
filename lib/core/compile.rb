@@ -403,6 +403,7 @@ module Buildr
     def initialize(*args) #:nodoc:
       super
       @filter = Buildr::Filter.new
+      @filter.using Buildr.profile['filter'] if Buildr.profile['filter']
       enhance do
         filter.run if target && !sources.empty?
       end

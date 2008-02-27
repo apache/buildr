@@ -154,7 +154,11 @@ module Buildr
     unless @profiles
       filename = ['Profiles.yaml', 'profiles.yaml'].map { |fn| File.expand_path(fn, File.dirname(Rake.application.rakefile)) }.
         detect { |filename| File.exist?(filename) }
-      @profiles = filename ? YAML::load(File.read(filename)) : {}
+      profiles = filename && YAML::load(File.read(filename)) || {}
+      raise 'Profiles file must be a YAML file with a name: structure map.' unless Hash === profiles
+      @profiles = profiles.inject({}) { |hash, (name, value)| value ||= {} 
+        raise 'Each profile must be empty or contain name/value pairs.' unless Hash === value
+        hash.merge(name=>(value || {})) }
     end
     @profiles
   end

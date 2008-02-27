@@ -126,6 +126,8 @@ production:
   jdbc: oracle:thin:@bigstrong:1521:mighty
 }}}
 
+You can also use profiles to specify default filters for the "@resources@ task":building.html#resources.
+
 "Read more ...":settings_profiles.html#profiles
 
 

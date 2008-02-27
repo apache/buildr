@@ -451,7 +451,7 @@ describe Buildr.method(:options) do
 end
 
 
-describe Buildr::Options, ' proxy.exclude' do
+describe Buildr::Options, 'proxy.exclude' do
   before do
     options.proxy.http = 'http://myproxy:8080'
     @domain = 'domain'
@@ -620,6 +620,16 @@ test:
     YAML
     Buildr.profiles.should == { 'dev'=> { 'foo'=>'bar' }, 'test'=>{ 'bar'=>'baz' } }
   end
+
+  it 'should accept empty profiles file' do
+    write 'Profiles.yaml', "# comment\n\n"
+    Buildr.profiles.should == {}
+  end
+
+  it 'should complain if profiles file is not a map' do
+    write 'Profiles.yaml', 'not_a_map'
+    lambda { Buildr.profiles }.should raise_error
+  end
 end
 
 
@@ -632,5 +642,15 @@ describe Buildr, 'profile' do
 
   it 'should return empty hash if no proflie available' do
     Buildr.profile.should == {}
+  end
+
+  it 'should accept empty profile' do
+    write 'Profiles.yaml', "development:\n"
+    Buildr.profile.should == {}
+  end
+
+  it 'should complain if profile is not a map' do
+    write 'Profiles.yaml', 'development: not_a_map'
+    lambda { Buildr.profile }.should raise_error
   end
 end

@@ -326,6 +326,24 @@ resources.filter.using 'version'=>version,
   'copyright'=>'Acme Inc (C) 2007'
 }}}
 
+
+You can also use "profiles":settings_profiles.html#profiles to supply a
+name/value map that all @resources@ task should default to, by adding a
+@filter@ element to each of the profiles.  The following examples shows a
+@profiles.yaml@ file that applies the same filter in development and test
+environments:
+
+{{{!yaml
+filter: &alpha1
+  version: experimental
+  copyright: Acme Inc (C) 2007
+  
+development:
+  filter: *alpha1
+test:
+  filter: *alpha1
+}}}
+
 You can specify a different format by passing it as the first argument.
 Supported formats include:
 
