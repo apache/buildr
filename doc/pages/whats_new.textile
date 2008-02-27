@@ -213,9 +213,8 @@ h4.  Other
 1.0.1.
 
 * JUnit tests now operate on all compiled test classes that extend
-junit.framework.TestCase and match the include/exclude patterns.  Test cases no
-longer have to end or start with Test, and including non-test classes simply
-ignores them.
+@junit.framework.TestCase@ or use the @Test@ annotation; TestNG test cases are
+filtered by annotation.  Test cases no longer have to use a specific file name.
 
 * Remote repositories now support HTTP Basic Authentication.
 
@@ -235,9 +234,9 @@ tricks and techniques.
 * The "Troubleshooting":troubleshooting.html page (also available in the PDF)
 collects troubleshooting ideas from the mailing list.
 
-* The "Download and installation":download.html has been rewritten to cover all
-you need to know about downloading and installing Buildr for various operating
-systems and configurations.
+* The "Getting Started":getting_started.html has been rewritten to cover all
+you need to know about downloading and installing Buildr on Linux, OS/X,
+Windows and with JRuby (1.1 or later).
 
 * A new "Contributing":contributing.html page has more details on how to file
 bugs, policy for submitting patches, running Buildr test cases, and helping
@@ -248,5 +247,5 @@ with the documentation.
 * The "Extending Buildr":extending.html page that deals with writing your own
 tasks, creating extensions and specifying alternative layouts.
 
-* The site also includes "RSpec test report":report.html and "Test coverage
+* The site also includes "RSpec report":specs.html and "Test coverage
 report":coverage/index.html.

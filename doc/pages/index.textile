@@ -32,12 +32,13 @@ h2.  News
 
 Check out "all that's new in Buildr 1.3":whats_new.html.
 
-* Building Scala projects
-* Building Groovy projects
-* Running on JRuby
-* EAR packaging
+* Buildr 1.3 now runs on JRuby 1.1
+* Support for building Scala projects
+* Support for building Groovy projects
+* EAR packages
+* Profiles
 * New API for accessing Java libraries
-* Alternative source layouts,
+* Alternative source layouts
 * More documentation
 * Other features and bug fixes.
 

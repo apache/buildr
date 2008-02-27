@@ -17,7 +17,7 @@ def specify(platform)
                                  'Rakefile', 'spec/**/*', 'doc/**/*'].to_ary
     spec.require_path = 'lib'
     spec.has_rdoc     = true
-    spec.extra_rdoc_files = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']
+    spec.extra_rdoc_files = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'reports/specs.html']
     spec.rdoc_options << '--title' << "Buildr -- #{spec.summary}" <<
                          '--main' << 'README' << '--line-numbers' << '--inline-source' << '-p' <<
                          '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
