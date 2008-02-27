@@ -60,6 +60,9 @@ module Buildr
   end
 
   include Ant
+  class Project
+    include Ant
+  end
 
   Buildr.help do
     Java.load
