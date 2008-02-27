@@ -78,6 +78,11 @@ resolve external dependencies properly, you will need to add a @M2_REPO@
 variable pointing to your Maven2 repository directory (@Settings / Path
 Variables@).
 
+If you're using IDEA 7.0 or later, use the @buildr idea7x@ task instead.  This
+task creates the proper @.ipr@ and @.iml@ files for IDEA version 7.0 and above.
+It includes the @-7x@ suffix in the generated files, so you can use the @idea@
+and @idea7x@ tasks side by side on the same project.
+
 
 h2. Cobertura, JDepend
 
