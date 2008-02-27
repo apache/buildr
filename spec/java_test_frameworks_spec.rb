@@ -301,17 +301,14 @@ describe Buildr::TestNG do
   it 'should include classes using TestNG annotations' do
     write 'src/test/java/com/example/AnnotatedClass.java', <<-JAVA
       package com.example;
-      import org.testng.annotations.Test
-      @Test
-      public class AnnotatedClass {
-      }
+      @org.testng.annotations.Test
+      public class AnnotatedClass { }
     JAVA
     write 'src/test/java/com/example/AnnotatedMethod.java', <<-JAVA
       package com.example;
-      import org.testng.annotations.Test
       public class AnnotatedMethod {
-        @Test
-        publid void annotated {};
+        @org.testng.annotations.Test
+        public void annotated() { }
       }
     JAVA
     define('foo') { test.using(:testng) }
@@ -328,8 +325,7 @@ describe Buildr::TestNG do
 
   it 'should ignore inner classes' do
     write 'src/test/java/InnerClassTest.java', <<-JAVA
-      import org.testng.annotations.Test;
-      @Test
+      @org.testng.annotations.Test
       public class InnerClassTest {
         public class InnerTest {
         }
