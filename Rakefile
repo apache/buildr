@@ -17,7 +17,7 @@ def specify(platform)
                                  'Rakefile', 'spec/**/*', 'doc/**/*'].to_ary
     spec.require_path = 'lib'
     spec.has_rdoc     = true
-    spec.extra_rdoc_files = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'reports/specs.html']
+    spec.extra_rdoc_files = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']
     spec.rdoc_options << '--title' << "Buildr -- #{spec.summary}" <<
                          '--main' << 'README' << '--line-numbers' << '--inline-source' << '-p' <<
                          '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
@@ -64,8 +64,9 @@ ruby_package = Rake::GemPackageTask.new(ruby_spec) { |pkg| pkg.need_tar = pkg.ne
 jruby_spec = specify('java')
 jruby_package = Rake::GemPackageTask.new(jruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = false }
 
+task('clobber') { rm_rf 'pkg' }
 desc 'Install the package locally'
-task 'install'=>'package' do |task|
+task 'install'=>['clobber', 'package'] do |task|
   if RUBY_PLATFORM =~ /java/ 
     cmd = %w(jruby -S gem install)
     pkg = jruby_package
