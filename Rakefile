@@ -45,9 +45,15 @@ def specify(platform)
 end
 
 
+ruby_spec = specify(Gem::Platform::RUBY)
+ruby_package = Rake::GemPackageTask.new(ruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = true }
+
+jruby_spec = specify('java')
+jruby_package = Rake::GemPackageTask.new(jruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = false }
+
 # Packaging and local installation.
 #
-task 'compile' do
+task 'compile' => 'install-dependencies' do
   say 'Compiling Java libraries ... '
   cmd = [ RUBY_PLATFORM =~ /java/ ? 'jruby' : 'ruby' ] <<
     '-I' << File.join(File.dirname(__FILE__), 'lib') <<
@@ -58,11 +64,16 @@ task 'compile' do
 end
 task 'package'=>'compile'
 
-ruby_spec = specify(Gem::Platform::RUBY)
-ruby_package = Rake::GemPackageTask.new(ruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = true }
-
-jruby_spec = specify('java')
-jruby_package = Rake::GemPackageTask.new(jruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = false }
+task 'install-dependencies' do
+  gems = Gem::SourceIndex.from_installed_gems
+  specify(RUBY_PLATFORM).dependencies.each do |dep|
+    if gems.search(dep).empty?
+      puts "Installing gem: #{dep}"
+      require 'rubygems/dependency_installer'
+      Gem::DependencyInstaller.new(dep.name, dep.version_requirements).install
+    end
+  end
+end
 
 task('clobber') { rm_rf 'pkg' }
 desc 'Install the package locally'
@@ -201,9 +212,16 @@ end
 
 
 namespace 'release' do
-  require 'highline'
-  require 'highline/import'
-  Kernel.def_delegators :$terminal, :color
+  
+  begin 
+    require 'highline'
+    require 'highline/import'
+    Kernel.def_delegators :$terminal, :color
+  rescue LoadError 
+    unless ARGV.include? 'install-dependencies'
+      fail "Please install highline gem or run 'rake install-dependencies'"
+    end
+  end
 
   # This task does all prerequisites checks before starting the release, for example,
   # that we have Groovy and Scala to run all the test cases, or that we have Allison
