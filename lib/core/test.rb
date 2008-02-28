@@ -425,7 +425,7 @@ module Buildr
         @passed_tests = @framework.run(@tests, self, dependencies)
         @failed_tests = @tests - @passed_tests
         unless @failed_tests.empty?
-          warn "The following tests failed:\n#{@failed_tests.join('\n')}" if verbose
+          warn "The following tests failed:\n#{@failed_tests.join("\n")}" if verbose
           fail 'Tests failed!'
         end
       end
