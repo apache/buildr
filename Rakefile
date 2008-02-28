@@ -67,10 +67,15 @@ task 'package'=>'compile'
 task 'install-dependencies' do
   gems = Gem::SourceIndex.from_installed_gems
   specify(RUBY_PLATFORM).dependencies.each do |dep|
-    if gems.search(dep).empty?
-      puts "Installing gem: #{dep}"
-      require 'rubygems/dependency_installer'
-      Gem::DependencyInstaller.new(dep.name, dep.version_requirements).install
+    if gems.search(dep.name, dep.version_requirements).empty?
+      puts "Installing dependency: #{dep}"
+      begin
+        require 'rubygems/dependency_installer'
+        Gem::DependencyInstaller.new(dep.name, dep.version_requirements).install
+      rescue LoadError # < rubygems 1.0.1
+        require 'rubygems/remote_installer'
+        Gem::RemoteInstaller.new.install(dep.name, dep.version_requirements)
+      end
     end
   end
 end
