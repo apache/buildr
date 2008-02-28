@@ -537,7 +537,6 @@ module Buildr
       # specified. Nothing will happen unless we include all files.
       if @paths.empty?
         @paths[nil] = FromPath.new(self, nil)
-        @paths[nil].include '*'
       end
 
       # Otherwise, empty unzip creates target as a file when touching.
@@ -652,7 +651,7 @@ module Buildr
       end
 
       def map(entries)
-        includes = @include || ['*']
+        includes = @include || ['**/*']
         excludes = @exclude || []
         entries.inject({}) do |map, entry|
           short = entry.name.sub(@path, '')

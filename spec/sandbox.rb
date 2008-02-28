@@ -56,6 +56,8 @@ module Sandbox
     # Move to the work directory and make sure Rake thinks of it as the Rakefile directory.
     @sandbox[:pwd] = Dir.pwd
     Dir.chdir @test_dir
+    @sandbox[:load_path] = $LOAD_PATH.clone
+    @sandbox[:loaded_features] = $LOADED_FEATURES.clone
     @sandbox[:original_dir] = Rake.application.original_dir 
     Rake.application.instance_eval { @original_dir = Dir.pwd }
     Rake.application.instance_eval { @rakefile = File.expand_path('buildfile') }
@@ -96,6 +98,8 @@ module Sandbox
     # Switch back Rake directory.
     Dir.chdir @sandbox[:pwd]
     original_dir = @sandbox[:original_dir]
+    $LOAD_PATH.replace @sandbox[:load_path]
+    $LOADED_FEATURES.replace @sandbox[:loaded_features]
     Rake.application.instance_eval { @original_dir = original_dir }
     FileUtils.rm_rf @test_dir
 
@@ -104,8 +108,9 @@ module Sandbox
     @sandbox[:tasks].each { |block| block.call }
     Rake.application.instance_variable_set :@rules, @sandbox[:rules]
 
-    # Get rid of all artifacts and out test directory.
+    # Get rid of all artifacts and addons.
     @sandbox[:artifacts].tap { |artifacts| Artifact.class_eval { @artifacts = artifacts } }
+    Addon.instance_eval { @addons.clear }
 
     # Restore options.
     Buildr.options.test = nil
