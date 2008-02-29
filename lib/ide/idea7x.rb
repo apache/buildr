@@ -132,19 +132,20 @@ module Buildr
 
       def generate_content(project, xml, generated, relative)
         xml.content(:url=>"#{MODULE_DIR_URL}") do
-          unless project.sources.empty?
+          unless project.compile.sources.empty?
             srcs = project.compile.sources.map { |src| relative[src.to_s] } + generated.map { |src| relative[src.to_s] }
             srcs.sort.uniq.each do |path|
               xml.sourceFolder :url=>"#{MODULE_DIR_URL}/#{path}", :isTestSource=>"false"
             end
-
+          end
+          unless project.test.compile.sources.empty?
             test_sources = project.test.compile.sources.map { |src| relative[src.to_s] }
             test_sources.each do |paths|
               paths.sort.uniq.each do |path|
                 xml.sourceFolder :url=>"#{MODULE_DIR_URL}/#{path}", :isTestSource=>"true"
               end
             end
-          end
+          end          
           [project.resources=>false, project.test.resources=>true].each do |resources, test|
             resources.each do |path|
               path[0].sources.each do |srcpath|
