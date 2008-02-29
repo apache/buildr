@@ -55,7 +55,7 @@ module Buildr
 
       # Find a path relative to the project's root directory.
       relative = lambda do |path|
-        Pathname.new(path.to_s).relative_path_from(Pathname.new(project.path_to)).to_s
+        Pathname.new(File.expand_path(path.to_s)).relative_path_from(Pathname.new(project.path_to)).to_s
       end
 
       m2repo = Buildr::Repositories.instance.local
@@ -132,7 +132,7 @@ module Buildr
 
       def generate_content(project, xml, generated, relative)
         xml.content(:url=>"#{MODULE_DIR_URL}") do
-          if project.has_compile_sources
+          unless project.sources.empty?
             srcs = project.compile.sources.map { |src| relative[src.to_s] } + generated.map { |src| relative[src.to_s] }
             srcs.sort.uniq.each do |path|
               xml.sourceFolder :url=>"#{MODULE_DIR_URL}/#{path}", :isTestSource=>"false"
@@ -152,7 +152,7 @@ module Buildr
               end
             end
           end
-          xml.excludeFolder :url=>"#{MODULE_DIR_URL}/#{relative[project.compile.target.to_s]}" if project.has_compile_sources
+          xml.excludeFolder :url=>"#{MODULE_DIR_URL}/#{relative[project.compile.target.to_s]}" if project.compile.target
         end
       end
 
