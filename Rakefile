@@ -51,22 +51,16 @@ ruby_package = Rake::GemPackageTask.new(ruby_spec) { |pkg| pkg.need_tar = pkg.ne
 jruby_spec = specify('java')
 jruby_package = Rake::GemPackageTask.new(jruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = false }
 
-# Packaging and local installation.
-#
-task 'compile' => 'install-dependencies' do
-  say 'Compiling Java libraries ... '
-  cmd = [ RUBY_PLATFORM =~ /java/ ? 'jruby' : 'ruby' ] <<
-    '-I' << File.join(File.dirname(__FILE__), 'lib') <<
-    File.join(File.dirname(__FILE__), 'bin', 'buildr') <<
-    'compile'
-  system *cmd
-  say 'OK'
-end
-task 'package'=>'compile'
-
-task 'install-dependencies' do
+# Setup environment for running this Rakefile (RSpec, Docter, etc).
+desc "If you're building from sources, run this task one to setup the necessary dependencies."
+task 'setup' do
+  # Install all Buildr and documentation dependencies.
   gems = Gem::SourceIndex.from_installed_gems
-  specify(RUBY_PLATFORM).dependencies.each do |dep|
+  dependencies = specify(RUBY_PLATFORM).dependencies
+  dependencies << Gem::Dependency.new('docter', '~>1.1')
+  dependencies << Gem::Dependency.new('ultraviolet', '~>0.10')
+  dependencies << Gem::Dependency.new('rcov', '~>0.8') unless RUBY_PLATFORM =~ /java/ 
+  dependencies.each do |dep|
     if gems.search(dep.name, dep.version_requirements).empty?
       puts "Installing dependency: #{dep}"
       begin
@@ -80,7 +74,11 @@ task 'install-dependencies' do
   end
 end
 
+# Packaging and local installation.
+#
+desc 'Clean up all temporary directories used for running tests, creating documentation, packaging, etc.'
 task('clobber') { rm_rf 'pkg' }
+
 desc 'Install the package locally'
 task 'install'=>['clobber', 'package'] do |task|
   if RUBY_PLATFORM =~ /java/ 
@@ -90,7 +88,13 @@ task 'install'=>['clobber', 'package'] do |task|
     cmd = %w(gem install)
     pkg = ruby_package
   end
-  cmd << '--ignore-dependencies' << File.expand_path(pkg.gem_file, pkg.package_dir)
+  # This hack is necessary when a new gem shows up in the index but is not
+  # available for download and gem install fails, even though we have a less
+  # recent dependency installed locally.
+  cmd << '--ignore-dependencies' if ENV['IGNORE']
+  cmd << File.expand_path(pkg.gem_file, pkg.package_dir)
+  # Saves us from doing sudo rake install, which requires sudo rake clobber.
+  cmd.unshift 'sudo' unless Gem::win_platform?
   system *cmd
 end
 
@@ -98,12 +102,11 @@ desc 'Uninstall previously installed packaged'
 task 'uninstall' do |task|
   if RUBY_PLATFORM =~ /java/ 
     cmd = %w(jruby -S gem uninstall)
-    pkg = jruby_package
   else 
     cmd = %w(gem uninstall)
-    pkg = ruby_package
   end
-  cmd << File.expand_path(pkg.gem_file, pkg.package_dir)
+  cmd << ruby_spec.name
+  cmd.unshift 'sudo' unless Gem::win_platform?
   system *cmd
 end
 
@@ -212,26 +215,24 @@ begin
   end
 
 rescue LoadError
-  puts "To generate the site documentation and PDF, gem install docter ultraviolet"
+  puts "To generate site documentation, run rake setup first"
 end
 
 
 namespace 'release' do
-  
-  begin 
+ 
+  begin
     require 'highline'
     require 'highline/import'
     Kernel.def_delegators :$terminal, :color
   rescue LoadError 
-    unless ARGV.include? 'install-dependencies'
-      fail "Please install highline gem or run 'rake install-dependencies'"
-    end
+    puts 'HighLine required, please run rake setup first'
   end
 
   # This task does all prerequisites checks before starting the release, for example,
   # that we have Groovy and Scala to run all the test cases, or that we have Allison
   # and PrinceXML to generate the full documentation.
-  task 'check'
+  task 'check'=>'setup'
   # This task does all the preparation work before making a release and also checks
   # that we generate all the right material, for example, that we compiled Java sources,
   # created the PDF, have coverage report.
@@ -267,6 +268,17 @@ namespace 'release' do
     fail "Cannot release unless all local changes are in SVN:\n#{status}" unless status.empty?
   end
 
+  # Re-generate Java extensions and to this before running test cases.
+  task 'compile' do
+    say 'Compiling Java libraries ... '
+    cmd = [ RUBY_PLATFORM =~ /java/ ? 'jruby' : 'ruby' ] <<
+      '-I' << File.join(File.dirname(__FILE__), 'lib') <<
+      File.join(File.dirname(__FILE__), 'bin', 'buildr') <<
+      'compile'
+    system *cmd
+    say 'OK'
+  end
+
   # Tests, specs and coverage reports.
   task 'check' do
     say 'Checking that we have JRuby, Scala and Groovy available ... '
@@ -275,7 +287,7 @@ namespace 'release' do
     fail 'Full testing requires Groovy!' if `which groovyc`.empty?
     say 'OK'
   end
-  task 'prepare' do
+  task 'prepare'=>'compile' do
     say 'Running test suite using JRuby ...'
     task('spec:jruby').invoke
     say 'Running test suite using Ruby ...'
