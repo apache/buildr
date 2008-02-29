@@ -67,8 +67,6 @@ module Buildr
 
       # The only thing we need to look for is a change in the Buildfile.
       file(task_name=>sources) do |task|
-        puts "Writing #{task.name}" if verbose
-
         # Note: Use the test classpath since Eclipse compiles both "main" and "test" classes using the same classpath
         deps = project.test.compile.dependencies.map(&:to_s) - [ project.compile.target.to_s ]
 
@@ -86,6 +84,7 @@ module Buildr
 
         # Project type is going to be the first package type
         if package = project.packages.first
+          puts "Writing #{task.name}" if verbose
           File.open(task.name, "w") do |file|
             xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
             xml.module(:version=>"4", :relativePaths=>"true", :type=>"JAVA_MODULE") do
@@ -114,108 +113,100 @@ module Buildr
 
     end # after_define
 
-    private
+    class << self
 
-    def self.generate_order_entries(project_libs, xml)
-      xml.orderEntry :type=>"sourceFolder", :forTests=>"false"
-      xml.orderEntry :type=>"inheritedJdk"
+      def generate_order_entries(project_libs, xml)
+        xml.orderEntry :type=>"sourceFolder", :forTests=>"false"
+        xml.orderEntry :type=>"inheritedJdk"
 
-      # Classpath elements from other projects
-      project_libs.map(&:id).sort.uniq.each do |project_id|
-        xml.orderEntry :type=>'module', "module-name"=>"#{project_id}#{CLASSIFIER}"
+        # Classpath elements from other projects
+        project_libs.map(&:id).sort.uniq.each do |project_id|
+          xml.orderEntry :type=>'module', "module-name"=>"#{project_id}#{CLASSIFIER}"
+        end
       end
-    end
 
-    def self.generate_compile_output(project, xml, relative)
-      xml.output(:url=>"#{MODULE_DIR_URL}/#{relative[project.compile.target.to_s]}") if project.has_compile_sources
-      xml.output-test(:url=>"#{MODULE_DIR_URL}/#{relative[project.test.compile.target.to_s]}") if project.has_test_sources
-    end
+      def generate_compile_output(project, xml, relative)
+        xml.output(:url=>"#{MODULE_DIR_URL}/#{relative[project.compile.target.to_s]}") if project.compile.target
+        xml.output-test(:url=>"#{MODULE_DIR_URL}/#{relative[project.test.compile.target.to_s]}") if project.test.compile.target
+      end
 
-    def self.generate_content(project, xml, generated, relative)
-      xml.content(:url=>"#{MODULE_DIR_URL}") do
-        if project.has_compile_sources
-          srcs = project.compile.sources.map { |src| relative[src.to_s] } + generated.map { |src| relative[src.to_s] }
-          srcs.sort.uniq.each do |path|
-            xml.sourceFolder :url=>"#{MODULE_DIR_URL}/#{path}", :isTestSource=>"false"
+      def generate_content(project, xml, generated, relative)
+        xml.content(:url=>"#{MODULE_DIR_URL}") do
+          if project.has_compile_sources
+            srcs = project.compile.sources.map { |src| relative[src.to_s] } + generated.map { |src| relative[src.to_s] }
+            srcs.sort.uniq.each do |path|
+              xml.sourceFolder :url=>"#{MODULE_DIR_URL}/#{path}", :isTestSource=>"false"
+            end
+
+            test_sources = project.test.compile.sources.map { |src| relative[src.to_s] }
+            test_sources.each do |paths|
+              paths.sort.uniq.each do |path|
+                xml.sourceFolder :url=>"#{MODULE_DIR_URL}/#{path}", :isTestSource=>"true"
+              end
+            end
           end
+          [project.resources=>false, project.test.resources=>true].each do |resources, test|
+            resources.each do |path|
+              path[0].sources.each do |srcpath|
+                xml.sourceFolder :url=>"#{FILE_PATH_PREFIX}#{srcpath}", :isTestSource=>path[1].to_s
+              end
+            end
+          end
+          xml.excludeFolder :url=>"#{MODULE_DIR_URL}/#{relative[project.compile.target.to_s]}" if project.has_compile_sources
+        end
+      end
 
-          test_sources = project.test.compile.sources.map { |src| relative[src.to_s] }
-          test_sources.each do |paths|
-            paths.sort.uniq.each do |path|
-              xml.sourceFolder :url=>"#{MODULE_DIR_URL}/#{path}", :isTestSource=>"true"
+      def generate_module_libs(xml, ext_libs)
+        ext_libs.each do |path|
+          xml.orderEntry :type=>"module-library" do
+            xml.library do
+              xml.CLASSES do
+                xml.root :url=>"jar://#{path}!/"
+              end
+              xml.JAVADOC
+              xml.SOURCES
             end
           end
         end
-        [project.resources=>false, project.test.resources=>true].each do |resources, test|
-          resources.each do |path|
-            path[0].sources.each do |srcpath|
-              xml.sourceFolder :url=>"#{FILE_PATH_PREFIX}#{srcpath}", :isTestSource=>path[1].to_s
+      end
+
+      def generate_ipr(project, idea7x, sources)
+        task_name = project.path_to("#{project.name.gsub(':', '-')}-7x.ipr")
+        idea7x.enhance [ file(task_name) ]
+        file(task_name=>sources) do |task|
+          puts "Writing #{task.name}" if verbose
+
+          # Generating just the little stanza that chanages from one project to another
+          partial = StringIO.new
+          xml = Builder::XmlMarkup.new(:target=>partial, :indent=>2)
+          xml.component(:name=>"ProjectModuleManager") do
+            xml.modules do
+              project.projects.each do |subp|
+                module_name = subp.name.gsub(":", "-")
+                module_path = subp.name.split(":"); module_path.shift
+                module_path = module_path.join(File::SEPARATOR)
+                path = "#{module_path}/#{module_name}#{IML_SUFFIX}"
+                xml.module :fileurl=>"#{PROJECT_DIR_URL}/#{path}", :filepath=>"#{PROJECT_DIR}/#{path}"
+              end
+              if package = project.packages.first
+                xml.module :fileurl=>"#{PROJECT_DIR_URL}/#{project.name}#{IML_SUFFIX}", :filepath=>"#{PROJECT_DIR}/#{project.name}#{IML_SUFFIX}"
+              end
             end
           end
-        end
-        xml.excludeFolder :url=>"#{MODULE_DIR_URL}/#{relative[project.compile.target.to_s]}" if project.has_compile_sources
-      end
-    end
 
-    def self.generate_module_libs(xml, ext_libs)
-      ext_libs.each do |path|
-        xml.orderEntry :type=>"module-library" do
-          xml.library do
-            xml.CLASSES do
-              xml.root :url=>"jar://#{path}!/"
-            end
-            xml.JAVADOC
-            xml.SOURCES
-          end
+          # Loading the whole fairly constant crap
+          template_xml = REXML::Document.new(File.open(File.join(File.dirname(__FILE__), IPR_TEMPLATE)))
+          include_xml = REXML::Document.new(partial.string)
+          template_xml.root.add_element(include_xml.root)
+          template_xml.write(File.new(task.name, "w"))
         end
       end
+
     end
-
-    def self.generate_ipr(project, idea7x, sources)
-      task_name = project.path_to("#{project.name.gsub(':', '-')}-7x.ipr")
-      idea7x.enhance [ file(task_name) ]
-      file(task_name=>sources) do |task|
-        puts "Writing #{task.name}" if verbose
-
-        # Generating just the little stanza that chanages from one project to another
-        partial = StringIO.new
-        xml = Builder::XmlMarkup.new(:target=>partial, :indent=>2)
-        xml.component(:name=>"ProjectModuleManager") do
-          xml.modules do
-            project.projects.each do |subp|
-              module_name = subp.name.gsub(":", "-")
-              module_path = subp.name.split(":"); module_path.shift
-              module_path = module_path.join(File::SEPARATOR)
-              path = "#{module_path}/#{module_name}#{IML_SUFFIX}"
-              xml.module :fileurl=>"#{PROJECT_DIR_URL}/#{path}", :filepath=>"#{PROJECT_DIR}/#{path}"
-            end
-            if package = project.packages.first
-              xml.module :fileurl=>"#{PROJECT_DIR_URL}/#{project.name}#{IML_SUFFIX}", :filepath=>"#{PROJECT_DIR}/#{project.name}#{IML_SUFFIX}"
-            end
-          end
-        end
-
-        # Loading the whole fairly constant crap
-        template_xml = REXML::Document.new(File.open(File.join(File.dirname(__FILE__), IPR_TEMPLATE)))
-        include_xml = REXML::Document.new(partial.string)
-        template_xml.root.add_element(include_xml.root)
-        template_xml.write(File.new(task.name, "w"))
-      end
-    end
-
 
   end  # module Idea7x
 end # module Buildr
 
 class Buildr::Project
-
   include Buildr::Idea7x
-
-  def has_compile_sources
-    self.compile.target.to_s.size > 0
-  end
-
-  def has_test_sources
-    self.test.compile.target.to_s.size > 0
-  end
 end
