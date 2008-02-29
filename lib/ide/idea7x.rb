@@ -127,7 +127,7 @@ module Buildr
 
       def generate_compile_output(project, xml, relative)
         xml.output(:url=>"#{MODULE_DIR_URL}/#{relative[project.compile.target.to_s]}") if project.compile.target
-        xml.output-test(:url=>"#{MODULE_DIR_URL}/#{relative[project.test.compile.target.to_s]}") if project.test.compile.target
+        xml.tag!("output-test", :url=>"#{MODULE_DIR_URL}/#{relative[project.test.compile.target.to_s]}") if project.test.compile.target  
       end
 
       def generate_content(project, xml, generated, relative)
