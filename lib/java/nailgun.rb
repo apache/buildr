@@ -3,6 +3,12 @@ module Buildr
   # To start the nailgun server run the ng:start task, this will
   # download, compile and installed nailgun if needed, afterwards
   # it will start the nailgun server.
+  #
+  # Issues:
+  #   JRuby 1.1RC2 fails at reopening STDIN, so the workaround is
+  #   to redefine the $stdin global and STDIN constant. 
+  #   Kernel#gets, readline, etc, must be avoided and you should use
+  #   $stdin#gets
   module Nailgun 
     VERSION = '0.7.1'
     NAME = "nailgun-#{VERSION}"
@@ -56,9 +62,16 @@ module Buildr
         cp compiled_bin.to_s, task.to_s, :verbose => false
       end
 
-      task :boot => artifact do
+      task :boot => artifact do |task|
         if $nailgun_server
           raise "Already nunning on Nailgun server: #{$nailgun_server}"
+        end
+        tasks = Rake.application.instance_eval { @top_level_tasks.dup }
+        tasks.delete_if do |t| 
+          t =~ /^(buildr:initialize|(ng|nailgun):.+)$/
+        end
+        unless tasks.empty?
+          raise "Don't specify more targets when starting Nailgun server"
         end
         BOOT.call
       end
@@ -77,6 +90,36 @@ module Buildr
   Nailgun::BOOT = lambda do
     require 'jruby'
     
+    class ::ConcreteJavaProxy
+      def self.jclass(name = nil)
+        name ||= self.java_class.name
+        Nailgun::Util.class_for_name(name)
+      end
+      
+      def self.jnew(*args)
+        objs = []
+        classes = args.map do |a|
+          case a
+          when nil
+            obj << nil
+            nil
+          when Hash
+            objs << a.keys.first
+            cls = a.values.first
+            cls = Nailgun::Util.proxy_class(cls) if String == cls
+            cls
+          else
+            objs << a
+            a.java_class
+          end
+        end
+        classes = classes.to_java(java.lang.Class)
+        ctor = jclass.getDeclaredConstructor(classes)
+        ctor.setAccessible(true)
+        ctor.newInstance(objs.to_java(java.lang.Object))
+      end
+    end
+    
     class Application
       def buildfile(dir = nil, candidates = nil)
         Nailgun::Util.find_buildfile(dir || Dir.pwd, candidates || @rakefiles)
@@ -88,35 +131,6 @@ module Buildr
     end
 
     module Nailgun
-      class ::ConcreteJavaProxy
-        def self.jclass(name = nil)
-          name ||= self.java_class.name
-          Util.class_for_name(name)
-        end
-        
-        def self.jnew(*args)
-          objs = []
-          classes = args.map do |a|
-            case a
-            when nil
-              obj << nil
-              nil
-            when Hash
-              objs << a.keys.first
-              cls = a.values.first
-              cls = Util.proxy_class(cls) if String == cls
-              cls
-            else
-              objs << a
-              a.java_class
-            end
-          end
-          classes = classes.to_java(java.lang.Class)
-          ctor = jclass.getDeclaredConstructor(classes)
-          ctor.setAccessible(true)
-          ctor.newInstance(objs.to_java(java.lang.Object))
-        end
-      end
       
       module Util
         extend self
@@ -176,12 +190,11 @@ module Buildr
           end
           
           begin
-            p nail.in
             input  = RubyIO.jnew(runtime, java.lang.System.in => java.io.InputStream)
             output = RubyIO.jnew(runtime, nail.out => java.io.OutputStream)
             error = RubyIO.jnew(runtime, nail.err => java.io.OutputStream)
             #stdin.reopen(input, 'r') # not working on jruby :(
-            #set_in.call(input)
+            set_in.call(input)
             stdout.reopen(output)
             stderr.reopen(error)
             result = yield
@@ -189,7 +202,7 @@ module Buildr
             input  = RubyIO.jnew(runtime, java.lang.System.in => java.io.InputStream)
             output = RubyIO.jnew(runtime, java.lang.System.out => java.io.OutputStream)
             error = RubyIO.jnew(runtime, java.lang.System.err => java.io.OutputStream)
-            #set_in.call(input)
+            set_in.call(input)
             stdout.reopen(output)
             stderr.reopen(error)
           end
