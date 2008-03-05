@@ -1,4 +1,5 @@
 1.3.0 (Pending)
+* Added: Nailgun integration for improved user experience when running on JRuby.
 * Added: Cobertura tasks can be invoked for a single project using project name as prefix to cobetura tasks.
 * Added: Cobertura can exclude specified classes from instrumentation.
 * Added: ArchiveTask#clean can be used to remove content from a package. 

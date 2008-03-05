@@ -97,6 +97,11 @@ Bridge), the JRuby version obviously can do well without it.
 
 "Read more ...":download.html#jruby
 
+Buildr provides a "Nailgun":http://www.martiansoftware.com/nailgun/index.html
+server when running on JRuby. Using the integrated BuildrServer allows for 
+faster task execution and avoid frequent JVM startup overhead. 
+
+"Read more ...":more_stuff.html#nailgun
 
 h4.  Profiles
 

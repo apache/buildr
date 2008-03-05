@@ -215,7 +215,7 @@ module Buildr
             super
             puts 
             puts 'To get a summary of Nailgun features use'
-            puts '  help:nailgun'
+            puts '  ng:help'
           end
 
           def do_option(opt, value)
@@ -249,7 +249,7 @@ module Buildr
         end
         Buildr.help do 
           "\nTo get a summary of Nailgun features use" << 
-          "\n  help:nailgun"
+          "\n  ng:help"
         end
         if ctx.fresh
           run_fresh(ctx)
@@ -796,6 +796,14 @@ module Buildr
          and will be used by default when ``#{installed_bin.to_s.pathmap("%f")}'' is invoked from inside 
          from a directory inside #{installed_bin.to_s.pathmap("%d")}
         NOTICE
+      end
+
+      task :help do 
+        puts Rake.application.nailgun_help
+      end
+
+      task :tasks do 
+        puts Rake.application.nailgun_tasks
       end
     end # namespace :nailgun
     

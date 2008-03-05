@@ -96,9 +96,11 @@ module Java
 
   end
 
-  task 'ng:start' do |t|
-    require 'java/nailgun'
-    Rake.application.invoke_task('nailgun:start')
+  [:start, :help, :tasks].each do |n|
+    task "ng:#{n}" do |t|
+      require 'java/nailgun'
+      Rake.application.invoke_task("nailgun:#{n}")
+    end
   end
   
 end
