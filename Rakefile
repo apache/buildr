@@ -58,7 +58,7 @@ task 'setup' do
   gems = Gem::SourceIndex.from_installed_gems
   dependencies = specify(RUBY_PLATFORM).dependencies
   dependencies << Gem::Dependency.new('docter', '~>1.1')
-  dependencies << Gem::Dependency.new('ultraviolet', '~>0.10')
+  dependencies << Gem::Dependency.new('ultraviolet', '~>0.10') unless RUBY_PLATFORM =~ /java/
   dependencies << Gem::Dependency.new('rcov', '~>0.8') unless RUBY_PLATFORM =~ /java/ 
   dependencies.each do |dep|
     if gems.search(dep.name, dep.version_requirements).empty?

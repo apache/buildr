@@ -96,4 +96,26 @@ module Java
 
   end
 
+  task 'ng:start' do |t|
+    require 'java/nailgun'
+    Rake.application.invoke_task('nailgun:start')
+  end
+  
 end
+
+
+# File.fnmatch bug on JRuby1.1RC2. 
+# This issue has been fixed on jruby's trunk, so delete this monkey patch
+# when we upgrade to a new JRuby release.
+# http://jira.codehaus.org/browse/JRUBY-2196
+class File
+  class << self
+    def fnmatch_with_workaround2196(pattern, file, *flags)
+      return true if pattern == '**/*' && flags.include?(FNM_PATHNAME)
+      fnmatch_without_workaround2196(pattern, file, *flags)
+    end
+    
+    alias_method_chain :fnmatch, :workaround2196
+  end
+end
+

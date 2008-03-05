@@ -55,33 +55,20 @@ module Buildr
     class Application < Rake::Application #:nodoc:
 
       DEFAULT_BUILDFILES = ['buildfile', 'Buildfile'] + DEFAULT_RAKEFILES
+      
+      require 'core/application_cli'
+      include CommandLineInterface
 
-      OPTIONS = [     # :nodoc:
-        ['--help',     '-h', GetoptLong::NO_ARGUMENT,
-          'Display this help message.'],
-        ['--nosearch', '-n', GetoptLong::NO_ARGUMENT,
-          'Do not search parent directories for the buildfile.'],
-        ['--quiet',    '-q', GetoptLong::NO_ARGUMENT,
-          'Do not log messages to standard output.'],
-        ['--buildfile', '-f', GetoptLong::REQUIRED_ARGUMENT,
-          'Use FILE as the buildfile.'],
-        ['--require',  '-r', GetoptLong::REQUIRED_ARGUMENT,
-          'Require MODULE before executing buildfile.'],
-        ['--trace',    '-t', GetoptLong::NO_ARGUMENT,
-          'Turn on invoke/execute tracing, enable full backtrace.'],
-        ['--version',  '-v', GetoptLong::NO_ARGUMENT,
-          'Display the program version.'],
-        ['--environment', '-e', GetoptLong::REQUIRED_ARGUMENT,
-          'Environment name (e.g. development, test, production).']
-      ]
+      attr_reader :rakefiles, :requires
+      private :rakefiles, :requires
 
       def initialize()
         super
         @rakefiles = DEFAULT_BUILDFILES
         @name = 'Buildr'
         @requires = []
-        opts = GetoptLong.new(*command_line_options)
-        opts.each { |opt, value| do_option(opt, value) }
+        @top_level_tasks = []
+        parse_options
         collect_tasks
         top_level_tasks.unshift 'buildr:initialize'
       end
@@ -100,26 +87,6 @@ module Buildr
           real << ("%im" % ((times.real / 60) % 60)) if times.real >= 60
           real << ("%.3fs" % (times.real % 60))
           puts "Completed in #{real.join}"
-        end
-      end
-
-      def do_option(opt, value)
-        case opt
-        when '--help'
-          help
-          exit
-        when '--buildfile'
-          @rakefiles.clear
-          @rakefiles << value
-        when '--version'
-          puts "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby '+JRUBY_VERSION+')'}"
-          exit
-        when '--environment'
-          ENV['BUILDR_ENV'] = value
-        when '--require'
-          @requires << value
-        when '--nosearch', '--quiet', '--trace'
-          super
         end
       end
 
@@ -147,46 +114,6 @@ module Buildr
         load_imports
       end
 
-      def collect_tasks
-        @top_level_tasks = []
-        ARGV.each do |arg|
-          if arg =~ /^(\w+)=(.*)$/
-            ENV[$1.upcase] = $2
-          else
-            @top_level_tasks << arg
-          end
-        end
-        @top_level_tasks.push("default") if @top_level_tasks.size == 0
-      end
-
-      def usage()
-        puts "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby '+JRUBY_VERSION+')'}"
-        puts
-        puts 'Usage:'
-        puts '  buildr [options] [tasks] [name=value]'
-      end
-
-      def help()
-        usage
-        puts
-        puts 'Options:'
-        OPTIONS.sort.each do |long, short, mode, desc|
-          if mode == GetoptLong::REQUIRED_ARGUMENT
-            if desc =~ /\b([A-Z]{2,})\b/
-              long = long + "=#{$1}"
-            end
-          end
-          printf "  %-20s (%s)\n", long, short
-          printf "      %s\n", desc
-        end
-        puts
-        puts 'For help with your buildfile:'
-        puts '  buildr help'
-      end
-
-      def command_line_options
-        OPTIONS.collect { |lst| lst[0..-2] }
-      end
     end
 
     Rake.application = Buildr::Application.new
