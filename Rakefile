@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'rubygems/uninstaller'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'spec/rake/spectask'
@@ -103,6 +102,11 @@ end
 desc 'Uninstall previously installed packaged'
 task 'uninstall' do |task|
   say "Uninstalling #{ruby_spec.name} ... "
+  begin
+    require 'rubygems/uninstaller'
+  rescue LoadError # < rubygems 1.0.1
+    require 'rubygems/installer'
+  end
   Gem::Uninstaller.new(ruby_spec.name, :executables=>true, :ignore=>true ).uninstall
   say 'OK'
 end

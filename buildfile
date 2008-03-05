@@ -23,7 +23,8 @@ define 'buildr' do
   compile.using :source=>'1.4', :target=>'1.4', :debug=>false
 
   define 'java' do
-    compile.using(:javac).from(FileList['lib/java/**/*.java']).into('lib/java')
+    require 'java/nailgun'
+    compile.using(:javac).from(FileList['lib/java/**/*.java']).into('lib/java').with(Buildr::Nailgun.artifact)
   end
 
   desc 'ANTLR grammar generation tasks.'

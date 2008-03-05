@@ -19,7 +19,6 @@ $LOADED_FEATURES << 'rubygems/open-uri.rb' # We already have open-uri
 require 'rubygems/source_info_cache'
 require 'rubygems/doc_manager'
 require 'rubygems/format'
-require 'rubygems/dependency_installer'
 
 
 module Buildr
@@ -59,6 +58,7 @@ module Buildr
       #        but installing the documenation requires RDoc, and RDoc defines
       #        one too many top-level classes which mess with our stuff.
 =begin
+      require 'rubygems/dependency_installer'
       installer = Gem::DependencyInstaller.new(path || name, version.to_s).tap do |installer|
         installer.install 
         say 'Installed'
