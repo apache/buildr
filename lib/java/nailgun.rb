@@ -17,11 +17,7 @@ require 'rbconfig'
 
 module Buildr
 
-  # Issues:
-  #   JRuby 1.1RC2 fails at reopening STDIN, so the workaround is
-  #   to redefine the $stdin global and STDIN constant. 
-  #   Kernel#gets, readline, etc, must be avoided and you should use
-  #   $stdin#gets
+  #  See the nailgun_help method for documentation.
   module Nailgun # :nodoc:
     extend self
     
@@ -31,7 +27,7 @@ module Buildr
     ARTIFACT_SPEC = "com.martiansoftware:nailgun:jar:#{VERSION}"
     
     attr_accessor :artifact
-    attr_accessor :iface, :port, :runtime_pool_size
+    attr_accessor :server, :port, :jruby_queue_size, :buildr_queue_size
     attr_accessor :jruby_home, :home
     
     self.jruby_home = if PLATFORM =~ /java/
@@ -39,10 +35,12 @@ module Buildr
                       else
                         ENV['JRUBY_HOME'] || File.join(ENV['HOME'], '.jruby')
                       end
+    
     self.home = ENV['NAILGUN_HOME'] || File.join(jruby_home, 'tool', 'nailgun')
-    self.iface = 'localhost'
+    self.server = 'localhost'
     self.port = 2113
-    self.runtime_pool_size = 3
+    self.jruby_queue_size = 3
+    self.buildr_queue_size = 3
 
     def namespace(&block)
       if Object.const_defined?(:Rake)
@@ -60,9 +58,84 @@ module Buildr
 
     module Application
       def nailgun_help
-        tasks = {} 
-        tasks['ng:stop'] = 'Start the Nailgun server.'
+        "  " + <<-DESC.strip.gsub(/ *\n +/, "\n  ")
+          NailGun is a client, protocol, and server for running Java 
+          programs from the command line without incurring the JVM
+          startup overhead. Nailgun integration is currently available
+          only when running Buildr with JRuby.
+
+          Buildr provides a custom nailgun server, allowing you to 
+          start a single JVM and let buildr create a queue of runtimes.
+          These JRuby runtimes can be cached (indexed by buildfile path)
+          and are automatically reloaded when the buildfile has been modified.
+          Runtime caching allows you to execute tasks without
+          spending time creating the buildr environment. Some nailgun 
+          tasks have been provided to manage the cached runtimes.
+
+          To start the buildr server execute the ng:start task.
+
+            Configuration and Environment Variables.
+
+          Before starting the server, buildr will check if you have 
+          nailgun already installed by seeking the nailgun jar under
+
+              $NAILGUN_HOME
+
+          You can override this environment variable to tell buildr where
+          to find or where to install nailgun. If missing, NAILGUN_HOME
+          defaults to the $JRUBY_HOME/tools/nailgun directory. You can 
+          also specify the nailgun_home on your buildfile with the following
+          code:
+              
+              require 'java/nailgun'
+              Buildr::Nailgun.home = File.expand_path('~/.jruby/tools/nailgun')
+
+          Buildr will also check that the nailgun client binary (ng.exe for 
+          Windows systems, ng otherwise) is installed on NAILGUN_HOME. 
+          If no binary is found, buildr will download nailgun and 
+          compile+install it.
+          
+          
+          The buildr server binds itself to localhost, port 2113. You can 
+          override this on your buildfile, by placing the following code:
+
+              require 'java/nailgun'
+              Buildr::Nailgun.server = '127.0.0.1'
+              Buildr::Nailgun.port = 2233
+
+          Once started, if you provided custom host/port settings you need
+          to tell the nailgun client where to connect to:
+
+              ng --nailgun-server 127.0.0.1 --nailgun-port 2233 ng:tasks
+
+          The buildr server starts a BuildrFactory responsible for providing
+          a pool of JRuby runtimes configured and ready for task execution. 
+          This BuildrFactory consists of two queues: One of pure JRuby runtimes
+          with almost nothing loaded, and another of Buildr runtimes (consumed
+          from the first queue) with the Buildr runtime preloaded but without
+          any project definition. The jruby queue is used for sandboxing code
+          like running GetoptLong, but most importantly its the place where 
+          buildr runtimes begin life, to be later added on the buildr queue.
+          By default both queues are of size 3, you can customize this with:
+
+              require 'java/nailgun'
+              Buildr::Nailgun.jruby_queue_size = 4 # JRuby creation is fast!
+              Buildr::Nailgun.buildr_queue_size = 5 # loading buildr takes longer
+
+          The buildr_queue_size is of particular importance if you expect to 
+          reload lots of buildfiles.
+
+          Execute ng:tasks get an overview of available nailgun tasks.
+          
+        DESC
+      end
+      
+      def nailgun_tasks
+        tasks = {}
+        tasks['ng:help'] = 'Display nailgun help'
+        tasks['ng:start'] = 'Start the Nailgun server.'
         tasks['ng:stop'] = 'Stop the Nailgun server.'
+        tasks['ng:tasks'] = 'Display this message'
         tasks['ng:list'] = <<-DESC
                  Display a list of builfile paths having an associated
                  buildr runtime. Having a cached runtime reduces buidlr
@@ -71,6 +144,8 @@ module Buildr
                  If buildr finds the current buildfile on this list, 
                  no file loading will be performed, only execution of 
                  specified tasks on the previously loaded environment. 
+                 However if the cached runtime is out of date (buildfile
+                 has been modified) the runtime will be reloaded.
 
                  This feature becomes handy when performing development
                  cycle: edit -> compile -> test -> report. 
@@ -81,7 +156,7 @@ module Buildr
                  Remove all cached buildr runtimes and exit
             DESC
         tasks[['ng:add [tasks]', 'ng:put [tasks]']] = <<-DESC
-                 Add or reload a cached runtime.
+                 Add or update a cached runtime.
                  
                  Use this task to create a cached buildr runtime for a 
                  buildfile.
@@ -95,15 +170,8 @@ module Buildr
                  after buildr completion.
             DESC
         
-        out = "  "
-        out << <<-DESC.strip.gsub(/ *\n +/, "\n  ")
-          NailGun is a client, protocol, and server for running Java 
-          programs from the command line without incurring the JVM
-          startup overhead. 
-          Buildr provides nailgun integration, allowing you to start
-          a single JVM and let buildr create a pool of JRuby instances.
-        DESC
-        out << "\n\nNailgun tasks:\n"
+        out = ""
+        out << "\nNailgun tasks:\n"
         tasks.each_pair do |task, desc|
           out << "\n"
           out << sprintf("  %20-s\n", [task].flatten.join(' | '))
@@ -159,7 +227,7 @@ module Buildr
               puts version
               opts.exit = true
             when '--environment'
-              opts.environment = value
+              ctx.env['BUILDR_ENV'] = value
             when '--buildfile'
               opts.buildfile = value
             when '--nosearch'
@@ -176,6 +244,9 @@ module Buildr
         ARGV.replace(ctx.argv)
         Dir.chdir(ctx.pwd)
         ctx.env.each { |k, v| ENV[k.to_s] = v.to_s }
+        Buildr::Application.module_eval do
+          include Nailgun::Application
+        end
         Buildr.help do 
           "\nTo get a summary of Nailgun features use" << 
           "\n  help:nailgun"
@@ -214,6 +285,14 @@ module Buildr
     module Util
       extend self
       
+      def timestamp(file)
+        if File.exist?(file)
+          File.mtime(file)
+        else
+          Rake::EARLY
+        end
+      end
+
       def find_buildfile(pwd, candidates, nosearch=false)
         candidates = [candidates].flatten
         buildfile = candidates.find { |c| File.file?(File.expand_path(c, pwd)) }
@@ -350,6 +429,7 @@ module Buildr
         def initialize
           @buildfile = Rake.application.buildfile
           @runtimes = { @buildfile => JRuby.runtime }
+          @timestamps = { @buildfile => Util.timestamp(@buildfile) }
         end
 
         def main(nail)
@@ -359,8 +439,9 @@ module Buildr
         private
         def run(nail)
           nail.assert_loopback_client
-          nail.out.println "Connected to #{nail.getNGServer}"
+          nail.out.println "Using #{nail.getNGServer}"
           ctx = context_from_nail(nail)
+          
           case ctx.action
           when :start
             nail.out.println "Cannot start nailgun when running as client"
@@ -375,7 +456,12 @@ module Buildr
             return nail.exit(0)
           when :clear
             @runtimes.clear
+            @timestamps.clear
             nail.out.println "Cleared all runtimes"
+            return nail.exit(0)
+          when :tasks
+            nail.out.println ""
+            nail.out.println Rake.application.nailgun_tasks
             return nail.exit(0)
           when :help
             nail.out.println ""
@@ -398,14 +484,25 @@ module Buildr
             buildfile ||= File.expand_path(candidates.first, ctx.pwd)
             nail.out.println "Deleting runtime for #{buildfile}"
             @runtimes.delete(buildfile)
+            @timestamps.delete(buidlfile)
             return nail.exit(0)
           end
 
-          puts "Obtaining Buildr for #{buildfile}"
+          puts "Getting buildr runtime for #{buildfile}"
+
+          if ctx.action.nil? && @timestamps.key?(buildfile) &&
+              @timestamps[buildfile] < Util.timestamp(buildfile)
+            puts "Reloading runtime for #{buildfile} due to modification"
+            ctx.action = :put
+          end
+
           runtime = @runtimes[buildfile]
           if runtime.nil? || [:put, :once].include?(ctx.action)
             runtime = ctx.buildr
-            @runtimes[buildfile] = runtime if ctx.action == :put
+            if ctx.action == :put
+              @runtimes[buildfile] = runtime
+              @timestamps[buildfile] = Util.timestamp(buildfile)
+            end
             ctx.fresh = true
           end
           
@@ -432,8 +529,8 @@ module Buildr
             :start => %w{ng:boot ng:start nailgun:boot nailgun:start},
             :stop => %w{ng:stop nailgun:stop},
             :once => %w{ng:once nailgun:once},
-            :help => %w{ng:help nailgun:help ng:tasks nailgun:tasks 
-                        help:ng help:nailgun},
+            :tasks => %w{ng:tasks nailgun:tasks},
+            :help => %w{ng:help nailgun:help help:ng help:nailgun},
           }
           action = actions.find { |k,v| k if v.any? { |t| ctx.argv.delete(t) } }
           ctx.action = action.first if action
@@ -534,8 +631,6 @@ module Buildr
               @runtimes_ready.signal
             end
           end
-        rescue => e
-          p e
         end
 
         def may_create_buildr?
@@ -555,8 +650,6 @@ module Buildr
           Thread.pass while @runtime_creator.status == 'run'
           create_buildr
           Thread.pass
-        rescue => e 
-          p e
         end
 
         def create_buildr
@@ -621,7 +714,7 @@ module Buildr
 
         def to_s
           "BuildrServer(" <<
-            [Rake.application.buildfile, @host, @port].join(", ") <<
+            [Rake.application.version, @host, @port].join(", ") <<
             ")"
         end
       end # class BuildrServer
@@ -674,10 +767,35 @@ module Buildr
       end
       
       task :start => [installed_bin, :boot] do
-        factory = BuildrFactory.new(runtime_pool_size)
-        $nailgun_server = BuildrServer.new(iface, port, factory)
+        factory = BuildrFactory.new(buildr_queue_size, jruby_queue_size)
+        $nailgun_server = BuildrServer.new(server, port, factory)
         puts "Starting #{$nailgun_server}"
         $nailgun_server.start_server
+        win = Config::CONFIG['host_os'] =~ /mswin/i
+        puts <<-NOTICE
+
+
+        Buildr server has been started, to use it execute 
+          #{installed_bin.to_s}
+
+        You may want to add the containing directory to your PATH
+        variable:
+
+          #{win ?
+        "> set PATH=%PATH%:#{installed_bin.to_s.pathmap("%d")}" :
+        "$ export PATH=${PATH};#{installed_bin.to_s.pathmap("%d")}"
+         }
+
+         To display Nailgun related help, execute the command:
+             ``#{installed_bin.to_s.pathmap("%f")} help:nailgun''
+
+         To get an overview of Nailgun tasks, execute the command:
+            ``#{installed_bin.to_s.pathmap("%f")} ng:tasks''
+
+         Runtime for #{Rake.application.buildfile} has been cached
+         and will be used by default when ``#{installed_bin.to_s.pathmap("%f")}'' is invoked from inside 
+         from a directory inside #{installed_bin.to_s.pathmap("%d")}
+        NOTICE
       end
     end # namespace :nailgun
     
