@@ -41,6 +41,21 @@ When you use JUnit, the dependencies includes JUnit, and Buildr picks up all
 test classes from the project by looking for classes that either subclass 
 @junit.framework.TestCase@ or include methods annotated with @org.junit.Test@.
 
+The JUnit test framework supports the following options:
+
+|_. Option        |_. Value |
+| @:fork@         | VM forking, defaults to true. |
+| @:clonevm@      | If true clone the VM each time it is forked. |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:environment@  | Hash of environment variables available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |
+
+For example, to pass properties to the test case:
+
+{{{!ruby
+test.using :properties=>{ :currency=>'USD' }
+}}}
+
 There are benefits to running test cases in separate VMs.  The default forking
 mode is @:once@, and you can change it by setting the @:fork@ option.
 
@@ -93,6 +108,12 @@ picks test classes that contain methods annotated with
 @org.testng.annotations.Test@, and generates test reports in
 the @reports/testng@ directory.  At the moment we don't have consolidated HTML
 reports for TestNG.
+
+The TestNG test framework supports the following options:
+
+|_. Option        |_. Value |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |
 
 
 h2. Excluding Tests and Ignoring Failures

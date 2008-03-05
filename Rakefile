@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'rubygems/uninstaller'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'spec/rake/spectask'
@@ -51,6 +52,27 @@ ruby_package = Rake::GemPackageTask.new(ruby_spec) { |pkg| pkg.need_tar = pkg.ne
 jruby_spec = specify('java')
 jruby_package = Rake::GemPackageTask.new(jruby_spec) { |pkg| pkg.need_tar = pkg.need_zip = false }
 
+begin
+  require 'rubygems/dependency_installer'
+  def install_gem(gem, options = {})
+    say "Installing #{gem}..."
+    installer = Gem::DependencyInstaller.new(gem, options.delete(:version), options)
+    installer.install
+    installer.installed_gems.each do |spec|
+      Gem::DocManager.new(spec).generate_ri unless options[:ri] == false
+      Gem::DocManager.new(spec).generate_rdoc unless options[:rdoc] == false
+    end
+  end
+rescue LoadError # < rubygems 1.0.1
+  require 'rubygems/remote_installer'
+  def install_gem(gem, options = {})
+    say "Installing #{gem}..."
+    Gem::RemoteInstaller.new.install(gem, options.delete(:version))
+    say 'OK'
+  end
+end
+
+
 # Setup environment for running this Rakefile (RSpec, Docter, etc).
 desc "If you're building from sources, run this task one to setup the necessary dependencies."
 task 'setup' do
@@ -60,18 +82,8 @@ task 'setup' do
   dependencies << Gem::Dependency.new('docter', '~>1.1')
   dependencies << Gem::Dependency.new('ultraviolet', '~>0.10') unless RUBY_PLATFORM =~ /java/
   dependencies << Gem::Dependency.new('rcov', '~>0.8') unless RUBY_PLATFORM =~ /java/ 
-  dependencies.each do |dep|
-    if gems.search(dep.name, dep.version_requirements).empty?
-      puts "Installing dependency: #{dep}"
-      begin
-        require 'rubygems/dependency_installer'
-        Gem::DependencyInstaller.new(dep.name, dep.version_requirements).install
-      rescue LoadError # < rubygems 1.0.1
-        require 'rubygems/remote_installer'
-        Gem::RemoteInstaller.new.install(dep.name, dep.version_requirements)
-      end
-    end
-  end
+  dependencies.select { |dep| gems.search(dep.name, dep.version_requirements).empty? }.
+    each { |dep| install_gem dep.name, :version=>dep.version_requirements }
 end
 
 # Packaging and local installation.
@@ -81,33 +93,18 @@ task('clobber') { rm_rf 'pkg' }
 
 desc 'Install the package locally'
 task 'install'=>['clobber', 'package'] do |task|
-  if RUBY_PLATFORM =~ /java/ 
-    cmd = %w(jruby -S gem install)
-    pkg = jruby_package
-  else 
-    cmd = %w(gem install)
-    pkg = ruby_package
-  end
-  # This hack is necessary when a new gem shows up in the index but is not
-  # available for download and gem install fails, even though we have a less
-  # recent dependency installed locally.
-  cmd << '--ignore-dependencies' if ENV['IGNORE']
-  cmd << File.expand_path(pkg.gem_file, pkg.package_dir)
-  # Saves us from doing sudo rake install, which requires sudo rake clobber.
-  cmd.unshift 'sudo' unless Gem::win_platform?
-  system *cmd
+  pkg = RUBY_PLATFORM =~ /java/ ? jruby_package : ruby_package
+  options = {}
+  # options[:ri] = options[:rdoc] = false
+  # options[:ignore_dependencies] = true
+  install_gem File.expand_path(pkg.gem_file, pkg.package_dir), options
 end
 
 desc 'Uninstall previously installed packaged'
 task 'uninstall' do |task|
-  if RUBY_PLATFORM =~ /java/ 
-    cmd = %w(jruby -S gem uninstall)
-  else 
-    cmd = %w(gem uninstall)
-  end
-  cmd << ruby_spec.name
-  cmd.unshift 'sudo' unless Gem::win_platform?
-  system *cmd
+  say "Uninstalling #{ruby_spec.name} ... "
+  Gem::Uninstaller.new(ruby_spec.name, :executables=>true, :ignore=>true ).uninstall
+  say 'OK'
 end
 
 

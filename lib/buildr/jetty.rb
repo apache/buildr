@@ -20,7 +20,6 @@ require "core/project"
 require "java/artifact"
 require "java/java"
 require "thread"
-#require "struct"
 
 module Buildr
 

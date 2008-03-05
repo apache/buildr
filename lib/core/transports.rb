@@ -413,7 +413,7 @@ module URI
 
         # To create a path, we need to create all its parent. We use realpath to determine if
         # the path already exists, otherwise mkdir fails.
-        puts "Creating path #{@base_path}" if Rake.application.options.trace
+        puts "Creating path #{path}" if Rake.application.options.trace
         File.dirname(path).split('/').inject('') do |base, part|
           combined = base + part
           sftp.realpath combined rescue sftp.mkdir combined, {}

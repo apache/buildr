@@ -99,7 +99,7 @@ namespace 'help' do
   task 'projects' do
     width = projects.map(&:name).map(&:size).max
     projects.each do |project|
-      puts project.comment.blank? ? "  #{project.name}" : ("  %-#{width}s  # %s" % [project.name, project.comment])
+      puts project.comment.to_s.blank? ? "  #{project.name}" : ("  %-#{width}s  # %s" % [project.name, project.comment])
     end
   end
 
