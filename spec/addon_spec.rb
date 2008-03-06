@@ -17,6 +17,7 @@
 require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
+=begin
 describe Addon do
   before { $loaded = false }
 
@@ -168,3 +169,4 @@ describe Addon, 'from artifact' do
     lambda { Rake.application.load_imports }.should change { $loaded }.to('foo')
   end
 end
+=end

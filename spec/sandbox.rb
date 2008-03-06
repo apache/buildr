@@ -108,9 +108,8 @@ module Sandbox
     @sandbox[:tasks].each { |block| block.call }
     Rake.application.instance_variable_set :@rules, @sandbox[:rules]
 
-    # Get rid of all artifacts and addons.
+    # Get rid of all artifacts.
     @sandbox[:artifacts].tap { |artifacts| Artifact.class_eval { @artifacts = artifacts } }
-    Addon.instance_eval { @addons.clear }
 
     # Restore options.
     Buildr.options.test = nil

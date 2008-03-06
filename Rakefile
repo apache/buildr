@@ -93,22 +93,33 @@ task('clobber') { rm_rf 'pkg' }
 desc 'Install the package locally'
 task 'install'=>['clobber', 'package'] do |task|
   pkg = RUBY_PLATFORM =~ /java/ ? jruby_package : ruby_package
-  options = {}
-  # options[:ri] = options[:rdoc] = false
-  # options[:ignore_dependencies] = true
-  install_gem File.expand_path(pkg.gem_file, pkg.package_dir), options
+  # install_gem File.expand_path(pkg.gem_file, pkg.package_dir)
+  ruby 'install', File.expand_path(pkg.gem_file, pkg.package_dir), :command=>'gem', :sudo=>true
+end
+
+def ruby(*args)
+  options = Hash === args.last ? args.pop : {}
+  #options[:verbose] ||= false
+  cmd = []
+  cmd << 'sudo' if options.delete(:sudo) && !Gem.win_platform? && RUBY_PLATFORM !~ /java/
+  cmd << File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
+  cmd << '-S' << options.delete(:command) if options[:command]
+  sh *cmd.push(*args.flatten).push(options)
 end
 
 desc 'Uninstall previously installed packaged'
 task 'uninstall' do |task|
   say "Uninstalling #{ruby_spec.name} ... "
+  ruby 'install', name_or_path.to_s, :command=>'gem', :sudo=>true
+=begin
   begin
     require 'rubygems/uninstaller'
   rescue LoadError # < rubygems 1.0.1
     require 'rubygems/installer'
   end
   Gem::Uninstaller.new(ruby_spec.name, :executables=>true, :ignore=>true ).uninstall
-  say 'OK'
+=end
+  say 'Done'
 end
 
 
