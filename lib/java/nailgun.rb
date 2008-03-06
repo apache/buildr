@@ -799,8 +799,7 @@ module Buildr
       
       self.artifact = Buildr.artifact(ARTIFACT_SPEC).from(ng_jar)
       
-      compiled_bin = tmp[NAME, NAME, 'ng']
-      compiled_bin << '.exe' if Config::CONFIG['host_os'] =~ /mswin/i
+      compiled_bin = tmp[NAME, NAME, "ng"+Config::CONFIG['EXEEXT']]
       compiled_bin = file(compiled_bin => dist_dir.target) do |task|
         unless task.to_s.pathmap('%x') == '.exe'
           Dir.chdir(task.to_s.pathmap('%d')) do
