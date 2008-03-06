@@ -305,6 +305,15 @@ module Buildr
 
     module Util
       extend self
+
+      def normalize_path(*args)
+        path = File.expand_path(*args)
+        if Config::CONFIG["host_os"] =~ /win/i
+          path.gsub!('/', '\\').gsub!(/^[a-zA-Z]+:/) { |s| s.upcase }
+        else
+          path
+        end
+      end
       
       def timestamp(file)
         if File.exist?(file)
@@ -316,11 +325,11 @@ module Buildr
 
       def find_buildfile(pwd, candidates, nosearch=false)
         candidates = [candidates].flatten
-        buildfile = candidates.find { |c| File.file?(File.expand_path(c, pwd)) }
-        return File.expand_path(buildfile, pwd) if buildfile
+        buildfile = candidates.find { |c| File.file?(Util.normalize_path(c, pwd)) }
+        return Util.normalize_path(buildfile, pwd) if buildfile
         return nil if nosearch
         updir = File.dirname(pwd)
-        return nil if File.expand_path(updir) == File.expand_path(pwd)
+        return nil if Util.normalize_path(updir) == Util.normalize_path(pwd)
         find_buildfile(updir, candidates)
       end
       
@@ -446,10 +455,7 @@ module Buildr
         attr_accessor :runtime
         
         def initialize(path, *requires)
-          @path = path.dup
-          if Config::CONFIG["host_os"] =~ /win/i
-            @path.gsub!('/', '\\').gsub!(/^[a-zA-Z]+:/) { |s| s.upcase }
-          end
+          @path = Util.normalize_path(path)
           @requires = requires.dup
         end
 
@@ -546,7 +552,7 @@ module Buildr
           candidates = [opts.buildfile] if opts.buildfile
           
           path = Util.find_buildfile(ctx.pwd, candidates, opts.nosearch) ||
-            File.expand_path(candidates.first, ctx.pwd)
+            Util.normalize_path(candidates.first, ctx.pwd)
           
           if ctx.action == :delete
             nail.out.println "Deleting runtime for #{path}"
@@ -687,7 +693,7 @@ module Buildr
                                          JRuby.reference($nailgun_server))
             load_service = runtime.getLoadService
             load_service.getLoadPath.
-              unshift File.expand_path('..', File.dirname(__FILE__))
+              unshift Util.normalize_path('..', File.dirname(__FILE__))
             load_service.require 'java/nailgun'
             header.replace ["Created runtime[#{creator}]", runtime]
             runtime
@@ -838,30 +844,39 @@ module Buildr
         $nailgun_server = BuildrServer.new(server, port, factory)
         puts "Starting #{$nailgun_server}"
         $nailgun_server.start_server
-        win = Config::CONFIG['host_os'] =~ /mswin/i
+
+        is_win = Config::CONFIG['host_os'] =~ /win/i
+        bin_path = Util.normalize_path(installed_bin.to_s.pathmap("%d"))
+        bin_name = installed_bin.to_s.pathmap("%f")
+
         puts <<-NOTICE
 
+        Buildr server has been started, you may need to update your PATH
+        variable in order to execute the #{bin_name} binary.
 
-        Buildr server has been started, to use it execute 
-          #{installed_bin.to_s}
+          #{ is_win ?
+             "> set NAILGUN_HOME=#{bin_path}" :
+             "$ export NAILGUN_HOME=#{bin_path}"
+           }
+          #{ is_win ?
+             "> set PATH=%NAILGUN_HOME%;%PATH%" :
+             "$ export PATH=%NAILGUN_HOME%:${PATH}"
+           }
+           
+        Runtime for #{Rake.application.buildfile} has been cached, this 
+        means you can open a terminal inside 
 
-        You may want to add the containing directory to your PATH
-        variable:
+              #{Rake.application.buildfile.pathmap("%d")}
 
-          #{win ?
-        "> set PATH=%PATH%;#{installed_bin.to_s.pathmap("%d")}" :
-        "$ export PATH=${PATH}:#{installed_bin.to_s.pathmap("%d")}"
-         }
+        Invoke tasks by executing the #{bin_name} program, it takes the
+        same parameters you normally use for ``buildr''. 
 
-         To display Nailgun related help, execute the command:
-             ``ng ng:help''
+        To display Nailgun related help, execute the command:
+            ``#{bin_name} ng:help''
 
-         To get an overview of Nailgun tasks, execute the command:
-             ``ng ng:tasks''
+        To get an overview of Nailgun tasks, execute the command:
+            ``#{bin_name} ng:tasks''
 
-         Runtime for #{Rake.application.buildfile} has been cached
-         and will be used by default when ``#{installed_bin.to_s.pathmap("%f")}'' is invoked
-         from a directory inside of #{installed_bin.to_s.pathmap("%d")}
         NOTICE
       end
 
