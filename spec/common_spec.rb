@@ -429,7 +429,7 @@ describe Buildr::Filter do
     Dir['target/*'].sort.each do |file|
       File.readable?(file).should be_true
       File.writable?(file).should be_true
-      (File.stat(file).mode & 0x0fff).should == 0664
+      (File.stat(file).mode & 0o200).should == 0o200
     end
   end
 end

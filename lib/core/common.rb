@@ -19,7 +19,32 @@ require 'pathname'
 require 'core/transports'
 require 'open-uri'
 require 'uri/open-sftp'
+require 'rbconfig'
 
+class File
+  class << self
+
+    # Just like File.expand_path, but for windows systems it
+    # capitalizes the drive name and ensures backslashes are used
+    def normalize_path(path, *dirs)
+      path = File.expand_path(path, *dirs)
+      if Config::CONFIG["host_os"] =~ /win/i
+        path.gsub!('/', '\\').gsub!(/^[a-zA-Z]+:/) { |s| s.upcase }
+      else
+        path
+      end
+    end
+
+    # Return the timestamp of file, without having to create a file task
+    def timestamp(file)
+      if File.exist?(file)
+        File.mtime(file)
+      else
+        Rake::EARLY
+      end
+    end
+  end
+end
 
 class Hash
 

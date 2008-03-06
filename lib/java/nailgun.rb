@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'rbconfig'
-
 module Buildr
 
   #  See the nailgun_help method for documentation.
@@ -308,30 +306,13 @@ module Buildr
     module Util
       extend self
 
-      def normalize_path(*args)
-        path = File.expand_path(*args)
-        if Config::CONFIG["host_os"] =~ /win/i
-          path.gsub!('/', '\\').gsub!(/^[a-zA-Z]+:/) { |s| s.upcase }
-        else
-          path
-        end
-      end
-      
-      def timestamp(file)
-        if File.exist?(file)
-          File.mtime(file)
-        else
-          Rake::EARLY
-        end
-      end
-
       def find_buildfile(pwd, candidates, nosearch=false)
         candidates = [candidates].flatten
-        buildfile = candidates.find { |c| File.file?(Util.normalize_path(c, pwd)) }
-        return Util.normalize_path(buildfile, pwd) if buildfile
+        buildfile = candidates.find { |c| File.file?(File.normalize_path(c, pwd)) }
+        return File.normalize_path(buildfile, pwd) if buildfile
         return nil if nosearch
         updir = File.dirname(pwd)
-        return nil if Util.normalize_path(updir) == Util.normalize_path(pwd)
+        return nil if File.normalize_path(updir) == File.normalize_path(pwd)
         find_buildfile(updir, candidates)
       end
       
@@ -457,7 +438,7 @@ module Buildr
         attr_accessor :runtime
         
         def initialize(path, *requires)
-          @path = Util.normalize_path(path)
+          @path = File.normalize_path(path)
           @requires = requires.dup
         end
 
@@ -466,7 +447,7 @@ module Buildr
         end
 
         def last_modification
-          Util.timestamp(path)
+          File.timestamp(path)
         end
         
         def should_be_loaded?
@@ -554,7 +535,7 @@ module Buildr
           candidates = [opts.buildfile] if opts.buildfile
           
           path = Util.find_buildfile(ctx.pwd, candidates, opts.nosearch) ||
-            Util.normalize_path(candidates.first, ctx.pwd)
+            File.normalize_path(candidates.first, ctx.pwd)
           
           if ctx.action == :delete
             nail.out.println "Deleting runtime for #{path}"
@@ -695,7 +676,7 @@ module Buildr
                                          JRuby.reference($nailgun_server))
             load_service = runtime.getLoadService
             load_service.getLoadPath.
-              unshift Util.normalize_path('..', File.dirname(__FILE__))
+              unshift File.normalize_path('..', File.dirname(__FILE__))
             load_service.require 'java/nailgun'
             header.replace ["Created runtime[#{creator}]", runtime]
             runtime
@@ -848,7 +829,7 @@ module Buildr
         $nailgun_server.start_server
 
         is_win = Config::CONFIG['host_os'] =~ /win/i
-        bin_path = Util.normalize_path(installed_bin.to_s.pathmap("%d"))
+        bin_path = File.normalize_path(installed_bin.to_s.pathmap("%d"))
         bin_name = installed_bin.to_s.pathmap("%f")
 
         puts <<-NOTICE

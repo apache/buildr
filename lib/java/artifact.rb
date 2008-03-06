@@ -397,7 +397,7 @@ module Buildr
     #
     # The default path is .m2/repository relative to the home directory.
     def local()
-      @local ||= ENV['M2_REPO'] || ENV["local_repo"] || File.join(ENV['HOME'], ".m2/repository")
+      @local ||= File.expand_path(ENV['M2_REPO'] || ENV["local_repo"] || File.join(ENV['HOME'], ".m2/repository"))
     end
 
     # :call-seq:

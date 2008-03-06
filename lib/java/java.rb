@@ -15,7 +15,7 @@
 
 
 require 'core/project'
-require 'rbconfig'
+
 ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Home' if Config::CONFIG['host_os'] =~ /darwin/i
 if PLATFORM == 'java'
   require File.join(File.dirname(__FILE__), 'jruby')
@@ -60,7 +60,7 @@ module Java
           puts "Running #{name}" if verbose
           block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
           puts cmd_args.join(' ') if Rake.application.options.trace
-          system(cmd_args.map { |arg| %Q{"#{arg}"} }.join(' ')).tap do |ok|
+          system(*cmd_args).tap do |ok|
             block.call ok, $?
           end
         end
@@ -199,7 +199,7 @@ module Java
       # Returns the path to the specified Java command (with no argument to java itself).
       def path_to_bin(name = nil)
         home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
-        File.join(home, 'bin', name.to_s)
+        File.normalize_path(File.join(home, 'bin', name.to_s))
       end
 
       # :call-seq:
@@ -208,7 +208,8 @@ module Java
       # Extracts the classpath from the options, expands it by calling artifacts, invokes
       # each of the artifacts and returns an array of paths.
       def classpath_from(options)
-        Buildr.artifacts(options[:classpath] || []).map(&:to_s).each { |t| task(t).invoke }
+        Buildr.artifacts(options[:classpath] || []).map(&:to_s).
+          map { |t| task(t).invoke; File.normalize_path(t) }
       end
 
     end

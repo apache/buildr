@@ -46,11 +46,11 @@ module Buildr
       end
 
       def report_to(file = nil)
-        File.expand_path(File.join(*["reports/cobertura", file.to_s].compact))
+        File.normalize_path(File.join(*["reports/cobertura", file.to_s].compact))
       end
 
       def data_file()
-        File.expand_path("reports/cobertura.ser")
+        File.normalize_path("reports/cobertura.ser")
       end
 
     end
@@ -79,7 +79,7 @@ module Buildr
       end
 
       def report_to(file = nil)
-        File.expand_path(File.join(*[report_dir, file.to_s].compact))
+        File.normalize_path(File.join(*[report_dir, file.to_s].compact))
       end
 
       # :call-seq:
