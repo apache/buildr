@@ -61,13 +61,31 @@ automatically reloaded when the buildfile has been modified.
 Runtime caching allows you to execute tasks without spending time creating 
 the buildr environment. 
 
+Start the BuildrServer by executing @ng:start@ task.
+server output will display a message when it becomes ready, you
+will also see messages when the JRuby runtimes are being created,
+or when a new buildr environment is being loaded on them.
+After the runtime queues have been populated, you can start calling
+buildr as you normally do, by invoking the $NAILGUN_HOME/ng binary:
+
+{{{!sh
+# on another terminal, change directory to a project.
+# if this project is the same ng:start was invoked on, it's 
+# runtime has been cached, so no loading is performed unless 
+# the buildfile has been modified. otherwise the buildfile 
+# will be loaded on a previously loaded fresh-buildr runtime
+# and it will be cached.
+cd /some/buildr/project
+ng ng:help                      # display nailgun help
+ng ng:tasks                     # display overview of ng tasks
+ng clean compile                # just invoke those two tasks
+}}}
+
 Some nailgun tasks have been provided to manage the cached runtimes, 
 to get an overview of them execute the @ng:tasks@ task.
 
 Be sure to read the nailgun help by executing the @ng:help@ task.
 
-To start the buildr server execute the @ng:start@ task, as mentioned
-above these tasks are only available when running on JRuby.
 
 h2. Eclipse, IDEA
 

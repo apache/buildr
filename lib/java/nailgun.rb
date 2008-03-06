@@ -72,9 +72,28 @@ module Buildr
           spending time creating the buildr environment. Some nailgun 
           tasks have been provided to manage the cached runtimes.
 
-          To start the buildr server execute the ng:start task.
+          To start the buildr server execute the following task:
 
-            Configuration and Environment Variables.
+              ng:start
+
+          Server output will display a message when it becomes ready, you
+          will also see messages when the JRuby runtimes are being created,
+          or when a new buildr environment is being loaded on them.
+          After the runtime queues have been populated, you can start calling
+          buildr as you normally do, by invoking the $NAILGUN_HOME/ng binary:
+
+              # on another terminal, change directory to a project.
+              # if this project is the same ng:start was invoked on, it's 
+              # runtime has been cached, so no loading is performed unless 
+              # the buildfile has been modified. otherwise the buildfile 
+              # will be loaded on a previously loaded fresh-buildr runtime
+              # and it will be cached.
+              cd /some/buildr/project
+              ng ng:help                      # display nailgun help
+              ng ng:tasks                     # display overview of ng tasks
+              ng clean compile                # just invoke those two tasks
+
+             Configuration and Environment Variables.
 
           Before starting the server, buildr will check if you have 
           nailgun already installed by seeking the nailgun jar under
@@ -103,7 +122,7 @@ module Buildr
               Buildr::Nailgun.server = '127.0.0.1'
               Buildr::Nailgun.port = 2233
 
-          Once started, if you provided custom host/port settings you need
+          If you provided custom host/port settings you need
           to tell the nailgun client where to connect to:
 
               ng --nailgun-server 127.0.0.1 --nailgun-port 2233 ng:tasks
@@ -124,6 +143,11 @@ module Buildr
 
           The buildr_queue_size is of particular importance if you expect to 
           reload lots of buildfiles.
+ 
+            Running buildr using a nailgun client.
+
+          After you have started the nailgun server, you only have to open another
+          terminal on a project directory 
 
           Execute ng:tasks get an overview of available nailgun tasks.
           
@@ -782,19 +806,19 @@ module Buildr
         variable:
 
           #{win ?
-        "> set PATH=%PATH%:#{installed_bin.to_s.pathmap("%d")}" :
-        "$ export PATH=${PATH};#{installed_bin.to_s.pathmap("%d")}"
+        "> set PATH=%PATH%;#{installed_bin.to_s.pathmap("%d")}" :
+        "$ export PATH=${PATH}:#{installed_bin.to_s.pathmap("%d")}"
          }
 
          To display Nailgun related help, execute the command:
-             ``#{installed_bin.to_s.pathmap("%f")} help:nailgun''
+             ``ng ng:help''
 
          To get an overview of Nailgun tasks, execute the command:
-            ``#{installed_bin.to_s.pathmap("%f")} ng:tasks''
+             ``ng ng:tasks''
 
          Runtime for #{Rake.application.buildfile} has been cached
-         and will be used by default when ``#{installed_bin.to_s.pathmap("%f")}'' is invoked from inside 
-         from a directory inside #{installed_bin.to_s.pathmap("%d")}
+         and will be used by default when ``#{installed_bin.to_s.pathmap("%f")}'' is invoked
+         from a directory inside of #{installed_bin.to_s.pathmap("%d")}
         NOTICE
       end
 
