@@ -293,7 +293,9 @@ module Buildr
       end
 
       def run_local(ctx)
-        Rake.application.instance_eval do        
+        Rake.application.instance_eval do
+          verbose(nil)
+          options.trace = false
           parse_options
           collect_tasks
           clear_invoked
