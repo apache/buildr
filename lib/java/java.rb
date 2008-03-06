@@ -52,7 +52,7 @@ module Java
         name = options[:name] || "java #{args.first}"
         cmd_args = [path_to_bin('java')]
         classpath = classpath_from(options)
-        cmd_args << '-cp' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         options[:properties].each { |k, v| cmd_args << "-D#{k}=#{v}" } if options[:properties]
         cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
         cmd_args += args.flatten.compact
@@ -94,7 +94,7 @@ module Java
         classpath = classpath_from(options)
         tools = File.expand_path('lib/tools.jar', ENV['JAVA_HOME']) if ENV['JAVA_HOME']
         classpath << tools if tools && File.exist?(tools)
-        cmd_args << '-cp' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         cmd_args += files
         unless Rake.application.options.dryrun
           puts 'Running apt' if verbose
@@ -127,7 +127,7 @@ module Java
 
         cmd_args = []
         classpath = classpath_from(options)
-        cmd_args << '-cp' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         cmd_args << '-sourcepath' << options[:sourcepath].join(File::PATH_SEPARATOR) if options[:sourcepath]
         cmd_args << '-d' << options[:output].to_s if options[:output]
         cmd_args += options[:javac_args].flatten if options[:javac_args]

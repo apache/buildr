@@ -56,7 +56,7 @@ module Buildr
         cmd_args = []
         tools = File.expand_path('lib/tools.jar', ENV['JAVA_HOME']) if ENV['JAVA_HOME']
         dependencies << tools if tools && File.exist?(tools)
-        cmd_args << '-cp' << dependencies.join(File::PATH_SEPARATOR) unless dependencies.empty?
+        cmd_args << '-classpath' << dependencies.join(File::PATH_SEPARATOR) unless dependencies.empty?
         source_paths = sources.select { |source| File.directory?(source) }
         cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
         cmd_args << '-d' << File.expand_path(target)
@@ -136,7 +136,7 @@ module Buildr
         check_options options, OPTIONS
 
         cmd_args = []
-        cmd_args << '-cp' << (dependencies + Scalac.dependencies).join(File::PATH_SEPARATOR)
+        cmd_args << '-classpath' << (dependencies + Scalac.dependencies).join(File::PATH_SEPARATOR)
         source_paths = sources.select { |source| File.directory?(source) }
         cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
         cmd_args << '-d' << File.expand_path(target)
@@ -408,7 +408,7 @@ module Buildr
         cmd_args << '-nocompile' << '-s' << task.name
         cmd_args << '-source' << compile.options.source if compile.options.source
         classpath = Buildr.artifacts(compile.dependencies).map(&:to_s).each { |t| task(t).invoke }
-        cmd_args << '-cp' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         cmd_args += (sources.map(&:to_s) - [task.name]).
           map { |file| File.directory?(file) ? FileList["#{file}/**/*.java"] : file }.flatten
         unless Rake.application.options.dryrun
