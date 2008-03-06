@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 module Buildr
 
   # Addes the <code>jdepend:swing</code>, <code>jdepend:text</code> and <code>jdepend:xml</code> tasks.
@@ -38,17 +37,17 @@ module Buildr
 
       desc "Runs JDepend on all your projects (Swing UI)"
       task "swing" do
-        Buildr.java "jdepend.swingui.JDepend", paths, :classpath=>requires, :name=>"JDepend"
+        Java::Commands.java "jdepend.swingui.JDepend", paths, :classpath=>requires, :name=>"JDepend"
       end
 
       desc "Runs JDepend on all your projects (Text UI)"
       task "text" do
-        Buildr.java "jdepend.textui.JDepend", paths, :classpath=>requires, :name=>"JDepend"
+        Java::Commands.java "jdepend.textui.JDepend", paths, :classpath=>requires, :name=>"JDepend"
       end
 
       desc "Runs JDepend on all your projects (XML output to jdepend.xml)"
       task "xml" do
-        Buildr.java "jdepend.xmlui.JDepend", "-file", "jdepend.xml", paths, :classpath=>requires, :name=>"JDepend"
+        Java::Commands.java "jdepend.xmlui.JDepend", "-file", "jdepend.xml", paths, :classpath=>requires, :name=>"JDepend"
         puts "Created jdepend.xml"
       end
     end

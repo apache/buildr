@@ -102,12 +102,12 @@ module Buildr
 
           You can override this environment variable to tell buildr where
           to find or where to install nailgun. If missing, NAILGUN_HOME
-          defaults to the $JRUBY_HOME/tools/nailgun directory. You can 
+          defaults to the $JRUBY_HOME/tool/nailgun directory. You can 
           also specify the nailgun_home on your buildfile with the following
           code:
               
               require 'java/nailgun'
-              Buildr::Nailgun.home = File.expand_path('~/.jruby/tools/nailgun')
+              Buildr::Nailgun.home = File.expand_path('~/.jruby/tool/nailgun')
 
           Buildr will also check that the nailgun client binary (ng.exe for 
           Windows systems, ng otherwise) is installed on NAILGUN_HOME. 
@@ -144,11 +144,6 @@ module Buildr
           The buildr_queue_size is of particular importance if you expect to 
           reload lots of buildfiles.
  
-            Running buildr using a nailgun client.
-
-          After you have started the nailgun server, you only have to open another
-          terminal on a project directory 
-
           Execute ng:tasks get an overview of available nailgun tasks.
           
         DESC
@@ -179,13 +174,13 @@ module Buildr
         tasks['ng:clear'] = <<-DESC
                  Remove all cached buildr runtimes and exit
             DESC
-        tasks[['ng:add [tasks]', 'ng:put [tasks]']] = <<-DESC
+        tasks['ng:load'] = <<-DESC
                  Add or update a cached runtime.
                  
                  Use this task to create a cached buildr runtime for a 
                  buildfile.
             DESC
-        tasks[['ng:del', 'ng:delete']] = <<-DESC
+        tasks['ng:delete'] = <<-DESC
                  Delete cached runtime for a buildfile and exit.
             DESC
         tasks['ng:once [tasks]'] = <<-DESC
@@ -217,6 +212,7 @@ module Buildr
       if Buildr.const_defined?(:Application)
         class Buildr::Application
           include Nailgun::Application
+          public :requires
         end
       end
     end
@@ -225,7 +221,7 @@ module Buildr
       extend self
       
       def parse_options(ctx, opts)
-          
+        opts.requires = []
         Buildr.const_set(:VERSION, ctx.server.runtime.getObject.
                          const_get(:Buildr)::VERSION)
   
@@ -254,6 +250,8 @@ module Buildr
               ctx.env['BUILDR_ENV'] = value
             when '--buildfile'
               opts.buildfile = value
+            when '--require'
+              opts.requires << value
             when '--nosearch'
               opts.nosearch = true
             end
@@ -271,9 +269,8 @@ module Buildr
         Buildr::Application.module_eval do
           include Nailgun::Application
         end
-        Buildr.help do 
-          "\nTo get a summary of Nailgun features use" << 
-          "\n  ng:help"
+        task 'nailgun:load' do
+          puts "Buildfile #{Rake.application.buildfile} loaded"
         end
         if ctx.fresh
           run_fresh(ctx)
@@ -443,17 +440,56 @@ module Buildr
           result
         end
       end
+
+      class Buildfile
+        attr_reader :path, :requires, :loaded_time
+        attr_accessor :runtime
+        
+        def initialize(path, *requires)
+          @path = path.dup
+          @requires = requires.dup
+        end
+
+        def loaded!
+          @loaded_time = Time.now
+        end
+
+        def last_modification
+          Util.timestamp(path)
+        end
+        
+        def should_be_loaded?
+          (loaded_time || Rake::EARLY) < last_modification
+        end
+        
+        def to_s
+          buff = path.dup
+          buff << sprintf("\n  %-25s %s", "Last Modified:", last_modification)
+          unless requires.empty?
+            buff << sprintf("\n  %-25s %s", "Requires:", requires.join(" ")) 
+          end
+          if should_be_loaded?
+            buff << sprintf("\n  %-25s %s", "Needs reload, last was:", loaded_time)
+          else
+            buff << sprintf("\n  %-25s %s", "Loaded at:", loaded_time)
+          end
+          buff << sprintf("\n  %-25s %s", "Runtime:", runtime)
+          buff
+        end        
+      end
       
       class BuildrNail 
         include org.apache.buildr.BuildrNail
         Main = Util.proxy_class 'org.apache.buildr.BuildrNail$Main'
-        
+
         attr_reader :buildfile
         
         def initialize
-          @buildfile = Rake.application.buildfile
-          @runtimes = { @buildfile => JRuby.runtime }
-          @timestamps = { @buildfile => Util.timestamp(@buildfile) }
+          buildfile = Buildfile.new(Rake.application.buildfile,
+                                    *Rake.application.requires)
+          buildfile.loaded!
+          buildfile.runtime = JRuby.runtime
+          @buildfiles = { buildfile.path => buildfile }
         end
 
         def main(nail)
@@ -475,12 +511,15 @@ module Buildr
             nail.out.println "Stopping #{nail.getNGServer}"
             return nail.getNGServer.shutdown(true)
           when :list
-            nail.out.println "Defined runtimes:"
-            @runtimes.each_key { |f| nail.out.println f }
+            if @buildfiles.empty?
+              nail.out.println "No defined runtimes"
+            else
+              nail.out.println "Defined runtimes:"
+              @buildfiles.each_value { |f| nail.out.println "- #{f}" }
+            end
             return nail.exit(0)
           when :clear
-            @runtimes.clear
-            @timestamps.clear
+            @buildfiles.clear
             nail.out.println "Cleared all runtimes"
             return nail.exit(0)
           when :tasks
@@ -503,31 +542,31 @@ module Buildr
           candidates = Buildr::Application::DEFAULT_BUILDFILES
           candidates = [opts.buildfile] if opts.buildfile
           
-          buildfile = Util.find_buildfile(ctx.pwd, candidates, opts.nosearch)
+          path = Util.find_buildfile(ctx.pwd, candidates, opts.nosearch) ||
+            File.expand_path(candidates.first, ctx.pwd)
+          
           if ctx.action == :delete
-            buildfile ||= File.expand_path(candidates.first, ctx.pwd)
-            nail.out.println "Deleting runtime for #{buildfile}"
-            @runtimes.delete(buildfile)
-            @timestamps.delete(buidlfile)
+            nail.out.println "Deleting runtime for #{path}"
+            @buildfiles.delete(path)
             return nail.exit(0)
           end
 
-          puts "Getting buildr runtime for #{buildfile}"
-
-          if ctx.action.nil? && @timestamps.key?(buildfile) &&
-              @timestamps[buildfile] < Util.timestamp(buildfile)
-            puts "Reloading runtime for #{buildfile} due to modification"
-            ctx.action = :put
-          end
-
-          runtime = @runtimes[buildfile]
-          if runtime.nil? || [:put, :once].include?(ctx.action)
-            runtime = ctx.buildr
-            if ctx.action == :put
-              @runtimes[buildfile] = runtime
-              @timestamps[buildfile] = Util.timestamp(buildfile)
-            end
+          puts "Getting buildr runtime for #{path}"
+          buildfile = @buildfiles[path] || Buildfile.new(path, *opts.requires)
+          
+          save = buildfile.should_be_loaded? || ctx.action == :load
+          
+          runtime = buildfile.runtime
+          
+          if save || ctx.action == :once
+            ctx.argv.unshift 'nailgun:load'
             ctx.fresh = true
+            runtime = ctx.buildr
+            if save
+              buildfile.runtime = runtime
+              buildfile.loaded!
+              @buildfiles[path] = buildfile
+            end
           end
           
           Util.on_runtime(runtime) do
@@ -546,8 +585,8 @@ module Buildr
           def ctx.runtime; @runtime ||= server.buildr_factory.runtime; end
           def ctx.buildr; @buildr ||= server.buildr_factory.obtain; end
           actions = {
-            :put => %w{ng:add ng:put nailgun:add nailgun:put},
-            :delete => %w{ng:del ng:delete nailgun:del nailgun:delete},
+            :load => %w{ng:load nailgun:load},
+            :delete => %w{ng:delete nailgun:delete},
             :clear => %w{ng:clear nailgun:clear},
             :list => %w{ng:list nailgun:list},
             :start => %w{ng:boot ng:start nailgun:boot nailgun:start},
@@ -641,6 +680,8 @@ module Buildr
           puts "Creating runtime[#{creator}]"
           runtime = Util.benchmark do |header|
             runtime = org.jruby.Ruby.newInstance
+            runtime.global_variables.set('$nailgun_server',
+                                         JRuby.reference($nailgun_server))
             load_service = runtime.getLoadService
             load_service.getLoadPath.
               unshift File.expand_path('..', File.dirname(__FILE__))
@@ -829,6 +870,7 @@ module Buildr
       task :tasks do 
         puts Rake.application.nailgun_tasks
       end
+      
     end # namespace :nailgun
     
   end # module Nailgun
