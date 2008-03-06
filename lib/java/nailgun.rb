@@ -447,6 +447,9 @@ module Buildr
         
         def initialize(path, *requires)
           @path = path.dup
+          if Config::CONFIG["host_os"] =~ /win/i
+            @path.gsub!('/', '\\').gsub!(/^[a-zA-Z]+:/) { |s| s.upcase }
+          end
           @requires = requires.dup
         end
 
@@ -565,7 +568,7 @@ module Buildr
             if save
               buildfile.runtime = runtime
               buildfile.loaded!
-              @buildfiles[path] = buildfile
+              @buildfiles[buildfile.path] = buildfile
             end
           end
           
