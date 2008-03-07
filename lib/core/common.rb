@@ -28,7 +28,7 @@ class File
     # capitalizes the drive name and ensures backslashes are used
     def normalize_path(path, *dirs)
       path = File.expand_path(path, *dirs)
-      if Config::CONFIG["host_os"] =~ /win/i
+      if Config::CONFIG["host_os"] =~ /mswin|windows|cygwin/i
         path.gsub!('/', '\\').gsub!(/^[a-zA-Z]+:/) { |s| s.upcase }
       else
         path
