@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+require 'rbconfig'
+
 module Buildr
 
   #  See the nailgun_help method for documentation.
