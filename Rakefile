@@ -102,7 +102,7 @@ def ruby(*args)
   #options[:verbose] ||= false
   cmd = []
   cmd << 'sudo' if options.delete(:sudo) && !Gem.win_platform? && RUBY_PLATFORM !~ /java/
-  cmd << File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
+  cmd << Config::CONFIG['ruby_install_name']
   cmd << '-S' << options.delete(:command) if options[:command]
   sh *cmd.push(*args.flatten).push(options)
 end
