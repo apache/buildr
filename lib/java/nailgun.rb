@@ -14,6 +14,12 @@
 # the License.
 
 require 'rbconfig'
+require 'ostruct'
+require 'core/application_cli'
+require 'jruby'
+require 'thread'
+require 'monitor'
+        require 'benchmark'
 
 module Buildr
 
@@ -225,10 +231,8 @@ module Buildr
         Buildr.const_set(:VERSION, ctx.server.runtime.getObject.
                          const_get(:Buildr)::VERSION)
   
-        require 'ostruct'
         obj = OpenStruct.new(:ctx => ctx, :opts => opts)
         class << obj
-          require 'core/application_cli'
           include Buildr::CommandLineInterface
           
           def help
@@ -320,7 +324,6 @@ module Buildr
       
       def benchmark(action = ['Completed'], verbose = true)
         result = nil
-        require 'benchmark'
         times = Benchmark.measure do
           result = yield(action)
         end
@@ -350,7 +353,6 @@ module Buildr
     end # module Util
 
     boot do
-      require 'jruby'
       
       class ::ConcreteJavaProxy
         def self.jclass(name = nil)
@@ -597,8 +599,6 @@ module Buildr
       end # class BuildrNail
 
       class BuildrFactory
-        require 'thread'
-        require 'monitor'
         
         attr_accessor :buildrs_size, :runtimes_size
         
