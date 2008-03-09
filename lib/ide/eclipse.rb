@@ -62,7 +62,7 @@ module Buildr
 
           # Find a path relative to the project's root directory.
           relative = lambda do |path|
-            path or throw "Invalid path #{path}"
+            path or throw "Invalid path '#{path.inspect}'"
             msg = [:to_path, :to_str, :to_s].find { |msg| path.respond_to? msg }
             path = path.__send__(msg)
             Pathname.new(File.expand_path(path)).relative_path_from(Pathname.new(project.path_to)).to_s
@@ -105,18 +105,20 @@ module Buildr
                 end
               end
 
-              # Test classes are generated in a separate output directory
-              test_sources = project.test.compile.sources.map { |src| relative[src] }
-              test_sources.each do |paths|
-                paths.sort.uniq.each do |path|
-                  xml.classpathentry :kind=>'src', :path=>path, :output => relative[project.test.compile.target], :excluding=>excludes
+              if project.test.compile.target
+                # Test classes are generated in a separate output directory
+                test_sources = project.test.compile.sources.map { |src| relative[src] }
+                test_sources.each do |paths|
+                  paths.sort.uniq.each do |path|
+                    xml.classpathentry :kind=>'src', :path=>path, :output => relative[project.test.compile.target], :excluding=>excludes
+                  end
                 end
-              end
 
-              # Test resources go in separate output directory as well
-              project.test.resources.sources.each do |path|
-                if File.exist? project.path_to(path)
-                  xml.classpathentry :kind=>'src', :path=>relative[path], :output => relative[project.test.compile.target], :excluding=>excludes
+                # Test resources go in separate output directory as well
+                project.test.resources.sources.each do |path|
+                  if File.exist? project.path_to(path)
+                    xml.classpathentry :kind=>'src', :path=>relative[path], :output => relative[project.test.compile.target], :excluding=>excludes
+                  end
                 end
               end
 
