@@ -14,11 +14,13 @@
 # the License.
 
 
+require 'core/package'
 require 'tasks/zip'
-$LOADED_FEATURES << 'rubygems/open-uri.rb' # We already have open-uri
+$LOADED_FEATURES << 'rubygems/open-uri.rb' # We already have open-uri, RubyGems loads a different one
 require 'rubygems/source_info_cache'
 require 'rubygems/doc_manager'
 require 'rubygems/format'
+require 'rubyforge'
 
 
 module Buildr
@@ -95,6 +97,26 @@ module Buildr
       @spec
     end
 
+    def install
+      cmd = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', name
+      cmd .unshift 'sudo' unless Gem.win_platform? || RUBY_PLATFORM =~ /java/
+      sh *cmd
+    end
+
+    def uninstall
+      cmd = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'uninstall', spec.name, '-v', spec.version.to_s
+      cmd .unshift 'sudo' unless Gem.win_platform? || RUBY_PLATFORM =~ /java/
+      sh *cmd
+    end
+
+    def upload
+      rubyforge = RubyForge.new
+      rubyforge.login
+      #File.open('.changes', 'w'){|f| f.write(current)}
+      #rubyforge.userconfig.merge!('release_changes' => '.changes',  'preformatted' => true)
+      rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version, package(:gem).to_s
+    end
+
   private
 
     def create_from(file_map)
@@ -135,9 +157,10 @@ module Buildr
         end
       end
     end
+
   end
 
-  class Buildr::Project
+  class Project
     include PackageAsGem
   end
 

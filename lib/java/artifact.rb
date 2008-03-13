@@ -14,14 +14,14 @@
 # the License.
 
 
-require "core/project"
-require "core/transports"
-require "builder"
+require 'core/project'
+require 'core/transports'
+require 'builder'
 
 module Buildr
 
-  desc "Download all artifacts"
-  task "artifacts"
+  desc 'Download all artifacts'
+  task 'artifacts'
 
   # Mixin with a task to make it behave like an artifact. Implemented by the packaging tasks.
   #
@@ -58,50 +58,50 @@ module Buildr
     end
 
     # :call-seq:
-    #   to_spec_hash() => Hash
+    #   to_spec_hash => Hash
     #
     # Returns the artifact specification as a hash. For example:
     #   com.example:app:jar:1.2
     # becomes:
-    #   { :group=>"com.example",
-    #     :id=>"app",
+    #   { :group=>'com.example',
+    #     :id=>'app',
     #     :type=>:jar,
-    #     :version=>"1.2" }
-    def to_spec_hash()
+    #     :version=>'1.2' }
+    def to_spec_hash
       base = { :group=>group, :id=>id, :type=>type, :version=>version }
       classifier.to_s.blank? ? base : base.merge(:classifier=>classifier)
     end
     alias_method :to_hash, :to_spec_hash
 
     # :call-seq:
-    #   to_spec() => String
+    #   to_spec => String
     #
     # Returns the artifact specification, in the structure:
     #   <group>:<artifact>:<type>:<version>
     # or
     #   <group>:<artifact>:<type>:<classifier><:version>
-    def to_spec()
+    def to_spec
       classifier.to_s.blank? ? "#{group}:#{id}:#{type}:#{version}" : "#{group}:#{id}:#{type}:#{classifier}:#{version}"
     end
 
     # :call-seq:
-    #   pom() => Artifact
+    #   pom => Artifact
     # 
     # Convenience method that returns a POM artifact.
-    def pom()
+    def pom
       return self if type == :pom
       Buildr.artifact(:group=>group, :id=>id, :version=>version, :type=>:pom)
     end
 
     # :call-seq:
-    #   pom_xml() => string
+    #   pom_xml => string
     #
     # Creates POM XML for this artifact.
-    def pom_xml()
+    def pom_xml
       xml = Builder::XmlMarkup.new(:indent=>2)
       xml.instruct!
       xml.project do
-        xml.modelVersion  "4.0.0"
+        xml.modelVersion  '4.0.0'
         xml.groupId       group
         xml.artifactId    id
         xml.version       version
@@ -109,8 +109,29 @@ module Buildr
       end
     end
 
+    def install
+      pom.install if pom && pom != self
+      invoke
+      installed = Buildr.repositories.locate(self)
+      unless installed == name # If not already in local repository.
+        verbose(Rake.application.options.trace || false) do
+          mkpath File.dirname(installed)
+          cp name, installed
+        end
+        puts "Installed #{installed}" if verbose
+      end
+    end
+
+    def uninstall
+      verbose(Rake.application.options.trace || false) do
+        installed = Buildr.repositories.locate(self)
+        rm installed if File.exist?(installed) 
+        pom.uninstall if pom && pom != self
+      end
+    end
+
     # :call-seq:
-    #   upload()
+    #   upload
     #   upload(url)
     #   upload(options)
     #
@@ -124,18 +145,22 @@ module Buildr
       # Where do we release to?
       upload_to ||= Buildr.repositories.release_to
       upload_to = { :url=>upload_to } unless Hash === upload_to
-      raise ArgumentError, "Don't know where to upload, perhaps you forgot to set repositories.release_to" if upload_to[:url].to_s.blank?
+      raise ArgumentError, 'Don\'t know where to upload, perhaps you forgot to set repositories.release_to' if upload_to[:url].to_s.blank?
+      invoke # Make sure we exist.
+
+      # Upload POM ahead of package, so we don't fail and find POM-less package (the horror!)
+      pom.upload(upload_to) if pom && pom != self
 
       # Set the upload URI, including mandatory slash (we expect it to be the base directory).
       # Username/password may be part of URI, or separate entities.
       uri = URI.parse(upload_to[:url].clone)
-      uri.path = uri.path + "/" unless uri.path[-1] == "/"
+      uri.path = uri.path + '/' unless uri.path[-1] == '/'
       uri.user = upload_to[:username] if upload_to[:username]
       uri.password = upload_to[:password] if upload_to[:password]
 
       # Upload artifact relative to base URL, need to create path before uploading.
       puts "Deploying #{to_spec}" if verbose
-      path = group.gsub(".", "/") + "/#{id}/#{version}/#{File.basename(name)}"
+      path = group.gsub('.', '/') + "/#{id}/#{version}/#{File.basename(name)}"
       URI.upload uri + path, name, :permissions=>upload_to[:permissions]
     end
 
@@ -149,7 +174,7 @@ module Buildr
     end
     
     def group_path
-      group.gsub(".", "/")
+      group.gsub('.', '/')
     end
 
   end
@@ -182,10 +207,10 @@ module Buildr
       end
 
       # :call-seq:
-      #   list() => specs
+      #   list => specs
       #
       # Returns an array of specs for all the registered artifacts. (Anything created from artifact, or package).
-      def list()
+      def list
         @artifacts.keys
       end
 
@@ -195,7 +220,7 @@ module Buildr
       # Register an artifact task(s) for later lookup (see #lookup).
       def register(*tasks)
         @artifacts ||= {}
-        fail "You can only register an artifact task, one of the arguments is not a Task that responds to to_spec()" unless
+        fail 'You can only register an artifact task, one of the arguments is not a Task that responds to to_spec' unless
           tasks.all? { |task| task.respond_to?(:to_spec) && task.respond_to?(:invoke) }
         tasks.each { |task| @artifacts[task.to_spec] = task }
         tasks
@@ -225,7 +250,7 @@ module Buildr
           spec[:type] = spec[:type].to_s.blank? ? DEFAULT_TYPE : spec[:type].to_sym
           spec
         elsif String === spec
-          group, id, type, version, *rest = spec.split(":")
+          group, id, type, version, *rest = spec.split(':')
           unless rest.empty?
             # Optional classifier comes before version.
             classifier, version = version, rest.shift
@@ -233,7 +258,7 @@ module Buildr
           end
           to_hash :group=>group, :id=>id, :type=>type, :version=>version, :classifier=>classifier
         else
-          fail "Expecting a String, Hash or object that responds to to_spec"
+          fail 'Expecting a String, Hash or object that responds to to_spec'
         end
       end
 
@@ -309,7 +334,7 @@ module Buildr
   protected
 
     # :call-seq:
-    #   download()
+    #   download
     # 
     # Downloads an artifact from one of the remote repositories, and stores it in the local
     # repository. Accepts a String or Hash artifact specification, and returns a path to the
@@ -317,11 +342,11 @@ module Buildr
     #
     # This method attempts to download the artifact from each repository in the order in
     # which they are returned from #remote, until successful. It always downloads the POM first.
-    def download()
+    def download
       puts "Downloading #{to_spec}" if Rake.application.options.trace
       remote = Buildr.repositories.remote.map { |repo_url| URI === repo_url ? repo_url : URI.parse(repo_url) }
-      remote = remote.each { |repo_url| repo_url.path += "/" unless repo_url.path[-1] == "/" }
-      fail "No remote repositories defined!" if remote.empty?
+      remote = remote.each { |repo_url| repo_url.path += '/' unless repo_url.path[-1] == '/' }
+      fail 'No remote repositories defined!' if remote.empty?
       exact_success = remote.find do |repo_url|
         begin
           path = "#{group_path}/#{id}/#{version}/#{File.basename(name)}"
@@ -366,8 +391,8 @@ module Buildr
         metadata_xml = StringIO.new
         URI.download repo_url + metadata_path, metadata_xml
         metadata = REXML::Document.new(metadata_xml.string).root
-        timestamp = REXML::XPath.first(metadata, "//timestamp").text
-        build_number = REXML::XPath.first(metadata, "//buildNumber").text
+        timestamp = REXML::XPath.first(metadata, '//timestamp').text
+        build_number = REXML::XPath.first(metadata, '//buildNumber').text
         snapshot_of = version[0, version.size - 9]
         repo_url + "#{group_path}/#{id}/#{version}/#{id}-#{snapshot_of}-#{timestamp}-#{build_number}.#{type}"
       rescue URI::NotFoundError
@@ -385,19 +410,19 @@ module Buildr
   #
   # You can access this object from the #repositories method. For example:
   #   puts repositories.local
-  #   repositories.remote << "http://example.com/repo"
-  #   repositories.release_to = "sftp://example.com/var/www/public/repo"
+  #   repositories.remote << 'http://example.com/repo'
+  #   repositories.release_to = 'sftp://example.com/var/www/public/repo'
   class Repositories
     include Singleton
 
     # :call-seq:
-    #   local() => path
+    #   local => path
     #
     # Returns the path to the local repository.
     #
     # The default path is .m2/repository relative to the home directory.
-    def local()
-      @local ||= File.expand_path(ENV['M2_REPO'] || ENV["local_repo"] || File.join(ENV['HOME'], ".m2/repository"))
+    def local
+      @local ||= File.expand_path(ENV['M2_REPO'] || ENV['local_repo'] || File.join(ENV['HOME'], '.m2/repository'))
     end
 
     # :call-seq:
@@ -419,22 +444,22 @@ module Buildr
     # a file path.
     #
     # For example:
-    #   locate :group=>"log4j", :id=>"log4j", :version=>"1.1"
+    #   locate :group=>'log4j', :id=>'log4j', :version=>'1.1'
     #     => ~/.m2/repository/log4j/log4j/1.1/log4j-1.1.jar
     def locate(spec)
       spec = Artifact.to_hash(spec)
-      File.join(local, spec[:group].split("."), spec[:id], spec[:version], Artifact.hash_to_file_name(spec))
+      File.join(local, spec[:group].split('.'), spec[:id], spec[:version], Artifact.hash_to_file_name(spec))
     end
 
     # :call-seq:
-    #   remote() => Array
+    #   remote => Array
     #
     # Returns an array of all the remote repository URLs.
     #
     # When downloading artifacts, repositories are accessed in the order in which they appear here.
     # The best way is to add repositories individually, for example:
-    #   repositories.remote << "http://example.com/repo"
-    def remote()
+    #   repositories.remote << 'http://example.com/repo'
+    def remote
       @remote ||= []
     end
 
@@ -469,39 +494,39 @@ module Buildr
     # Besides the URL, all other settings depend on the transport protocol in use.
     #
     # For example:
-    #   repositories.release_to = "sftp://john:secret@example.com/var/www/repo/"
-    #   repositories.release_to = { :url=>"sftp://example.com/var/www/repo/",
-    #                                :username="john", :password=>"secret" }
+    #   repositories.release_to = 'sftp://john:secret@example.com/var/www/repo/'
+    #   repositories.release_to = { :url=>'sftp://example.com/var/www/repo/',
+    #                                :username='john', :password=>'secret' }
     def release_to=(options)
       options = { :url=>options } unless Hash === options
       @release_to = options
     end
 
     # :call-seq:
-    #   release_to() => hash
+    #   release_to => hash
     #
     # Returns the current release server setting as a Hash. This is a more convenient way to
     # configure the settings, as it allows you to specify the settings progressively.
     #
     # For example, the Buildfile will contain the repository URL used by all developers:
-    #   repositories.release_to[:url] ||= "sftp://example.com/var/www/repo"
+    #   repositories.release_to[:url] ||= 'sftp://example.com/var/www/repo'
     # Your private buildr.rb will contain your credentials:
-    #   repositories.release_to[:username] = "john"
-    #   repositories.release_to[:password] = "secret"
-    def release_to()
+    #   repositories.release_to[:username] = 'john'
+    #   repositories.release_to[:password] = 'secret'
+    def release_to
       @release_to ||= {}
     end
 
   end
 
   # :call-seq:
-  #    repositories() => Repositories
+  #    repositories => Repositories
   #
   # Returns an object you can use for setting the local repository path, remote repositories
   # URL and release server settings.
   #
   # See Repositories.
-  def repositories()
+  def repositories
     Repositories.instance
   end
 
@@ -520,20 +545,20 @@ module Buildr
   # a different way of creating the artifact in the local repository. See Artifact for more details.
   #
   # For example, to specify an artifact:
-  #   artifact("log4j:log4j:jar:1.1")
+  #   artifact('log4j:log4j:jar:1.1')
   #
   # To use the artifact in a task:
-  #   compile.with artifact("log4j:log4j:jar:1.1")
+  #   compile.with artifact('log4j:log4j:jar:1.1')
   #
   # To specify an artifact and the means for creating it:
-  #   download(artifact("dojo:dojo-widget:zip:2.0")=>
-  #     "http://download.dojotoolkit.org/release-2.0/dojo-2.0-widget.zip")
+  #   download(artifact('dojo:dojo-widget:zip:2.0')=>
+  #     'http://download.dojotoolkit.org/release-2.0/dojo-2.0-widget.zip')
   def artifact(spec, &block) #:yields:task
     spec = Artifact.to_hash(spec)
     unless task = Artifact.lookup(spec)
       task = Artifact.define_task(repositories.locate(spec))
       task.send :apply_spec, spec
-      Rake::Task["rake:artifacts"].enhance [task]
+      Rake::Task['rake:artifacts'].enhance [task]
       Artifact.register(task)
     end
     task.enhance &block
@@ -559,8 +584,8 @@ module Buildr
   #   artifacts(xml, ws, db)
   #
   # Using artifacts created by a project:
-  #   artifact project("my-app")               # All packages
-  #   artifact project("mu-app").package(:war) # Only the WAR
+  #   artifact project('my-app')               # All packages
+  #   artifact project('mu-app').package(:war) # Only the WAR
   def artifacts(*specs)
     specs.flatten.inject([]) do |set, spec|
       case spec
@@ -614,9 +639,9 @@ module Buildr
   # * :version -- The version number
   #
   # For example:
-  #   group "xbean", "xbean_xpath", "xmlpublic", :under=>"xmlbeans", :version=>"2.1.0"
+  #   group 'xbean', 'xbean_xpath', 'xmlpublic', :under=>'xmlbeans', :version=>'2.1.0'
   # Or:
-  #   group %w{xbean xbean_xpath xmlpublic}, :under=>"xmlbeans", :version=>"2.1.0"
+  #   group %w{xbean xbean_xpath xmlpublic}, :under=>'xmlbeans', :version=>'2.1.0'
   def group(*args)
     hash = args.pop
     args.flatten.map { |id| artifact :group=>hash[:under], :version=>hash[:version], :id=>id }
@@ -655,11 +680,10 @@ module Buildr
   def upload(*args, &block)
     artifacts = artifacts(args)
     raise ArgumentError, 'This method can only upload artifacts' unless artifacts.all? { |f| f.respond_to?(:to_spec) }
-    all = (artifacts + artifacts.map { |artifact| artifact.pom }).uniq
     task('upload').tap do |task|
       task.enhance &block if block
-      task.enhance all do
-        all.each { |artifact| artifact.upload }
+      task.enhance artifacts do
+        artifacts.each { |artifact| artifact.upload }
       end
     end
   end

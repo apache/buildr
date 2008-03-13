@@ -38,6 +38,7 @@ def specify(platform)
     spec.add_dependency 'rspec',                '~> 1.1'
     spec.add_dependency 'xml-simple',           '~> 1.0'
     spec.add_dependency 'archive-tar-minitar',  '~> 0.5'
+    spec.add_dependency 'rubyforge',            '~> 0.4'
     
     spec.platform = platform
     spec.add_dependency 'rjb', '~> 1.1' unless platform == 'java'
@@ -72,31 +73,6 @@ rescue LoadError # < rubygems 1.0.1
 end
 
 
-# Setup environment for running this Rakefile (RSpec, Docter, etc).
-desc "If you're building from sources, run this task one to setup the necessary dependencies."
-task 'setup' do
-  # Install all Buildr and documentation dependencies.
-  gems = Gem::SourceIndex.from_installed_gems
-  dependencies = specify(RUBY_PLATFORM).dependencies
-  dependencies << Gem::Dependency.new('docter', '~>1.1')
-  dependencies << Gem::Dependency.new('ultraviolet', '~>0.10') unless RUBY_PLATFORM =~ /java/
-  dependencies << Gem::Dependency.new('rcov', '~>0.8') unless RUBY_PLATFORM =~ /java/ 
-  dependencies.select { |dep| gems.search(dep.name, dep.version_requirements).empty? }.
-    each { |dep| install_gem dep.name, :version=>dep.version_requirements }
-end
-
-# Packaging and local installation.
-#
-desc 'Clean up all temporary directories used for running tests, creating documentation, packaging, etc.'
-task('clobber') { rm_rf 'pkg' }
-
-desc 'Install the package locally'
-task 'install'=>['clobber', 'package'] do |task|
-  pkg = RUBY_PLATFORM =~ /java/ ? jruby_package : ruby_package
-  # install_gem File.expand_path(pkg.gem_file, pkg.package_dir)
-  ruby 'install', File.expand_path(pkg.gem_file, pkg.package_dir), :command=>'gem', :sudo=>true
-end
-
 def ruby(*args)
   options = Hash === args.last ? args.pop : {}
   #options[:verbose] ||= false
@@ -107,18 +83,37 @@ def ruby(*args)
   sh *cmd.push(*args.flatten).push(options)
 end
 
+# Setup environment for running this Rakefile (RSpec, Docter, etc).
+desc "If you're building from sources, run this task one to setup the necessary dependencies."
+task 'setup' do
+  # Install all Buildr and documentation dependencies.
+  gems = Gem::SourceIndex.from_installed_gems
+  dependencies = specify(RUBY_PLATFORM).dependencies
+  dependencies << Gem::Dependency.new('docter', '~>1.1')
+  dependencies << Gem::Dependency.new('ultraviolet', '~>0.10') unless RUBY_PLATFORM =~ /java/
+  dependencies << Gem::Dependency.new('rcov', '~>0.8') unless RUBY_PLATFORM =~ /java/ 
+  dependencies.select { |dep| gems.search(dep.name, dep.version_requirements).empty? }.
+    each do |dep|
+      ruby 'install', dep.name, '-v', dep.version_requirements.to_s, :command=>'gem', :sudo=>true
+    end
+    #each { |dep| install_gem dep.name, :version=>dep.version_requirements }
+end
+
+# Packaging and local installation.
+#
+desc 'Clean up all temporary directories used for running tests, creating documentation, packaging, etc.'
+task('clobber') { rm_rf 'pkg' }
+
+desc 'Install the package locally'
+task 'install'=>['clobber', 'package'] do |task|
+  pkg = RUBY_PLATFORM =~ /java/ ? jruby_package : ruby_package
+  ruby 'install', File.expand_path(pkg.gem_file, pkg.package_dir), :command=>'gem', :sudo=>true
+end
+
 desc 'Uninstall previously installed packaged'
 task 'uninstall' do |task|
   say "Uninstalling #{ruby_spec.name} ... "
   ruby 'install', name_or_path.to_s, :command=>'gem', :sudo=>true
-=begin
-  begin
-    require 'rubygems/uninstaller'
-  rescue LoadError # < rubygems 1.0.1
-    require 'rubygems/installer'
-  end
-  Gem::Uninstaller.new(ruby_spec.name, :executables=>true, :ignore=>true ).uninstall
-=end
   say 'Done'
 end
 

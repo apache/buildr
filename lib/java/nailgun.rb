@@ -19,7 +19,7 @@ require 'core/application_cli'
 require 'jruby'
 require 'thread'
 require 'monitor'
-        require 'benchmark'
+require 'benchmark'
 
 module Buildr
 

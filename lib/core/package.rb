@@ -136,8 +136,7 @@ module Buildr
       spec[:version] ||= self.version
       spec[:type] ||= type
 
-      packager = method("package_as_#{type}") rescue
-        fail("Don't know how to create a package of type #{type}")
+      packager = method("package_as_#{type}") rescue fail("Don't know how to create a package of type #{type}")
       if packager.arity == 1
         spec = send("package_as_#{type}_spec", spec) if respond_to?("package_as_#{type}_spec")
         file_name = path_to(:target, Artifact.hash_to_file_name(spec))
@@ -147,50 +146,38 @@ module Buildr
         file_name = path_to(:target, Artifact.hash_to_file_name(spec))
         package = packager.call(file_name, spec)
       end
-      unless packages.include?(package)
-        # Make it an artifact using the specifications, and tell it how to create a POM.
-        package.extend ActsAsArtifact
-        package.send :apply_spec, spec.only(*Artifact::ARTIFACT_ATTRIBUTES)
-        # Another task to create the POM file.
-        pom = package.pom
-        pom.enhance do
-          mkpath File.dirname(pom.name), :verbose=>false
-          File.open(pom.name, 'w') { |file| file.write pom.pom_xml }
-        end
 
+      # First time: prepare package for install, uninstall and upload tasks.
+      unless packages.include?(package)
         # We already run build before package, but we also need to do so if the package itself is
         # used as a dependency, before we get to run the package task.
         task 'package'=>package
         package.enhance [task('build')]
 
-        # Install the artifact along with its POM. Since the artifact (package task) is created
-        # in the target directory, we need to copy it into the local repository. However, the
-        # POM artifact (created by calling artifact on its spec) is already mapped to its right
-        # place in the local repository, so we only need to invoke it.
-        installed = file(Buildr.repositories.locate(package)=>package) { |task|
-          verbose(Rake.application.options.trace || false) do
-            mkpath File.dirname(task.name), :verbose=>false
-            cp package.name, task.name
+        unless package.respond_to?(:install)
+          # Make it an artifact using the specifications, and tell it how to create a POM.
+          package.extend ActsAsArtifact
+          package.send :apply_spec, spec.only(*Artifact::ARTIFACT_ATTRIBUTES)
+          # Another task to create the POM file.
+          pom = package.pom
+          pom.enhance do
+            mkpath File.dirname(pom.name), :verbose=>false
+            File.open(pom.name, 'w') { |file| file.write pom.pom_xml }
           end
-          puts "Installed #{task.name}" if verbose
-        }
-        task 'install'=>[installed, pom]
-        task 'uninstall' do |task|
-          verbose(Rake.application.options.trace || false) do
-            [ installed, pom ].map(&:to_s).each { |file| rm file if File.exist?(file) } 
-          end
-        end
-        task 'upload'=>[package.pom] do
-          package.pom.upload
-          package.upload
+          file(Buildr.repositories.locate(package)=>package) { package.install }
+
+          # Add the package to the list of packages created by this project, and
+          # register it as an artifact. The later is required so if we look up the spec
+          # we find the package in the project's target directory, instead of finding it
+          # in the local repository and attempting to install it.
+          Artifact.register package, pom
         end
 
-        # Add the package to the list of packages created by this project, and
-        # register it as an artifact. The later is required so if we look up the spec
-        # we find the package in the project's target directory, instead of finding it
-        # in the local repository and attempting to install it.
+        task('install')   { package.install if package.respond_to?(:install) }
+        task('uninstall') { package.uninstall if package.respond_to?(:uninstall) }
+        task('upload')    { package.upload if package.respond_to?(:upload) }
+
         packages << package
-        Artifact.register package, pom
       end
       package
     end
@@ -231,7 +218,6 @@ module Buildr
 
   end
 end
-
 
 class Buildr::Project
   include Buildr::Package
