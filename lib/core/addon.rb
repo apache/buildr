@@ -26,33 +26,38 @@ require 'rubyforge'
 module Buildr
 
   # :call-seq:
-  #   addon(id, options?)
-  #   addon(task, options?)
+  #   addon(name, version?)
+  #   addon(task)
   #
-  # Use this to download and install an addon.  The first form takes the addon identifier,
-  # a string that contains the qualified name, colon and version number.  For example:
-  #   addon 'buildr-openjpa', '1.0'
-  # Some addon accept options passed as a hash argument.
+  # Use the specified addon, downloading and install it, if necessary.
   #
-  # The second form takes a file task that points to the directory containing the addon.
+  # Addons are essentially Ruby gems, but installed and loaded differently:
+  # * The addon method downloads and installs the gem, if necessary.
+  # * It requires a Ruby file with the same name as the gem, if it finds one.
+  # * It imports all .rake files found in the Gem's tasks directory.
+  #
+  # The first form takes the gem's name and optional version requirement.  The default
+  # version requirement is '>= 0' (see RubyGem's gem method for more information).
+  # For example:
+  #   addon 'buildr-java', '~> 1.0'
+  #
+  # The second form takes a file task that points to the Gem file.
   def addon(name_or_path, version = nil)
     case name_or_path
     when Rake::FileTask
       path = name_or_path.to_s
       spec = Gem::Format.from_file_by_path(path).spec
-      name, version = spec.name, spec.version
     when String
-      name = name_or_path
-      spec = Gem::SourceIndex.from_installed_gems.search(name, version).first || Gem::SourceInfoCache.search(name, version).first
-      fail "Could not find #{name} locally or in remote repository." unless spec
-      version ||= '> 0'
+      dep = Gem::Dependency.new(name_or_path, version)
+      spec = Gem::SourceIndex.from_installed_gems.search(dep).last || Gem::SourceInfoCache.search(dep).last
+      fail Gem::LoadError, "Could not find #{name_or_path} locally or in remote repository." unless spec
     else fail "First argument must be Gem name or File task."
     end
 
-    if Gem::SourceIndex.from_installed_gems.search(name, version).empty?
-      say "Installing #{spec.full_name} ... "
-      cmd = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name']), '-S', 'gem', 'install', name_or_path.to_s
-      cmd << '-v' << version.to_s if version
+    if Gem::SourceIndex.from_installed_gems.search(spec.name, spec.version).empty?
+      say "Installing #{spec.full_name} ... " if verbose
+      cmd = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', name_or_path.to_s
+      cmd << '-v' << spec.version.to_s
       cmd.unshift 'sudo' unless Gem.win_platform? || RUBY_PLATFORM =~ /java/
       sh *cmd.push(:verbose=>false)
       Gem.source_index.load_gems_in Gem::SourceIndex.installed_spec_directories
@@ -74,12 +79,11 @@ module Buildr
 =end
     end
     
-    Gem.activate(name, true, version).tap do
-      spec = Gem.loaded_specs[name]
+    Gem.activate(spec.name, true, spec.version).tap do
       FileList[spec.require_paths.map { |path| File.expand_path("#{path}/*.rb", spec.full_gem_path) }].
         map { |path| File.basename(path) }.each { |file| require file }
       FileList[File.expand_path('tasks/*.rake', spec.full_gem_path)].each do |file| 
-        Rake.application.add_import
+        Rake.application.add_import file
       end
     end
   end
@@ -143,10 +147,9 @@ module Buildr
 
     def package_as_gem(file_name) #:nodoc:
       PackageGemTask.define_task(file_name).tap do |gem|
-        { 'lib' =>_(:source, :main, :ruby),
-          'test'=>_(:source, :test, :ruby),
-          'doc' =>_(:source, :doc) }.
-          each { |target, source| gem.include :from=>source, :path=>target if File.directory?(source) }
+        %{ lib test doc }.each do |dir|
+          gem.include :from=>_(dir), :path=>dir if File.directory?(_(dir))
+        end
         gem.spec do |spec|
           spec.name = id
           spec.version = version

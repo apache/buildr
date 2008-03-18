@@ -17,156 +17,103 @@
 require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
-=begin
-describe Addon do
-  before { $loaded = false }
+describe Buildr, 'addon' do
 
-  it 'should list all loaded addons' do
-    write 'foobar/init.rb'
-    addon file('foobar')
-    Addon.list.each { |addon| addon.should be_kind_of(Addon) }.
-      map(&:name).should include('foobar')
+  before do
+    Gem.source_index.load_gems_in Gem::SourceIndex.installed_spec_directories
+    @loaded_specs = Gem.loaded_specs.clone
+    @available ||= []
+    Gem::SourceInfoCache.should_receive(:search).any_number_of_times do |dep|
+      @available.select { |spec| spec.name == dep.name && dep.version_requirements.satisfied_by?(spec.version) }.sort_by(&:sort_obj)
+    end
+
+    should_receive(:sh).any_number_of_times do |*args|
+      unless Gem.win_platform? || RUBY_PLATFORM =~ /java/
+        fail 'Expecting sudo gem for this platform' unless args.shift == 'sudo'
+      end
+      args.shift =~ /ruby/ or fail 'Expecting ruby command'
+      args.shift == '-S' or fail 'Expecting -S command line argument'
+      args.shift == 'gem' or fail 'Expecting gem script'
+      args.shift == 'install' or fail 'Expecting install comamnd'
+      (name = args.shift) or fail 'Expecting gem name to come next'
+      args.shift == '-v' or fail 'Expecting -v option'
+      dep = Gem::Dependency.new(name, args.shift)
+      if spec = Gem::SourceInfoCache.search(dep).last
+        spec.loaded_from = File.join(Gem.dir, 'specifications', "#{spec.full_name}.gemspec")
+        Gem.source_index.add_spec(spec)
+        Gem.source_index.should_receive(:load_gems_in).any_number_of_times.with(Gem::SourceIndex.installed_spec_directories)
+      else
+        fail 'Forget to check source info cache'
+      end
+    end
   end
 
-  it 'should return true when loading addon for first time' do
-    write 'foobar/init.rb'
-    addon(file('foobar')).should be(true)
+  def available(name, version)
+    @available << Gem::Specification.new do |s|
+      s.platform = Gem::Platform::RUBY
+      s.name = name
+      s.version = version
+      s.author = 'A User'
+      s.email = 'example@example.com'
+      s.homepage = 'http://example.com'
+      s.has_rdoc = true
+      s.summary = "this is a summary"
+      s.description = "This is a test description"
+      yield(s) if block_given?
+    end
   end
 
-  it 'should allow loading same addon twice' do
-    write 'foobar/init.rb'
-    addon file('foobar')
-    lambda { addon file('foobar') }.should_not raise_error
+  it 'should install specified gem' do
+    available 'foobar', '1.0.0'
+    lambda { addon 'foobar' }.should change { spec = Gem.loaded_specs['foobar'] and spec.full_name }.to('foobar-1.0.0')
   end
 
-  it 'should return false when loading addon second time' do
-    write 'foobar/init.rb'
-    addon(file('foobar'))
-    addon(file('foobar')).should be(false)
+  it 'should install version 0 or later' do
+    available 'foobar', '0.0.0'
+    lambda { addon 'foobar' }.should change { spec = Gem.loaded_specs['foobar'] and spec.full_name }.to('foobar-0.0.0')
   end
 
-  it 'should instantiate addon once even if loaded twice' do
-    write 'foobar/init.rb', <<-RUBY
-      $loaded = !$loaded
-    RUBY
-    lambda { addon file('foobar') }.should change { $loaded }
-    lambda { addon file('foobar') }.should_not change { $loaded }
-  end
-end
-
-
-describe Addon, 'from directory' do
-  before { $loaded = false }
-
-  it 'should have no version number' do
+  it 'should install specified version number' do
+    ['1.0', '1.1', '1.2', '2.0'].each do |version|
+      available 'foobar', version
+    end
+    lambda { addon 'foobar', '1.1' }.should change { spec = Gem.loaded_specs['foobar'] and spec.full_name }.to('foobar-1.1')
   end
 
-  it 'should add directory to LOAD_PATH' do
-    mkpath 'foobar'
-    lambda { addon file('foobar') }.should change { $LOAD_PATH.clone }
-    $LOAD_PATH.should include(File.expand_path('foobar'))
+  it 'should install version matching requirement' do
+    ['1.0', '1.1', '1.2', '2.0'].each do |version|
+      available 'foobar', version
+    end
+    lambda { addon 'foobar', '~> 1' }.should change { spec = Gem.loaded_specs['foobar'] and spec.full_name }.to('foobar-1.2')
   end
 
-  it 'should load init.rb file if found' do
-    write 'foobar/init.rb', '$loaded = true'
-    lambda { addon file('foobar') }.should change { $loaded }.to(true)
+  it 'should complain if no version matches requirement' do
+    available 'foobar', '1.0'
+    lambda { addon 'foobar', '2.0' }.should raise_error(Gem::LoadError, /could not find/i)
   end
 
-  it 'should add init.rb to LOADED_FEATURES' do
-    write 'foobar/init.rb'
-    lambda { addon file('foobar') }.should change { $LOADED_FEATURES.clone }
-    $LOADED_FEATURES.should include(File.expand_path('foobar/init.rb'))
+  it 'should complain if installing conflicting versions' do
+    available 'foobar', '1.0'
+    available 'foobar', '2.0'
+    addon 'foobar', '1.0'
+    lambda { addon 'foobar', '2.0' }.should raise_error(Exception, /can't activate/)
   end
 
-  it 'should pass options to addon' do
-    write 'foobar/init.rb', '$loaded = $ADDON[:loaded]'
-    lambda { addon file('foobar'), :loaded=>5 }.should change { $loaded }.to(5)
+  it 'should complain if gem not in remote repository' do
+    lambda { addon 'foobar', '1.1' }.should raise_error(Gem::LoadError, /could not find foobar/i)
   end
 
-  it 'should import any tasks present in tasks sub-directory' do
-    write 'foobar/tasks/foo.rake', "$loaded = 'foo'"
-    addon file('foobar')
-    lambda { Rake.application.load_imports }.should change { $loaded }.to('foo')
+  it 'should not install gem if already present' do
+    addon 'rake'
   end
 
-  it 'should fail if directory doesn\'t exist' do
-    lambda { addon file('missing') }.should raise_error(RuntimeError, /not a directory/i)
-  end
+  it 'should not install if gem already exists in local repository'
 
-  it 'should fail if path is not a directory' do
-    write 'wrong'
-    lambda { addon file('wrong') }.should raise_error(RuntimeError, /not a directory/i)
-  end
-end
+  it 'should require files in gem require path (lib)'
+  it 'should not require files placed elsewhere in gem'
+  it 'should import all .rake files in tasks directory'
 
-
-describe Addon, 'from artifact' do
-  before { $loaded = false }
-
-  def load_addon(options = nil)
-    write 'source/init.rb', "require 'extra'"
-    write 'source/extra.rb', '$loaded = $ADDON[:loaded] || true'
-    zip('repository/org/apache/buildr/foobar/1.0/foobar-1.0.zip').include(:from=>'source').invoke
-    addon 'org.apache.buildr.foobar:1.0', options
-  end
-
-  it 'should figure out addon group from name:version' do
-    artifact('fizz.buzz:foobar:zip:1.0').should_receive(:execute)
-    addon 'fizz.buzz.foobar:1.0' rescue nil
-  end
-
-  it 'should pick name from prefix' do
-    load_addon
-    Addon.list.map(&:name).should include('org.apache.buildr.foobar')
-  end
-
-  it 'should pick version from suffix' do
-    load_addon
-    Addon.list.map(&:version).should include('1.0')
-  end
-
-  it 'should download artifact from remote repository' do
-    lambda { addon 'org.apache.buildr.foobar:1.0' }.should raise_error(Exception, /no remote repositories/i)
-  end
-
-  it 'should install artifact in local repository' do
-    load_addon
-    file('repository/org/apache/buildr/foobar/1.0/foobar-1.0.zip').should exist
-  end
-
-  it 'should expand ZIP addon into local repository' do
-    load_addon
-    file('repository/org/apache/buildr/foobar/1.0/foobar-1.0').should exist
-    file('repository/org/apache/buildr/foobar/1.0/foobar-1.0').should contain('init.rb', 'extra.rb')
-  end
-
-  it 'should add directory to LOAD_PATH' do
-    lambda { load_addon  }.should change { $LOAD_PATH.clone }
-    $LOAD_PATH.should include(File.expand_path('repository/org/apache/buildr/foobar/1.0/foobar-1.0'))
-  end
-
-  it 'should load init.rb file if found' do
-    lambda { load_addon }.should change { $loaded }.to(true)
-  end
-
-  it 'should add init.rb to LOADED_FEATURES' do
-    lambda { load_addon }.should change { $LOADED_FEATURES.clone }
-    $LOADED_FEATURES.should include(File.expand_path('repository/org/apache/buildr/foobar/1.0/foobar-1.0/init.rb'))
-  end
-
-  it 'should pass options to addon' do
-    lambda { load_addon :loaded=>5 }.should change { $loaded }.to(5)
-  end
-
-  it 'should fail if loading same addon with two different versions' do
-    load_addon
-    lambda { addon 'org.apache.buildr.foobar:2.0' }.should raise_error(RuntimeError, /two different version numbers/)
-  end
-
-  it 'should import any tasks present in tasks sub-directory' do
-    write 'source/tasks/foo.rake', "$loaded = 'foo'"
-    load_addon
-    lambda { Rake.application.load_imports }.should change { $loaded }.to('foo')
+  after do
+    Gem.loaded_specs.replace @loaded_specs
   end
 end
-=end
