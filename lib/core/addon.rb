@@ -82,7 +82,7 @@ module Buildr
     Gem.activate(spec.name, true, spec.version).tap do
       FileList[spec.require_paths.map { |path| File.expand_path("#{path}/*.rb", spec.full_gem_path) }].
         map { |path| File.basename(path) }.each { |file| require file }
-      FileList[File.expand_path('tasks/*.rake', spec.full_gem_path)].each do |file| 
+      FileList[File.expand_path('tasks/*.rake', spec.full_gem_path)].each do |file|
         Rake.application.add_import file
       end
     end

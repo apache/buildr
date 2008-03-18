@@ -20,8 +20,16 @@ require File.join(File.dirname(__FILE__), 'spec_helpers')
 describe Buildr, 'addon' do
 
   before do
-    Gem.source_index.load_gems_in Gem::SourceIndex.installed_spec_directories
     @loaded_specs = Gem.loaded_specs.clone
+    Gem.use_paths(Dir.pwd)
+    Gem.source_index.load_gems_in Gem::SourceIndex.installed_spec_directories
+  end
+
+  before do
+    $loaded = nil
+  end
+
+  before do
     @available ||= []
     Gem::SourceInfoCache.should_receive(:search).any_number_of_times do |dep|
       @available.select { |spec| spec.name == dep.name && dep.version_requirements.satisfied_by?(spec.version) }.sort_by(&:sort_obj)
@@ -42,6 +50,11 @@ describe Buildr, 'addon' do
         spec.loaded_from = File.join(Gem.dir, 'specifications', "#{spec.full_name}.gemspec")
         Gem.source_index.add_spec(spec)
         Gem.source_index.should_receive(:load_gems_in).any_number_of_times.with(Gem::SourceIndex.installed_spec_directories)
+        spec.files.reject { |file| File.directory?(file) }.each do |file|
+          target = File.expand_path(file, spec.full_gem_path)
+          mkpath File.dirname(target)
+          cp file, target
+        end
       else
         fail 'Forget to check source info cache'
       end
@@ -59,6 +72,7 @@ describe Buildr, 'addon' do
       s.has_rdoc = true
       s.summary = "this is a summary"
       s.description = "This is a test description"
+      s.files = FileList['lib/**/*', 'tasks/**/*']
       yield(s) if block_given?
     end
   end
@@ -103,15 +117,33 @@ describe Buildr, 'addon' do
     lambda { addon 'foobar', '1.1' }.should raise_error(Gem::LoadError, /could not find foobar/i)
   end
 
-  it 'should not install gem if already present' do
-    addon 'rake'
+  it 'should not install gem if already present'
+
+  it 'should require files in gem require path (lib)' do
+    write 'lib/foobar.rb', '$loaded = true'
+    available 'foobar', '1.0'
+    lambda do
+      addon 'foobar'
+    end.should change { $loaded }.to(true)
   end
 
-  it 'should not install if gem already exists in local repository'
+  it 'should not require files placed elsewhere in gem' do
+    write 'lib/extra/foobar.rb', '$loaded = true'
+    available 'foobar', '1.0'
+    lambda do
+      addon 'foobar'
+    end.should_not change { $loaded }
+    lambda { require 'extra/foobar.rb' }.should change { $loaded }.to(true)
+  end
 
-  it 'should require files in gem require path (lib)'
-  it 'should not require files placed elsewhere in gem'
-  it 'should import all .rake files in tasks directory'
+  it 'should import all .rake files in tasks directory' do
+    write 'tasks/test.rake', '$loaded = true'
+    available 'foobar', '1.0'
+    lambda do
+      addon 'foobar'
+      Rake.application.load_imports
+    end.should change { $loaded }.to(true)
+  end
 
   after do
     Gem.loaded_specs.replace @loaded_specs
