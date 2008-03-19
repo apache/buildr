@@ -54,6 +54,7 @@ jruby_package = Rake::GemPackageTask.new(jruby_spec) { |pkg| pkg.need_tar = pkg.
 
 begin
   require 'rubygems/dependency_installer'
+  require 'rubygems/doc_manager'
   def install_gem(gem, options = {})
     say "Installing #{gem}..."
     installer = Gem::DependencyInstaller.new(gem, options.delete(:version), options)

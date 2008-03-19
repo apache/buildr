@@ -78,7 +78,7 @@ module Buildr
 
         # Returns true if this framework applies to the current project.  For example, JUnit returns
         # true if the tests are written in Java.
-        def applies_to?(paths)
+        def applies_to?(project)
           raise 'Not implemented'
         end
 
@@ -92,12 +92,15 @@ module Buildr
 
       # Construct a new test framework with the specified options.  Note that options may
       # change before the framework is run.
-      def initialize(options)
+      def initialize(test_task, options)
         @options = options
+        @task = test_task
       end
 
       # Options for this test framework.
       attr_reader :options
+      # The test task we belong to
+      attr_reader :task
 
       # Returns a list of dependenices for this framework.  Defaults to calling the #dependencies
       # method on the class.
@@ -112,13 +115,13 @@ module Buildr
       # This method should return a list suitable for using with the #run method, but also suitable
       # for the user to manage.  For example, JUnit locates all the tests in the test.compile.target
       # directory, and returns the class names, which are easier to work with than file names.
-      def tests(project)
+      def tests(dependencies)
         raise 'Not implemented'
       end
 
       # TestTask calls this method to run the named (and only those) tests.  This method returns
       # the list of tests that ran successfully.
-      def run(tests, task, dependencies)
+      def run(tests, dependencies)
         raise 'Not implemented'
       end
 
@@ -398,7 +401,7 @@ module Buildr
       cls = TestFramework.select(name) or raise ArgumentError, "No #{name} test framework available. Did you install it?"
       #cls.inherit_options.reject { |name| options.has_key?(name) }.
       #  each { |name| options[name] = @parent_task.options[name] } if @parent_task.respond_to?(:options)
-      @framework = cls.new(options)
+      @framework = cls.new(self, options)
       # Test framework dependency.
       with @framework.dependencies
     end
@@ -417,12 +420,12 @@ module Buildr
     def run_tests
       dependencies = Buildr.artifacts(self.dependencies).map(&:to_s).uniq
       rm_rf report_to.to_s
-      @tests = @framework.tests(self, dependencies).select { |test| include?(test) }.sort
+      @tests = @framework.tests(dependencies).select { |test| include?(test) }.sort
       if @tests.empty?
         @passed_tests, @failed_tests = [], []
       else
         puts "Running tests in #{@project.name}" if verbose
-        @passed_tests = @framework.run(@tests, self, dependencies)
+        @passed_tests = @framework.run(@tests, dependencies)
         @failed_tests = @tests - @passed_tests
         unless @failed_tests.empty?
           warn "The following tests failed:\n#{@failed_tests.join("\n")}" if verbose
@@ -540,7 +543,7 @@ module Buildr
       # Similar to the regular resources task but using different paths.
       resources = ResourcesTask.define_task('test:resources')
       resources.send :associate_with, project, :test
-      project.path_to(:src, :test, :resources).tap { |dir| resources.from dir if File.exist?(dir) }
+      project.path_to(:source, :test, :resources).tap { |dir| resources.from dir if File.exist?(dir) }
 
       # Similar to the regular compile task but using different paths.
       compile = CompileTask.define_task('test:compile'=>[project.compile, resources])

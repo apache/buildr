@@ -269,13 +269,22 @@ module Buildr
   class Filter
 
     def initialize #:nodoc:
-      @include = []
-      @exclude = []
-      @sources = []
+      clear
     end
 
     # Returns the list of source directories (each being a file task).
     attr_reader :sources
+
+    # :call-seq: 
+    #   clear => self
+    # 
+    # Clear filter sources and include/exclude patterns
+    def clear
+      @include = []
+      @exclude = []
+      @sources = []
+      self
+    end
 
     # :call-seq:
     #   from(*sources) => self

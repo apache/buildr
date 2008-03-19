@@ -16,4 +16,5 @@
 
 require 'java/compilers'
 require 'java/test_frameworks'
+require 'java/bdd_frameworks'
 require 'java/packaging'

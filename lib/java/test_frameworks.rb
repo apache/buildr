@@ -21,7 +21,69 @@ require 'java/ant'
 
 module Buildr
 
-  # JMock is available when using JUnit and TestNG.
+  class TestFramework
+    module JavaTest
+
+      # Add buildr utilities (JavaTestFilter) to classpath
+      Java.classpath << File.join(File.dirname(__FILE__))
+
+      def self.included(mod)
+        super
+        mod.extend ClassMethods
+      end
+
+      private
+      # :call-seq:
+      #     filter_classes(dependencies, criteria)
+      # 
+      # Return a list of classnames that match the given criteria. 
+      # The criteria parameter is a hash that must contain at least one of:
+      #
+      # * :class_names -- List of patterns to match against class name
+      # * :interfaces -- List of java interfaces or java classes
+      # * :class_annotations -- List of annotations on class level
+      # * :method_annotations -- List of annotations on method level
+      #
+      def filter_classes(dependencies, criteria = {})
+        return [] unless task.compile.target
+        target = Pathname.new(task.compile.target.to_s)
+        candidates = Dir["#{target}/**/*.class"].
+          map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
+          reject { |name| name =~ /\$/ }
+        result = []
+        if criteria[:class_names]
+          result.concat candidates.select { |name| criteria[:class_names].flatten.any? { |pat| pat === name } }
+        end
+        begin
+          Java.load
+          filter = Java.org.apache.buildr.JavaTestFilter.new(dependencies.to_java(Java.java.lang.String))
+          if criteria[:interfaces]
+            filter.add_interfaces(criteria[:interfaces].to_java(Java.java.lang.String)) 
+          end
+          if criteria[:class_annotations]
+            filter.add_class_annotations(criteria[:class_annotations].to_java(Java.java.lang.String))
+          end
+          if criteria[:method_annotations]
+            filter.add_method_annotations(criteria[:method_annotations].to_java(Java.java.lang.String))
+          end
+          result.concat filter.filter(candidates.to_java(Java.java.lang.String)).map(&:to_s)
+        rescue =>ex
+          puts "#{ex.class}: #{ex.message}" if verbose
+          raise
+        end
+        result.uniq
+      end
+      
+      module ClassMethods
+        def applies_to?(project) #:nodoc:
+          project.test.compile.language == :java
+        end        
+      end
+      
+    end
+  end
+
+  # JMock is available when using JUnit and TestNG, JBehave.
   module JMock
     # JMock version.
     VERSION = '1.2.0' unless const_defined?('VERSION')
@@ -105,44 +167,24 @@ module Buildr
 
     end
 
-
-    # Ant-JUnit requires for JUnit and JUnit reports tasks.  Also requires JavaTestFilter.
-    Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}"
-    Java.classpath << File.join(File.dirname(__FILE__))
-
     # JUnit version number.
     VERSION = '4.3.1' unless const_defined?('VERSION')
-    # JUnit specification.
+    
     REQUIRES = ["junit:junit:jar:#{VERSION}"] + JMock::REQUIRES
 
-    class << self
+    # Ant-JUnit requires for JUnit and JUnit reports tasks.
+    Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}"
 
-      def applies_to?(project) #:nodoc:
-        project.test.compile.language == :java
-      end
-
+    include TestFramework::JavaTest
+    
+    def tests(dependencies) #:nodoc:
+      filter_classes(dependencies, 
+                     :interfaces => %w{junit.framework.TestCase},
+                     :class_annotations => %w{org.junit.Test},
+                     :method_annotations => %w{org.junit.Test})
     end
 
-    def tests(task, dependencies) #:nodoc:
-      return [] unless task.compile.target
-      target = Pathname.new(task.compile.target.to_s)
-      candidates = Dir["#{target}/**/*.class"].
-        map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
-        reject { |name| name =~ /\$/ }
-      begin
-        Java.load
-        Java.org.apache.buildr.JavaTestFilter.new(dependencies.to_java(Java.java.lang.String)).
-          add_interfaces(['junit.framework.TestCase'].to_java(Java.java.lang.String)).
-          add_class_annotations(['org.junit.Test'].to_java(Java.java.lang.String)).
-          add_method_annotations(['org.junit.Test'].to_java(Java.java.lang.String)).
-          filter(candidates.to_java(Java.java.lang.String)).map(&:to_s)
-      rescue =>ex
-        puts "#{ex.class}: #{ex.message}" if verbose
-        raise
-      end
-    end
-
-    def run(tests, task, dependencies) #:nodoc:
+    def run(tests, dependencies) #:nodoc:
       # Use Ant to execute the Junit tasks, gives us performance and reporting.
       Buildr.ant('junit') do |ant|
         case options[:fork]
@@ -211,33 +253,15 @@ module Buildr
     # TestNG specification.
     REQUIRES = ["org.testng:testng:jar:jdk15:#{VERSION}"] + JMock::REQUIRES
 
-    class << self
+    include TestFramework::JavaTest
 
-      def applies_to?(project) #:nodoc:
-        project.test.compile.language == :java
-      end
-
+    def tests(dependencies) #:nodoc:
+      filter_classes(dependencies, 
+                     :class_annotations => %w{org.testng.annotations.Test},
+                     :method_annotations => %w{org.testng.annotations.Test})
     end
 
-    def tests(task, dependencies) #:nodoc:
-      return [] unless task.compile.target
-      target = Pathname.new(task.compile.target.to_s)
-      candidates = Dir["#{target}/**/*.class"].
-        map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
-        reject { |name| name =~ /\$/ }
-      begin
-        Java.load
-        Java.org.apache.buildr.JavaTestFilter.new(dependencies.to_java(Java.java.lang.String)).
-          add_class_annotations(['org.testng.annotations.Test'].to_java(Java.java.lang.String)).
-          add_method_annotations(['org.testng.annotations.Test'].to_java(Java.java.lang.String)).
-          filter(candidates.to_java(Java.java.lang.String)).map(&:to_s)
-      rescue =>ex
-        puts "#{ex.class}: #{ex.message}" if verbose
-        raise
-      end
-    end
-
-    def run(tests, task, dependencies) #:nodoc:
+    def run(tests, dependencies) #:nodoc:
       cmd_args = [ 'org.testng.TestNG', '-sourcedir', task.compile.sources.join(';'), '-suitename', task.send(:project).name ]
       cmd_args << '-d' << task.report_to.to_s
       cmd_options = { :properties=>options[:properties], :java_args=>options[:java_args],

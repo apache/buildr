@@ -16,7 +16,7 @@
 
 module Buildr
 
-  # Addes the <code>cobertura:html</code> and <code>cobertura:xml</code> tasks.
+  # Provides the <code>cobertura:html</code> and <code>cobertura:xml</code> tasks.
   # Require explicitly using <code>require "buildr/cobertura"</code>.
   #
   # You can generate cobertura reports for a single project 
