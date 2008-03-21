@@ -14,7 +14,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 if [ -z `which jruby` ] ; then
-  version=1.1RC2
+  version=1.1RC3
   target=/opt/jruby
   echo "Installing JRuby ${version} in ${target}"
   sudo mkdir -p $(dirname ${target})
