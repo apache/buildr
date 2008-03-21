@@ -49,8 +49,12 @@ module Buildr
       spec = Gem::Format.from_file_by_path(path).spec
     when String
       dep = Gem::Dependency.new(name_or_path, version)
-      spec = Gem::SourceIndex.from_installed_gems.search(dep).last || Gem::SourceInfoCache.search(dep).last
-      fail Gem::LoadError, "Could not find #{name_or_path} locally or in remote repository." unless spec
+      #spec = Gem::SourceIndex.from_installed_gems.search(dep).last || Gem::SourceInfoCache.search(dep).last
+      unless spec = Gem::SourceIndex.from_installed_gems.search(dep).last
+        Gem::SourceInfoCache.search(dep).last
+        Gem::SourceInfoCache.cache.flush
+        fail Gem::LoadError, "Could not find #{name_or_path} locally or in remote repository." unless spec
+      end
     else fail "First argument must be Gem name or File task."
     end
 

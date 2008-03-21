@@ -101,6 +101,13 @@ describe Buildr, 'addon' do
     lambda { addon 'foobar', '~> 1' }.should change { spec = Gem.loaded_specs['foobar'] and spec.full_name }.to('foobar-1.2')
   end
 
+  it 'should support array of version matches' do
+    ['1.0', '1.1', '1.2'].each do |version|
+      available 'foobar', version
+    end
+    lambda { addon 'foobar', ['> 1.0', '< 1.2'] }.should change { spec = Gem.loaded_specs['foobar'] and spec.full_name }.to('foobar-1.1')
+  end
+
   it 'should complain if no version matches requirement' do
     available 'foobar', '1.0'
     lambda { addon 'foobar', '2.0' }.should raise_error(Gem::LoadError, /could not find/i)
@@ -111,6 +118,14 @@ describe Buildr, 'addon' do
     available 'foobar', '2.0'
     addon 'foobar', '1.0'
     lambda { addon 'foobar', '2.0' }.should raise_error(Exception, /can't activate/)
+  end
+
+  it 'should not upgrade if compatible version available in local repository' do
+    available 'foobar', '1.0'
+    addon 'foobar', '1.0'
+    available 'foobar', '2.0'
+    addon 'foobar', '1.0'
+    Gem.loaded_specs['foobar'].full_name.should eql('foobar-1.0')
   end
 
   it 'should complain if gem not in remote repository' do
@@ -134,6 +149,15 @@ describe Buildr, 'addon' do
       addon 'foobar'
     end.should_not change { $loaded }
     lambda { require 'extra/foobar.rb' }.should change { $loaded }.to(true)
+  end
+
+  it 'should require files only once' do
+    write 'lib/foobar.rb', '$loaded = $loaded.to_i + 1'
+    available 'foobar', '1.0'
+    lambda do
+      addon 'foobar'
+      addon 'foobar'
+    end.should change { $loaded }.to(1)
   end
 
   it 'should import all .rake files in tasks directory' do
