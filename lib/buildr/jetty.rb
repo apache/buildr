@@ -52,7 +52,7 @@ module Buildr
       "org.slf4j:slf4j-simple:jar:#{SLF4J_VERSION}", "org.slf4j:jcl104-over-slf4j:jar:#{SLF4J_VERSION}" ]
      
     Java.classpath <<  REQUIRES
-    Java.classpath << File.join(__DIR__)
+    Java.classpath << File.dirname(__FILE__)
     
     # Default URL for Jetty (change with options.jetty.url).
     URL = "http://localhost:8080"

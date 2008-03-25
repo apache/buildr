@@ -2,6 +2,7 @@ require 'rubygems'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'spec/rake/spectask'
+gem 'facets', '= 2.3.0'
 
 
 # Gem specification comes first, other tasks rely on it.
@@ -91,7 +92,6 @@ task 'setup' do
   gems = Gem::SourceIndex.from_installed_gems
   dependencies = specify(RUBY_PLATFORM).dependencies
   dependencies << Gem::Dependency.new('docter', '~>1.1')
-  dependencies << Gem::Dependency.new('ultraviolet', '~>0.10') unless RUBY_PLATFORM =~ /java/
   dependencies << Gem::Dependency.new('rcov', '~>0.8') unless RUBY_PLATFORM =~ /java/ 
   dependencies.select { |dep| gems.search(dep.name, dep.version_requirements).empty? }.
     each do |dep|
@@ -181,7 +181,6 @@ task 'docs'=>[rdoc.name]
 begin
   require 'docter'
   require 'docter/server'
-  require 'docter/ultraviolet'
 
   web_docs = {
     :collection => Docter.collection('Buildr').using('doc/web.toc.yaml').
@@ -261,7 +260,7 @@ namespace 'release' do
     directories = 'lib', 'spec', 'docs', 'bin'
     ignore = 'class', 'opts'
     FileList['lib/**/*', 'spec/**/*', 'bin/**', 'doc/css/*', 'doc/scripts/*'].
-      exclude('doc/css/eiffel.css').reject { |file| File.directory?(file) || ignore.include?(file[/[^.]*$/]) }.each do |file|
+      exclude('doc/css/syntax.css').reject { |file| File.directory?(file) || ignore.include?(file[/[^.]*$/]) }.each do |file|
       comments = File.read(file).scan(/(\/\*(.*?)\*\/)|^#\s+(.*?)$|<!--(.*?)-->/m).
         map { |match| match.reject(&:nil?) }.flatten.join("\n")
       fail "File #{file} missing Apache License, please add it before making a release!" unless

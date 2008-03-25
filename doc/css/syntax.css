@@ -1,0 +1,43 @@
+/**
+ * From Syntax, Copyright © 2005 Jamis Buck
+ */
+
+.ruby .normal   {}
+.ruby .comment  { color: #005; font-style: italic; }
+.ruby .keyword  { color: #A00; font-weight: bold; }
+.ruby .method   { color: #077; }
+.ruby .class    { color: #074; }
+.ruby .module   { color: #050; }
+.ruby .punct    { color: #447; font-weight: bold; }
+.ruby .symbol   { color: #099; }
+.ruby .string   { color: #944; background: #FFE; }
+.ruby .char     { color: #F07; }
+.ruby .ident    { color: #004; }
+.ruby .constant { color: #07F; }
+.ruby .regex    { color: #B66; background: #FEF; }
+.ruby .number   { color: #F99; }
+.ruby .attribute { color: #7BB; }
+.ruby .global   { color: #7FB; }
+.ruby .expr     { color: #227; }
+.ruby .escape   { color: #277; }
+
+.xml .normal    {}
+.xml .namespace { color: #B66; font-weight: bold; }
+.xml .tag       { color: #F88; }
+.xml .comment   { color: #005; font-style: italic; }
+.xml .punct     { color: #447; font-weight: bold; }
+.xml .string    { color: #944; }
+.xml .number    { color: #F99; }
+.xml .attribute { color: #BB7; }
+
+.yaml .document { }
+.yaml .type     { }
+.yaml .key      { color: #00c0c0 }
+.yaml .comment  { color: #808080 }
+.yaml .punct    { }
+.yaml .string   { }
+.yaml .number   { }
+.yaml .time     { }
+.yaml .date     { }
+.yaml .ref      { color: 00c0c0 }
+.yaml .anchor   { color: 00c0c0 }
