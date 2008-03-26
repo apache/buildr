@@ -32,10 +32,9 @@ module Buildr
     #
     #   require 'buildr/xmlbeans'
     #   artifacts[Buildr::XMLBeans].use :xmlbeans => '2.2.0'
-    REQUIRES = ArtifactNamespace.for self, {
-      'stax:stax-api:jar:>=1' => '1.0.1',
-      'org.apache.xmlbeans:xmlbeans:jar:>2' => '2.3.0'
-    }
+    REQUIRES = ArtifactNamespace.for self,
+    'stax:stax-api:jar:>=1'               => '1.0.1',
+    'org.apache.xmlbeans:xmlbeans:jar:>2' => '2.3.0'
     
     class << self
 
@@ -46,7 +45,7 @@ module Buildr
         puts "Running XMLBeans schema compiler" if verbose
         Buildr.ant "xmlbeans" do |ant|
           ant.taskdef :name=>"xmlbeans", :classname=>"org.apache.xmlbeans.impl.tool.XMLBean",
-            :classpath=>requires.map(&:to_s).join(File::PATH_SEPARATOR)
+            :classpath=>requires.join(File::PATH_SEPARATOR)
           ant.xmlbeans :srconly=>"true", :srcgendir=>options[:output].to_s, :classgendir=>options[:output].to_s, 
             :javasource=>options[:javasource] do
             args.flatten.each { |file| ant.fileset File.directory?(file) ? { :dir=>file } : { :file=>file } }
@@ -56,8 +55,8 @@ module Buildr
         touch options[:output].to_s, :verbose=>false
       end
 
-      def requires
-        REQUIRES.each { |artifact| artifact.invoke }
+      def requires()
+        @requires ||= REQUIRES.each(&:invoke).map(&:to_s)
       end
     end
 
