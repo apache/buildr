@@ -1,6 +1,8 @@
 require 'buildr/jetty'
 $LOADED_FEATURES << 'jruby' unless RUBY_PLATFORM =~ /java/ # Pretend to have JRuby, keeps Nailgun happy.
 require 'java/nailgun'
+repositories.remote << 'http://repo1.maven.org/maven2'
+
 
 define 'buildr' do
   compile.using :source=>'1.4', :target=>'1.4', :debug=>false

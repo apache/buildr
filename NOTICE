@@ -15,6 +15,11 @@ This product includes software developed by Intalio
 http://www.intalio.com
 
 
+* progressbar - http://0xcc.net/ruby-progressbar/
+Licensed under the Ruby License
+Copyright (C) 2001-2005 Satoru Takabayashi <satoru@namazu.org>
+
+
 THIRD-PARTY DEPENDENCIES
 ------------------------
 Even though those dependencies aren't shipped with Buildr, Buildr needs 
@@ -59,10 +64,6 @@ Copyright (c) 2003 Maik Schmidt
 * ruwiki (archive-tar-minitar) - http://rubyforge.org/projects/ruwiki/
 Licensed under the Ruby License
 Copyright 2004 Mauricio Julio Fernández Pradier and Austin Ziegler
-
-* progressbar - http://0xcc.net/ruby-progressbar/
-Licensed under the Ruby License
-Copyright (C) 2001 Satoru Takabayashi <satoru@namazu.org>
 
 
 MATERIALS IN DOCUMENTATION

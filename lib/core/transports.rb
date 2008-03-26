@@ -23,7 +23,7 @@ require 'uri'
 require 'uri/sftp'
 require 'digest/md5'
 require 'digest/sha1'
-require 'progressbar'
+require 'core/progressbar'
 require 'tempfile'
 
 
@@ -260,13 +260,7 @@ module URI
     # Call << for each block of bytes down/uploaded.
     def with_progress_bar(enable, file_name, size) #:nodoc:
       if enable && $stdout.isatty && size
-        progress_bar = Console::ProgressBar.new(file_name, size)
-        # Extend the progress bar so we can display count/total.
-        class << progress_bar
-          def total()
-            convert_bytes(@total)
-          end
-        end
+        progress_bar = ProgressBar.new(file_name, size)
         # Squeeze the filename into 30 characters.
         if file_name.size > 30
           base, ext = file_name.split('.')
@@ -274,9 +268,9 @@ module URI
         else
           truncated = file_name
         end
-        progress_bar.format = "#{truncated}: %3d%% %s %s/%s %s"
-        progress_bar.format = '%3d%% %s %s/%s %s'
-        progress_bar.format_arguments = [:percentage, :bar, :bytes, :total, :stat]
+        progress_bar.format = "#{truncated}: %3d%% %s %s" # %s/%s %s"
+        #progress_bar.format = '%3d%% %s %s/%s %s'
+        progress_bar.format_arguments = [:percentage, :bar, :stat_for_file_transfer] # :bytes, :total, :stat]
         progress_bar.bar_mark = '.'
 
         begin

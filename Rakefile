@@ -38,7 +38,6 @@ def specify(platform)
     spec.add_dependency 'xml-simple',           '~> 1.0'
     spec.add_dependency 'archive-tar-minitar',  '~> 0.5'
     spec.add_dependency 'rubyforge',            '~> 0.4'
-    spec.add_dependency 'progressbar',          '~> 0.0.3'
     
     spec.platform = platform
     spec.add_dependency 'rjb', '~> 1.1' unless platform == 'java'
