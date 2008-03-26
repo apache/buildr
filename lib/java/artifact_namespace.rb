@@ -14,6 +14,7 @@
 # the License.
 
 require 'java/artifact'
+require 'hpricot'
 
 module Buildr
 
@@ -181,7 +182,7 @@ module Buildr
                  end
         end
         name = name.to_s.split(/:{2,}/).join(':')
-        name = ROOT if name.to_s.blank?
+        name = ROOT if name.empty?
         @instances ||= Hash.new { |h, k| h[k] = new(k) }
         instance = @instances[name.to_sym]
         instance.need(needs) if needs
@@ -772,7 +773,7 @@ module Buildr
         end
       end
       return [] unless xml
-      doc = hpricot(xml)
+      doc = Hpricot(xml)
       case from
       when :metadata then
         doc.search("versions/version").map(&:innerHTML).reverse
@@ -794,25 +795,10 @@ module Buildr
               puts e.class, e
               return []
             end
-      doc = hpricot(xml)
+      doc = Hpricot(xml)
       doc.search("table.grid/tr/td[1]/a").map(&:innerHTML)
     end
 
-    def hpricot(xml)
-      send :require, 'hpricot'
-    rescue LoadError
-      cmd = "gem install hpricot"
-      if PLATFORM[/java/]
-        cmd = "jruby -S " + cmd + " --source http://caldersphere.net"
-      end
-      raise <<-NOTICE
-      Your system is missing the hpricot gem, install it with:
-        #{cmd}
-      NOTICE
-    else
-      Hpricot(xml)
-    end
-  end # Search
-
+  end
 end
 
