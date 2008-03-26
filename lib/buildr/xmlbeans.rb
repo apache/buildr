@@ -32,10 +32,10 @@ module Buildr
     #
     #   require 'buildr/xmlbeans'
     #   artifacts[Buildr::XMLBeans].use :xmlbeans => '2.2.0'
-    REQUIREMENTS = {
+    REQUIRES = ArtifactNamespace.for self, {
       'stax:stax-api:jar:>=1' => '1.0.1',
       'org.apache.xmlbeans:xmlbeans:jar:>2' => '2.3.0'
-    }.tap { |reqs| Buildr.artifacts[self].need reqs }
+    }
     
     class << self
 
@@ -57,7 +57,7 @@ module Buildr
       end
 
       def requires
-        Buildr.artifacts[XMLBeans].each { |artifact| artifact.invoke }
+        REQUIRES.each { |artifact| artifact.invoke }
       end
     end
 

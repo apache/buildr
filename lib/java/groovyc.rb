@@ -48,16 +48,21 @@ module Buildr
     # * :target            -- Bytecode compatibility.
     # * :javac             -- Hash of options passed to the ant javac task
     #
-    # ArtifactNamespace for this module is 
-    # 
     class Groovyc < Base
       
-      REQUIREMENTS = {
+      # The groovyc compiler jars are added to classpath at load time,
+      # if you want to customize the artifact versions to use, you must use
+      # the
+      #
+      #      artifacts['Buildr::Compiler::Groovyc']
+      #
+      # namespace before this file is required.
+      REQUIRES = ArtifactNamespace.for self, {
         'org.codehaus.groovy:groovy:jar:>=1.5.3' => '1.5.3',
         'commons-cli:commons-cli:jar:>=1.0' => '1.0',
         'asm:asm:jar:>=2.2' => '2.2.3',
         'antlr:antlr:jar:>=2.7.7' => '2.7.7'
-      }.tap { |reqs| Buildr.artifacts[self].need reqs }
+      }
       
       ANT_TASK = 'org.codehaus.groovy.ant.Groovyc'
       GROOVYC_OPTIONS = [:encoding, :verbose, :fork, :memoryInitialSize, :memoryMaximumSize, :listfiles, :stacktrace]
@@ -66,7 +71,7 @@ module Buildr
 
       class << self
         def dependencies #:nodoc:
-          Buildr.artifacts[self].values
+          REQUIRES.values
         end
 
         def applies_to?(project, task) #:nodoc:

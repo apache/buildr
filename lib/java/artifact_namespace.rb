@@ -19,12 +19,27 @@ module Buildr
 
   #
   # ArtifactNamespace allows users to control artifact versions to be
-  # used by their projects and Buildr modules/addons. See Buildr::XMLBeans
-  # as an example for modules/addon writers.
-  # 
+  # used by their projects or addons. 
   # A namespace is a hierarchical dictionary that allows to specify
   # artifact version requirements (see ArtifactNamespace#need).
   #
+  #
+  # Addon/extension authors expecting their users to customize an artifact
+  # version, need to document the namespace where users can do so.
+  # The following example illustrates how to do this. See the source for 
+  # Buildr::XMLBeans for real-world example.
+  #   
+  #   # Document this addon/extension features
+  #   module Some::Extension
+  #     # Document this constant for users to know the version requirements
+  #     REQUIRES = ArtifactNamespace.for self, 'arti:fact:jar:>1' => '1.0.1'
+  #
+  #     def some_stuff
+  #        REQUIRES.requirement(:fact)[:version].satisfied_by?('0.9') # -> false
+  #        REQUIRES.each { |artifact| artifact.invoke } # get them!
+  #     end
+  #   end
+  # 
   # Every project can have it's own namespace inheriting the one for
   # their parent projects. 
   #
@@ -145,10 +160,13 @@ module Buildr
       # :call-seq:
       #   Buildr.artifacts { |ns| ... } -> namespace
       #   Buildr.artifacts(name) { |ns| ... } -> namespace
+      #   ArtifactNamespace.for(name, requirements) { |ns| ... } -> namespace
       # 
       # Obtain the namespace for the given +name+ or for the currently
       # running project. If a block is given, the namespace is yielded to it.
-      def instance(name = nil, &block)
+      #
+      # See the class level documentation for ArtifactNamespace.
+      def instance(name = nil, needs = nil, &block)
         case name
         when Array then name = name.join(':')
         when Module, Project then name = name.name
@@ -166,6 +184,7 @@ module Buildr
         name = ROOT if name.to_s.blank?
         @instances ||= Hash.new { |h, k| h[k] = new(k) }
         instance = @instances[name.to_sym]
+        instance.need(needs) if needs
         yield(instance) if block
         instance
       end
@@ -296,7 +315,7 @@ module Buildr
     #     need name => requirement
     #     need requirement => default_version
     #   end
-    # 
+    #
     # Establish an artifact +requirement+ on the current namespace.
     # A +requirement+ is simply an artifact spec whose version part
     # contains comparision operators. If no +name+ is specified, 
