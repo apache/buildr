@@ -48,17 +48,18 @@ module Buildr
     # * :target            -- Bytecode compatibility.
     # * :javac             -- Hash of options passed to the ant javac task
     class Groovyc < Base
-
-      # Which groovy version to use?
-      VERSION = "1.5.3" unless const_defined?('VERSION')
-
-      REQUIRES = Buildr.struct(
-        :groovy => "org.codehaus.groovy:groovy:jar:#{VERSION}",
-        :commons_cli => 'commons-cli:commons-cli:jar:1.0',
-        :asm => 'asm:asm:jar:2.2.3',
-        :antlr => 'antlr:antlr:jar:2.7.7'
-      ) unless const_defined?('REQUIRES')
       
+      Buildr.artifacts(self) do
+        need :groovy => "org.codehaus.groovy:groovy:jar:>=1.5.3",
+             :commons_cli => 'commons-cli:commons-cli:jar:>=1.0',
+             :asm => 'asm:asm:jar:>=2.2',
+             :antlr => 'antlr:antlr:jar:>=2.7.7'
+        default :groovy => '1.5.3',
+                :commons_cli => '1.0',
+                :asm => '2.2.3',
+                :antlr => '2.7.7'
+      end
+        
       ANT_TASK = 'org.codehaus.groovy.ant.Groovyc'
       GROOVYC_OPTIONS = [:encoding, :verbose, :fork, :memoryInitialSize, :memoryMaximumSize, :listfiles, :stacktrace]
       JAVAC_OPTIONS = [:optimise, :warnings, :debug, :deprecation, :source, :target, :javac]
@@ -66,7 +67,7 @@ module Buildr
 
       class << self
         def dependencies #:nodoc:
-          Buildr.artifacts(REQUIRES)
+          Buildr.artifacts(Buildr.artifacts[self].used)
         end
 
         def applies_to?(project, task) #:nodoc:

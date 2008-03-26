@@ -22,10 +22,12 @@ module Buildr
   # Provides XMLBeans schema compiler. Require explicitly using <code>require "buildr/xmlbeans"</code>.
   module XMLBeans
 
-    STAX = "stax:stax-api:jar:1.0"
-    XMLBEANS = "org.apache.xmlbeans:xmlbeans:jar:2.3.0"
-    REQUIRES = [ STAX, XMLBEANS ]
-
+    Buildr.artifacts(self) do
+      need :stax => 'stax:stax-api:jar:>=1.0',
+           :xmlbeans => 'org.apache.xmlbeans:xmlbeans:jar:>=2.2'
+      default :stax => '1.0', :xmlbeans => '2.3.0'
+    end
+    
     class << self
 
       def compile(*args)
@@ -45,12 +47,9 @@ module Buildr
         touch options[:output].to_s, :verbose=>false
       end
 
-    private
-
       def requires()
-        @requires ||= Buildr.artifacts(REQUIRES).each { |artifact| artifact.invoke }.map(&:to_s)
+        Buildr.artifacts[XMLBeans].used.each { |artifact| artifact.invoke }.map(&:to_s)
       end
-    
     end
 
     def compile_xml_beans(*args)
@@ -62,7 +61,7 @@ module Buildr
         XMLBeans.compile args.flatten, :output=>task.name,
           :javasource=>compile.options.source, :xsb=>compile.target
       end
-      compile.using(:javac).from(generated).with(STAX, XMLBEANS)
+      compile.using(:javac).from(generated).with(*XMLBeans.requires)
       # Once compiled, we need to copy the generated XSB/XSD and one (magical?) class file
       # into the target directory, or the rest is useless.
       compile do |task|

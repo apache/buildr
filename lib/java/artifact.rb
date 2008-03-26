@@ -17,7 +17,7 @@
 require 'core/project'
 require 'core/transports'
 require 'builder'
-require 'java/artifact_search'
+require 'java/artifact_namespace'
 
 module Buildr
 
@@ -558,9 +558,6 @@ module Buildr
   def artifact(spec, &block) #:yields:task
     spec = Artifact.to_hash(spec)
     unless task = Artifact.lookup(spec)
-      if ArtifactSearch.enabled? && ArtifactSearch.requirement?(spec)
-        spec = ArtifactSearch.best_version(spec)
-      end
       task = Artifact.define_task(repositories.locate(spec))
       task.send :apply_spec, spec
       Rake::Task['rake:artifacts'].enhance [task]
@@ -571,11 +568,15 @@ module Buildr
 
   # :call-seq:
   #   artifacts(*spec) => artifacts
+  #   artifacts { |namespace| ... } => namespace
+  #   artifacts(scope) { |namespace| ... } => namespace
+  #   artifacts[scope] => namespace
   #
   # Handles multiple artifacts at a time. This method is the plural equivalent of
   # #artifacts, but can do more things.
   #
-  # You can pass any number of arguments, each of which can be:
+  # The first form returns an array of artifacts built using the supplied
+  # specifications, each of which can be:
   # * An artifact specification (String or Hash). Returns the appropriate Artifact task.
   # * An artifact of any other task. Returns the task as is.
   # * A project. Returns all artifacts created (packaged) by that project.
@@ -589,10 +590,19 @@ module Buildr
   #   artifacts(xml, ws, db)
   #
   # Using artifacts created by a project:
-  #   artifact project('my-app')               # All packages
-  #   artifact project('mu-app').package(:war) # Only the WAR
-  def artifacts(*specs)
-    specs.flatten.inject([]) do |set, spec|
+  #   artifacts project('my-app')               # All packages
+  #   artifacts project('my-app').package(:war) # Only the WAR
+  #
+  # Last three forms return an ArtifactNamespace instead of an array
+  # and are only useful to work with the resulting namespace. See the
+  # documentation for ArtifactNamespace for more info.
+  def artifacts(*specs, &block)
+    specs.flatten!
+    if block
+      scope = Rake.application.current_scope
+      return ArtifactNamespace.instance(specs.first || scope, &block)
+    end
+    specs.inject([]) do |set, spec|
       case spec
       when Hash
         set |= [artifact(spec)]
@@ -606,10 +616,15 @@ module Buildr
         set |= [spec]
       when Struct
         set |= artifacts(spec.values)
+      when Symbol
+        name = spec
+        spec = ArtifactNamespace.instance.spec(name)
+        raise "No artifact found by name #{name.inspect}" unless spec
+        set |= [artifact(spec)]
       else
-        fail "Invalid artifact specification in: #{specs.to_s}"
+        fail "Invalid artifact specification in #{specs.inspect}"
       end
-    end
+    end.extend ArtifactNamespace::AryMixin
   end
 
   def transitive(*specs)

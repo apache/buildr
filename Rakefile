@@ -155,7 +155,6 @@ namespace 'spec' do
 
   desc 'Run all specs specifically with JRuby'
   task('jruby') { system 'jruby -S rake spec' }
-
 end
 
 
