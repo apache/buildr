@@ -531,7 +531,7 @@ module Buildr
           ary << i
         end
         str = str.join(' ')
-        str.gsub!('!', ' negate \1')
+        str.gsub!(/!([^=])?/, ' negate \1')
         str.gsub!(pattern) do |expr|
           case expr.strip
           when 'not', 'negate' then 'negate '
