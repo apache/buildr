@@ -17,6 +17,7 @@
 require 'core/project'
 require 'core/transports'
 require 'builder'
+require 'java/artifact_search'
 
 module Buildr
 
@@ -211,6 +212,7 @@ module Buildr
       #
       # Returns an array of specs for all the registered artifacts. (Anything created from artifact, or package).
       def list
+        @artifacts ||= {}
         @artifacts.keys
       end
 
@@ -556,6 +558,9 @@ module Buildr
   def artifact(spec, &block) #:yields:task
     spec = Artifact.to_hash(spec)
     unless task = Artifact.lookup(spec)
+      if ArtifactSearch.enabled? && ArtifactSearch.requirement?(spec)
+        spec = ArtifactSearch.best_version(spec)
+      end
       task = Artifact.define_task(repositories.locate(spec))
       task.send :apply_spec, spec
       Rake::Task['rake:artifacts'].enhance [task]
