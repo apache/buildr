@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'core/environment'
 require 'java/artifact'
 
 module Buildr
@@ -61,7 +60,7 @@ module Buildr
   #         log4j:      log4j:log4j:jar:1.2.15
   #         groovy:     org.codehaus.groovy:groovy:jar:1.5.4
   #       
-  #       # open Buildr::XMLBeans namespace
+  #       # module/addon namespace
   #       Buildr::XMLBeans: 
   #         xmlbeans: 2.2
   #
@@ -175,6 +174,34 @@ module Buildr
       
       alias_method :for, :instance
     end
+
+    def initialize(name) #:nodoc:
+      @name = name
+      clear
+    end
+
+    attr_reader :name
+    include Enumerable
+    
+    # Return an array of artifacts defined for use
+    def to_a(include_parents = false)
+      seen = {}
+      registry = self
+      while registry
+        registry.instance_variable_get(:@using).each_pair do |key, spec|
+          spec = spec(key) unless Hash == spec
+          name = Artifact.to_spec(spec.merge(:version => '-'))
+          seen[name] = Buildr.artifact(spec) unless seen.key?(name)
+        end
+        registry = include_parents ? registry.parent : nil
+      end
+      seen.values
+    end
+
+    def each(&block)
+      to_a.each(&block)
+    end
+
     
     # Set the parent namespace
     def parent=(parent)
@@ -196,14 +223,7 @@ module Buildr
       end
       @parent.tap(&block)
     end
-
-    def initialize(name) #:nodoc:
-      @name = name
-      clear
-    end
-
-    attr_reader :name
-
+    
     # Clear internal requirements map
     def clear
       @using = {}
@@ -211,26 +231,7 @@ module Buildr
       @requires = {}
     end
     
-    # Return artifacts defined for use
-    def used(include_parents = false)
-      seen = {}
-      registry = self
-      while registry
-        registry.instance_variable_get(:@using).each_pair do |key, spec|
-          spec = spec(key) unless Hash == spec
-          name = Artifact.to_spec(spec.merge(:version => '-'))
-          seen[name] = Buildr.artifact(spec) unless seen.key?(name)
-        end
-        registry = include_parents ? registry.parent : nil
-      end
-      seen.values
-    end
 
-    def each(&block)
-      used(false).each(&block)
-    end
-    include Enumerable
-    
     # Return the named artifacts from this namespace hierarchy
     def only(*names)
       names = @requires.keys if names.empty?
@@ -262,7 +263,7 @@ module Buildr
         end
         spec
       elsif parent
-        parent.spec(name)
+        parent.spec(name) || parent.spec(@aliases[name])
       end
     end
 
@@ -301,18 +302,20 @@ module Buildr
     #
     # In adition to comparition operators, artifact requirements support logic operators
     # 
-    # * ( expr )       -- Parenthesis group expressions
-    # * not( expr )    -- Negation
-    # * expr and expr  -- Logical and
-    # * expr or  expr  -- Logical or
+    # * ( expr )     -- expression grouping
+    # * !( expr )    -- negate nested expr, parens are required
+    # * expr & expr  -- Logical and
+    # * expr |  expr -- Logical or
     #
     # Requirements defined on parent namespaces, are inherited by
     # their childs, this means that when a specific version is selected for use
     # on a sub-namespace, validation will be performed by checking the parent requirement.
     #
     #   artifacts('one') do 
-    #     need :bar => 'foo:bar:jar:1.0 or ~>1.0'
-    #     need 'foo:baz:jar:>1.2 & <1.3 & not(>=1.2.5 | <=1.2.6)'
+    #     need :bar => 'foo:bar:jar:1.0 | ~>1.0'
+    #     need 'foo:baz:jar:>1.2 & <1.3 & !(>=1.2.5 | <=1.2.6)'
+    #     # default logical operator is &, so this can be written as
+    #     need 'foo:baz:jar:>1.2 <1.3 !(>=1.2.5 | <=1.2.6)'
     #   end
     # 
     #   artifacts('one:two') do 
@@ -388,30 +391,19 @@ module Buildr
 
     # See examples for #need and #default methods.
     def use(*specs)
-      set = lambda do |k, v|
-        k = k.to_sym
-        unless @setting_defaults && (@using[k] || @using[@aliases[k]])
-          @using[k] = v
-        end
-      end
       specs.flatten.each do |spec|
         if (Hash === spec || Struct === spec) &&
            (spec.keys & ActsAsArtifact::ARTIFACT_ATTRIBUTES).empty?
           spec.each_pair do |k, v|
             if VersionRequirement.version?(v)
-              fail_unless_satisfied(requirement(k), {:version => v})
-              set.call(k, v)
+              set(k, v)
             else
               spec = Artifact.to_hash(v)
-              fail_unless_satisfied(requirement(k), spec)
-              set.call(k, spec)
+              set(k, spec)
             end
           end
         else
-          spec = Artifact.to_hash(spec)
-          unvers = Artifact.to_spec(spec.merge(:version => '-')).to_sym
-          fail_unless_satisfied(requirement(unvers), spec)
-          set.call(unvers, spec)
+          set(spec, Artifact.to_hash(spec))
         end
       end
       self
@@ -457,6 +449,23 @@ module Buildr
           raise "Artifact attributes mismatch, " + 
             "required #{Artifact.to_spec(req)}, got #{Artifact.to_spec(spec)}"
         end
+      end
+    end
+
+    def set(name, spec)
+      name = normalize_name(name)
+      needed = requirement(name)
+      candidate = VersionRequirement.version?(spec) ? {:version => spec } : spec
+      if @setting_defaults
+        current = spec(name)
+        satisfied = current && needed && needed[:version].satisfied_by?(current[:version])
+        unless satisfied || (!needed && current)
+          fail_unless_satisfied(needed, candidate)
+          @using[name] = spec
+        end
+      else
+        fail_unless_satisfied(needed, candidate)
+        @using[name] = spec
       end
     end
 

@@ -32,7 +32,7 @@ describe Buildr::ArtifactNamespace, 'obtained from Buildr#artifacts' do
     artifacts(nil) { |ns| ns.name.should == ArtifactNamespace::ROOT }
   end
 
-  it 'should return an array responding to :namespace if no block given' do
+  it 'should return an array responding to #namespace if no block given' do
     ary = artifacts
     ary.should be_kind_of(Array)
     ary.should respond_to(:namespace)
@@ -78,50 +78,83 @@ describe Buildr::ArtifactNamespace do
   end
 
   it 'should register a requirement with the #need method' do
-    artifacts do |root|
-      root.need 'foo:bar:jar:>1.0'
-      root.should_not be_satisfied('foo:bar:jar:?')
-      root.need :bat => 'foo:bat:jar:>1.0'
-      root.should_not be_satisfied(:bat)
+    artifacts do |ns|
+      ns.need 'foo:bar:jar:>1.0'
+      ns.should_not be_satisfied('foo:bar:jar:?')
+      ns.need :bat => 'foo:bat:jar:>1.0'
+      ns.should_not be_satisfied(:bat)
     end
   end
 
   it 'should register an artifact with the #use method' do
-    artifacts do |root|
-      root.use :bat => 'bat:bar:jar:2.0'
-      root.spec(:bat).should_not be_nil
-      root.spec(:bat)[:version].should == '2.0'
-      root.spec(:bat)[:group].should == 'bat'
+    artifacts do |ns|
+      ns.use :bat => 'bat:bar:jar:2.0'
+      ns.spec(:bat).should_not be_nil
+      ns.spec(:bat)[:version].should == '2.0'
+      ns.spec(:bat)[:group].should == 'bat'
       artifacts(:bat).should_not be_empty
-      root.use 'bat:man:jar:3.0'
-      root.spec('bat:man:jar:?')[:version].should == '3.0'
+      ns.use 'bat:man:jar:3.0'
+      ns.spec('bat:man:jar:?')[:version].should == '3.0'
       artifacts('bat:man:jar:?').should_not be_empty
     end
   end
 
   it 'should set defaults witht the #default method' do 
-    artifacts do |root|
-      root.use :bar => 'foo:bar:jar:2.0'
-      root.spec(:bar).should_not be_nil
-      root.default :bar => 'foo:bar:jar:1.9'
-      root.spec(:bar)[:version].should == '2.0'
-      root.default :baz => 'foo:baz:jar:1.8'
-      root.spec(:baz)[:version].should == '1.8'
+    artifacts do
+      use :bar => 'foo:bar:jar:2.0'
+      spec(:bar)[:version].should == '2.0'
+      default :bar => 'foo:bar:jar:1.9'
+      spec(:bar)[:version].should == '2.0'
+      default :baz => 'foo:baz:jar:1.8'
+      spec(:baz)[:version].should == '1.8'
+      need :bat => 'foo:bat:jar:>1.0'
+      default :bat => 'foo:bat:jar:1.5'
+      spec(:bat)[:version].should == '1.5'
     end
   end
 
   it 'should complain if requirement is not met' do 
-    artifacts do |root|
-      root.need :foo => 'foo:bar:jar:>3.0'
-      lambda { root.use :foo => '2.0' }.should raise_error(Exception)
-      lambda { root.use :foo => 'foo:baz:jar:3.1' }.should raise_error(Exception)
-      root.use :foo => '3.2'
-      root.spec(:foo)[:version].should == '3.2'
-      root.use :bat => '2.0'
-      lambda { root.need :bat => 'foo:bat:jar:>2.0' }.should raise_error(Exception)
-      root.use :baz => 'foo:ban:jar:2.1'
-      lambda { root.need :baz => 'foo:baz:jar:>2.0' }.should raise_error(Exception)
+    artifacts do |ns|
+      ns.need :foo => 'foo:bar:jar:>3.0'
+      lambda { ns.use :foo => '2.0' }.should raise_error(Exception)
+      lambda { ns.use :foo => 'foo:baz:jar:3.1' }.should raise_error(Exception)
+      ns.use :foo => '3.2'
+      ns.spec(:foo)[:version].should == '3.2'
+      ns.use :bat => '2.0'
+      lambda { ns.need :bat => 'foo:bat:jar:>2.0' }.should raise_error(Exception)
+      ns.use :baz => 'foo:ban:jar:2.1'
+      lambda { ns.need :baz => 'foo:baz:jar:>2.0' }.should raise_error(Exception)
     end
+  end
+
+  it 'should be populated with ArtifactNamespace.load given a hash of hashes' do 
+    hash = {}
+    hash[nil] = Hash[:foo => 'foo:bar:jar:1.0']
+    hash['one'] = Hash[:foo => 'foo:bar:jar:2.0']
+    ArtifactNamespace.load(hash)
+    artifacts[nil].spec(:foo)[:version].should == '1.0'
+    artifacts['one'].spec(:foo)[:version].should == '2.0'
+  end
+
+  it 'should select compatible artifacts defined on parent namespaces' do
+    artifacts do
+      use :foo => 'foo:bar:jar:3.0'
+      use :baz => 'foo:baz:jar:1.0'
+      use 'foo:bat:jar:1.5.6.7'
+    end
+    module Some
+      Buildr.artifacts(self) do
+        need :foo => 'foo:bar:jar:>=1.0'
+        need :baz => 'foo:baz:jar:>=2.0'
+        need :bat => 'foo:bat:jar:>1.5 & <1.6'
+        default :foo => '2.0'
+        default :baz => '2.0'
+        default :bat => '1.5.5'
+      end
+    end
+    artifacts[Some].spec(:foo)[:version].should == '3.0'
+    artifacts[Some].spec(:baz)[:version].should == '2.0'
+    artifacts[Some].spec(:bat)[:version].should == '1.5.6.7'
   end
   
 end
