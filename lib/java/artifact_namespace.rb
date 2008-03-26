@@ -28,10 +28,11 @@ module Buildr
   # their parent projects. 
   #
   # To open the namespace for the current context just provide a block
-  # to the Buildr.artifacts method (see ArtifactNamespace.instance):
+  # to the Buildr.artifacts method (see ArtifactNamespace.instance) or
+  # index the resulting array by a non-numeric argument (see AryMixin#[])
   #
   #    -- buildfile --
-  #    # open the root namespace, equivalent to artifacts[nil]
+  #    # open the root namespace, equivalent to artifacts[:root]
   #    artifacts do |ns|
   #       # later referenced by name
   #       ns.use :spring => 'org.springframework:spring:jar:2.5'
@@ -98,20 +99,12 @@ module Buildr
       #
       #   ary = artifacts('some:art:jar:1.0')
       #   ary[0] -> Artifact
-      #   ary[nil] -> root ArtifactNamespace
+      #   ary[nil] -> currently running ArtifactNamespace
+      #   ary[true] -> root ArtifactNamespace
       #   ary['some:name:space'] -> 'some:name:space' ArtifactNamespace
       def [](idx)
-        Numeric === idx ? super : namespace(idx)
+        Numeric === idx ? super : ArtifactNamespace.instance(idx)
       end
-      
-      # :call-seq:
-      #   artifacts.namespace -> namespace
-      #   artifacts.namespace(name) -> namespace
-      def namespace(*a, &b)
-        ArtifactNamespace.instance(*a, &b)
-      end
-      
-      alias_method :ns, :namespace
     end
     
     ROOT = :root
@@ -158,7 +151,8 @@ module Buildr
         case name
         when Array then name = name.join(':')
         when Module, Project then name = name.name
-        when nil then
+        when true then ROOT
+        when false, nil then
           task = Thread.current[:rake_chain]
           task = task.instance_variable_get(:@value) if task
           name = case task
@@ -171,7 +165,7 @@ module Buildr
         name = ROOT if name.to_s.blank?
         @instances ||= Hash.new { |h, k| h[k] = new(k) }
         instance = @instances[name.to_sym]
-        instance.tap(&block) if block
+        yield(instance) if block
         instance
       end
       
@@ -242,25 +236,19 @@ module Buildr
     # Test if named requirement has been satisfied
     def satisfied?(name)
       req, spec = requirement(name), spec(name)
-      if req && spec
-        req[:version].satisfied_by?(spec[:version])
-      else
-        false
-      end
+      req && spec && req[:version].satisfied_by?(spec[:version])
     end
 
     # Return the artifact spec (a hash) for the given name
     def spec(name)
       name = normalize_name(name)
       using = @using[name] || @using[@aliases[name]]
-      if using
-        if using.kind_of?(Hash)
-          spec = using.dup
-        else
-          spec = @requires[name] || @requires[@aliases[name]]
-          spec = spec ? spec.dup : {}
-          spec[:version] = using.dup
-        end
+      if Hash === using
+        using.dup
+      elsif using
+        spec = @requires[name] || @requires[@aliases[name]]
+        spec = spec ? spec.dup : {}
+        spec[:version] = using.dup
         spec
       elsif parent
         parent.spec(name) || parent.spec(@aliases[name])
@@ -337,16 +325,16 @@ module Buildr
           named[nil] = Artifact.to_hash(spec)
         end
         named.each_pair do |name, spec|
+          unvers = normalize_name(spec)
           spec[:version] = VersionRequirement.create(spec[:version])
-          unvers = Artifact.to_spec(spec.merge(:version => '-')).to_sym
           @requires[unvers] = spec
           if name
             name = name.to_sym
             using = @using[name] || @using[@aliases[name]]
             using = { :version  => using } if using.kind_of?(String) && VersionRequirement.version?(using)
             fail_unless_satisfied(spec, using)
-            @aliases[name.to_sym] = unvers
-            @aliases[unvers] = name.to_sym
+            @aliases[name] = unvers
+            @aliases[unvers] = name
           end
         end
       end
@@ -636,12 +624,9 @@ module Buildr
     end
   end # VersionRequirement
 
+  # Search best artifact version from remote repositories
   module ArtifactSearch
     extend self
-    
-    def enabled=(bool); @enabled = true & bool; end
-    def enabled?; @enabled; end
-    self.enabled = true
     
     def include(method = nil)
       (@includes ||= []).tap { push method if method }
@@ -677,8 +662,7 @@ module Buildr
       end
       result ||= requirement.default
       raise "Could not find #{Artifact.to_spec(spec)}"  +
-        "\n You may need to use an specific version instead of a requirement" +
-        "\n More Docu." unless result
+        "\n You may need to use an specific version instead of a requirement" unless result
       spec.merge :version => result
     end
     

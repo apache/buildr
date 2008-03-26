@@ -25,21 +25,12 @@ describe Buildr, '#artifacts' do
     expected = be_kind_of(ArtifactNamespace)
     artifacts { |ns| ns.name.should == ArtifactNamespace::ROOT }
     artifacts { |ns| ns.should expected }.should expected
-    artifacts { self.should expected }
   end
 
   it 'should tap root namespace when given a block and nil argument' do
     artifacts(nil) { |ns| ns.name.should == ArtifactNamespace::ROOT }
   end
 
-  it 'should return an array responding to #namespace if no block given' do
-    ary = artifacts
-    ary.should be_kind_of(Array)
-    ary.should respond_to(:namespace)
-    ary.namespace.should be_kind_of(ArtifactNamespace)
-    ary.namespace.name.should === ArtifactNamespace::ROOT
-  end
-  
   it 'should return an array whose non-numeric indices are namespaces' do
     ary = artifacts("foo:bar:jar:1.0")
     ary.should be_kind_of(Array)
@@ -87,12 +78,12 @@ describe Buildr::ArtifactNamespace do
   end
 
   it 'should have no parent if its the root namespace' do
-    root = artifacts.namespace
+    root = artifacts[nil]
     root.parent.should be_nil
   end
 
   it 'should reference it\'s parent' do
-    root = artifacts.namespace
+    root = artifacts[nil]
     define 'foo' do
       foo = artifacts { |ns| ns.parent.should == root }
       define 'bar' do
@@ -124,16 +115,16 @@ describe Buildr::ArtifactNamespace do
   end
 
   it 'should set defaults witht the #default method' do 
-    artifacts do
-      use :bar => 'foo:bar:jar:2.0'
-      spec(:bar)[:version].should == '2.0'
-      default :bar => 'foo:bar:jar:1.9'
-      spec(:bar)[:version].should == '2.0'
-      default :baz => 'foo:baz:jar:1.8'
-      spec(:baz)[:version].should == '1.8'
-      need :bat => 'foo:bat:jar:>1.0'
-      default :bat => 'foo:bat:jar:1.5'
-      spec(:bat)[:version].should == '1.5'
+    artifacts do |ns|
+      ns.use :bar => 'foo:bar:jar:2.0'
+      ns.spec(:bar)[:version].should == '2.0'
+      ns.default :bar => 'foo:bar:jar:1.9'
+      ns.spec(:bar)[:version].should == '2.0'
+      ns.default :baz => 'foo:baz:jar:1.8'
+      ns.spec(:baz)[:version].should == '1.8'
+      ns.need :bat => 'foo:bat:jar:>1.0'
+      ns.default :bat => 'foo:bat:jar:1.5'
+      ns.spec(:bat)[:version].should == '1.5'
     end
   end
 
@@ -161,19 +152,19 @@ describe Buildr::ArtifactNamespace do
   end
 
   it 'should select compatible artifacts defined on parent namespaces' do
-    artifacts do
-      use :foo => 'foo:bar:jar:3.0'
-      use :baz => 'foo:baz:jar:1.0'
-      use 'foo:bat:jar:1.5.6.7'
+    artifacts do |ns|
+      ns.use :foo => 'foo:bar:jar:3.0'
+      ns.use :baz => 'foo:baz:jar:1.0'
+      ns.use 'foo:bat:jar:1.5.6.7'
     end
     module Some
-      Buildr.artifacts(self) do
-        need :foo => 'foo:bar:jar:>=1.0'
-        need :baz => 'foo:baz:jar:>=2.0'
-        need :bat => 'foo:bat:jar:>1.5 & <1.6'
-        default :foo => '2.0'
-        default :baz => '2.0'
-        default :bat => '1.5.5'
+      Buildr.artifacts(self) do |ns|
+        ns.need :foo => 'foo:bar:jar:>=1.0'
+        ns.need :baz => 'foo:baz:jar:>=2.0'
+        ns.need :bat => 'foo:bat:jar:>1.5 & <1.6'
+        ns.default :foo => '2.0'
+        ns.default :baz => '2.0'
+        ns.default :bat => '1.5.5'
       end
     end
     artifacts[Some].spec(:foo)[:version].should == '3.0'
