@@ -16,19 +16,19 @@
 
 require File.join(File.dirname(__FILE__), 'spec_helpers')
 
-describe Buildr::ArtifactNamespace, 'obtained from Buildr#artifacts' do 
+describe Buildr, '#artifacts' do 
   before :each do 
     ArtifactNamespace.clear
   end
   
-  it 'should tap root namespace if called outside a project definition' do
+  it 'should tap root namespace if given a block and called outside a project definition' do
     expected = be_kind_of(ArtifactNamespace)
     artifacts { |ns| ns.name.should == ArtifactNamespace::ROOT }
     artifacts { |ns| ns.should expected }.should expected
     artifacts { self.should expected }
   end
 
-  it 'should tap root namespace when given nil' do
+  it 'should tap root namespace when given a block and nil argument' do
     artifacts(nil) { |ns| ns.name.should == ArtifactNamespace::ROOT }
   end
 
@@ -39,8 +39,32 @@ describe Buildr::ArtifactNamespace, 'obtained from Buildr#artifacts' do
     ary.namespace.should be_kind_of(ArtifactNamespace)
     ary.namespace.name.should === ArtifactNamespace::ROOT
   end
+  
+  it 'should return an array whose non-numeric indices are namespaces' do
+    ary = artifacts("foo:bar:jar:1.0")
+    ary.should be_kind_of(Array)
+    ary[0].should be_kind_of(Artifact)
+    ary[nil].should be_kind_of(ArtifactNamespace)
+    ary[nil].name.should === ArtifactNamespace::ROOT
+    ary['some:addon'].should be_kind_of(ArtifactNamespace)
+    ary['some:addon'].name.should === 'some:addon'.intern
+  end
 
-  it 'should return the namespace for the current project' do
+  it 'should take symbols, searching for them on the current namespace' do 
+    artifacts[nil][:bar] = 'foo:bar:jar:1.0'
+    artifacts[nil].use 'foo:moo:jar:2.0'
+    artifacts[nil][:bat] = 'foo:bar:jar:0.9'
+    define 'foo' do
+      artifacts[project][:baz] = 'foo:baz:jar:1.0'
+      compile.with :bar, :baz, :'foo:moo:jar:-', 'some:other:jar:1.0'
+      classpath = compile.classpath.map(&:to_spec)
+      classpath.should include('foo:baz:jar:1.0', 'foo:bar:jar:1.0', 
+                               'foo:moo:jar:2.0', 'some:other:jar:1.0')
+      classpath.should_not include('foo:bar:jar:0.9')
+    end
+  end
+
+  it 'should return the namespace for the current project if given a block' do
     define 'foo' do
       artifacts { |ns| ns.name.should == name.intern }
       define 'bar' do 
@@ -49,7 +73,7 @@ describe Buildr::ArtifactNamespace, 'obtained from Buildr#artifacts' do
     end
   end
 
-  it 'should take the first argument as the scope when given a block' do 
+  it 'should take the first argument as the namespace when given a block' do 
     artifacts('moo') { |ns| ns.name.should == :moo }
     artifacts(:mooo) { |ns| ns.name.should == :mooo }
     a = Module.new { def self.name; "Some::Module::A"; end }
@@ -156,5 +180,5 @@ describe Buildr::ArtifactNamespace do
     artifacts[Some].spec(:baz)[:version].should == '2.0'
     artifacts[Some].spec(:bat)[:version].should == '1.5.6.7'
   end
-  
+
 end

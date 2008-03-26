@@ -618,8 +618,9 @@ module Buildr
         set |= artifacts(spec.values)
       when Symbol
         name = spec
-        spec = ArtifactNamespace.instance.spec(name)
-        raise "No artifact found by name #{name.inspect}" unless spec
+        ns = ArtifactNamespace.instance
+        spec = ns.spec(name)
+        raise "No artifact found by name #{name.inspect} on #{ns.name} namespace" unless spec
         set |= [artifact(spec)]
       else
         fail "Invalid artifact specification in #{specs.inspect}"

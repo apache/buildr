@@ -52,8 +52,8 @@ describe Buildr::VersionRequirement, '#satisfied_by?' do
     should_satisfy '>1.0', %w(1.0.1), %w(1 1.0 0.1)
     should_satisfy '>=1.0', %w(1.0.1 1 1.0), %w(0.9)
 
-    should_satisfy '<1.0', %w(0.9, 0.9.9), %w(1 1.0 1.1 2)
-    should_satisfy '<=1.0', %w(0.9, 0.9.9 1 1.0), %w(1.1 2)
+    should_satisfy '<1.0', %w(0.9 0.9.9), %w(1 1.0 1.1 2)
+    should_satisfy '<=1.0', %w(0.9 0.9.9 1 1.0), %w(1.1 2)
     
     should_satisfy '~> 1.2.3', %w(1.2.3 1.2.3.4 1.2.4), %w(1.2.1 0.9 1.4 2)
   end

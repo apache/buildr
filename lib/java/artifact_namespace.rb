@@ -31,7 +31,7 @@ module Buildr
   # to the Buildr.artifacts method (see ArtifactNamespace.instance):
   #
   #    -- buildfile --
-  #    # open the root namespace, equivalent to +artifacts.namespace(nil)+
+  #    # open the root namespace, equivalent to artifacts[nil]
   #    artifacts do |ns|
   #       # later referenced by name
   #       ns.use :spring => 'org.springframework:spring:jar:2.5'
@@ -42,10 +42,14 @@ module Buildr
   #    # specify the xmlbeans version to use:
   #    artifacts[Buildr::XMLBeans][:xmlbeans] = '2.2'
   #   
-  #    # select some artifacts by their ruby symbols or spec
+  #    # Artifacts can be referenced using their name or spec
+  #    define 'moo_proj' { compile.with artifacts[self][:spring] }
+  #    # Buildr.artifact can take ruby symbols searching them on the current namespace
   #    define 'foo_proj' { compile.with :log4j, :'asm:asm:jar:-', 'some:other:jar:2.0' }
-  #    # or get all used artifacts for the project namespace
-  #    define 'bar_proj' { compile.with artifacts[self].used }
+  #    # or get all used artifacts for the current project
+  #    define 'bar_proj' { compile.with artifacts[project].values }
+  #    # or get all used artifacts in namespace (including parents)
+  #    define 'full_proj' { compile.with artifacts[project].values(true) }
   # 
   # The ArtifactNamespace.load method can be used to populate your
   # namespaces from a hash of hashes, like your profile yaml in the
@@ -87,22 +91,22 @@ module Buildr
       
       # :call-seq:
       #   artifacts[numeric] -> artifact
-      #   artifacts[scope] -> namespace
+      #   artifacts[name] -> namespace
       #
-      # Extends the regular Array#[] so that non numeric
-      # indices are scope names, returning the corresponding
-      # namespace
+      # Extends the regular Array#[] so for non-numeric
+      # indices it returns the corresponding ArtifactNamespace
+      #
+      #   ary = artifacts('some:art:jar:1.0')
+      #   ary[0] -> Artifact
+      #   ary[nil] -> root ArtifactNamespace
+      #   ary['some:name:space'] -> 'some:name:space' ArtifactNamespace
       def [](idx)
-        if Numeric === idx
-          super
-        else
-          namespace(idx)
-        end
+        Numeric === idx ? super : namespace(idx)
       end
       
       # :call-seq:
       #   artifacts.namespace -> namespace
-      #   artifacts.namespace(scope) -> namespace
+      #   artifacts.namespace(name) -> namespace
       def namespace(*a, &b)
         ArtifactNamespace.instance(*a, &b)
       end
@@ -135,12 +139,8 @@ module Buildr
       #
       #   -- buildfile --
       #   ArtifactNamespace.load(Buildr.profile['artifacts'])
-      def load(namespace_hash)
-        if Hash === namespace_hash
-          namespace_hash.each_pair do |name, uses|
-            instance(name).use(uses)
-          end
-        end
+      def load(namespaces = {})
+        namespaces.each_pair { |name, uses| instance(name).use(uses) }
       end
       
       # Forget all previously declared namespaces.
@@ -150,9 +150,9 @@ module Buildr
 
       # :call-seq:
       #   Buildr.artifacts { |ns| ... } -> namespace
-      #   Buildr.artifacts(scope) { |ns| ... } -> namespace
+      #   Buildr.artifacts(name) { |ns| ... } -> namespace
       # 
-      # Obtain the namespace for the given +scope+ or for the currently
+      # Obtain the namespace for the given +name+ or for the currently
       # running project. If a block is given, the namespace is yielded to it.
       def instance(name = nil, &block)
         case name
@@ -161,8 +161,11 @@ module Buildr
         when nil then
           task = Thread.current[:rake_chain]
           task = task.instance_variable_get(:@value) if task
-          name = task ? task.scope : Rake.application.current_scope
-          name = name.join(':')
+          name = case task
+                 when Project then task.name
+                 when Rake::Task then task.scope.join(':')
+                 when nil then Rake.application.current_scope.join(':')
+                 end
         end
         name = name.to_s.split(/:{2,}/).join(':')
         name = ROOT if name.to_s.blank?
@@ -184,13 +187,13 @@ module Buildr
     include Enumerable
     
     # Return an array of artifacts defined for use
-    def to_a(include_parents = false)
+    def values(include_parents = false)
       seen = {}
       registry = self
       while registry
         registry.instance_variable_get(:@using).each_pair do |key, spec|
           spec = spec(key) unless Hash == spec
-          name = Artifact.to_spec(spec.merge(:version => '-'))
+          name = normalize_name(spec)
           seen[name] = Buildr.artifact(spec) unless seen.key?(name)
         end
         registry = include_parents ? registry.parent : nil
@@ -198,10 +201,14 @@ module Buildr
       seen.values
     end
 
-    def each(&block)
-      to_a.each(&block)
+    # Return the named artifacts from this namespace hierarchy
+    def values_at(*names)
+      names.map { |name| Buildr.artifact(spec(name)) }
     end
 
+    def each(&block)
+      values.each(&block)
+    end
     
     # Set the parent namespace
     def parent=(parent)
@@ -231,13 +238,6 @@ module Buildr
       @requires = {}
     end
     
-
-    # Return the named artifacts from this namespace hierarchy
-    def only(*names)
-      names = @requires.keys if names.empty?
-      ary = names.map { |name| Buildr.artifact(spec(name)) }
-      ary.size == 1 ? ary.first : ary
-    end
 
     # Test if named requirement has been satisfied
     def satisfied?(name)
@@ -303,9 +303,9 @@ module Buildr
     # In adition to comparition operators, artifact requirements support logic operators
     # 
     # * ( expr )     -- expression grouping
-    # * !( expr )    -- negate nested expr, parens are required
-    # * expr & expr  -- Logical and
-    # * expr |  expr -- Logical or
+    # * !( expr )    -- Negate nested expr, parens are required
+    # * expr & expr  -- Logical and, default operator. ">1 <2" is equivalent to ">1 & <2"
+    # * expr | expr  -- Logical or, lower precedence than &
     #
     # Requirements defined on parent namespaces, are inherited by
     # their childs, this means that when a specific version is selected for use
@@ -356,13 +356,13 @@ module Buildr
     # Specify default version if no previous one has been selected.
     # This method is useful mainly for plugin/addon writers, allowing
     # their users to override the artifact version to be used.
-    # Plugin/Addon writers need to document the +scope+ used by their
+    # Plugin/Addon writers need to document the +namespace+ used by their
     # addon, which can be simply an string or a module name.
     # 
     # Suppose we are writing the Foo::Addon module
     #
     #   module Foo::Addon
-    #     artifacts(self) do # scope is the module name => "Foo::Addon"
+    #     artifacts(self) do # namespace is the module name => "Foo::Addon"
     #       need :bar => 'foo:bar:jar:>2.0', # suppose bar is used at load time
     #            :baz => 'foo:baz:jar:>3.0'  # used when Foo::Addon.baz called
     #       default :bar => '2.5', :baz => '3.5'
@@ -410,10 +410,20 @@ module Buildr
     end
     
     alias_method :<<, :use
-    alias_method :[], :only
     
     # :call-seq:
-    #   artifacts.namespace('foo:bar')[:commons_net] = '1.0'
+    #   artifacts['name:space'][:an_art] -> Artifact
+    #   artifacts['name:space']['an:spec:jar:-'] -> Artifact
+    #   artifacts['name:space'][:an_art, 'an:spec:jar:-', 'more_art'] -> [Artifact]
+    #
+    # Alias for #values_at
+    def [](name, *rest)
+      values = values_at(name, *rest)
+      rest.empty? ? values.first : values
+    end
+    
+    # :call-seq:
+    #   artifacts['name:space'][:artifact_name] = '1.0'
     # 
     # Selects an artifact version for usage, with hash like syntax.
     # 
@@ -471,6 +481,8 @@ module Buildr
 
   end # ArtifactNamespace
 
+  #
+  # See ArtifactNamespace#need
   class VersionRequirement
     
     CMP_PROCS = Gem::Requirement::OPS.dup
@@ -480,14 +492,20 @@ module Buildr
     VER_CHARS = '\w\.'
     
     class << self
+      # is +str+ a version string?
       def version?(str)
         /^\s*[#{VER_CHARS}]+\s*$/ === str
       end
       
+      # is +str+ a version requirement?
       def requirement?(str)
         /[#{BOOL_CHARS}#{CMP_CHARS}\(\)]/ === str
       end
       
+      # :call-seq:
+      #    VersionRequirement.create(" >1 <2 !(1.5) ") -> requirement
+      #
+      # parse the +str+ requirement 
       def create(str)
         instance_eval normalize(str)
       rescue StandardError => e
@@ -537,14 +555,20 @@ module Buildr
       end
     end
 
-    def initialize(op, *requirements)
+    def initialize(op, *requirements) #:nodoc:
       @op, @requirements = op, requirements
     end
 
-    def has_alternatives?
+    # Is this object a composed requirement?
+    #   VersionRequirement.create('1').composed? -> false
+    #   VersionRequirement.create('1 | 2').composed? -> true
+    #   VersionRequirement.create('1 & 2').composed? -> true
+    def composed?
       requirements.size > 1
     end
 
+    # Return the last requirement on this object having a 
+    # = operator.
     def default
       default = nil
       requirements.reverse.find do |r|
@@ -559,6 +583,7 @@ module Buildr
       default
     end
 
+    # Test if this requirement can be satisfied by +version+
     def satisfied_by?(version)
       return false unless version
       unless version.kind_of?(Gem::Version)
@@ -577,14 +602,19 @@ module Buildr
       negative ? !result : result
     end
 
+    # Either modify the current requirement (if it's already an or operation)
+    # or create a new requirement
     def |(other)
       operation(:|, other)
     end
 
+    # Either modify the current requirement (if it's already an and operation)
+    # or create a new requirement
     def &(other)
       operation(:&, other)
     end
-
+    
+    # return the parsed expression
     def to_s
       str = requirements.map(&:to_s).join(" " + @op.to_s + " ").to_s
       str = "( " + str + " )" if negative || requirements.size > 1
@@ -629,7 +659,7 @@ module Buildr
       end
       result = nil
       methods = search_methods
-      if requirement.has_alternatives?
+      if requirement.composed?
         until result || methods.empty?
           method = methods.shift
           type = method.keys.first
