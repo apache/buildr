@@ -114,14 +114,14 @@ module Buildr
      private 
       def groovyc_options(sources, target)
         check_options options, OPTIONS
-        groovyc_options = options.only(*GROOVYC_OPTIONS)
+        groovyc_options = options.to_hash.only(*GROOVYC_OPTIONS)
         groovyc_options[:destdir] = File.expand_path(target)
         groovyc_options
       end
 
       def javac_options
         check_options options, OPTIONS
-        javac_options = options.only(*JAVAC_OPTIONS)
+        javac_options = options.to_hash.only(*JAVAC_OPTIONS)
         javac_options[:optimize] = (javac_options.delete(:optimise) || false)
         javac_options[:nowarn] = (javac_options.delete(:warnings) || verbose).to_s !~ /^(true|yes|on)$/i
         other = javac_options.delete(:javac) || {}

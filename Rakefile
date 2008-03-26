@@ -78,7 +78,7 @@ def ruby(*args)
   options = Hash === args.last ? args.pop : {}
   #options[:verbose] ||= false
   cmd = []
-  cmd << 'sudo' if options.delete(:sudo) && !Gem.win_platform? && RUBY_PLATFORM !~ /java/
+  cmd << 'sudo' if options.delete(:sudo) && !Gem.win_platform?
   cmd << Config::CONFIG['ruby_install_name']
   cmd << '-S' << options.delete(:command) if options[:command]
   sh *cmd.push(*args.flatten).push(options)

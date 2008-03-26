@@ -176,10 +176,27 @@ class BasicObject #:nodoc:
 end
 
 
-class OpenObject < BasicObject
-  def initialize(hash = nil, &block)
+class OpenObject < Hash
+
+  def initialize(source=nil, &block)
     @hash = Hash.new(&block)
-    @hash.update(hash) if hash
+    @hash.update(source) if source
+  end
+
+  def [](key)
+    @hash[key]
+  end
+
+  def []=(key, value)
+    @hash[key] = value
+  end
+
+  def delete(key)
+    @hash.delete(key)
+  end
+
+  def to_hash
+    @hash.clone
   end
 
   def method_missing(symbol, *args)
@@ -188,18 +205,6 @@ class OpenObject < BasicObject
     else
       self[symbol]
     end
-  end
-
-  def []=(key, value)
-    @hash[key] = value
-  end
-
-  def [](key)
-    @hash[key]
-  end
-
-  def to_hash
-    @hash.clone
   end
 end
 
