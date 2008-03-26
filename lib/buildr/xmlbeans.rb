@@ -20,12 +20,20 @@ require "java/ant"
 module Buildr
 
   # Provides XMLBeans schema compiler. Require explicitly using <code>require "buildr/xmlbeans"</code>.
+  #
+  # You may use ArtifactNamespace to select the artifact version used by this module:
+  #
+  #   require 'buildr/xmlbeans'
+  #   artifacts[Buildr::XMLBeans].use :xmlbeans => '2.2.0'
+  #   define 'some_proj' do 
+  #      compile_xml_beans _('xsd_dir')
+  #   end
   module XMLBeans
 
-    Buildr.artifacts(self) do
-      need :stax => 'stax:stax-api:jar:>=1.0',
-           :xmlbeans => 'org.apache.xmlbeans:xmlbeans:jar:>=2.2'
-      default :stax => '1.0', :xmlbeans => '2.3.0'
+    Buildr.artifacts(self) do |ns|
+      ns.need :stax => 'stax:stax-api:jar:>=1',
+              :xmlbeans => 'org.apache.xmlbeans:xmlbeans:jar:>2'
+      ns.default :stax => '1.0.1', :xmlbeans => '2.3.0'
     end
     
     class << self
@@ -37,7 +45,7 @@ module Buildr
         puts "Running XMLBeans schema compiler" if verbose
         Buildr.ant "xmlbeans" do |ant|
           ant.taskdef :name=>"xmlbeans", :classname=>"org.apache.xmlbeans.impl.tool.XMLBean",
-            :classpath=>requires.join(File::PATH_SEPARATOR)
+            :classpath=>requires.map(&:to_s).join(File::PATH_SEPARATOR)
           ant.xmlbeans :srconly=>"true", :srcgendir=>options[:output].to_s, :classgendir=>options[:output].to_s, 
             :javasource=>options[:javasource] do
             args.flatten.each { |file| ant.fileset File.directory?(file) ? { :dir=>file } : { :file=>file } }
@@ -47,8 +55,8 @@ module Buildr
         touch options[:output].to_s, :verbose=>false
       end
 
-      def requires()
-        Buildr.artifacts[XMLBeans].used.each { |artifact| artifact.invoke }.map(&:to_s)
+      def requires
+        Buildr.artifacts[XMLBeans].each { |artifact| artifact.invoke }
       end
     end
 

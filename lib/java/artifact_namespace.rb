@@ -151,7 +151,7 @@ module Buildr
         case name
         when Array then name = name.join(':')
         when Module, Project then name = name.name
-        when true then ROOT
+        when :root, 'root', true then ROOT
         when false, nil then
           task = Thread.current[:rake_chain]
           task = task.instance_variable_get(:@value) if task
@@ -181,7 +181,11 @@ module Buildr
     include Enumerable
     
     # Return an array of artifacts defined for use
-    def values(include_parents = false)
+    # If +include_parents+ is true, all artifacts from this namespace 
+    # up are returned.
+    # If +ignore_missing+ is true, artifacts without selected version
+    # are ignored, otherwise an exception is thrown.
+    def values(include_parents = false, ignore_missing = false)
       seen = {}
       registry = self
       while registry
@@ -189,6 +193,15 @@ module Buildr
           spec = spec(key) unless Hash == spec
           name = normalize_name(spec)
           seen[name] = Buildr.artifact(spec) unless seen.key?(name)
+        end
+        registry.instance_variable_get(:@requires).values.each do |req|
+          spec = spec(req)
+          raise "No version selected for #{Artifact.to_spec(req)} " +
+            "on namespace #{registry.name}" unless ignore_missing || spec
+          if spec
+            name = normalize_name(spec)
+            seen[name] = Buildr.artifact(spec) unless seen.key?(name)
+          end
         end
         registry = include_parents ? registry.parent : nil
       end
@@ -241,6 +254,7 @@ module Buildr
 
     # Return the artifact spec (a hash) for the given name
     def spec(name)
+      return nil unless name
       name = normalize_name(name)
       using = @using[name] || @using[@aliases[name]]
       if Hash === using
@@ -256,6 +270,7 @@ module Buildr
     end
 
     def requirement(name)
+      return nil unless name
       name = normalize_name(name)
       req = @requires[name] || @requires[@aliases[name]]
       if req
@@ -266,6 +281,7 @@ module Buildr
     end
 
     def delete(name)
+      return self unless name
       name = normalize_name(name)
       [name, @aliases[name]].each do |n|
         @requires.delete(n); @using.delete(n); @aliases.delete(n)
@@ -555,8 +571,7 @@ module Buildr
       requirements.size > 1
     end
 
-    # Return the last requirement on this object having a 
-    # = operator.
+    # Return the last requirement on this object having an = operator.
     def default
       default = nil
       requirements.reverse.find do |r|

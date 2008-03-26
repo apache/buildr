@@ -172,4 +172,24 @@ describe Buildr::ArtifactNamespace do
     artifacts[Some].spec(:bat)[:version].should == '1.5.6.7'
   end
 
+  it 'should return its artifacts when called the #values method' do
+    artifacts do |ns|
+      ns.use "num:one:jar:1.1", "num:two:jar:2.2"
+    end
+    artifacts('foo') do |ns|
+      ns.need :one => 'num:one:jar:>=1.0'
+      ns.default :one => '1.0'
+      ns.need :three => 'num:three:jar:>=3.0'
+      ns.default :three => '3.0'
+    end
+    foo = artifacts['foo'].values.map(&:to_spec)
+    foo.should include("num:one:jar:1.1", "num:three:jar:3.0")
+    foo = artifacts['foo'].values(true).map(&:to_spec) # including parents
+    foo.should include("num:one:jar:1.1", "num:three:jar:3.0", "num:two:jar:2.2")
+    artifacts['foo'].need :four => 'num:four:jar:>4.0'
+    lambda { artifacts[:foo].values }.should raise_error(Exception, /no version/i)
+    foo = artifacts['foo'].values(false, true).map(&:to_spec) # ignore missing
+    foo.should include("num:one:jar:1.1", "num:three:jar:3.0")
+  end
+
 end
