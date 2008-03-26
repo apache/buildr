@@ -19,7 +19,8 @@ module Buildr
 
   #
   # ArtifactNamespace allows users to control artifact versions to be
-  # used by their projects and Buildr modules/addons.
+  # used by their projects and Buildr modules/addons. See Buildr::XMLBeans
+  # as an example for modules/addon writers.
   # 
   # A namespace is a hierarchical dictionary that allows to specify
   # artifact version requirements (see ArtifactNamespace#need).
@@ -32,21 +33,21 @@ module Buildr
   # index the resulting array by a non-numeric argument (see AryMixin#[])
   #
   #    -- buildfile --
-  #    # open the root namespace, equivalent to artifacts[:root]
+  #    # open the current namespace, equivalent to artifacts[nil]
   #    artifacts do |ns|
-  #       # later referenced by name
-  #       ns.use :spring => 'org.springframework:spring:jar:2.5'
-  #       ns.use :log4j => 'log4j:log4j:jar:1.2.15'
+  #       # artifacts are referenced by id or spec
+  #       ns.use 'org.springframework:spring:jar:2.5'
+  #       ns.use :logging => 'log4j:log4j:jar:1.2.15'
   #    end
   #
   #    require 'buildr/xmlbeans'
   #    # specify the xmlbeans version to use:
   #    artifacts[Buildr::XMLBeans][:xmlbeans] = '2.2'
   #   
-  #    # Artifacts can be referenced using their name or spec
+  #    # Artifacts can be referenced using their id or spec
   #    define 'moo_proj' { compile.with artifacts[self][:spring] }
   #    # Buildr.artifact can take ruby symbols searching them on the current namespace
-  #    define 'foo_proj' { compile.with :log4j, :'asm:asm:jar:-', 'some:other:jar:2.0' }
+  #    define 'foo_proj' { compile.with :logging, :'asm:asm:jar:-', 'some:other:jar:2.0' }
   #    # or get all used artifacts for the current project
   #    define 'bar_proj' { compile.with artifacts[project].values }
   #    # or get all used artifacts in namespace (including parents)
@@ -62,7 +63,7 @@ module Buildr
   #       # root namespace, null name
   #       ~:
   #         spring:     org.springframework:spring:jar:2.5
-  #         log4j:      log4j:log4j:jar:1.2.15
+  #         logging:    log4j:log4j:jar:1.2.15
   #         groovy:     org.codehaus.groovy:groovy:jar:1.5.4
   #       
   #       # module/addon namespace
@@ -78,9 +79,9 @@ module Buildr
   #   require 'buildr/xmlbeans' # will use xmlbeans-2.2
   #   require 'java/groovyc' # will find groovy 1.5.4 on global ns
   #   describe 'one' do 
-  #     compile.with :spring, :log4j   # spring-2.5, log4j-1.2.15
+  #     compile.with :spring, :logging   # spring-2.5, log4j-1.2.15
   #     describe 'oldie' do
-  #       compile.with :spring, :log4j # spring-1.0, log4j-1.2.15
+  #       compile.with :spring, :logging # spring-1.0, log4j-1.2.15
   #     end
   #   end
   # 
@@ -119,7 +120,7 @@ module Buildr
       #       # root namespace, null name
       #       ~:
       #         spring:     org.springframework:spring:jar:2.5
-      #         log4j:      log4j:log4j:jar:1.2.15
+      #         logging:    log4j:log4j:jar:1.2.15
       #         groovy:     org.codehaus.groovy:groovy:jar:1.5.4
       #       
       #       # open Buildr::XMLBeans namespace
@@ -241,7 +242,7 @@ module Buildr
     # Clear internal requirements map
     def clear
       @using = {}
-      @aliases = {}
+      @ids = {}
       @requires = {}
     end
     
@@ -256,23 +257,23 @@ module Buildr
     def spec(name)
       return nil unless name
       name = normalize_name(name)
-      using = @using[name] || @using[@aliases[name]]
+      using = @using[name] || @using[@ids[name]]
       if Hash === using
         using.dup
       elsif using
-        spec = @requires[name] || @requires[@aliases[name]]
+        spec = @requires[name] || @requires[@ids[name]]
         spec = spec ? spec.dup : {}
         spec[:version] = using.dup
         spec
       elsif parent
-        parent.spec(name) || parent.spec(@aliases[name])
+        parent.spec(name) || parent.spec(@ids[name])
       end
     end
 
     def requirement(name)
       return nil unless name
       name = normalize_name(name)
-      req = @requires[name] || @requires[@aliases[name]]
+      req = @requires[name] || @requires[@ids[name]]
       if req
         req.dup
       elsif parent
@@ -283,21 +284,23 @@ module Buildr
     def delete(name)
       return self unless name
       name = normalize_name(name)
-      [name, @aliases[name]].each do |n|
-        @requires.delete(n); @using.delete(n); @aliases.delete(n)
+      [name, @ids[name]].each do |n|
+        @requires.delete(n); @using.delete(n); @ids.delete(n)
       end
       self
     end
 
-    # :call-seq: 
+    # :call-seq:
     #   artifacts do
-    #     need *specs
-    #     need name => spec
+    #     need *requirements
+    #     need name => requirement
+    #     need requirement => default_version
     #   end
     # 
-    # Establish an artifact dependency on the current namespace.
-    # A dependency is simply an artifact spec whose version part
-    # contains comparision operators.
+    # Establish an artifact +requirement+ on the current namespace.
+    # A +requirement+ is simply an artifact spec whose version part
+    # contains comparision operators. If no +name+ is specified, 
+    # the artifact :id attribute is used as name.
     #
     # Supported comparison operators are =, !=, >, <, >=, <= and ~>.
     # The compatible comparison (~>) matches from the specified version up one version.
@@ -336,22 +339,36 @@ module Buildr
         named = {}
         if (Hash === spec || Struct === spec) &&
            (spec.keys & ActsAsArtifact::ARTIFACT_ATTRIBUTES).empty?
-          spec.each_pair { |k, v| named[k] = Artifact.to_hash(v) }
+          spec.each_pair do |name, art|
+            if name =~ /([^:]+:){2,4}/
+              default_version = art
+              art = Artifact.to_hash(name)
+              name = art[:id]
+            elsif Array === art
+              art, default_version = Artifact.to_hash(art.first), art.last
+            else
+              art, default_version = Artifact.to_hash(art), nil
+            end
+            named[name] = [art, default_version]
+          end
         else
-          named[nil] = Artifact.to_hash(spec)
+          spec = Artifact.to_hash(spec)
+          named[spec[:id]] = [spec, nil]
         end
-        named.each_pair do |name, spec|
+        named.each_pair do |name, spec_version|
+          spec, default_version = *spec_version
           unvers = normalize_name(spec)
           spec[:version] = VersionRequirement.create(spec[:version])
           @requires[unvers] = spec
           if name
             name = name.to_sym
-            using = @using[name] || @using[@aliases[name]]
+            using = @using[name] || @using[@ids[name]]
             using = { :version  => using } if using.kind_of?(String) && VersionRequirement.version?(using)
             fail_unless_satisfied(spec, using)
-            @aliases[name] = unvers
-            @aliases[unvers] = name
+            @ids[name] = unvers
+            @ids[unvers] = name
           end
+          setting_defaults { set(unvers, default_version) } if default_version
         end
       end
       self
@@ -385,12 +402,7 @@ module Buildr
     #   Foo::Addon.baz    # used baz-4.0
     # 
     def default(*specs)
-      @setting_defaults = true
-      begin
-        use(*specs)
-      ensure
-        @setting_defaults = false
-      end
+      setting_defaults { use(*specs) }
     end
 
     # See examples for #need and #default methods.
@@ -466,6 +478,16 @@ module Buildr
       end
     end
 
+    def setting_defaults
+      @setting_defaults = true
+      begin
+        result = yield
+      ensure
+        @setting_defaults = false
+      end
+      result
+    end
+
     def set(name, spec)
       name = normalize_name(name)
       needed = requirement(name)
@@ -475,10 +497,12 @@ module Buildr
         satisfied = current && needed && needed[:version].satisfied_by?(current[:version])
         unless satisfied || (!needed && current)
           fail_unless_satisfied(needed, candidate)
+          @ids[spec[:id].to_sym], @ids[name] = name, spec[:id].to_sym if @ids[name].nil? && spec[:id]
           @using[name] = spec
         end
       else
         fail_unless_satisfied(needed, candidate)
+        @ids[spec[:id].to_sym], @ids[name] = name, spec[:id].to_sym if @ids[name].nil? && spec[:id]
         @using[name] = spec
       end
     end

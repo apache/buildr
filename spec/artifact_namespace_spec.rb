@@ -92,12 +92,28 @@ describe Buildr::ArtifactNamespace do
     end
   end
 
+  it 'should take the artifact id attribute as name' do
+     artifacts do |ns|
+        ns.need 'foo:bar:jar:>1.0'
+        ns.default :bar => '1.1'
+        ns.spec('foo:bar:jar:-')[:version].should == '1.1'
+        ns.use 'some:thing:jar:2.0'
+        ns.spec(:thing)[:version].should == '2.0'
+        ns.spec('some:thing:jar:-')[:version].should == '2.0'
+     end
+  end
+
   it 'should register a requirement with the #need method' do
     artifacts do |ns|
       ns.need 'foo:bar:jar:>1.0'
       ns.should_not be_satisfied('foo:bar:jar:?')
       ns.need :bat => 'foo:bat:jar:>1.0'
       ns.should_not be_satisfied(:bat)
+    end
+    artifacts('foo') do |ns|
+      ns.need 'foo:baz:jar:>1.0' => '2.0'
+      ns.spec('foo:baz:jar:-').values_at(:id, :version).should == ['baz', '2.0']
+      ns.spec(:baz).values_at(:id, :version).should == ['baz', '2.0']
     end
   end
 

@@ -21,20 +21,21 @@ module Buildr
 
   # Provides XMLBeans schema compiler. Require explicitly using <code>require "buildr/xmlbeans"</code>.
   #
-  # You may use ArtifactNamespace to select the artifact version used by this module:
-  #
   #   require 'buildr/xmlbeans'
-  #   artifacts[Buildr::XMLBeans].use :xmlbeans => '2.2.0'
   #   define 'some_proj' do 
-  #      compile_xml_beans _('xsd_dir')
+  #      compile_xml_beans _(:source, :main, :xsd) # the directory with *.xsd
   #   end
   module XMLBeans
 
-    Buildr.artifacts(self) do |ns|
-      ns.need :stax => 'stax:stax-api:jar:>=1',
-              :xmlbeans => 'org.apache.xmlbeans:xmlbeans:jar:>2'
-      ns.default :stax => '1.0.1', :xmlbeans => '2.3.0'
-    end
+    # You can use ArtifactNamespace to customize the versions of 
+    # <code>:xmlbeans</code> or <code>:stax</code> used by this module:
+    #
+    #   require 'buildr/xmlbeans'
+    #   artifacts[Buildr::XMLBeans].use :xmlbeans => '2.2.0'
+    REQUIREMENTS = {
+      'stax:stax-api:jar:>=1' => '1.0.1',
+      'org.apache.xmlbeans:xmlbeans:jar:>2' => '2.3.0'
+    }.tap { |reqs| Buildr.artifacts[self].need reqs }
     
     class << self
 
