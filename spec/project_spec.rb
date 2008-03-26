@@ -701,57 +701,6 @@ describe Project, '#task' do
 end
 
 
-describe InheritedAttributes do
-  before do
-    class TestAttributes
-      include InheritedAttributes
-      inherited_attr :foo
-      inherited_attr :bar do 'barring' end
-      attr_accessor :parent 
-    end
-    @parent = TestAttributes.new
-    @child = TestAttributes.new
-    @child.parent = @parent
-  end
-
-  it 'should have getter and setter methods' do
-    @parent.foo = 'foo'
-    @parent.bar = 'bar'
-    @parent.foo.should eql('foo')
-    @parent.bar.should eql('bar')
-  end
-
-  it 'should take default value from block' do
-    @parent.foo.should be_nil
-    @parent.bar.should eql('barring')
-  end
-
-  it 'should take default value from parent' do
-    @child.foo.should be_nil
-    @parent.foo = 'foo'
-    @child.foo.should eql('foo')
-    @child.foo.should be(@parent.foo)
-  end
-
-  it 'should cache default value from parent' do
-    @parent.foo = 'foo'
-    @child.foo.should eql('foo')
-    @parent.foo = 'bar'
-    @child.foo.should eql('foo')
-  end
-
-  it 'should set value in child separately from parent' do
-    @child.bar = 'barred'
-    @child.bar.should eql('barred')
-    @parent.bar.should eql('barring')
-  end
-
-  after do
-    Object.send :remove_const, TestAttributes.name
-  end
-end
-
-
 describe Rake::Task, 'buildr:initialize' do
   it 'should be ready to run as the first task' do
     Rake.application.top_level_tasks.first.should eql('buildr:initialize')

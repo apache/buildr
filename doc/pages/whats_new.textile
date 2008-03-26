@@ -214,8 +214,8 @@ between names used by Buildr and actual paths within the project.
 
 h4.  Other
 
-* Buildr 1.3 upgrades to Rake 0.8, RSpec 1.1, RJB 1.1, Facets 2.2 and OpenJPA
-1.0.1.
+* Buildr 1.3 upgrades to Rake 0.8, RSpec 1.1, RJB 1.1 and OpenJPA
+1.0.1.  Buildr no longer includes or uses Facets.
 
 * JUnit tests now operate on all compiled test classes that extend
 @junit.framework.TestCase@ or use the @Test@ annotation; TestNG test cases are

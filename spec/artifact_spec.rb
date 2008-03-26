@@ -344,6 +344,7 @@ describe Buildr, '#artifact' do
   end
 
   it 'should reject partial string specifier' do
+    artifact('com.example:library::2.0') 
     lambda { artifact('com.example:library:jar') }.should raise_error
     lambda { artifact('com.example:library:jar:') }.should raise_error
     lambda { artifact('com.example:library::2.0') }.should_not raise_error

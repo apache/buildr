@@ -103,7 +103,7 @@ module Buildr
 
               [Artifact.to_spec(spec)] + transitive_deps
             end
-          }.flatten.compact.uniq_by{|spec| art = spec.split(':'); "#{art[0]}:#{art[1]}"}
+          }.flatten.compact #.uniq_by{|spec| art = spec.split(':'); "#{art[0]}:#{art[1]}"}
 
         @depends_for_scopes[scopes] = depends
       end

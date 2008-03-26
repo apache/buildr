@@ -23,10 +23,8 @@ require 'uri'
 require 'uri/sftp'
 require 'digest/md5'
 require 'digest/sha1'
-require 'facets/progressbar'
-require 'highline'
+require 'progressbar'
 require 'tempfile'
-require 'uri/sftp'
 
 
 # Monkeypatching: SFTP never defines the mkdir method on its session or the underlying
@@ -337,7 +335,7 @@ module URI
       http.use_ssl = true if self.instance_of? URI::HTTPS
 
       puts "Requesting #{self}"  if Rake.application.options.trace
-      request = Net::HTTP::Get.new(path.blank? ? '/' : path, headers)
+      request = Net::HTTP::Get.new(path.empty? ? '/' : path, headers)
       request.basic_auth self.user, self.password if self.user
       http.request request do |response|
         case response
@@ -472,7 +470,7 @@ module URI
     # See URI::Generic#read
     def read(options = nil, &block)
       options ||= {}
-      raise ArgumentError, 'Either you\'re attempting to read a file from another host (which we don\'t support), or you used two slashes by mistake, where you should have file:///<path>.' unless host.to_s.blank?
+      raise ArgumentError, 'Either you\'re attempting to read a file from another host (which we don\'t support), or you used two slashes by mistake, where you should have file:///<path>.' if host
 
       path = real_path
       # TODO: complain about clunky URLs
@@ -499,7 +497,7 @@ module URI
   protected
 
     def write_internal(options, &block) #:nodoc:
-      raise ArgumentError, 'Either you\'re attempting to write a file to another host (which we don\'t support), or you used two slashes by mistake, where you should have file:///<path>.' unless host.to_s.blank?
+      raise ArgumentError, 'Either you\'re attempting to write a file to another host (which we don\'t support), or you used two slashes by mistake, where you should have file:///<path>.' if host
       temp = nil
       Tempfile.open File.basename(path) do |temp|
         temp.binmode

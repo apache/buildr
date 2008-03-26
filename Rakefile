@@ -2,7 +2,6 @@ require 'rubygems'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
 require 'spec/rake/spectask'
-gem 'facets', '= 2.3.0'
 
 
 # Gem specification comes first, other tasks rely on it.
@@ -29,7 +28,6 @@ def specify(platform)
 
     # Tested against these dependencies.
     spec.add_dependency 'rake',                 '~> 0.8'
-    spec.add_dependency 'facets',               '~> 2.2'
     spec.add_dependency 'builder',              '~> 2.1'
     spec.add_dependency 'net-ssh',              '~> 1.1'
     spec.add_dependency 'net-sftp',             '~> 1.1'
@@ -40,6 +38,7 @@ def specify(platform)
     spec.add_dependency 'xml-simple',           '~> 1.0'
     spec.add_dependency 'archive-tar-minitar',  '~> 0.5'
     spec.add_dependency 'rubyforge',            '~> 0.4'
+    spec.add_dependency 'progressbar',          '~> 0.0.3'
     
     spec.platform = platform
     spec.add_dependency 'rjb', '~> 1.1' unless platform == 'java'
@@ -100,6 +99,12 @@ task 'setup' do
     #each { |dep| install_gem dep.name, :version=>dep.version_requirements }
 end
 
+begin
+  require 'highline/import'
+rescue LoadError 
+  puts 'HighLine required, please run rake setup first'
+end
+
 # Packaging and local installation.
 #
 desc 'Clean up all temporary directories used for running tests, creating documentation, packaging, etc.'
@@ -113,8 +118,9 @@ end
 
 desc 'Uninstall previously installed packaged'
 task 'uninstall' do |task|
-  say "Uninstalling #{ruby_spec.name} ... "
-  ruby 'install', name_or_path.to_s, :command=>'gem', :sudo=>true
+  spec = RUBY_PLATFORM =~ /java/ ? jruby_spec : ruby_spec
+  say "Uninstalling #{spec.name} ... "
+  ruby 'install', spec.name, :command=>'gem', :sudo=>true
   say 'Done'
 end
 
@@ -227,14 +233,6 @@ end
 
 namespace 'release' do
  
-  begin
-    require 'highline'
-    require 'highline/import'
-    Kernel.def_delegators :$terminal, :color
-  rescue LoadError 
-    puts 'HighLine required, please run rake setup first'
-  end
-
   # This task does all prerequisites checks before starting the release, for example,
   # that we have Groovy and Scala to run all the test cases, or that we have Allison
   # and PrinceXML to generate the full documentation.

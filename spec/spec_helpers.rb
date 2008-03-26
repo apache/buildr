@@ -39,10 +39,10 @@ unless self.class.const_defined?('SpecHelpers')
         $warning << message
       end
 
-      def warn_deprecated_with_capture(message)
+      alias :warn_deprecated_without_capture :warn_deprecated
+      def warn_deprecated(message)
         verbose(true) { warn_deprecated_without_capture message }
       end
-      alias_method_chain :warn_deprecated, :capture
     end
 
     class WarningMatcher
@@ -75,12 +75,12 @@ unless self.class.const_defined?('SpecHelpers')
 
 
     class ::Rake::Task
-      def execute_with_a_record(args)
+      alias :execute_without_a_record :execute
+      def execute(args)
         $executed ||= []
         $executed << name
         execute_without_a_record args
       end
-      alias_method_chain :execute, :a_record
     end
 
     class InvokeMatcher

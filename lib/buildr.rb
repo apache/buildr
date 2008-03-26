@@ -22,14 +22,6 @@ require 'net/ssh'
 
 require 'highline'
 require 'highline/import'
-require 'symbol/to_proc'
-require 'facets/string/blank'
-require 'facets/module/alias_method_chain'
-require 'facets/string/starts_with'
-require 'facets/openobject'
-require 'facets/kernel/tap'
-require 'facets/kernel/ergo'
-require 'facets/enumerable/uniq_by'
 require 'builder' # A different kind of buildr, one we use to create XML.
 
 

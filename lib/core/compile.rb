@@ -83,8 +83,8 @@ module Buildr
         def applies_to?(project, task)
           paths = task.sources + [sources].flatten.map { |src| Array(project.path_to(:source, task.usage, src.to_sym)) }
           paths.flatten!
-          ext_glob = source_ext.ergo { |ext| Array === ext ? "{#{ext.join(',')}}" : ext }
-          paths.any? { |path| !Dir["#{path}/**/*.#{ext_glob}"].empty? }
+          ext_glob = Array(source_ext).join(',')
+          paths.any? { |path| !Dir["#{path}/**/*.{#{ext_glob}}"].empty? }
         end
 
         # Implementations can use this method to specify various compiler attributes.
@@ -138,7 +138,7 @@ module Buildr
         self.class.dependencies
       end
 
-    private
+    protected
 
       # Use this to complain about CompileTask options not supported by this compiler.
       #
@@ -154,8 +154,8 @@ module Buildr
 
       # Expands a list of source directories/files into a list of files that have the #source_ext extension.
       def files_from_sources(sources)
-        ext_glob = self.class.source_ext.ergo { |ext| Array === ext ? "{#{ext.join(',')}}" : ext }
-        sources.flatten.map { |source| File.directory?(source) ? FileList["#{source}/**/*.#{ext_glob}"] : source }.
+        ext_glob = Array(self.class.source_ext).join(',')
+        sources.flatten.map { |source| File.directory?(source) ? FileList["#{source}/**/*.{#{ext_glob}}"] : source }.
           flatten.reject { |file| File.directory?(file) }.map { |file| File.expand_path(file) }.uniq
       end
 
@@ -165,20 +165,18 @@ module Buildr
       # The default method maps all files in the source directories with #source_ext into
       # paths in the target directory with #target_ext (e.g. 'source/foo.java'=>'target/foo.class').
       def compile_map(sources, target)
-        source_ext = self.class.source_ext
         target_ext = self.class.target_ext
-        ext_glob = self.class.source_ext.ergo { |ext| Array === ext ? "{#{ext.join(',')}}" : ext }
+        ext_glob = Array(self.class.source_ext).join(',')
         sources.flatten.inject({}) do |map, source|
           if File.directory?(source)
             base = Pathname.new(source)
-            FileList["#{source}/**/*.#{ext_glob}"].reject { |file| File.directory?(file) }.
+            FileList["#{source}/**/*.{#{ext_glob}}"].reject { |file| File.directory?(file) }.
               each { |file| map[file] = File.join(target, Pathname.new(file).relative_path_from(base).to_s.ext(target_ext)) }
           else
             map[source] = File.join(target, File.basename(source).ext(target_ext))
           end
           map
         end
-
       end
 
     end

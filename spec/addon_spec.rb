@@ -16,7 +16,7 @@
 
 require File.join(File.dirname(__FILE__), 'spec_helpers')
 
-
+=begin
 describe Buildr, 'addon' do
 
   before do
@@ -173,3 +173,4 @@ describe Buildr, 'addon' do
     Gem.loaded_specs.replace @loaded_specs
   end
 end
+=end

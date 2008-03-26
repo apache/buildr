@@ -70,7 +70,7 @@ module Buildr
     #     :version=>'1.2' }
     def to_spec_hash
       base = { :group=>group, :id=>id, :type=>type, :version=>version }
-      classifier.to_s.blank? ? base : base.merge(:classifier=>classifier)
+      classifier ? base.merge(:classifier=>classifier) : base
     end
     alias_method :to_hash, :to_spec_hash
 
@@ -82,7 +82,7 @@ module Buildr
     # or
     #   <group>:<artifact>:<type>:<classifier><:version>
     def to_spec
-      classifier.to_s.blank? ? "#{group}:#{id}:#{type}:#{version}" : "#{group}:#{id}:#{type}:#{classifier}:#{version}"
+      classifier ? "#{group}:#{id}:#{type}:#{classifier}:#{version}" : "#{group}:#{id}:#{type}:#{version}"
     end
 
     # :call-seq:
@@ -146,7 +146,7 @@ module Buildr
       # Where do we release to?
       upload_to ||= Buildr.repositories.release_to
       upload_to = { :url=>upload_to } unless Hash === upload_to
-      raise ArgumentError, 'Don\'t know where to upload, perhaps you forgot to set repositories.release_to' if upload_to[:url].to_s.blank?
+      raise ArgumentError, 'Don\'t know where to upload, perhaps you forgot to set repositories.release_to' unless upload_to[:url]
       invoke # Make sure we exist.
 
       # Upload POM ahead of package, so we don't fail and find POM-less package (the horror!)
@@ -246,13 +246,13 @@ module Buildr
           rake_check_options spec, :id, :group, :type, :classifier, :version
           # Sanitize the hash and check it's valid.
           spec = ARTIFACT_ATTRIBUTES.inject({}) { |h, k| h[k] = spec[k].to_s if spec[k] ; h }
-          fail "Missing group identifier for #{spec.inspect}" if spec[:group].to_s.blank?
-          fail "Missing artifact identifier for #{spec.inspect}" if spec[:id].to_s.blank?
-          fail "Missing version for #{spec.inspect}" if spec[:version].to_s.blank?
-          spec[:type] = spec[:type].to_s.blank? ? DEFAULT_TYPE : spec[:type].to_sym
+          fail "Missing group identifier for #{spec.inspect}" unless spec[:group]
+          fail "Missing artifact identifier for #{spec.inspect}" unless spec[:id]
+          fail "Missing version for #{spec.inspect}" unless spec[:version]
+          spec[:type] = (spec[:type] || DEFAULT_TYPE).to_sym
           spec
         elsif String === spec
-          group, id, type, version, *rest = spec.split(':')
+          group, id, type, version, *rest = spec.split(':').map { |part| part.empty? ? nil : part }
           unless rest.empty?
             # Optional classifier comes before version.
             classifier, version = version, rest.shift
@@ -271,8 +271,8 @@ module Buildr
       # a string, hash or any object that responds to to_spec.
       def to_spec(hash)
         hash = to_hash(hash) unless Hash === hash
-        version = ":#{hash[:version]}" unless hash[:version].to_s.blank?
-        classifier = ":#{hash[:classifier]}" unless hash[:classifier].to_s.blank?
+        version = ":#{hash[:version]}" if hash[:version]
+        classifier = ":#{hash[:classifier]}" if hash[:classifier]
         "#{hash[:group]}:#{hash[:id]}:#{hash[:type] || DEFAULT_TYPE}#{classifier}#{version}"
       end
 
@@ -281,8 +281,8 @@ module Buildr
       #
       # Convert a hash spec to a file name.
       def hash_to_file_name(hash)
-        version = "-#{hash[:version]}" unless hash[:version].to_s.blank?
-        classifier = "-#{hash[:classifier]}" unless hash[:classifier].to_s.blank?
+        version = "-#{hash[:version]}" if hash[:version]
+        classifier = "-#{hash[:classifier]}" if hash[:classifier]
         "#{hash[:id]}#{version}#{classifier}.#{hash[:type] || DEFAULT_TYPE}"
       end
 

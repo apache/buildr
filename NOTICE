@@ -25,10 +25,6 @@ bundled under the etc/legal directory (when available).
 Licensed under MIT/X Consortium
 Copyright 2003, 2004 by Jim Weirich.
 
-* Facets - http://rubyforge.org/projects/facets
-Licensed under the Ruby License
-Copyright 2005,2006,2007 Thomas Sawyer
-
 * Builder - http://rubyforge.org/projects/builder
 Licensed under MIT/X Consortium
 Copyright 2004 by Jim Weirich (jim@weirichhouse.org).
@@ -63,6 +59,11 @@ Copyright (c) 2003 Maik Schmidt
 * ruwiki (archive-tar-minitar) - http://rubyforge.org/projects/ruwiki/
 Licensed under the Ruby License
 Copyright 2004 Mauricio Julio Fernández Pradier and Austin Ziegler
+
+* progressbar - http://0xcc.net/ruby-progressbar/
+Licensed under the Ruby License
+Copyright (C) 2001 Satoru Takabayashi <satoru@namazu.org>
+
 
 MATERIALS IN DOCUMENTATION
 --------------------------

@@ -18,30 +18,6 @@ require 'core/common'
 
 module Buildr
 
-  # *Deprecated*
-  module InheritedAttributes #:nodoc:
-
-    def self.included(base)
-      base.extend(self)
-      warn_deprecated 'InheritedAttributes are deprecated'
-    end
-
-    def inherited_attr(symbol, default = nil, &block)
-      block ||= proc { default }
-      attr_accessor symbol
-      define_method "#{symbol}_with_inheritence" do
-        value = send("#{symbol}_without_inheritence")
-        if value.nil?
-          value = parent ? parent.send(symbol) : self.instance_eval(&block)
-          send "#{symbol}=", value
-        end
-        value
-      end
-      alias_method_chain symbol, :inheritence
-    end
-  end
-
-
   # Symbolic mapping for directory layout.  Used for both the default and custom layouts.
   #
   # For example, the default layout maps [:source, :main, :java] to 'src/main/java', and

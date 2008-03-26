@@ -17,7 +17,7 @@
 * Added: Experimental support for addons.
 * Changed: JUnit/TestNG test cases are selected by superClass or annotations, not by class-name pattern.
 * Changed: Upgraded to Antwrap 0.7.0, thanks to Caleb Powell for relicensing under Apache License.
-* Changed: Upgraded to Rake 0.8, RSpec 1.1, RJB 1.1, Facets 2.2, OpenJPA 1.0.1.
+* Changed: Upgraded to Rake 0.8, RSpec 1.1, RJB 1.1, OpenJPA 1.0.1.
 * Changed: Resources are now copied to target/resources instead of target/classes, and target/test/resources instead of target/test-resources.
 * Changed: Test cases are now compiled into target/test/classes instead of target/test-classes.
 * Changed: Compile extension and CompileTask are now separate from the Java module.  Multiple compilers can be used, either guessed from the project layout, or specified with compile.using(:name).
@@ -32,6 +32,7 @@
 * Changed: Resource tasks no longer generate target directory if there are no resources to copy over.
 * Removed: Prepare tasks removed.
 * Removed: All deprecated features since 1.1.  If you've seen warnings before, except the build to break.
+* Removed: No longer using Facets or recommending you use it in buildfiles.
 * Fixed: More typos/documentation fixes by Lacton
 * Fixed: Artifact.pom resolves artifact without classifier, i.e org.testng:testng:jar:jdk15:5.1 uses org.testng:testng:pom:5.1 (Tommy).
 * Fixed: More patches towards JRuby support, courtesy of Vic Borja.

@@ -330,7 +330,7 @@ class Buildr::ArchiveTask
     def entries() #:nodoc:
       return root.entries unless @path
       @entries ||= root.entries.inject([]) { |selected, entry|
-        selected << entry.name.sub(@path, "") if entry.name.starts_with?(@path)
+        selected << entry.name.sub(@path, "") if entry.name.index(@path) == 0
         selected
       }
     end
