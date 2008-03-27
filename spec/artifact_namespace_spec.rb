@@ -386,41 +386,62 @@ describe Buildr::ArtifactNamespace do
   end
 
   it 'should be an Enumerable' do
-    Enumerable === artifact_ns
+    artifact_ns.should be_kind_of(Enumerable)
     artifact_ns.use 'foo:bar:baz:1.0'
     artifact_ns.map(&:artifact).should include(artifact('foo:bar:baz:1.0'))
   end
 
 end # ArtifactNamespace
 
-describe Buildr, '.artifact' do
+describe Buildr do
   before(:each) { Buildr::ArtifactNamespace.clear }
-  
-  it 'should search current namespace if given a symbol' do 
-    define 'foo' do 
-      artifact_ns.use :cool => 'cool:aid:jar:1.0'
-      define 'bar' do
-        artifact(:cool).should == artifact_ns[:cool].artifact
-      end
-    end
-  end
 
-  it 'should search current namespace if given a symbol spec' do 
-    define 'foo' do 
-      artifact_ns.use 'cool:aid:jar:1.0'
-      define 'bar' do
-        artifact(:'cool:aid:jar').should == artifact_ns[:aid].artifact
+  describe '.artifacts' do 
+    it 'should take ruby symbols and ask the current namespace for them' do
+      define 'foo' do 
+        artifact_ns.cool = 'cool:aid:jar:1.0'
+        artifact_ns.use 'some:other:jar:1.0'
+        artifact_ns.use 'bat:man:jar:1.0'
+        compile.with :cool, :other, :'bat:man:jar'
+        compile.classpath.map(&:to_spec).should include('cool:aid:jar:1.0', 'some:other:jar:1.0', 'bat:man:jar:1.0')
+      end
+    end
+    
+    it 'should take a namespace' do 
+      artifact_ns(:moo).muu = 'moo:muu:jar:1.0'
+      define 'foo' do
+        compile.with artifact_ns(:moo)
+        compile.classpath.map(&:to_spec).should include('moo:muu:jar:1.0')
       end
     end
   end
   
-  it 'should fail when no artifact by that name is found' do
-    define 'foo' do 
-      artifact_ns.use 'cool:aid:jar:1.0'
-      define 'bar' do
-        lambda { artifact(:cool) }.should raise_error(IndexError, /artifact/)
+  describe '.artifact' do
+    it 'should search current namespace if given a symbol' do 
+      define 'foo' do 
+        artifact_ns.use :cool => 'cool:aid:jar:1.0'
+        define 'bar' do
+          artifact(:cool).should == artifact_ns[:cool].artifact
+        end
+      end
+    end
+    
+    it 'should search current namespace if given a symbol spec' do 
+      define 'foo' do 
+        artifact_ns.use 'cool:aid:jar:1.0'
+        define 'bar' do
+          artifact(:'cool:aid:jar').should == artifact_ns[:aid].artifact
+        end
+      end
+    end
+    
+    it 'should fail when no artifact by that name is found' do
+      define 'foo' do 
+        artifact_ns.use 'cool:aid:jar:1.0'
+        define 'bar' do
+          lambda { artifact(:cool) }.should raise_error(IndexError, /artifact/)
+        end
       end
     end
   end
 end
-
