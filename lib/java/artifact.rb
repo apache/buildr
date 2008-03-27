@@ -556,6 +556,7 @@ module Buildr
   #   download(artifact('dojo:dojo-widget:zip:2.0')=>
   #     'http://download.dojotoolkit.org/release-2.0/dojo-2.0-widget.zip')
   def artifact(spec, &block) #:yields:task
+    spec = artifact_ns.fetch(spec) if spec.kind_of?(Symbol)
     spec = Artifact.to_hash(spec)
     unless task = Artifact.lookup(spec)
       task = Artifact.define_task(repositories.locate(spec))
@@ -597,14 +598,11 @@ module Buildr
   # and are only useful to work with the resulting namespace. See the
   # documentation for ArtifactNamespace for more info.
   def artifacts(*specs, &block)
-    specs.flatten!
-    if block
-      scope = Rake.application.current_scope
-      return ArtifactNamespace.instance(specs.first || scope, &block)
-    end
-    specs.inject([]) do |set, spec|
+    specs.flatten.inject([]) do |set, spec|
       case spec
-      when Hash
+      when ArtifactNamespace
+        set |= spec.artifacts
+      when Symbol, Hash
         set |= [artifact(spec)]
       when /([^:]+:){2,4}/ # A spec as opposed to a file name.
         set |= [artifact(spec)]
@@ -616,16 +614,10 @@ module Buildr
         set |= [spec]
       when Struct
         set |= artifacts(spec.values)
-      when Symbol
-        name = spec
-        ns = ArtifactNamespace.instance
-        spec = ns.spec(name)
-        raise "No artifact found by name #{name.inspect} on #{ns.name} namespace" unless spec
-        set |= [artifact(spec)]
       else
         fail "Invalid artifact specification in #{specs.inspect}"
       end
-    end.extend ArtifactNamespace::AryMixin
+    end
   end
 
   def transitive(*specs)

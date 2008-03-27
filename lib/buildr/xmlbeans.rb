@@ -31,10 +31,11 @@ module Buildr
     # <code>:xmlbeans</code> or <code>:stax</code> used by this module:
     #
     #   require 'buildr/xmlbeans'
-    #   artifacts[Buildr::XMLBeans].use :xmlbeans => '2.2.0'
-    REQUIRES = ArtifactNamespace.for self,
-    'stax:stax-api:jar:>=1'               => '1.0.1',
-    'org.apache.xmlbeans:xmlbeans:jar:>2' => '2.3.0'
+    #   Buildr::XMLBeans::REQUIRES.xmlbeans = '2.2.0'
+    REQUIRES = ArtifactNamespace.for(self) do |ns|
+      ns.xmlbeans! 'org.apache.xmlbeans:xmlbeans:jar:2.3.0', '>2'
+      ns.stax_api! 'stax:stax-api:jar:>=1.0.1'
+    end
     
     class << self
 
@@ -56,7 +57,7 @@ module Buildr
       end
 
       def requires()
-        @requires ||= REQUIRES.each(&:invoke).map(&:to_s)
+        @requires ||= REQUIRES.artifacts.each(&:invoke).map(&:to_s)
       end
     end
 

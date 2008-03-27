@@ -13,131 +13,225 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'java/artifact'
-require 'hpricot'
+require 'java/version_requirement'
 
 module Buildr
-
+  
+  # An ArtifactNamespace is a hierarchical dictionary used to manage ArtifactRequirements.
+  # It can be used to have different artifact versions per project
+  # or to allow users to select a version for addons or modules.
   #
-  # ArtifactNamespace allows users to control artifact versions to be
-  # used by their projects or addons. 
-  # A namespace is a hierarchical dictionary that allows to specify
-  # artifact version requirements (see ArtifactNamespace#need).
+  # Namespaces are opened using the Buildr.artifact_ns method, most important methods are:
+  # [need]      Used to create a requirement on the namespace.
+  # [use]       Set the artifact version to use for a requirement.
+  # [values_at] Reference requirements by name.
+  # [each]      Return each ArtifactRequirement in the namespace.
+  # The method_missing method for instances provides some syntactic sugar to these.
+  # See the following examples, and the methods for ArtifactRequirement.
   #
+  # = Avoiding constant polution on buildfile
   #
-  # Addon/extension authors expecting their users to customize an artifact
-  # version, need to document the namespace where users can do so.
-  # The following example illustrates how to do this. See the source for 
-  # Buildr::XMLBeans for real-world example.
-  #   
-  #   # Document this addon/extension features
-  #   module Some::Extension
-  #     # Document this constant for users to know the version requirements
-  #     REQUIRES = ArtifactNamespace.for self, 'arti:fact:jar:>1' => '1.0.1'
-  #
-  #     def some_stuff
-  #        REQUIRES.requirement(:fact)[:version].satisfied_by?('0.9') # -> false
-  #        REQUIRES.each { |artifact| artifact.invoke } # get them!
-  #     end
-  #   end
+  # Each project has its own ArtifactNamespace inheriting the one from the 
+  # parent project up to the root namespace.
   # 
-  # Every project can have it's own namespace inheriting the one for
-  # their parent projects. 
-  #
-  # To open the namespace for the current context just provide a block
-  # to the Buildr.artifacts method (see ArtifactNamespace.instance) or
-  # index the resulting array by a non-numeric argument (see AryMixin#[])
-  #
-  #    -- buildfile --
-  #    # open the current namespace, equivalent to artifacts[nil]
-  #    artifacts do |ns|
-  #       # artifacts are referenced by id or spec
-  #       ns.use 'org.springframework:spring:jar:2.5'
-  #       ns.use :logging => 'log4j:log4j:jar:1.2.15'
-  #    end
-  #
-  #    require 'buildr/xmlbeans'
-  #    # specify the xmlbeans version to use:
-  #    artifacts[Buildr::XMLBeans][:xmlbeans] = '2.2'
-  #   
-  #    # Artifacts can be referenced using their id or spec
-  #    define 'moo_proj' { compile.with artifacts[self][:spring] }
-  #    # Buildr.artifact can take ruby symbols searching them on the current namespace
-  #    define 'foo_proj' { compile.with :logging, :'asm:asm:jar:-', 'some:other:jar:2.0' }
-  #    # or get all used artifacts for the current project
-  #    define 'bar_proj' { compile.with artifacts[project].values }
-  #    # or get all used artifacts in namespace (including parents)
-  #    define 'full_proj' { compile.with artifacts[project].values(true) }
-  # 
-  # The ArtifactNamespace.load method can be used to populate your
-  # namespaces from a hash of hashes, like your profile yaml in the
-  # following example:
-  # 
-  #   -- profiles.yaml --
-  #   development:
-  #     artifacts:
-  #       # root namespace, null name
-  #       ~:
-  #         spring:     org.springframework:spring:jar:2.5
-  #         logging:    log4j:log4j:jar:1.2.15
-  #         groovy:     org.codehaus.groovy:groovy:jar:1.5.4
-  #       
-  #       # module/addon namespace
-  #       Buildr::XMLBeans: 
-  #         xmlbeans: 2.2
-  #
-  #       # for subproject one:oldie
-  #       one:oldie:
-  #         spring:  org.springframework:spring:jar:1.0
+  # Consider the following snippet, as project grows, each subproject 
+  # may need diferent artifact combinations and/or versions. Asigning 
+  # artifact specifications to constants can make it painful to maintain
+  # their references even if using structs/hashes.
   #
   #   -- buildfile --
-  #   ArtifactNamespace.load(Buildr.profile['artifacts'])
-  #   require 'buildr/xmlbeans' # will use xmlbeans-2.2
-  #   require 'java/groovyc' # will find groovy 1.5.4 on global ns
-  #   describe 'one' do 
-  #     compile.with :spring, :logging   # spring-2.5, log4j-1.2.15
-  #     describe 'oldie' do
-  #       compile.with :spring, :logging # spring-1.0, log4j-1.2.15
+  #   SPRING = 'org.springframework:spring:jar:2.5'
+  #   SPRING_OLD = 'org.springframework:spring:jar:1.0'
+  #   LOGGING = ['comons-logging:commons-logging:jar:1.1.1', 
+  #              'log4j:log4j:jar:1.2.15']
+  #   WL_LOGGING = artifact('bea:wlcommons-logging:jar:8.1').from('path/to/wlcommons-logging.jar')
+  #   LOGGING_WEBLOGIC = ['comons-logging:commons-logging:jar:1.1.1', 
+  #                       WL_LOGGING]
+  #   COMMONS = struct :collections => 'commons-collection:commons-collection:jar:3.1',
+  #                    :net => 'commons-net:commons-net:jar:1.4.0'
+  #   
+  #   define 'example1' do
+  #     define 'one' do
+  #       compile.with SPRING, LOGGING_WEBLOGIC, COMMONS
+  #     end
+  #     define 'two' do
+  #       compile.with SPRING_OLD, LOGGING, COMMONS
+  #     end
+  #     define 'three' do
+  #       compile.with "commons-collections:commons-collections:jar:2.2"
   #     end
   #   end
+  #
   # 
+  # With ArtifactNamespace you can do some more advanced stuff, the following
+  # annotated snipped could still be reduced if default artifact definitions were
+  # loaded from yaml file (see section bellow and ArtifactNamespace.load).
   # 
+  #   -- buildfile --
+  #   artifact_ns do |ns| # the current namespace (root if called outside a project)
+  #     # default artifacts
+  #     ns.spring = 'org.springframework:spring:jar:2.5'
+  #     # default logger is log4j
+  #     ns.logger = 'log4j:log4j:jar:1.2.15'
+  #
+  #     # create a sub namespace by calling the #ns method,
+  #     # artifacts defined on the sub-namespace can be referenced by
+  #     # name :commons_net or by calling commons.net
+  #     ns.ns :commons, :net => 'commons-net:commons-net:jar:1.4.0',
+  #                     :logging => 'comons-logging:commons-logging:jar:1.1.1'
+  #
+  #
+  #     # When a child namespace asks for the :log artifact, 
+  #     # these artifacts will be searched starting from the :current namespace.
+  #     ns.dynamic :log, :logger, :commons_logging
+  #   end
+  #   
+  #   artifact_ns('example2:one') do |ns| # namespace for the one subproject
+  #     ns.logger = artifact('bea:wlcommons-logging:jar:8.1').from('path/to/wlcommons-logging.jar')
+  #   end
+  #   artifact_ns('example2:two') do |ns| 
+  #     ns.spring = '1.0' # for project two use an older spring version (just for an example)
+  #   end
+  #   artifact_ns('example2:three').commons_collections = 2.2'
+  #   artifact_ns('example2:four') do |ns|
+  #     ns.beanutils = 'commons-beanutils:commons-beanutils:jar:1.5'        # just for this project
+  #     ns.ns(:compilation).use :commons_logging, :beanutils, :spring       # compile time dependencies
+  #     ns.ns(:testing).use :log, :beanutils, 'cglib:cglib-nodep:jar:2.1.3' # run time dependencies
+  #   end
+  #   
+  #   define 'example2' do 
+  #     define 'one' do
+  #       compile.with :spring, :log, :commons # uses weblogic logging
+  #     end
+  #     define 'two' do
+  #       compile.with :spring, :log, :commons # will take old spring
+  #     end
+  #     define 'three' do
+  #       compile.with :commons_collections
+  #       test.with artifact_ns('example2:two').spring # use spring from project two
+  #     end
+  #     define 'four' do
+  #       compile.with artifact_ns.compilation
+  #       test.with artifact_ns.testing
+  #     end
+  #     task(:down_them_all) do # again, just to fill this space with something ;)
+  #       parent.projects.map(&method(:artifact_ns)).map(&:artifacts).map(&:invoke)
+  #     end
+  #   end
+  #
+  # = Loading from a yaml file (e. profiles.yaml)
+  #
+  # If your projects use lots of jars (after all we are using java ;) you may prefer
+  # to have constant artifact definitions on an external file.
+  # Doing so would allow an external tool (or future Buildr feature) to maintain
+  # an artifacts.yaml for you.
+  # An example usage is documented on the ArtifactNamespace.load method.
+  #
+  # = For addon/plugin writers & Customizing artifact versions
+  # 
+  # Sometimes users would need to change the default artifact versions used by some
+  # module, for example, the XMLBeans compiler needs this, because of compatibility
+  # issues. Another example would be to select the groovy version to use on all our
+  # projects so that Buildr modules requiring groovy jars can use user prefered versions.
+  #
+  # To meet this goal, an ArtifactNamespace allows to specify ArgumentRequirement objects.
+  # In fact the only diference with the examples you have already seen is that requirements
+  # have an associated VersionRequirement, so that each time a user tries to select a version,
+  # buildr checks if it satisfies the requirements.
+  #
+  # Requirements are declared using the ArtifactNamespace#need method, but again,
+  # syntactic sugar is provided by ArtifactNamespace#method_missing.
+  #
+  # The following example is taken from the XMLBeans compiler module.
+  # And illustrates how addon authors should specify their requirements, 
+  # provide default versions, and document the namespace for users to customize.
+  # 
+  #    module Buildr::XMLBeans
+  #
+  #       # You need to document this constant, giving users some hints
+  #       # about when are (maybe some of) these artifacts used. I mean, 
+  #       # some modules, add jars to the Buildr classpath when its file 
+  #       # is required, you would need to tell your users, so that they
+  #       # can open the namespace and specify their defaults. Of course
+  #       # when the requirements are defined, buildr checks if any compatible
+  #       # version has been already defined, if so, uses it.
+  #       #
+  #       # Some things here have been changed to illustrate their meaning.
+  #       REQUIRES = ArtifactNamespace.for(self).tap do |ns|
+  #
+  #         # This jar requires a >2.0 version, default being 2.3.0
+  #         ns.xmlbeans! 'org.apache.xmlbeans:xmlbeans:jar:2.3.0', '>2'
+  #
+  #         # Users can customize with Buildr::XMLBeans::REQUIRES.stax_api = '1.2'
+  #         # This is a non-flexible requirement, only satisfied by version 1.0.1
+  #         ns.stax_api! 'stax:stax-api:jar:1.0.1'
+  #
+  #         # This one is not part of XMLBeans, but is just another example
+  #         # illustrating an `artifact requirement spec`.
+  #
+  #         ns.need " some_name ->  ar:ti:fact:3.2.5 ->  ( >2 & <4)"
+  #
+  #         # As you can see it's just an artifact spec, prefixed with
+  #         # ' some_name -> ', this means users can use that name to 
+  #         # reference the requirement, also this string has a VersionRequirement
+  #         # just after another ->.
+  #       end
+  #
+  #       # The REQUIRES constant is an ArtifactNamespace instance, 
+  #       # that means we can use it directly. Note that calling 
+  #       # Buildr.artifact_ns would lead to the currently executing context,
+  #       # not the one for this module.
+  #       def use
+  #         # test if user specified his own version, if so, we could perform some
+  #         # functionallity based on this.
+  #         REQUIRES.some_name.selected? # => false 
+  #         
+  #         REQUIRES.some_name.satisfied_by?('1.5') # => false
+  #         puts REQUIRES.some_name.requirement     # => ( >2 & <4 )
+  #
+  #         REQUIRES.artifacts # get the Artifact tasks
+  #       end
+  #
+  #    end 
+  # 
+  # That's it for addon writers, now, users can select their prefered version with
+  # something like:
+  #
+  #    require 'buildr/xmlbeans'
+  #    Buildr::XMLBeans::REQUIRES.xmlbeans = '2.2.0'
+  #
+  # More advanced stuff, if users really need to select an xmlbeans version
+  # per project, they can do so letting :current (that is, the currently running
+  # namespace) be parent of the REQUIRES namespace:
+  #
+  #    Buildr::XMLBeans::REQUIRES.parent = :current
+  #
+  # Now, provided that the compiler does not caches its artifacts, it will 
+  # select the correct version. (See the first section for how to select per project 
+  # artifacts).
+  #
+  #
   class ArtifactNamespace
-    
-    # Mixin for arrays returned by Buildr.artifacts
-    module AryMixin
-      
-      # :call-seq:
-      #   artifacts[numeric] -> artifact
-      #   artifacts[name] -> namespace
-      #
-      # Extends the regular Array#[] so for non-numeric
-      # indices it returns the corresponding ArtifactNamespace
-      #
-      #   ary = artifacts('some:art:jar:1.0')
-      #   ary[0] -> Artifact
-      #   ary[nil] -> currently running ArtifactNamespace
-      #   ary[true] -> root ArtifactNamespace
-      #   ary['some:name:space'] -> 'some:name:space' ArtifactNamespace
-      def [](idx)
-        Numeric === idx ? super : ArtifactNamespace.instance(idx)
-      end
-    end
-    
-    ROOT = :root
-
     class << self
+      # Forget all namespaces, create a new ROOT
+      def clear
+        @instances = nil
+        remove_const(:ROOT) if const_defined?(:ROOT)
+        const_set(:ROOT, new(:root))
+      end
+
       # Populate namespaces from a hash of hashes. 
       # The following example uses the profiles yaml to achieve this.
       #
       #   -- profiles.yaml --
       #   development:
-      #     artifacts:
-      #       # root namespace, null name
-      #       ~:
+      #     :artifacts:
+      #       :root:        # root namespace
       #         spring:     org.springframework:spring:jar:2.5
-      #         logging:    log4j:log4j:jar:1.2.15
       #         groovy:     org.codehaus.groovy:groovy:jar:1.5.4
+      #         logging:    # define a named group
+      #           - log4j:log4j:jar:1.2.15
+      #           - commons-logging:commons-logging:1.1.1
       #       
       #       # open Buildr::XMLBeans namespace
       #       Buildr::XMLBeans:
@@ -148,31 +242,25 @@ module Buildr
       #         spring:  org.springframework:spring:jar:1.0
       #
       #   -- buildfile --
-      #   ArtifactNamespace.load(Buildr.profile['artifacts'])
+      #   ArtifactNamespace.load(Buildr.profile[:artifacts])
       def load(namespaces = {})
         namespaces.each_pair { |name, uses| instance(name).use(uses) }
       end
       
-      # Forget all previously declared namespaces.
-      def clear 
-        @instances = nil
-      end
-
       # :call-seq:
-      #   Buildr.artifacts { |ns| ... } -> namespace
-      #   Buildr.artifacts(name) { |ns| ... } -> namespace
-      #   ArtifactNamespace.for(name, requirements) { |ns| ... } -> namespace
-      # 
-      # Obtain the namespace for the given +name+ or for the currently
-      # running project. If a block is given, the namespace is yielded to it.
+      #   ArtifactNamespace.instance { |current_ns| ... } -> current_ns
+      #   ArtifactNamespace.instance(name) { |ns| ... } -> ns
+      #   ArtifactNamespace.instance(:current) { |current_ns| ... } -> current_ns
+      #   ArtifactNamespace.instance(:root) { |root_ns| ... } -> root_ns
       #
-      # See the class level documentation for ArtifactNamespace.
-      def instance(name = nil, needs = nil, &block)
+      # Obtain an instance for the given name
+      def instance(name = nil)
         case name
+        when :root, 'root' then return ROOT
+        when ArtifactNamespace then return name
         when Array then name = name.join(':')
         when Module, Project then name = name.name
-        when :root, 'root', true then ROOT
-        when false, nil then
+        when :current, 'current', nil then
           task = Thread.current[:rake_chain]
           task = task.instance_variable_get(:@value) if task
           name = case task
@@ -182,623 +270,622 @@ module Buildr
                  end
         end
         name = name.to_s.split(/:{2,}/).join(':')
-        name = ROOT if name.empty?
+        return ROOT if name.size == 0
+        name = name.intern
         @instances ||= Hash.new { |h, k| h[k] = new(k) }
-        instance = @instances[name.to_sym]
-        instance.need(needs) if needs
-        yield(instance) if block
+        instance = @instances[name]
+        yield(instance) if block_given?
         instance
       end
-      
+
+      alias_method :[], :instance
       alias_method :for, :instance
+      
+      # :call-seq:
+      #   ArtifactNamespace.root { |ns| ... } -> ns
+      #
+      # Obtain the root namespace, returns the ROOT constant
+      def root
+        yield ROOT if block_given?
+        ROOT
+      end
     end
 
-    def initialize(name) #:nodoc:
-      @name = name
-      clear
-    end
-
-    attr_reader :name
-    include Enumerable
-    
-    # Return an array of artifacts defined for use
-    # If +include_parents+ is true, all artifacts from this namespace 
-    # up are returned.
-    # If +ignore_missing+ is true, artifacts without selected version
-    # are ignored, otherwise an exception is thrown.
-    def values(include_parents = false, ignore_missing = false)
-      seen = {}
-      registry = self
-      while registry
-        registry.instance_variable_get(:@using).each_pair do |key, spec|
-          spec = spec(key) unless Hash == spec
-          name = normalize_name(spec)
-          seen[name] = Buildr.artifact(spec) unless seen.key?(name)
+    module DClone #:nodoc:
+      def dclone 
+        clone = self.clone
+        clone.instance_variables.each do |i| 
+          value = clone.instance_variable_get(i)
+          value = value.dclone rescue
+          clone.instance_variable_set(i, value)
         end
-        registry.instance_variable_get(:@requires).values.each do |req|
-          spec = spec(req)
-          raise "No version selected for #{Artifact.to_spec(req)} " +
-            "on namespace #{registry.name}" unless ignore_missing || spec
-          if spec
-            name = normalize_name(spec)
-            seen[name] = Buildr.artifact(spec) unless seen.key?(name)
+        clone
+      end
+    end
+
+    class Registry < Hash #:nodoc:
+      include DClone
+
+      attr_accessor :parent
+      def alias(new_name, old_name)
+        new_name = new_name.to_sym
+        old_name = old_name.to_sym
+        if obj = get(old_name, true)
+          self[new_name] = obj
+          @aliases ||= []
+          group = @aliases.find { |a| a.include?(new_name) }
+          group.delete(new_name) if group
+          group = @aliases.find { |a| a.include?(old_name) }
+          @aliases << (group = [old_name]) unless group
+          group << new_name unless group.include?(new_name)
+        end
+        obj
+      end
+      
+      def aliases(name)
+        return [] unless name
+        name = name.to_sym
+        ((@aliases ||= []).find { |a| a.include?(name) } || [name]).dup
+      end
+
+      def []=(key, value)
+        return unless key
+        super(key.to_sym, value)
+      end
+
+      def get(key, include_parent = nil)
+        [].tap { |a| aliases(key).select { |n| a[0] = self[n] } }.first || 
+          (include_parent && parent && parent.get(key, include_parent))
+      end
+
+      def keys(include_parent = nil)
+        (super() | (include_parent && parent && parent.keys(include_parent) || [])).uniq
+      end
+
+      def values(include_parent = nil)
+        (super() | (include_parent && parent && parent.values(include_parent) || [])).uniq
+      end
+
+      def key?(key, include_parent = nil)
+        return false unless key
+        super(key.to_sym) || (include_parent && parent && parent.key?(key, include_parent))
+      end
+
+      def delete(key, include_parent = nil)
+        aliases(key).map {|n| super(n) } && include_parent && parent && parent.delete(key, include_parent)
+      end
+    end
+
+    # An artifact requirement is an object that ActsAsArtifact and has
+    # an associated VersionRequirement. It also knows the name (some times equal to the 
+    # artifact id) that is used to store it in an ArtifactNamespace.
+    class ArtifactRequirement
+      attr_accessor :version
+      attr_reader :name, :requirement
+
+      include DClone
+  
+      # Create a requirement from an `artifact requirement spec`.
+      # This spec has three parts, separated by  -> 
+      # 
+      #     some_name ->  ar:ti:fact:3.2.5 ->  ( >2 & <4)
+      #
+      # As you can see it's just an artifact spec, prefixed with
+      #     some_name ->
+      # the :some_name symbol becomes this object's name and
+      # is used to store it on an ArtifactNamespace.
+      #
+      #                   ar:ti:fact:3.2.5
+      #
+      # The second part is an artifact spec by itself, and specifies
+      # all remaining attributes, the version of this spec becomes
+      # the default version of this requirement.
+      #
+      # The last part consist of a VersionRequirement.
+      #                                     ->  ( >2 & <4)
+      #                        
+      # VersionRequirement supports RubyGem's comparision operators
+      # in adition to parens, logical and, logical or and negation.
+      # See the docs for VersionRequirement for more info on operators.
+      def initialize(spec)
+        self.class.send :include, ActsAsArtifact unless ActsAsArtifact === self
+        if ArtifactRequirement === spec
+          copy_attrs(spec)
+        else
+          spec = requirement_hash(spec)
+          apply_spec(spec[:spec])
+          self.name = spec[:name]
+          @requirement = spec[:requirement]
+          @version = @requirement.default if VersionRequirement.requirement?(@version)
+        end
+      end
+
+      # Copy attributes from other to this object
+      def copy_attrs(other)
+        (ActsAsArtifact::ARTIFACT_ATTRIBUTES + [:name, :requirement]).each do |attr|
+          value = other.instance_variable_get("@#{attr}")
+          value = value.dup if value && !value.kind_of?(Numeric) && !value.kind_of?(Symbol)
+          instance_variable_set("@#{attr}", value)
+        end
+      end
+
+      def name=(name)
+        @name = name.to_s.to_sym
+      end
+      
+      # Set a the requirement, this must be an string formatted for
+      # VersionRequirement#create to parse.
+      def requirement=(version_requirement)
+        @requirement = VersionRequirement.create(version_requirement.to_s)
+      end
+
+      # Return a hash consisting of :name, :spec, :requirement
+      def requirement_hash(spec = self)
+        result = {}
+        if String === spec 
+          parts = spec.split(/\s*->\s*/, 3).map(&:strip)
+          case parts.size
+          when 1
+            result[:spec] = Artifact.to_hash(parts.first)
+          when 2
+            if /^\w+$/ === parts.first
+              result[:name] = parts.first
+              result[:spec] = Artifact.to_hash(parts.last)
+            else
+              result[:spec] = Artifact.to_hash(parts.first)
+              result[:requirement] = VersionRequirement.create(parts.last)
+            end
+          when 3
+            result[:name] = parts.first
+            result[:spec] = Artifact.to_hash(parts[1])
+            result[:requirement] = VersionRequirement.create(parts.last)
+          end
+        else
+          result[:spec] = Artifact.to_hash(spec)
+        end
+        result[:name] ||= result[:spec][:id].to_s.to_sym
+        result[:requirement] ||= VersionRequirement.create(result[:spec][:version])
+        result
+      end
+      
+      # Test if this requirement is satisfied by an artifact spec.
+      def satisfied_by?(spec)
+        return false unless requirement
+        spec = Artifact.to_hash(spec)
+        hash = to_spec_hash
+        hash.delete(:version)
+        version = spec.delete(:version)
+        hash == spec && requirement.satisfied_by?(version)
+      end
+
+      # Has user selected a version for this requirement?
+      def selected?
+        @selected
+      end
+
+      def selected! #:nodoc:
+        @selected = true
+        self
+      end
+
+      # Return the Artifact object for the currently selected version
+      def artifact
+        ::Buildr.artifact(self)
+      end
+
+      # Format this requirement as an `artifact requirement spec`
+      def to_requirement_spec
+        result = to_spec
+        result = "#{name} -> #{result}" if name
+        result = "#{result} -> #{requirement}" if requirement
+        result
+      end
+
+      def to_s #:nodoc:
+        id ? to_requirement_spec : version
+      end
+
+      # Return an artifact spec without the version part.
+      def unversioned_spec
+        to_spec[/^([a-zA-Z._-]+(:[a-zA-Z._-]+){2,3})/]
+      end
+    
+      class << self
+        # Return an artifact spec without the version part.
+        def unversioned_spec(spec)
+          spec.to_s[/^([a-zA-Z._-]+(:[a-zA-Z._-]+){2,3})/] || new(spec).unversioned_spec
+        end
+      end
+    end
+
+    include DClone
+    include Enumerable
+    attr_reader :name
+    
+    def initialize(name) #:nodoc:
+      @name = name.to_sym
+    end
+    clear
+    
+    def root
+      ROOT
+    end
+    
+    # ROOT namespace has no parent
+    def parent
+      root? ? nil : ArtifactNamespace.instance(@parent || @name.to_s.split(':')[0...-1].join(':'))
+    end
+    
+    # Set the parent for the current namespace, except if it is ROOT
+    def parent=(other)
+      raise 'Cannot set parent of root namespace' if root?
+      @parent = other
+      @registry = nil
+    end
+    
+    # Is this the ROOT namespace?
+    def root?
+      ROOT == self
+    end
+
+    # Create a named sub-namespace, sub-namespaces are themselves 
+    # ArtifactNamespace instances but cannot be referenced by
+    # the Buildr.artifact_ns, ArtifactNamespace.instance methods. 
+    # Reference needs to be through this object using the given +name+
+    #
+    #   artifact_ns('foo').ns(:bar).need :thing => 'some:thing:jar:1.0'
+    #   artifact_ns('foo').bar # => the sub-namespace
+    #   artifact_ns('foo').bar.thing # => the some thing artifact
+    #
+    # See the top level ArtifactNamespace documentation for examples
+    def ns(name, *uses, &block)
+      name = name.to_sym
+      sub = registry[name]
+      if sub
+        raise TypeError.new("#{name} is not a sub namespace of #{self}") unless sub.kind_of?(ArtifactNamespace)
+      else
+        sub = ArtifactNamespace.new("#{self.name}.#{name}")
+        sub.parent = self
+        registry[name] = sub
+      end
+      sub.use(*uses)
+      yield sub if block_given?
+      sub
+    end
+
+    # :call-seq:
+    #   artifact_ns.need 'name -> org:foo:bar:jar:~>1.2.3 -> 1.2.5'
+    #   artifact_ns.need :name => 'org.foo:bar:jar:1.0'
+    #
+    # Create a new ArtifactRequirement on this namespace.
+    # ArtifactNamespace#method_missing provides syntactic sugar for this.
+    def need(*specs)
+      named = specs.flatten.inject({}) do |seen, spec|
+        if Hash === spec && (spec.keys & ActsAsArtifact::ARTIFACT_ATTRIBUTES).empty?
+          spec.each_pair do |name, spec|
+            if Array === spec # a group
+              seen[name] ||= spec.map { |s| ArtifactRequirement.new(s) }
+            else
+              artifact = ArtifactRequirement.new(spec)
+              artifact.name = name
+              seen[artifact.name] ||= artifact
+            end
+          end
+        else
+          artifact = ArtifactRequirement.new(spec)
+          seen[artifact.name] ||= artifact
+        end
+        seen
+      end
+      named.each_pair do |name, artifact|
+        if Array === artifact # a group
+          artifact.each do |a| 
+            unvers = a.unversioned_spec
+            previous = registry[unvers]
+            if previous && previous.selected? && a.satisfied_by?(previous)
+              a.version = previous.version
+            end
+            registry[unvers] = a
+          end
+          group(name, *(artifact.map { |a| a.unversioned_spec } + [{:namespace => self}]))
+        else
+          unvers = artifact.unversioned_spec
+          previous = registry.get(unvers, true)
+          if previous && previous.selected? && artifact.satisfied_by?(previous)
+            artifact.version = previous.version
+            artifact.selected!
+          end
+          registry[unvers] = artifact
+          registry.alias name, unvers unless name.to_s[/^\s*$/]
+        end
+      end
+      self
+    end
+
+    # :call-seq:
+    #   artifact_ns.use 'name -> org:foo:bar:jar:1.2.3'
+    #   artifact_ns.use :name => 'org:foo:bar:jar:1.2.3'
+    #   artifact_ns.use :name => '2.5.6'
+    #
+    # First and second form are equivalent, the third is used when an 
+    # ArtifactRequirement has been previously defined with :name, so it
+    # just selects the version.
+    #
+    # ArtifactNamespace#method_missing provides syntactic sugar for this.
+    def use(*specs)
+      named = specs.flatten.inject({}) do |seen, spec|
+        if Hash === spec && (spec.keys & ActsAsArtifact::ARTIFACT_ATTRIBUTES).empty?
+          spec.each_pair do |name, spec|
+            if ArtifactNamespace === spec # create as subnamespace
+              raise ArgumentError.new("Circular reference") if self == spec
+              registry[name.to_sym] = spec
+            elsif Numeric === spec || (String === spec && VersionRequirement.version?(spec))
+              artifact = ArtifactRequirement.allocate
+              artifact.name = name
+              artifact.version = spec.to_s
+              seen[artifact.name] ||= artifact
+            elsif Symbol === spec
+              self.alias name, spec
+            elsif Array === spec # a group
+              seen[name] ||= spec.map { |s| ArtifactRequirement.new(s) }
+            else
+              artifact = ArtifactRequirement.new(spec)
+              artifact.name = name
+              seen[artifact.name] ||= artifact
+            end
+          end
+        else
+          if Symbol === spec
+            artifact = get(spec).dclone
+          else
+            artifact = ArtifactRequirement.new(spec)
+          end
+          seen[artifact.name] ||= artifact
+        end
+        seen
+      end
+      named.each_pair do |name, artifact|
+        is_group = Array === artifact
+        artifact = [artifact].flatten.map do |artifact|
+          unvers = artifact.unversioned_spec
+          previous = get(unvers, false) || get(name, false) 
+          if previous # have previous on current namespace
+            if previous.requirement # we must satisfy the requirement
+              unless unvers # we only have the version
+                satisfied = previous.requirement.satisfied_by?(artifact.version)
+              else
+                satisfied = previous.satisfied_by?(artifact)
+              end
+              raise "Unsatisfied dependency #{previous} " +
+                "not satisfied by #{artifact}" unless satisfied
+              previous.version = artifact.version # OK, set new version
+            else # not a requirement, set the new values
+              previous.copy_attrs(artifact)
+            end
+            artifact = previous # use the same object for aliases
+          else
+            if unvers.nil? && # we only have the version
+                (previous = get(unvers, true, false, false))
+              version = artifact.version
+              artifact.copy_attrs(previous)
+              artifact.version = version
+            end
+            artifact.requirement = nil  
+          end
+          artifact.selected!
+        end
+        artifact = artifact.first unless is_group
+        if is_group
+          names = artifact.map do |art| 
+            unv = art.unversioned_spec
+            registry[unv] = art
+            unv
+          end
+          group(name, *(names + [{:namespace => self}]))
+        elsif artifact.id
+          unvers = artifact.unversioned_spec
+          registry[unvers] = artifact
+          registry.alias name, unvers unless name.to_s[/^\s*$/]
+        else
+          registry[name] = artifact
+        end
+      end
+      self
+    end
+
+    # Like Hash#fetch
+    def fetch(name, default = nil, &block)
+      block ||= lambda { raise IndexError.new("No artifact found by name #{name.inspect} in namespace #{self}") }
+      real_name = name.to_s[/^\w+$/] ? name : ArtifactRequirement.unversioned_spec(name)
+      get(real_name.to_sym) || default || block.call(name)
+    end
+
+    # :call-seq:
+    #   artifact_ns[:name] -> ArtifactRequirement
+    #   artifact_ns[:many, :names] -> [ArtifactRequirement]
+    def [](*names)
+      ary = values_at(*names)
+      names.size == 1 ? ary.first : ary
+    end
+
+    # :call-seq:
+    #   artifact_ns[:name] = 'some:cool:jar:1.0.2'
+    #   artifact_ns[:name] = '1.0.2'
+    #
+    # Just like the use method
+    def []=(*names)
+      values = names.pop
+      values = [values] unless Array === values
+      names.each_with_index do |name, i|
+        use name => (values[i] || values.last)
+      end
+    end
+
+    # yield each ArtifactRequirement
+    def each(&block)
+      values.each(&block)
+    end
+
+    # return Artifact objects for each requirement
+    def artifacts(*names)
+      (names.empty? && values || values_at(*names)).map(&:artifact)
+    end
+
+    # Return all requirements for this namespace
+    def values(include_parents = false, include_groups = true)
+      seen, dict = {}, registry
+      while dict
+        dict.each do |k, v|
+          v = v.call if v.respond_to?(:call)
+          v = v.values if v.kind_of?(ArtifactNamespace)
+          if Array === v && include_groups
+            v.compact.each { |v| seen[v.name] = v unless seen.key?(v.name) }
+          else
+            seen[v.name] = v unless seen.key?(v.name)
           end
         end
-        registry = include_parents ? registry.parent : nil
+        dict = include_parents ? dict.parent : nil
       end
       seen.values
     end
 
-    # Return the named artifacts from this namespace hierarchy
+    # Return only the named requirements
     def values_at(*names)
-      names.map { |name| Buildr.artifact(spec(name)) }
+      names.map do |name| 
+        name = name.to_s[/^\w+$/] ? name : ArtifactRequirement.unversioned_spec(name)
+        get(name.to_sym)
+      end
     end
 
-    def each(&block)
-      values.each(&block)
+
+    def key?(name, include_parents = false)
+      name = ArtifactRequirement.unversioned_spec(name) unless name.to_s[/^\w+$/]
+      registry.key?(name, include_parents)
+    end
+
+    def delete(name, include_parents = false)
+      registry.delete(name, include_parents)
+      self
     end
     
-    # Set the parent namespace
-    def parent=(parent)
-      fail "Cannot set parent of root namespace!" if @name == ROOT
-      @parent = parent
-    end
-
     # :call-seq:
-    #   namespace.parent { |parent_namespace| ... } -> parent_namespace
-    # 
-    # Get the parent namespace
-    def parent(&block)
-      return nil if @name == ROOT
-      if @parent
-        @parent = self.class.instance(@parent) unless @parent.kind_of?(self.class)
-      else
-        name = @name.to_s.split(':')[0...-1].join(':')
-        @parent = self.class.instance(name)
-      end
-      @parent.tap(&block)
-    end
-    
-    # Clear internal requirements map
-    def clear
-      @using = {}
-      @ids = {}
-      @requires = {}
-    end
-    
-
-    # Test if named requirement has been satisfied
-    def satisfied?(name)
-      req, spec = requirement(name), spec(name)
-      req && spec && req[:version].satisfied_by?(spec[:version])
-    end
-
-    # Return the artifact spec (a hash) for the given name
-    def spec(name)
-      return nil unless name
-      name = normalize_name(name)
-      using = @using[name] || @using[@ids[name]]
-      if Hash === using
-        using.dup
-      elsif using
-        spec = @requires[name] || @requires[@ids[name]]
-        spec = spec ? spec.dup : {}
-        spec[:version] = using.dup
-        spec
-      elsif parent
-        parent.spec(name) || parent.spec(@ids[name])
-      end
-    end
-
-    def requirement(name)
-      return nil unless name
-      name = normalize_name(name)
-      req = @requires[name] || @requires[@ids[name]]
-      if req
-        req.dup
-      elsif parent
-        parent.requirement(name)
-      end
-    end
-
-    def delete(name)
-      return self unless name
-      name = normalize_name(name)
-      [name, @ids[name]].each do |n|
-        @requires.delete(n); @using.delete(n); @ids.delete(n)
+    #   group :who, :me, :you
+    #   group :them, :me, :you, :namespace => ns
+    #
+    # Create a virtual group on this namespace. When the namespace
+    # is asked for the +who+ artifact, it's value is an array made from
+    # the remaining names. These names are searched by default from the current
+    # namespace. 
+    # Second form specified the starting namespace to search from.
+    def group(group_name, *members)
+      namespace = (Hash === members.last && members.pop[:namespace]) || :current
+      registry[group_name] = lambda do
+        artifacts = self.class[namespace].values_at(*members)
+        artifacts = artifacts.first if members.size == 1
+        artifacts
       end
       self
     end
 
+    alias_method :dynamic, :group
+
+    # Create an alias for a named requirement.
+    def alias(new_name, old_name)
+      registry.alias(new_name, old_name) or
+        raise NameError.new("Undefined artifact name: #{old_name}")
+    end
+
+    def to_s #:nodoc:
+      name.to_s
+    end
+
     # :call-seq:
-    #   artifacts do
-    #     need *requirements
-    #     need name => requirement
-    #     need requirement => default_version
-    #   end
+    #   artifact_ns.cool_aid!('cool:aid:jar:2.3.4', '~>2.3') -> artifact_requirement
+    #   artifact_ns.cool_aid = '2.3.5'
+    #   artifact_ns.cool_aid  -> artifact_requirement
+    #   artifact_ns.cool_aid? -> true | false
     #
-    # Establish an artifact +requirement+ on the current namespace.
-    # A +requirement+ is simply an artifact spec whose version part
-    # contains comparision operators. If no +name+ is specified, 
-    # the artifact :id attribute is used as name.
+    # First form creates an ArtifactRequirement on the namespace.
+    # It is equivalent to providing a requirement_spec to the #need method:
+    #   artifact_ns.need "cool_aid -> cool:aid:jar:2.3.4 -> ~>2.3"
+    # the second argument is optional.
     #
-    # Supported comparison operators are =, !=, >, <, >=, <= and ~>.
-    # The compatible comparison (~>) matches from the specified version up one version.
-    # For example, ~> 5.3.1 will match all versions from 5.3.1 up to but excluding 5.4,
-    # while ~> 5.3 will match all versions from 5.3.0 up to but excluding 6.
+    # Second form can be used to select an artifact version
+    # and is equivalent to:
+    #   artifact_ns.use :cool_aid => '1.0'
     #
-    # In adition to comparition operators, artifact requirements support logic operators
-    # 
-    # * ( expr )     -- expression grouping
-    # * !( expr )    -- Negate nested expr, parens are required
-    # * expr & expr  -- Logical and, default operator. ">1 <2" is equivalent to ">1 & <2"
-    # * expr | expr  -- Logical or, lower precedence than &
+    # Third form obtains the named ArtifactRequirement, can be 
+    # used to test if a named requirement has been defined.
+    # It is equivalent to:
+    #   artifact_ns.fetch(:cool_aid) { nil }
     #
-    # Requirements defined on parent namespaces, are inherited by
-    # their childs, this means that when a specific version is selected for use
-    # on a sub-namespace, validation will be performed by checking the parent requirement.
+    # Last form tests if the ArtifactRequirement has been defined
+    # and a version has been selected for use.
+    # It is equivalent to:
     #
-    #   artifacts('one') do 
-    #     need :bar => 'foo:bar:jar:1.0 | ~>1.0'
-    #     need 'foo:baz:jar:>1.2 & <1.3 & !(>=1.2.5 | <=1.2.6)'
-    #     # default logical operator is &, so this can be written as
-    #     need 'foo:baz:jar:>1.2 <1.3 !(>=1.2.5 | <=1.2.6)'
-    #   end
-    # 
-    #   artifacts('one:two') do 
-    #     use :bar => '0.9' # This wil fail because of previous requirement
-    #     use :bar => '1.1.1' # valid, selected for usage
+    #   artifact_ns.has_cool_aid?
+    #   artifact_ns.values_at(:cool_aid).flatten.all? { |a| a && a.selected? }
     #
-    #     use 'foo:baz:jar:1.2.5.1' # on invalid range
-    #     use 'foo:bar:jar:1.2.4' # valid, selected for usage
-    #
-    #     use :bat => 'foo:bat:jar:0.9' # valid, no requirement found for it
-    #   end
-    def need(*specs)
-      specs.flatten.each do |spec|
-        named = {}
-        if (Hash === spec || Struct === spec) &&
-           (spec.keys & ActsAsArtifact::ARTIFACT_ATTRIBUTES).empty?
-          spec.each_pair do |name, art|
-            if name =~ /([^:]+:){2,4}/
-              default_version = art
-              art = Artifact.to_hash(name)
-              name = art[:id]
-            elsif Array === art
-              art, default_version = Artifact.to_hash(art.first), art.last
-            else
-              art, default_version = Artifact.to_hash(art), nil
-            end
-            named[name] = [art, default_version]
+    def method_missing(name, *args, &block)
+      case name.to_s
+      when /!$/ then
+        name = $`.intern
+        if args.size < 1 && args.size > 2
+          raise ArgumentError.new("wrong number of arguments for #{name}!(spec, version_requirement?)")
+        end
+        need name => args.first
+        get(name).tap { |r| r.requirement = args.last if args.size == 2 }
+      when /=$/ then use $` => args.first
+      when /\?$/ then
+        name = $`.gsub(/^(has|have)_/, '').intern
+        [get(name)].flatten.all? { |a| a && a.selected? }
+      else get(name)
+      end
+    end
+
+   private
+    def get(name, include_parents = true, include_subs = true, include_self = true) #:nodoc:
+      if include_subs && name.to_s[/_/] # try sub namespaces first
+        sub, parts = self, name.to_s.split('_')
+        sub_name = parts.shift.to_sym
+        until sub != self || parts.empty?
+          if registry[sub_name].kind_of?(ArtifactNamespace)
+            sub = registry[sub_name]
+            artifact = sub[parts.join('_')]
+          else
+            sub_name = [sub_name, parts.shift].join('_').to_sym
           end
-        else
-          spec = Artifact.to_hash(spec)
-          named[spec[:id]] = [spec, nil]
-        end
-        named.each_pair do |name, spec_version|
-          spec, default_version = *spec_version
-          unvers = normalize_name(spec)
-          spec[:version] = VersionRequirement.create(spec[:version])
-          @requires[unvers] = spec
-          if name
-            name = name.to_sym
-            using = @using[name] || @using[@ids[name]]
-            using = { :version  => using } if using.kind_of?(String) && VersionRequirement.version?(using)
-            fail_unless_satisfied(spec, using)
-            @ids[name] = unvers
-            @ids[unvers] = name
-          end
-          setting_defaults { set(unvers, default_version) } if default_version
         end
       end
-      self
-    end
-
-    # Specify default version if no previous one has been selected.
-    # This method is useful mainly for plugin/addon writers, allowing
-    # their users to override the artifact version to be used.
-    # Plugin/Addon writers need to document the +namespace+ used by their
-    # addon, which can be simply an string or a module name.
-    # 
-    # Suppose we are writing the Foo::Addon module
-    #
-    #   module Foo::Addon
-    #     artifacts(self) do # namespace is the module name => "Foo::Addon"
-    #       need :bar => 'foo:bar:jar:>2.0', # suppose bar is used at load time
-    #            :baz => 'foo:baz:jar:>3.0'  # used when Foo::Addon.baz called
-    #       default :bar => '2.5', :baz => '3.5'
-    #     end
-    #   end
-    #
-    #   # If the artifact is used at load time, users would
-    #   # need to select versions before loading the addon.
-    #   artifacts('Foo::Addon') do 
-    #     use :bar => '3.1'
-    #   end
-    #   # load the addon
-    #   addon 'foo_addon' # used bar-3.1 not 2.5
-    #   Foo::Addon.baz    # used baz-3.5
-    #   artifacts.namespace('Foo::Addon').use :baz => '4.0'
-    #   Foo::Addon.baz    # used baz-4.0
-    # 
-    def default(*specs)
-      setting_defaults { use(*specs) }
-    end
-
-    # See examples for #need and #default methods.
-    def use(*specs)
-      specs.flatten.each do |spec|
-        if (Hash === spec || Struct === spec) &&
-           (spec.keys & ActsAsArtifact::ARTIFACT_ATTRIBUTES).empty?
-          spec.each_pair do |k, v|
-            if VersionRequirement.version?(v)
-              set(k, v)
-            else
-              spec = Artifact.to_hash(v)
-              set(k, spec)
-            end
-          end
-        else
-          set(spec, Artifact.to_hash(spec))
+      unless artifact
+        if include_self
+          artifact = registry.get(name, include_parents)
+        elsif include_parents && registry.parent
+          artifact = registry.parent.get(name, true)
         end
       end
-      self
-    end
-    
-    alias_method :<<, :use
-    
-    # :call-seq:
-    #   artifacts['name:space'][:an_art] -> Artifact
-    #   artifacts['name:space']['an:spec:jar:-'] -> Artifact
-    #   artifacts['name:space'][:an_art, 'an:spec:jar:-', 'more_art'] -> [Artifact]
-    #
-    # Alias for #values_at
-    def [](name, *rest)
-      values = values_at(name, *rest)
-      rest.empty? ? values.first : values
-    end
-    
-    # :call-seq:
-    #   artifacts['name:space'][:artifact_name] = '1.0'
-    # 
-    # Selects an artifact version for usage, with hash like syntax.
-    # 
-    # Alias for #use
-    def []=(name, spec)
-      use name => spec
+      artifact = artifact.call if artifact.respond_to?(:call)
+      artifact
     end
 
-    private
-    def normalize_name(name)
-      if name.to_s =~ /([^:]+:){2,4}/ 
-        spec = Artifact.to_hash(name.to_s)
-        Artifact.to_spec(spec.merge(:version => '-')).to_sym
-      elsif name.kind_of?(Symbol) || name.kind_of?(String)
-        name.to_sym
-      else
-        spec = Artifact.to_hash(name)
-        Artifact.to_spec(spec.merge(:version => '-')).to_sym
+    def registry
+      @registry ||= Registry.new.tap do |m|
+        m.parent = parent.send(:registry) unless root?
       end
     end
-    
-    def fail_unless_satisfied(req, spec)
-      if req && spec
-        spec = spec.dup
-        version = spec[:version]
-        unless req[:version].satisfied_by?(version)
-          raise "Version requirement #{Artifact.to_spec(req)} " +
-            "not met by #{version}"
-        end
-        spec.delete(:version)
-        if !spec.empty? && req.values_at(*spec.keys) != spec.values_at(*spec.keys)
-          spec[:version] = version
-          raise "Artifact attributes mismatch, " + 
-            "required #{Artifact.to_spec(req)}, got #{Artifact.to_spec(spec)}"
-        end
-      end
-    end
-
-    def setting_defaults
-      @setting_defaults = true
-      begin
-        result = yield
-      ensure
-        @setting_defaults = false
-      end
-      result
-    end
-
-    def set(name, spec)
-      name = normalize_name(name)
-      needed = requirement(name)
-      candidate = VersionRequirement.version?(spec) ? {:version => spec } : spec
-      if @setting_defaults
-        current = spec(name)
-        satisfied = current && needed && needed[:version].satisfied_by?(current[:version])
-        unless satisfied || (!needed && current)
-          fail_unless_satisfied(needed, candidate)
-          @ids[spec[:id].to_sym], @ids[name] = name, spec[:id].to_sym if @ids[name].nil? && spec[:id]
-          @using[name] = spec
-        end
-      else
-        fail_unless_satisfied(needed, candidate)
-        @ids[spec[:id].to_sym], @ids[name] = name, spec[:id].to_sym if @ids[name].nil? && spec[:id]
-        @using[name] = spec
-      end
-    end
-
+     
   end # ArtifactNamespace
 
+  # Open an ArtifactNamespace.
+  # If no name is given, the namespace for the currently running 
+  # project is returned. If a block is provided, the namespace
+  # is yielded to it.
   #
-  # See ArtifactNamespace#need
-  class VersionRequirement
-    
-    CMP_PROCS = Gem::Requirement::OPS.dup
-    CMP_REGEX = Gem::Requirement::OP_RE.dup
-    CMP_CHARS = CMP_PROCS.keys.join
-    BOOL_CHARS = '\|\&\!'
-    VER_CHARS = '\w\.'
-    
-    class << self
-      # is +str+ a version string?
-      def version?(str)
-        /^\s*[#{VER_CHARS}]+\s*$/ === str
-      end
-      
-      # is +str+ a version requirement?
-      def requirement?(str)
-        /[#{BOOL_CHARS}#{CMP_CHARS}\(\)]/ === str
-      end
-      
-      # :call-seq:
-      #    VersionRequirement.create(" >1 <2 !(1.5) ") -> requirement
-      #
-      # parse the +str+ requirement 
-      def create(str)
-        instance_eval normalize(str)
-      rescue StandardError => e
-        raise "Failed to parse #{str.inspect} due to: #{e}"
-      end
-
-      private
-      def requirement(req)
-        unless req =~ /^\s*(#{CMP_REGEX})?\s*([#{VER_CHARS}]+)\s*$/
-          raise "Invalid requirement string: #{req}"
-        end
-        comparator, version = $1, $2
-        version = Gem::Version.new(0).tap { |v| v.version = version }
-        VersionRequirement.new(nil, [$1, version])
-      end
-
-      def negate(vreq)
-        vreq.negative = !vreq.negative
-        vreq
-      end
-      
-      def normalize(str)
-        str = str.strip
-        if str[/[^\s\(\)#{BOOL_CHARS + VER_CHARS + CMP_CHARS}]/]
-          raise "version string #{str.inspect} contains invalid characters"
-        end
-        str.gsub!(/\s+(and|\&\&)\s+/, ' & ')
-        str.gsub!(/\s+(or|\|\|)\s+/, ' | ')
-        str.gsub!(/(^|\s*)not\s+/, ' ! ')
-        pattern = /(#{CMP_REGEX})?\s*[#{VER_CHARS}]+/
-        left_pattern = /[#{VER_CHARS}\)]$/
-        right_pattern = /^(#{pattern}|\()/
-        str = str.split.inject([]) do |ary, i|
-          ary << '&' if ary.last =~ left_pattern  && i =~ right_pattern
-          ary << i
-        end
-        str = str.join(' ')
-        str.gsub!(/!([^=])?/, ' negate \1')
-        str.gsub!(pattern) do |expr|
-          case expr.strip
-          when 'not', 'negate' then 'negate '
-          else 'requirement("' + expr + '")'
-          end
-        end
-        str.gsub!(/negate\s+\(/, 'negate(')
-        str
-      end
-    end
-
-    def initialize(op, *requirements) #:nodoc:
-      @op, @requirements = op, requirements
-    end
-
-    # Is this object a composed requirement?
-    #   VersionRequirement.create('1').composed? -> false
-    #   VersionRequirement.create('1 | 2').composed? -> true
-    #   VersionRequirement.create('1 & 2').composed? -> true
-    def composed?
-      requirements.size > 1
-    end
-
-    # Return the last requirement on this object having an = operator.
-    def default
-      default = nil
-      requirements.reverse.find do |r|
-        if Array === r
-          if !negative && (r.first.nil? || r.first.include?('='))
-            default = r.last.to_s
-          end
-        else
-          default = r.default
-        end
-      end
-      default
-    end
-
-    # Test if this requirement can be satisfied by +version+
-    def satisfied_by?(version)
-      return false unless version
-      unless version.kind_of?(Gem::Version)
-        raise "Invalid version: #{version.inspect}" unless self.class.version?(version)
-        version = Gem::Version.new(0).tap { |v| v.version = version.strip }
-      end
-      message = op == :| ? :any? : :all?
-      result = requirements.send message do |req|
-        if Array === req
-          cmp, rv = *req
-          CMP_PROCS[cmp || '='].call(version, rv)
-        else
-          req.satisfied_by?(version)
-        end
-      end
-      negative ? !result : result
-    end
-
-    # Either modify the current requirement (if it's already an or operation)
-    # or create a new requirement
-    def |(other)
-      operation(:|, other)
-    end
-
-    # Either modify the current requirement (if it's already an and operation)
-    # or create a new requirement
-    def &(other)
-      operation(:&, other)
-    end
-    
-    # return the parsed expression
-    def to_s
-      str = requirements.map(&:to_s).join(" " + @op.to_s + " ").to_s
-      str = "( " + str + " )" if negative || requirements.size > 1
-      str = "!" + str if negative
-      str
-    end
-
-    attr_accessor :negative
-    protected
-    attr_reader :requirements, :op
-    def operation(op, other)
-      @op ||= op 
-      if negative == other.negative && @op == op && other.requirements.size == 1
-        @requirements << other.requirements.first
-        self
-      else
-        self.class.new(op, self, other)
-      end
-    end
-  end # VersionRequirement
-
-  # Search best artifact version from remote repositories
-  module ArtifactSearch
-    extend self
-    
-    def include(method = nil)
-      (@includes ||= []).tap { push method if method }
-    end
-
-    def exclude(method = nil)
-      (@excludes ||= []).tap { push method if method }
-    end
-    
-    def best_version(spec)
-      spec = Artifact.to_hash(spec)
-      spec[:version] = requirement = VersionRequirement.create(spec[:version])
-      select = lambda do |candidates|
-        candidates.find { |candidate| requirement.satisfied_by?(candidate) }
-      end
-      result = nil
-      methods = search_methods
-      if requirement.composed?
-        until result || methods.empty?
-          method = methods.shift
-          type = method.keys.first
-          from = method[type]
-          if (include.empty? || !(include & [:all, type, from]).empty?) &&
-              (exclude & [:all, type, from]).empty?
-            if from.respond_to?(:call)
-              versions = from.call(spec.dup)
-            else
-              versions = send("#{type}_versions", spec.dup, *from)
-            end
-            result = select[versions]
-          end
-        end
-      end
-      result ||= requirement.default
-      raise "Could not find #{Artifact.to_spec(spec)}"  +
-        "\n You may need to use an specific version instead of a requirement" unless result
-      spec.merge :version => result
-    end
-    
-    def requirement?(spec)
-      VersionRequirement.requirement?(spec[:version])
-    end
-    
-    private
-    def search_methods
-      [].tap do
-        push :runtime => [Artifact.list]
-        push :local => Buildr.repositories.local
-        Buildr.repositories.remote.each { |remote| push :remote => remote }
-        push :mvnrepository => []
-      end
-    end
-
-    def depend_version(spec)
-      spec[:version][/[\w\.]+/]
-    end
-
-    def runtime_versions(spec, artifacts)
-      spec_classif = spec.values_at(:group, :id, :type)
-      artifacts.inject([]) do |in_memory, str|
-        candidate = Artifact.to_hash(str)
-        if spec_classif == candidate.values_at(:group, :id, :type)
-          in_memory << candidate[:version]
-        end
-        in_memory
-      end
-    end
-    
-    def local_versions(spec, repo)
-      path = (spec[:group].split(/\./) + [spec[:id]]).flatten.join('/')
-      Dir[File.expand_path(path + "/*", repo)].map { |d| d.pathmap("%f") }.sort.reverse
-    end
-
-    def remote_versions(art, base, from = :metadata, fallback = true)
-      path = (art[:group].split(/\./) + [art[:id]]).flatten.join('/')
-      base ||= "http://mirrors.ibiblio.org/pub/mirrors/maven2"
-      uris = {:metadata => "#{base}/#{path}/maven-metadata.xml"}
-      uris[:listing] = "#{base}/#{path}/" if base =~ /^https?:/
-        xml = nil
-      until xml || uris.empty?
-        begin
-          xml = URI.read(uris.delete(from))
-        rescue URI::NotFoundError => e
-          from = fallback ? uris.keys.first : nil
-        end
-      end
-      return [] unless xml
-      doc = Hpricot(xml)
-      case from
-      when :metadata then
-        doc.search("versions/version").map(&:innerHTML).reverse
-      when :listing then
-        doc.search("a[@href]").inject([]) { |vers, a|
-          vers << a.innerHTML.chop if a.innerHTML[-1..-1] == '/'
-          vers
-        }.sort.reverse
-      else 
-        fail "Don't know how to parse #{from}: \n#{xml.inspect}"
-      end
-    end
-
-    def mvnrepository_versions(art)
-      uri = "http://www.mvnrepository.com/artifact/#{art[:group]}/#{art[:id]}"
-      xml = begin
-              URI.read(uri)
-            rescue URI::NotFoundError => e
-              puts e.class, e
-              return []
-            end
-      doc = Hpricot(xml)
-      doc.search("table.grid/tr/td[1]/a").map(&:innerHTML)
-    end
-
+  # See also ArtifactNamespace.instance
+  def artifact_ns(name = nil, &block)
+    ArtifactNamespace.instance(name, &block)
   end
+  
 end
+
 
