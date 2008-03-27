@@ -16,6 +16,9 @@
 
 
 @page { margin: 1in 0.75in 1in 0.75in; }
+@page {
+  font-family: "DejaVu Sans", Verdana, Helvetica;
+}
 @page:left {
   @top-left { content: counter(page); }
   @top-right { content: string(pagetitle); }
@@ -54,7 +57,7 @@ pre {
 }
 a:link, a:visited {
   background: transparent;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 
@@ -89,6 +92,4 @@ ol.toc a:after { content: leader('.') target-counter(attr(href), page); }
 
 #license {
   padding-top: 1in;
-  page-break-before: none !important;
-  page-break-inside: always !important;
 }

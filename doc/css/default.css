@@ -18,7 +18,7 @@
 body {
   background-color: #fff;
   color: #000;
-  font-family: "DejaVu Sans", Verdana, Helvetica, sans-serif;
+  font-family: "DejaVu Sans", Verdana, Helvetica;
   text-align: center;
 	line-height: 1.5em;
 }
@@ -41,9 +41,6 @@ pre { padding: 1em; }
 pre.wrapped {
   white-space: pre-wrap;       /* css-3 */
   white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
-  white-space: -pre-wrap;      /* Opera 4-6 */
-  white-space: -o-pre-wrap;    /* Opera 7 */
-  word-wrap: break-word;
 }
 
 h1, h2, h3 {
@@ -78,7 +75,7 @@ blockquote {
 }
 
 ul { 
-  list-style-ty pe: disc;
+  list-style-type: disc;
 }
 
 ul ul {

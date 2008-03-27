@@ -3,7 +3,7 @@
  */
 
 .ruby .normal   {}
-.ruby .comment  { color: #005; font-style: italic; }
+.ruby .comment  { color: #7f7f7f; }
 .ruby .keyword  { color: #A00; font-weight: bold; }
 .ruby .method   { color: #077; }
 .ruby .class    { color: #074; }
@@ -23,8 +23,8 @@
 
 .xml .normal    {}
 .xml .namespace { color: #B66; font-weight: bold; }
-.xml .tag       { color: #F88; }
-.xml .comment   { color: #005; font-style: italic; }
+.xml .tag       { color: #4c00ff; }
+.xml .comment   { color: #7f7f7f; }
 .xml .punct     { color: #447; font-weight: bold; }
 .xml .string    { color: #944; }
 .xml .number    { color: #F99; }
@@ -32,8 +32,8 @@
 
 .yaml .document { }
 .yaml .type     { }
-.yaml .key      { color: #00c0c0 }
-.yaml .comment  { color: #808080 }
+.yaml .key      { color: #4c00ff}
+.yaml .comment  { color: #7f7f7f; }
 .yaml .punct    { }
 .yaml .string   { }
 .yaml .number   { }
