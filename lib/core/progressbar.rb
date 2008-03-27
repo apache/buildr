@@ -120,6 +120,10 @@ class ProgressBar
   end
 
   def get_width
+    @screen_width ||= HighLine::SystemExtensions.terminal_size.first rescue 80
+    return @screen_width
+    # Original code below, above code adds dependency on HighLine.
+=begin
     # FIXME: I don't know how portable it is.
     default_width = 80
     begin
@@ -134,6 +138,7 @@ class ProgressBar
     rescue Exception
       default_width
     end
+=end
   end
 
   def show

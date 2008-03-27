@@ -260,7 +260,7 @@ module URI
     # Call << for each block of bytes down/uploaded.
     def with_progress_bar(enable, file_name, size) #:nodoc:
       if enable && $stdout.isatty && size
-        progress_bar = ProgressBar.new(file_name, size)
+        progress_bar = ProgressBar.new(file_name, size, $stdout)
         # Squeeze the filename into 30 characters.
         if file_name.size > 30
           base, ext = file_name.split('.')
