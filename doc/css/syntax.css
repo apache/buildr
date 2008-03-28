@@ -4,8 +4,8 @@
 
 .ruby .normal   {}
 .ruby .comment  { color: #7f7f7f; }
-.ruby .keyword  { color: #A00; font-weight: bold; }
-.ruby .method   { color: #077; }
+.ruby .keyword  { color: #153582; font-weight: bold; }
+.ruby .method   { color: #066; }
 .ruby .class    { color: #074; }
 .ruby .module   { color: #050; }
 .ruby .punct    { color: #447; font-weight: bold; }
@@ -39,5 +39,5 @@
 .yaml .number   { }
 .yaml .time     { }
 .yaml .date     { }
-.yaml .ref      { color: 00c0c0 }
-.yaml .anchor   { color: 00c0c0 }
+.yaml .ref      { color: #00c0c0 }
+.yaml .anchor   { color: #00c0c0 }

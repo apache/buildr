@@ -35,7 +35,7 @@ end
 
 current = Rake::GemPackageTask.new($spec)
 desc 'Install the package locally'
-task 'install'=>['clobber', "#{current.package_dir}/#{current.gem_file}"] do |task|
+task 'install'=>"#{current.package_dir}/#{current.gem_file}" do |task|
   ruby 'install',  "#{current.package_dir}/#{current.gem_file}", :command=>'gem', :sudo=>true
 end
 

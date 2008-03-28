@@ -16,9 +16,6 @@ version of Ruby and RubyGems:
 
 http://rubyinstaller.rubyforge.org
 
-
-
-
 Make sure to set JAVA_HOME environment variable first, then:
 
   gem install buildr

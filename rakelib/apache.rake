@@ -26,12 +26,12 @@ namespace 'apache' do
     say 'Checking that files contain the Apache license ... '
     excluded = ['.class', '.png', '.jar', '.tif', 'README', 'LICENSE', 'CHANGELOG', 'DISCLAIMER', 'NOTICE', 'KEYS']
     required = FileList[$spec.files].exclude(*excluded).exclude(*Array($license_excluded)).select { |fn| File.file?(fn) }
-    required.each do |fn| 
+    missing = required.reject { |fn| 
       comments = File.read(fn).scan(/(\/\*(.*?)\*\/)|^#\s+(.*?)$|<!--(.*?)-->/m).
         map { |match| match.compact }.flatten.join("\n")
-      fail "File #{fn} missing Apache License, please add it before making a release!" unless
-        comments =~ /Licensed to the Apache Software Foundation/ && comments =~ /http:\/\/www.apache.org\/licenses\/LICENSE-2.0/
-    end
+      comments =~ /Licensed to the Apache Software Foundation/ && comments =~ /http:\/\/www.apache.org\/licenses\/LICENSE-2.0/
+    }
+    fail "#{missing.join(', ')} missing Apache License, please add it before making a release!" unless missing.empty?
     say 'OK'
   end
 

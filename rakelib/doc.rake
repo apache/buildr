@@ -44,28 +44,21 @@ begin
   require 'docter'
   require 'docter/server'
 
-  web_docs = {
-    :collection => Docter.collection($spec.name).using('doc/web.toc.yaml').
-      include('doc/pages', 'LICENSE', 'CHANGELOG'),
-    :template   => Docter.template('doc/web.haml').
-      include('doc/css', 'doc/images', 'doc/scripts', 'reports/specs.html', 'reports/coverage', 'rdoc')
-  }
-  print_docs = {
-    :collection => Docter.collection($spec.name).using('doc/print.toc.yaml').
-      include('doc/pages', 'LICENSE'),
-    :template   => Docter.template('doc/print.haml').include('doc/css', 'doc/images')
-  }
+  file 'reports/specs.html'=>'reports'
 
   #Docter.filter_for(:footnote) do |html|
   #  html.gsub(/<p id="fn(\d+)">(.*?)<\/p>/, %{<p id="fn\\1" class="footnote">\\2</p>})
   #end
 
-  desc 'Run Docter server on port 3000'
-  Docter::Rake.serve 'docter', web_docs[:collection], web_docs[:template], :port=>3000
+  collection = Docter.collection($spec.name).using('doc/site.toc.yaml').include('doc/pages', 'LICENSE', 'CHANGELOG')
+  template   = Docter.template('doc/site.haml').
+    include('doc/css', 'doc/images', 'doc/scripts', 'reports/specs.html', 'reports/coverage', 'rdoc', 'print/buildr.pdf')
 
-  desc 'Generate HTML documentation'
-  Docter::Rake.generate('site', web_docs[:collection], web_docs[:template])
-  task 'site'=>'reports'
+  desc 'Run Docter server on port 3000'
+  Docter::Rake.serve 'docter', collection, template, :port=>3000
+
+  desc 'Generate Web site in directory site'
+  Docter::Rake.generate 'site', collection, template
 
   task 'clobber' do
     rm_rf 'site'
@@ -84,9 +77,11 @@ end
 
 if `prince --version` && $?.exitstatus == 0
 
-  Docter::Rake.generate('print', print_docs[:collection], print_docs[:template], :one_page)
-  file('site/buildr.pdf'=>'print') do |task|
-    mkpath 'site'
+  Docter::Rake.generate 'print',
+    Docter.collection($spec.name).using('doc/print.toc.yaml').include('doc/pages', 'LICENSE'),
+    Docter.template('doc/print.haml').include('doc/css', 'doc/images'), :one_page
+
+  file('print/buildr.pdf'=>'print') do |task|
     sh 'prince', 'print/index.html', '-o', task.name, '--media=print' do |ok, res|
       fail 'Failed to create PDF, see errors above' unless ok
     end
@@ -97,7 +92,6 @@ if `prince --version` && $?.exitstatus == 0
     sh 'open', 'site/buildr.pdf'
   end
 
-  task 'docs'=>'site/buildr.pdf'
   task 'clobber' do
     rm_rf 'print'
   end

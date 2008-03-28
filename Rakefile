@@ -27,7 +27,7 @@ $specs = ['ruby', 'java'].inject({}) { |hash, platform|
                                  'Rakefile', 'rakelib/**/*', 'spec/**/*', 'doc/**/*'].to_ary
     spec.require_path = 'lib'
     spec.has_rdoc     = true
-    spec.extra_rdoc_files = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'site/buildr.pdf']
+    spec.extra_rdoc_files = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']
     spec.rdoc_options << '--title' << "Buildr -- #{spec.summary}" <<
                          '--main' << 'README' << '--line-numbers' << '--inline-source' << '-p' <<
                          '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
@@ -55,7 +55,7 @@ $specs = ['ruby', 'java'].inject({}) { |hash, platform|
 }
 $spec = $specs[RUBY_PLATFORM =~ /java/ ? 'java' : 'ruby']
 
-$license_excluded = ['lib/core/progressbar.rb', 'spec/spec.opts', 'doc/css/syntax.css', '.textile', '.yaml']
+$license_excluded = ['lib/core/progressbar.rb', 'spec/spec.opts', 'doc/css/syntax.css', '.textile', '.haml']
 
 
 def ruby(*args)
@@ -71,10 +71,8 @@ end
 # Setup environment for running this Rakefile (RSpec, Docter, etc).
 desc "If you're building from sources, run this task one to setup the necessary dependencies."
 task 'setup' do
-  dependencies = spec.dependencies
-  dependencies = dependencies.reject { |dep| dep.name == 'rjb' } if RUBY_PLATFORM =~ /java/
   installed = Gem::SourceIndex.from_installed_gems
-  required = dependencies.select { |dep| installed.search(dep.name, dep.version_requirements).empty? }
+  required = $spec.dependencies.select { |dep| installed.search(dep.name, dep.version_requirements).empty? }
   required.each do |dep|
     puts "Installing #{dep} ..."
     ruby 'install', dep.name, '-v', dep.version_requirements.to_s, :command=>'gem', :sudo=>true

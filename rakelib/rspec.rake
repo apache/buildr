@@ -35,8 +35,10 @@ begin
     task.spec_files = FileList['spec/**/*_spec.rb']
     task.spec_opts << '--format' << 'html:reports/specs.html' << '--backtrace'
     task.rcov = true
-    task.rcov_dir = 'reports/coverage'
     task.rcov_opts = ['--exclude', 'spec,bin']
+  end
+  task 'reports' do
+    mv 'coverage', 'reports'
   end
 
   task 'clobber' do
