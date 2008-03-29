@@ -76,9 +76,9 @@ namespace 'release' do
   # Full test suite depends on having JRuby, Scala and Groovy installed.
   task 'check' do
     say 'Checking that we have JRuby, Scala and Groovy available ... '
-    fail 'Full testing requires JRuby!' unless `jruby --version` && $?.exitstatus == 0
-    fail 'Full testing requires Scala!' unless `scala --version` && $?.exitstatus == 0
-    fail 'Full testing requires Groovy!' unless `groovy --version` && $?.exitstatus == 0
+    fail 'Full testing requires JRuby!' unless which('jruby')
+    fail 'Full testing requires Scala!' unless which('scala')
+    fail 'Full testing requires Groovy!' unless which('groovy')
     say 'OK'
   end
 

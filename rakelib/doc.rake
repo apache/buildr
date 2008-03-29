@@ -75,7 +75,7 @@ rescue LoadError
 end
 
 
-if `prince --version` && $?.exitstatus == 0
+if which('prince')
 
   Docter::Rake.generate 'print',
     Docter.collection($spec.name).using('doc/print.toc.yaml').include('doc/pages', 'LICENSE'),

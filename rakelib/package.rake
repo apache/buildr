@@ -15,7 +15,10 @@
 
 
 require 'rake/gempackagetask'
-require 'yaml'
+
+
+desc 'Clean up all temporary directories used for running tests, creating documentation, packaging, etc.'
+task 'clobber'
 
 desc 'Compile Java libraries used by Buildr'
 task 'compile' do

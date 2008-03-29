@@ -32,7 +32,6 @@ define 'buildr' do
     # Legals included in source code and show in RDoc.
     legal = 'LICENSE', 'DISCLAIMER', 'NOTICE'
     package(:gem).include(legal).path('lib').include('lib/buildr')
-    p package(:gem)
     package(:gem).spec do |spec|
       spec.author             = 'Apache Buildr'
       spec.email              = 'buildr-user@incubator.apache.org'

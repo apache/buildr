@@ -14,6 +14,7 @@
 # the License.
 
 
+$KCODE = 'utf8'
 # in order to work around a bug in jruby (1.0.1 and trunk as of oct11, 2007)
 # needle and net/ssh need to be loaded before -anything- else. please see
 # http://jira.codehaus.org/browse/JRUBY-1188 for more info.

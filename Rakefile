@@ -58,14 +58,36 @@ $spec = $specs[RUBY_PLATFORM =~ /java/ ? 'java' : 'ruby']
 $license_excluded = ['lib/core/progressbar.rb', 'spec/spec.opts', 'doc/css/syntax.css', '.textile', '.haml']
 
 
+# Finds and returns path to executable.  Consults PATH environment variable.
+# Returns nil if executable not found.
+def which(name)
+  if Gem.win_platform?
+    path = ENV['PATH'].split(File::PATH_SEPARATOR).map { |path| path.gsub('\\', '/') }.map { |path| "#{path}/#{name}.{exe,bat,com}" }
+  else
+    path = ENV['PATH'].split(File::PATH_SEPARATOR).map { |path| "#{path}/#{name}" }
+  end
+  FileList[path].existing.first
+end
+
+# Runs Ruby with these command line arguments.  The last argument may be a hash,
+# supporting the following keys:
+#   :script   -- Runs the specified script (e.g., :script=>'gem')
+#   :sudo     -- Run as sudo on operating systems that require it.
+#   :verbose  -- Override Rake's verbose flag.
 def ruby(*args)
   options = Hash === args.last ? args.pop : {}
-  #options[:verbose] ||= false
   cmd = []
   cmd << 'sudo' if options.delete(:sudo) && !Gem.win_platform?
   cmd << Config::CONFIG['ruby_install_name']
   cmd << '-S' << options.delete(:command) if options[:command]
   sh *cmd.push(*args.flatten).push(options)
+end
+
+
+begin
+  require 'highline/import'
+rescue LoadError 
+  puts 'HighLine required, please run rake setup first'
 end
 
 # Setup environment for running this Rakefile (RSpec, Docter, etc).
@@ -79,16 +101,6 @@ task 'setup' do
   end
 end
 
-
-begin
-  require 'highline/import'
-rescue LoadError 
-  puts 'HighLine required, please run rake setup first'
-end
-
-
-desc 'Clean up all temporary directories used for running tests, creating documentation, packaging, etc.'
-task 'clobber'
 
 namespace 'release' do
 
