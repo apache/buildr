@@ -21,7 +21,6 @@ $KCODE = 'utf8'
 require 'needle'
 require 'net/ssh'
 
-require 'highline'
 require 'highline/import'
 require 'builder' # A different kind of buildr, one we use to create XML.
 

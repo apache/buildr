@@ -21,7 +21,7 @@ module Buildr
 
     task "generate" do
       script = nil 
-      HighLine.new.choose do |menu|
+      choose do |menu|
         menu.header = "To use Buildr you need a buildfile. Do you want me to create one?"
 
         menu.choice("From maven2 pom file") { script = Generate.from_maven2_pom(true).join("\n") } if File.exists?("pom.xml")

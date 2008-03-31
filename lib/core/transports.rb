@@ -248,7 +248,7 @@ module URI
   protected
 
     # :call-seq:
-    #   with_progress_bar(enable, file_name, size) { |progress| ... }
+    #   with_progress_bar(show, file_name, size) { |progress| ... }
     #
     # Displays a progress bar while executing the block. The first argument must be true for the
     # progress bar to show (TTY output also required), as a convenient for selectively using the
@@ -258,39 +258,10 @@ module URI
     #
     # The block is yielded with a progress object that implements a single method.
     # Call << for each block of bytes down/uploaded.
-    def with_progress_bar(enable, file_name, size) #:nodoc:
-      if enable && $stdout.isatty && size
-        progress_bar = ProgressBar.new(file_name, size, $stdout)
-        # Squeeze the filename into 30 characters.
-        if file_name.size > 30
-          base, ext = file_name.split('.')
-          truncated = "#{base[0..26-ext.to_s.size]}...#{ext}"
-        else
-          truncated = file_name
-        end
-        progress_bar.format = "#{truncated}: %3d%% %s %s" # %s/%s %s"
-        #progress_bar.format = '%3d%% %s %s/%s %s'
-        progress_bar.format_arguments = [:percentage, :bar, :stat_for_file_transfer] # :bytes, :total, :stat]
-        progress_bar.bar_mark = '.'
-
-        begin
-          class << progress_bar
-            def <<(bytes)
-              inc bytes.respond_to?(:size) ? bytes.size : bytes
-            end
-          end
-          yield progress_bar
-        ensure
-          progress_bar.finish
-        end
-      else
-        progress_bar = Object.new
-        class << progress_bar
-          def <<(bytes)
-          end
-        end
-        yield progress_bar
-      end
+    def with_progress_bar(show, file_name, size, &block) #:nodoc:
+      options = { :total=>size, :title=>file_name }
+      options[:hidden] = true unless show
+      ProgressBar.start options, &block
     end
 
     # :call-seq:
@@ -393,7 +364,7 @@ module URI
       rescue Net::SSH::AuthenticationFailed=>ex
         # Only if running with console, prompt for password.
         if !ssh_options[:password] && $stdout.isatty
-          password = HighLine.new.ask("Password for #{host}:") { |q| q.echo = '*' }
+          password = ask("Password for #{host}:") { |q| q.echo = '*' }
           ssh_options[:password] = password
           retry
         end

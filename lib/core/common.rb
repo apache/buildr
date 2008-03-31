@@ -310,7 +310,7 @@ end
 
 
 # Add a touch of colors (red) to warnings.
-HighLine.use_color = PLATFORM !~ /win32/
+HighLine.use_color = !Gem.win_platform?
 module Kernel #:nodoc:
 
   alias :warn_without_color :warn

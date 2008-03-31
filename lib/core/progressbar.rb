@@ -1,241 +1,149 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with this
+# work for additional information regarding copyright ownership.  The ASF
+# licenses this file to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
-# Ruby/ProgressBar - a text progress bar library
+#    http://www.apache.org/licenses/LICENSE-2.0
 #
-# Copyright (C) 2001-2005 Satoru Takabayashi <satoru@namazu.org>
-#     All rights reserved.
-#     This is free software with ABSOLUTELY NO WARRANTY.
-#
-# You can redistribute it and/or modify it under the terms
-# of Ruby's license.
-#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+# License for the specific language governing permissions and limitations under
+# the License.
+
 
 class ProgressBar
-  VERSION = "0.9"
 
-  def initialize (title, total, out = STDERR)
-    @title = title
-    @total = total
-    @out = out
-    @terminal_width = 80
-    @bar_mark = "o"
-    @current = 0
-    @previous = 0
-    @finished_p = false
-    @start_time = Time.now
-    @previous_time = @start_time
-    @title_width = 14
-    @format = "%-#{@title_width}s %3d%% %s %s"
-    @format_arguments = [:title, :percentage, :bar, :stat]
+  class << self
+
+    def start(args, &block)
+      new(args).start &block
+    end
+
+  end
+
+  def initialize(args = {})
+    @title = args[:title] || ''
+    @total = args[:total] || 0
+    @mark = args[:mark] || '.'
+    @format = args[:format] ||
+      @total == 0 ? ['%s %8s %s', :title, :count, :elapsed] : ['%s: %s |--| %8s/%s %s', :title, :percentage, :count, :total, :time]
+    @width = $terminal.output_cols - 1
+    @output = args[:output] || $stderr unless args[:hidden] || !$stdout.isatty
     clear
-    show
-  end
-  attr_reader   :title
-  attr_reader   :current
-  attr_accessor :start_time
-  attr_accessor :bar_mark
-
-  private
-  def fmt_bar
-    bar_width = do_percentage * @terminal_width / 100
-    sprintf("|%s%s|", 
-            @bar_mark * bar_width, 
-            " " *  (@terminal_width - bar_width))
   end
 
-  def fmt_percentage
-    do_percentage
-  end
-
-  def fmt_stat
-    if @finished_p then elapsed else eta end
-  end
-
-  def fmt_stat_for_file_transfer
-    if @finished_p then 
-      sprintf("%s %s %s", bytes, transfer_rate, elapsed)
-    else 
-      sprintf("%s %s %s", bytes, transfer_rate, eta)
-    end
-  end
-
-  def fmt_title
-    @title[0,(@title_width - 1)] + ":"
-  end
-
-  def convert_bytes (bytes)
-    if bytes < 1024
-      sprintf("%6dB", bytes)
-    elsif bytes < 1024 * 1000 # 1000kb
-      sprintf("%5.1fKB", bytes.to_f / 1024)
-    elsif bytes < 1024 * 1024 * 1000  # 1000mb
-      sprintf("%5.1fMB", bytes.to_f / 1024 / 1024)
+  def start
+    @start = @last_time = Time.now
+    @count = 0
+    render
+    if block_given?
+      result = yield(self) if block_given?
+      finish
+      result
     else
-      sprintf("%5.1fGB", bytes.to_f / 1024 / 1024 / 1024)
+      self
     end
   end
 
-  def transfer_rate
-    bytes_per_second = @current.to_f / (Time.now - @start_time)
-    sprintf("%s/s", convert_bytes(bytes_per_second))
+  def inc(count)
+    set @count + count
   end
 
-  def bytes
-    convert_bytes(@current)
+  def <<(bytes)
+    inc bytes.size
   end
 
-  def format_time (t)
-    t = t.to_i
-    sec = t % 60
-    min  = (t / 60) % 60
-    hour = t / 3600
-    sprintf("%02d:%02d:%02d", hour, min, sec);
+  def set(count)
+    @count = [count, 0].max
+    @count = [count, @total].min unless @total == 0
+    render if changed?
   end
 
-  # ETA stands for Estimated Time of Arrival.
+  def title
+    @title.size > @width / 5 ? (@title[0, @width / 5 - 2] + '..') : @title 
+  end
+
+  def count
+    human(@count)
+  end
+
+  def total
+    human(@total)
+  end
+
+  def percentage
+    '%3d%%' % (@total == 0 ? 100 : (@count * 100 / @total))
+  end
+
+  def time
+    @finished ? elapsed : eta
+  end
+
   def eta
-    if @current == 0
-      "ETA:  --:--:--"
-    else
-      elapsed = Time.now - @start_time
-      eta = elapsed * @total / @current - elapsed;
-      sprintf("ETA:  %s", format_time(eta))
-    end
+    return 'ETA:  --:--:--' if @count == 0
+    elapsed = Time.now - @start
+    eta = elapsed * @total / @count - elapsed
+    'ETA:  %s' % duration(eta.ceil)
   end
 
   def elapsed
-    elapsed = Time.now - @start_time
-    sprintf("Time: %s", format_time(elapsed))
-  end
-  
-  def eol
-    if @finished_p then "\n" else "\r" end
+    'Time: %s' % duration(Time.now - @start) 
   end
 
-  def do_percentage
-    if @total.zero?
-      100
-    else
-      @current  * 100 / @total
-    end
+  def rate
+    '%s/s' % human(@count / (Time.now - @start))
   end
 
-  def get_width
-    @screen_width ||= HighLine::SystemExtensions.terminal_size.first rescue 80
-    return @screen_width
-    # Original code below, above code adds dependency on HighLine.
-=begin
-    # FIXME: I don't know how portable it is.
-    default_width = 80
-    begin
-      tiocgwinsz = 0x5413
-      data = [0, 0, 0, 0].pack("SSSS")
-      if @out.ioctl(tiocgwinsz, data) >= 0 then
-        rows, cols, xpixels, ypixels = data.unpack("SSSS")
-        if cols >= 0 then cols else default_width end
-      else
-        default_width
-      end
-    rescue Exception
-      default_width
-    end
-=end
+  def progress(width)
+    width -= 2
+    marks = @total == 0 ? width : (@count * width / @total)
+    "|%-#{width}s|" % (@mark * marks)
   end
 
-  def show
-    arguments = @format_arguments.map {|method| 
-      method = sprintf("fmt_%s", method)
-      send(method)
-    }
-    line = sprintf(@format, *arguments)
-
-    width = get_width
-    if line.length == width - 1 
-      @out.print(line + eol)
-      @out.flush
-    elsif line.length >= width
-      @terminal_width = [@terminal_width - (line.length - width + 1), 0].max
-      if @terminal_width == 0 then @out.print(line + eol) else show end
-    else # line.length < width - 1
-      @terminal_width += width - line.length + 1
-      show
-    end
-    @previous_time = Time.now
+  def human(bytes)
+    magnitude = (0..3).find { |i| bytes < (1024 << i * 10) } || 3
+    return '%dB' % bytes if magnitude == 0
+    return '%.1f%s' % [ bytes.to_f / (1 << magnitude * 10), [nil, 'KB', 'MB', 'GB'][magnitude] ]
   end
 
-  def show_if_needed
-    if @total.zero?
-      cur_percentage = 100
-      prev_percentage = 0
-    else
-      cur_percentage  = (@current  * 100 / @total).to_i
-      prev_percentage = (@previous * 100 / @total).to_i
-    end
-
-    # Use "!=" instead of ">" to support negative changes
-    if cur_percentage != prev_percentage || 
-        Time.now - @previous_time >= 1 || @finished_p
-      show
-    end
-  end
-
-  public
-  def clear
-    @out.print "\r"
-    @out.print(" " * (get_width - 1))
-    @out.print "\r"
+  def duration(seconds)
+    '%02d:%02d:%02d' % [seconds / 3600, (seconds / 60) % 60, seconds % 60]
   end
 
   def finish
-    @current = @total
-    @finished_p = true
-    show
-  end
-
-  def finished?
-    @finished_p
-  end
-
-  def file_transfer_mode
-    @format_arguments = [:title, :percentage, :bar, :stat_for_file_transfer]
-  end
-
-  def format= (format)
-    @format = format
-  end
-
-  def format_arguments= (arguments)
-    @format_arguments = arguments
-  end
-
-  def halt
-    @finished_p = true
-    show
-  end
-
-  def inc (step = 1)
-    @current += step
-    @current = @total if @current > @total
-    show_if_needed
-    @previous = @current
-  end
-
-  def set (count)
-    if count < 0 || count > @total
-      raise "invalid count: #{count} (total: #{@total})"
+    unless @finished
+      @finished = true
+      render
     end
-    @current = count
-    show_if_needed
-    @previous = @current
   end
 
-  def inspect
-    "#<ProgressBar:#{@current}/#{@total}>"
+protected
+
+  def clear
+    return unless @output
+    @output.print "\r", " " * @width, "\r"
+    @output.flush
   end
+    
+  def render
+    return unless @output
+    format, *args = @format
+    line = format % args.map { |arg| send(arg) }
+    @output.print line.sub('|--|') { progress(@width - line.size + 4) }
+    @output.print @finished ? "\n" : "\r"
+    @output.flush
+    @previous = @count
+    @last_time = Time.now
+  end
+
+  def changed?
+    return false unless @output
+    return human(@count) != human(@previous) if @total == 0
+    return true if (@count - @previous) >= @total / 100
+    return Time.now - @last_time > 1
+  end
+
 end
-
-class ReversedProgressBar < ProgressBar
-  def do_percentage
-    100 - super
-  end
-end
-

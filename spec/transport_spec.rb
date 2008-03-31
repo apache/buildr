@@ -286,6 +286,7 @@ describe URI::HTTP, '#read' do
     ok.stub!(:read_body)
     @http.stub!(:request).and_yield(ok)
     Net::HTTP.should_receive(:new).and_return(@http)
+    $stdout.should_receive(:isatty).and_return(false)
     @uri.read :progress=>true
   end
 
