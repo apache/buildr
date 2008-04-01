@@ -17,26 +17,27 @@
 # We need two specifications, for Ruby and Java, and one for the platform we run on.
 $specs = ['ruby', 'java'].inject({}) { |hash, platform|
   spec = Gem::Specification.new do |spec|
-    spec.name         = 'buildr'
-    spec.version      = File.read(__FILE__.pathmap('%d/lib/buildr.rb')).scan(/VERSION\s*=\s*(['"])(.*)\1/)[0][1]
-    spec.author       = 'Apache Buildr'
-    spec.email        = 'buildr-user@incubator.apache.org'
-    spec.homepage     = "http://incubator.apache.org/#{spec.name}/"
-    spec.summary      = 'A build system that doesn\'t suck'
-    spec.files        = FileList['lib/**/*', 'README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'KEYS',
-                                 'Rakefile', 'rakelib/**/*', 'spec/**/*', 'doc/**/*'].to_ary
-    spec.require_path = 'lib'
-    spec.has_rdoc     = true
-    spec.extra_rdoc_files = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']
-    spec.rdoc_options << '--title' << "Buildr -- #{spec.summary}" <<
-                         '--main' << 'README' << '--line-numbers' << '--inline-source' << '-p' <<
-                         '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
-    spec.rubyforge_project = 'buildr'
-    spec.platform = platform
+    spec.name           = 'buildr'
+    spec.version        = File.read(__FILE__.pathmap('%d/lib/buildr.rb')).scan(/VERSION\s*=\s*(['"])(.*)\1/)[0][1]
+    spec.author         = 'Apache Buildr'
+    spec.email          = 'buildr-user@incubator.apache.org'
+    spec.homepage       = "http://incubator.apache.org/#{spec.name}/"
+    spec.summary        = 'A build system that doesn\'t suck'
 
-    spec.bindir = 'bin'                               # Use these for applications.
-    spec.executables = ['buildr']
+    spec.files          = FileList['lib/**/*', 'addon/**/*', 'README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'KEYS',
+                                   'Rakefile', 'rakelib/**/*', 'spec/**/*', 'doc/**/*'].to_ary
+    spec.require_paths  = ['lib', 'addon']
+    spec.bindir         = 'bin'                               # Use these for applications.
+    spec.executable     = 'buildr'
 
+    spec.has_rdoc           = true
+    spec.extra_rdoc_files   = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']
+    spec.rdoc_options       << '--title' << "Buildr -- #{spec.summary}" <<
+                               '--main' << 'README' << '--line-numbers' << '--inline-source' << '-p' <<
+                               '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
+    spec.rubyforge_project  = 'buildr'
+
+    spec.platform  = platform
     # Tested against these dependencies.
     spec.add_dependency 'rake',                 '~> 0.8'
     spec.add_dependency 'builder',              '~> 2.1'
@@ -94,8 +95,9 @@ end
 desc "If you're building from sources, run this task one to setup the necessary dependencies."
 task 'setup' do
   installed = Gem::SourceIndex.from_installed_gems
-  required = $spec.dependencies.select { |dep| installed.search(dep.name, dep.version_requirements).empty? }
-  required.each do |dep|
+  dependencies = $spec.dependencies
+  dependencies << Gem::Dependency.new('win32console', nil) if Gem.win_platform? # Colors for RSpec.
+  dependencies.select { |dep| installed.search(dep.name, dep.version_requirements).empty? }.each do |dep|
     puts "Installing #{dep} ..."
     ruby 'install', dep.name, '-v', dep.version_requirements.to_s, :command=>'gem', :sudo=>true
   end

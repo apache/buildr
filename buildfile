@@ -13,9 +13,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'buildr/jetty'
 $LOADED_FEATURES << 'jruby' unless RUBY_PLATFORM =~ /java/ # Pretend to have JRuby, keeps Nailgun happy.
-require 'java/nailgun'
+require 'buildr/jetty'
+require 'buildr/java/nailgun'
 repositories.remote << 'http://repo1.maven.org/maven2'
 
 
@@ -23,15 +23,15 @@ define 'buildr' do
   compile.using :source=>'1.4', :target=>'1.4', :debug=>false
 
   define 'java' do
-    compile.using(:javac).from(FileList['lib/java/**/*.java']).into('lib/java').with(Buildr::Nailgun.artifact)
+    compile.using(:javac).from(FileList['lib/buildr/java/**/*.java']).into('lib/buildr/java').with(Buildr::Nailgun.artifact)
   end
 
   desc 'Buildr extra packages (Antlr, Cobertura, Hibernate, Javacc, JDepend, Jetty, OpenJPA, XmlBeans)'
   define 'extra', :version=>'1.0' do
-    compile.using(:javac).from(FileList['lib/buildr/**/*.java']).into('lib/buildr').with(Buildr::Jetty::REQUIRES)
+    compile.using(:javac).from(FileList['addon/buildr/**/*.java']).into('addon/buildr').with(Buildr::Jetty::REQUIRES)
     # Legals included in source code and show in RDoc.
     legal = 'LICENSE', 'DISCLAIMER', 'NOTICE'
-    package(:gem).include(legal).path('lib').include('lib/buildr')
+    package(:gem).include(legal).path('lib').include('addon/buildr')
     package(:gem).spec do |spec|
       spec.author             = 'Apache Buildr'
       spec.email              = 'buildr-user@incubator.apache.org'

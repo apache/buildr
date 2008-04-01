@@ -24,7 +24,7 @@ unless self.class.const_defined?('SpecHelpers')
 
   # Load additional files for optional specs
   if rspec_options.argv.any? { |s| s =~ /groovy_compilers_spec/ }
-    require 'java/groovyc'
+    require 'buildr/java/groovyc'
   end
 
   require File.expand_path('sandbox', File.dirname(__FILE__))

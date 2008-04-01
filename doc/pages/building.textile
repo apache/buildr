@@ -265,7 +265,7 @@ h3. Compiling Groovy
 Before using the Groovy compiler, you must first require it on your buildfile:
 
 {{{!ruby
-   require 'java/groovyc'
+   require 'buildr/java/groovyc'
 }}}
 
 Once loaded, the groovyc compiler will be automatically selected if any .groovy

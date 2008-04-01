@@ -23,7 +23,7 @@ task 'clobber'
 desc 'Compile Java libraries used by Buildr'
 task 'compile' do
   say 'Compiling Java libraries ... '
-  ruby '-Ilib', 'bin/buildr', 'compile'
+  ruby '-Ilib', '-Iaddon', 'bin/buildr', 'compile'
   say 'OK'
 end
 

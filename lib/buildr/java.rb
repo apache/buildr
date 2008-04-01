@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with this
 # work for additional information regarding copyright ownership.  The ASF
@@ -15,7 +14,13 @@
 # the License.
 
 
-require 'rubygems'
-require 'buildr'
+ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Home' if Config::CONFIG['host_os'] =~ /darwin/i
+require PLATFORM == 'java' ? 'buildr/java/jruby' : 'buildr/java/rjb'
 
-Rake.application.run
+
+require 'buildr/java/compilers'
+require 'buildr/java/test_frameworks'
+require 'buildr/java/bdd_frameworks'
+require 'buildr/java/packaging'
+require 'buildr/java/commands'
+require 'buildr/java/deprecated'

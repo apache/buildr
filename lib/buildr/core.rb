@@ -1,4 +1,3 @@
-#!/usr/bin/env ruby
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with this
 # work for additional information regarding copyright ownership.  The ASF
@@ -15,7 +14,15 @@
 # the License.
 
 
-require 'rubygems'
-require 'buildr'
-
-Rake.application.run
+require 'buildr/core/application'
+require 'buildr/core/project'
+require 'buildr/core/environment'
+require 'buildr/core/help'
+require 'buildr/core/build'
+require 'buildr/core/package'
+require 'buildr/core/filter'
+require 'buildr/core/compile'
+require 'buildr/core/test'
+require 'buildr/core/checks'
+require 'buildr/core/generate'
+require 'buildr/core/addon'

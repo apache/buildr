@@ -29,10 +29,10 @@ module Buildr
   VERSION = '1.3.0'.freeze # unless const_defined?(:VERSION)
 end
 
-require File.join(File.dirname(__FILE__), 'core')
-require File.join(File.dirname(__FILE__), 'tasks')
-require File.join(File.dirname(__FILE__), 'java')
-require File.join(File.dirname(__FILE__), 'ide')
+require 'buildr/core'
+require 'buildr/tasks'
+require 'buildr/java'
+require 'buildr/ide'
 
 
 # Methods defined in Buildr are both instance methods (e.g. when included in Project)
