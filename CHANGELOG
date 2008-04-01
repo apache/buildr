@@ -53,6 +53,12 @@ task is deprecated.
 (http://blog.evanweaver.com/files/doc/fauna/allison).
 * Changed: Resource tasks no longer generate target directory if there are no
 resources to copy over.
+* Changed: To prevent collissions with required files, the source layout now
+places everything under lib/buildr, so require 'core/compile' is now require
+'buildr/core/compile'.
+* Changed: The various Java tasks (JavaCC, XMLBeans, JDepends, etc) are now
+located in the extra directory, and may at some point relocate to an addon
+Gem.
 * Removed: Prepare tasks removed.
 * Removed: All deprecated features since 1.1.  If you've seen warnings before,
 except the build to break.
@@ -69,6 +75,8 @@ relative to the project directory and reordered project elements (Thomas
 Marek).
 * Fixed: When compiling Scala only include scala-library and scala-compiler
 JARs (John Layton).
+* Fixed: POM generation now applies JAR as default packaging if unspecified
+(Maarten Billemont).
 
 1.2.10 (2007-11-26)
 * Changed: Resources sets permission on copied files to make them

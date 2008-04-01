@@ -174,7 +174,7 @@ EOF
         test_dependencies = test_dependencies.sort.map{|d| "'#{d}'"}.join(', ')
         script <<  "  test.with #{test_dependencies}" unless test_dependencies.empty?
 
-        packaging = project['packaging'].first
+        packaging = project['packaging'] ? project['packaging'].first : 'jar'
         if %w(jar war).include?(packaging)
           script <<  "  package :#{packaging}, :id => '#{artifactId}'"
         end
