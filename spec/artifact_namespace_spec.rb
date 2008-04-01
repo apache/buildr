@@ -13,10 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 require File.join(File.dirname(__FILE__), 'spec_helpers')
-
-require 'buildr/java/artifact_namespace'
 
 describe Buildr::ArtifactNamespace do
 
@@ -43,14 +40,19 @@ describe Buildr::ArtifactNamespace do
     it 'should return the top level namespace when invoked outside a project definition' do
       artifact_ns.should be_root
     end
+
+    it 'should return the namespace for the receiving project' do 
+      define('foo') { }
+      project('foo').artifact_ns.name.should == 'foo'
+    end
     
     it 'should return the current project namespace when invoked inside a project' do
       define 'foo' do
         artifact_ns.should_not be_root
-        artifact_ns.name.should == :foo
+        artifact_ns.name.should == 'foo'
         task :doit do 
           artifact_ns.should_not be_root
-          artifact_ns.name.should == :foo
+          artifact_ns.name.should == 'foo'
         end.invoke
       end
     end
@@ -60,18 +62,18 @@ describe Buildr::ArtifactNamespace do
     end
     
     it 'should return the namespace for the given name' do 
-      artifact_ns(:foo).name.should == :foo
-      artifact_ns('foo:bar').name.should == 'foo:bar'.intern
-      artifact_ns(['foo', 'bar', 'baz']).name.should == 'foo:bar:baz'.intern
+      artifact_ns(:foo).name.should == 'foo'
+      artifact_ns('foo:bar').name.should == 'foo:bar'
+      artifact_ns(['foo', 'bar', 'baz']).name.should == 'foo:bar:baz'
       abc_module do 
-        artifact_ns(A::B::C).name.should == 'A:B:C'.intern
+        artifact_ns(A::B::C).name.should == 'A::B::C'
       end
       artifact_ns(:root).should be_root
       artifact_ns(:current).should be_root
       define 'foo' do
-        artifact_ns(:current).name.should == :foo
+        artifact_ns(:current).name.should == 'foo'
         define 'baz' do
-          artifact_ns(:current).name.should == 'foo:baz'.intern
+          artifact_ns(:current).name.should == 'foo:baz'
         end
       end
     end
@@ -287,6 +289,54 @@ describe Buildr::ArtifactNamespace do
       end
     end
   end
+
+  describe '#values_at' do 
+    it 'returns the named artifacts' do 
+      define 'foo' do
+        artifact_ns.use 'foo:one:baz:1.0'
+        define 'bar' do
+          artifact_ns.use :foo_baz => 'foo:two:baz:1.0'
+          
+          specs = artifact_ns.values_at('one').map(&:to_spec)
+          specs.should include('foo:one:baz:1.0')
+          specs.should_not include('foo:two:baz:1.0')
+
+          specs = artifact_ns.values_at('foo_baz').map(&:to_spec)
+          specs.should include('foo:two:baz:1.0')
+          specs.should_not include('foo:one:baz:1.0')
+        end
+      end
+    end
+
+    it 'returns first artifacts by their unversioned spec' do
+      define 'foo' do
+        artifact_ns.use 'foo:one:baz:2.0'
+        define 'bar' do
+          artifact_ns.use :older => 'foo:one:baz:1.0'
+          
+          specs = artifact_ns.values_at('foo:one:baz').map(&:to_spec)
+          specs.should include('foo:one:baz:1.0')
+          specs.should_not include('foo:one:baz:2.0')
+        end
+        specs = artifact_ns.values_at('foo:one:baz').map(&:to_spec)
+        specs.should include('foo:one:baz:2.0')
+        specs.should_not include('foo:one:baz:1.0')
+      end
+    end
+
+    it 'return first artifact satisfying a dependency' do
+      define 'foo' do
+        artifact_ns.use 'foo:one:baz:2.0'
+        define 'bar' do
+          artifact_ns.use :older => 'foo:one:baz:1.0'
+          
+          specs = artifact_ns.values_at('foo:one:baz:>1.0').map(&:to_spec)
+          specs.should include('foo:one:baz:2.0')
+          specs.should_not include('foo:one:baz:1.0')
+        end
+      end
+    end
+  end
   
   describe '#method_missing' do 
     it 'should use cool_aid! to create a requirement' do 
@@ -442,6 +492,144 @@ describe Buildr do
           lambda { artifact(:cool) }.should raise_error(IndexError, /artifact/)
         end
       end
+    end
+  end
+end
+
+describe "Extension using ArtifactNamespace" do
+  before(:each) { Buildr::ArtifactNamespace.clear }
+
+  def abc_module
+    Object.module_eval 'module A; module B; module C; end; end; end'
+    yield
+  ensure
+    Object.send :remove_const, :A
+  end
+  
+  it 'can register namespace listeners' do
+    abc_module do
+      # An example extension to illustrate namespace listeners and method forwarding
+      class A::Example
+        
+        module Ext
+          include Buildr::Extension
+          def example; @example ||= A::Example.new; end
+          before_define do |p|
+            Rake::Task.define_task('example') { p.example.doit }
+          end
+        end
+        
+        REQUIRES = ArtifactNamespace.for(self) do |ns|
+          ns.xmlbeans! 'org.apache.xmlbeans:xmlbeans:jar:2.3.0', '>2'
+          ns.stax_api! 'stax:stax-api:jar:>=1.0.1'
+        end
+
+        attr_reader :options, :requires
+        
+        def initialize
+          # We could actually use the REQUIRES namespace, but to make things
+          # a bit more interesting, suppose each Example instance can have its 
+          # own artifact requirements in adition to those specified on REQUIRES.
+          # To achieve this we create an anonymous namespace.
+          @requires = ArtifactNamespace.new # a namespace per instance
+          REQUIRES.each { |requirement| @requires.need requirement }
+          
+          # For user convenience, we make the options object respond to
+          #    :xmlbeans, :xmlbeans=, :xmlbeans?
+          # forwarding them to the namespace.
+          @options = OpenObject.new.extend(@requires.accessor(:xmlbeans, :stax_api))
+          # Register callbacks so we can perform some logic when an artifact
+          # is selected by the user.
+          options.xmlbeans.add_listener &method(:selected_xmlbeans)
+          options.stax_api.add_listener do |stax|
+            # Now using a proc
+            stax.should be_selected
+            stax.version.should == '1.6180'
+            options[:math] = :golden # customize our options for this version
+            # In this example we set the stax version when running outside
+            # a project definition. This means we have no access to the project
+            # namespace unless we had a reference to the project or knew it's name
+            Buildr.artifact_ns(:current).name.should == 'root'
+          end
+        end
+
+        include Spec::Matchers # for assertions
+        
+        # Called with the ArtifactRequirement that has just been selected
+        # by a user. This allows extension author to selectively perform
+        # some action by inspecting the requirement state.
+        def selected_xmlbeans(xmlbeans)
+          xmlbeans.should be_selected
+          xmlbeans.version.should == '3.1415'
+          options[:math] = :pi
+          # This example just sets xmlbeans for foo:bar project
+          # So the currently running namespace should have the foo:bar name
+          Buildr.artifact_ns(:current).name.should == 'foo:bar'
+        end
+
+        # Suppose we invoke an ant task here or something else.
+        def doit
+          # Now call ant task with our selected artifact and options
+          classpath = requires.map(&:artifact).map(&:to_s).join(File::PATH_SEPARATOR)
+          lambda { ant('thing') { |ant| ant.classpath classpath, :math => options[:math] } }
+          
+          # We are not a Project instance, hence we have no artifact_ns
+          lambda { artifact_ns }.should raise_error(NameError)
+
+          # Extension authors may NOT rely project's namespaces.
+          # However the ruby-way gives you power and at the same time 
+          # makes you dangerous, (think open-modules, monkey-patching)
+          # Given that buildr is pure ruby, consider it a sharp-edged sword.
+          # Having said that, you may actually inspect a project's 
+          # namespace, but don't write on it without letting your users
+          # know you will.
+          # This example obtains the current project namespace to make
+          # some assertions.
+          
+          # To obtain a project's namespace we need either
+          # 1) a reference to the project, and call artifact_ns on it
+          #      project.artifact_ns  # the namespace for project
+          # 2) know the project name
+          #      Buildr.artifact_ns('the:project')
+          # 3) Use :current to reference the currently running project
+          #      Buildr.artifact_ns(:current)
+          name = Buildr.artifact_ns(:current).name
+          case name
+          when 'foo:bar'
+            options[:math].should == :pi
+            requires.xmlbeans.version.should == '3.1415'
+            requires.stax_api.version.should == '1.0.1'
+          when 'foo:baz'
+            options[:math].should == :golden
+            requires.xmlbeans.version.should == '2.3.0'
+            requires.stax_api.version.should == '1.6180'
+          else
+            fail "This example expects foo:bar or foo:baz projects not #{name.inspect}"
+          end
+        end
+      end
+      
+      define 'foo' do
+        define 'bar' do
+          extend A::Example::Ext
+          task('setup') do
+            example.options.xmlbeans = '3.1415'
+          end
+          task('run' => [:setup, :example])
+        end
+        define 'baz' do
+          extend A::Example::Ext
+        end
+      end
+
+      project('foo:bar').example.requires.should_not == project('foo:baz').example.requires
+      project('foo:bar').example.requires.xmlbeans.should_not == project('foo:baz').example.requires.xmlbeans
+      
+      # current namespace outside a project is :root, see the stax callback
+      project('foo:baz').example.options.stax_api = '1.6180'
+      # we call the task outside the project, see #doit
+      lambda { task('foo:bar:run').invoke }.should run_task('foo:bar:example')
+      lambda { task('foo:baz:example').invoke }.should run_task('foo:baz:example')
     end
   end
 end

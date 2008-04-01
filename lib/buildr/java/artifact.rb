@@ -570,20 +570,18 @@ module Buildr
 
   # :call-seq:
   #   artifacts(*spec) => artifacts
-  #   artifacts { |namespace| ... } => namespace
-  #   artifacts(scope) { |namespace| ... } => namespace
-  #   artifacts[scope] => namespace
   #
   # Handles multiple artifacts at a time. This method is the plural equivalent of
   # #artifacts, but can do more things.
   #
-  # The first form returns an array of artifacts built using the supplied
+  # Returns an array of artifacts built using the supplied
   # specifications, each of which can be:
   # * An artifact specification (String or Hash). Returns the appropriate Artifact task.
   # * An artifact of any other task. Returns the task as is.
   # * A project. Returns all artifacts created (packaged) by that project.
   # * A string. Returns that string, assumed to be a file name.
   # * An array of artifacts or a Struct.
+  # * A symbol. Returns the named artifact from the current ArtifactNamespace
   #
   # For example, handling a collection of artifacts:
   #   xml = [ xerces, xalan, jaxp ]
@@ -594,10 +592,6 @@ module Buildr
   # Using artifacts created by a project:
   #   artifacts project('my-app')               # All packages
   #   artifacts project('my-app').package(:war) # Only the WAR
-  #
-  # Last three forms return an ArtifactNamespace instead of an array
-  # and are only useful to work with the resulting namespace. See the
-  # documentation for ArtifactNamespace for more info.
   def artifacts(*specs, &block)
     specs.flatten.inject([]) do |set, spec|
       case spec
@@ -645,7 +639,7 @@ module Buildr
   end
 
   # :call-seq:
-  #   groups(ids, :under=>group_name, :version=>number) => artifacts
+  #   group(ids, :under=>group_name, :version=>number) => artifacts
   #
   # Convenience method for defining multiple artifacts that belong to the same group and version.
   # Accepts multiple artifact identifiers follows by two hash values:

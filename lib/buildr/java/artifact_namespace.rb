@@ -85,7 +85,7 @@ module Buildr
   #
   #     # When a child namespace asks for the :log artifact, 
   #     # these artifacts will be searched starting from the :current namespace.
-  #     ns.dynamic :log, :logger, :commons_logging
+  #     ns.virtual :log, :logger, :commons_logging
   #   end
   #   
   #   artifact_ns('example2:one') do |ns| # namespace for the one subproject
@@ -195,7 +195,9 @@ module Buildr
   #       end
   #
   #    end 
-  # 
+  #
+  # A more advanced example using ArtifactRequirement listeners is included 
+  # in the artifact_namespace_spec.rb description for 'Extension using ArtifactNamespace'
   # That's it for addon writers, now, users can select their prefered version with
   # something like:
   #
@@ -219,7 +221,7 @@ module Buildr
       def clear
         @instances = nil
         remove_const(:ROOT) if const_defined?(:ROOT)
-        const_set(:ROOT, new(:root))
+        const_set(:ROOT, new('root'))
       end
 
       # Populate namespaces from a hash of hashes. 
@@ -227,8 +229,8 @@ module Buildr
       #
       #   -- profiles.yaml --
       #   development:
-      #     :artifacts:
-      #       :root:        # root namespace
+      #     artifacts:
+      #       root:        # root namespace
       #         spring:     org.springframework:spring:jar:2.5
       #         groovy:     org.codehaus.groovy:groovy:jar:1.5.4
       #         logging:    # define a named group
@@ -244,7 +246,7 @@ module Buildr
       #         spring:  org.springframework:spring:jar:1.0
       #
       #   -- buildfile --
-      #   ArtifactNamespace.load(Buildr.profile[:artifacts])
+      #   ArtifactNamespace.load(Buildr.profile['artifacts'])
       def load(namespaces = {})
         namespaces.each_pair { |name, uses| instance(name).use(uses) }
       end
@@ -271,9 +273,9 @@ module Buildr
                  when nil then Rake.application.current_scope.join(':')
                  end
         end
-        name = name.to_s.split(/:{2,}/).join(':')
+        name = name.to_s
         return ROOT if name.size == 0
-        name = name.intern
+        name = name.to_s
         @instances ||= Hash.new { |h, k| h[k] = new(k) }
         instance = @instances[name]
         yield(instance) if block_given?
@@ -412,7 +414,7 @@ module Buildr
       end
 
       def name=(name)
-        @name = name.to_s.to_sym
+        @name = name.to_s
       end
       
       # Set a the requirement, this must be an string formatted for
@@ -467,7 +469,12 @@ module Buildr
 
       def selected! #:nodoc:
         @selected = true
+        @listeners.each { |l| l.call(self) } if @listeners
         self
+      end
+
+      def add_listener(&callback)
+        (@listeners ||= []) << callback
       end
 
       # Return the Artifact object for the currently selected version
@@ -504,8 +511,8 @@ module Buildr
     include Enumerable
     attr_reader :name
     
-    def initialize(name) #:nodoc:
-      @name = name.to_sym
+    def initialize(name = nil) #:nodoc:
+      @name = name.to_s if name
     end
     clear
     
@@ -515,7 +522,18 @@ module Buildr
     
     # ROOT namespace has no parent
     def parent
-      root? ? nil : ArtifactNamespace.instance(@parent || @name.to_s.split(':')[0...-1].join(':'))
+      if root?
+        nil
+      elsif @parent.kind_of?(ArtifactNamespace)
+        @parent
+      elsif @parent
+        ArtifactNamespace.instance(@parent)
+      elsif name
+        parent_name = name.gsub(/::?[^:]+$/, '')
+        parent_name == name ? root : ArtifactNamespace.instance(parent_name)
+      else
+        root
+      end
     end
     
     # Set the parent for the current namespace, except if it is ROOT
@@ -536,7 +554,7 @@ module Buildr
     # Reference needs to be through this object using the given +name+
     #
     #   artifact_ns('foo').ns(:bar).need :thing => 'some:thing:jar:1.0'
-    #   artifact_ns('foo').bar # => the sub-namespace
+    #   artifact_ns('foo').bar # => the sub-namespace 'foo.bar'
     #   artifact_ns('foo').bar.thing # => the some thing artifact
     #
     # See the top level ArtifactNamespace documentation for examples
@@ -553,6 +571,12 @@ module Buildr
       sub.use(*uses)
       yield sub if block_given?
       sub
+    end
+
+    # Test if a sub-namespace by the given name exists
+    def ns?(name)
+      sub = registry[name.to_sym]
+      ArtifactNamespace === sub
     end
 
     # :call-seq:
@@ -754,11 +778,23 @@ module Buildr
     # Return only the named requirements
     def values_at(*names)
       names.map do |name| 
-        name = name.to_s[/^\w+$/] ? name : ArtifactRequirement.unversioned_spec(name)
-        get(name.to_sym)
+        catch :artifact do
+          unless name.to_s[/^\w+$/] 
+            unvers = ArtifactRequirement.unversioned_spec(name)
+            unless unvers.to_s == name.to_s
+              req = ArtifactRequirement.new(name)
+              reg = self
+              while reg
+                candidate = reg.send(:get, unvers, false, false, true)
+                throw :artifact, candidate if req.satisfied_by?(candidate)
+                reg = reg.parent
+              end
+            end
+          end
+          get(name.to_sym)
+        end
       end
     end
-
 
     def key?(name, include_parents = false)
       name = ArtifactRequirement.unversioned_spec(name) unless name.to_s[/^\w+$/]
@@ -789,7 +825,7 @@ module Buildr
       self
     end
 
-    alias_method :dynamic, :group
+    alias_method :virtual, :group
 
     # Create an alias for a named requirement.
     def alias(new_name, old_name)
@@ -841,7 +877,31 @@ module Buildr
       when /\?$/ then
         name = $`.gsub(/^(has|have)_/, '').intern
         [get(name)].flatten.all? { |a| a && a.selected? }
-      else get(name)
+      else 
+        if block || args.size > 0
+          raise ArgumentError.new("wrong number of arguments #{args.size} for 0 or block given")
+        end
+        get(name)
+      end
+    end
+
+    # Return an anonymous module 
+    #   # first create a requirement
+    #   artifact_ns.cool_aid! 'cool:aid:jar:>=1.0'
+    #
+    #   # extend an object as a cool_aid delegator
+    #   jars = Object.new.extend(artifact_ns.accessor(:cool_aid))
+    #   jars.cool_aid = '2.0'
+    #
+    #   artifact_ns.cool_aid.version # -> '2.0'
+    def accessor(*names)
+      ns = self
+      Module.new do 
+        names.each do |name|
+          define_method("#{name}") { ns.send("#{name}") }
+          define_method("#{name}?") { ns.send("#{name}?") }
+          define_method("#{name}=") { |vers| ns.send("#{name}=", vers) }
+        end
       end
     end
 
@@ -878,13 +938,17 @@ module Buildr
      
   end # ArtifactNamespace
 
+  # :call-seq:
+  #   project.artifact_ns -> ArtifactNamespace
+  #   Buildr.artifact_ns(name) -> ArtifactNamespace
+  #   Buildr.artifact_ns -> ArtifactNamespace for the currently running Project
+  #
   # Open an ArtifactNamespace.
-  # If no name is given, the namespace for the currently running 
-  # project is returned. If a block is provided, the namespace
-  # is yielded to it.
+  # If a block is provided, the namespace is yielded to it.
   #
   # See also ArtifactNamespace.instance
   def artifact_ns(name = nil, &block)
+    name = self if name.nil? && self.kind_of?(Project)
     ArtifactNamespace.instance(name, &block)
   end
   

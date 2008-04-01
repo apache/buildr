@@ -684,7 +684,7 @@ module Buildr
   #
   #     before_define do |project|
   #       # Define the loc task for this particular project.
-  #       define_task 'loc' do |task|
+  #       Rake::Task.define_task 'loc' do |task|
   #         lines = task.prerequisites.map { |path| Dir['#{path}/**/*'] }.flatten.uniq.
   #           inject(0) { |total, file| total + File.readlines(file).count }
   #         puts "Project #{project.name} has #{lines} lines of code"
