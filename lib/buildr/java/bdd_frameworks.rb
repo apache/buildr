@@ -59,7 +59,7 @@ module Buildr
     include TestFramework::JavaBDD
     self.lang = :ruby
 
-    REQUIRES = ['org.jruby:jruby-complete:jar:1.1RC2']
+    REQUIRES = ['org.jruby:jruby-complete:jar:1.1RC3']
     TESTS_PATTERN = [ /_spec.rb$/ ]
     OPTIONS = [:properties, :java_args]
 
@@ -68,16 +68,70 @@ module Buildr
     end
 
     def tests(dependencies) #:nodoc:
-      if ENV['SPEC']
-        FileList[Env['SPEC']]
-      else
-        Dir[task.project.path_to(:source, bdd_dir, "ruby/**/*_spec.rb")]
+      Dir[task.project.path_to(:source, bdd_dir, lang, '**/*_spec.rb')].
+        select do |name| 
+        selector = ENV['SPEC']
+        selector.nil? || Regexp.new(selector) === name
       end
     end
 
     def run(tests, dependencies) #:nodoc:
-      tests # TODO
+      cmd_options = task.options.only(:properties, :java_args)
+      cmd_options.update :classpath => dependencies, :project => task.project
+      install_gems(cmd_options)
+
+      report_dir = task.report_to.to_s
+      FileUtils.rm_rf report_dir
+      ENV['CI_REPORTS'] = report_dir
+
+      jruby("-Ilib", "-S", "spec",
+      "--require", gem_path(task.project, "ci_reporter", "lib/ci/reporter/rake/rspec_loader"),
+      "--format", "CI::Reporter::RSpecDoc", tests,
+      cmd_options.merge({:name => "RSpec"}))
+      tests
     end
+
+    private
+    def jruby_home(project)
+      @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : File.expand_path(".jruby", ENV['HOME'])
+    end
+
+    def gem_path(project, gem_name, *additional)
+      dir = Dir["#{jruby_home(project)}/lib/ruby/gems/1.8/gems/#{gem_name}*"].to_a.first
+      dir = File.join(dir, *additional) unless additional.empty?
+      dir
+    end
+
+    def required_gems(options)
+      ["ci_reporter", options[:required_gems]].flatten.compact
+    end
+
+    def jruby(*args)
+      java_args = ["org.jruby.Main", *args]
+      java_args << {} unless Hash === args.last
+      cmd_options = java_args.last
+      project = cmd_options.delete(:project)
+      if RUBY_PLATFORM =~ /java/
+        # when run from within JRuby, use jars in launched-JRuby's classpath rather than the
+        # stated dependency
+        cmd_options[:classpath].delete_if {|e| File.basename(e) =~ /^jruby-complete-.*\.jar$/ }
+        cmd_options[:classpath].unshift *(java.lang.System.getProperty("java.class.path").split(File::PATH_SEPARATOR))
+      end
+      cmd_options[:java_args] ||= []
+      cmd_options[:java_args] << "-Xmx512m" unless cmd_options[:java_args].detect {|a| a =~ /^-Xmx/}
+      cmd_options[:properties] ||= {}
+      cmd_options[:properties]["jruby.home"] = jruby_home(project)
+      Java::Commands.java(*java_args)
+    end
+
+    def install_gems(options)
+      unless required_gems(options).all? {|g| gem_path(options[:project], g)}
+        args = ["-S", "maybe_install_gems", *required_gems(options)]
+        args << {:name => "JRuby Setup"}.merge(options)
+        jruby(*args)
+      end
+    end
+    
   end
 
   class JtestR < TestFramework::Base
@@ -165,7 +219,7 @@ module Buildr
     end
    
     def tests(dependencies) #:nodoc:
-      Dir[task.project.path_to(:source, bdd_dir, "groovy/**/*.groovy")].
+      Dir[task.project.path_to(:source, bdd_dir, lang, "**/*.groovy")].
         select { |name| TESTS_PATTERN.any? { |pat| pat === name } }
     end
 
