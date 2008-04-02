@@ -22,15 +22,17 @@ class ProgressBar
       new(args).start &block
     end
 
+    def width
+      @width ||= $terminal.output_cols || 80
+    end
+
   end
 
   def initialize(args = {})
     @title = args[:title] || ''
     @total = args[:total] || 0
     @mark = args[:mark] || '.'
-    @format = args[:format] ||
-      @total == 0 ? ['%s %8s %s', :title, :count, :elapsed] : ['%s: %s |--| %8s/%s %s', :title, :percentage, :count, :total, :time]
-    @width = $terminal.output_cols - 1
+    @format = args[:format] || default_format
     @output = args[:output] || $stderr unless args[:hidden] || !$stdout.isatty
     clear
   end
@@ -64,7 +66,7 @@ class ProgressBar
   end
 
   def title
-    @title.size > @width / 5 ? (@title[0, @width / 5 - 2] + '..') : @title 
+    @title.size > ProgressBar.width / 5 ? (@title[0, ProgressBar.width / 5 - 2] + '..') : @title 
   end
 
   def count
@@ -125,7 +127,7 @@ protected
 
   def clear
     return unless @output
-    @output.print "\r", " " * @width, "\r"
+    @output.print "\r", " " * (ProgressBar.width - 1), "\r"
     @output.flush
   end
     
@@ -133,7 +135,7 @@ protected
     return unless @output
     format, *args = @format
     line = format % args.map { |arg| send(arg) }
-    @output.print line.sub('|--|') { progress(@width - line.size + 4) }
+    @output.print line.sub('|--|') { progress(ProgressBar.width - line.size + 3) }
     @output.print @finished ? "\n" : "\r"
     @output.flush
     @previous = @count
@@ -145,6 +147,10 @@ protected
     return human(@count) != human(@previous) if @total == 0
     return true if (@count - @previous) >= @total / 100
     return Time.now - @last_time > 1
+  end
+
+  def default_format
+    @total == 0 ? ['%s %8s %s', :title, :count, :elapsed] : ['%s: %s |--| %8s/%s %s', :title, :percentage, :count, :total, :time]
   end
 
 end
