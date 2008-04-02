@@ -14,14 +14,13 @@
 # the License.
 
 
-require 'rbconfig'
-require 'ostruct'
-require 'buildr/core/application_cli'
-require 'jruby'
-require 'thread'
-require 'monitor'
 require 'benchmark'
-
+require 'jruby'
+require 'monitor'
+require 'ostruct'
+require 'rbconfig'
+require 'thread'
+require 'buildr/core/application_cli'
 
 module Buildr
 
@@ -33,6 +32,8 @@ module Buildr
     NAME = "nailgun-#{VERSION}"
     URL = "http://downloads.sourceforge.net/nailgun/#{NAME}.zip"
     ARTIFACT_SPEC = "com.martiansoftware:nailgun:jar:#{VERSION}"
+    BUILDR_PATHS = [File.expand_path('../', File.dirname(__FILE__)),
+                    File.expand_path('../../lib', File.dirname(__FILE__))]
     
     attr_accessor :artifact
     attr_accessor :server, :port, :jruby_queue_size, :buildr_queue_size
@@ -82,7 +83,7 @@ module Buildr
 
           To start the buildr server execute the following task:
 
-              ng:start
+              nailgun:start
 
           Server output will display a message when it becomes ready, you
           will also see messages when the JRuby runtimes are being created,
@@ -91,14 +92,14 @@ module Buildr
           buildr as you normally do, by invoking the $NAILGUN_HOME/ng binary:
 
               # on another terminal, change directory to a project.
-              # if this project is the same ng:start was invoked on, it's 
+              # if this project is the same nailgun:start was invoked on, it's 
               # runtime has been cached, so no loading is performed unless 
               # the buildfile has been modified. otherwise the buildfile 
               # will be loaded on a previously loaded fresh-buildr runtime
               # and it will be cached.
               cd /some/buildr/project
-              ng ng:help                      # display nailgun help
-              ng ng:tasks                     # display overview of ng tasks
+              ng nailgun:help                      # display nailgun help
+              ng nailgun:tasks                     # display overview of ng tasks
               ng clean compile                # just invoke those two tasks
 
              Configuration and Environment Variables.
@@ -133,7 +134,7 @@ module Buildr
           If you provided custom host/port settings you need
           to tell the nailgun client where to connect to:
 
-              ng --nailgun-server 127.0.0.1 --nailgun-port 2233 ng:tasks
+              ng --nailgun-server 127.0.0.1 --nailgun-port 2233 nailgun:tasks
 
           The buildr server starts a BuildrFactory responsible for providing
           a pool of JRuby runtimes configured and ready for task execution. 
@@ -152,18 +153,18 @@ module Buildr
           The buildr_queue_size is of particular importance if you expect to 
           reload lots of buildfiles.
  
-          Execute ng:tasks get an overview of available nailgun tasks.
+          Execute nailgun:tasks get an overview of available nailgun tasks.
           
         DESC
       end
       
       def nailgun_tasks
         tasks = {}
-        tasks['ng:help'] = 'Display nailgun help'
-        tasks['ng:start'] = 'Start the Nailgun server.'
-        tasks['ng:stop'] = 'Stop the Nailgun server.'
-        tasks['ng:tasks'] = 'Display this message'
-        tasks['ng:list'] = <<-DESC
+        tasks['nailgun:help'] = 'Display nailgun help'
+        tasks['nailgun:start'] = 'Start the Nailgun server.'
+        tasks['nailgun:stop'] = 'Stop the Nailgun server.'
+        tasks['nailgun:tasks'] = 'Display this message'
+        tasks['nailgun:list'] = <<-DESC
                  Display a list of builfile paths having an associated
                  buildr runtime. Having a cached runtime reduces buidlr
                  execution time.
@@ -179,19 +180,19 @@ module Buildr
 
                  This task exits inmediatly after printing the file list.
             DESC
-        tasks['ng:clear'] = <<-DESC
+        tasks['nailgun:clear'] = <<-DESC
                  Remove all cached buildr runtimes and exit
             DESC
-        tasks['ng:load'] = <<-DESC
+        tasks['nailgun:load'] = <<-DESC
                  Add or update a cached runtime.
                  
                  Use this task to create a cached buildr runtime for a 
                  buildfile.
             DESC
-        tasks['ng:delete'] = <<-DESC
+        tasks['nailgun:delete'] = <<-DESC
                  Delete cached runtime for a buildfile and exit.
             DESC
-        tasks['ng:once [tasks]'] = <<-DESC
+        tasks['nailgun:once [tasks]'] = <<-DESC
                  Ignore cached runtime and perform tasks on a newly 
                  created environment. This new runtime is dropped right
                  after buildr completion.
@@ -214,7 +215,10 @@ module Buildr
       end
       
       def clear_invoked
-        tasks.each { |t| t.instance_variable_set(:@already_invoked, false) }
+        tasks.each do |task|
+          is_project = Project.instance_variable_get(:@projects).key?(task.name)
+          task.instance_variable_set(:@already_invoked, false) unless is_project
+        end
       end
 
       if Buildr.const_defined?(:Application)
@@ -230,8 +234,7 @@ module Buildr
       
       def parse_options(ctx, opts)
         opts.requires = []
-        Buildr.const_set(:VERSION, ctx.server.runtime.getObject.
-                         const_get(:Buildr)::VERSION)
+        Buildr.const_set(:VERSION, ctx.server.runtime.object.const_get(:Buildr)::VERSION)
   
         obj = OpenStruct.new(:ctx => ctx, :opts => opts)
         class << obj
@@ -241,7 +244,7 @@ module Buildr
             super
             puts 
             puts 'To get a summary of Nailgun features use'
-            puts '  ng:help'
+            puts '  nailgun:help'
           end
 
           def do_option(opt, value)
@@ -306,7 +309,7 @@ module Buildr
           collect_tasks
           clear_invoked
           top_level_tasks.delete('buildr:initialize')
-          Util.benchmark { top_level }
+          Util.benchmark { top_level } 
         end
       end
     end
@@ -340,17 +343,21 @@ module Buildr
       end
 
       def on_runtime(runtime, *args, &block)
-        code = %q{
-          obj = Object.new
-          def obj.runtime_exec(*args, &block)
-            (class << self; self; end).
-              send(:define_method, :runtime_exec, &block)
+        raise_error = lambda do |cls, msg, trace|
+          raise RuntimeError.new(cls + ": "+ msg.to_s).tap { |e| e.set_backtrace(trace.map(&:to_s)) }
+        end
+        executor = runtime.object.const_get(:Module).new do
+          extend self
+          def runtime_exec(*args, &prc)
+            define_method(:runtime_exec, &prc)
             runtime_exec(*args)
+          rescue => e
+            [:error, e.class.name, e.message, e.backtrace]
           end
-          obj
-        }
-        executor = runtime.evalScriptlet(code)
-        executor.runtime_exec(*args, &block)
+        end
+        result = executor.runtime_exec(*args, &block)
+        raise_error.call(*result[1..-1]) if result.kind_of?(Array) && result.first == :error
+        result
       end
     end # module Util
 
@@ -406,34 +413,31 @@ module Buildr
         end
 
         import org.jruby.RubyIO 
-        def redirect_stdio(runtime, nail)
-          result = nil
+        def set_stdio(runtime, dev)
+          set_global = lambda do |global, constant, stream|
+            runtime.global_variables.set(global, stream)
+            runtime.object.send(:remove_const, constant)
+            runtime.object.send(:const_set, constant, stream)
+          end
           stdin  = runtime.global_variables.get('$stdin')
           stdout = runtime.global_variables.get('$stdout')
           stderr = runtime.global_variables.get('$stderr')
+          input  = RubyIO.jnew(runtime, dev.in => java.io.InputStream)
+          output = RubyIO.jnew(runtime, dev.out => java.io.OutputStream)
+          error = RubyIO.jnew(runtime, dev.err => java.io.OutputStream)
+          # stdin.reopen(input, 'r') # not working on jruby, :(
+          set_global.call('$stdin', 'STDIN', input)
+          stdout.reopen(output, 'w')
+          stderr.reopen(error, 'w')
+        end
 
-          set_in = lambda do |i|
-            runtime.global_variables.set('$stdin', i)
-            runtime.object.send(:remove_const, 'STDIN')
-            runtime.object.send(:const_set, 'STDIN', i)
-          end
-          
-          begin
-            input  = RubyIO.jnew(runtime, java.lang.System.in => java.io.InputStream)
-            output = RubyIO.jnew(runtime, nail.out => java.io.OutputStream)
-            error = RubyIO.jnew(runtime, nail.err => java.io.OutputStream)
-            #stdin.reopen(input, 'r') # not working on jruby :(
-            set_in.call(input)
-            stdout.reopen(output)
-            stderr.reopen(error)
+        def redirect_stdio(runtime, nail)
+          result = nil
+          begin 
+            set_stdio(runtime, nail)
             result = yield
           ensure
-            input  = RubyIO.jnew(runtime, java.lang.System.in => java.io.InputStream)
-            output = RubyIO.jnew(runtime, java.lang.System.out => java.io.OutputStream)
-            error = RubyIO.jnew(runtime, java.lang.System.err => java.io.OutputStream)
-            set_in.call(input)
-            stdout.reopen(output)
-            stderr.reopen(error)
+            set_stdio(runtime, java.lang.System)
           end
           result
         end
@@ -532,9 +536,9 @@ module Buildr
           
           opts = OpenStruct.new
           
-          Util.on_runtime(ctx.runtime) do
-            ::Buildr::Nailgun::ContextRunner.parse_options(ctx, opts)
-          end
+          runtime = ctx.runtime
+          #Util.set_stdio(runtime, nail)
+          runtime.object.const_get(:Buildr)::Nailgun::ContextRunner.parse_options(ctx, opts)
           return nail.exit(0) if opts.exit
 
           candidates = Buildr::Application::DEFAULT_BUILDFILES
@@ -555,7 +559,7 @@ module Buildr
           save = buildfile.should_be_loaded? || ctx.action == :load
           
           runtime = buildfile.runtime
-          
+
           if save || ctx.action == :once
             ctx.argv.unshift 'nailgun:load'
             ctx.fresh = true
@@ -566,11 +570,10 @@ module Buildr
               @buildfiles[buildfile.path] = buildfile
             end
           end
-          
-          Util.on_runtime(runtime) do
-            Util.redirect_stdio(runtime, nail) do
-              ::Buildr::Nailgun::ContextRunner.run(ctx)
-            end
+
+          Util.redirect_stdio(runtime, nail) do
+            runtime.object.send :puts
+            runtime.object.const_get(:Buildr)::Nailgun::ContextRunner.run(ctx)
           end
         end
         
@@ -583,15 +586,15 @@ module Buildr
           def ctx.runtime; @runtime ||= server.buildr_factory.runtime; end
           def ctx.buildr; @buildr ||= server.buildr_factory.obtain; end
           actions = {
-            :load => %w{ng:load nailgun:load},
-            :delete => %w{ng:delete nailgun:delete},
-            :clear => %w{ng:clear nailgun:clear},
-            :list => %w{ng:list nailgun:list},
-            :start => %w{ng:boot ng:start nailgun:boot nailgun:start},
-            :stop => %w{ng:stop nailgun:stop},
-            :once => %w{ng:once nailgun:once},
-            :tasks => %w{ng:tasks nailgun:tasks},
-            :help => %w{ng:help nailgun:help help:ng help:nailgun},
+            :load   => %w{ nailgun:load },
+            :delete => %w{ nailgun:delete },
+            :clear  => %w{ nailgun:clear },
+            :list   => %w{ nailgun:list },
+            :start  => %w{ nailgun:boot nailgun:start },
+            :stop   => %w{ nailgun:stop },
+            :once   => %w{ nailgun:once },
+            :tasks  => %w{ nailgun:tasks },
+            :help   => %w{ nailgun:help help:nailgun },
           }
           action = actions.find { |k,v| k if v.any? { |t| ctx.argv.delete(t) } }
           ctx.action = action.first if action
@@ -611,37 +614,30 @@ module Buildr
 
           @buildrs = [].extend(MonitorMixin)
           @buildrs_ready = @buildrs.new_cond
-          @buildrs_create = @buildrs.new_cond
-          
+          @buildrs_needed = @buildrs.new_cond
+                    
           @buildrs_creators = [].extend(MonitorMixin)
-          @runtimes_creators = [].extend(MonitorMixin)
-          
+
           @runtimes = [].extend(MonitorMixin)
           @runtimes_ready = @runtimes.new_cond
-          @runtimes_create = @runtimes.new_cond
+          @runtimes_needed = @runtimes.new_cond
+          
+          @runtimes_creators = [].extend(MonitorMixin)
         end
         
         def obtain
-          @buildrs.synchronize do
-            @buildrs_ready.wait_while { @buildrs.empty? }
-            @buildrs_create.signal
-            @buildrs.shift
-          end
+          get(:buildr)
         end
 
         def runtime
-          @runtimes.synchronize do
-            @runtimes_ready.wait_while { @runtimes.empty? }
-            @runtimes_create.signal
-            @runtimes.shift
-          end
+          get(:runtime)
         end
 
         def start
-          puts "Starting Buildr runtime factory"
-          @runtime_creator = Thread.new { loop { create_runtime_when_needed } }
-          @buildr_creator = Thread.new { loop { create_buildr_when_needed } }
+          debug "Starting Buildr runtime factory"
+          @runtime_creator = Thread.new { loop { create :runtime } }
           @runtime_creator.priority = -2
+          @buildr_creator = Thread.new { loop { create :buildr } }
           @buildr_creator.priority = 1
         end
 
@@ -651,86 +647,103 @@ module Buildr
         end
 
         private
-        def may_create_runtime?
-          @runtimes.synchronize do
-            count = @runtimes.size
-            if count < runtimes_size 
-              count += @runtimes_creators.synchronize { @runtimes_creators.size }
+        def debug(*msg)
+          puts *msg if Rake.application.options.trace
+        end
+
+        def get(thing)
+          collection = instance_variable_get("@#{thing}s")
+          needs = instance_variable_get("@#{thing}s_needed")
+          ready = instance_variable_get("@#{thing}s_ready")
+          result = nil
+          collection.synchronize do 
+            if collection.empty?
+              debug "no #{thing} available, ask to create more"
+              needs.broadcast
+              debug "should be creating #{thing}"
+              ready.wait_while { collection.empty? }
             end
-            count if count < runtimes_size
+            debug "Getting my #{thing}"
+            result = collection.shift
+            debug "would need more #{thing}s"
+            needs.broadcast
+            debug "got my #{thing}: #{result.inspect}"
+            Thread.pass
           end
+          debug "returning #{result.inspect}"
+          result
+        end
+
+        def create(thing, *args, &prc)
+          creator = needed(thing)
+          collection = instance_variable_get("@#{thing}s")
+          ready = instance_variable_get("@#{thing}s_ready")
+          needs = instance_variable_get("@#{thing}s_needed")
+          unless creator
+            collection.synchronize do
+              debug "awake those wanting a #{thing}"
+              ready.broadcast
+              Thread.pass
+              debug "wait until more #{thing}s are needed"
+              # needs.wait(1); return
+              needs.wait_until { creator = needed(thing) }
+            end
+          end
+          debug "About to create #{thing} # #{creator}"
+          method = "create_#{thing}"
+          creators = instance_variable_get("@#{thing}s_creators")
+          debug "registering creator for #{thing} #{creator}"
+          creators.synchronize { creators << creator }
+          result = send(method, creator, *args, &prc)
+          debug "created #{thing}[#{creator}] => #{result.inspect}"
+          creators.synchronize do 
+            debug "unregistering creator for #{thing} #{creator}"
+            creators.delete(creator)
+            collection.synchronize do
+              debug "adding object on queue for #{thing} #{creator}"
+              collection << result
+            end
+          end
+        rescue => e
+          puts "#{e.backtrace.shift}: #{e.message}"
+          e.backtrace.each { |i| puts "\tfrom #{i}" }
         end
         
-        def create_runtime_when_needed
-          @runtimes.synchronize do
-            @runtimes_create.wait_until { may_create_runtime? }
+        def needed(thing)
+          collection = instance_variable_get("@#{thing}s")
+          creators = instance_variable_get("@#{thing}s_creators")
+          size = instance_variable_get("@#{thing}s_size")
+          collection.synchronize do
+            count = collection.size
+            if count < size
+              count += creators.synchronize { creators.size }
+            end
+            count if count < size
           end
-          create_runtime
-          Thread.pass
         end
-        
-        def create_runtime
-          creator = may_create_runtime?
-          return unless creator
-          @runtimes_creators.synchronize { @runtimes_creators << creator }
-          puts "Creating runtime[#{creator}]"
-          runtime = Util.benchmark do |header|
+
+        def create_runtime(creator)
+          debug "Creating runtime[#{creator}]"
+          Util.benchmark do |header|
             runtime = org.jruby.Ruby.newInstance
-            runtime.global_variables.set('$nailgun_server',
-                                         JRuby.reference($nailgun_server))
-            load_service = runtime.getLoadService
-            load_service.getLoadPath.
-              unshift File.normalize_path('..', File.dirname(__FILE__))
-            load_service.require 'buildr/java/nailgun'
+            runtime.global_variables.set('$nailgun_server', JRuby.reference($nailgun_server))
+            BUILDR_PATHS.each { |path| runtime.load_service.load_path.unshift path }
+            runtime.load_service.require 'buildr/nailgun'
             header.replace ["Created runtime[#{creator}]", runtime]
             runtime
           end
-          @runtimes_creators.synchronize do 
-            @runtimes_creators.delete(creator)
-            @runtimes.synchronize do
-              @runtimes << runtime
-              @runtimes_ready.signal
-            end
-          end
         end
 
-        def may_create_buildr?
-          @buildrs.synchronize do 
-            count = @buildrs.size
-            if count < buildrs_size
-              count += @buildrs_creators.synchronize { @buildrs_creators.size }
-            end
-            count if count < buildrs_size
-          end
-        end
-
-        def create_buildr_when_needed
-          @buildrs.synchronize do
-            @buildrs_create.wait_until { may_create_buildr? }
-          end
-          Thread.pass while @runtime_creator.status == 'run'
-          create_buildr
-          Thread.pass
-        end
-
-        def create_buildr
-          creator = may_create_buildr?
-          return unless creator
-          @buildrs_creators.synchronize { @buildrs_creators << creator }
-          runtime = self.runtime
-          puts "Loading buildr[#{creator}] on #{runtime} ..."
+        def create_buildr(creator)
+          debug "Obtaining runtime to load buildr[#{creator}] on it"
+          runtime = get(:runtime)
+          debug "Loading buildr[#{creator}] on #{runtime} ..."
           Util.benchmark ["Loaded buildr[#{creator}] on #{runtime}"] do
-            load_service = runtime.getLoadService
+            load_service = runtime.load_service
             load_service.require 'rubygems'
             load_service.require 'buildr'
           end
-          @buildrs_creators.synchronize do
-            @buildrs_creators.delete(creator)
-            @buildrs.synchronize do
-              @buildrs << runtime 
-              @buildrs_ready.signal
-            end
-          end
+          runtime
         end
         
       end # BuildrFactory
@@ -747,10 +760,6 @@ module Buildr
 
         def runtime
           JRuby.runtime
-        end
-
-        def to_ruby
-          org.jruby.javasupport.JavaEmbedUtils.javaToRuby(runtime, java_object)
         end
 
         def start_server
@@ -847,7 +856,7 @@ module Buildr
            }
           #{ is_win ?
              "> set PATH=%NAILGUN_HOME%;%PATH%" :
-             "$ export PATH=%NAILGUN_HOME%:${PATH}"
+             "$ export PATH=${NAILGUN_HOME}:${PATH}"
            }
            
         Runtime for #{Rake.application.buildfile} has been cached, this 
@@ -859,10 +868,10 @@ module Buildr
         same parameters you normally use for ``buildr''. 
 
         To display Nailgun related help, execute the command:
-            ``#{bin_name} ng:help''
+            ``#{bin_name} nailgun:help''
 
         To get an overview of Nailgun tasks, execute the command:
-            ``#{bin_name} ng:tasks''
+            ``#{bin_name} nailgun:tasks''
 
         NOTICE
       end
@@ -878,11 +887,6 @@ module Buildr
     end # namespace :nailgun
     
   end # module Nailgun
-  
-  [:start, :help, :tasks].each do |n|
-    task "ng:#{n}" do |t|
-      Rake.application.invoke_task("nailgun:#{n}")
-    end
-  end
-  
+
 end
+
