@@ -115,7 +115,7 @@ module Buildr
           also specify the nailgun_home on your buildfile with the following
           code:
               
-              require 'buildr/java/nailgun'
+              require 'buildr/nailgun'
               Buildr::Nailgun.home = File.expand_path('~/.jruby/tool/nailgun')
 
           Buildr will also check that the nailgun client binary (ng.exe for 
@@ -127,7 +127,7 @@ module Buildr
           The buildr server binds itself to localhost, port 2113. You can 
           override this on your buildfile, by placing the following code:
 
-              require 'buildr/java/nailgun'
+              require 'buildr/nailgun'
               Buildr::Nailgun.server = '127.0.0.1'
               Buildr::Nailgun.port = 2233
 
@@ -146,7 +146,7 @@ module Buildr
           buildr runtimes begin life, to be later added on the buildr queue.
           By default both queues are of size 3, you can customize this with:
 
-              require 'buildr/java/nailgun'
+              require 'buildr/nailgun'
               Buildr::Nailgun.jruby_queue_size = 4 # JRuby creation is fast!
               Buildr::Nailgun.buildr_queue_size = 5 # loading buildr takes longer
 
