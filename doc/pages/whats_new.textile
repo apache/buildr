@@ -56,6 +56,24 @@ Buildr now supports Groovy, using the Groovyc Ant task.
 Read more about "using Groovy":building.html#compiling_groovy.
 
 
+h4.  Packaging Files
+
+The @package@ method is convenient enough that you can now use it to generate
+artifacts, an in addition to generate regular file tasks, specifying the file
+name using the @:file@ attribute.  For example:
+
+{{{!ruby
+package :zip, :file=>_('target/interesting.zip')
+}}}
+
+Since this package is not an artifact and does not have a specification, it
+will not automatically install itself in the local repository or upload to a
+remote repository.  For these, use the @package@ method as before.
+
+Read more about "the package
+method":packaging.html#specifying_and_referencing_packages.
+
+
 h4.  Packaging EARs
 
 EAR packages support four component types:

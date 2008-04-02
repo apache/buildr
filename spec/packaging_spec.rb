@@ -302,6 +302,125 @@ POM
 end
 
 
+
+
+
+describe Project, '#package file' do
+  it 'should be a file task' do
+    define 'foo' do
+      package(:zip, :file=>'foo.zip').should be_kind_of(Rake::FileTask)
+    end
+  end
+
+  it 'should not require id, project or version' do
+    define 'foo', :group=>nil do
+      lambda { package(:zip, :file=>'foo.zip') }.should_not raise_error
+      lambda { package(:zip, :file=>'bar.zip', :id=>'error') }.should raise_error
+      lambda { package(:zip, :file=>'bar.zip', :group=>'error') }.should raise_error
+      lambda { package(:zip, :file=>'bar.zip', :version=>'error') }.should raise_error
+    end
+  end
+
+  it 'should not provide project or version' do
+    define 'foo' do
+      package(:zip, :file=>'foo.zip').tap do |pkg|
+        pkg.should_not respond_to(:group)
+        pkg.should_not respond_to(:version)
+      end
+    end
+  end
+
+  it 'should provide packaging type' do
+    define 'foo', :version=>'1.0' do
+      zip = package(:zip, :file=>'foo.zip')
+      jar = package(:jar, :file=>'bar.jar')
+      zip.type.should eql(:zip)
+      jar.type.should eql(:jar)
+    end
+  end
+
+  it 'should assume packaging type from extension if unspecified' do
+    define 'foo', :version=>'1.0' do
+      package(:file=>'foo.zip').class.should be(Buildr::ZipTask)
+      define 'bar' do
+        package(:file=>'bar.jar').class.should be(Buildr::Packaging::Java::JarTask)
+      end
+    end
+  end
+
+  it 'should support different packaging types' do
+    define 'foo', :version=>'1.0' do
+      package(:jar, :file=>'foo.jar').class.should be(Buildr::Packaging::Java::JarTask)
+    end
+    define 'bar' do
+      package(:type=>:war, :file=>'bar.war').class.should be(Buildr::Packaging::Java::WarTask)
+    end
+  end
+
+  it 'should fail if packaging not supported' do
+    lambda { define('foo') { package(:weirdo, :file=>'foo.zip') } }.should raise_error(RuntimeError, /Don't know how to create a package/)
+  end
+
+  it 'should create different tasks for each file' do
+    define 'foo', :version=>'1.0' do
+      package(:zip, :file=>'foo.zip')
+      package(:jar, :file=>'foo.jar')
+    end
+    project('foo').packages.uniq.size.should be(2)
+  end
+
+  it 'should return the same task for subsequent calls' do
+    define 'foo', :version=>'1.0' do
+      package(:zip, :file=>'foo.zip').should eql(package(:file=>'foo.zip'))
+    end
+  end
+
+  it 'should point to specified file' do
+    define 'foo', :version=>'1.0' do
+      package(:zip, :file=>'foo.zip').should point_to_path('foo.zip')
+      package(:zip, :file=>'target/foo-1.0.zip').should point_to_path('target/foo-1.0.zip')
+    end
+  end
+
+  it 'should create prerequisite for package task' do
+    define 'foo', :version=>'1.0' do
+      package(:zip, :file=>'foo.zip')
+    end
+    project('foo').task('package').prerequisites.should include(*project('foo').packages)
+  end
+
+  it 'should create task requiring a build' do
+    define 'foo', :version=>'1.0' do
+      package(:zip, :file=>'foo.zip').prerequisites.should include(build)
+    end
+  end
+
+  it 'should create specified file during build' do
+    define 'foo', :version=>'1.0' do
+      package(:zip, :file=>'foo.zip')
+    end
+    lambda { project('foo').task('package').invoke }.should change { File.exist?('foo.zip') }.to(true)
+  end
+
+  it 'should do nothing for installation/upload' do
+    define 'foo', :version=>'1.0' do
+      package(:zip, :file=>'foo.zip')
+    end
+    lambda do
+      task('install').invoke
+      task('upload').invoke
+      task('uninstall').invoke
+    end.should_not raise_error
+  end
+
+end
+
+
+
+
+
+
+
 describe Rake::Task, ' package' do
   it 'should be local task' do
     define 'foo', :version=>'1.0' do

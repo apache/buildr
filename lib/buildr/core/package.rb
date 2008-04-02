@@ -129,21 +129,28 @@ module Buildr
     #   end
     def package(*args)
       spec = Hash === args.last ? args.pop.dup : {}
-      type = args.shift || compile.packaging || :zip
-      rake_check_options spec, *ActsAsArtifact::ARTIFACT_ATTRIBUTES
-      spec[:id] ||= self.id
-      spec[:group] ||= self.group
-      spec[:version] ||= self.version
-      spec[:type] ||= type
+      if spec[:file]
+        rake_check_options spec, :file, :type
+        spec[:type] = args.shift || spec[:type] || spec[:file].split('.').last
+        file_name = spec[:file]
+      else
+        rake_check_options spec, *ActsAsArtifact::ARTIFACT_ATTRIBUTES
+        spec[:id] ||= self.id
+        spec[:group] ||= self.group
+        spec[:version] ||= self.version
+        spec[:type] = args.shift || spec[:type] || compile.packaging || :zip
+      end
 
-      packager = method("package_as_#{type}") rescue fail("Don't know how to create a package of type #{type}")
+      packager = method("package_as_#{spec[:type]}") rescue fail("Don't know how to create a package of type #{spec[:type]}")
       if packager.arity == 1
-        spec = send("package_as_#{type}_spec", spec) if respond_to?("package_as_#{type}_spec")
-        file_name = path_to(:target, Artifact.hash_to_file_name(spec))
+        unless file_name
+          spec = send("package_as_#{spec[:type]}_spec", spec) if respond_to?("package_as_#{spec[:type]}_spec")
+          file_name = path_to(:target, Artifact.hash_to_file_name(spec))
+        end
         package = packages.find { |pkg| pkg.name == file_name } || packager.call(file_name)
       else
         warn_deprecated "We changed the way package_as methods are implemented.  See the package method documentation for more details."
-        file_name = path_to(:target, Artifact.hash_to_file_name(spec))
+        file_name ||= path_to(:target, Artifact.hash_to_file_name(spec))
         package = packager.call(file_name, spec)
       end
 
@@ -154,7 +161,9 @@ module Buildr
         task 'package'=>package
         package.enhance [task('build')]
 
-        unless package.respond_to?(:install)
+        if spec[:file]
+          class << package ; self ; end.send(:define_method, :type) { spec[:type] }
+        elsif !package.respond_to?(:install)
           # Make it an artifact using the specifications, and tell it how to create a POM.
           package.extend ActsAsArtifact
           package.send :apply_spec, spec.only(*Artifact::ARTIFACT_ATTRIBUTES)

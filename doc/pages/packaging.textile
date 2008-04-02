@@ -35,121 +35,99 @@ create it.  It then adds itself as a prerequisite to the @package@ task.
 Translation: you can create multiple packages from the same project.
 
 
-h2. Packaging JARs
+h2. Specifying And Referencing Packages
 
-There are several ways you can configure the JAR package.  We'll start with the
-MANIFEST.MF file.  You can include a specific file:
+Buildr supports several packaging types, and so when dealing with packages, you
+have to indicate the desired package type.  The packaging type can be the first
+argument, or the value of the @:type@ argument.  The following two are
+equivalent:
 
 {{{!ruby
-package(:jar).with :manifest=>_('src/main/MANIFEST.MF')
+package :jar
+package :type=>:jar
 }}}
 
-Or generate a manifest from a hash:
+If you do not specify a package type, Buildr will attempt to infer one.
+
+In the documentation you will find a number of tasks dealing with specific
+packaging types (@ZipTask@, @JarTask@, etc).  The @package@ method is a
+convenience mechanism that sets up the package for you associates it with
+various project life cycle tasks.
+
+To package a particular file, use the @:file@ argument, for example:
 
 {{{!ruby
-package(:jar).with :manifest=>{ 'Copyright'=>'Acme Inc (C) 2007' }
+package :zip, :file=>_('target/interesting.zip')
 }}}
 
-You can also generate a JAR with no manifest with the value @false@, create a
-manifest with several sections using an array of hashes, or create it from a
-proc.
+This returns a file task that will run as part of the project's @package@ task
+(generating all packages).  It will invoke the @build@ task to generate any
+necessary prerequisites, before creating the specified file.
 
-In large projects, where all the packages use the same manifest, it's easier to
-set it once on the top project using the @manifest@ project property.
-Sub-projects inherit the property from their parents, and the @package@ method
-uses that property if you don't override it, as we do above.
+The package type does not have to be the same as the file name extension, but
+if you don't specify the package type, it will be inferred from the extension.
 
-For example, we can get the same result by specifying this at the top project:
+Most often you will want to use the second form to generate packages that are
+also artifacts.  These packages have an artifact specification, which you can
+use to reference them from other projects (and buildfiles).  They are also
+easier to share across projects: artifacts install themselves in the local
+repository when running the @install@ task, and upload to the remote repository
+when running the @upload@ task (see "Installing and
+Uploading":#installing_and_uploading).
+
+The artifact specification is based on the project name (using dashes instead
+of colons), group identifier and version number, all three obtained from the
+project definition.  You can specify different values using the @:id@,
+@:group@, @:version@ and @:classifier@ arguments.  For example:
 
 {{{!ruby
-manifest['Copyright'] = 'Acme Inc (C) 2007'
+define 'killer-app', :version=>'1.0' do
+  # Generates silly-1.0.jar
+  package :jar, :id=>'silly'
+
+  # Generates killer-app-la-web-1.x.war
+  project 'la-web' do
+    package :war, :version=>'1.x'
+  end
+
+  # Generates killer-app-the-api-1.0-sources.zip
+  project 'teh-api' do
+    package :zip, :classifier=>'sources'
+  end
+end
 }}}
 
-If you need to mix-in the project's manifest with values that only one package
-uses, you can do so easily:
+The file name is determined from the identifier, version number, classifier and
+extension associated with that packaging type.
+
+If you do not specify the packaging type, Buildr attempt to infer it from the
+project definition.  In the general case it will use the default packaging
+type, ZIP.  A project that compiles Java classes will default to JAR packaging;
+for other languages, consult the specific documentation.
+
+A single project can create multiple packages.  For example, a Java project may
+generate a JAR package for the runtime library and another JAR containing just
+the API; a ZIP file for the source code and another ZIP for the documentation.
+Make sure to always call @package@ with enough information to identify the
+specific package you are referencing.  Even if the project only defines a
+single package, calling the @package@ method with no arguments does not
+necessarily refer to that one.
+
+You can use the @packages@ method to obtain a list of all packages defined in
+the project, for example:
 
 {{{!ruby
-package(:jar).with :manifest=>manifest.merge('Main-Class'=>'com.acme.Main')
-}}}
-
-If you need to include more files in the @META-INF@ directory, you can use the
-@:meta_inf@ option.  You can give it a file, or array of files.  And yes, there
-is a @meta_inf@ project property you can set once to include the same set of
-file in all the JARs.  It works like this:
-
-{{{!ruby
-meta_inf << file('DISCLAIMER') << file('NOTICE')
-}}}
-
-If you have a @LICENSE@ file, it's already included in the @meta_inf@ list of
-files.
-
-Other than that, @package :jar@ includes the contents of the compiler's target
-directory and resources, which most often is exactly what you intend it to do.
-If you want to include other files in the JAR, instead or in addition, you can
-do so using the @include@ and @exclude@ methods.  If you do not want the target
-directory included in your JAR, simply call the @clean@ method on it.
-
-{{{!ruby
-package(:jar).clean.include( only_these_files )
-}}}
-
-
-h2. Packaging WARs
-
-Pretty much everything you know about JARs works the same way for WARs, so
-let's just look at the differences.
-
-Without much prompting, @package :war@ picks the contents of the
-@src/main/webapp@ directory and places it at the root of the WAR, copies the
-compiler target directory into the @WEB-INF/classes@ path, and copies any
-compiled dependencies into the @WEB-INF/libs@ paths.
-
-Again, you can use the @include@ and @exclude@ methods to change the contents
-of the WAR.  There are two convenience options you can use to make the more
-common changes.  If you need to include a classes directory other than the
-default:
-
-{{{!ruby
-package(:war).with :classes=>_('target/additional')
-}}}
-
-If you want to include a different set of libraries other than the default:
-
-{{{!ruby
-package(:war).with :libs=>MYSQL_JDBC
-}}}
-
-Both options accept a single value or an array.  The @:classes@ option accepts
-the name of a directory containing class files, initially set to
-@compile.target@ and @resources.target@.  The @:libs@ option accepts artifact
-specifications, file names and tasks, initially set to include everything in
-@compile.dependencies@.
-
-As you can guess, the package task has two attributes called @classes@ and
-@libs@; the @with@ method merely sets their value.  If you need more precise
-control over these arrays, you can always work with them directly, for example:
-
-{{{!ruby
-# Add an artifact to the existing set:
-package(:war).libs += artifacts(MYSQL_JDBC)
-# Remove an artifact from the existing set:
-package(:war).libs -= artifacts(LOG4J)
-# List all the artifacts:
-puts 'Artifacts included in WAR package:'
-puts package(:war).libs.map(&:to_spec)
+project('killer-app:teh-impl').packages.first
+project('killer-app:teh-impl').packages.select { |pkg| pkg.type == :zip }
 }}}
 
 
 h2. Packaging ZIPs
 
-JARs and WARs are pretty much glorified ZIPs.  The ZIP packaging is much
-simpler, it doesn't support the @:manifest@ and @:meta_inf@ options.  Sounds
-simpler, and it is.
-
-Which is why we're going to use this section to tell you a bit more about ZIP
-file packaging.  But anything you read here, you can also use with @package
-:jar@ and @package :war@.  They're all ZIP files, afterall.
+ZIP is the most common form of packaging, used by default when no other
+packaging type applies.  It also forms the basis for many other packaging types
+(e.g. JAR and WAR).  Most of what you'll find here applies to other packaging
+types.
 
 Let's start by including additional files in the ZIP package.  We're going to
 include the @target/docs@ directory and @README@ file:
@@ -244,6 +222,115 @@ the expanded ZIP.  For example:
 {{{!ruby
 # Everything but the libs
 package(:zip).merge('bigbad.war').exclude('libs/**/*')
+}}}
+
+
+h2. Packaging JARs
+
+JAR packages extend ZIP packages with support for Manifest files and the
+META-INF directory.  They also default to include the class files found in the
+@target/classes@ directory.
+
+You can tell the JAR package to include a particular Manifest file:
+
+{{{!ruby
+package(:jar).with :manifest=>_('src/main/MANIFEST.MF')
+}}}
+
+Or generate a manifest from a hash:
+
+{{{!ruby
+package(:jar).with :manifest=>{ 'Copyright'=>'Acme Inc (C) 2007' }
+}}}
+
+You can also generate a JAR with no manifest with the value @false@, create a
+manifest with several sections using an array of hashes, or create it from a
+proc.
+
+In large projects, where all the packages use the same manifest, it's easier to
+set it once on the top project using the @manifest@ project property.
+Sub-projects inherit the property from their parents, and the @package@ method
+uses that property if you don't override it, as we do above.
+
+For example, we can get the same result by specifying this at the top project:
+
+{{{!ruby
+manifest['Copyright'] = 'Acme Inc (C) 2007'
+}}}
+
+If you need to mix-in the project's manifest with values that only one package
+uses, you can do so easily:
+
+{{{!ruby
+package(:jar).with :manifest=>manifest.merge('Main-Class'=>'com.acme.Main')
+}}}
+
+If you need to include more files in the @META-INF@ directory, you can use the
+@:meta_inf@ option.  You can give it a file, or array of files.  And yes, there
+is a @meta_inf@ project property you can set once to include the same set of
+file in all the JARs.  It works like this:
+
+{{{!ruby
+meta_inf << file('DISCLAIMER') << file('NOTICE')
+}}}
+
+If you have a @LICENSE@ file, it's already included in the @meta_inf@ list of
+files.
+
+Other than that, @package :jar@ includes the contents of the compiler's target
+directory and resources, which most often is exactly what you intend it to do.
+If you want to include other files in the JAR, instead or in addition, you can
+do so using the @include@ and @exclude@ methods.  If you do not want the target
+directory included in your JAR, simply call the @clean@ method on it:
+
+{{{!ruby
+package(:jar).clean.include( only_these_files )
+}}}
+
+
+h2. Packaging WARs
+
+Pretty much everything you know about JARs works the same way for WARs, so
+let's just look at the differences.
+
+Without much prompting, @package :war@ picks the contents of the
+@src/main/webapp@ directory and places it at the root of the WAR, copies the
+compiler target directory into the @WEB-INF/classes@ path, and copies any
+compiled dependencies into the @WEB-INF/libs@ paths.
+
+Again, you can use the @include@ and @exclude@ methods to change the contents
+of the WAR.  There are two convenience options you can use to make the more
+common changes.  If you need to include a classes directory other than the
+default:
+
+{{{!ruby
+package(:war).with :classes=>_('target/additional')
+}}}
+
+If you want to include a different set of libraries other than the default:
+
+{{{!ruby
+package(:war).with :libs=>MYSQL_JDBC
+}}}
+
+Both options accept a single value or an array.  The @:classes@ option accepts
+the name of a directory containing class files, initially set to
+@compile.target@ and @resources.target@.  The @:libs@ option accepts artifact
+specifications, file names and tasks, initially set to include everything in
+@compile.dependencies@.
+
+As you can guess, the package task has two attributes called @classes@ and
+@libs@; the @with@ method merely sets their value.  If you need more precise
+control over these arrays, you can always work with them directly, for example:
+
+{{{!ruby
+# Add an artifact to the existing set:
+package(:war).libs += artifacts(MYSQL_JDBC)
+# Remove an artifact from the existing set:
+package(:war).libs -= artifacts(LOG4J)
+# List all the artifacts:
+puts 'Artifacts included in WAR package:'
+puts package(:war).libs.map(&:to_spec)
 }}}
 
 
@@ -457,85 +544,6 @@ task 'deploy'=>'docs' do
   uri = URI("sftp://#{username}:#{password}@var/www/docs")
   uri.upload file('docs')
 end
-}}}
-
-
-h2. Specifying And Referencing Packages
-
-If it's a package to us and an artifact to someone else, then it must have an
-artifact specification.  Right? And to have an artifact specification, it must
-have a group identifier, artifact identifier, version number and optional
-classifier.  Where do they come from?
-
-These are all options you can pass to the @package@ method.  Or, you can let it
-pick them from the project definition.  In this case it pays to be lazy, and
-easier to just specify the group identifier and version number as project
-properties.  The artifact identifier is just the project (full) name, with
-colons (@:@) replaced by dashes (@-@).
-
-Let's run an example and find out:
-
-{{{!ruby
-puts project('killer-app:teh-impl').packages.first.to_spec
-=> acme:killer-app-teh-impl:1.0:jar
-}}}
-
-What you don't like, you can always change.  For example:
-
-{{{!ruby
-# Generates silly-1.0.jar
-package :jar, :id=>'silly'
-
-# Generates killer-app-la-web-1.x.war
-project 'la-web' do
-  package :war, :version=>'1.x'
-end
-
-# Generates killer-app-the-api-1.0-sources.zip
-project 'teh-api' do
-  package :zip, :classifier=>'sources'
-end
-}}}
-
-You can get all the packages created by a project and filter them yourself.
-Let's illustrate that with an example that prints artifact specifications for
-all the packages we generate through our projects:
-
-{{{!ruby
-puts projects.map(&:packages).flatten.map(&:to_spec).join(', ')
-=> acme:killer-app:zip:sources:1.0, acme:killer-app-teh-api:jar:1.0,
-   acme:killer-app-teh-impl:jar:1.0, acme:killer-app-la-web:war:1.0
-}}}
-
-p(tip). The @map@ method takes an array, runs the block with each item, and
-returns a new array.  The @&:@ shortcut is not a standard part of Ruby but a
-useful convenience that calls this method on each instance.  So
-@map(&:packages)@ is just a shorter way of saying @map { |obj| obj.packages }@.
-
-Now reduce it to only use the JAR packages:
-
-{{{!ruby
-puts projects.map(&:packages).flatten.select { |pkg| pkg.type == :jar }.
-  map(&:to_spec).join(', ')
-}}}
-
-But for a single package, we're just going to call @package@ with the right
-artifact specification.  Each time you call @package@ on a project, it returns
-a file task for that package.  It only creates the file task once, so call it
-twice, and you'll get the same file task.  We can use that to our advantage:
-
-{{{!ruby
-compile.with project('teh-api').package(:jar)
-}}}
-
-But remember, @package@ decides which file task to return from the combination
-of file type, artifact and group identifiers, version number and classifier.
-So we need to pass the very same arguments to retrieve the very same package.
-For example:
-
-{{{!ruby
-projec(t'killer-app:teh-impl').package(:war)
-project('killer-app').package(:zip, :classifier=>'docs')
 }}}
 
 
