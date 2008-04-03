@@ -393,3 +393,73 @@ your own.
 
 Next, let's talk about "customizing your environment and using
 profiles":settings_profiles.html
+
+h2. Behaviour-Driven Development
+
+Buildr supports using Behaviour-Driven Development(BDD) frameworks for testing
+your java projects, which one to use, is just a matter of preference, mainly
+on what language/tools you feel confortable to use for testing.
+Buildr follows each framework naming conventions, searching for files under
+the @src/spec/{lang}@ directory.
+
+h4. JBehave 
+
+"JBehave":http://jbehave.org/ is a pure java BDD framework, stories and 
+behaviour specifications are written in the java language. 
+
+To use JBehave in your project you can select it with @test.using :jbehave@.
+
+This framework will search for the following patterns under your project:
+   @src/spec/java/**/*Behaviour.java@
+
+Supports the following options:
+
+|_. Option        |_. Value |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |
+
+h4. RSpec
+
+"RSpec":http://rspec.info/ is the de-facto BDD framework for ruby. It's the 
+framework used to test Buildr itself. 
+
+Specifications are written in "Ruby":http://www.ruby-lang.org/en/ language, 
+but are run by using "JRuby":http://jruby.codehaus.org/. 
+That means you have access to all your Java classes and any Java or Ruby 
+tool out there.
+
+To use this framework in your project you can select it with 
+@test.using :rspec@.
+
+This framework will search for the following patterns under your project:
+   @src/spec/ruby/**/*_spec.rb@
+
+Supports the following options:
+
+|_. Option        |_. Value |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |
+
+
+h4. EasyB
+
+"EasyB":http://www.easyb.org/ is a BDD framework using 
+"Groovy":http://groovy.codehaus.org/. 
+
+Specifications are written in the Groovy language, of course you get
+seamless java integration as with all things groovy. 
+
+To use this framework in your project you can select it with 
+@test.using :easyb@.
+
+This framework will search for the following patterns under your project:
+   @src/spec/groovy/**/*Behavior.groovy@
+   @src/spec/groovy/**/*Story.groovy@
+
+Supports the following options:
+
+|_. Option        |_. Value |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |
+| @:format@       | Report format, either :txt or :xml |
+

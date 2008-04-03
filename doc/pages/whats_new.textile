@@ -121,6 +121,21 @@ faster task execution and avoid frequent JVM startup overhead.
 
 "Read more ...":more_stuff.html#nailgun
 
+h4. Behaviour-Driven Development
+
+Given that many languages are now supported by Buildr, the same is true for
+testing, the convention is to store BDD files under the @src/spec/{lang}@ 
+directory. 
+The following table shows the framework's name you can use to select them 
+for your projects. Buildr follows each framework's naming convention.
+
+|_. test.using     |_. Test file name convention                  |
+| @:jbehave@       |  @src/spec/java/**/*Behaviour.java@            |
+| @:rspec@         |  @src/spec/ruby/**/*_spec.rb@                  |
+| @:easyb@         |  @src/spec/groovy/**/*{Story,Behavior}.groovy@ |
+
+"Read more ...":testing.html#bdd
+
 h4.  Profiles
 
 Different environments may require different configurations, some you will want

@@ -1,4 +1,7 @@
-1.3.0 (Pending)
+1.3.0 (Pending) 
+* Added: Testing with EasyB (Nicolas Modrzyk).
+* Added: Testing with JBehave (John Layton).
+* Added: Testing with RSpec (Nick Sieger).
 * Added: Nailgun integration for improved user experience when running on
 JRuby.
 * Added: Cobertura tasks can be invoked for a single project using project
