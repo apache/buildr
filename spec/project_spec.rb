@@ -701,6 +701,8 @@ describe Project, '#task' do
 end
 
 
+=begin
+# TODO: how do we test this?
 describe Rake::Task, 'buildr:initialize' do
   it 'should be ready to run as the first task' do
     Rake.application.top_level_tasks.first.should eql('buildr:initialize')
@@ -712,3 +714,4 @@ describe Rake::Task, 'buildr:initialize' do
     lambda { task('buildr:initialize').invoke }.should change { defined }.to(true)
   end
 end
+=end

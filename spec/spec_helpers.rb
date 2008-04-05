@@ -223,43 +223,43 @@ unless self.class.const_defined?('SpecHelpers')
     end
 
     def dryrun
-      Rake.application.options.dryrun = true
+      Buildr.application.options.dryrun = true
       begin
         suppress_stdout { yield }
       ensure
-        Rake.application.options.dryrun = false
+        Buildr.application.options.dryrun = false
       end
     end
 
     # We run tests with tracing off. Then things break. And we need to figure out what went wrong.
     # So just use trace() as you would use verbose() to find and squash the bug.
     def trace(value = nil)
-      old_value = Rake.application.options.trace
-      Rake.application.options.trace = value unless value.nil?
+      old_value = Buildr.application.options.trace
+      Buildr.application.options.trace = value unless value.nil?
       if block_given?
         begin
           yield
         ensure
-          Rake.application.options.trace = old_value
+          Buildr.application.options.trace = old_value
         end
       end
-      Rake.application.options.trace
+      Buildr.application.options.trace
     end
 
-    # Change the Rakefile original directory, faking invocation from a different directory.
+    # Change the Buildr original directory, faking invocation from a different directory.
     def in_original_dir(dir)
       begin
-        original_dir = Rake.application.original_dir
-        Rake.application.instance_eval { @original_dir = File.expand_path(dir) }
+        original_dir = Buildr.application.original_dir
+        Buildr.application.instance_eval { @original_dir = File.expand_path(dir) }
         yield
       ensure
-        Rake.application.instance_eval { @original_dir = original_dir }
+        Buildr.application.instance_eval { @original_dir = original_dir }
       end 
     end
 
 
     # Buildr's define method creates a project definition but does not evaluate it
-    # (that happens once the Rakefile is loaded), and we include Buildr's define in
+    # (that happens once the buildfile is loaded), and we include Buildr's define in
     # the test context so we can use it without prefixing with Buildr. This just patches
     # define to evaluate the project definition before returning it.
     def define(name, properties = nil, &block) #:yields:project
@@ -279,7 +279,7 @@ unless self.class.const_defined?('SpecHelpers')
     # Make all Buildr methods accessible from test cases, and add various helper methods.
     config.include Buildr, SpecHelpers
 
-    # Sanbdox Rake/Buildr for each test.
+    # Sanbdox Buildr for each test.
     config.include Sandbox
   end
 

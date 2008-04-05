@@ -78,14 +78,16 @@ module Buildr
     def run(tests, dependencies) #:nodoc:
       cmd_options = task.options.only(:properties, :java_args)
       cmd_options.update :classpath => dependencies, :project => task.project
-      install_gems(cmd_options)
+      # TODO:  Setting up JRuby is something to do before running Buildr.
+      #install_gems(cmd_options)
 
       report_dir = task.report_to.to_s
       FileUtils.rm_rf report_dir
       ENV['CI_REPORTS'] = report_dir
 
       jruby("-Ilib", "-S", "spec",
-      "--require", gem_path(task.project, "ci_reporter", "lib/ci/reporter/rake/rspec_loader"),
+      #"--require", gem_path(task.project, "ci_reporter", "lib/ci/reporter/rake/rspec_loader"),
+      "--require", "ci/reporter/rake/rspec_loader",
       "--format", "CI::Reporter::RSpecDoc", tests,
       cmd_options.merge({:name => "RSpec"}))
       tests
@@ -124,13 +126,13 @@ module Buildr
       Java::Commands.java(*java_args)
     end
 
-    def install_gems(options)
-      unless required_gems(options).all? {|g| gem_path(options[:project], g)}
-        args = ["-S", "maybe_install_gems", *required_gems(options)]
-        args << {:name => "JRuby Setup"}.merge(options)
-        jruby(*args)
-      end
-    end
+    #def install_gems(options)
+    #  unless required_gems(options).all? {|g| gem_path(options[:project], g)}
+    #    args = ["-S", "maybe_install_gems", *required_gems(options)]
+    #    args << {:name => "JRuby Setup"}.merge(options)
+    #    jruby(*args)
+    #  end
+    #end
     
   end
 

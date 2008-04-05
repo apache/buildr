@@ -117,50 +117,8 @@ module Buildr
     Buildr.options
   end
 
-  # :call-seq:
-  #   environment => string or nil
-  #
-  # Returns the environment name.  Use this when your build depends on the environment,
-  # for example, development, production, etc.  The value comes from the BUILDR_ENV
-  # environment variable, and defaults to 'development'.
-  # 
-  # For example:
-  #   buildr -e production
-  def environment
-    ENV['BUILDR_ENV'] ||= 'development'
-  end
-
-  # :call-seq:
-  #   environment(env)
-  #
-  # Sets the environment name.
-  def environment=(env)
-    ENV['BUILDR_ENV'] = env
-  end
-
-  # :call-seq:
-  #    profile => hash
-  #
-  # Returns the profile for the current environment.
   def profile
-    profiles[environment] ||= {}
-  end
-
-  # :call-seq:
-  #    profiles => hash
-  #
-  # Returns all the profiles loaded from the profiles.yaml file.
-  def profiles
-    unless @profiles
-      filename = ['Profiles.yaml', 'profiles.yaml'].map { |fn| File.expand_path(fn, File.dirname(Rake.application.rakefile)) }.
-        detect { |filename| File.exist?(filename) }
-      profiles = filename && YAML::load(File.read(filename)) || {}
-      raise 'Profiles file must be a YAML file with a name: structure map.' unless Hash === profiles
-      @profiles = profiles.inject({}) { |hash, (name, value)| value ||= {} 
-        raise 'Each profile must be empty or contain name/value pairs.' unless Hash === value
-        hash.merge(name=>(value || {})) }
-    end
-    @profiles
+    application.profile
   end
 
 end

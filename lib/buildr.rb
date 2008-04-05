@@ -29,6 +29,7 @@ module Buildr
   VERSION = '1.3.0'.freeze # unless const_defined?(:VERSION)
 end
 
+
 require 'buildr/core'
 require 'buildr/tasks'
 require 'buildr/java'

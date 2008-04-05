@@ -20,64 +20,69 @@
 repositories.remote << 'http://repo1.maven.org/maven2'
 Java.load # Anything added to the classpath.
 artifacts(TestFramework.frameworks.map(&:dependencies).flatten).each { |a| file(a).invoke }
-task('buildr:initialize').invoke
 
-# We need to run all tests inside a sandbox, tacking a snapshot of Rake/Buildr before the test,
+ENV['HOME'] = File.expand_path('tmp/home')
+
+# We need to run all tests inside a _sandbox, tacking a snapshot of Buildr before the test,
 # and restoring everything to its previous state after the test. Damn state changes.
 module Sandbox
 
-  def self.included(spec)
-    spec.before(:each) { sandbox }
-    spec.after(:each) { reset }
+  class << self
+    attr_reader :tasks, :rules
+
+    def included(spec)
+      spec.before(:each) { sandbox }
+      spec.after(:each) { reset }
+    end
   end
 
-  def sandbox
-    @sandbox = {}
-    # During teardown we get rid of all the tasks and start with a clean slate.
-    # Unfortunately, we also get rid of tasks we need, like build, clean, etc.
-    # Here we capture them in their original form, recreated during teardown.
-    @sandbox[:tasks] = Rake.application.tasks.collect do |original|
-      prerequisites = original.prerequisites.clone
-      actions = original.instance_eval { @actions }.clone
-      lambda do
-        original.class.send(:define_task, original.name=>prerequisites).tap do |task|
-          task.comment = original.comment
-          actions.each { |action| task.enhance &action }
-        end
+  @tasks = Buildr.application.tasks.collect do |original|
+    prerequisites = original.send(:prerequisites).map(&:to_s)
+    actions = original.instance_eval { @actions }.clone
+    lambda do
+      original.class.send(:define_task, original.name=>prerequisites).tap do |task|
+        task.comment = original.comment
+        actions.each { |action| task.enhance &action }
       end
     end
-    @sandbox[:rules] = Rake.application.instance_variable_get(:@rules).clone
+  end
+  @rules = Buildr.application.instance_variable_get(:@rules)
 
+  def sandbox
     # Create a temporary directory where we can create files, e.g,
     # for projects, compilation. We need a place that does not depend
     # on the current directory.
-    @test_dir = File.expand_path('../tmp', File.dirname(__FILE__))
-    FileUtils.mkpath @test_dir
-    # Move to the work directory and make sure Rake thinks of it as the Rakefile directory.
-    @sandbox[:pwd] = Dir.pwd
-    Dir.chdir @test_dir
-    @sandbox[:load_path] = $LOAD_PATH.clone
-    @sandbox[:loaded_features] = $LOADED_FEATURES.clone
-    @sandbox[:original_dir] = Rake.application.original_dir 
-    Rake.application.instance_eval { @original_dir = Dir.pwd }
-    Rake.application.instance_eval { @rakefile = File.expand_path('buildfile') }
+    temp = File.join(File.dirname(__FILE__), '../tmp')
+    FileUtils.mkpath temp
+    Dir.chdir temp
+
+    @_sandbox = {}
+    Buildr.application = Rake.application = Buildr::Application.new
+    Sandbox.tasks.each { |block| block.call }
+    Buildr.application.instance_variable_set :@rules, Sandbox.rules.clone
+    Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
+
+    @_sandbox[:load_path] = $LOAD_PATH.clone
+    @_sandbox[:loaded_features] = $LOADED_FEATURES.clone
     
     # Later on we'll want to lose all the on_define created during the test.
-    @sandbox[:on_define] = Project.class_eval { (@on_define || []).dup }
-    @sandbox[:layout] = Layout.default.clone
+    @_sandbox[:on_define] = Project.class_eval { (@on_define || []).dup }
+    @_sandbox[:layout] = Layout.default.clone
 
     # Create a local repository we can play with. However, our local repository will be void
     # of some essential artifacts (e.g. JUnit artifacts required by build task), so we create
     # these first (see above) and keep them across test cases.
-    @sandbox[:artifacts] = Artifact.class_eval { @artifacts }.clone
-    Buildr.repositories.local = File.join(@test_dir, 'repository')
+    @_sandbox[:artifacts] = Artifact.class_eval { @artifacts }.clone
+    Buildr.repositories.local = File.expand_path('repository')
+    ENV['HOME'] = File.expand_path('home')
 
-    @sandbox[:env_keys] = ENV.keys
+    @_sandbox[:env_keys] = ENV.keys
     ['DEBUG', 'TEST', 'HTTP_PROXY', 'USER'].each { |k| ENV.delete(k) ; ENV.delete(k.downcase) }
 
     # Don't output crap to the console.
     trace false
     verbose false
+    task('buildr:initialize').invoke
   end
 
   # Call this from teardown.
@@ -91,29 +96,20 @@ module Sandbox
 
     # Get rid of all the projects and the on_define blocks we used.
     Project.clear
-    on_define = @sandbox[:on_define]
+    on_define = @_sandbox[:on_define]
     Project.class_eval { @on_define = on_define }
-    Layout.default = @sandbox[:layout].clone
+    Layout.default = @_sandbox[:layout].clone
 
-    # Switch back Rake directory.
-    Dir.chdir @sandbox[:pwd]
-    original_dir = @sandbox[:original_dir]
-    $LOAD_PATH.replace @sandbox[:load_path]
-    $LOADED_FEATURES.replace @sandbox[:loaded_features]
-    Rake.application.instance_eval { @original_dir = original_dir }
-    FileUtils.rm_rf @test_dir
-
-    # Get rid of all the tasks and restore the default tasks.
-    Rake::Task.clear
-    @sandbox[:tasks].each { |block| block.call }
-    Rake.application.instance_variable_set :@rules, @sandbox[:rules]
+    $LOAD_PATH.replace @_sandbox[:load_path]
+    $LOADED_FEATURES.replace @_sandbox[:loaded_features]
+    FileUtils.rm_rf Dir.pwd
 
     # Get rid of all artifacts.
-    @sandbox[:artifacts].tap { |artifacts| Artifact.class_eval { @artifacts = artifacts } }
+    @_sandbox[:artifacts].tap { |artifacts| Artifact.class_eval { @artifacts = artifacts } }
 
     # Restore options.
     Buildr.options.test = nil
-    (ENV.keys - @sandbox[:env_keys]).each { |key| ENV.delete key }
+    (ENV.keys - @_sandbox[:env_keys]).each { |key| ENV.delete key }
   end
 
 end

@@ -132,7 +132,7 @@ describe 'repositories.local' do
   it 'should default to .m2 path' do
     # For convenience, sandbox actually sets the local repository to a temp directory
     repositories.local = nil
-    repositories.local.should eql(File.expand_path('~/.m2/repository'))
+    repositories.local.should eql(File.expand_path('.m2/repository', ENV['HOME']))
   end
 
   it 'should be settable' do

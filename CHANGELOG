@@ -24,6 +24,10 @@ JavaWrapper.
 * Added: JRuby 1.1 support (Victor Hugo Borja, Nick Sieger).
 * Added: IDEA 7 task: use buildr idea7x (Shane Witbeck).
 * Added: Experimental support for addons.
+* Added: Experimental support for YAML configurtion files settings.yaml (in
+~/.buildr), build.yaml (next to buildfile) and profiles.yaml.
+* Added: Ability to create a package that is not an artifact and specify the
+target file using the :file argument.
 * Changed: JUnit/TestNG test cases are selected by superClass or annotations,
 not by class-name pattern.
 * Changed: Upgraded to Antwrap 0.7.0, thanks to Caleb Powell for relicensing
