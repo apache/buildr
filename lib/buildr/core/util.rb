@@ -50,7 +50,7 @@ module Buildr
 
     # Runs Ruby with these command line arguments.  The last argument may be a hash,
     # supporting the following keys:
-    #   :script   -- Runs the specified script (e.g., :script=>'gem')
+    #   :command  -- Runs the specified script (e.g., :command=>'gem')
     #   :sudo     -- Run as sudo on operating systems that require it.
     #   :verbose  -- Override Rake's verbose flag.
     def ruby(*args)
@@ -62,7 +62,7 @@ module Buildr
         cmd << 'sudo' << '-u' << '##{ruby_uid}'
       end
       cmd << ruby_bin
-      cmd << '-S' << options.delete(:script) if options[:script]
+      cmd << '-S' << options.delete(:command) if options[:command]
       Rake.application.sh *cmd.push(*args.flatten).push(options)
     end
 
@@ -81,7 +81,7 @@ module Buildr
       end
       dependencies.select { |dep| installed.search(dep.name, dep.version_requirements).empty? }.each do |dep|
         puts "Installing #{dep} ..."
-        ruby 'install', dep.name, '-v', dep.version_requirements.to_s, :script=>'gem', :sudo=>true
+        ruby 'install', dep.name, '-v', dep.version_requirements.to_s, :command=>'gem', :sudo=>true
       end
     end
   end

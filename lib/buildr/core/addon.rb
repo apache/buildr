@@ -34,11 +34,11 @@ module Buildr
     end
 
     def install
-      SystemUtil.ruby 'install', name, :script => 'gem', :sudo => true
+      SystemUtil.ruby 'install', name, :command => 'gem', :sudo => true
     end
 
     def uninstall
-      SystemUtil.ruby 'uninstall', spec.name, '-v', spec.version.to_s, :script => 'gem', :sudo => true
+      SystemUtil.ruby 'uninstall', spec.name, '-v', spec.version.to_s, :command => 'gem', :sudo => true
     end
 
     def upload

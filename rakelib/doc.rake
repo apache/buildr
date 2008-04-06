@@ -32,7 +32,7 @@ begin
 rescue LoadError
   puts 'Please run rake setup to install the Allison RDoc template'
   task 'setup' do
-    ruby 'install', 'allison', :script=>'gem', :sudo=>true
+    ruby 'install', 'allison', :command=>'gem', :sudo=>true
   end
   task 'release:check' do
     fail 'Please run rake setup to install the Allison RDoc template'
@@ -67,7 +67,7 @@ begin
 rescue LoadError
   puts 'Please run rake setup to install the Docter document generation library'
   task 'setup' do
-    ruby 'install', 'docter', :script=>'gem', :sudo=>true
+    ruby 'install', 'docter', :command=>'gem', :sudo=>true
   end
   task 'release:check' do
     fail 'Please run rake setup to install the Docter document generation library'
