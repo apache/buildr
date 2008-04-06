@@ -276,7 +276,7 @@ describe Buildr::Application do
 end
 
 
-describe ENV do
+describe 'ENV' do
 
   describe 'BUILDR_ENV' do
     it 'should default to development' do
