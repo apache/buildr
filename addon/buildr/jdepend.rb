@@ -33,7 +33,7 @@ module Buildr
 
       def paths()
         Project.projects.map(&:compile).each(&:invoke).map(&:target).
-          map(&:to_s).select { |path| File.exist?(path) }.map { |path| File.normalize_path(path) }
+          map(&:to_s).select { |path| File.exist?(path) }.map { |path| FileUtil.normalize_path(path) }
       end
 
     end

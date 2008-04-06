@@ -188,9 +188,7 @@ module Buildr
         end
         install.each do |spec|
           say "Installing #{spec.full_name} ... " if verbose
-          cmd = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', spec.name, '-v', spec.version.to_s
-          cmd.unshift 'sudo' unless Gem.win_platform? || RUBY_PLATFORM =~ /java/
-          sh *cmd.push(:verbose=>false)
+          SystemUtil.ruby 'install', spec.name, '-v', spec.version.to_s, :script => 'gem', :sudo => true, :verbose => false
           Gem.source_index.load_gems_in Gem::SourceIndex.installed_spec_directories
         end
         installed += install

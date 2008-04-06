@@ -189,7 +189,7 @@ module Java
       # Returns the path to the specified Java command (with no argument to java itself).
       def path_to_bin(name = nil)
         home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
-        File.normalize_path(File.join(home, 'bin', name.to_s))
+        FileUtil.normalize_path(File.join(home, 'bin', name.to_s))
       end
 
       # :call-seq:
@@ -199,7 +199,7 @@ module Java
       # each of the artifacts and returns an array of paths.
       def classpath_from(options)
         Buildr.artifacts(options[:classpath] || []).map(&:to_s).
-          map { |t| task(t).invoke; File.normalize_path(t) }
+          map { |t| task(t).invoke; FileUtil.normalize_path(t) }
       end
 
     end

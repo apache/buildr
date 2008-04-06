@@ -13,6 +13,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# Load file/system utilities used shared between Buildr's runtime and this Rakefile
+require File.expand_path('lib/buildr/core/util', File.dirname(__FILE__))
+extend Buildr::SystemUtil
 
 # We need two specifications, for Ruby and Java, and one for the platform we run on.
 $specs = ['ruby', 'java'].inject({}) { |hash, platform|
@@ -54,36 +57,9 @@ $specs = ['ruby', 'java'].inject({}) { |hash, platform|
   end
   hash.update(platform=>spec)
 }
-$spec = $specs[RUBY_PLATFORM =~ /java/ ? 'java' : 'ruby']
+$spec = $specs[java_platform? ? 'java' : 'ruby']
 
 $license_excluded = ['lib/core/progressbar.rb', 'spec/spec.opts', 'doc/css/syntax.css', '.textile', '.haml']
-
-
-# Finds and returns path to executable.  Consults PATH environment variable.
-# Returns nil if executable not found.
-def which(name)
-  if Gem.win_platform?
-    path = ENV['PATH'].split(File::PATH_SEPARATOR).map { |path| path.gsub('\\', '/') }.map { |path| "#{path}/#{name}.{exe,bat,com}" }
-  else
-    path = ENV['PATH'].split(File::PATH_SEPARATOR).map { |path| "#{path}/#{name}" }
-  end
-  FileList[path].existing.first
-end
-
-# Runs Ruby with these command line arguments.  The last argument may be a hash,
-# supporting the following keys:
-#   :script   -- Runs the specified script (e.g., :script=>'gem')
-#   :sudo     -- Run as sudo on operating systems that require it.
-#   :verbose  -- Override Rake's verbose flag.
-def ruby(*args)
-  options = Hash === args.last ? args.pop : {}
-  cmd = []
-  cmd << 'sudo' if options.delete(:sudo) && !Gem.win_platform?
-  cmd << Config::CONFIG['ruby_install_name']
-  cmd << '-S' << options.delete(:command) if options[:command]
-  sh *cmd.push(*args.flatten).push(options)
-end
-
 
 begin
   require 'highline/import'
@@ -94,15 +70,10 @@ end
 # Setup environment for running this Rakefile (RSpec, Docter, etc).
 desc "If you're building from sources, run this task one to setup the necessary dependencies."
 task 'setup' do
-  installed = Gem::SourceIndex.from_installed_gems
   dependencies = $spec.dependencies
   dependencies << Gem::Dependency.new('win32console', nil) if Gem.win_platform? # Colors for RSpec.
-  dependencies.select { |dep| installed.search(dep.name, dep.version_requirements).empty? }.each do |dep|
-    puts "Installing #{dep} ..."
-    ruby 'install', dep.name, '-v', dep.version_requirements.to_s, :command=>'gem', :sudo=>true
-  end
+  install_gems(*dependencies)
 end
-
 
 namespace 'release' do
 

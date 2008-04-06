@@ -34,15 +34,11 @@ module Buildr
     end
 
     def install
-      cmd = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', name
-      cmd .unshift 'sudo' unless Gem.win_platform?
-      sh *cmd
+      SystemUtil.ruby 'install', name, :script => 'gem', :sudo => true
     end
 
     def uninstall
-      cmd = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'uninstall', spec.name, '-v', spec.version.to_s
-      cmd .unshift 'sudo' unless Gem.win_platform?
-      sh *cmd
+      SystemUtil.ruby 'uninstall', spec.name, '-v', spec.version.to_s, :script => 'gem', :sudo => true
     end
 
     def upload

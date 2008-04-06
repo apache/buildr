@@ -30,9 +30,9 @@ begin
   gem 'allison'
   rdoc.template = File.expand_path('lib/allison.rb', Gem.loaded_specs['allison'].full_gem_path)
 rescue LoadError
-  say 'Please run rake setup to install the Allison RDoc template'
+  puts 'Please run rake setup to install the Allison RDoc template'
   task 'setup' do
-    ruby 'install', 'allison', :command=>'gem', :sudo=>true
+    ruby 'install', 'allison', :script=>'gem', :sudo=>true
   end
   task 'release:check' do
     fail 'Please run rake setup to install the Allison RDoc template'
@@ -65,9 +65,9 @@ begin
   end
 
 rescue LoadError
-  say 'Please run rake setup to install the Docter document generation library'
+  puts 'Please run rake setup to install the Docter document generation library'
   task 'setup' do
-    ruby 'install', 'docter', :command=>'gem', :sudo=>true
+    ruby 'install', 'docter', :script=>'gem', :sudo=>true
   end
   task 'release:check' do
     fail 'Please run rake setup to install the Docter document generation library'
@@ -75,7 +75,7 @@ rescue LoadError
 end
 
 
-if which('prince')
+if Object.const_defined?(:Docter) && which('prince')
 
   Docter::Rake.generate 'print',
     Docter.collection($spec.name).using('doc/print.toc.yaml').include('doc/pages', 'LICENSE'),
@@ -105,10 +105,10 @@ end
 
 namespace 'release' do
   task 'prepare'=>'docs' do
-    say 'Checking that we have site documentation, RDoc and PDF ... '
+    puts 'Checking that we have site documentation, RDoc and PDF ... '
     fail 'No PDF generated, you need to install PrinceXML!' unless File.exist?('site/buildr.pdf')
     fail 'No RDocs in site directory' unless File.exist?('site/rdoc/files/lib/buildr_rb.html')
     fail 'No site documentation in site directory' unless File.exist?('site/index.html')
-    say 'OK'
+    puts 'OK'
   end
 end

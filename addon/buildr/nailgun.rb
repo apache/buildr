@@ -319,11 +319,11 @@ module Buildr
 
       def find_buildfile(pwd, candidates, nosearch=false)
         candidates = [candidates].flatten
-        buildfile = candidates.find { |c| File.file?(File.normalize_path(c, pwd)) }
-        return File.normalize_path(buildfile, pwd) if buildfile
+        buildfile = candidates.find { |c| File.file?(File.expand_path(c, pwd)) }
+        return File.expand_path(buildfile, pwd) if buildfile
         return nil if nosearch
         updir = File.dirname(pwd)
-        return nil if File.normalize_path(updir) == File.normalize_path(pwd)
+        return nil if File.expand_path(updir) == File.expand_path(pwd)
         find_buildfile(updir, candidates)
       end
       
@@ -448,7 +448,7 @@ module Buildr
         attr_accessor :runtime
         
         def initialize(path, *requires)
-          @path = File.normalize_path(path)
+          @path = File.expand_path(path)
           @requires = requires.dup
         end
 
@@ -545,7 +545,7 @@ module Buildr
           candidates = [opts.buildfile] if opts.buildfile
           
           path = Util.find_buildfile(ctx.pwd, candidates, opts.nosearch) ||
-            File.normalize_path(candidates.first, ctx.pwd)
+            File.expand_path(candidates.first, ctx.pwd)
           
           if ctx.action == :delete
             nail.out.println "Deleting runtime for #{path}"
@@ -841,8 +841,8 @@ module Buildr
         puts "Starting #{$nailgun_server}"
         $nailgun_server.start_server
 
-        is_win = Config::CONFIG['host_os'] =~ /win/i
-        bin_path = File.normalize_path(installed_bin.to_s.pathmap("%d"))
+        is_win = SystemUtil.win_os?
+        bin_path = FileUtil.normalize_path(installed_bin.to_s.pathmap("%d"))
         bin_name = installed_bin.to_s.pathmap("%f")
 
         puts <<-NOTICE
@@ -862,7 +862,7 @@ module Buildr
         Runtime for #{Rake.application.buildfile} has been cached, this 
         means you can open a terminal inside 
 
-              #{Rake.application.buildfile.pathmap("%d")}
+              #{FileUtil.normalize_path(Rake.application.buildfile.pathmap("%d"))}
 
         Invoke tasks by executing the #{bin_name} program, it takes the
         same parameters you normally use for ``buildr''. 
