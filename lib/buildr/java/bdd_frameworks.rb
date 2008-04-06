@@ -59,7 +59,7 @@ module Buildr
     include TestFramework::JavaBDD
     self.lang = :ruby
 
-    REQUIRES = ['org.jruby:jruby-complete:jar:1.1RC3']
+    REQUIRES = ['org.jruby:jruby-complete:jar:1.1']
     TESTS_PATTERN = [ /_spec.rb$/ ]
     OPTIONS = [:properties, :java_args]
 
