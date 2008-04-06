@@ -377,7 +377,7 @@ module Buildr
 
         def update_classpath(component)
           package = file(component[:artifact].to_s)
-          package.manifest = package.manifest.dup # avoid mofifying parent projects manifest
+          package.manifest = (package.manifest || {}).dup # avoid mofifying parent projects manifest  
           package.prepare do
             header = case package.manifest
               when Hash then package.manifest

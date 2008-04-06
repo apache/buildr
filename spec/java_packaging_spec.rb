@@ -637,6 +637,21 @@ describe Packaging, 'ear' do
     inspect_ear { |files| files.should include('ejb/foo-1.0.jar') }
   end
 
+  it 'should accept an artifact with component type' do
+    define 'foo', :version=>'1.0' do
+      write 'src/main/resources/foo', 'true'
+      artifact("foo:bar:jar:1.0").from(package(:jar, :id => 'muu').to_s)
+      artifact("foo:baz:jar:1.0").from(package(:jar, :id => 'moo').to_s)
+      package(:ear).add 'foo:baz:jar:1.0'
+      package(:jar, :id => :miu).merge(artifact('foo:bar:jar:1.0')).include('**/*')
+      package(:ear).add :ejb=> package(:jar, :id => :miu)
+    end
+    inspect_ear { |files| files.should include('ejb/miu-1.0.jar', 'lib/baz-1.0.jar') }
+    inspect_classpath 'ejb/miu-1.0.jar'do |classpath|
+      classpath.should include('../lib/baz-1.0.jar')
+    end
+  end
+
   it 'should map JARs to /lib directory' do
     define 'foo', :version=>'1.0' do
       package(:ear) << package(:jar)
