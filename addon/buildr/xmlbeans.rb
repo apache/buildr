@@ -76,9 +76,9 @@ module Buildr
       # into the target directory, or the rest is useless.
       compile do |task|
         verbose(false) do
-          base = Pathname.new(generated.to_s)
+          base = generated.to_s
           FileList["#{base}/**/*.{class,xsb,xsd}"].each do |file|
-            target = File.join(compile.target.to_s, Pathname.new(file).relative_path_from(base))
+            target = File.join(compile.target.to_s, Util.relative_path(base, file))
             mkpath File.dirname(target) ; cp file, target
           end
         end

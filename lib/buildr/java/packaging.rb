@@ -455,20 +455,14 @@ module Buildr
 
       private
 
-        # :call-seq:
-        #   relative_path(to_component, from_component = nil)
-        #
-        def relative_path(to, from = ".")
-          to = File.join(to[:path].to_s, File.basename(to[:artifact].to_s)) if to.kind_of?(Hash)
-          from = from[:path].to_s if from.kind_of?(Hash)
-          to, from = File.expand_path(to, "/"), File.expand_path(from, "/")
-          Util.relative_path(to, from)
-        end
-
         # Classpath of all packages included as libraries (type :lib).
         def libs_classpath(component)
+          from = component[:path]
           @classpath = @components.select { |comp| comp[:type] == :lib }.
-            map { |comp| relative_path(comp, component) }
+            map do |lib| 
+            lib_path = File.join(lib[:path].to_s, lib[:artifact].pathmap('%f'))
+            Util.relative_path(lib_path, from)
+          end
         end
 
         def descriptor_xml
@@ -480,7 +474,7 @@ module Buildr
           xml.application do
             xml.tag! 'display-name', display_name
             @components.each do |comp|
-              uri = relative_path(comp)
+              uri = relative_path(File.join(comp[:path].to_s, comp[:artifact].pathmap('%f')))
               case comp[:type]
               when :war
                 xml.module :id=>comp[:id] do

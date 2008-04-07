@@ -18,7 +18,6 @@ require 'buildr/core/build'
 require 'buildr/core/compile'
 require 'buildr/java/ant'
 
-
 module Buildr
 
   class TestFramework
@@ -46,9 +45,9 @@ module Buildr
       #
       def filter_classes(dependencies, criteria = {})
         return [] unless task.compile.target
-        target = Pathname.new(task.compile.target.to_s)
+        target = task.compile.target.to_s
         candidates = Dir["#{target}/**/*.class"].
-          map { |file| Pathname.new(file).relative_path_from(target).to_s.ext('').gsub(File::SEPARATOR, '.') }.
+          map { |file| Util.relative_path(file, target).ext('').gsub(File::SEPARATOR, '.') }.
           reject { |name| name =~ /\$/ }
         result = []
         if criteria[:class_names]

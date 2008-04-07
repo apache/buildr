@@ -217,8 +217,7 @@ module Buildr
           source.entries.reject { |entry| entry.directory? }.each do |entry|
             if @includes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) } &&
                !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) }
-              dest = Pathname.new(File.expand_path(path + "/" + entry.name, '/')).
-                              relative_path_from(Pathname.new(File.expand_path('/'))).to_s
+              dest = Util.relative_path(path + "/" + entry.name)
               puts "Adding #{dest}" if Rake.application.options.trace
               file_map[dest] = lambda { |output| output.write source.read(entry) }
             end

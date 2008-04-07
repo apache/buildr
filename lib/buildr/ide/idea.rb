@@ -14,7 +14,6 @@
 # the License.
 
 
-require 'pathname'
 require 'buildr/core/project'
 require 'buildr/java/artifact'
 require 'stringio'
@@ -48,9 +47,7 @@ module Buildr
       sources << File.expand_path(Rake.application.rakefile, root_path) if Rake.application.rakefile
 
       # Find a path relative to the project's root directory.
-      relative = lambda do |path|
-        Pathname.new(path.to_s).relative_path_from(Pathname.new(project.path_to)).to_s
-      end
+      relative = lambda { |path| Util.relative_path(path.to_s, project.path_to) }
 
       m2repo = Buildr::Repositories.instance.local
       excludes = [ '**/.svn/', '**/CVS/' ].join('|')

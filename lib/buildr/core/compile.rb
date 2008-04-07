@@ -170,9 +170,8 @@ module Buildr
         ext_glob = Array(self.class.source_ext).join(',')
         sources.flatten.inject({}) do |map, source|
           if File.directory?(source)
-            base = Pathname.new(source)
             FileList["#{source}/**/*.{#{ext_glob}}"].reject { |file| File.directory?(file) }.
-              each { |file| map[file] = File.join(target, Pathname.new(file).relative_path_from(base).to_s.ext(target_ext)) }
+              each { |file| map[file] = File.join(target, Util.relative_path(source, file).ext(target_ext)) }
           else
             map[source] = File.join(target, File.basename(source).ext(target_ext))
           end

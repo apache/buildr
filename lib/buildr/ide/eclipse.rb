@@ -14,7 +14,6 @@
 # the License.
 
 
-require 'pathname'
 require 'buildr/core/project'
 require 'buildr/java/artifact'
 
@@ -65,7 +64,7 @@ module Buildr
             path or raise "Invalid path '#{path.inspect}'"
             msg = [:to_path, :to_str, :to_s].find { |msg| path.respond_to? msg }
             path = path.__send__(msg)
-            Pathname.new(File.expand_path(path)).relative_path_from(Pathname.new(project.path_to)).to_s
+            Util.relative_path(File.expand_path(path), project.path_to)
           end
 
           m2repo = Buildr::Repositories.instance.local
