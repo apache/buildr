@@ -28,14 +28,74 @@ module Buildr
       # Adds support for MANIFEST.MF and other META-INF files.
       module WithManifest #:nodoc:
 
-        def self.included(base)
-          base.class_eval do
-            alias :initialize_without_manifest :initialize
-            alias :initialize :initialize_with_manifest
-          end
-        end
-
         MANIFEST_HEADER = ['Manifest-Version: 1.0', 'Created-By: Buildr']
+        MANIFEST_LINE_SEP = /\r\n|\n|\r[^\n]/
+        MANIFEST_SECTION_SEP = /(#{MANIFEST_LINE_SEP}){2}/
+
+        class << self
+          def included(base)
+            base.class_eval do
+              alias :initialize_without_manifest :initialize
+              alias :initialize :initialize_with_manifest
+            end
+          end
+
+          # WithManifest.from_file(path) => [Hash]
+          #
+          # Return an array of hashes built from the file manifest.
+          # Each hash is a manifest section.
+          #
+          # The array returned by this function can be feed to
+          #       WithManifest#manifest_lines_from
+          # to obtain the formatted manifest content.
+          def from_file(file)
+            Zip::ZipFile.open(file.to_s) do |zip|
+              begin
+                zip.file.read('META-INF/MANIFEST.MF').split(MANIFEST_SECTION_SEP).
+                  reject { |s| s.chomp == "" }.map do |section
+                  section.split(MANIFEST_LINE_SEP).inject([]) { |merged, line|
+                    if line[0] == 32
+                      merged.last << line[1..-1]
+                    else
+                      merged << line
+                    end
+                    merged
+                  }.map { |line| line.split(/:\s+/) }.
+                    inject({}) { |map, (name, value)| map.merge(name => value) }
+                end
+              rescue Errno::ENOENT
+                [{}] # manifest with first section empty
+              end
+            end
+          end
+
+          def manifest_lines_from(arg)
+            case arg
+            when Hash
+              arg.map { |name, value| "#{name}: #{value}" }.sort.
+                map { |line| manifest_wrap_at_72(line) }.flatten
+            when Array
+              arg.map { |section|
+                name = section.has_key?('Name') ? ["Name: #{section['Name']}"] : []
+                name + section.except('Name').map { |name, value| "#{name}: #{value}" }.sort + ['']
+              }.flatten.map { |line| manifest_wrap_at_72(line) }.flatten
+            when Proc, Method
+              manifest_lines_from(arg.call)
+            when String
+              arg.split("\n").map { |line| manifest_wrap_at_72(line) }.flatten
+            else
+              fail 'Invalid manifest, expecting Hash, Array, file name/task or proc/method.'
+            end
+          end
+
+         private
+          def manifest_wrap_at_72(arg)
+            #return arg.map { |line| manifest_wrap_at_72(line) }.flatten.join("\n") if Array === arg
+            return arg if arg.size < 72
+            [ arg[0..70], manifest_wrap_at_72(' ' + arg[71..-1]) ]
+          end
+
+        end
 
         # Specifies how to create the manifest file.
         attr_accessor :manifest
@@ -59,41 +119,14 @@ module Buildr
               # Tempfiles gets deleted on garbage collection, so we're going to hold on to it
               # through instance variable not closure variable.
               Tempfile.open 'MANIFEST.MF' do |@manifest_tmp|
-                lines = String === manifest || Rake::Task === manifest ? manifest_lines_from(File.read(manifest.to_s)) :
-                  manifest_lines_from(manifest)
+                lines = String === manifest || Rake::Task === manifest ?
+                WithManifest.manifest_lines_from(File.read(manifest.to_s)) : WithManifest.manifest_lines_from(manifest)
                 @manifest_tmp.write((MANIFEST_HEADER + lines).join("\n"))
                 @manifest_tmp.write "\n"
                 path('META-INF').include @manifest_tmp.path, :as=>'MANIFEST.MF'
               end
             end
           end
-        end
-
-      private
-
-        def manifest_lines_from(arg)
-          case arg
-          when Hash
-            arg.map { |name, value| "#{name}: #{value}" }.sort.
-              map { |line| manifest_wrap_at_72(line) }.flatten
-          when Array
-            arg.map { |section|
-              name = section.has_key?('Name') ? ["Name: #{section['Name']}"] : []
-              name + section.except('Name').map { |name, value| "#{name}: #{value}" }.sort + ['']
-            }.flatten.map { |line| manifest_wrap_at_72(line) }.flatten
-          when Proc, Method
-            manifest_lines_from(arg.call)
-          when String
-            arg.split("\n").map { |line| manifest_wrap_at_72(line) }.flatten
-          else
-            fail 'Invalid manifest, expecting Hash, Array, file name/task or proc/method.'
-          end
-        end
-
-        def manifest_wrap_at_72(arg)
-          #return arg.map { |line| manifest_wrap_at_72(line) }.flatten.join("\n") if Array === arg
-          return arg if arg.size < 72
-          [ arg[0..70], manifest_wrap_at_72(' ' + arg[71..-1]) ]
         end
 
       end
@@ -305,7 +338,7 @@ module Buildr
           @libs, @components = [], []
           prepare do
             @components.each do |component|
-              path(component[:path]).include(component[:artifact])
+              path(component[:path]).include(component[:clone] || component[:artifact])
             end
             path('META-INF').include(descriptor)
           end
@@ -354,7 +387,8 @@ module Buildr
               component = options.merge(:artifact => artifact, :type => type, 
                 :id=>artifact.respond_to?(:to_spec) ? artifact.id : artifact.to_s.pathmap('%n'),
                 :path=>options[:path] || dirs[type].to_s)
-              update_classpath(component) unless :lib == type || Artifact === artifact
+              component[:clone] = component_clone(component) unless :lib == type
+              # update_classpath(component) unless :lib == type || Artifact === artifact
               @components << component
             end
           end
@@ -366,12 +400,32 @@ module Buildr
 
       protected
 
+        def component_clone(component)
+          file(path_to(component[:path], component[:artifact].to_s.pathmap('%f')) => component[:artifact]) do |task|
+            mkpath task.pathmap('%d'), :verbose => false
+            cp component[:artifact].to_s, task.to_s, :verbose => false
+            sections = WithManifest.from_file(component[:artifact])
+            class_path = sections.first['Class-Path'].to_s.split
+            included_libs = class_path.map { |fn| File.basename(fn) }
+            included_libs += package.path('WEB-INF/lib').sources.map { |fn| File.basename(fn) }
+            # Include all other libraries in the classpath.
+            class_path += libs_classpath(component).reject { |path| included_libs.include?(File.basename(path)) }
+            sections.first['Class-Path'] = class_path.join(' ')
+            Zip::ZipFile.open(task.to_s) do |zip|
+              zip.get_output_stream('META-INF/MANIFEST.MF') do |out|
+                out.write WithManifest.manifest_lines_from(sections).join('\n')
+                out.write '\n'
+              end
+            end
+          end
+        end
+
         def associate(project)
           @project = project
         end
 
         def path_to(*args) #:nodoc:
-          @project.path_to(:target, :ear, *args)
+          @project.path_to(:target, :ear, name.pathmap('%n'), *args)
         end
         alias_method :_, :path_to
 
@@ -404,8 +458,7 @@ module Buildr
           to = File.join(to[:path].to_s, File.basename(to[:artifact].to_s)) if to.kind_of?(Hash)
           from = from[:path].to_s if from.kind_of?(Hash)
           to, from = File.expand_path(to, "/"), File.expand_path(from, "/")
-          require 'pathname'
-          Pathname.new(to).relative_path_from(Pathname.new(from)).to_s
+          Util.relative_path(to, from)
         end
 
         # Classpath of all packages included as libraries (type :lib).

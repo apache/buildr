@@ -14,6 +14,7 @@
 # the License.
 
 require 'rbconfig'
+require 'pathname'
 
 module Buildr
   
@@ -114,6 +115,11 @@ module Buildr
       else
         Rake::EARLY
       end
+    end
+
+    def relative_path(to, from = ".")
+      to, from = File.expand_path(to, "/"), File.expand_path(from, "/")
+      Pathname.new(to).relative_path_from(Pathname.new(from)).to_s
     end
   end
 end

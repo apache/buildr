@@ -18,9 +18,6 @@ require File.join(File.dirname(__FILE__), 'spec_helpers')
 require File.join(File.dirname(__FILE__), 'packaging_helper')
 
 
-MANIFEST_LINE_SEP = /\r\n|\n|\r[^\n]/
-MANIFEST_SECTION_SEP = /(#{MANIFEST_LINE_SEP}){2}/
-
 describe Project, '#manifest' do
   it 'should include user name' do
     ENV['USER'] = 'MysteriousJoe'
@@ -70,22 +67,7 @@ shared_examples_for 'package with manifest' do
   def inspect_manifest
     package = project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) do |zip|
-      sections = zip.file.read('META-INF/MANIFEST.MF').split(MANIFEST_SECTION_SEP).
-        reject { |s| s.chomp == "" }.map do |section|
-        section.split(MANIFEST_LINE_SEP).each { |line| line.length.should < 72 }.
-          inject([]) { |merged, line|
-            if line[0] == 32
-              merged.last << line[1..-1]
-            else
-              merged << line
-            end
-            merged
-          }.map { |line| line.split(/: /) }.
-          inject({}) { |map, (name, value)| map.merge(name=>value) }
-        end
-      yield sections
-    end
+    yield Buildr::Packaging::Java::WithManifest.from_file(package)
   end
 
   it 'should include default header when no options specified' do
@@ -127,7 +109,7 @@ shared_examples_for 'package with manifest' do
     package_with_manifest 'Foo'=>1, :bar=>'Bar'
     package = project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF').should =~ /#{MANIFEST_LINE_SEP}$/ }
+    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF').should =~ /#{Buildr::Packaging::Java::WithManifest::MANIFEST_LINE_SEP}$/ }
   end
 
   it 'should break hash manifest lines longer than 72 characters using continuations' do
@@ -582,21 +564,8 @@ describe Packaging, 'ear' do
       File.open('tmp.zip', 'wb') do |tmp|
         tmp.write ear.file.read(package)
       end
-      Zip::ZipFile.open('tmp.zip') do |zip|
-        first_section = zip.file.read('META-INF/MANIFEST.MF').split(MANIFEST_SECTION_SEP).
-          reject { |s| s.chomp == "" }.first.
-          split(MANIFEST_LINE_SEP).each { |line| line.length.should < 72 }.
-          inject([]) { |merged, line|
-            if line[0] == 32
-              merged.last << line[1..-1]
-            else
-              merged << line
-            end
-            merged
-          }.map { |line| line.split(/: /) }.
-          inject({}) { |map, (name, value)| map.merge(name=>value) }
-        yield first_section['Class-Path'].to_s.split(' ')
-      end
+      sections = Buildr::Packaging::Java::WithManifest.from_file(package)
+      yield sections.first['Class-Path'].to_s.split(' ')
     end
   end
 
