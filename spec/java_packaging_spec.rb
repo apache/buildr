@@ -564,7 +564,7 @@ describe Packaging, 'ear' do
       File.open('tmp.zip', 'wb') do |tmp|
         tmp.write ear.file.read(package)
       end
-      sections = Buildr::Packaging::Java::WithManifest.from_file(package)
+      sections = Buildr::Packaging::Java::WithManifest.from_file('tmp.zip')
       yield sections.first['Class-Path'].to_s.split(' ')
     end
   end
@@ -606,40 +606,32 @@ describe Packaging, 'ear' do
     inspect_ear { |files| files.should include('ejb/foo-1.0.jar') }
   end
 
-  it 'should accept an artifact as non-lib component, without updating its manifest' do
-    define 'bar', :version => '1.0' do
-      write 'hello', 'world'
-      package(:zip).include('hello')
-      package(:zip).manifest = {'Class-Path' => 'bar'}
-      package(:zip).invoke
-      artifact('hello:world:jar:1.0').from(package(:zip).to_s)
+  it 'should not modify original artifact for its components' do
+    define 'one', :version => '1.0' do 
+      write 'src/main/resources/one.txt', '1'
       package(:jar)
     end
-    define 'foo', :version => '1.0' do
-      package(:ear).add project(:bar).package(:jar)
-      package(:ear).add :ejb => 'hello:world:jar:1.0'
+    
+    define 'two', :version => '1.0' do 
+      write 'src/main/resources/two.txt', '2'
+      package(:jar)
     end
-    inspect_ear { |files| files.should include('ejb/world-1.0.jar', 'lib/bar-1.0.jar') }
-    inspect_classpath 'ejb/world-1.0.jar'do |classpath|
-      classpath.should == ['bar'] # should not be updated by EarTask
+    
+    define 'foo', :version => '1.0' do 
+      package(:ear).add project(:one).package(:jar)
+      package(:ear).add :ejb => project(:two).package(:jar)
+    end
+
+    inspect_ear { |files| files.should include('lib/one-1.0.jar', 'ejb/two-1.0.jar') }
+    
+    Buildr::Packaging::Java::WithManifest.from_file(project('one').package(:jar)).first['Class-Path'].should be_nil
+    Buildr::Packaging::Java::WithManifest.from_file(project('two').package(:jar)).first['Class-Path'].should be_nil
+    
+    inspect_classpath 'ejb/two-1.0.jar' do |classpath|
+      classpath.should include('../lib/one-1.0.jar')
     end
   end
-
-  it 'should accept an artifact clone with component type' do
-    define 'foo', :version=>'1.0' do
-      write 'src/main/resources/foo', 'true'
-      artifact("foo:bar:jar:1.0").from(package(:jar, :id => 'muu').to_s)
-      artifact("foo:baz:jar:1.0").from(package(:jar, :id => 'moo').to_s)
-      package(:ear).add 'foo:baz:jar:1.0'
-      package(:jar, :id => :miu).merge(artifact('foo:bar:jar:1.0')).include('**/*')
-      package(:ear).add :ejb=> package(:jar, :id => :miu)
-    end
-    inspect_ear { |files| files.should include('ejb/miu-1.0.jar', 'lib/baz-1.0.jar') }
-    inspect_classpath 'ejb/miu-1.0.jar'do |classpath|
-      classpath.should include('../lib/baz-1.0.jar')
-    end
-  end
-
+  
   it 'should map JARs to /lib directory' do
     define 'foo', :version=>'1.0' do
       package(:ear) << package(:jar)

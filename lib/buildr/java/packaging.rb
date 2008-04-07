@@ -40,35 +40,29 @@ module Buildr
             end
           end
 
-          # WithManifest.from_file(path) => [Hash]
-          #
-          # Return an array of hashes built from the file manifest.
-          # Each hash is a manifest section.
+          # from_file(path) => Array of hashes (sections of manifest)
           #
           # The array returned by this function can be feed to
           #       WithManifest#manifest_lines_from
           # to obtain the formatted manifest content.
           def from_file(file)
             Zip::ZipFile.open(file.to_s) do |zip|
-              begin
-                zip.file.read('META-INF/MANIFEST.MF').split(MANIFEST_SECTION_SEP).
-                  reject { |s| s.chomp == "" }.map do |section
-                  section.split(MANIFEST_LINE_SEP).inject([]) { |merged, line|
-                    if line[0] == 32
-                      merged.last << line[1..-1]
-                    else
-                      merged << line
-                    end
-                    merged
-                  }.map { |line| line.split(/:\s+/) }.
-                    inject({}) { |map, (name, value)| map.merge(name => value) }
-                end
-              rescue Errno::ENOENT
-                [{}] # manifest with first section empty
+              return [{}] unless zip.get_entry('META-INF/MANIFEST.MF')
+              zip.read('META-INF/MANIFEST.MF').split(MANIFEST_SECTION_SEP).
+                reject { |s| s.chomp == "" }.map do |section|
+                section.split(MANIFEST_LINE_SEP).inject([]) { |merged, line|
+                  if line[0] == 32
+                    merged.last << line[1..-1]
+                  else
+                    merged << line
+                  end
+                  merged
+                }.map { |line| line.split(/:\s+/) }.
+                  inject({}) { |map, (name, value)| map.merge(name => value) }
               end
             end
           end
-
+          
           def manifest_lines_from(arg)
             case arg
             when Hash
@@ -86,6 +80,19 @@ module Buildr
             else
               fail 'Invalid manifest, expecting Hash, Array, file name/task or proc/method.'
             end
+          end
+
+          # update_manifest(file) { |manifest_sections| ... }
+          def update_manifest(file)
+            sections = from_file(file.to_s)
+            result = yield sections
+            Zip::ZipFile.open(file.to_s) do |zip|
+              zip.get_output_stream('META-INF/MANIFEST.MF') do |out|
+                out.write WithManifest.manifest_lines_from(sections).join("\n")
+                out.write "\n"
+              end
+            end
+            result
           end
 
          private
@@ -402,20 +409,17 @@ module Buildr
 
         def component_clone(component)
           file(path_to(component[:path], component[:artifact].to_s.pathmap('%f')) => component[:artifact]) do |task|
-            mkpath task.pathmap('%d'), :verbose => false
+            mkpath task.to_s.pathmap('%d'), :verbose => false
             cp component[:artifact].to_s, task.to_s, :verbose => false
-            sections = WithManifest.from_file(component[:artifact])
-            class_path = sections.first['Class-Path'].to_s.split
-            included_libs = class_path.map { |fn| File.basename(fn) }
-            included_libs += package.path('WEB-INF/lib').sources.map { |fn| File.basename(fn) }
-            # Include all other libraries in the classpath.
-            class_path += libs_classpath(component).reject { |path| included_libs.include?(File.basename(path)) }
-            sections.first['Class-Path'] = class_path.join(' ')
-            Zip::ZipFile.open(task.to_s) do |zip|
-              zip.get_output_stream('META-INF/MANIFEST.MF') do |out|
-                out.write WithManifest.manifest_lines_from(sections).join('\n')
-                out.write '\n'
+            WithManifest.update_manifest(task) do |sections|
+              class_path = sections.first['Class-Path'].to_s.split
+              included_libs = class_path.map { |fn| fn.pathmap('%f') }
+              Zip::ZipFile.foreach(task.to_s) do |entry|
+                included_libs << entry.name.pathmap('%f') if entry.file? && entry.name =~ /^WEB-INF\/lib\/[^\/]+$/
               end
+              # Include all other libraries in the classpath.
+              class_path += libs_classpath(component).reject { |path| included_libs.include?(File.basename(path)) }
+              sections.first['Class-Path'] = class_path.join(' ')
             end
           end
         end
@@ -500,7 +504,7 @@ module Buildr
         # return a FileTask to build the ear application.xml file
         def descriptor
           return @descriptor if @descriptor
-          descriptor_path = path_to(:target, "#{id}/META-INF/application.xml")
+          descriptor_path = path_to('META-INF/application.xml')
           @descriptor = file(descriptor_path) do |task|
             puts "Creating EAR Descriptor: #{task.to_s}" if Rake.application.options.trace
             mkpath File.dirname(task.name), :verbose=>false
