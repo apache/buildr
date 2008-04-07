@@ -118,7 +118,7 @@ module Buildr
     end
 
     def relative_path(to, from = ".")
-      to, from = File.expand_path(to, "/"), File.expand_path(from, "/")
+      to, from = File.expand_path(to.to_s, "/"), File.expand_path(from.to_s, "/")
       Pathname.new(to).relative_path_from(Pathname.new(from)).to_s
     end
   end
