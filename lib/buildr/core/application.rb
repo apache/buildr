@@ -46,8 +46,7 @@ ENV["HOME"] ||= File.expand_path(Gem::user_home)
 ENV['BUILDR_ENV'] ||= 'development'
 
 # Add a touch of colors (red) to warnings.
-HighLine.use_color = !Gem.win_platform?
-
+HighLine.use_color = !Buildr::Util.win_os?
 
 module Buildr
 
@@ -188,7 +187,7 @@ module Buildr
         end
         install.each do |spec|
           say "Installing #{spec.full_name} ... " if verbose
-          SystemUtil.ruby 'install', spec.name, '-v', spec.version.to_s, :command => 'gem', :sudo => true, :verbose => false
+          Util.ruby 'install', spec.name, '-v', spec.version.to_s, :command => 'gem', :sudo => true, :verbose => false
           Gem.source_index.load_gems_in Gem::SourceIndex.installed_spec_directories
         end
         installed += install

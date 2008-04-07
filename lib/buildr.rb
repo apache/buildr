@@ -24,17 +24,14 @@ require 'net/ssh'
 require 'highline/import'
 require 'builder' # A different kind of buildr, one we use to create XML.
 
-
 module Buildr
   VERSION = '1.3.0'.freeze # unless const_defined?(:VERSION)
 end
-
 
 require 'buildr/core'
 require 'buildr/tasks'
 require 'buildr/java'
 require 'buildr/ide'
-
 
 # Methods defined in Buildr are both instance methods (e.g. when included in Project)
 # and class methods when invoked like Buildr.artifacts().

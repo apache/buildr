@@ -17,7 +17,7 @@ require 'rbconfig'
 
 module Buildr
   
-  module SystemUtil
+  module Util
     extend self
 
     def java_platform?
@@ -56,14 +56,15 @@ module Buildr
     def ruby(*args)
       options = Hash === args.last ? args.pop : {}
       cmd = []
-      ruby_bin = FileUtil.normalize_path(Config::CONFIG['ruby_install_name'], Config::CONFIG['bindir'])
-      euid, ruby_uid = Process.uid, File.stat(ruby_bin).uid
-      if options.delete(:sudo) && !win_os? && euid != ruby_uid
-        cmd << 'sudo' << '-u' << '##{ruby_uid}'
+      ruby_bin = File.expand_path(Config::CONFIG['ruby_install_name'], Config::CONFIG['bindir'])
+      if options.delete(:sudo) && !(win_os? || Process.uid == File.stat(ruby_bin).uid)
+        cmd << 'sudo' << '-u' << '##{File.stat(ruby_bin).uid}'
       end
       cmd << ruby_bin
       cmd << '-S' << options.delete(:command) if options[:command]
-      Rake.application.sh *cmd.push(*args.flatten).push(options)
+      Rake.application.send :sh, *cmd.push(*args.flatten).push(options) do |ok, status|
+        ok or fail "Command failed with status (#{status ? status.exitstatus : 'unknown'}): [#{cmd.join(" ")}]"
+      end
     end
 
     # :call-seq:
@@ -75,28 +76,31 @@ module Buildr
         case gem
         when Gem::Dependency then gem
         when Array then Gem::Dependency.new(*gem)
-        when String then Gem::Dependency.new(gem, nil)
+        when String then Gem::Dependency.new(gem, '> 0')
         else raise "Invalid gem dependency: #{gem.inspect}"
         end
       end
       dependencies.select { |dep| installed.search(dep.name, dep.version_requirements).empty? }.each do |dep|
         puts "Installing #{dep} ..."
-        ruby 'install', dep.name, '-v', dep.version_requirements.to_s, :command=>'gem', :sudo=>true
+        if win_os? # run the installer directly
+          begin
+            require 'rubygems/dependency_installer'
+            Gem::DependencyInstaller.new(dep.name, dep.version_requirements).install
+          rescue LoadError
+            require 'rubygems/remote_installer'
+            Gem::RemoteInstaller.new.install(dep.name, dep.version_requirements)
+          end
+        else
+          ruby 'install', dep.name, '-v', dep.version_requirements.to_s.inspect, :command=>'gem', :sudo=>true
+        end
       end
     end
-  end
-  
-  module FileUtil
-    extend self
 
     # Just like File.expand_path, but for windows systems it
     # capitalizes the drive name and ensures backslashes are used
-    #
-    # Use this function when you want to execute a shell command 
-    # with a full path name.
     def normalize_path(path, *dirs)
       path = File.expand_path(path, *dirs)
-      if SystemUtil.win_os?
+      if win_os?
         path.gsub!('/', '\\').gsub!(/^[a-zA-Z]+:/) { |s| s.upcase }
       else
         path

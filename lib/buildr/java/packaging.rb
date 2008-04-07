@@ -354,7 +354,7 @@ module Buildr
               component = options.merge(:artifact => artifact, :type => type, 
                 :id=>artifact.respond_to?(:to_spec) ? artifact.id : artifact.to_s.pathmap('%n'),
                 :path=>options[:path] || dirs[type].to_s)
-              update_classpath(component) unless :lib == type
+              update_classpath(component) unless :lib == type || Artifact === artifact
               @components << component
             end
           end

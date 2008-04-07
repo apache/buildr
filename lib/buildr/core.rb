@@ -14,6 +14,7 @@
 # the License.
 
 
+require 'buildr/core/common'
 require 'buildr/core/application'
 require 'buildr/core/project'
 require 'buildr/core/environment'

@@ -841,8 +841,8 @@ module Buildr
         puts "Starting #{$nailgun_server}"
         $nailgun_server.start_server
 
-        is_win = SystemUtil.win_os?
-        bin_path = FileUtil.normalize_path(installed_bin.to_s.pathmap("%d"))
+        is_win = Util.win_os?
+        bin_path = File.expand_path(installed_bin.to_s.pathmap("%d"))
         bin_name = installed_bin.to_s.pathmap("%f")
 
         puts <<-NOTICE
@@ -862,7 +862,7 @@ module Buildr
         Runtime for #{Rake.application.buildfile} has been cached, this 
         means you can open a terminal inside 
 
-              #{FileUtil.normalize_path(Rake.application.buildfile.pathmap("%d"))}
+              #{Rake.application.buildfile.pathmap("%d")}
 
         Invoke tasks by executing the #{bin_name} program, it takes the
         same parameters you normally use for ``buildr''. 

@@ -15,7 +15,7 @@
 
 $LOADED_FEATURES << 'jruby' unless RUBY_PLATFORM =~ /java/ # Pretend to have JRuby, keeps Nailgun happy.
 require 'buildr/jetty'
-require 'buildr/java/nailgun'
+require 'buildr/nailgun'
 repositories.remote << 'http://repo1.maven.org/maven2'
 
 

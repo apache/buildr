@@ -637,7 +637,26 @@ describe Packaging, 'ear' do
     inspect_ear { |files| files.should include('ejb/foo-1.0.jar') }
   end
 
-  it 'should accept an artifact with component type' do
+  it 'should accept an artifact as non-lib component, without updating its manifest' do
+    define 'bar', :version => '1.0' do
+      write 'hello', 'world'
+      package(:zip).include('hello')
+      package(:zip).manifest = {'Class-Path' => 'bar'}
+      package(:zip).invoke
+      artifact('hello:world:jar:1.0').from(package(:zip).to_s)
+      package(:jar)
+    end
+    define 'foo', :version => '1.0' do
+      package(:ear).add project(:bar).package(:jar)
+      package(:ear).add :ejb => 'hello:world:jar:1.0'
+    end
+    inspect_ear { |files| files.should include('ejb/world-1.0.jar', 'lib/bar-1.0.jar') }
+    inspect_classpath 'ejb/world-1.0.jar'do |classpath|
+      classpath.should == ['bar'] # should not be updated by EarTask
+    end
+  end
+
+  it 'should accept an artifact clone with component type' do
     define 'foo', :version=>'1.0' do
       write 'src/main/resources/foo', 'true'
       artifact("foo:bar:jar:1.0").from(package(:jar, :id => 'muu').to_s)

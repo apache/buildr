@@ -13,14 +13,13 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 require 'tempfile'
 require 'pathname'
-require 'buildr/core/transports'
 require 'open-uri'
+$LOADED_FEATURES << 'rubygems/open-uri.rb' # avoid loading rubygems' open-uri
 require 'uri/open-sftp'
-
 require 'buildr/core/util'
+require 'buildr/core/transports'
 
 module Rake #:nodoc
   class FileList

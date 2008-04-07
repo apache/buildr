@@ -15,7 +15,11 @@
 
 # Load file/system utilities used shared between Buildr's runtime and this Rakefile
 require File.expand_path('lib/buildr/core/util', File.dirname(__FILE__))
-extend Buildr::SystemUtil
+extend Buildr::Util
+
+class << self
+  alias_method :say, :puts
+end unless respond_to?(:say)
 
 # We need two specifications, for Ruby and Java, and one for the platform we run on.
 $specs = ['ruby', 'java'].inject({}) { |hash, platform|
@@ -71,7 +75,7 @@ end
 desc "If you're building from sources, run this task one to setup the necessary dependencies."
 task 'setup' do
   dependencies = $spec.dependencies
-  dependencies << Gem::Dependency.new('win32console', nil) if Gem.win_platform? # Colors for RSpec.
+  dependencies << Gem::Dependency.new('win32console', '> 0') if win_os? # Colors for RSpec.
   install_gems(*dependencies)
 end
 
