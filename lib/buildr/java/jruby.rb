@@ -81,7 +81,7 @@ module Java
       add_url_method = java.lang.Class.forName('java.net.URLClassLoader').
         getDeclaredMethod('addURL', [java.net.URL].to_java(java.lang.Class))
       add_url_method.setAccessible(true)
-      add_path = lambda { |path| add_url_method.invoke(sysloader, [java.io.File.new(path).toURL].to_java(java.net.URL)) }
+      add_path = lambda { |path| add_url_method.invoke(sysloader, [java.io.File.new(path).toURI.toURL].to_java(java.net.URL)) }
       # Include tools (compiler, Javadoc, etc) for all platforms except OS/X.
       unless Config::CONFIG['host_os'] =~ /darwin/i
         home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
