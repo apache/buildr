@@ -23,28 +23,30 @@ task 'clobber'
 desc 'Compile Java libraries used by Buildr'
 task 'compile' do
   say 'Compiling Java libraries ... '
-  ruby '-Ilib', '-Iaddon', 'bin/buildr', 'compile'
+  sh Config::CONFIG['ruby_install_name'], '-Ilib', '-Iaddon', 'bin/buildr', 'compile'
   say 'OK'
 end
 
-Rake::GemPackageTask.new($specs['ruby']) do |pkg|
+Rake::GemPackageTask.new(spec('ruby')) do |pkg|
   pkg.need_tar = pkg.need_zip = true
   file pkg.package_dir_path=>'compile'
   file pkg.package_dir=>'compile'
 end
-Rake::GemPackageTask.new($specs['java']) do |pkg|
+Rake::GemPackageTask.new(spec('java')) do |pkg|
   file pkg.package_dir_path=>'compile'
 end
 
-current = Rake::GemPackageTask.new($spec)
+current = Rake::GemPackageTask.new(spec)
 desc 'Install the package locally'
 task 'install'=>"#{current.package_dir}/#{current.gem_file}" do |task|
-  ruby 'install',  "#{current.package_dir}/#{current.gem_file}", :command=>'gem', :sudo=>true
+  install_gem "#{current.package_dir}/#{current.gem_file}"
 end
 
 desc 'Uninstall previously installed packaged'
 task 'uninstall' do |task|
   say "Uninstalling #{$spec.name} ... "
-  ruby 'install', $spec.name, :command=>'gem', :sudo=>true
+  args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'uninstall', spec.name, '--version', spec.version]
+  args.unshift('sudo') unless windows?
+  sh *args
   say 'Done'
 end

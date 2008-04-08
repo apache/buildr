@@ -19,7 +19,7 @@ begin
 rescue LoadError
   say 'Please run rake setup to install the RubyForge gem'
   task 'setup' do
-    ruby 'install', 'rubyforge', :command=>'gem', :sudo=>true
+    install_gem 'rubyforge'
   end
   task 'release:check' do
     fail 'Please run rake setup to install the RubyForge gem'
@@ -66,18 +66,18 @@ namespace 'release' do
     pattern = /(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/
     changelog = File.read(__FILE__.pathmap('%d/CHANGELOG'))
     changes = changelog.scan(pattern).inject({}) { |hash, set| hash[set[1]] = set[2] ; hash }
-    current = changes[$spec.version.to_s]
-    current = changes[$spec.version.to_s.split('.')[0..-2].join('.')] if !current && $spec.version.to_s =~ /\.0$/
-    fail "No changeset found for version #{$spec.version}" unless current
+    current = changes[spec.version.to_s]
+    current = changes[spec.version.to_s.split('.')[0..-2].join('.')] if !current && spec.version.to_s =~ /\.0$/
+    fail "No changeset found for version #{spec.version}" unless current
     say 'OK'
 
-    say "Uploading #{$spec.version} to RubyForge ... "
+    say "Uploading #{spec.version} to RubyForge ... "
     files = Dir.glob('pkg/*.{gem,tgz,zip}')
     rubyforge = RubyForge.new
     rubyforge.login    
     File.open('.changes', 'w'){|f| f.write(current)}
     rubyforge.userconfig.merge!('release_changes' => '.changes',  'preformatted' => true)
-    rubyforge.add_release $spec.rubyforge_project.downcase, $spec.name.downcase, $spec.version, *files
+    rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version, *files
     rm '.changes'
     say 'Done'
   end

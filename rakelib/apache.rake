@@ -25,7 +25,7 @@ namespace 'apache' do
   task 'license' do
     say 'Checking that files contain the Apache license ... '
     excluded = ['.class', '.png', '.jar', '.tif', 'README', 'LICENSE', 'CHANGELOG', 'DISCLAIMER', 'NOTICE', 'KEYS']
-    required = FileList[$spec.files].exclude(*excluded).exclude(*Array($license_excluded)).select { |fn| File.file?(fn) }
+    required = FileList[spec.files].exclude(*excluded).exclude(*Array($license_excluded)).select { |fn| File.file?(fn) }
     missing = required.reject { |fn| 
       comments = File.read(fn).scan(/(\/\*(.*?)\*\/)|^#\s+(.*?)$|<!--(.*?)-->/m).
         map { |match| match.compact }.flatten.join("\n")

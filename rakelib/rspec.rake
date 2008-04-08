@@ -29,7 +29,6 @@ begin
     task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failing' << '--example' << 'failing'
   end
 
-  directory 'reports'
   desc 'Run RSpec and generate Spec and coverage reports (slow)'
   Spec::Rake::SpecTask.new('reports') do |task|
     task.spec_files = FileList['spec/**/*_spec.rb']
@@ -38,6 +37,7 @@ begin
     task.rcov_opts = ['--exclude', 'spec,bin']
   end
   task 'reports' do
+    mkpath 'reports'
     mv 'coverage', 'reports'
   end
 
@@ -46,11 +46,12 @@ begin
     rm_rf 'reports'
   end
 
+  task 'setup' do
+    install_gem 'win32console' if Gem.win_platform? # Colors for RSpec, only on Windows platform.
+  end
+
 rescue LoadError
   say 'Please run rake setup to install RSpec'
-  task 'setup' do
-    ruby 'install', 'rspec', :command=>'gem', :sudo=>true
-  end
   task 'release:check' do
     fail 'Please run rake setup to install RSpec'
   end
@@ -62,13 +63,13 @@ namespace 'spec' do
   desc 'Run all specs specifically with Ruby'
   task 'ruby' do
     say 'Running test suite using Ruby ...'
-    system 'ruby -S rake spec'
+    sh 'ruby -S rake spec'
   end
 
   desc 'Run all specs specifically with JRuby'
   task 'jruby' do
     say 'Running test suite using JRuby ...'
-    system 'jruby -S rake spec'
+    sh 'jruby -S rake spec'
   end
 end
 

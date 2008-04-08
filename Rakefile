@@ -13,17 +13,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Load file/system utilities used shared between Buildr's runtime and this Rakefile
-require File.expand_path('lib/buildr/core/util', File.dirname(__FILE__))
-extend Buildr::Util
 
-class << self
-  alias_method :say, :puts
-end unless respond_to?(:say)
-
-# We need two specifications, for Ruby and Java, and one for the platform we run on.
-$specs = ['ruby', 'java'].inject({}) { |hash, platform|
-  spec = Gem::Specification.new do |spec|
+def spec(platform = 'ruby')
+  @specs ||= {}
+  @specs[platform] ||= Gem::Specification.new do |spec|
     spec.name           = 'buildr'
     spec.version        = File.read(__FILE__.pathmap('%d/lib/buildr.rb')).scan(/VERSION\s*=\s*(['"])(.*)\1/)[0][1]
     spec.author         = 'Apache Buildr'
@@ -57,27 +50,12 @@ $specs = ['ruby', 'java'].inject({}) { |hash, platform|
     spec.add_dependency 'xml-simple',           '~> 1.0'
     spec.add_dependency 'archive-tar-minitar',  '~> 0.5'
     spec.add_dependency 'rubyforge',            '~> 0.4'
-    spec.add_dependency 'rjb',                  '~> 1.1' if platform =~ /ruby/
+    spec.add_dependency 'rjb',                  '~> 1.1' unless platform =~ /java/
   end
-  hash.update(platform=>spec)
-}
-$spec = $specs[java_platform? ? 'java' : 'ruby']
+end
+
 
 $license_excluded = ['lib/core/progressbar.rb', 'spec/spec.opts', 'doc/css/syntax.css', '.textile', '.haml']
-
-begin
-  require 'highline/import'
-rescue LoadError 
-  puts 'HighLine required, please run rake setup first'
-end
-
-# Setup environment for running this Rakefile (RSpec, Docter, etc).
-desc "If you're building from sources, run this task one to setup the necessary dependencies."
-task 'setup' do
-  dependencies = $spec.dependencies
-  dependencies << Gem::Dependency.new('win32console', '> 0') if win_os? # Colors for RSpec.
-  install_gems(*dependencies)
-end
 
 namespace 'release' do
 
