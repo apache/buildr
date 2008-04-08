@@ -14,7 +14,7 @@
 # the License.
 
 
-require 'buildr/tasks/zip'
+require 'buildr/packaging/zip'
 require 'archive/tar/minitar'
 
 

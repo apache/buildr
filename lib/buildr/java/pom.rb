@@ -15,7 +15,7 @@
 
 
 require 'xmlsimple'
-require 'buildr/java/artifact'
+require 'buildr/packaging'
 
 
 module Buildr

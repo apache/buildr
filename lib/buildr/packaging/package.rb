@@ -16,7 +16,7 @@
 
 require 'buildr/core/project'
 require 'buildr/core/compile'
-require 'buildr/java/artifact'
+require 'buildr/packaging/artifact'
 
 
 module Buildr

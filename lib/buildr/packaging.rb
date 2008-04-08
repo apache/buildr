@@ -14,6 +14,8 @@
 # the License.
 
 
-require 'buildr/tasks/concat.rb'
-require 'buildr/tasks/zip.rb'
-require 'buildr/tasks/tar.rb'
+require 'buildr/packaging/zip'
+require 'buildr/packaging/tar'
+require 'buildr/packaging/artifact'
+require 'buildr/packaging/package'
+require 'buildr/packaging/gems'

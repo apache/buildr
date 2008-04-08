@@ -14,9 +14,7 @@
 # the License.
 
 
-require 'buildr/core/package'
-require 'buildr/tasks/zip'
-require 'buildr/tasks/tar'
+require 'buildr/packaging'
 
 
 module Buildr

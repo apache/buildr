@@ -18,7 +18,7 @@ require 'uri'
 require 'net/http'
 require 'buildr/core/project'
 require 'buildr/java'
-require 'buildr/java/artifact'
+require 'buildr/packaging'
 require 'thread'
 
 

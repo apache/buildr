@@ -14,8 +14,8 @@
 # the License.
 
 
-require 'buildr/core/package'
-require 'buildr/tasks/zip'
+require 'buildr/packaging/package'
+require 'buildr/packaging/zip'
 require 'rubyforge'
 
 

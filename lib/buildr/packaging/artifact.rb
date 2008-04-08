@@ -17,7 +17,7 @@
 require 'builder'
 require 'buildr/core/project'
 require 'buildr/core/transports'
-require 'buildr/java/artifact_namespace'
+require 'buildr/packaging/artifact_namespace'
 
 
 module Buildr
