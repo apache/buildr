@@ -54,7 +54,9 @@ end
 
 
 shared_examples_for 'package with manifest' do
-  @long_line = 'No line may be longer than 72 bytes (not characters), in its UTF8-encoded form. If a value would make the initial line longer than this, it should be continued on extra lines (each starting with a single SPACE).'
+  before do
+    @long_line = 'No line may be longer than 72 bytes (not characters), in its UTF8-encoded form. If a value would make the initial line longer than this, it should be continued on extra lines (each starting with a single SPACE).'
+  end
 
   def package_with_manifest(manifest = nil)
     packaging = @packaging
@@ -67,15 +69,15 @@ shared_examples_for 'package with manifest' do
   def inspect_manifest
     package = project('foo').package(@packaging)
     package.invoke
-    yield Buildr::Packaging::Java::WithManifest.from_file(package)
+    yield Buildr::Packaging::Java::Manifest.from_zip(package)
   end
 
   it 'should include default header when no options specified' do
     ENV['USER'] = 'MysteriousJoe'
     package_with_manifest # Nothing for default.
-    inspect_manifest do |sections|
-      sections.size.should be(1)
-      sections.first.should == {
+    inspect_manifest do |manifest|
+      manifest.sections.size.should be(1)
+      manifest.main.should == {
         'Manifest-Version'        =>'1.0',
         'Created-By'              =>'Buildr',
         'Implementation-Title'    =>@project.name,
@@ -96,12 +98,12 @@ shared_examples_for 'package with manifest' do
 
   it 'should map manifest from hash' do
     package_with_manifest 'Foo'=>1, :bar=>'Bar'
-    inspect_manifest do |sections|
-      sections.size.should be(1)
-      sections.first['Manifest-Version'].should eql('1.0')
-      sections.first['Created-By'].should eql('Buildr')
-      sections.first['Foo'].should eql('1')
-      sections.first['bar'].should eql('Bar')
+    inspect_manifest do |manifest|
+      manifest.sections.size.should be(1)
+      manifest.main['Manifest-Version'].should eql('1.0')
+      manifest.main['Created-By'].should eql('Buildr')
+      manifest.main['Foo'].should eql('1')
+      manifest.main['bar'].should eql('Bar')
     end
   end
 
@@ -109,24 +111,24 @@ shared_examples_for 'package with manifest' do
     package_with_manifest 'Foo'=>1, :bar=>'Bar'
     package = project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF').should =~ /#{Buildr::Packaging::Java::WithManifest::MANIFEST_LINE_SEP}$/ }
+    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF').should =~ /#{Buildr::Packaging::Java::Manifest::LINE_SEPARATOR}$/ }
   end
 
   it 'should break hash manifest lines longer than 72 characters using continuations' do
     package_with_manifest 'foo'=>@long_line
     package = project('foo').package(@packaging)
-    inspect_manifest do |sections|
-      sections.first['foo'].should == @long_line
+    inspect_manifest do |manifest|
+      manifest.main['foo'].should == @long_line
     end
   end
 
   it 'should map manifest from array' do
     package_with_manifest [ { :foo=>'first' }, { :bar=>'second' } ]
-    inspect_manifest do |sections|
-      sections.size.should be(2)
-      sections.first['Manifest-Version'].should eql('1.0')
-      sections.first['foo'].should eql('first')
-      sections.last['bar'].should eql('second')
+    inspect_manifest do |manifest|
+      manifest.sections.size.should be(2)
+      manifest.main['Manifest-Version'].should eql('1.0')
+      manifest.main['foo'].should eql('first')
+      manifest.sections.last['bar'].should eql('second')
     end
   end
 
@@ -140,8 +142,8 @@ shared_examples_for 'package with manifest' do
   it 'should break array manifest lines longer than 72 characters using continuations' do
     package_with_manifest ['foo'=>@long_line]
     package = project('foo').package(@packaging)
-    inspect_manifest do |sections|
-      sections.first['foo'].should == @long_line
+    inspect_manifest do |manifest|
+      manifest.main['foo'].should == @long_line
     end
   end
 
@@ -149,27 +151,27 @@ shared_examples_for 'package with manifest' do
     package_with_manifest [ {}, { 'Name'=>'first', :Foo=>'first', :bar=>'second' } ]
     package = project('foo').package(@packaging)
     package.invoke
-    inspect_manifest do |sections|
-      sections[1]["Name"].should == "first"
+    inspect_manifest do |manifest|
+      manifest.sections[1]["Name"].should == "first"
     end
   end
 
   it 'should create manifest from proc' do
     package_with_manifest lambda { 'Meta: data' }
-    inspect_manifest do |sections|
-      sections.size.should be(1)
-      sections.first['Manifest-Version'].should eql('1.0')
-      sections.first['Meta'].should eql('data')
+    inspect_manifest do |manifest|
+      manifest.sections.size.should be(1)
+      manifest.main['Manifest-Version'].should eql('1.0')
+      manifest.main['Meta'].should eql('data')
     end
   end
 
   it 'should create manifest from file' do
     write 'MANIFEST.MF', 'Meta: data'
     package_with_manifest 'MANIFEST.MF'
-    inspect_manifest do |sections|
-      sections.size.should be(1)
-      sections.first['Manifest-Version'].should eql('1.0')
-      sections.first['Meta'].should eql('data')
+    inspect_manifest do |manifest|
+      manifest.sections.size.should be(1)
+      manifest.main['Manifest-Version'].should eql('1.0')
+      manifest.main['Meta'].should eql('data')
     end
   end
 
@@ -178,10 +180,10 @@ shared_examples_for 'package with manifest' do
       write task.to_s, 'Meta: data'
     end
     package_with_manifest 'MANIFEST.MF'
-    inspect_manifest do |sections|
-      sections.size.should be(1)
-      sections.first['Manifest-Version'].should eql('1.0')
-      sections.first['Meta'].should eql('data')
+    inspect_manifest do |manifest|
+      manifest.sections.size.should be(1)
+      manifest.main['Manifest-Version'].should eql('1.0')
+      manifest.main['Meta'].should eql('data')
     end
   end
 
@@ -190,7 +192,7 @@ shared_examples_for 'package with manifest' do
     mkpath 'target/classes'
     packaging = @packaging
     define('foo', :version=>'1.0') { package(packaging).with :manifest=>{'Foo'=>'data'} }
-    inspect_manifest { |sections| sections.first['Foo'].should eql('data') }
+    inspect_manifest { |manifest| manifest.main['Foo'].should eql('data') }
   end
 
   it 'should include META-INF directory' do
@@ -564,8 +566,8 @@ describe Packaging, 'ear' do
       File.open('tmp.zip', 'wb') do |tmp|
         tmp.write ear.file.read(package)
       end
-      sections = Buildr::Packaging::Java::WithManifest.from_file('tmp.zip')
-      yield sections.first['Class-Path'].to_s.split(' ')
+      manifest = Buildr::Packaging::Java::Manifest.from_zip('tmp.zip')
+      yield manifest.main['Class-Path'].to_s.split(' ')
     end
   end
 
@@ -624,8 +626,8 @@ describe Packaging, 'ear' do
 
     inspect_ear { |files| files.should include('lib/one-1.0.jar', 'ejb/two-1.0.jar') }
     
-    Buildr::Packaging::Java::WithManifest.from_file(project('one').package(:jar)).first['Class-Path'].should be_nil
-    Buildr::Packaging::Java::WithManifest.from_file(project('two').package(:jar)).first['Class-Path'].should be_nil
+    Buildr::Packaging::Java::Manifest.from_zip(project('one').package(:jar)).main['Class-Path'].should be_nil
+    Buildr::Packaging::Java::Manifest.from_zip(project('two').package(:jar)).main['Class-Path'].should be_nil
     
     inspect_classpath 'ejb/two-1.0.jar' do |classpath|
       classpath.should include('../lib/one-1.0.jar')

@@ -23,12 +23,96 @@ module Buildr
     # Adds packaging for Java projects: JAR, WAR, AAR, EAR, Javadoc.
     module Java
 
+      class Manifest
+
+        STANDARD_HEADER = "Manifest-Version: 1.0\nCreated-By: Buildr\n"
+        LINE_SEPARATOR = /\r\n|\n|\r[^\n]/ #:nodoc:
+        SECTION_SEPARATOR = /(#{LINE_SEPARATOR}){2}/ #:nodoc:
+
+        class << self
+
+          def parse(str)
+            sections = str.split(SECTION_SEPARATOR).reject { |s| s.strip.empty? }
+            new sections.map { |section|
+              lines = section.split(LINE_SEPARATOR).inject([]) { |merged, line|
+                if line[0] == 32
+                  merged.last << line[1..-1]
+                else
+                  merged << line
+                end
+                merged
+              }
+              lines.map { |line| line.scan(/(.*?):\s*(.*)/).first }.
+                inject({}) { |map, (key, value)| map.merge(key=>value) }
+            }
+          end
+
+          def from_zip(file)
+            Zip::ZipFile.open(file.to_s) do |zip|
+              return Manifest.new unless zip.get_entry('META-INF/MANIFEST.MF')
+              Manifest.parse zip.read('META-INF/MANIFEST.MF')
+            end
+          end
+
+          # update_manifest(file) { |manifest| ... }
+          def update_manifest(file)
+            manifest = from_zip(file)
+            result = yield manifest
+            Zip::ZipFile.open(file.to_s) do |zip|
+              zip.get_output_stream('META-INF/MANIFEST.MF') do |out|
+                out.write manifest.to_s
+                out.write "\n"
+              end
+            end
+            result
+          end
+
+        end
+
+        def initialize(arg = nil)
+          case arg
+          when nil, Hash then @sections = [arg || {}]
+          when Array then @sections = arg
+          when String then @sections = Manifest.parse(arg).sections
+          when Proc, Method then @sections = Manifest.parse(arg.call).sections
+          else
+            fail 'Invalid manifest, expecting Hash, Array, file name/task or proc/method.'
+          end
+        end
+
+        attr_reader :sections
+
+        def main
+          sections.first
+        end
+
+        include Enumerable
+
+        def each(&block)
+          @sections.each(&block)
+        end
+
+        def to_s
+          @sections.map { |section|
+            keys = section.keys
+            keys.unshift('Name') if keys.delete('Name')
+            lines = keys.map { |key| manifest_wrap_at_72("#{key}: #{section[key]}") }
+            lines + ['']
+          }.flatten.join("\n")
+        end
+
+      private
+
+        def manifest_wrap_at_72(line)
+          return [line] if line.size < 72
+          [ line[0..70] ] + manifest_wrap_at_72(' ' + line[71..-1])
+        end
+
+      end
+
+
       # Adds support for MANIFEST.MF and other META-INF files.
       module WithManifest #:nodoc:
-
-        MANIFEST_HEADER = ['Manifest-Version: 1.0', 'Created-By: Buildr']
-        MANIFEST_LINE_SEP = /\r\n|\n|\r[^\n]/
-        MANIFEST_SECTION_SEP = /(#{MANIFEST_LINE_SEP}){2}/
 
         class << self
           def included(base)
@@ -36,68 +120,6 @@ module Buildr
               alias :initialize_without_manifest :initialize
               alias :initialize :initialize_with_manifest
             end
-          end
-
-          # from_file(path) => Array of hashes (sections of manifest)
-          #
-          # The array returned by this function can be feed to
-          #       WithManifest#manifest_lines_from
-          # to obtain the formatted manifest content.
-          def from_file(file)
-            Zip::ZipFile.open(file.to_s) do |zip|
-              return [{}] unless zip.get_entry('META-INF/MANIFEST.MF')
-              zip.read('META-INF/MANIFEST.MF').split(MANIFEST_SECTION_SEP).
-                reject { |s| s.chomp == "" }.map do |section|
-                section.split(MANIFEST_LINE_SEP).inject([]) { |merged, line|
-                  if line[0] == 32
-                    merged.last << line[1..-1]
-                  else
-                    merged << line
-                  end
-                  merged
-                }.map { |line| line.split(/:\s+/) }.
-                  inject({}) { |map, (name, value)| map.merge(name => value) }
-              end
-            end
-          end
-          
-          def manifest_lines_from(arg)
-            case arg
-            when Hash
-              arg.map { |name, value| "#{name}: #{value}" }.sort.
-                map { |line| manifest_wrap_at_72(line) }.flatten
-            when Array
-              arg.map { |section|
-                name = section.has_key?('Name') ? ["Name: #{section['Name']}"] : []
-                name + section.except('Name').map { |name, value| "#{name}: #{value}" }.sort + ['']
-              }.flatten.map { |line| manifest_wrap_at_72(line) }.flatten
-            when Proc, Method
-              manifest_lines_from(arg.call)
-            when String
-              arg.split("\n").map { |line| manifest_wrap_at_72(line) }.flatten
-            else
-              fail 'Invalid manifest, expecting Hash, Array, file name/task or proc/method.'
-            end
-          end
-
-          # update_manifest(file) { |manifest_sections| ... }
-          def update_manifest(file)
-            sections = from_file(file.to_s)
-            result = yield sections
-            Zip::ZipFile.open(file.to_s) do |zip|
-              zip.get_output_stream('META-INF/MANIFEST.MF') do |out|
-                out.write WithManifest.manifest_lines_from(sections).join("\n")
-                out.write "\n"
-              end
-            end
-            result
-          end
-
-         private
-          def manifest_wrap_at_72(arg)
-            #return arg.map { |line| manifest_wrap_at_72(line) }.flatten.join("\n") if Array === arg
-            return arg if arg.size < 72
-            [ arg[0..70], manifest_wrap_at_72(' ' + arg[71..-1]) ]
           end
 
         end
@@ -124,9 +146,10 @@ module Buildr
               # Tempfiles gets deleted on garbage collection, so we're going to hold on to it
               # through instance variable not closure variable.
               Tempfile.open 'MANIFEST.MF' do |@manifest_tmp|
-                lines = String === manifest || Rake::Task === manifest ?
-                WithManifest.manifest_lines_from(File.read(manifest.to_s)) : WithManifest.manifest_lines_from(manifest)
-                @manifest_tmp.write((MANIFEST_HEADER + lines).join("\n"))
+                self.manifest = File.read(manifest.to_s) if String === manifest || Rake::Task === manifest
+                self.manifest = Manifest.new(manifest) unless Manifest === manifest
+                @manifest_tmp.write Manifest::STANDARD_HEADER
+                @manifest_tmp.write manifest.to_s
                 @manifest_tmp.write "\n"
                 path('META-INF').include @manifest_tmp.path, :as=>'MANIFEST.MF'
               end
@@ -409,15 +432,15 @@ module Buildr
           file(path_to(component[:path], component[:artifact].to_s.pathmap('%f')) => component[:artifact]) do |task|
             mkpath task.to_s.pathmap('%d'), :verbose => false
             cp component[:artifact].to_s, task.to_s, :verbose => false
-            WithManifest.update_manifest(task) do |sections|
-              class_path = sections.first['Class-Path'].to_s.split
+            Manifest.update_manifest(task) do |manifest|
+              class_path = manifest.main['Class-Path'].to_s.split
               included_libs = class_path.map { |fn| fn.pathmap('%f') }
               Zip::ZipFile.foreach(task.to_s) do |entry|
                 included_libs << entry.name.pathmap('%f') if entry.file? && entry.name =~ /^WEB-INF\/lib\/[^\/]+$/
               end
               # Include all other libraries in the classpath.
               class_path += libs_classpath(component).reject { |path| included_libs.include?(File.basename(path)) }
-              sections.first['Class-Path'] = class_path.join(' ')
+              manifest.main['Class-Path'] = class_path.join(' ')
             end
           end
         end
