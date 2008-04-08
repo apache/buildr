@@ -29,7 +29,7 @@ module Buildr
 end
 
 require 'buildr/core'
-require 'buildr/tasks'
+require 'buildr/packaging'
 require 'buildr/java'
 require 'buildr/ide'
 

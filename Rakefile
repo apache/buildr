@@ -14,8 +14,9 @@
 # the License.
 
 
-def spec(platform = 'ruby')
+def spec(platform = nil)
   @specs ||= {}
+  platform ||= RUBY_PLATFORM =~ /java/ ? 'java' : 'ruby'
   @specs[platform] ||= Gem::Specification.new do |spec|
     spec.name           = 'buildr'
     spec.version        = File.read(__FILE__.pathmap('%d/lib/buildr.rb')).scan(/VERSION\s*=\s*(['"])(.*)\1/)[0][1]

@@ -44,7 +44,7 @@ end
 
 desc 'Uninstall previously installed packaged'
 task 'uninstall' do |task|
-  print "Uninstalling #{$spec.name} ... "
+  print "Uninstalling #{spec.name} ... "
   args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'uninstall', spec.name, '--version', spec.version]
   args.unshift('sudo') unless windows?
   sh *args
