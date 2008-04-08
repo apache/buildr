@@ -31,7 +31,7 @@ module Java
 
     # *Deprecated:* Append to Java.classpath directly.
     def classpath
-      warn_deprecated 'Append to Java.classpath instead.'
+      Buildr.application.deprecated 'Append to Java.classpath instead.'
       ::Java.classpath
     end
 
@@ -41,13 +41,13 @@ module Java
 
     # *Deprecated:* No longer necessary.
     def setup
-      warn_deprecated 'See documentation for new way to access Java code.'
+      Buildr.application.deprecated 'See documentation for new way to access Java code.'
       yield self if block_given?
     end
     
     # *Deprecated:* Use Java.load instead.
     def load
-      warn_deprecated 'Use Java.load instead.'
+      Buildr.application.deprecated 'Use Java.load instead.'
       ::Java.load
     end
 
@@ -55,7 +55,7 @@ module Java
 
     # *Deprecated:* Use Java.pkg.pkg.ClassName to import a Java class.
     def import(class_name)
-      warn_deprecated 'Use Java.pkg.pkg.ClassName to import a Java class.'
+      Buildr.application.deprecated 'Use Java.pkg.pkg.ClassName to import a Java class.'
       ::Java.instance_eval(class_name)
     end
   end
@@ -66,38 +66,38 @@ module Java
     # *Deprecated*: Use Java::Commands.java instead.
     def java(*args, &block)
       return send(:method_missing, :java) if args.empty?
-      warn_deprecated 'Use Java::Commands.javadoc instead.'
+      Buildr.application.deprecated 'Use Java::Commands.javadoc instead.'
       Commands.java(*args, &block)
     end
 
     # *Deprecated*: Use Java::Commands.apt instead.
     def apt(*args)
-      warn_deprecated 'Use Java::Commands.javadoc instead.'
+      Buildr.application.deprecated 'Use Java::Commands.javadoc instead.'
       Commands.apt(*args)
     end
 
     # *Deprecated*: Use Java::Commands.javac instead.
     def javac(*args)
-      warn_deprecated 'Use Java::Commands.javadoc instead.'
+      Buildr.application.deprecated 'Use Java::Commands.javadoc instead.'
       Commands.javac(*args)
     end
 
     # *Deprecated*: Use Java::Commands.javadoc instead.
     def javadoc(*args)
-      warn_deprecated 'Use Java::Commands.javadoc instead.'
+      Buildr.application.deprecated 'Use Java::Commands.javadoc instead.'
       Commands.javadoc(*args)
     end
 
     # *Deprecated:* Use ENV_JAVA['java.version'] instead.
     def version
-      warn_deprecated 'Use ENV_JAVA[\'java.version\'] instead.'
+      Buildr.application.deprecated 'Use ENV_JAVA[\'java.version\'] instead.'
       Java.load
       ENV_JAVA['java.version']
     end
 
     # *Deprecated:* Use ENV['JAVA_HOME'] instead
     def home
-      warn_deprecated 'Use ENV[\'JAVA_HOME\'] instead.'
+      Buildr.application.deprecated 'Use ENV[\'JAVA_HOME\'] instead.'
       ENV['JAVA_HOME']
     end
 
@@ -108,7 +108,7 @@ module Java
     # and installs various dependencies that are required on the classpath before calling
     # any Java code (e.g. Ant and its tasks).
     def wrapper
-      warn_deprecated 'See documentation for new way to access Java code.'
+      Buildr.application.deprecated 'See documentation for new way to access Java code.'
       if block_given?
         Java.load
         yield JavaWrapper.instance
@@ -126,13 +126,13 @@ module Java
 
     # *Deprecated:* Use ENV['JAVA_OPTS'] instead.
     def java_args
-      warn_deprecated "Use ENV['JAVA_OPTS'] instead"
+      Buildr.application.deprecated "Use ENV['JAVA_OPTS'] instead"
       (ENV["JAVA_OPTS"] || ENV["JAVA_OPTIONS"]).to_s.split
     end
 
     # *Deprecated:* Use ENV['JAVA_OPTS'] instead.
     def java_args=(args)
-      warn_deprecated "Use ENV['JAVA_OPTS'] instead"
+      Buildr.application.deprecated "Use ENV['JAVA_OPTS'] instead"
       ENV['JAVA_OPTS'] = Array(args).join(' ')
     end
 

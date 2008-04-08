@@ -23,7 +23,7 @@ namespace 'apache' do
 
   desc 'Check that source files contain the Apache license'
   task 'license' do
-    say 'Checking that files contain the Apache license ... '
+    print 'Checking that files contain the Apache license ... '
     excluded = ['.class', '.png', '.jar', '.tif', 'README', 'LICENSE', 'CHANGELOG', 'DISCLAIMER', 'NOTICE', 'KEYS']
     required = FileList[spec.files].exclude(*excluded).exclude(*Array($license_excluded)).select { |fn| File.file?(fn) }
     missing = required.reject { |fn| 
@@ -32,19 +32,19 @@ namespace 'apache' do
       comments =~ /Licensed to the Apache Software Foundation/ && comments =~ /http:\/\/www.apache.org\/licenses\/LICENSE-2.0/
     }
     fail "#{missing.join(', ')} missing Apache License, please add it before making a release!" unless missing.empty?
-    say 'OK'
+    puts 'OK'
   end
 
   file 'incubating'=>'package' do
     rm_rf 'incubating'
     mkpath 'incubating'
-    say 'Creating -incubating packages ... '
+    print 'Creating -incubating packages ... '
     packages = FileList['pkg/*.{gem,zip,tgz}'].map do |package|
       package.pathmap('incubating/%n-incubating%x').tap do |incubating|
         cp package, incubating
       end
     end
-    say 'Done'
+    puts 'Done'
   end
 
   task 'sign', :incubating do |task, args|
@@ -52,14 +52,14 @@ namespace 'apache' do
     sources = FileList[args.incubating ? 'incubating/*' : 'pkg/*']
 
     gpg_user = ENV['GPG_USER'] or fail 'Please set GPG_USER (--local-user) environment variable so we know which key to use.'
-    say 'Signing release files ...'
+    print 'Signing release files ...'
     sources.each do |fn|
       contents = File.open(fn, 'rb') { |file| file.read }
       File.open(fn + '.md5', 'w') { |file| file.write MD5.hexdigest(contents) << ' ' << File.basename(fn) }
       File.open(fn + '.sha1', 'w') { |file| file.write SHA1.hexdigest(contents) << ' ' << File.basename(fn) }
       sh 'gpg', '--local-user', gpg_user, '--armor', '--output', fn + '.asc', '--detach-sig', fn, :verbose=>true
     end
-    say 'Done'
+    puts 'Done'
   end
 
   task 'upload', :project, :incubating, :depends=>['site', 'KEYS', 'sign'] do |task, args|
@@ -71,11 +71,11 @@ namespace 'apache' do
 
     dir = task('sign').prerequisite.find { |prereq| File.directory?(prereq.name) }
     fail 'Please enhance sign task with directory containing files to release' unless dir
-    say 'Uploading packages to Apache dist ...'
+    puts 'Uploading packages to Apache dist ...'
     args = FileList["#{dir}/*", 'KEYS'].flatten << target
     
     sh 'rsync', '-progress', *args
-    say 'Done'
+    puts 'Done'
   end
 
 end

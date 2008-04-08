@@ -94,10 +94,10 @@ end
 
 namespace 'release' do
   task 'prepare'=>'docs' do
-    say 'Checking that we have site documentation, RDoc and PDF ... '
+    print 'Checking that we have site documentation, RDoc and PDF ... '
     fail 'No PDF generated, you need to install PrinceXML!' unless File.exist?('site/buildr.pdf')
     fail 'No RDocs in site directory' unless File.exist?('site/rdoc/files/lib/buildr_rb.html')
     fail 'No site documentation in site directory' unless File.exist?('site/index.html')
-    say 'OK'
+    puts 'OK'
   end
 end

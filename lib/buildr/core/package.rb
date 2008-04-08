@@ -149,7 +149,7 @@ module Buildr
         end
         package = packages.find { |pkg| pkg.name == file_name } || packager.call(file_name)
       else
-        warn_deprecated "We changed the way package_as methods are implemented.  See the package method documentation for more details."
+        Buildr.application.deprecated "We changed the way package_as methods are implemented.  See the package method documentation for more details."
         file_name ||= path_to(:target, Artifact.hash_to_file_name(spec))
         package = packager.call(file_name, spec)
       end

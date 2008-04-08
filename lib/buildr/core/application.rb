@@ -45,9 +45,6 @@ require 'buildr/core/application_cli'
 ENV["HOME"] ||= File.expand_path(Gem::user_home)
 ENV['BUILDR_ENV'] ||= 'development'
 
-# Add a touch of colors (red) to warnings.
-HighLine.use_color = !Buildr::Util.win_os?
-
 module Buildr
 
   class Application < Rake::Application #:nodoc:
@@ -247,6 +244,26 @@ module Buildr
     end
     private :load_tasks
 
+    # :call-seq:
+    #   deprecated(message)
+    #
+    # Use with deprecated methods and classes. This method automatically adds the file name and line number,
+    # and the text 'Deprecated' before the message, and eliminated duplicate warnings. It only warns when
+    # running in verbose mode.
+    #
+    # For example:
+    #   deprecated 'Please use new_foo instead of foo.'
+    def deprecated(message) #:nodoc:
+      return unless verbose
+      "#{caller[1]}: Deprecated: #{message}".tap do |message|
+        @deprecated ||= {}
+        unless @deprecated[message]
+          @deprecated[message] = true
+          warn message
+        end
+      end
+    end
+
   end
 
 
@@ -271,4 +288,23 @@ module Buildr
 
   Buildr.application = Rake.application = Buildr::Application.new
 
+end
+
+
+# Add a touch of colors (red) to warnings.
+if $stdout.isatty
+  begin
+    require 'Win32/Console/ANSI' if Config::CONFIG['host_os'] =~ /mswin/
+    HighLine.use_color = true
+  rescue LoadError
+  end
+end
+
+if HighLine.use_color?
+  module Kernel #:nodoc:
+    alias :warn_without_color :warn
+    def warn(message)
+      warn_without_color $terminal.color(message.to_s, :red)
+    end
+  end
 end

@@ -249,13 +249,13 @@ module Buildr
 
     # *Deprecated*: Use dependencies instead.
     def classpath
-      warn_deprecated 'Use dependencies instead.'
+      Buildr.application.deprecated 'Use dependencies instead.'
       dependencies
     end
 
     # *Deprecated*: Use dependencies= instead.
     def classpath=(artifacts)
-      warn_deprecated 'Use dependencies= instead.'
+      Buildr.application.deprecated 'Use dependencies= instead.'
       self.dependencies = artifacts
     end
 

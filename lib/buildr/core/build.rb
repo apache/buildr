@@ -66,25 +66,25 @@ module Buildr
 
     # *Deprecated:* Use +path_to(:target)+ instead.
     def target
-      warn_deprecated 'Use path_to(:target) instead'
+      Buildr.application.deprecated 'Use path_to(:target) instead'
       layout.expand(:target)
     end
 
     # *Deprecated:* Use Layout instead.
     def target=(dir)
-      warn_deprecated 'Use Layout instead'
+      Buildr.application.deprecated 'Use Layout instead'
       layout[:target] = _(dir)
     end
 
     # *Deprecated:* Use +path_to(:reports)+ instead.
     def reports()
-      warn_deprecated 'Use path_to(:reports) instead'
+      Buildr.application.deprecated 'Use path_to(:reports) instead'
       layout.expand(:reports)
     end
 
     # *Deprecated:* Use Layout instead.
     def reports=(dir)
-      warn_deprecated 'Use Layout instead'
+      Buildr.application.deprecated 'Use Layout instead'
       layout[:reports] = _(dir)
     end
 

@@ -322,7 +322,7 @@ module Buildr
 
       # *Deprecated* Check the Extension module to see how extensions are handled.
       def on_define(&block)
-        warn_deprecated 'This method is deprecated, see Extension'
+        Buildr.application.deprecated 'This method is deprecated, see Extension'
         (@on_define ||= []) << block if block
       end
 

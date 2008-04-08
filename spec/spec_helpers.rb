@@ -38,10 +38,12 @@ unless self.class.const_defined?('SpecHelpers')
         $warning ||= []
         $warning << message
       end
+    end
 
-      alias :warn_deprecated_without_capture :warn_deprecated
-      def warn_deprecated(message)
-        verbose(true) { warn_deprecated_without_capture message }
+    class << Buildr.application
+      alias :deprecated_without_capture :deprecated
+      def deprecated(message)
+        verbose(true) { deprecated_without_capture message }
       end
     end
 

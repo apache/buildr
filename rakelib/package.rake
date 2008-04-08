@@ -22,9 +22,9 @@ task 'clobber'
 
 desc 'Compile Java libraries used by Buildr'
 task 'compile' do
-  say 'Compiling Java libraries ... '
+  puts 'Compiling Java libraries ...'
   sh Config::CONFIG['ruby_install_name'], '-Ilib', '-Iaddon', 'bin/buildr', 'compile'
-  say 'OK'
+  puts 'OK'
 end
 
 Rake::GemPackageTask.new(spec('ruby')) do |pkg|
@@ -44,9 +44,9 @@ end
 
 desc 'Uninstall previously installed packaged'
 task 'uninstall' do |task|
-  say "Uninstalling #{$spec.name} ... "
+  print "Uninstalling #{$spec.name} ... "
   args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'uninstall', spec.name, '--version', spec.version]
   args.unshift('sudo') unless windows?
   sh *args
-  say 'Done'
+  puts 'Done'
 end

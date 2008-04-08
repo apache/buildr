@@ -165,7 +165,7 @@ module Buildr
       raise 'No target directory specified, where am I going to copy the files to?' if target.nil?
 
       copy_map = sources.flatten.map(&:to_s).inject({}) do |map, source|
-        files = FileList.recursive(source).
+        files = Util.recursive_with_dot_files(source).
           map { |file| Util.relative_path(file, source) }.
           select { |file| @include.empty? || @include.any? { |pattern| File.fnmatch(pattern, file, File::FNM_PATHNAME) } }.
           reject { |file| @exclude.any? { |pattern| File.fnmatch(pattern, file, File::FNM_PATHNAME) } }

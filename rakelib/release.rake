@@ -17,7 +17,7 @@
 begin
   require 'rubyforge'
 rescue LoadError
-  say 'Please run rake setup to install the RubyForge gem'
+  puts 'Please run rake setup to install the RubyForge gem'
   task 'setup' do
     install_gem 'rubyforge'
   end
@@ -40,11 +40,11 @@ namespace 'release' do
 
   # Does CHANGELOG reflects current release?
   task 'check' do
-    say 'Checking that CHANGELOG indicates most recent version and today\'s date ... '
+    print 'Checking that CHANGELOG indicates most recent version and today\'s date ... '
     expecting = "#{ruby_spec.version} (#{Time.now.strftime('%Y-%m-%d')})"
     header = File.readlines('CHANGELOG').first
     fail "Expecting CHANGELOG to start with #{expecting}, but found #{header} instead" unless expecting == header
-    say 'OK'
+    puts 'OK'
   end
 
   # No local changes.
@@ -62,16 +62,16 @@ namespace 'release' do
 
   task 'rubyforge'=>'pacakge' do
     # Read the changes for this release.
-    say 'Looking for changes between this release and previous one ... '
+    print 'Looking for changes between this release and previous one ... '
     pattern = /(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/
     changelog = File.read(__FILE__.pathmap('%d/CHANGELOG'))
     changes = changelog.scan(pattern).inject({}) { |hash, set| hash[set[1]] = set[2] ; hash }
     current = changes[spec.version.to_s]
     current = changes[spec.version.to_s.split('.')[0..-2].join('.')] if !current && spec.version.to_s =~ /\.0$/
     fail "No changeset found for version #{spec.version}" unless current
-    say 'OK'
+    puts 'OK'
 
-    say "Uploading #{spec.version} to RubyForge ... "
+    print "Uploading #{spec.version} to RubyForge ... "
     files = Dir.glob('pkg/*.{gem,tgz,zip}')
     rubyforge = RubyForge.new
     rubyforge.login    
@@ -79,31 +79,31 @@ namespace 'release' do
     rubyforge.userconfig.merge!('release_changes' => '.changes',  'preformatted' => true)
     rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version, *files
     rm '.changes'
-    say 'Done'
+    puts 'Done'
   end
 
   # Tag this release in SVN.
   task 'tag' do
-    say "Tagging release as tags/#{ruby_spec.version} ... "
+    print "Tagging release as tags/#{ruby_spec.version} ... "
     cur_url = `svn info`.scan(/URL: (.*)/)[0][0]
     new_url = cur_url.sub(/(trunk$)|(branches\/\w*)$/, "tags/#{ruby_spec.version.to_s}")
     sh 'svn', 'copy', cur_url, new_url, '-m', "Release #{ruby_spec.version.to_s}", :verbose=>false
-    say "OK"
+    puts "OK"
   end
 
   # Update lib/buildr.rb to next vesion number, add new entry in CHANGELOG.
   task 'next_version'=>'tag' do
     next_version = ruby_spec.version.to_ints.zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
-    say "Updating lib/buildr.rb to next version number (#{next_version}) ... "
+    print "Updating lib/buildr.rb to next version number (#{next_version}) ... "
     buildr_rb = File.read(__FILE__.pathmap('%d/lib/buildr.rb')).
       sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" } 
     File.open(__FILE__.pathmap('%d/lib/buildr.rb'), 'w') { |file| file.write buildr_rb }
-    say "OK"
+    puts "OK"
 
-    say 'Adding new entry to CHANGELOG ... '
+    print 'Adding new entry to CHANGELOG ... '
     changelog = File.read(__FILE__.pathmap('%d/CHANGELOG'))
     File.open(__FILE__.pathmap('%d/CHANGELOG'), 'w') { |file| file.write "#{next_version} (Pending)\n\n#{changelog}" }
-    say "OK"
+    puts "OK"
   end
 
   task 'wrapup'=>['tag', 'next_version']

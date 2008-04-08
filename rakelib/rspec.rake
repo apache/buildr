@@ -51,7 +51,7 @@ begin
   end
 
 rescue LoadError
-  say 'Please run rake setup to install RSpec'
+  puts 'Please run rake setup to install RSpec'
   task 'release:check' do
     fail 'Please run rake setup to install RSpec'
   end
@@ -62,13 +62,13 @@ end
 namespace 'spec' do
   desc 'Run all specs specifically with Ruby'
   task 'ruby' do
-    say 'Running test suite using Ruby ...'
+    puts 'Running test suite using Ruby ...'
     sh 'ruby -S rake spec'
   end
 
   desc 'Run all specs specifically with JRuby'
   task 'jruby' do
-    say 'Running test suite using JRuby ...'
+    puts 'Running test suite using JRuby ...'
     sh 'jruby -S rake spec'
   end
 end
@@ -76,19 +76,19 @@ end
 namespace 'release' do
   # Full test suite depends on having JRuby, Scala and Groovy installed.
   task 'check' do
-    say 'Checking that we have JRuby, Scala and Groovy available ... '
+    print 'Checking that we have JRuby, Scala and Groovy available ... '
     fail 'Full testing requires JRuby!' unless which('jruby')
     fail 'Full testing requires Scala!' unless which('scala')
     fail 'Full testing requires Groovy!' unless which('groovy')
-    say 'OK'
+    puts 'OK'
   end
 
   # Release requires RSpec and test coverage reports, uploaded as part of site.
   # Primary test environment is Ruby (RCov), also test on JRuby.
   task 'prepare'=>['compile', 'reports', 'spec:jruby'] do
-    say 'Checking that we have specs and coverage report ... '
+    print 'Checking that we have specs and coverage report ... '
     fail 'No specifications in site directory!' unless File.exist?('site/specs.html') 
     fail 'No coverage reports in site directory!' unless File.exist?('site/coverage/index.html')
-    say 'OK'
+    puts 'OK'
   end
 end

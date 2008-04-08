@@ -16,6 +16,7 @@
 require 'rbconfig'
 require 'pathname'
 
+
 module Buildr
   
   module Util
@@ -38,17 +39,6 @@ module Buildr
       Config::CONFIG['host_os'] =~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i
     end
 
-    # Finds and returns path to executable.  Consults PATH environment variable.
-    # Returns nil if executable not found.
-    def which(name)
-      if win_os?
-        path = ENV['PATH'].split(File::PATH_SEPARATOR).map { |path| path.gsub('\\', '/') }.map { |path| "#{path}/#{name}.{exe,bat,com}" }
-      else
-        path = ENV['PATH'].split(File::PATH_SEPARATOR).map { |path| "#{path}/#{name}" }
-      end
-      FileList[path].existing.first
-    end
-
     # Runs Ruby with these command line arguments.  The last argument may be a hash,
     # supporting the following keys:
     #   :command  -- Runs the specified script (e.g., :command=>'gem')
@@ -65,35 +55,6 @@ module Buildr
       cmd << '-S' << options.delete(:command) if options[:command]
       Rake.application.send :sh, *cmd.push(*args.flatten).push(options) do |ok, status|
         ok or fail "Command failed with status (#{status ? status.exitstatus : 'unknown'}): [#{cmd.join(" ")}]"
-      end
-    end
-
-    # :call-seq:
-    #  install_gems(*dependencies) 
-    #
-    def install_gems(*gems)
-      installed = Gem::SourceIndex.from_installed_gems
-      dependencies = gems.map do |gem| 
-        case gem
-        when Gem::Dependency then gem
-        when Array then Gem::Dependency.new(*gem)
-        when String then Gem::Dependency.new(gem, '> 0')
-        else raise "Invalid gem dependency: #{gem.inspect}"
-        end
-      end
-      dependencies.select { |dep| installed.search(dep.name, dep.version_requirements).empty? }.each do |dep|
-        puts "Installing #{dep} ..."
-        if win_os? # run the installer directly
-          begin
-            require 'rubygems/dependency_installer'
-            Gem::DependencyInstaller.new(dep.name, dep.version_requirements).install
-          rescue LoadError
-            require 'rubygems/remote_installer'
-            Gem::RemoteInstaller.new.install(dep.name, dep.version_requirements)
-          end
-        else
-          ruby 'install', dep.name, '-v', dep.version_requirements.to_s.inspect, :command=>'gem', :sudo=>true
-        end
       end
     end
 
@@ -121,8 +82,18 @@ module Buildr
       to, from = File.expand_path(to.to_s, "/"), File.expand_path(from.to_s, "/")
       Pathname.new(to).relative_path_from(Pathname.new(from)).to_s
     end
+
+    # Generally speaking, it's not a good idea to operate on dot files (files starting with dot).
+    # These are considered invisible files (.svn, .hg, .irbrc, etc).  Dir.glob/FileList ignore them
+    # on purpose.  There are few cases where we do have to work with them (filter, zip), a better
+    # solution is welcome, maybe being more explicit with include.  For now, this will do.
+    def recursive_with_dot_files(*dirs)
+      FileList[dirs.map { |dir| File.join(dir, '/**/{*,.*}') }].reject { |file| File.basename(file) =~ /^[.]{1,2}$/ }
+    end
+
   end
 end
+
 
 module Kernel #:nodoc:
   # Borrowed from Ruby 1.9.
@@ -186,6 +157,7 @@ class OpenObject < Hash
   end
 end
 
+
 class Hash
 
   class << self
@@ -245,4 +217,32 @@ class Hash
     }.join("\n")
   end
 
+end
+
+
+module Rake #:nodoc
+  class Task #:nodoc:
+    def invoke(*args)
+      task_args = TaskArguments.new(arg_names, args)
+      invoke_with_call_chain(task_args, Thread.current[:rake_chain] || InvocationChain::EMPTY)
+    end
+
+    def invoke_with_call_chain(task_args, invocation_chain)
+      new_chain = InvocationChain.append(self, invocation_chain)
+      @lock.synchronize do
+        if application.options.trace
+          puts "** Invoke #{name} #{format_trace_flags}"
+        end
+        return if @already_invoked
+        @already_invoked = true
+        invoke_prerequisites(task_args, new_chain)
+        begin
+          old_chain, Thread.current[:rake_chain] = Thread.current[:rake_chain], new_chain
+          execute(task_args) if needed?
+        ensure
+          Thread.current[:rake_chain] = nil
+        end
+      end
+    end
+  end
 end

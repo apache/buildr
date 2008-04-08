@@ -204,13 +204,13 @@ module Buildr
 
     # *Deprecated*: Use dependencies instead.
     def classpath
-      warn_deprecated 'Use dependencies instead.'
+      Buildr.application.deprecated 'Use dependencies instead.'
       dependencies
     end
 
     # *Deprecated*: Use dependencies= instead.
     def classpath=(artifacts)
-      warn_deprecated 'Use dependencies= instead.'
+      Buildr.application.deprecated 'Use dependencies= instead.'
       self.dependencies = artifacts
     end
 
@@ -313,7 +313,7 @@ module Buildr
         elsif name == :integration
           options[:integration] = true
         else
-          warn_deprecated "Please replace with using(:#{name}=>true)"
+          Buildr.application.deprecated "Please replace with using(:#{name}=>true)"
           options[name.to_sym] = true
         end
       end 
@@ -350,7 +350,7 @@ module Buildr
 
     # *Deprecated*: Use tests instead.
     def classes
-      warn_deprecated 'Call tests instead of classes'
+      Buildr.application.deprecated 'Call tests instead of classes'
       tests
     end
 
