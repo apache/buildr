@@ -48,6 +48,65 @@ ENV['BUILDR_ENV'] ||= 'development'
 
 module Buildr
 
+  # Provide settings that come from three sources.
+  #
+  # User settings are placed in the .buildr/settings.yaml file located in the user's home directory.
+  # The should only be used for settings that are specific to the user and applied the same way
+  # across all builds.  Example for user settings are preferred repositories, path to local repository,
+  # user/name password for uploading to remote repository.
+  #
+  # Build settings are placed in the build.yaml file located in the build directory.  They help keep
+  # the buildfile and build.yaml file simple and readable, working to the advantages of each one.
+  # Example for build settings are gems, repositories and artifacts used by that build.
+  #
+  # Profile settings are placed in the profiles.yaml file located in the build directory.  They provide
+  # settings that differ in each environment the build runs in.  For example, URLs and database
+  # connections will be different when used in development, test and production environments.
+  # The settings for the current environment are obtained by calling #profile.
+  class Settings
+
+    def initialize(application) #:nodoc:
+      @application = application
+      @user = load_from('settings', @application.home_dir)
+      @build = load_from('build')
+      @profiles = load_from('profiles')
+     # .inject({}) { |hash, (name, value)|
+     #     value ||= {}
+     #     raise 'Each profile must be empty or contain name/value pairs.' unless Hash === value
+     #     hash.update(name=>value) }
+    end
+
+    # User settings loaded from setting.yaml file in user's home directory.
+    attr_reader :user
+
+    # Build settings loaded from build.yaml file in build directory.
+    attr_reader :build
+
+    # Profiles loaded from profiles.yaml file in build directory.
+    attr_reader :profiles
+
+    # :call-seq:
+    #    profile => hash
+    #
+    # Returns the profile for the current environment.
+    def profile
+      profiles[@application.environment] ||= {}
+    end
+
+  private
+
+    def load_from(base_name, dir = nil)
+      file_name = ['yaml', 'yml'].map { |ext| File.expand_path("#{base_name}.#{ext}", dir) }.find { |fn| File.exist?(fn) }
+      return {} unless file_name
+      yaml = YAML.load(File.read(file_name)) || {}
+      fail "Expecting #{file_name} to be a map (name: value)!" unless Hash === yaml
+      @application.build_files << file_name
+      yaml
+    end
+
+  end
+
+
   class Application < Rake::Application #:nodoc:
 
     DEFAULT_BUILDFILES = ['buildfile', 'Buildfile'] + DEFAULT_RAKEFILES
@@ -81,48 +140,9 @@ module Buildr
     # Copied from BUILD_ENV.
     attr_reader :environment
 
-    # User settings loaded from settings.yaml (Hash).
+    # Returns the Settings associated with this build.
     def settings
-      unless @settings
-        file_name = ['settings.yaml', 'settings.yml'].map { |fn| File.expand_path(fn, home_dir) }.find { |fn| File.exist?(fn) }
-        @settings = file_name && YAML.load(File.read(file_name)) || {}
-        fail "Expecting #{file_name} to be a hash!" unless Hash === @settings
-      end
-      @settings
-    end
-
-    # Configuration loaded from build.yaml (Hash).
-    def configuration
-      unless @config
-        file_name = ['build.yaml', 'build.yml'].map { |fn| File.expand_path(fn, File.dirname(buildfile)) }.find { |fn| File.exist?(fn) }
-        @config = file_name && YAML.load(File.read(file_name)) || {}
-        fail "Expecting #{file_name} to be a hash!" unless Hash === @config
-      end
-      @config
-    end
-
-    # :call-seq:
-    #    profile => hash
-    #
-    # Returns the profile for the current environment.
-    def profile
-      profiles[environment] ||= {}
-    end
-
-    # :call-seq:
-    #    profiles => hash
-    #
-    # Returns all the profiles loaded from the profiles.yaml file.
-    def profiles
-      unless @profiles
-        file_name = ['profiles.yaml', 'profiles.yml'].map { |fn| File.expand_path(fn, File.dirname(buildfile)) }.find { |fn| File.exist?(fn) }
-        @profiles = file_name && YAML.load(File.read(file_name)) || {}
-        fail "Expecting #{file_name} to be a hash!" unless Hash === @profiles
-        @profiles = profiles.inject({}) { |hash, (name, value)| value ||= {} 
-          raise 'Each profile must be empty or contain name/value pairs.' unless Hash === value
-          hash.merge(name=>(value || {})) }
-      end
-      @profiles
+      @settings ||= Settings.new(self)
     end
 
     # :call-seq:
@@ -142,7 +162,7 @@ module Buildr
     # Returns Gem::Specification for every listed and installed Gem, Gem::Dependency
     # for listed and uninstalled Gem, which is the installed before loading the buildfile.
     def listed_gems #:nodoc:
-      Array(configuration['gems']).map do |dep|
+      Array(settings.build['gems']).map do |dep|
         name, trail = dep.scan(/^\s*(\S*)\s*(.*)\s*$/).first
         versions = trail.scan(/[=><~!]{0,2}\s*[\d\.]+/)
         versions = ['>= 0'] if versions.empty?
@@ -280,14 +300,6 @@ module Buildr
 
   class << self
 
-    # :call-seq:
-    #   build_files => files
-    #
-    # Returns a list of build files. These are files used by the build, 
-    def build_files
-      Buildr.application.build_files
-    end
-
     task 'buildr:initialize' do
       Buildr.load_tasks_and_local_files
     end
@@ -299,6 +311,10 @@ module Buildr
 
     def application=(app)
       Rake.application = app
+    end
+
+    def settings
+      Buildr.application.settings
     end
 
   end

@@ -49,7 +49,7 @@ module Buildr
       # We need paths relative to the top project's base directory.
       root_path = lambda { |p| f = lambda { |p| p.parent ? f[p.parent] : p.base_dir }; f[p] }[project]
 
-      sources = Buildr.build_files.map { |file| File.expand_path(file) }.select { |file| File.exist?(file) }
+      sources = Buildr.application.build_files.map { |file| File.expand_path(file) }.select { |file| File.exist?(file) }
       sources << File.expand_path(Buildr.application.buildfile, root_path) if Buildr.application.buildfile
 
       # Find a path relative to the project's root directory.

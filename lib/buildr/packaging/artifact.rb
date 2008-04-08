@@ -424,8 +424,12 @@ module Buildr
     # Returns the path to the local repository.
     #
     # The default path is .m2/repository relative to the home directory.
+    # You can set this using the M2_REPO environment variable or the repositories/local
+    # value in your settings.yaml file.
     def local
-      @local ||= File.expand_path(ENV['M2_REPO'] || ENV['local_repo'] || File.join(ENV['HOME'], '.m2/repository'))
+      @local ||= File.expand_path(ENV['M2_REPO'] || ENV['local_repo'] ||
+        (Buildr.settings.user['repositories'] && Buildr.settings.user['repositories']['local']) ||
+        File.join(ENV['HOME'], '.m2/repository'))
     end
 
     # :call-seq:
@@ -462,8 +466,23 @@ module Buildr
     # When downloading artifacts, repositories are accessed in the order in which they appear here.
     # The best way is to add repositories individually, for example:
     #   repositories.remote << 'http://example.com/repo'
+    #
+    # You can also specify remote repositories in the settings.yaml (per user) and build.yaml (per build)
+    # files.  Both sets of URLs are loaded by default into this array, URLs from the personal setting
+    # showing first.
+    #
+    # For example:
+    #   repositories:
+    #     remote:
+    #     - http://example.com/repo
+    #     - http://elsewhere.com/repo
     def remote
-      @remote ||= []
+      unless @remote
+        @remote = [Buildr.settings.user, Buildr.settings.build].inject([]) { |repos, hash|
+          repos | Array(hash['repositories'] && hash['repositories']['remote'])
+        }
+      end
+      @remote
     end
 
     # :call-seq:
@@ -478,12 +497,9 @@ module Buildr
     # With nil, clears the array.
     def remote=(urls)
       case urls
-      when nil
-        @remote = nil
-      when Array
-        @remote = urls.dup
-      else
-        @remote = [urls.to_s]
+      when nil then @remote = nil
+      when Array then @remote = urls.dup
+      else @remote = [urls.to_s]
       end
     end
 
@@ -498,8 +514,18 @@ module Buildr
     #
     # For example:
     #   repositories.release_to = 'sftp://john:secret@example.com/var/www/repo/'
+    #
     #   repositories.release_to = { :url=>'sftp://example.com/var/www/repo/',
     #                                :username='john', :password=>'secret' }
+    # Or in the settings.yaml file:
+    #   repositories:
+    #     release_to: sftp://john:secret@example.com/var/www/repo/
+    #
+    #   repositories:
+    #     release_to:
+    #       url: sftp://example.com/var/www/repo/
+    #       username: john
+    #       password: secret
     def release_to=(options)
       options = { :url=>options } unless Hash === options
       @release_to = options
@@ -517,7 +543,11 @@ module Buildr
     #   repositories.release_to[:username] = 'john'
     #   repositories.release_to[:password] = 'secret'
     def release_to
-      @release_to ||= {}
+      unless @release_to
+        value = Buildr.settings.user['repositories'] && Buildr.settings.user['repositories']['release_to']
+        @release_to = Hash === value ? value.inject({}) { |hash, (key, value)| hash.update(key.to_sym=>value) } : { :url=>Array(value).first }
+      end
+      @release_to
     end
 
   end

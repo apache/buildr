@@ -128,7 +128,7 @@ describe Artifact do
 end
 
 
-describe 'repositories.local' do
+describe Repositories, 'local' do
   it 'should default to .m2 path' do
     # For convenience, sandbox actually sets the local repository to a temp directory
     repositories.local = nil
@@ -157,10 +157,18 @@ describe 'repositories.local' do
     repositories.locate(:group=>'com.example', :id=>'library', :version=>'2.0').should eql(
       File.expand_path('~/.m2/repository/com/example/library/2.0/library-2.0.jar'))
   end
+
+  it 'should load path from settings file' do
+    write 'home/.buildr/settings.yaml', <<-YAML
+    repositories:
+      local: my_repo
+    YAML
+    repositories.local.should eql(File.expand_path('my_repo'))
+  end
 end
 
 
-describe 'repositories.remote' do
+describe Repositories, 'remote' do
   before do
     @repos = [ 'http://www.ibiblio.org/maven2', 'http://repo1.maven.org/maven2' ]
   end
@@ -295,10 +303,44 @@ describe 'repositories.remote' do
     lambda { artifact('com.example:library:jar:2.1-SNAPSHOT').invoke }.should raise_error(RuntimeError, /Failed to download/)
     File.exist?(File.join(repositories.local, 'com/example/library/2.1-SNAPSHOT/library-2.1-SNAPSHOT.jar')).should be_false
   end
+
+  it 'should load with all repositories specified in settings file' do
+    write 'home/.buildr/settings.yaml', <<-YAML
+    repositories:
+      remote:
+      - http://example.com
+      - http://example.org
+    YAML
+    repositories.remote.should include('http://example.com', 'http://example.org')
+  end
+
+  it 'should load with all repositories specified in build.yaml file' do
+    write 'build.yaml', <<-YAML
+    repositories:
+      remote:
+      - http://example.com
+      - http://example.org
+    YAML
+    repositories.remote.should include('http://example.com', 'http://example.org')
+  end
+
+  it 'should load with all repositories specified in settings and build.yaml files' do
+    write 'home/.buildr/settings.yaml', <<-YAML
+    repositories:
+      remote:
+      - http://example.com
+    YAML
+    write 'build.yaml', <<-YAML
+    repositories:
+      remote:
+      - http://example.org
+    YAML
+    repositories.remote.should include('http://example.com', 'http://example.org')
+  end
 end
 
 
-describe 'repositories.release_to' do
+describe Repositories, 'release_to' do
   it 'should accept URL as first argument' do
     repositories.release_to = 'http://example.com'
     repositories.release_to.should == { :url=>'http://example.com' }
@@ -314,6 +356,25 @@ describe 'repositories.release_to' do
     repositories.release_to.should == { :url=>'http://example.com' }
     repositories.release_to[:username] = 'john'
     repositories.release_to.should == { :url=>'http://example.com', :username=>'john' }
+  end
+
+  it 'should load URL from settings file' do
+    write 'home/.buildr/settings.yaml', <<-YAML
+    repositories:
+      release_to: http://john:secret@example.com
+    YAML
+    repositories.release_to.should == { :url=>'http://john:secret@example.com' }
+  end
+
+  it 'should load URL, username and password from settings file' do
+    write 'home/.buildr/settings.yaml', <<-YAML
+    repositories:
+      release_to:
+        url: http://example.com
+        username: john
+        password: secret
+    YAML
+    repositories.release_to.should == { :url=>'http://example.com', :username=>'john', :password=>'secret' }
   end
 end
 

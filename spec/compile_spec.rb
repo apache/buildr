@@ -547,10 +547,12 @@ describe Project, '#resources' do
 
   it 'should use current profile for filtering' do
     write 'profiles.yaml', <<-YAML
-development:
-  foo: bar
-test:
-  foo: baz
+      development:
+        filter:
+          foo: bar
+      test:
+        filter:
+          foo: baz
     YAML
     write 'src/main/resources/foo', '${foo}'
     define('foo').compile.invoke

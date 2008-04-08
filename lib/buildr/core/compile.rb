@@ -401,7 +401,7 @@ module Buildr
     def initialize(*args) #:nodoc:
       super
       @filter = Buildr::Filter.new
-      @filter.using Buildr.profile['filter'] if Buildr.profile['filter']
+      @filter.using Buildr.settings.profile['filter'] if Hash === Buildr.settings.profile['filter']
       enhance do
         filter.run if target && !sources.empty?
       end
@@ -479,7 +479,6 @@ module Buildr
       resources = ResourcesTask.define_task('resources')
       resources.send :associate_with, project, :main
       project.path_to(:source, :main, :resources).tap { |dir| resources.from dir if File.exist?(dir) }
-      resources.filter.using Buildr.profile
 
       compile = CompileTask.define_task('compile'=>resources)
       compile.send :associate_with, project, :main

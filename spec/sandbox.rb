@@ -17,7 +17,9 @@
 # The local repository we use for testing is void of any artifacts, which will break given
 # that the code requires several artifacts. So we establish them first using the real local
 # repository and cache these across test cases.
+Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
 repositories.remote << 'http://repo1.maven.org/maven2'
+require 'buildr/java/groovyc'
 Java.load # Anything added to the classpath.
 artifacts(TestFramework.frameworks.map(&:dependencies).flatten).each { |a| file(a).invoke }
 
@@ -79,6 +81,12 @@ module Sandbox
     @_sandbox[:env_keys] = ENV.keys
     ['DEBUG', 'TEST', 'HTTP_PROXY', 'USER'].each { |k| ENV.delete(k) ; ENV.delete(k.downcase) }
 
+    # Remove testing local repository, and reset all repository settings.
+    Buildr.repositories.instance_eval do
+      @local = @remote = @release_to = nil
+    end
+    Buildr.options.proxy.http = nil
+
     # Don't output crap to the console.
     trace false
     verbose false
@@ -87,13 +95,6 @@ module Sandbox
 
   # Call this from teardown.
   def reset
-    # Remove testing local repository, and reset all repository settings.
-    Buildr.repositories.local = nil
-    Buildr.repositories.remote = nil
-    Buildr.repositories.release_to = nil
-    Buildr.options.proxy.http = nil
-    Buildr.instance_eval { @profiles = nil }
-
     # Get rid of all the projects and the on_define blocks we used.
     Project.clear
     on_define = @_sandbox[:on_define]

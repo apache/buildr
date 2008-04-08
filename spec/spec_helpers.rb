@@ -22,11 +22,6 @@ unless self.class.const_defined?('SpecHelpers')
   $LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__))
   require 'buildr'
 
-  # Load additional files for optional specs
-  if rspec_options.argv.any? { |s| s =~ /groovy_compilers_spec/ }
-    require 'buildr/java/groovyc'
-  end
-
   require File.expand_path('sandbox', File.dirname(__FILE__))
 
   module SpecHelpers

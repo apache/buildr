@@ -117,8 +117,4 @@ module Buildr
     Buildr.options
   end
 
-  def profile
-    application.profile
-  end
-
 end

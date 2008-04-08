@@ -43,7 +43,7 @@ module Buildr
       # the Buildfile (buildr.rb, separate file listing dependencies, etc), so we add anything required
       # after the Buildfile. So which don't know where Buildr shows up exactly, ignore files that show
       # in $LOADED_FEATURES that we cannot resolve.
-      sources = Buildr.build_files.map { |file| File.expand_path(file) }.select { |file| File.exist?(file) }
+      sources = Buildr.application.build_files.map { |file| File.expand_path(file) }.select { |file| File.exist?(file) }
       sources << File.expand_path(Buildr.application.buildfile, root_path) if Buildr.application.buildfile
 
       # Find a path relative to the project's root directory.
