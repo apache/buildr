@@ -91,14 +91,14 @@ module Buildr
         options[:debug] = Buildr.options.debug if options[:debug].nil?
         options[:deprecation] ||= false
         options[:optimise] ||= false
-        options[:verbose] ||= Rake.application.options.trace if options[:verbose].nil?
+        options[:verbose] ||= Buildr.application.options.trace if options[:verbose].nil?
         options[:warnings] = verbose if options[:warnings].nil?
         options[:javac] = OpenObject.new if options[:javac].nil?
       end
 
       # http://groovy.codehaus.org/The+groovyc+Ant+Task
       def compile(sources, target, dependencies) #:nodoc:
-        return if Rake.application.options.dryrun
+        return if Buildr.application.options.dryrun
         Buildr.ant 'groovyc' do |ant|
           classpath = dependencies | self.class.dependencies.map(&:to_s)
           ant.taskdef :name => 'groovyc', :classname => ANT_TASK, :classpath => classpath.join(File::PATH_SEPARATOR)

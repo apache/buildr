@@ -129,7 +129,7 @@ describe Project, ' block' do
   end
 
   it 'should execute in namespace of project' do
-    define('foo') { define('bar') { Rake.application.current_scope.should eql(['foo', 'bar']) } }
+    define('foo') { define('bar') { Buildr.application.current_scope.should eql(['foo', 'bar']) } }
   end
 end
 
@@ -320,7 +320,7 @@ describe Project, '#on_define' do
 
   it 'should execute in namespace of project' do
     scopes = []
-    Project.on_define { |project| scopes << Rake.application.current_scope }
+    Project.on_define { |project| scopes << Buildr.application.current_scope }
     define('foo') { define 'bar' }
     scopes.should eql([['foo'], ['foo', 'bar']])
   end
@@ -346,7 +346,7 @@ describe Project, '#on_define' do
 
   it 'should execute enhancement in namespace of project' do
     scopes = []
-    Project.on_define { |project| project.enhance { scopes << Rake.application.current_scope } }
+    Project.on_define { |project| project.enhance { scopes << Buildr.application.current_scope } }
     define('foo') { define 'bar' }
     scopes.should eql([['foo'], ['foo', 'bar']])
   end
@@ -609,7 +609,7 @@ end
 describe Project, '#task' do
   it 'should create a regular task' do
     define('foo') { task('bar') }
-    Rake.application.lookup('foo:bar').should_not be_nil
+    Buildr.application.lookup('foo:bar').should_not be_nil
   end 
 
   it 'should return a task defined in the project' do
@@ -648,17 +648,17 @@ describe Project, '#task' do
 
   it 'should create a file task' do
     define('foo') { file('bar') }
-    Rake.application.lookup(File.expand_path('bar')).should_not be_nil
+    Buildr.application.lookup(File.expand_path('bar')).should_not be_nil
   end
 
   it 'should create file task with absolute path' do
     define('foo') { file('/tmp') }
-    Rake.application.lookup(File.expand_path('/tmp')).should_not be_nil
+    Buildr.application.lookup(File.expand_path('/tmp')).should_not be_nil
   end
 
   it 'should create file task relative to project base directory' do
     define('foo', :base_dir=>'tmp') { file('bar') }
-    Rake.application.lookup(File.expand_path('tmp/bar')).should_not be_nil
+    Buildr.application.lookup(File.expand_path('tmp/bar')).should_not be_nil
   end
 
   it 'should accept single dependency' do
@@ -705,7 +705,7 @@ end
 # TODO: how do we test this?
 describe Rake::Task, 'buildr:initialize' do
   it 'should be ready to run as the first task' do
-    Rake.application.top_level_tasks.first.should eql('buildr:initialize')
+    Buildr.application.top_level_tasks.first.should eql('buildr:initialize')
   end
 
   it 'should evaluate all project definitions' do

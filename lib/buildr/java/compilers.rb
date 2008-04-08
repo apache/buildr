@@ -62,8 +62,8 @@ module Buildr
         cmd_args << '-d' << File.expand_path(target)
         cmd_args += javac_args
         cmd_args += files_from_sources(sources)
-        unless Rake.application.options.dryrun
-          puts (['javac'] + cmd_args).join(' ') if Rake.application.options.trace
+        unless Buildr.application.options.dryrun
+          puts (['javac'] + cmd_args).join(' ') if Buildr.application.options.trace
           Java.load
           Java.com.sun.tools.javac.Main.compile(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to compile, see errors above'
@@ -75,7 +75,7 @@ module Buildr
       def javac_args #:nodoc:
         args = []  
         args << '-nowarn' unless options[:warnings]
-        args << '-verbose' if Rake.application.options.trace
+        args << '-verbose' if Buildr.application.options.trace
         args << '-g' if options[:debug]
         args << '-deprecation' if options[:deprecation]
         args << '-source' << options[:source].to_s if options[:source]
@@ -143,9 +143,9 @@ module Buildr
         cmd_args += scalac_args
         cmd_args += files_from_sources(sources)
 
-        unless Rake.application.options.dryrun
+        unless Buildr.application.options.dryrun
           Scalac.scala_home or fail 'Are we forgetting something? SCALA_HOME not set.'
-          puts (['scalac'] + cmd_args).join(' ') if Rake.application.options.trace
+          puts (['scalac'] + cmd_args).join(' ') if Buildr.application.options.trace
           if Scalac.use_fsc
             system(([File.expand_path('bin/fsc', Scalac.scala_home)] + cmd_args).join(' ')) or
               fail 'Failed to compile, see errors above'
@@ -163,7 +163,7 @@ module Buildr
       def scalac_args #:nodoc:
         args = []
         args << "-nowarn" unless options[:warnings]
-        args << "-verbose" if Rake.application.options.trace
+        args << "-verbose" if Buildr.application.options.trace
         args << "-g" if options[:debug]
         args << "-deprecation" if options[:deprecation]
         args << "-optimise" if options[:optimise]
@@ -318,7 +318,7 @@ module Buildr
     private
 
       def generate(sources, target, options = {})
-        cmd_args = [ '-d', target, Rake.application.options.trace ? '-verbose' : '-quiet' ]
+        cmd_args = [ '-d', target, Buildr.application.options.trace ? '-verbose' : '-quiet' ]
         options.reject { |key, value| [:sourcepath, :classpath].include?(key) }.
           each { |key, value| value.invoke if value.respond_to?(:invoke) }.
           each do |key, value|
@@ -339,9 +339,9 @@ module Buildr
           end
         end
         cmd_args += sources.flatten.uniq
-        unless Rake.application.options.dryrun
+        unless Buildr.application.options.dryrun
           puts "Generating Javadoc for #{name}" if verbose
-          puts (['javadoc'] + cmd_args).join(' ') if Rake.application.options.trace
+          puts (['javadoc'] + cmd_args).join(' ') if Buildr.application.options.trace
           Java.load
           Java.com.sun.tools.javadoc.Main.execute(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to generate Javadocs, see errors above'
@@ -404,16 +404,16 @@ module Buildr
     def apt(*sources)
       sources = compile.sources if sources.empty?
       file(path_to(:target, 'generated/apt')=>sources) do |task|
-        cmd_args = [ Rake.application.options.trace ? '-verbose' : '-nowarn' ]
+        cmd_args = [ Buildr.application.options.trace ? '-verbose' : '-nowarn' ]
         cmd_args << '-nocompile' << '-s' << task.name
         cmd_args << '-source' << compile.options.source if compile.options.source
         classpath = Buildr.artifacts(compile.dependencies).map(&:to_s).each { |t| task(t).invoke }
         cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         cmd_args += (sources.map(&:to_s) - [task.name]).
           map { |file| File.directory?(file) ? FileList["#{file}/**/*.java"] : file }.flatten
-        unless Rake.application.options.dryrun
+        unless Buildr.application.options.dryrun
           puts 'Running apt' if verbose
-          puts (['apt'] + cmd_args).join(' ') if Rake.application.options.trace
+          puts (['apt'] + cmd_args).join(' ') if Buildr.application.options.trace
           Java.com.sun.tools.apt.Main.process(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to process annotations, see errors above'
         end

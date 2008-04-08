@@ -165,7 +165,7 @@ describe Buildr, 'addon' do
     available 'foobar', '1.0'
     lambda do
       addon 'foobar'
-      Rake.application.load_imports
+      Buildr.application.load_imports
     end.should change { $loaded }.to(true)
   end
 

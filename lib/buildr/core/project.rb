@@ -14,7 +14,7 @@
 # the License.
 
 
-require 'buildr/core/common'
+require 'buildr/core/util'
 
 
 module Buildr
@@ -195,7 +195,7 @@ module Buildr
         # Make sure a sub-project is only defined within the parent project,
         # to prevent silly mistakes that lead to inconsistencies (e.g.
         # namespaces will be all out of whack).
-        Rake.application.current_scope == name.split(':')[0...-1] or
+        Buildr.application.current_scope == name.split(':')[0...-1] or
           raise "You can only define a sub project (#{name}) within the definition of its parent project"
 
         @projects ||= {}
@@ -331,13 +331,13 @@ module Buildr
       end
 
       def local_projects(dir = nil, &block) #:nodoc:
-        dir = File.expand_path(dir || Rake.application.original_dir)
+        dir = File.expand_path(dir || Buildr.application.original_dir)
         projects = Project.projects.select { |project| project.base_dir == dir }
         if projects.empty? && dir != Dir.pwd && File.dirname(dir) != dir
           local_projects(File.dirname(dir), &block)
         elsif block
           if projects.empty?
-            warn "No projects defined for directory #{Rake.application.original_dir}" if verbose
+            warn "No projects defined for directory #{Buildr.application.original_dir}" if verbose
           else
             projects.each { |project| block[project] }
           end
@@ -355,7 +355,7 @@ module Buildr
         namespace = task_name.split(':')
         last_name = namespace.pop
         namespace.pop
-        Rake.application.lookup((namespace + [last_name]).join(':'), []) unless namespace.empty?
+        Buildr.application.lookup((namespace + [last_name]).join(':'), []) unless namespace.empty?
       end
 
       # :call-seq:
@@ -363,7 +363,7 @@ module Buildr
       #
       # Figure out project associated to this task and return it.
       def project_from_task(task) #:nodoc:
-        project = Rake.application.lookup('rake:' + task.to_s.gsub(/:[^:]*$/, ''))
+        project = Buildr.application.lookup('rake:' + task.to_s.gsub(/:[^:]*$/, ''))
         project if Project === project
       end
 
@@ -477,7 +477,7 @@ module Buildr
     #   puts project('foo:bar').file('src').to_s
     #   => '/home/foo/bar/src'
     def file(*args, &block)
-      task_name, arg_names, deps = Rake.application.resolve_args(args)
+      task_name, arg_names, deps = Buildr.application.resolve_args(args)
       task = Rake::FileTask.define_task(path_to(task_name))
       task.set_arg_names(arg_names) unless arg_names.empty?
       task.enhance Array(deps), &block
@@ -507,20 +507,15 @@ module Buildr
     # As with Rake's task method, calling this method enhances the task with the
     # prerequisites and optional block.
     def task(*args, &block)
-      task_name, arg_names, deps = Rake.application.resolve_args(args)
+      task_name, arg_names, deps = Buildr.application.resolve_args(args)
       if task_name =~ /^:/
-        Rake.application.instance_eval do
-          scope, @scope = @scope, []
-          begin
-            task = Rake::Task.define_task(task_name[1..-1])
-          ensure
-            @scope = scope
-          end
+        Buildr.application.switch_to_namespace [] do
+          task = Rake::Task.define_task(task_name[1..-1])
         end
-      elsif Rake.application.current_scope == name.split(':')
+      elsif Buildr.application.current_scope == name.split(':')
         task = Rake::Task.define_task(task_name)
       else
-        unless task = Rake.application.lookup(task_name, name.split(':'))
+        unless task = Buildr.application.lookup(task_name, name.split(':'))
           raise "You cannot define a project task outside the project definition, and no task #{name}:#{task_name} defined in the project"
         end
       end
@@ -534,7 +529,7 @@ module Buildr
     # Define a recursive task. A recursive task executes itself and the same task
     # in all the sub-projects.
     def recursive_task(*args, &block)
-      task_name, arg_names, deps = Rake.application.resolve_args(args)
+      task_name, arg_names, deps = Buildr.application.resolve_args(args)
       task = Buildr.options.parallel ? multitask(task_name) : task(task_name)
       parent.task(task_name).enhance [task] if parent
       task.set_arg_names(arg_names) unless arg_names.empty?
@@ -618,13 +613,8 @@ module Buildr
     end
 
     def execute(args) #:nodoc:
-      begin
-        # Reset the namespace, so all tasks are automatically defined in the project's namespace.
-        scope = Rake.application.current_scope
-        Rake.application.instance_variable_set :@scope, name.split(':')
+      Buildr.application.switch_to_namespace name.split(':') do
         super
-      ensure
-        Rake.application.instance_variable_set :@scope, scope
       end
     end
 
@@ -875,20 +865,20 @@ module Buildr
     desc "Freezes the Buildfile so it always uses Buildr version #{Buildr::VERSION}"
     task 'freeze' do
       puts "Freezing the Buildfile so it always uses Buildr version #{Buildr::VERSION}"
-      original = File.read(Rake.application.rakefile)
+      original = File.read(Buildr.application.buildfile)
       if original =~ /gem\s*(["'])buildr\1/
         modified = original.sub(/gem\s*(["'])buildr\1\s*,\s*(["']).*\2/, %{gem "buildr", "#{Buildr::VERSION}"})
       else
         modified = %{gem "buildr", "#{Buildr::VERSION}"\n} + original
       end
-      File.open(Rake.application.rakefile, "w") { |file| file.write modified }
+      File.open(Buildr.application.buildfile, "w") { |file| file.write modified }
     end
 
     desc 'Unfreezes the Buildfile to use the latest version of Buildr'
     task 'unfreeze' do
       puts 'Unfreezing the Buildfile to use the latest version of Buildr from your Gems repository.'
-      modified = File.read(Rake.application.rakefile).sub(/^\s*gem\s*(["'])buildr\1.*\n/, "")
-      File.open(Rake.application.rakefile, "w") { |file| file.write modified }
+      modified = File.read(Buildr.application.buildfile).sub(/^\s*gem\s*(["'])buildr\1.*\n/, "")
+      File.open(Buildr.application.buildfile, "w") { |file| file.write modified }
     end
   end
 

@@ -46,12 +46,12 @@ module Buildr
     #   end
     def ant(name, &block)
       options = { :name=>name, :basedir=>Dir.pwd, :declarative=>true }
-      options.merge!(:logger=> Logger.new(STDOUT), :loglevel=> Logger::DEBUG) if Rake.application.options.trace
+      options.merge!(:logger=> Logger.new(STDOUT), :loglevel=> Logger::DEBUG) if Buildr.application.options.trace
       Java.load
       Antwrap::AntProject.new(options).tap do |project|
         # Set Ant logging level to debug (--trace), info (default) or error only (--quiet).
         project.project.getBuildListeners().get(0).
-          setMessageOutputLevel((Rake.application.options.trace && 4) || (verbose && 2) || 0)
+          setMessageOutputLevel((Buildr.application.options.trace && 4) || (verbose && 2) || 0)
         yield project if block_given?
       end
     end

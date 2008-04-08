@@ -49,11 +49,11 @@ module Buildr
       cmd = []
       ruby_bin = File.expand_path(Config::CONFIG['ruby_install_name'], Config::CONFIG['bindir'])
       if options.delete(:sudo) && !(win_os? || Process.uid == File.stat(ruby_bin).uid)
-        cmd << 'sudo' << '-u' << '##{File.stat(ruby_bin).uid}'
+        cmd << 'sudo' << '-u' << "##{File.stat(ruby_bin).uid}"
       end
       cmd << ruby_bin
       cmd << '-S' << options.delete(:command) if options[:command]
-      Rake.application.send :sh, *cmd.push(*args.flatten).push(options) do |ok, status|
+      sh *cmd.push(*args.flatten).push(options) do |ok, status|
         ok or fail "Command failed with status (#{status ? status.exitstatus : 'unknown'}): [#{cmd.join(" ")}]"
       end
     end
@@ -217,32 +217,4 @@ class Hash
     }.join("\n")
   end
 
-end
-
-
-module Rake #:nodoc
-  class Task #:nodoc:
-    def invoke(*args)
-      task_args = TaskArguments.new(arg_names, args)
-      invoke_with_call_chain(task_args, Thread.current[:rake_chain] || InvocationChain::EMPTY)
-    end
-
-    def invoke_with_call_chain(task_args, invocation_chain)
-      new_chain = InvocationChain.append(self, invocation_chain)
-      @lock.synchronize do
-        if application.options.trace
-          puts "** Invoke #{name} #{format_trace_flags}"
-        end
-        return if @already_invoked
-        @already_invoked = true
-        invoke_prerequisites(task_args, new_chain)
-        begin
-          old_chain, Thread.current[:rake_chain] = Thread.current[:rake_chain], new_chain
-          execute(task_args) if needed?
-        ensure
-          Thread.current[:rake_chain] = nil
-        end
-      end
-    end
-  end
 end

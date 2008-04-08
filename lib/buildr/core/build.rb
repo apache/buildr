@@ -170,7 +170,7 @@ module Buildr
       #   NEXT_VERSION = 1.2.1
       # and the method will return 1.2.0.
       def with_next_version()
-        new_filename = Rake.application.rakefile + '.next'
+        new_filename = Buildr.application.buildfile + '.next'
         modified = change_version do |this_version, next_version|
           one_after = next_version.split('.')
           one_after[-1] = one_after[-1].to_i + 1
@@ -179,11 +179,11 @@ module Buildr
         File.open(new_filename, 'w') { |file| file.write modified }
         begin
           yield new_filename
-          mv new_filename, Rake.application.rakefile
+          mv new_filename, Buildr.application.buildfile
         ensure
           rm new_filename rescue nil
         end
-        File.read(Rake.application.rakefile).scan(THIS_VERSION_PATTERN)[0][1]
+        File.read(Buildr.application.buildfile).scan(THIS_VERSION_PATTERN)[0][1]
       end
 
       # :call-seq:
@@ -195,10 +195,10 @@ module Buildr
       # This method yields to the block with the current (this) and next version numbers and expects
       # an array with the new this and next version numbers.
       def change_version()
-        rakefile = File.read(Rake.application.rakefile)
-        this_version = rakefile.scan(THIS_VERSION_PATTERN)[0][1] or
+        buildfile = File.read(Buildr.application.buildfile)
+        this_version = buildfile.scan(THIS_VERSION_PATTERN)[0][1] or
           fail "Looking for THIS_VERSION = \"...\" in your Buildfile, none found"
-        next_version = rakefile.scan(NEXT_VERSION_PATTERN)[0][1] or
+        next_version = buildfile.scan(NEXT_VERSION_PATTERN)[0][1] or
           fail "Looking for NEXT_VERSION = \"...\" in your Buildfile, none found"
         this_version, next_version = yield(this_version, next_version)
         if verbose
@@ -206,7 +206,7 @@ module Buildr
           puts "  This:  #{this_version}"
           puts "  Next:  #{next_version}"
         end
-        rakefile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{this_version}"}) }.
+        buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{this_version}"}) }.
           gsub(NEXT_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{next_version}"}) }
       end
 
@@ -225,10 +225,10 @@ module Buildr
       #
       # Last, we commit what we currently have in the working copy.
       def commit(version)
-        rakefile = File.read(Rake.application.rakefile).
+        buildfile = File.read(Buildr.application.buildfile).
           gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{version}"}) }
-        File.open(Rake.application.rakefile, 'w') { |file| file.write rakefile }
-        svn 'commit', '-m', "Changed version number to #{version}", Rake.application.rakefile
+        File.open(Buildr.application.buildfile, 'w') { |file| file.write buildfile }
+        svn 'commit', '-m', "Changed version number to #{version}", Buildr.application.buildfile
       end
 
       # :call-seq:

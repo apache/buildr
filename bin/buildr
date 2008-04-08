@@ -18,4 +18,4 @@
 require 'rubygems'
 require 'buildr'
 
-Rake.application.run
+Buildr.application.run

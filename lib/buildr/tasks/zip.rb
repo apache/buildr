@@ -45,11 +45,11 @@ module Buildr
               if File.directory?(path)
                 in_directory path do |file, rel_path|
                   dest = "#{@path}#{rel_path}"
-                  puts "Adding #{dest}" if Rake.application.options.trace
+                  puts "Adding #{dest}" if Buildr.application.options.trace
                   file_map[dest] = file
                 end
               else
-                puts "Adding #{@path}#{File.basename(path)}" if Rake.application.options.trace
+                puts "Adding #{@path}#{File.basename(path)}" if Buildr.application.options.trace
                 file_map["#{@path}#{File.basename(path)}"] = path
               end
             end
@@ -150,11 +150,11 @@ module Buildr
                 path = rel_path.split('/')[1..-1]
                 path.unshift as unless as == '.'
                 dest = "#{@path}#{path.join('/')}"
-                puts "Adding #{dest}" if Rake.application.options.trace
+                puts "Adding #{dest}" if Buildr.application.options.trace
                 file_map[dest] = file
               end
             else
-              puts "Adding #{@path}#{as}" if Rake.application.options.trace
+              puts "Adding #{@path}#{as}" if Buildr.application.options.trace
               file_map["#{@path}#{as}"] = file
             end
           end
@@ -218,7 +218,7 @@ module Buildr
             if @includes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) } &&
                !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) }
               dest = Util.relative_path(path + "/" + entry.name)
-              puts "Adding #{dest}" if Rake.application.options.trace
+              puts "Adding #{dest}" if Buildr.application.options.trace
               file_map[dest] = lambda { |output| output.write source.read(entry) }
             end
           end
@@ -516,7 +516,7 @@ module Buildr
 
     # Initialize with hash argument of the form target=>zip_file.
     def initialize(args)
-      @target, arg_names, @zip_file = Rake.application.resolve_args([args])
+      @target, arg_names, @zip_file = Buildr.application.resolve_args([args])
       @paths = {}
     end
 
@@ -546,7 +546,7 @@ module Buildr
           patterns.map(entries).each do |dest, entry|
             next if entry.directory?
             dest = File.expand_path(dest, target.to_s)
-            puts "Extracting #{dest}" if Rake.application.options.trace
+            puts "Extracting #{dest}" if Buildr.application.options.trace
             mkpath File.dirname(dest), :verbose=>false rescue nil
             entry.extract(dest) { true }
           end
@@ -695,7 +695,7 @@ module Buildr
   #   unzip('src'=>'test.zip').include('README', 'LICENSE') 
   #   unzip('libs'=>'test.zip').from_path('libs')
   def unzip(args)
-    target, arg_names, zip_file = Rake.application.resolve_args([args])
+    target, arg_names, zip_file = Buildr.application.resolve_args([args])
     task = file(File.expand_path(target.to_s)=>zip_file)
     Unzip.new(task=>zip_file).tap do |setup|
       task.enhance { setup.extract }

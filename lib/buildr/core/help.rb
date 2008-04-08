@@ -55,7 +55,7 @@ end
 
 task 'help' do
   # Greeater.
-  Rake.application.usage
+  Buildr.application.usage
   puts
 
   # Show only the top-level projects.
@@ -106,7 +106,7 @@ namespace 'help' do
 
   desc 'List all tasks available from this buildfile'
   task 'tasks' do
-    Rake.application.tasks.select(&:comment).reject { |task| Project === task }.tap do |tasks|
+    Buildr.application.tasks.select(&:comment).reject { |task| Project === task }.tap do |tasks|
       width = [tasks.map(&:name).map(&:size), 20].flatten.max
       tasks.each do |task|
         printf "  %-#{width}s  # %s\n", task.name, task.comment

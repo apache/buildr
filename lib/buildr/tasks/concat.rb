@@ -44,7 +44,7 @@ module Buildr
   # For example:
   #   concat("master.sql"=>["users.sql", "orders.sql", reports.sql"]
   def concat(args)
-    file, arg_names, deps = Rake.application.resolve_args([args])
+    file, arg_names, deps = Buildr.application.resolve_args([args])
     ConcatTask.define_task(File.expand_path(file)=>deps)
   end
 

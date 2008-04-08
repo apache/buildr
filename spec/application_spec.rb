@@ -181,7 +181,7 @@ describe Buildr::Application do
 
     it 'should install nothing if specified gems already installed' do
       @app.should_receive(:listed_gems).and_return([Gem.loaded_specs['rspec']])
-      @app.should_not_receive(:sh)
+      Util.should_not_receive(:ruby)
       lambda { @app.load_gems }.should_not raise_error
     end
 
@@ -216,8 +216,8 @@ describe Buildr::Application do
       @app.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
       Gem::SourceInfoCache.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(true)
-      @app.should_receive(:sh) do |*args|
-        args.should include('-S', 'gem', 'install', 'foo', '-v', '1.2')
+      Util.should_receive(:ruby) do |*args|
+        args.should include('install', 'foo', '-v', '1.2')
       end
       @app.should_receive(:gem).and_return(false)
       @app.load_gems
@@ -227,7 +227,7 @@ describe Buildr::Application do
       @app.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
       Gem::SourceInfoCache.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(true)
-      @app.should_receive(:sh)
+      Util.should_receive(:ruby)
       Gem.source_index.should_receive(:load_gems_in).with(Gem::SourceIndex.installed_spec_directories)
       @app.should_receive(:gem).and_return(false)
       @app.load_gems
@@ -243,7 +243,7 @@ describe Buildr::Application do
       @app.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
       Gem::SourceInfoCache.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(true)
-      @app.should_receive(:sh)
+      Util.should_receive(:ruby)
       @app.should_receive(:gem).with('foo', @spec.version.to_s)
       @app.load_gems
     end

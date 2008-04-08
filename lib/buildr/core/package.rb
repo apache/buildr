@@ -39,7 +39,7 @@ module Buildr
       # which do not conflict with integration invoking the project's own packaging (package=>
       # integration=>foo:package is not circular, just confusing to debug.)
       task 'package' do
-        task('integration').invoke if Buildr.options.test && Rake.application.original_dir == Dir.pwd
+        task('integration').invoke if Buildr.options.test && Buildr.application.original_dir == Dir.pwd
       end
     end
 

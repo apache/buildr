@@ -57,7 +57,7 @@ module Sandbox
     Dir.chdir temp
 
     @_sandbox = {}
-    Buildr.application = Rake.application = Buildr::Application.new
+    Buildr.application = Buildr::Application.new
     Sandbox.tasks.each { |block| block.call }
     Buildr.application.instance_variable_set :@rules, Sandbox.rules.clone
     Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }

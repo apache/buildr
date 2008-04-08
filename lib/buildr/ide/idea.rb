@@ -44,7 +44,7 @@ module Buildr
       # after the Buildfile. So which don't know where Buildr shows up exactly, ignore files that show
       # in $LOADED_FEATURES that we cannot resolve.
       sources = Buildr.build_files.map { |file| File.expand_path(file) }.select { |file| File.exist?(file) }
-      sources << File.expand_path(Rake.application.rakefile, root_path) if Rake.application.rakefile
+      sources << File.expand_path(Buildr.application.buildfile, root_path) if Buildr.application.buildfile
 
       # Find a path relative to the project's root directory.
       relative = lambda { |path| Util.relative_path(path.to_s, project.path_to) }

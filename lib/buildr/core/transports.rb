@@ -299,7 +299,7 @@ module URI
       end
       http.use_ssl = true if self.instance_of? URI::HTTPS
 
-      puts "Requesting #{self}"  if Rake.application.options.trace
+      puts "Requesting #{self}"  if Buildr.application.options.trace
       request = Net::HTTP::Get.new(path.empty? ? '/' : path, headers)
       request.basic_auth self.user, self.password if self.user
       http.request request do |response|
@@ -307,11 +307,11 @@ module URI
         #case response = http.request(request)
         when Net::HTTPNotModified
           # No modification, nothing to do.
-          puts 'Not modified since last download' if Rake.application.options.trace
+          puts 'Not modified since last download' if Buildr.application.options.trace
           return nil
         when Net::HTTPRedirection
           # Try to download from the new URI, handle relative redirects.
-          puts "Redirected to #{response['Location']}" if Rake.application.options.trace
+          puts "Redirected to #{response['Location']}" if Buildr.application.options.trace
           return (self + URI.parse(response['location'])).read(options, &block)
         when Net::HTTPOK
           puts "Downloading #{self}" if verbose
@@ -358,7 +358,7 @@ module URI
       ssh_options = { :port=>port, :username=>user }.merge(options[:ssh_options] || {})
       ssh_options[:password] ||= SFTP.passwords[host]
       begin
-        puts "Connecting to #{host}" if Rake.application.options.trace
+        puts "Connecting to #{host}" if Buildr.application.options.trace
         session = Net::SSH.start(host, ssh_options)
         SFTP.passwords[host] = ssh_options[:password]
       rescue Net::SSH::AuthenticationFailed=>ex
@@ -372,11 +372,11 @@ module URI
       end
 
       session.sftp.connect do |sftp|
-        puts 'connected' if Rake.application.options.trace
+        puts 'connected' if Buildr.application.options.trace
 
         # To create a path, we need to create all its parent. We use realpath to determine if
         # the path already exists, otherwise mkdir fails.
-        puts "Creating path #{path}" if Rake.application.options.trace
+        puts "Creating path #{path}" if Buildr.application.options.trace
         File.dirname(path).split('/').inject('') do |base, part|
           combined = base + part
           sftp.realpath combined rescue sftp.mkdir combined, {}
@@ -384,7 +384,7 @@ module URI
         end
 
         with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
-          puts "Uploading to #{path}" if Rake.application.options.trace
+          puts "Uploading to #{path}" if Buildr.application.options.trace
           sftp.open_handle(path, 'w') do |handle|
             # Writing in chunks gives us the benefit of a progress bar,
             # but also require that we maintain a position in the file,

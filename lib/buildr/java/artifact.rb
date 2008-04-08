@@ -116,7 +116,7 @@ module Buildr
       invoke
       installed = Buildr.repositories.locate(self)
       unless installed == name # If not already in local repository.
-        verbose(Rake.application.options.trace || false) do
+        verbose(Buildr.application.options.trace || false) do
           mkpath File.dirname(installed)
           cp name, installed
         end
@@ -125,7 +125,7 @@ module Buildr
     end
 
     def uninstall
-      verbose(Rake.application.options.trace || false) do
+      verbose(Buildr.application.options.trace || false) do
         installed = Buildr.repositories.locate(self)
         rm installed if File.exist?(installed) 
         pom.uninstall if pom && pom != self
@@ -346,7 +346,7 @@ module Buildr
     # This method attempts to download the artifact from each repository in the order in
     # which they are returned from #remote, until successful. It always downloads the POM first.
     def download
-      puts "Downloading #{to_spec}" if Rake.application.options.trace
+      puts "Downloading #{to_spec}" if Buildr.application.options.trace
       remote = Buildr.repositories.remote.map { |repo_url| URI === repo_url ? repo_url : URI.parse(repo_url) }
       remote = remote.each { |repo_url| repo_url.path += '/' unless repo_url.path[-1] == '/' }
       fail 'No remote repositories defined!' if remote.empty?
@@ -359,7 +359,7 @@ module Buildr
           false
         rescue Exception=>error
           puts error if verbose
-          puts error.backtrace.join("\n") if Rake.application.options.trace
+          puts error.backtrace.join("\n") if Buildr.application.options.trace
           false
         end
       end

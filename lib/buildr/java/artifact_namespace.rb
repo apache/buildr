@@ -270,7 +270,7 @@ module Buildr
           name = case task
                  when Project then task.name
                  when Rake::Task then task.scope.join(':')
-                 when nil then Rake.application.current_scope.join(':')
+                 when nil then Buildr.application.current_scope.join(':')
                  end
         end
         name = name.to_s

@@ -36,7 +36,7 @@ module Java
       # * :verbose -- If true, prints the command and all its argument.
       def java(*args, &block)
         options = Hash === args.last ? args.pop : {}
-        options[:verbose] ||= Rake.application.options.trace || false
+        options[:verbose] ||= Buildr.application.options.trace || false
         rake_check_options options, :classpath, :java_args, :properties, :name, :verbose
 
         name = options[:name] || "java #{args.first}"
@@ -46,10 +46,10 @@ module Java
         options[:properties].each { |k, v| cmd_args << "-D#{k}=#{v}" } if options[:properties]
         cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
         cmd_args += args.flatten.compact
-        unless Rake.application.options.dryrun
+        unless Buildr.application.options.dryrun
           puts "Running #{name}" if verbose
           block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
-          puts cmd_args.join(' ') if Rake.application.options.trace
+          puts cmd_args.join(' ') if Buildr.application.options.trace
           system(*cmd_args).tap do |ok|
             block.call ok, $?
           end
@@ -74,7 +74,7 @@ module Java
 
         files = args.flatten.map(&:to_s).
           collect { |arg| File.directory?(arg) ? FileList["#{arg}/**/*.java"] : arg }.flatten
-        cmd_args = [ Rake.application.options.trace ? '-verbose' : '-nowarn' ]
+        cmd_args = [ Buildr.application.options.trace ? '-verbose' : '-nowarn' ]
         if options[:compile]
           cmd_args << '-d' << options[:output].to_s
         else
@@ -86,9 +86,9 @@ module Java
         classpath << tools if tools && File.exist?(tools)
         cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         cmd_args += files
-        unless Rake.application.options.dryrun
+        unless Buildr.application.options.dryrun
           puts 'Running apt' if verbose
-          puts (['apt'] + cmd_args).join(' ') if Rake.application.options.trace
+          puts (['apt'] + cmd_args).join(' ') if Buildr.application.options.trace
           Java.load
           Java.com.sun.tools.apt.Main.process(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to process annotations, see errors above'
@@ -122,9 +122,9 @@ module Java
         cmd_args << '-d' << options[:output].to_s if options[:output]
         cmd_args += options[:javac_args].flatten if options[:javac_args]
         cmd_args += files
-        unless Rake.application.options.dryrun
+        unless Buildr.application.options.dryrun
           puts "Compiling #{files.size} source files in #{name}" if verbose
-          puts (['javac'] + cmd_args).join(' ') if Rake.application.options.trace
+          puts (['javac'] + cmd_args).join(' ') if Buildr.application.options.trace
           Java.load
           Java.com.sun.tools.javac.Main.compile(cmd_args.to_java(Java.java.lang.String)) == 0 or 
             fail 'Failed to compile, see errors above'
@@ -150,7 +150,7 @@ module Java
       def javadoc(*args)
         options = Hash === args.last ? args.pop : {}
 
-        cmd_args = [ '-d', options[:output], Rake.application.options.trace ? '-verbose' : '-quiet' ]
+        cmd_args = [ '-d', options[:output], Buildr.application.options.trace ? '-verbose' : '-quiet' ]
         options.reject { |key, value| [:output, :name, :sourcepath, :classpath].include?(key) }.
           each { |key, value| value.invoke if value.respond_to?(:invoke) }.
           each do |key, value|
@@ -172,9 +172,9 @@ module Java
         end
         cmd_args += args.flatten.uniq
         name = options[:name] || Dir.pwd
-        unless Rake.application.options.dryrun
+        unless Buildr.application.options.dryrun
           puts "Generating Javadoc for #{name}" if verbose
-          puts (['javadoc'] + cmd_args).join(' ') if Rake.application.options.trace
+          puts (['javadoc'] + cmd_args).join(' ') if Buildr.application.options.trace
           Java.load
           Java.com.sun.tools.javadoc.Main.execute(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to generate Javadocs, see errors above'

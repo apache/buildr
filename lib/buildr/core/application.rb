@@ -39,6 +39,7 @@ require 'benchmark'
 require 'rake'
 require 'rubygems/source_info_cache'
 require 'buildr/core/application_cli'
+require 'buildr/core/util'
 
 
 # Gem::user_home is nice, but ENV['HOME'] lets you override from the environment.
@@ -195,7 +196,7 @@ module Buildr
         #  FileList[spec.require_paths.map { |path| File.expand_path("#{path}/*.rb", spec.full_gem_path) }].
         #    map { |path| File.basename(path) }.each { |file| require file }
         #  FileList[File.expand_path('tasks/*.rake', spec.full_gem_path)].each do |file|
-        #    Rake.application.add_import file
+        #    Buildr.application.add_import file
         #  end
         end
       end
@@ -264,6 +265,16 @@ module Buildr
       end
     end
 
+    # Not for external consumption.
+    def switch_to_namespace(names) #:nodoc:
+      current, @scope = @scope, names
+      begin
+        yield
+      ensure
+        @scope = current
+      end
+    end
+
   end
 
 
@@ -282,11 +293,17 @@ module Buildr
     end
 
     # Returns the Buildr::Application object.
-    attr_accessor :application
+    def application
+      Rake.application
+    end
+
+    def application=(app)
+      Rake.application = app
+    end
 
   end
 
-  Buildr.application = Rake.application = Buildr::Application.new
+  Buildr.application = Buildr::Application.new
 
 end
 
@@ -305,6 +322,34 @@ if HighLine.use_color?
     alias :warn_without_color :warn
     def warn(message)
       warn_without_color $terminal.color(message.to_s, :red)
+    end
+  end
+end
+
+
+module Rake #:nodoc
+  class Task #:nodoc:
+    def invoke(*args)
+      task_args = TaskArguments.new(arg_names, args)
+      invoke_with_call_chain(task_args, Thread.current[:rake_chain] || InvocationChain::EMPTY)
+    end
+
+    def invoke_with_call_chain(task_args, invocation_chain)
+      new_chain = InvocationChain.append(self, invocation_chain)
+      @lock.synchronize do
+        if application.options.trace
+          puts "** Invoke #{name} #{format_trace_flags}"
+        end
+        return if @already_invoked
+        @already_invoked = true
+        invoke_prerequisites(task_args, new_chain)
+        begin
+          old_chain, Thread.current[:rake_chain] = Thread.current[:rake_chain], new_chain
+          execute(task_args) if needed?
+        ensure
+          Thread.current[:rake_chain] = nil
+        end
+      end
     end
   end
 end

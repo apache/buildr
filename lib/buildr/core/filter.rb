@@ -178,7 +178,7 @@ module Buildr
         
       return false if copy_map.empty?
 
-      verbose(Rake.application.options.trace || false) do
+      verbose(Buildr.application.options.trace || false) do
         mkpath target.to_s
         copy_map.each do |path, source|
           dest = File.expand_path(path, target.to_s)

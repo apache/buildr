@@ -130,7 +130,7 @@ module Buildr
         # Run the expectation. We only print the expectation name when tracing (to know they all ran),
         # or when we get a failure.
         begin
-          puts description if Rake.application.options.trace
+          puts description if Buildr.application.options.trace
           klass.new.instance_eval &@block
         rescue Exception=>error
           raise error.exception("#{description}\n#{error}").tap { |wrapped| wrapped.set_backtrace(error.backtrace) }
@@ -151,7 +151,7 @@ module Buildr
             passed
           rescue Exception=>error
             if verbose
-              puts error.backtrace.detect { |line| line =~ /#{Rake.application.rakefile}/ } || ""
+              puts error.backtrace.detect { |line| line =~ /#{Buildr.application.buildfile}/ } || ""
               puts error
             end
             false
