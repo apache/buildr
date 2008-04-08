@@ -212,7 +212,7 @@ module Buildr
       end
 
       def expand(file_map, path)
-        @includes = ['*'] if @includes.empty?
+        @includes = ['**/*'] if @includes.empty?
         Zip::ZipFile.open(@zip_file) do |source|
           source.entries.reject { |entry| entry.directory? }.each do |entry|
             if @includes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) } &&
