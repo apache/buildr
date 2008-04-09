@@ -23,9 +23,9 @@ the current profile (if specified).
 JavaWrapper.
 * Added: JRuby 1.1 support (Victor Hugo Borja, Nick Sieger).
 * Added: IDEA 7 task: use buildr idea7x (Shane Witbeck).
-* Added: Experimental support for addons.
-* Added: Experimental support for YAML configurtion files settings.yaml (in
-~/.buildr), build.yaml (next to buildfile) and profiles.yaml.
+* Added: Experimental support for installing/loading Gems as part of a build.
+* Added: Experimental support for YAML configurtion files:
+~/.buildr/settings.yaml, build.yaml and profiles.yaml.
 * Added: Ability to create a package that is not an artifact and specify the
 target file using the :file argument.
 * Changed: JUnit/TestNG test cases are selected by superClass or annotations,

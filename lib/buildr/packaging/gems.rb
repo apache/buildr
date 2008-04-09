@@ -17,6 +17,7 @@
 require 'buildr/packaging/package'
 require 'buildr/packaging/zip'
 require 'rubyforge'
+require 'rubygems/package'
 
 
 module Buildr
@@ -26,7 +27,12 @@ module Buildr
     def initialize(*args)
       super
       @spec = Gem::Specification.new
+      prepare do
+        include(changelog) if changelog
+      end
     end
+
+    attr_accessor :changelog
 
     def spec
       yield @spec if block_given?
@@ -44,8 +50,7 @@ module Buildr
     def upload
       rubyforge = RubyForge.new
       rubyforge.login
-      #File.open('.changes', 'w'){|f| f.write(current)}
-      #rubyforge.userconfig.merge!('release_changes' => '.changes',  'preformatted' => true)
+      rubyforge.userconfig.merge!('release_changes'=>changelog.to_s, 'preformatted'=>true) if changelog
       rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version, package(:gem).to_s
     end
 
@@ -54,20 +59,19 @@ module Buildr
     def create_from(file_map)
       spec.mark_version
       spec.validate
-      Gem::Package.open(name, 'w', signer) do |pkg|
+      Gem::Package.open(name, 'w', nil) do |pkg|
         pkg.metadata = spec.to_yaml
         file_map.each do |path, content|
           next if content.nil? || File.directory?(content.to_s)
           pkg.add_file_simple(path, File.stat(name).mode & 0777, File.size(content.to_s)) do |os|
-              os.write File.open(content.to_s, 'rb') { |f| f.read }
+            File.open(content.to_s, "rb") do |file|
+              os.write file.read(4096)  until file.eof?
+            end
           end
         end
       end
     end
 
-    def signer
-      # TODO: implement.
-    end
   end
 
 

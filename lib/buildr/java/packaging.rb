@@ -31,6 +31,10 @@ module Buildr
 
         class << self
 
+          # :call_seq:
+          #   parse(str) => manifest
+          #
+          # Parse a string in MANIFEST.MF format and return a new Manifest.
           def parse(str)
             sections = str.split(SECTION_SEPARATOR).reject { |s| s.strip.empty? }
             new sections.map { |section|
@@ -47,6 +51,10 @@ module Buildr
             }
           end
 
+          # :call_seq:
+          #   from_zip(file) => manifest
+          #
+          # Parse the MANIFEST.MF entry of a ZIP (or JAR) file and return a new Manifest.
           def from_zip(file)
             Zip::ZipFile.open(file.to_s) do |zip|
               return Manifest.new unless zip.get_entry('META-INF/MANIFEST.MF')
@@ -54,7 +62,12 @@ module Buildr
             end
           end
 
-          # update_manifest(file) { |manifest| ... }
+          # :call_seq:
+          #   update_manifest(file) { |manifest| ... }
+          #
+          # Updates the MANIFEST.MF entry of a ZIP (or JAR) file.  Reads the MANIFEST.MF,
+          # yields to the block with the Manifest object, and writes the modified object
+          # back to the file.
           def update_manifest(file)
             manifest = from_zip(file)
             result = yield manifest
@@ -69,29 +82,39 @@ module Buildr
 
         end
 
+        # Returns a new Manifest object based on the argument:
+        # * nil         -- Empty Manifest.
+        # * Hash        -- Manifest with main section using the hash name/value pairs.
+        # * Array       -- Manifest with one section from each entry (must be hashes).
+        # * String      -- Parse (see Manifest#parse).
+        # * Proc/Method -- New Manifest from result of calling proc/method.
         def initialize(arg = nil)
           case arg
           when nil, Hash then @sections = [arg || {}]
           when Array then @sections = arg
           when String then @sections = Manifest.parse(arg).sections
-          when Proc, Method then @sections = Manifest.parse(arg.call).sections
+          when Proc, Method then @sections = Manifest.new(arg.call).sections
           else
             fail 'Invalid manifest, expecting Hash, Array, file name/task or proc/method.'
           end
         end
 
+        # The sections of this manifest.
         attr_reader :sections
 
+        # The main (first) section of this manifest.
         def main
           sections.first
         end
 
         include Enumerable
 
+        # Iterate over each section and yield to block.
         def each(&block)
           @sections.each(&block)
         end
 
+        # Convert to MANIFEST.MF format.
         def to_s
           @sections.map { |section|
             keys = section.keys

@@ -16,6 +16,9 @@
 # which returns true if running on the Windows platform of MRI, false when using JRuby.
 
 
+require 'rubygems/source_info_cache'
+
+
 def windows?
   Config::CONFIG['host_os'] =~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i
 end
@@ -35,11 +38,12 @@ end
 
 def install_gem(name, ver_requirement = nil)
   dep = Gem::Dependency.new(name, ver_requirement)
-  if Gem::SourceIndex.from_installed_gems.search(dep).empty? 
-    puts "Installing #{name} #{ver_requirement} ..."
-    args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', name]
+  if Gem::SourceIndex.from_installed_gems.search(dep).empty?
+    spec = Gem::SourceInfoCache.search(dep).last
+    fail "#{dep} not found in local or remote repository!" unless spec
+    puts "Installing #{spec} ..."
+    args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', spec.name, '-v', spec.version.to_s]
     args.unshift('sudo') unless windows?
-    args << '-v' << ver_requirement.to_s if ver_requirement
     sh *args
   end
 end
