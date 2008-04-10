@@ -78,9 +78,24 @@ module Buildr
       end
     end
 
-    def relative_path(to, from = ".")
-      to, from = File.expand_path(to.to_s, "/"), File.expand_path(from.to_s, "/")
-      Pathname.new(to).relative_path_from(Pathname.new(from)).to_s
+    # Return the path to the first argument, starting from the path provided by the
+    # second argument.
+    #
+    # For example:
+    #   relative_path('foo/bar', 'foo')
+    #   => 'bar'
+    #   relative_path('foo/bar', 'baz')
+    #   => '../foo/bar'
+    #   relative_path('foo/bar')
+    #   => 'foo/bar'
+    #   relative_path('/foo/bar', 'baz')
+    #   => '/foo/bar'
+    def relative_path(to, from = '.')
+      to = Pathname.new(to).cleanpath
+      return to.to_s if from.nil?
+      to_path = Pathname.new(File.expand_path(to.to_s, "/"))
+      from_path = Pathname.new(File.expand_path(from.to_s, "/"))
+      to_path.relative_path_from(from_path).to_s
     end
 
     # Generally speaking, it's not a good idea to operate on dot files (files starting with dot).

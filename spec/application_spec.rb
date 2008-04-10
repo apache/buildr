@@ -29,6 +29,26 @@ describe Buildr::Application do
     end
   end
 
+  describe 'environment' do
+    it 'should return value of BUILDR_ENV' do
+      ENV['BUILDR_ENV'] = 'qa'
+      Buildr::Application.new.environment.should eql('qa')
+    end
+
+    it 'should default to development' do
+      Buildr::Application.new.environment.should eql('development')
+    end
+
+    it 'should set environment name from -e argument' do
+      ARGV.push('-e', 'test')
+      Buildr::Application.new.environment.should eql('test')
+      ENV['BUILDR_ENV'].should eql('test')
+    end
+
+    after do
+      ENV['BUILDR_ENV'] = nil
+    end
+  end
 
   describe 'gems' do
 
@@ -177,16 +197,6 @@ describe Buildr::Application do
 end
 
 
-describe 'ENV' do
-
-  describe 'BUILDR_ENV' do
-    it 'should default to development' do
-      ENV['BUILDR_ENV'].should eql('development')
-    end
-  end
-end
-
-
 describe Buildr, 'settings' do
 
   describe 'user' do
@@ -281,4 +291,26 @@ describe Buildr, 'settings' do
 
   end
 
+end
+
+
+describe Buildr do
+  
+  describe 'environment' do
+    it 'should be same as Buildr.application.environment' do
+      Buildr.environment.should eql(Buildr.application.environment)
+    end
+  end
+
+  describe 'application' do
+    it 'should be same as Rake.application' do
+      Buildr.application.should == Rake.application
+    end
+  end
+
+  describe 'settings' do
+    it 'should be same as Buildr.application.settings' do
+      Buildr.settings.should == Buildr.application.settings
+    end
+  end
 end

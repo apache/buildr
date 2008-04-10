@@ -504,8 +504,9 @@ module Buildr
           from = component[:path]
           @classpath = @components.select { |comp| comp[:type] == :lib }.
             map do |lib| 
-            lib_path = File.join(lib[:path].to_s, lib[:artifact].to_s.pathmap('%f'))
-            Util.relative_path(lib_path, from)
+            basename = lib[:artifact].to_s.pathmap('%f')
+            full_path = lib[:path].empty? ? basename : File.join(lib[:path], basename)
+            Util.relative_path(full_path, from)
           end
         end
 
@@ -518,7 +519,8 @@ module Buildr
           xml.application do
             xml.tag! 'display-name', display_name
             @components.each do |comp|
-              uri = Util.relative_path(File.join(comp[:path].to_s, comp[:artifact].to_s.pathmap('%f')))
+              basename = comp[:artifact].to_s.pathmap('%f')
+              uri = comp[:path].empty? ? basename : File.join(comp[:path], basename)
               case comp[:type]
               when :war
                 xml.module :id=>comp[:id] do

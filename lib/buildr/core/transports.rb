@@ -346,7 +346,7 @@ module URI
 
     class << self
       # Caching of passwords, so we only need to ask once.
-      def passwords()
+      def passwords
         @passwords ||= {}
       end
     end
@@ -355,7 +355,7 @@ module URI
 
     def write_internal(options, &block) #:nodoc:
       # SSH options are based on the username/password from the URI.
-      ssh_options = { :port=>port, :username=>user }.merge(options[:ssh_options] || {})
+      ssh_options = { :port=>port, :username=>user, :password=>password }.merge(options[:ssh_options] || {})
       ssh_options[:password] ||= SFTP.passwords[host]
       begin
         puts "Connecting to #{host}" if Buildr.application.options.trace

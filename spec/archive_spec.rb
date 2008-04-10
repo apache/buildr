@@ -17,9 +17,9 @@
 require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
-describe "ArchiveTask", :shared=>true do
+describe 'ArchiveTask', :shared=>true do
   before do
-    @dir = File.expand_path("test")
+    @dir = File.expand_path('test')
     @files = %w{Test1.txt Text2.html}.map { |file| File.expand_path(file, @dir) }.
       each { |file| write file, content_for(file) }
   end
@@ -32,51 +32,51 @@ describe "ArchiveTask", :shared=>true do
   # Create an archive not using the archive task, this way we do have a file in existence, but we don't
   # have an already invoked task.  Yield an archive task to the block which can use it to include files,
   # set options, etc.
-  def create_without_task()
-    archive(@archive + ".tmp").tap do |task|
+  def create_without_task
+    archive(@archive + '.tmp').tap do |task|
       yield task if block_given?
       task.invoke
       mv task.name, @archive
     end
   end
 
-  def create_for_merge()
-    zip(@archive + ".src").include(@files).tap do |task|
+  def create_for_merge
+    zip(@archive + '.src').include(@files).tap do |task|
       task.invoke
       yield task
     end
   end
 
-  it "should point to archive file" do
+  it 'should point to archive file' do
     archive(@archive).name.should eql(@archive)
   end
 
-  it "should create file" do
+  it 'should create file' do
     lambda { archive(@archive).invoke }.should change { File.exist?(@archive) }.to(true)
   end
 
-  it "should create empty archive if no files included" do
+  it 'should create empty archive if no files included' do
     archive(@archive).invoke
     inspect_archive { |archive| archive.should be_empty }
   end
 
-  it "should create empty archive if called #clean method" do
+  it 'should create empty archive if called #clean method' do
     archive(@archive).include(@files).clean.invoke
     inspect_archive { |archive| archive.should be_empty }
   end
 
-  it "should archive all included files" do
+  it 'should archive all included files' do
     archive(@archive).include(@files).invoke
     inspect_archive { |archive| @files.each { |f| archive[File.basename(f)].should eql(content_for(f)) } }
     inspect_archive.size.should eql(@files.size)
   end
 
-  it "should include entry for directory" do
+  it 'should include entry for directory' do
     archive(@archive).include(@dir).invoke
-    inspect_archive { |archive| @files.each { |f| archive["test/" + File.basename(f)].should eql(content_for(f)) } }
+    inspect_archive { |archive| @files.each { |f| archive['test/' + File.basename(f)].should eql(content_for(f)) } }
   end
 
-  it "should not archive any excluded files" do
+  it 'should not archive any excluded files' do
     archive(@archive).include(@files).exclude(@files.last).invoke
     inspect_archive do |archive|
       archive.keys.should include(File.basename(@files.first))
@@ -84,15 +84,15 @@ describe "ArchiveTask", :shared=>true do
     end
   end
 
-  it "should not archive any excluded files in included directories" do
+  it 'should not archive any excluded files in included directories' do
     archive(@archive).include(@dir).exclude(@files.last).invoke
     inspect_archive do |archive|
-      archive.keys.should include("test/" + File.basename(@files.first))
-      archive.keys.should_not include("test/" + File.basename(@files.last))
+      archive.keys.should include('test/' + File.basename(@files.first))
+      archive.keys.should_not include('test/' + File.basename(@files.last))
     end
   end
 
-  it "should not archive any excluded files when using :from/:as" do
+  it 'should not archive any excluded files when using :from/:as' do
     archive(@archive).include(:from=>@dir).exclude(@files.last).invoke
     inspect_archive do |archive|
       archive.keys.should include(File.basename(@files.first))
@@ -100,7 +100,7 @@ describe "ArchiveTask", :shared=>true do
     end
   end
 
-  it "should exclude entire directory and all its children" do
+  it 'should exclude entire directory and all its children' do
     mkpath "#{@dir}/sub"
     write "#{@dir}/sub/test"
     archive(@archive).include(@dir).exclude("#{@dir}/sub").invoke
@@ -109,83 +109,93 @@ describe "ArchiveTask", :shared=>true do
     end
   end
 
-  it "should archive files into specified path" do
-    archive(@archive).include(@files, :path=>"code").invoke
-    inspect_archive { |archive| @files.each { |f| archive["code/" + File.basename(f)].should eql(content_for(f)) } }
+  it 'should not archive any excluded files when pattern is *.ext' do
+    write "test/file.txt"
+    write "test/file.swf"
+    archive(@archive).include(@dir).exclude('**/*.swf').invoke
+    inspect_archive do |archive|
+      archive.keys.should include('test/file.txt')
+      archive.keys.should_not include('test/file.swf')
+    end
   end
 
-  it "should include entry for directory" do
+  it 'should archive files into specified path' do
+    archive(@archive).include(@files, :path=>'code').invoke
+    inspect_archive { |archive| @files.each { |f| archive['code/' + File.basename(f)].should eql(content_for(f)) } }
+  end
+
+  it 'should include entry for directory' do
     archive(@archive).include(@dir).invoke
-    inspect_archive { |archive| @files.each { |f| archive["test/" + File.basename(f)].should eql(content_for(f)) } }
+    inspect_archive { |archive| @files.each { |f| archive['test/' + File.basename(f)].should eql(content_for(f)) } }
   end
 
-  it "should archive files into specified path" do
-    archive(@archive).include(@files, :path=>"code").invoke
-    inspect_archive { |archive| @files.each { |f| archive["code/" + File.basename(f)].should eql(content_for(f)) } }
+  it 'should archive files into specified path' do
+    archive(@archive).include(@files, :path=>'code').invoke
+    inspect_archive { |archive| @files.each { |f| archive['code/' + File.basename(f)].should eql(content_for(f)) } }
   end
 
-  it "should archive directories into specified path" do
-    archive(@archive).include(@dir, :path=>"code").invoke
-    inspect_archive { |archive| @files.each { |f| archive["code/test/" + File.basename(f)].should eql(content_for(f)) } }
+  it 'should archive directories into specified path' do
+    archive(@archive).include(@dir, :path=>'code').invoke
+    inspect_archive { |archive| @files.each { |f| archive['code/test/' + File.basename(f)].should eql(content_for(f)) } }
   end
 
-  it "should understand . in path" do
-    archive(@archive).path(".").should == archive(@archive).path("")
-    archive(@archive).path("foo").path(".").should == archive(@archive).path("foo")
+  it 'should understand . in path' do
+    archive(@archive).path('.').should == archive(@archive).path('')
+    archive(@archive).path('foo').path('.').should == archive(@archive).path('foo')
   end
 
-  it "should understand .. in path" do
-    archive(@archive).path("..").should == archive(@archive).path("")
-    archive(@archive).path("foo").path("..").should == archive(@archive).path("")
-    archive(@archive).path("foo/bar").path("..").should == archive(@archive).path("foo")
+  it 'should understand .. in path' do
+    archive(@archive).path('..').should == archive(@archive).path('')
+    archive(@archive).path('foo').path('..').should == archive(@archive).path('')
+    archive(@archive).path('foo/bar').path('..').should == archive(@archive).path('foo')
   end
 
-  it "should understand leading / in path" do
-    archive(@archive).path("/").should == archive(@archive).path("")
-    archive(@archive).path("foo/bar").path("/").should == archive(@archive).path("")
+  it 'should understand leading / in path' do
+    archive(@archive).path('/').should == archive(@archive).path('')
+    archive(@archive).path('foo/bar').path('/').should == archive(@archive).path('')
   end
 
-  it "should archive file into specified name" do
-    archive(@archive).include(@files.first, :as=>"test/sample").invoke
-    inspect_archive { |archive| @files.each { |f| archive["test/sample"].should eql(content_for(@files.first)) } }
+  it 'should archive file into specified name' do
+    archive(@archive).include(@files.first, :as=>'test/sample').invoke
+    inspect_archive { |archive| @files.each { |f| archive['test/sample'].should eql(content_for(@files.first)) } }
   end
 
-  it "should archive file into specified name/path" do
-    archive(@archive).include(@files.first, :as=>"test/sample", :path=>"path").invoke
-    inspect_archive { |archive| @files.each { |f| archive["path/test/sample"].should eql(content_for(@files.first)) } }
+  it 'should archive file into specified name/path' do
+    archive(@archive).include(@files.first, :as=>'test/sample', :path=>'path').invoke
+    inspect_archive { |archive| @files.each { |f| archive['path/test/sample'].should eql(content_for(@files.first)) } }
   end
 
-  it "should archive files starting with dot" do
-    write "test/.config", "# configuration"
-    archive(@archive).include("test").invoke
-    inspect_archive { |archive| @files.each { |f| archive["test/.config"].should eql("# configuration") } }
+  it 'should archive files starting with dot' do
+    write 'test/.config', '# configuration'
+    archive(@archive).include('test').invoke
+    inspect_archive { |archive| @files.each { |f| archive['test/.config'].should eql('# configuration') } }
   end
 
-  it "should archive directory into specified name" do
-    archive(@archive).include(@dir, :as=>"code").invoke
-    inspect_archive { |archive| @files.each { |f| archive["code/" + File.basename(f)].should eql(content_for(f)) } }
+  it 'should archive directory into specified name' do
+    archive(@archive).include(@dir, :as=>'code').invoke
+    inspect_archive { |archive| @files.each { |f| archive['code/' + File.basename(f)].should eql(content_for(f)) } }
   end
 
-  it "should archive directory into specified name/path" do
-    archive(@archive).include(@dir, :as=>"code", :path=>"path").invoke
-    inspect_archive { |archive| @files.each { |f| archive["path/code/" + File.basename(f)].should eql(content_for(f)) } }
+  it 'should archive directory into specified name/path' do
+    archive(@archive).include(@dir, :as=>'code', :path=>'path').invoke
+    inspect_archive { |archive| @files.each { |f| archive['path/code/' + File.basename(f)].should eql(content_for(f)) } }
   end
 
-  it "should archive directory contents" do
-    archive(@archive).include(@dir, :as=>".").invoke
+  it 'should archive directory contents' do
+    archive(@archive).include(@dir, :as=>'.').invoke
     inspect_archive { |archive| @files.each { |f| archive[File.basename(f)].should eql(content_for(f)) } }
   end
 
-  it "should archive directory contents into specified path" do
-    archive(@archive).include(@dir, :as=>".", :path=>"path").invoke
-    inspect_archive { |archive| @files.each { |f| archive["path/" + File.basename(f)].should eql(content_for(f)) } }
+  it 'should archive directory contents into specified path' do
+    archive(@archive).include(@dir, :as=>'.', :path=>'path').invoke
+    inspect_archive { |archive| @files.each { |f| archive['path/' + File.basename(f)].should eql(content_for(f)) } }
   end
 
-  it "should not allow two files with the :as argument" do
-    lambda { archive(@archive).include(@files.first, @files.last, :as=>"test/sample") }.should raise_error(RuntimeError, /one file/)
+  it 'should not allow two files with the :as argument' do
+    lambda { archive(@archive).include(@files.first, @files.last, :as=>'test/sample') }.should raise_error(RuntimeError, /one file/)
   end
 
-  it "should expand another archive file" do
+  it 'should expand another archive file' do
     create_for_merge do |src|
       archive(@archive).merge(src)
       archive(@archive).invoke
@@ -193,7 +203,7 @@ describe "ArchiveTask", :shared=>true do
     end
   end
 
-  it "should expand another archive file with include pattern" do
+  it 'should expand another archive file with include pattern' do
     create_for_merge do |src|
       archive(@archive).merge(src).include(File.basename(@files.first))
       archive(@archive).invoke
@@ -204,7 +214,7 @@ describe "ArchiveTask", :shared=>true do
     end
   end
   
-  it "should expand another archive file with exclude pattern" do
+  it 'should expand another archive file with exclude pattern' do
     create_for_merge do |src|
       archive(@archive).merge(src).exclude(File.basename(@files.first))
       archive(@archive).invoke
@@ -215,15 +225,31 @@ describe "ArchiveTask", :shared=>true do
     end
   end
 
-  it "should expand another archive file into path" do
+  it 'should expand another archive file into path' do
     create_for_merge do |src|
-      archive(@archive).path("test").merge(src)
+      archive(@archive).path('test').merge(src)
       archive(@archive).invoke
-      inspect_archive { |archive| @files.each { |f| archive["test/" + File.basename(f)].should eql(content_for(f)) } }
+      inspect_archive { |archive| @files.each { |f| archive['test/' + File.basename(f)].should eql(content_for(f)) } }
     end
   end
 
-  it "should expand another archive file into path with merge option" do
+  it 'should expand another archive file into path with :path option' do
+    create_for_merge do |src|
+      archive(@archive).merge(src, :path=>'test')
+      archive(@archive).invoke
+      inspect_archive { |archive| @files.each { |f| archive['test/' + File.basename(f)].should eql(content_for(f)) } }
+    end
+  end
+
+  it "should expand another archive file into path with :path=>'/'" do
+    create_for_merge do |src|
+      archive(@archive).merge(src, :path=>'/')
+      archive(@archive).invoke
+      inspect_archive { |archive| @files.each { |f| archive[File.basename(f)].should eql(content_for(f)) } }
+    end
+  end
+
+  it 'should expand another archive file into path with merge option' do
     create_for_merge do |src|
       archive(@archive).include(src, :merge=>true)
       archive(@archive).invoke
@@ -231,7 +257,7 @@ describe "ArchiveTask", :shared=>true do
     end
   end
 
-  it "should update if one of the files is recent" do
+  it 'should update if one of the files is recent' do
     create_without_task { |archive| archive.include(@files) }
     # Touch archive file to some point in the past. This effectively makes
     # all included files newer.
@@ -240,7 +266,7 @@ describe "ArchiveTask", :shared=>true do
     File.stat(@archive).mtime.should be_close(Time.now, 10) 
   end
 
-  it "should do nothing if all files are uptodate" do
+  it 'should do nothing if all files are uptodate' do
     create_without_task { |archive| archive.include(@files) }
     # By touching all files in the past, there's nothing new to update.
     (@files + [@archive]).each { |f| File.utime Time.now - 100, Time.now - 100, f }
@@ -248,23 +274,23 @@ describe "ArchiveTask", :shared=>true do
     File.stat(@archive).mtime.should be_close(Time.now - 100, 10) 
   end
 
-  it "should update if one of the files is recent" do
+  it 'should update if one of the files is recent' do
     create_without_task { |archive| archive.include(@files) }
     # Change files, we expect to see new content.
-    write @files.first, "/* Refreshed */"
+    write @files.first, '/* Refreshed */'
     File.utime(Time.now - 100, Time.now - 100, @archive) # Touch archive file to some point in the past.
     archive(@archive).include(@files).invoke
-    inspect_archive { |archive| archive[File.basename(@files.first)].should eql("/* Refreshed */") }
+    inspect_archive { |archive| archive[File.basename(@files.first)].should eql('/* Refreshed */') }
   end
 
-  it "should create new archive when updating" do
+  it 'should create new archive when updating' do
     create_without_task { |archive| archive.include(@files) }
     File.utime(Time.now - 100, Time.now - 100, @archive) # Touch archive file to some point in the past.
     archive(@archive).include(@files[1..-1]).invoke
     inspect_archive.size.should be(@files.size - 1)
   end
 
-  it "should not accept invalid options" do
+  it 'should not accept invalid options' do
     archive(@archive).include(@files)
     lambda { archive(@archive).with :option=>true }.should raise_error
   end
@@ -272,13 +298,13 @@ end
 
 
 describe TarTask do
-  it_should_behave_like "ArchiveTask"
-  before { @archive = File.expand_path("test.tar") }
+  it_should_behave_like 'ArchiveTask'
+  before { @archive = File.expand_path('test.tar') }
   define_method(:archive) { |file| tar(file) }
 
-  def inspect_archive()
+  def inspect_archive
     entries = {}
-    Archive::Tar::Minitar.open @archive, "r" do |reader|
+    Archive::Tar::Minitar.open @archive, 'r' do |reader|
       reader.each { |entry| entries[entry.directory ? "#{entry.name}/" : entry.name] = entry.read }
     end
     yield entries if block_given?
@@ -287,15 +313,15 @@ describe TarTask do
 end
 
 
-describe TarTask, " gzipped" do
-  it_should_behave_like "ArchiveTask"
-  before { @archive = File.expand_path("test.tgz") }
+describe TarTask, ' gzipped' do
+  it_should_behave_like 'ArchiveTask'
+  before { @archive = File.expand_path('test.tgz') }
   define_method(:archive) { |file| tar(file) }
 
-  def inspect_archive()
+  def inspect_archive
     entries = {}
     Zlib::GzipReader.open @archive do |gzip| 
-      Archive::Tar::Minitar.open gzip, "r" do |reader|
+      Archive::Tar::Minitar.open gzip, 'r' do |reader|
         reader.each { |entry| entries[entry.directory ? "#{entry.name}/" : entry.name] = entry.read }
       end
     end
@@ -306,11 +332,11 @@ end
 
 
 describe ZipTask do
-  it_should_behave_like "ArchiveTask"
-  before { @archive = File.expand_path("test.zip") }
+  it_should_behave_like 'ArchiveTask'
+  before { @archive = File.expand_path('test.zip') }
   define_method(:archive) { |file| zip(file) }
 
-  def inspect_archive()
+  def inspect_archive
     entries = {}
     Zip::ZipFile.open @archive do |zip|
       zip.entries.each do |entry|
@@ -322,21 +348,21 @@ describe ZipTask do
     entries
   end
 
-  it "should work with path object" do
-    archive(@archive).path("code").include(@files)
+  it 'should work with path object' do
+    archive(@archive).path('code').include(@files)
     archive(@archive).invoke
-    inspect_archive { |archive| archive.keys.should include("code/") }
+    inspect_archive { |archive| archive.keys.should include('code/') }
   end
 end
 
 
 describe Unzip do
   before do
-    @zip = File.expand_path("test.zip")
-    @dir = File.expand_path("test")
+    @zip = File.expand_path('test.zip')
+    @dir = File.expand_path('test')
     @files = %w{Test1.txt Text2.html}.map { |file| File.join(@dir, file) }.
       each { |file| write file, content_for(file) }
-    @target = File.expand_path("target")
+    @target = File.expand_path('target')
   end
 
   # Not too smart, we just create some content based on file name to
@@ -350,7 +376,7 @@ describe Unzip do
     yield
   end
     
-  it "should touch target directory" do
+  it 'should touch target directory' do
     with_zip do
       mkdir @target
       File.utime(Time.now - 10, Time.now - 10, @target)
@@ -359,97 +385,97 @@ describe Unzip do
     File.stat(@target).mtime.should be_close(Time.now, 2)
   end
 
-  it "should expand files" do
+  it 'should expand files' do
     with_zip do
       unzip(@target=>@zip).target.invoke
       @files.each { |f| File.read(File.join(@target, File.basename(f))).should eql(content_for(f)) }
     end
   end
 
-  it "should expand all files" do
+  it 'should expand all files' do
     with_zip do
       unzip(@target=>@zip).target.invoke
-      FileList[File.join(@target, "*")].size.should be(@files.size)
+      FileList[File.join(@target, '*')].size.should be(@files.size)
     end
   end
 
-  it "should expand only included files" do
+  it 'should expand only included files' do
     with_zip do
       only = File.basename(@files.first)
       unzip(@target=>@zip).include(only).target.invoke
-      FileList[File.join(@target, "*")].should include(File.expand_path(only, @target))
-      FileList[File.join(@target, "*")].size.should be(1)
+      FileList[File.join(@target, '*')].should include(File.expand_path(only, @target))
+      FileList[File.join(@target, '*')].size.should be(1)
     end
   end
 
-  it "should expand all but excluded files" do
+  it 'should expand all but excluded files' do
     with_zip do
       except = File.basename(@files.first)
       unzip(@target=>@zip).exclude(except).target.invoke
-      FileList[File.join(@target, "*")].should_not include(File.expand_path(except, @target))
-      FileList[File.join(@target, "*")].size.should be(@files.size - 1)
+      FileList[File.join(@target, '*')].should_not include(File.expand_path(except, @target))
+      FileList[File.join(@target, '*')].size.should be(@files.size - 1)
     end
   end
 
-  it "should include with nested path patterns" do
-    with_zip @files, :path=>"test/path" do
+  it 'should include with nested path patterns' do
+    with_zip @files, :path=>'test/path' do
       only = File.basename(@files.first)
       unzip(@target=>@zip).include(only).target.invoke
-      FileList[File.join(@target, "*")].should be_empty
+      FileList[File.join(@target, '*')].should be_empty
 
       Rake::Task.clear ; rm_rf @target
-      unzip(@target=>@zip).include("test/path/" + only).target.invoke
-      FileList[File.join(@target, "test/path/*")].size.should be(1)
+      unzip(@target=>@zip).include('test/path/' + only).target.invoke
+      FileList[File.join(@target, 'test/path/*')].size.should be(1)
 
       Rake::Task.clear ; rm_rf @target
-      unzip(@target=>@zip).include("test/**/*").target.invoke
-      FileList[File.join(@target, "test/path/*")].size.should be(2)
+      unzip(@target=>@zip).include('test/**/*').target.invoke
+      FileList[File.join(@target, 'test/path/*')].size.should be(2)
     end
   end
 
-  it "should include with relative path" do
-    with_zip @files, :path=>"test/path" do
+  it 'should include with relative path' do
+    with_zip @files, :path=>'test/path' do
       only = File.basename(@files.first)
-      unzip(@target=>@zip).tap { |unzip| unzip.from_path("test").include(only) }.target.invoke
-      FileList[File.join(@target, "*")].should be_empty
+      unzip(@target=>@zip).tap { |unzip| unzip.from_path('test').include(only) }.target.invoke
+      FileList[File.join(@target, '*')].should be_empty
 
       Rake::Task.clear ; rm_rf @target
-      unzip(@target=>@zip).tap { |unzip| unzip.from_path("test").include("test/*") }.target.invoke
-      FileList[File.join(@target, "path/*")].should be_empty
+      unzip(@target=>@zip).tap { |unzip| unzip.from_path('test').include('test/*') }.target.invoke
+      FileList[File.join(@target, 'path/*')].should be_empty
 
       Rake::Task.clear ; rm_rf @target
-      unzip(@target=>@zip).tap { |unzip| unzip.from_path("test").include("path/*" + only) }.target.invoke
-      FileList[File.join(@target, "path/*")].size.should be(1)
+      unzip(@target=>@zip).tap { |unzip| unzip.from_path('test').include('path/*' + only) }.target.invoke
+      FileList[File.join(@target, 'path/*')].size.should be(1)
 
       Rake::Task.clear ; rm_rf @target
-      unzip(@target=>@zip).tap { |unzip| unzip.from_path("test").include("path/*") }.target.invoke
-      FileList[File.join(@target, "path/*")].size.should be(2)
+      unzip(@target=>@zip).tap { |unzip| unzip.from_path('test').include('path/*') }.target.invoke
+      FileList[File.join(@target, 'path/*')].size.should be(2)
     end
   end
 
-  it "should exclude with relative path" do
-    with_zip @files, :path=>"test" do
+  it 'should exclude with relative path' do
+    with_zip @files, :path=>'test' do
       except = File.basename(@files.first)
-      unzip(@target=>@zip).tap { |unzip| unzip.from_path("test").exclude(except) }.target.invoke
-      FileList[File.join(@target, "*")].should include(File.join(@target, File.basename(@files[1])))
-      FileList[File.join(@target, "*")].size.should be(@files.size - 1)
+      unzip(@target=>@zip).tap { |unzip| unzip.from_path('test').exclude(except) }.target.invoke
+      FileList[File.join(@target, '*')].should include(File.join(@target, File.basename(@files[1])))
+      FileList[File.join(@target, '*')].size.should be(@files.size - 1)
     end
   end
 
-  it "should return itself from root method" do
+  it 'should return itself from root method' do
     task = unzip(@target=>@zip)
     task.root.should be(task)
-    task.from_path("foo").root.should be(task)
+    task.from_path('foo').root.should be(task)
   end
 
-  it "should return target task from target method" do
+  it 'should return target task from target method' do
     task = unzip(@target=>@zip)
     task.target.should be(file(@target))
-    task.from_path("foo").target.should be(file(@target))
+    task.from_path('foo').target.should be(file(@target))
   end
 
-  it "should alias from_path as path" do
+  it 'should alias from_path as path' do
     task = unzip(@target=>@zip)
-    task.from_path("foo").should be(task.path("foo"))
+    task.from_path('foo').should be(task.path('foo'))
   end
 end

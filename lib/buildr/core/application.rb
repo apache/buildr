@@ -70,10 +70,6 @@ module Buildr
       @user = load_from('settings', @application.home_dir)
       @build = load_from('build')
       @profiles = load_from('profiles')
-     # .inject({}) { |hash, (name, value)|
-     #     value ||= {}
-     #     raise 'Each profile must be empty or contain name/value pairs.' unless Hash === value
-     #     hash.update(name=>value) }
     end
 
     # User settings loaded from setting.yaml file in user's home directory.
@@ -122,12 +118,12 @@ module Buildr
       @name = 'Buildr'
       @requires = []
       @top_level_tasks = []
-      @home_dir = File.expand_path('.buildr', ENV['HOME'])
-      @environment = ENV['BUILDR_ENV']
       parse_options
       collect_tasks
       top_level_tasks.unshift 'buildr:initialize'
+      @home_dir = File.expand_path('.buildr', ENV['HOME'])
       mkpath @home_dir unless File.exist?(@home_dir)
+      @environment = ENV['BUILDR_ENV'] ||= 'development'
     end
 
     # Returns list of Gems associated with this buildfile, as listed in build.yaml.
@@ -309,12 +305,18 @@ module Buildr
       Rake.application
     end
 
-    def application=(app)
+    def application=(app) #:nodoc:
       Rake.application = app
     end
 
+    # Returns the Settings associated with this build.
     def settings
       Buildr.application.settings
+    end
+
+    # Copied from BUILD_ENV.
+    def environment
+      Buildr.application.environment
     end
 
   end
