@@ -3,7 +3,7 @@ h1.  What's New
 h2.  Buildr 1.3
 
 
-h4.  Multiple Languages
+h3.  Multiple Languages
 
 The main focus of this release is supporting multiple languages for compiling
 and testing.
@@ -42,21 +42,21 @@ I've tried to keep the compiler API as simple as possible, making it easy to
 add new compilers; however, I had to change the test framework API to
 accommodate the new features, so old test frameworks will not work on 1.3.
 
-h4.  Scala Support
+h3.  Scala Support
 
 Buildr now supports Scala, using both native and fast Scala compiler.
 
 Read more about "using Scala":building.html#compiling_scala.
 
 
-h4.  Groovy Support
+h3.  Groovy Support
 
 Buildr now supports Groovy, using the Groovyc Ant task.
 
 Read more about "using Groovy":building.html#compiling_groovy.
 
 
-h4.  Packaging Files
+h3.  Packaging Files
 
 The @package@ method is convenient enough that you can now use it to generate
 artifacts, an in addition to generate regular file tasks, specifying the file
@@ -74,7 +74,7 @@ Read more about "the package
 method":packaging.html#specifying_and_referencing_packages.
 
 
-h4.  Packaging EARs
+h3.  Packaging EARs
 
 EAR packages support four component types:
 
@@ -107,7 +107,7 @@ identifier, for example, "cool-web-1.0.war" will have the context root
 "Read more ...":packaging.html#packaging_ears
 
 
-h4.  JRuby Support
+h3.  JRuby Support
 
 We now offer two versions of Buildr, one for Ruby and one for JRuby.  They're
 exactly the same, except the Ruby version will also install RJB (Ruby Java
@@ -121,7 +121,8 @@ faster task execution and avoid frequent JVM startup overhead.
 
 "Read more ...":more_stuff.html#nailgun
 
-h4. Behaviour-Driven Development
+
+h3. Behaviour-Driven Development
 
 Given that many languages are now supported by Buildr, the same is true for
 testing, the convention is to store BDD files under the @src/spec/{lang}@ 
@@ -136,7 +137,8 @@ for your projects. Buildr follows each framework's naming convention.
 
 "Read more ...":testing.html#bdd
 
-h4.  Profiles
+
+h3.  Profiles
 
 Different environments may require different configurations, some you will want
 to control with code, others you will want to specify in the profiles file.
@@ -164,12 +166,77 @@ production:
   jdbc: oracle:thin:@bigstrong:1521:mighty
 }}}
 
-You can also use profiles to specify default filters for the "@resources@ task":building.html#resources.
+You can also use profiles to specify default filters for the "@resources@
+task":building.html#resources.
 
 "Read more ...":settings_profiles.html#profiles
 
 
-h4.  New API for accessing Java libraries
+h3.  Settings and build YAML files
+
+In addition to profiles, we also allow you to specify personal and build
+settings using two YAML files.
+
+Personal settings are placed in the @.buildr/settings.yaml@ file under your
+home directory. Settings stored there will be applied the same across all
+builds.
+
+For example:
+
+{{{!yaml
+# The repositories hash is read automatically by buildr.
+repositories:
+
+  # customize user local maven2 repository location
+  local: some/path/to/my_repo
+
+  relase_to:
+    url: http://intra.net/maven2
+    username: john
+    password: secret
+
+# You can place settings of your own, and reference them 
+# on buildfiles. 
+im:
+  server: jabber.company.com
+  usr: notifier@company-jabber.com
+  pwd: secret
+}}}
+
+"Read more ...":settings_profiles.html#personal_settings
+
+Build settings are placed in the @build.yaml@ file located in the same
+directory that the @buildfile@. Normally this file would be managed by the
+project revision control system, so settings here are shared between
+developers.
+
+For example:
+
+{{{!yaml
+# This project requires the following ruby gems, buildr addons
+gems: 
+  # Suppose we want to notify developers when testcases fail.
+  - buildr-twitter-notifier-addon >=1
+  # we test with ruby mock objects
+  - mocha
+  - ci_reporter
+
+# The artifact declarations will be automatically loaded by buildr, so that
+# you can reference artifacts by name (a ruby-symbol) on your buildfile.
+artifacts:
+  spring: org.springframework:spring:jar:2.0
+  log4j: log4j:log4j:jar:1.0
+  j2ee: geronimo-spec:geronimo-spec:j2ee:jar:1.4-rc4
+
+# Of course project settings can be defined here
+jira: 
+  uri: https://jira.corp.org
+}}}
+
+"Read more ...":settings_profiles.html#build_settings
+
+
+h3.  New API for accessing Java libraries
 
 Java classes are accessed as static methods on the @Java@ module, for example:
 
@@ -201,7 +268,7 @@ classpath.
 "Read more ...":more_stuff.html#using_java_libraries
 
 
-h4.  Creating Extensions
+h3.  Creating Extensions
 
 A module defines instance methods that are then mixed into the project and
 become instance methods of the project.  There are two general ways for
@@ -230,7 +297,7 @@ definition.  You can do that by adding callbacks to the process.
 "Read more ...":extending.html#creating_extensions
 
 
-h4.  Using Alternative Layouts
+h3.  Using Alternative Layouts
 
 Buildr follows a common convention for project layouts: Java source files
 appear in @src/main/java@ and compile to @target/classes@, resources are
@@ -245,7 +312,7 @@ between names used by Buildr and actual paths within the project.
 "Read more ...":extending.html#using_alternative_layouts
 
 
-h4.  Other
+h3.  Other
 
 * Buildr 1.3 upgrades to Rake 0.8, RSpec 1.1, RJB 1.1 and OpenJPA
 1.0.1.  Buildr no longer includes or uses Facets.
@@ -260,7 +327,7 @@ filtered by annotation.  Test cases no longer have to use a specific file name.
 to the compile task.
 
 
-h4.  Documentation
+h3.  Documentation
 
 * The "What's new?":whats_new.html page (this one, actually), summarizes all
 the important new features and changes in each release.

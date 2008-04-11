@@ -92,7 +92,7 @@ The prefered way to store personal settings is to create a @.buildr/settings.yam
 file under your home directory. Settings stored there will be applied the same
 across all builds.
 
-Here's an example settings.yaml:
+Here's an example @settings.yaml@:
 
 {{{!yaml
 # The repositories hash is read automatically by buildr.
@@ -130,16 +130,17 @@ task 'relase-notification' do
 end
 }}}
 
+
 h2. Build Settings
 
-Build settings are local to the project being built, and are placed in the 
-@build.yaml@ file located in the same directory that the @buildfile@. Normally 
+Build settings are local to the project being built, and are placed in the
+@build.yaml@ file located in the same directory that the @buildfile@. Normally
 this file would be managed by the project revision control system, so settings
 here are shared between developers.
 
 They help keep the buildfile and build.yaml file simple and readable, working
-to the advantages of each one.
-Example for build settings are gems, repositories and artifacts used by that build.
+to the advantages of each one.  Example for build settings are gems,
+repositories and artifacts used by that build.
 
 {{{!yaml
 # This project requires the following ruby gems, buildr addons
