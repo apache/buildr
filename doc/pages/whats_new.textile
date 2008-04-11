@@ -236,6 +236,39 @@ jira:
 "Read more ...":settings_profiles.html#build_settings
 
 
+h3.  Using Gems for extensions and 3rd party libraries
+
+"RubyGems":http://rubygems.rubyforge.org provides the @gem@ command line tool
+that you can use to search, install, upgrade, package and distribute gems. It
+installs all gems into a local repository that is shared across your builds and
+all other Ruby applications you may have running.  You can install a gem from a
+local file, or download and install it from any number of remote repositories.
+
+If your build depends on other gems, you will want to specify these
+dependencies as part of your build and check that configuration into source
+control.  That way you can have a specific environment that will guarantee
+repeatable builds, whether you're building a particular version, moving between
+branches, or joining an existing project.  Buildr will take care of installing
+all the necessary dependencies, which you can then manage with the @gem@
+command.
+
+Use the @build.yaml@ file to specify these dependencies (see "Build
+Settings":settings_profiles.html#build_settings for more information), for
+example:
+
+{{{!yaml
+# This project requires the following gems
+gems: 
+  # Suppose we want to notify developers when testcases fail.
+  - buildr-twitter-notifier-addon >=1
+  # we test with ruby mock objects
+  - mocha
+  - ci_reporter
+}}}
+
+"Read more ...":more_stuff.html#using_gems
+
+
 h3.  New API for accessing Java libraries
 
 Java classes are accessed as static methods on the @Java@ module, for example:

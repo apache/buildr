@@ -1,6 +1,99 @@
 h1. More Stuff
 
 
+h2.  Using Gems
+
+The purpose of the buildfile is to define your projects, and the various tasks
+and functions used for building them.  Some of these are specific to your
+projects, others are more general in nature, and you may want to share them
+across projects.
+
+There are several mechanisms for developing extensions and build features
+across projects which we cover in more details in the section "Extending
+Buildr":extending.html.  Here we will talk about using extensions that are
+distributed in the form of RubyGems.
+
+"RubyGems":http://rubygems.rubyforge.org provides the @gem@ command line tool
+that you can use to search, install, upgrade, package and distribute gems. It
+installs all gems into a local repository that is shared across your builds and
+all other Ruby applications you may have running.  You can install a gem from a
+local file, or download and install it from any number of remote repositories.
+
+RubyGems is preconfigured to use the "RubyForge":http://rubyforge.org
+repository.  You'll find a large number of open source Ruby libraries there,
+including Buildr itself and all its dependencies.  RubyForge provides a free
+account that you can use to host your projects and distribute your gems (you
+can use RubyForge strictly for distribution, as we do with Buildr).
+
+You can also set up your own private repository and use it instead or in
+addition to RubyForge.  Use the @gem sources@ command to add repositories, and
+the @gem server@ command to run a remote repository.  You can see all available
+options by running @gem help@.
+
+If your build depends on other gems, you will want to specify these
+dependencies as part of your build and check that configuration into source
+control.  That way you can have a specific environment that will guarantee
+repeatable builds, whether you're building a particular version, moving between
+branches, or joining an existing project.  Buildr will take care of installing
+all the necessary dependencies, which you can then manage with the @gem@
+command.
+
+Use the @build.yaml@ file to specify these dependencies (see "Build
+Settings":settings_profiles.html#build_settings for more information), for
+example:
+
+{{{!yaml
+# This project requires the following gems
+gems: 
+  # Suppose we want to notify developers when testcases fail.
+  - buildr-twitter-notifier-addon >=1
+  # we test with ruby mock objects
+  - mocha
+  - ci_reporter
+}}}
+
+Gems contain executable code, and for that reason Buildr will not install gems
+without your permission.  When you run a build that includes any dependencies
+that are not already installed on your machine, Buildr will ask for permission
+before installing them.  On Unix-based operating systems, you will also need
+sudo privileges and will be asked for your password before proceeding.
+
+Since this step requires your input, it will only happen when running Buildr
+interactively from the command line.  In all other cases, Buildr will fail and
+report the missing dependencies.  If you have an automated build environment,
+make sure to run the build once manually to install all the necessary
+dependencies.
+
+When installing a gem for the first time, Buildr will automatically look for
+the latest available version.  You can specify a particular version number, or
+a set of version numbers known to work with that build.  You can use equality
+operations to specify a range of versions, for example, @1.2.3@ to install only
+version 1.2.3, and @=> 1.2.3@ to install version 1.2.3 or later.
+
+You can also specify a range up to one version bump, for example, @~> 1.2.3@ is
+the same as @>= 1.2.3 < 1.3.0@, and @~> 1.2@ is the same as @>= 1.2.0 < 2.0.0@.
+If necessary, you can exclude a particular version number, for example, @~>
+1.2.3 != 1.2.7@.
+
+Buildr will install the latest version that matches the version requirement.
+To keep up with newer versions, execute the @gem update@ command periodically.
+You can also use @gem outdated@ to determine which new versions are available.
+
+Most gems include documentation that you can access in several forms.  You can
+use the @ri@ command line tool to find out more about a class, module or
+specific method.  For example:
+
+{{{!sh
+$ ri Buildr::Jetty
+$ ri Buildr::Jetty.start
+}}}
+
+You can also access documentation from a Web browser by running @gem server@
+and pointing your browser to "http://localhost:8808":http://localhost:8808.
+Note that after installing a new gem, you will need to restart the gem server
+to see its documentation.
+
+
 h2.  Using Java Libraries
 
 Buildr runs along side a JVM, using either RJB or JRuby.  The Java module
