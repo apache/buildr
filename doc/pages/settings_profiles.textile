@@ -78,7 +78,7 @@ repositories.upload_to[:password] = ENV['PASSWORD']
 }}}
 
 
-h2. Personal/Project Settings
+h2. Personal Settings
 
 Some things clearly do not belong in the Buildfile.  For example, the username
 and password you use to upload releases.  If you're working in a team or on an
@@ -87,6 +87,116 @@ open source project, you'd want to keep these in a separate place.
 You may want to use personal settings for picking up a different location for
 the local repository, or use a different set of preferred remote repositories,
 and so forth.
+
+The prefered way to store personal settings is to create a @.buildr/settings.yaml@
+file under your home directory. Settings stored there will be applied the same
+across all builds.
+
+Here's an example settings.yaml:
+
+{{{!yaml
+# The repositories hash is read automatically by buildr.
+repositories:
+
+  # customize user local maven2 repository location
+  local: some/path/to/my_repo
+
+  # prefer the local or nearest mirrors
+  remote: 
+   - https://intra.net/maven2
+   - http://example.com
+
+  relase_to:
+    url: http://intra.net/maven2
+    username: john
+    password: secret
+
+# You can place settings of your own, and reference them 
+# on buildfiles. 
+im:
+  server: jabber.company.com
+  usr: notifier@company-jabber.com
+  pwd: secret
+}}}
+
+Later your buildfile or addons can reference user preferences using the 
+hash returned by the @Buildr.settings.user@ accessor.
+
+{{{!ruby
+task 'relase-notification' do
+ usr, pwd, server = settings.user['im'].values_at('usr', 'pwd', 'server')
+ jabber = JabberAPI.new(server, usr, pwd)
+ jabber.msg("We are pleased to announce the last stable version #{VERSION}")
+end
+}}}
+
+h2. Build Settings
+
+Build settings are local to the project being built, and are placed in the 
+@build.yaml@ file located in the same directory that the @buildfile@. Normally 
+this file would be managed by the project revision control system, so settings
+here are shared between developers.
+
+They help keep the buildfile and build.yaml file simple and readable, working
+to the advantages of each one.
+Example for build settings are gems, repositories and artifacts used by that build.
+
+{{{!yaml
+# This project requires the following ruby gems, buildr addons
+gems: 
+  # Suppose we want to notify developers when testcases fail.
+  - buildr-twitter-notifier-addon >=1
+  # we test with ruby mock objects
+  - mocha
+  - ci_reporter
+
+# The artifact declarations will be automatically loaded by buildr, so that
+# you can reference artifacts by name (a ruby-symbol) on your buildfile.
+artifacts:
+  spring: org.springframework:spring:jar:2.0
+  log4j: log4j:log4j:jar:1.0
+  j2ee: geronimo-spec:geronimo-spec:j2ee:jar:1.4-rc4
+
+# Of course project settings can be defined here
+twitter:
+  notify:
+    test_failure: unless-modified
+    compile_failure: never
+  developers: 
+    - joe
+    - jane
+
+jira: 
+  uri: https://jira.corp.org
+}}}
+
+When buildr is loaded, required ruby gems will be installed if needed, thus adding
+features like the imaginary twitter notifier addon.
+
+Artifacts defined on @build.yaml@ can be referenced on your buildfile by supplying
+the ruby symbol to the @Buildr.artifact@ and @Buildr.artifacts@ methods. 
+The @compile.with@, @test.with@ methods can also be given these names.
+
+{{{!ruby
+define 'my_project' do 
+  compile.with artifacts(:log4j, :j2ee)
+  test.with :spring, :j2ee
+end
+}}}
+
+Build settings can be retreived using the @Buildr.settings.build@ accessor.
+
+{{{!ruby
+ tash 'create_patch' do 
+   patch = Git.create_patch :interactive => true
+   if patch && agree("Would you like to request inclusion of #{patch}")
+     jira = Jira.new( Buildr.settings.build['jira']['uri'] )  # submit a patch
+     jira.create(:improvement, patch.summary, :attachment => patch.blob)
+   end
+ end
+}}}
+
+h2. Non constant settings
 
 Before loading the Buildfile, Buildr will attempt to load two other files: the
 @buildr.rb@ file it finds in your home directory, followed by the @buildr.rb@
