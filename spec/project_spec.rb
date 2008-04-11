@@ -85,7 +85,6 @@ describe Project do
   end
 end
 
-
 describe Project, ' property' do
   it 'should be set if passed as argument' do
     define 'foo', 'version'=>'1.1'
@@ -704,6 +703,23 @@ describe Project, '#task' do
       file 'bar'=>'baz'
     end
     lambda { project('foo').file('bar').invoke }.should run_tasks(['foo:baz', project('foo').path_to('bar')])
+  end
+end
+
+describe Buildr::Generate do 
+  it 'should be able to create buildfile from directory structure' do
+    write 'src/main/java/Foo.java', ''
+    write 'one/two/src/main/java/Foo.java', ''
+    write 'one/three/src/main/java/Foo.java', ''
+    write 'four/src/main/java/Foo.java', ''
+    script = Buildr::Generate.from_directory(Dir.pwd)
+    puts script
+    instance_eval(script.join("\n"), "generated buildfile")
+    # projects should have been defined
+    root = Dir.pwd.pathmap('%n')
+    names = [root, "#{root}:one:two", "#{root}:one:three", "#{root}:four"]
+    # the top level project has the directory name.
+    names.each { |name| lambda { project(name) }.should_not raise_error }
   end
 end
 
