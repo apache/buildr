@@ -155,7 +155,7 @@ gems:
 artifacts:
   spring: org.springframework:spring:jar:2.0
   log4j: log4j:log4j:jar:1.0
-  j2ee: geronimo-spec:geronimo-spec:j2ee:jar:1.4-rc4
+  j2ee: geronimo-spec:geronimo-spec-j2ee:jar:1.4-rc4
 
 # Of course project settings can be defined here
 twitter:
@@ -187,7 +187,7 @@ end
 Build settings can be retreived using the @Buildr.settings.build@ accessor.
 
 {{{!ruby
- tash 'create_patch' do 
+ task 'create_patch' do 
    patch = Git.create_patch :interactive => true
    if patch && agree("Would you like to request inclusion of #{patch}")
      jira = Jira.new( Buildr.settings.build['jira']['uri'] )  # submit a patch
