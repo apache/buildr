@@ -29,8 +29,9 @@ describe Project do
 
   it 'should fail to be defined if its name is already used for a task' do
     lambda { define('test') }.should raise_error(RuntimeError, /Invalid project name/i)
-    lambda { define('valid') { define('build') } }.should raise_error(RuntimeError, /Invalid project name/i)
-    lambda { define('valid') { define('valid:compile') } }.should raise_error(RuntimeError, /Invalid project name/i)
+    define 'valid' do
+      lambda { define('build') }.should raise_error(RuntimeError, /Invalid project name/i)
+    end
   end
 
   it 'should exist once defined' do

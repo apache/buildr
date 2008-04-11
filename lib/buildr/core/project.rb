@@ -198,12 +198,12 @@ module Buildr
         Buildr.application.current_scope == name.split(':')[0...-1] or
           raise "You can only define a sub project (#{name}) within the definition of its parent project"
 
+        @projects ||= {}
+        raise "You cannot define the same project (#{name}) more than once" if @projects[name]
         # Projects with names like: compile, test, build are invalid, so we have
         # to make sure the project has not the name of an already defined task
         raise "Invalid project name: #{name.inspect} is already used for a task" if Buildr.application.lookup(name)
 
-        @projects ||= {}
-        raise "You cannot define the same project (#{name}) more than once" if @projects[name]
         Project.define_task(name).tap do |project|
           # Define the project to prevent duplicate definition.
           @projects[name] = project
