@@ -71,6 +71,19 @@ describe 'ArchiveTask', :shared=>true do
     inspect_archive.size.should eql(@files.size)
   end
 
+  it 'should archive file tasks' do
+    tasks = @files.map { |fn| file(fn) }
+    archive(@archive).include(tasks).invoke
+    inspect_archive { |archive| @files.each { |f| archive[File.basename(f)].should eql(content_for(f)) } }
+    inspect_archive.size.should eql(@files.size)
+  end
+
+  it 'should invoke and archive file tasks' do
+    file = file('included') { write 'included' }
+    lambda { archive(@archive).include(file).invoke }.should change { File.exist?(file.to_s) }.to(true)
+    inspect_archive.should include('included')
+  end
+
   it 'should include entry for directory' do
     archive(@archive).include(@dir).invoke
     inspect_archive { |archive| @files.each { |f| archive['test/' + File.basename(f)].should eql(content_for(f)) } }
