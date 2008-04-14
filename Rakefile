@@ -60,6 +60,7 @@ end
 
 $license_excluded = ['lib/core/progressbar.rb', 'spec/spec.opts', 'doc/css/syntax.css', '.textile', '.haml']
 
+
 namespace 'release' do
 
   task 'make' do
