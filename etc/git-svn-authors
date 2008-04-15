@@ -1,0 +1,15 @@
+# This file is used by git-svn
+#
+# Format is
+#   <apache svn login> = John Doe <john.doe@hacker.mail>
+#
+# If you are a committer and want to use git-svn to hack on
+# buildr, please add yourself here and commit this file via svn.
+# Then run the buildr-git.rb script to obtain and configure
+# a local buildr-git copy.
+#
+
+assaf    = Assaf Arkin <assaf@apache.org>
+boisvert = Alex Boisvert <alex.boisvert@gmail.com>
+mriou    = Matthieu Riou <mriou@apache.org>
+vborja   = Victor Hugo Borja <vic.borja@gmail.com>
