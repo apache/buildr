@@ -206,11 +206,11 @@ def optparse(options = OpenStruct.new, argv = ARGV)
     opt.separator ""
     opt.separator "OPTIONS:"
 
-    opt.on('-a', "--anonymous", "Use git://github.com/vic/buildr.git as origin") do 
+    opt.on('-a', "--anon", "Use git://github.com/vic/buildr.git as origin") do 
       options.origin = "git://github.com/vic/buildr.git"
     end
-    opt.on('-A', "--authenticated", "Use git@github.com:vic/buildr.git as origin") do
-      options.origin = "git@github.com/vic/buildr.git"
+    opt.on('-A', "--auth", "Use git@github.com:vic/buildr.git as origin") do
+      options.origin = "git@github.com:vic/buildr.git"
     end
     opt.on("-o", "--origin GIT_URL", "Clone from GIT_URL origin") do |value|
       options.origin = value
