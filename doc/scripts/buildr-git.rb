@@ -9,7 +9,6 @@ require 'yaml'
 require 'optparse'
 require 'ostruct'
 
-
 # Pager from http://nex-3.com/posts/73-git-style-automatic-paging-in-ruby
 def run_pager
   return if PLATFORM =~ /win32/
@@ -37,7 +36,24 @@ def run_pager
   exec pager rescue exec "/bin/sh", "-c", pager
 end
 
-notice = <<NOTICE
+def header
+  <<HEADER
+
+Buildr official commit channel is Apache's svn repository, however some
+developers may prefer to use git while working on several features and
+merging other's changes.
+
+This script will configure a buildr-git copy on so you can commit to svn.
+
+Enter <-h> to see options, <-H> to see notes about configured aliases
+and recommended workflow, or any other option.
+
+Ctrl+D or an invalid option to abort
+HEADER
+end
+
+def notice
+  <<NOTICE
 ALIASES:
 
   Some git aliases have been created for developer convenience:
@@ -170,165 +186,199 @@ RESOURCES:
    http://groups.google.com/group/git-users/web/git-references
 
 NOTICE
+end # notice method
 
-options = OpenStruct.new
-opt = OptionParser.new do |opt|
-  
-  if `git status 2>/dev/null`.chomp.empty?
-    options.local = File.expand_path('buildr', Dir.pwd)
-  else
-    puts "Current directory is a git repo: #{Dir.pwd}"
-    options.local = Dir.pwd 
-  end
+def optparse(options = OpenStruct.new, argv = ARGV)
+  opt = OptionParser.new do |opt|
+    
+    if `git status 2>/dev/null`.chomp.empty?
+      options.local = File.expand_path('buildr', Dir.pwd)
+    else
+      puts "Current directory is a git repo: #{Dir.pwd}"
+      options.local = Dir.pwd 
+    end
 
-  options.svn_branch = "apache/trunk"
-  options.origin = "git://github.com/vic/buildr.git"
-  options.member = false
-
-  opt.banner = "Usage: buildr-git.rb [options]"
-  opt.separator ""
-  opt.separator "OPTIONS:"
-
-  opt.on('-a', "--anonymous", "Use git://github.com/vic/buildr.git as origin") do 
+    options.svn_branch = "apache/trunk"
     options.origin = "git://github.com/vic/buildr.git"
     options.member = false
+
+    opt.banner = "Usage: buildr-git.rb [options]"
+    opt.separator ""
+    opt.separator "OPTIONS:"
+
+    opt.on('-a', "--anonymous", "Use git://github.com/vic/buildr.git as origin") do 
+      options.origin = "git://github.com/vic/buildr.git"
+    end
+    opt.on('-A', "--authenticated", "Use git@github.com:vic/buildr.git as origin") do
+      options.origin = "git@github.com/vic/buildr.git"
+    end
+    opt.on("-o", "--origin GIT_URL", "Clone from GIT_URL origin") do |value|
+      options.origin = value
+    end
+    opt.on('-l', "--local DIRECTORY", "Create local git clone on DIRECTORY") do |value|
+      options.local = value
+    end
+    opt.on('-b', "--branch GIT_SVN_BRANCH", 
+           "Set the name for svn branch instead of apache/trunk") do |value|
+      options.svn_branch = value
+    end
+    opt.on('-e', "--email EMAIL", 
+           "Configure git to use EMAIL for commits") do |value|
+      options.email = value
+    end
+    opt.on('-n', "--name USER_NAME", 
+           "Configure your USER_NAME for git commits") do |value|
+      options.user_name = value
+    end
+    opt.on('-h', "--help", "Show buildr-git help") do 
+      puts opt
+      throw :exit
+    end
+    opt.on('-H', "--notice", "Show notice about aliases and git workflow") do
+      run_pager
+      puts notice
+      throw :exit
+    end
   end
-  opt.on('-A', "--authenticated", "Use git@github.com:vic/buildr.git as origin") do
-    options.origin = "git@github.com/vic/buildr.git"
-    options.member = true
-  end
-  opt.on("-o", "--origin GIT_URL", "Clone from GIT_URL origin") do |value|
-    options.origin = value
-  end
-  opt.on('-l', "--local DIRECTORY", "Create local git clone on DIRECTORY") do |value|
-    options.local = value
-  end
-  opt.on('-b', "--branch GIT_SVN_BRANCH", 
-         "Set the name for svn branch instead of apache/trunk") do |value|
-    options.svn_branch = value
-  end
-  opt.on('-e', "--email EMAIL", 
-         "Configure git to use EMAIL for commits") do |value|
-    options.email = value
-  end
-  opt.on('-h', "--help", "Show buildr-git help") do 
-    puts opt
-    exit(0)
-  end
-  opt.on('-n', "--notice", "Show notice about aliases and git workflow") do
+  opt.parse!(argv)
+  options
+end # optparse method
+
+
+def main
+  catch :exit do
+    options = optparse
+    puts header
+    puts 
+    print '> '
+    if input = gets
+      options = optparse(options, input.split)
+    end
+    if input.nil? || (input != "\n" && input.empty?)
+      puts "Aborting."
+      return
+    end
+    perform(options)
+  end  
+end
+
+def perform(options)
+  origin = options.origin
+  member = origin =~ /@/
+  local = options.local
+  svn_branch = options.svn_branch
+  user_email = options.email
+  user_name = options.user_name
+  
+  `git clone #{origin} #{local} 1>&2` unless File.directory?(File.join('.git', origin))
+  
+  puts
+  puts "Entering #{local} directory"
+  puts
+  Dir.chdir(local) do
+    
+    # Load the list of git-svn committers
+    svn_authors_file = File.expand_path('etc/git-svn-authors', Dir.pwd)
+    svn_authors = File.read(svn_authors_file)
+    svn_authors.gsub!(/\s+=\s+/, ': ')
+    svn_authors = YAML.load(svn_authors)
+
+    # set the git-svn-authors file
+    `git config svn.authorsfile "#{svn_authors_file}"`
+
+    # Check that git is configured for the developer
+    user_email ||= `git config --get user.email`.chomp
+    if user_email.empty?
+      if member
+        puts "Enter your email as listed on #{svn_authors_file}"
+        print "> "
+        user_email = gets.chomp
+      else
+        puts "Provide an email address for git usage:"
+        user_email = gets.chomp
+      end
+    end
+
+    # Check user is listed
+    unless user_email.empty?
+      svn_user, git_contact = *svn_authors.find { |entry| /#{user_email}/ === entry.join(' ') }
+    end
+
+    if member 
+      if git_contact.nil? # if using the authenticated git, he must be listed
+        puts <<-NOTICE
+          You need to be a buildr commmitter listed on #{svn_authors_file}. 
+          Perhaps you need to add yourself to it, commit it using SVN, and 
+          and run this script again.
+          Also checks your git global values for user.email and user.name
+        NOTICE
+        return
+      elsif /\s*(.*?)\s+\<(.+)\>\s*/ === git_contact
+        user_name, user_email = $1, $2
+      else
+        puts "Invalid contact string for #{svn_user}: #{git_contact.inspect}"
+        return
+      end
+    elsif user_email =~ /^\s*$/
+      puts "User email shall not include spaces: #{user_email.inspect}"
+      return
+    end
+    
+    user_name ||= `git config --get user.name`.chomp
+    if git_contact.nil? && user_name.empty?
+      puts "Provide a developer name for git usage:"
+      user_name = gets.chomp
+    end
+    
+    # Start the pager
     run_pager
-    puts notice
-    exit(0)
-  end
-end
+    
+    # Configure user name and email for git sake (and github's gravatar)
+    puts
+    puts "You claim to be #{user_name.inspect} <#{user_email}> "
+    puts "with apache-svn user: #{svn_user}" if svn_user
+    puts
+    `git config user.name  "#{user_name}"`
+    `git config user.email "#{user_email}"`
+    
+    # Ok, now obtain the last svn commit from history
+    last_svn_log = `git log -n 10 | grep git-svn-id | head -n 1`
+    fail "No svn metadata on last 10 commits" unless last_svn_log =~ /git-svn-id/
+    svn_repo, svn_prev = last_svn_log.split[1].split("@")
+    
+    # Tell git where the svn repository is.
+    `git config svn-remote.#{svn_branch}.url #{svn_repo}`
+    `git config svn-remote.#{svn_branch}.fetch :refs/remotes/#{svn_branch}`
+    
+    # Create the svn branch, do this instead of pulling the full svn history
+    `git push --force . refs/remotes/origin/master:refs/remotes/#{svn_branch}`
+    
+    # Create apache aliases for developers git-workflow.
+    `git config alias.apache-fetch "!git-svn fetch #{svn_branch}"`
+    `git config alias.apache-merge "!git merge #{svn_branch}"`
+    `git config alias.apache-pull  "!git apache-fetch && git apache-merge"`
+    if svn_user
+      `git config alias.apache-push  "!git-svn dcommit --username #{svn_user}"`
+    else
+      `git config alias.apache-push  "!git-svn dcommit"`
+    end
+    
+    # Create github origin aliases
+    `git config alias.get "!git apache-fetch && git fetch origin"`
+    `git config alias.mrg "!git apache-merge && git merge origin"`
+    `git config alias.put "!git apache-push && git push origin"`
+    
+    # This is Victor's cronjob
+    `git config alias.synchronize "!git get && git mrg && git put"`
+    
+    # Final notices.
+    puts <<-NOTICE + notice
 
-opt.parse!(ARGV)
+    Your git repo #{local} has been configured, please review the 
+       #{File.join(local, '.git/config')} file.
 
-origin = options.origin
-local = options.local
-svn_branch = options.svn_branch
-email = options.email
+    NOTICE
+  end  
+end # perform method
 
-puts <<HEADER
-
-Buildr official commit channel is Apache's svn repository, however some
-developers may prefer to use git while working on several features and
-merging other's changes.
-
-This script will configure a buildr-git copy on so you can commit to svn.
-Local git copy: #{local}
-
-Enter <-h> to see options, <-n> to see notes about configured aliases
-and recommended workflow, or any other option.
-
-Ctrl+D or an invalid option to abort
-HEADER
-print '> '
-input = gets
-input = input.split if input
-opt.parse! input
-unless input && input.empty?
-  puts "Aborting."
-  exit(0)
-end
-
-`git clone #{origin} #{local} 1>&2` unless File.directory?(File.join('.git', origin))
-
-Dir.chdir(local) do
-  
-  # Load the list of git-svn committers
-  svn_authors_file = File.expand_path('etc/git-svn-authors', Dir.pwd)
-  svn_authors = File.read(svn_authors_file)
-  svn_authors.gsub!(/\s+=\s+/, ': ')
-  svn_authors = YAML.load(svn_authors)
-
-  # set the git-svn-authors file
-
-  `git config svn.authorsfile "#{svn_authors_file}"`
-
-  # Check that git is configured for the git developer
-  email ||= `git config --get user.email`.chomp
-  if email.empty?
-    puts "Enter your email as listed on #{svn_authors_file}"
-    print "> "
-    email = gets.chomp
-  end
-
-  # Check user lis listed
-  svn_user, git_contact = *svn_authors.find { |entry| /#{email}/i === entry.join(' ') }
-  fail "You need to be a buildr commmitter listed on #{svn_authors_file}"+
-    "\nPerhaps you need to set user.email, user.name on .git/config" unless git_contact
-  if /\s*(.*?)\s+\<(.+)\>\s*/ === git_contact
-    user_name, user_email = $1, $2
-  else
-    fail "Invalid contact string for #{svn_user}: #{git_contact.inspect}"
-  end
-  
-  # Start the pager
-  run_pager
-
-  # Configure user name and email for git sake (and github's gravatar)
-  puts
-  puts "You claim to be #{user_name} <#{user_email}> with apache-svn user"
-  puts "  #{svn_user}"
-  puts
-  `git config user.name  "#{user_name}"`
-  `git config user.email "#{user_email}"`
-
-  # Ok, now obtain the last svn commit from history
-  last_svn_log = `git log -n 10 | grep git-svn-id | head -n 1`
-  fail "No svn metadata on last 10 commits" unless last_svn_log =~ /git-svn-id/
-  svn_repo, svn_prev = last_svn_log.split[1].split("@")
-  
-  # Tell git where the svn repository is.
-  `git config svn-remote.#{svn_branch}.url #{svn_repo}`
-  `git config svn-remote.#{svn_branch}.fetch :refs/remotes/#{svn_branch}`
-  
-  # Create the svn branch, do this instead of pulling the full svn history
-  `git push --force . refs/remotes/origin/master:refs/remotes/#{svn_branch}`
-  
-  # Create apache aliases for developers git-workflow.
-  `git config alias.apache-fetch "!git-svn fetch #{svn_branch}"`
-  `git config alias.apache-merge "!git merge #{svn_branch}"`
-  `git config alias.apache-pull  "!git apache-fetch && git apache-merge"`
-  `git config alias.apache-push  "!git-svn dcommit --username #{svn_user}"`
-
-  # Create github origin aliases
-  `git config alias.get "!git apache-fetch && git fetch origin"`
-  `git config alias.mrg "!git apache-merge && git merge origin"`
-  `git config alias.put "!git apache-push && git push origin"`
-
-  # This is Victor's cronjob
-  `git config alias.synchronize "!git get && git mrg && git put"`
-
-  # Final notices.
-  notice = <<-NOTICE + notice
-
-  Your git repo #{local} has been configured, please review the 
-  #{File.join(local, '.git/config')} file.
-
-  NOTICE
-
-  puts notice
-  
-end
+main
