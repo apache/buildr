@@ -14,6 +14,9 @@
 # the License.
 
 
+require 'rake/gempackagetask'
+
+
 def spec(platform = nil)
   @specs ||= {}
   platform ||= RUBY_PLATFORM =~ /java/ ? 'java' : 'ruby'
@@ -52,14 +55,31 @@ def spec(platform = nil)
     spec.add_dependency 'archive-tar-minitar',  '~> 0.5'
     spec.add_dependency 'rubyforge',            '~> 0.4'
     unless platform =~ /java/
-      spec.add_dependency 'rjb',                  '~> 1.1', '!= 1.1.3'
+      #spec.add_dependency 'rjb',                  '~> 1.1', '!= 1.1.3'
+      spec.add_dependency 'rjb',                  '~> 1.1'
     end
   end
 end
 
 
-$license_excluded = ['lib/core/progressbar.rb', 'spec/spec.opts', 'doc/css/syntax.css', '.textile', '.haml']
+$license_excluded = ['spec/spec.opts', '.textile', '.haml']
 
+
+desc 'Compile Java libraries used by Buildr'
+task 'compile' do
+  puts 'Compiling Java libraries ...'
+  sh Config::CONFIG['ruby_install_name'], '-Ilib', '-Iaddon', 'bin/buildr', 'compile'
+  puts 'OK'
+end
+
+Rake::GemPackageTask.new(spec('ruby')) do |pkg|
+  pkg.need_tar = pkg.need_zip = true
+  file pkg.package_dir_path=>'compile'
+  file pkg.package_dir=>'compile'
+end
+Rake::GemPackageTask.new(spec('java')) do |pkg|
+  file pkg.package_dir_path=>'compile'
+end
 
 namespace 'release' do
 

@@ -84,7 +84,7 @@ begin
 rescue LoadError
   puts 'Please run rake setup to install the Docter document generation library'
   task 'setup' do
-    install_gem 'docter'
+    install_gem 'docter', '~>1.1.3'
   end
   task 'release:check' do
     fail 'Please run rake setup to install the Docter document generation library'
