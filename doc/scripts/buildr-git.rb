@@ -204,7 +204,7 @@ opt = OptionParser.new do |opt|
     options.local = value
   end
   opt.on('-b', "--branch GIT_SVN_BRANCH", 
-         "Set the name for the remote branch tracking apache/trunk changes") do |value|
+         "Set the name for svn branch instead of apache/trunk") do |value|
     options.svn_branch = value
   end
   opt.on('-e', "--email EMAIL", 
@@ -238,14 +238,16 @@ merging other's changes.
 This script will configure a buildr-git copy on so you can commit to svn.
 Local git copy: #{local}
 
-Press <RETURN> to continue, <-h> to see options, <-n> to see the
-comments on configured aliases and git workflow. 
-Ctrl+D or write anything else to abort
+Enter <-h> to see options, <-n> to see notes about configured aliases
+and recommended workflow, or any other option.
+
+Ctrl+D or an invalid option to abort
 HEADER
 print '> '
 input = gets
-opt.parse! [input.chomp] if input
-unless input && input.chomp.empty?
+input = input.split if input
+opt.parse! input
+unless input && input.empty?
   puts "Aborting."
   exit(0)
 end
