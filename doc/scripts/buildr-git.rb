@@ -332,9 +332,19 @@ def perform(options)
     
     # Start the pager
     run_pager
+    puts
+
+
+    old_origin = `git config --get remote.origin.url`.chomp
+    if member && old_origin !~ /@/
+      puts "Switching to authenticated origin #{origin}", ""
+      `git config remote.origin.url "#{origin}"`
+    elsif !member && old_origin =~ /@/
+      puts "Switching to anonymous origin #{origin}", ""
+      `git config remote.origin.url "#{origin}"`
+    end
     
     # Configure user name and email for git sake (and github's gravatar)
-    puts
     puts "You claim to be #{user_name.inspect} <#{user_email}> "
     puts "with apache-svn user: #{svn_user}" if svn_user
     puts
