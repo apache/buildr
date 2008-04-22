@@ -39,7 +39,8 @@ The default test framework for Java projects is JUnit 4.
 
 When you use JUnit, the dependencies includes JUnit, and Buildr picks up all
 test classes from the project by looking for classes that either subclass 
-@junit.framework.TestCase@ or include methods annotated with @org.junit.Test@.
+@junit.framework.TestCase@, include methods annotated with @org.junit.Test@,
+or test suites annotated with @org.org.junit.runner.RunWith@.
 
 The JUnit test framework supports the following options:
 

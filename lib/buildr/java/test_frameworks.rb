@@ -179,7 +179,7 @@ module Buildr
     def tests(dependencies) #:nodoc:
       filter_classes(dependencies, 
                      :interfaces => %w{junit.framework.TestCase},
-                     :class_annotations => %w{org.junit.Test},
+                     :class_annotations => %w{org.junit.runner.RunWith},
                      :method_annotations => %w{org.junit.Test})
     end
 

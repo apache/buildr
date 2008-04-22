@@ -77,6 +77,28 @@ describe Buildr::JUnit do
     project('foo').test.tests.should include('com.example.FirstTest')
   end
 
+  it 'should include public classes with RunWith annotation' do
+    write 'src/test/java/com/example/TestSuite.java', <<-JAVA
+      package com.example;
+      import org.junit.Test;
+      public class TestSuite {
+        @Test
+        public void annotated() { }
+      }
+    JAVA
+    write 'src/test/java/com/example/RunSuite.java', <<-JAVA
+      package com.example;
+      import org.junit.runner.RunWith;
+      import org.junit.runners.Suite;
+      @RunWith(Suite.class)
+      @Suite.SuiteClasses({TestSuite.class})
+      public class RunSuite {
+      }
+    JAVA
+    define('foo').test.invoke
+    project('foo').test.tests.should include('com.example.RunSuite')
+  end
+
   it 'should ignore classes not extending junit.framework.TestCase' do
     write 'src/test/java/NotATest.java', <<-JAVA
       public class NotATest { }
