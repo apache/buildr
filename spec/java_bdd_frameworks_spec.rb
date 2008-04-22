@@ -33,16 +33,17 @@ describe Buildr::RSpec do
   end
 
   it 'should include src/spec/ruby/**/*_spec.rb' do
+    verbose true
     foo do 
       spec = _(:source, :spec, :ruby, 'some_spec.rb')
-      write spec, 'true'
+      write spec, ''
       test.invoke
       test.tests.should include(spec)
     end
   end
 
 
-end # RSpec
+end if PLATFORM =~ /java/ # RSpec
 
 describe Buildr::JtestR do
 

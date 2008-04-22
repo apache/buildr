@@ -90,7 +90,7 @@ module Sandbox
     # Don't output crap to the console.
     trace false
     verbose false
-    task('buildr:initialize').invoke
+    #task('buildr:initialize').invoke
   end
 
   # Call this from teardown.
