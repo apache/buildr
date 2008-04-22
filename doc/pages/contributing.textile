@@ -6,24 +6,17 @@ chance to get involved and help your fellow developers.
 
 h2.  Mailing Lists
 
-We don't talk much, but when we do, we have interesting things to say, so start
-by subscribing to the "mailing lists":mailing_lists.html.  It's the best place
-to ask questions, offer help and suggestions, raise new ideas, tell us how
-you're using Buildr in your own projects, and find out what other people are
-doing with Buildr.
-
 We run two mailing lists, the
-"buildr-user":mailto:buildr-user@incubator.apache.org mailing list
-("subscribe":mailto:buildr-user-subscribe@incubator.apache.org,
-"archive":http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/) for
-developers working with Buildr, and the
-"buildr-dev":mailto:buildr-dev@incubator.apache.org mailing list
-("subscribe":mailto:buildr-dev-subscribe@incubator.apache.org,
-"archive":http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/) for
-development of Buildr itself.  We also have a
-"commits":mailto:buildr-commits@incubator.apache.org mailing list
-("subscribe":mailto:buildr-commits-subscribe@incubator.apache.org) if you want to
-stalk us.
+"buildr-user":http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/
+mailing list for developers working with Buildr, that would be you if you're
+using Buildr or interested in using it.  There's the 
+"buildr-dev":http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/
+mailing list for talking about development of Buildr itself, and 
+"commits":http://mail-archives.apache.org/mod_mbox/incubator-buildr-commits/
+mailing list for following SVN commits and JIRA issues.
+
+Check the "mailing lists":mailing_lists.html page for more information on
+subscribing, searching and posting to the mailing list.
 
 
 h2.  Bugs (aka Issues)
@@ -72,14 +65,26 @@ $ svn co http://svn.apache.org/repos/asf/incubator/buildr/trunk buildr
 You can also browse the "Buildr
 repository":http://svn.apache.org/repos/asf/incubator/buildr.
 
-You can also install Buildr from your working copy:
+Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from
+Github":http://github.com/vic/buildr/tree/master:
+
+{{{!sh
+$ git clone git://github.com/vic/buildr.git
+}}}
+
+To install Buildr from the source directory:
 
 {{{!sh
 $ cd buildr
-$ rake install
+$ rake setup install
 }}}
 
-(Linux and OS/X, use @sudo rake install@)
+When using Buildr for JRuby:
+
+{{{!sh
+$ cd buildr
+$ jruby -S rake setup install
+}}}
 
 
 h2.  Testing/Specs
