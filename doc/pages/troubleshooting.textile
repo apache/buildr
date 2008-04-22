@@ -83,3 +83,39 @@ glance at the code, so if all else fails, search for lines that end with one of
 these characters.
 
 
+h2.  Missing POM breaks transitive dependencies
+
+Occasionally, artifacts are deployed to remote repositories with missing or
+broken POMs.  Buildr will fail when attempting to resolve transitive
+dependencies with broken or missing POMs.
+
+In this particular case, failing is doing the right thing.  There's no way for
+Buildr to tell whether the POM is nowhere to be found, or just a temporary
+problem accessing the remote server.
+
+If you can determine that the POM file is missing you can work around the
+problem in three ways.  If you published the artifact, make the release again,
+getting it to upload the missing files.
+
+If the source repository is not under your control, but you are also using your
+own repository for the project, you can always create a dummy POM in your own
+repository.  Buildr will attempt to download the file from either repository,
+using the first file it finds.
+
+Alternatively, you can make Buildr create a dummy POM file in the local
+repository, instead of downloading it from a remote repository.  This example
+creates a dummy POM for Axis JAX-RPC:
+
+{{{!ruby
+artifact 'axis:axis-jaxrpc:pom:1.3' do |task|
+  write task.name, <<-POM
+    <project>
+      <modelVersion>4.0.0</modelVersion>
+      <groupId>axis</groupId>
+      <artifactId>axis-jaxrpc</artifactId>
+      <version>1.4</version>
+    </project>
+  POM
+end
+}}}
+
