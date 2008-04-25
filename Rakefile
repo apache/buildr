@@ -79,7 +79,7 @@ Rake::GemPackageTask.new spec(RUBY_PLATFORM =~ /java/ ? 'ruby' : 'java') do |tas
 end
 
 
-ENV['staging'] = "people.apache.org:~/public_html/#{spec.name}-#{spec.version}"
+ENV['staging'] = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
 
 task 'apache:license'=>spec.files
 # TODO: Switch fully to our own coloring scheme.
