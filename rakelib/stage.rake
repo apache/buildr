@@ -36,7 +36,7 @@ namespace 'stage' do
   # stage:upload moves the stage directory to the staging server.
   task 'upload' do |task, args|
     puts "Uploading staged directory to #{args.staging} ..."
-    sh 'rsync', '--progress', 'staged/', args.staging
+    sh 'rsync', '--progress', '--recursive', 'staged/', args.staging
     puts 'Done'
   end
 end

@@ -17,7 +17,7 @@
 file 'published' do |task, args|
   mkpath task.name
   puts "Populating published directory from #{args.staging} ..."
-  sh 'rsync', '--progress', "#{args.staging}/", 'published'
+  sh 'rsync', '--progress', '--recursive', "#{args.staging}/", 'published'
   puts 'Done'
 end
 

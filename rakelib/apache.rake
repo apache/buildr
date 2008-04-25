@@ -82,7 +82,7 @@ namespace 'apache' do
     target = args.incubating ? "people.apache.org:/www/incubator.apache.org/#{spec.name}" :
       "people.apache.org:/www/#{spec.name}.apache.org"
     puts 'Uploading Apache Web site ...'
-    sh 'rsync', '--progress', 'published/distro/site/', target
+    sh 'rsync', '--progress', '--recursive', '--delete', 'published/distro/site/', target
     puts 'Done'
   end
 

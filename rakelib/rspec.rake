@@ -62,21 +62,6 @@ begin
       sh 'jruby -S rake spec'
     end
 
-    task 'prepare'=>'spec' do
-      print 'Checking we have specs report .... '
-      fail 'No specifications in reports directory!' unless File.exist?('reports/specs.html') 
-      puts 'OK'
-    end
-    task 'prepare'=>RUBY_PLATFORM =~ /java/ ? 'ruby' : 'jruby'
-    # TODO:  Add Rcov when we get it implemented.
-=begin
-    task 'prepare'=>'rcov' do
-      print 'Checking we have coverage report .... '
-      fail 'No coverage in reports directory!' unless File.exist?('reports/coverage') 
-      puts 'OK'
-    end
-=end
-
   end
 
   task 'setup' do
@@ -85,10 +70,12 @@ begin
 
 rescue LoadError
   puts 'Please run rake setup to install RSpec'
-  task 'release:check' do
+  task 'stage:check' do
     fail 'Please run rake setup to install RSpec'
   end
 end
 
 
-task 'release:prepare'=>'spec:prepare'
+task 'stage:prepare'=>'spec'
+task 'stage:prepare'=>RUBY_PLATFORM =~ /java/ ? 'spec:ruby' : 'spec:jruby'
+# TODO:  Add Rcov when we get it implemented.
