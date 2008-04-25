@@ -15,52 +15,6 @@ This product includes software developed by Intalio
 http://www.intalio.com
 
 
-THIRD-PARTY DEPENDENCIES
-------------------------
-Even though those dependencies aren't shipped with Buildr, Buildr needs 
-the third-party libraries listed below to run. According licenses are 
-bundled under the etc/legal directory (when available).
-
-* Rake - http://rubyforge.org/projects/rake 
-Licensed under MIT/X Consortium
-Copyright 2003, 2004 by Jim Weirich.
-
-* Builder - http://rubyforge.org/projects/builder
-Licensed under MIT/X Consortium
-Copyright 2004 by Jim Weirich (jim@weirichhouse.org).
-
-* net-ssh - http://rubyforge.org/projects/net-ssh
-Licensed under BSD
-Copyright 2004, Jamis Buck (jamis@37signals.com)
-
-* rubyzip - http://rubyforge.org/projects/rubyzip
-Licensed under the Ruby License
-Authors: Thomas Sondergaard (thomas at sondergaard.cc),
-         Technorama Ltd. (oss-ruby-zip at technorama.net),
-extra-field support contributed by Tatsuki Sugiura (sugi at nemui.org)
-
-* highline - http://rubyforge.org/projects/highline
-Licensed under the Ruby License
-Copyright 2005 Gray Productions.
-Copyright 2007 Jeremy Hinegardner.
-
-* antwrap - http://rubyforge.org/projects/antwrap
-Licensed under LGPL
-Copyright Caleb Powell 2007
-
-* rspec - http://rubyforge.org/projects/rspec
-Licensed under MIT/X Consortium
-Copyright 2005-2007 The RSpec Development Team
-
-* xml-simple - http://rubyforge.org/projects/xml-simple
-Licensed under the Ruby License
-Copyright (c) 2003 Maik Schmidt
-
-* ruwiki (archive-tar-minitar) - http://rubyforge.org/projects/ruwiki/
-Licensed under the Ruby License
-Copyright 2004 Mauricio Julio Fernández Pradier and Austin Ziegler
-
-
 MATERIALS IN DOCUMENTATION
 --------------------------
 The following materials are incorporated into the documentation
@@ -71,9 +25,7 @@ Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved.
 Bitstream Vera is a trademark of Bitstream, Inc. 
 
 * ColorCons - http://www.mouserunner.com/
-Licensed under Creative Commons Attribution-ShareAlike 2.5
 Copyright (c) 2006 Ken Saunders
 
 * Ultraviolet stylesheets - http://ultraviolet.rubyforge.org
-Licensed under MIT
 Copyright (c) 2007 FIX
