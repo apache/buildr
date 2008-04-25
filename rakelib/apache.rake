@@ -22,10 +22,9 @@ require 'sha1'
 namespace 'apache' do
 
   desc 'Check that source files contain the Apache license'
-  task 'license' do
+  task 'license' do |task|
     print 'Checking that files contain the Apache license ... '
-    excluded = ['.class', '.png', '.jar', '.tif', 'README', 'LICENSE', 'CHANGELOG', 'DISCLAIMER', 'NOTICE', 'KEYS']
-    required = FileList[spec.files].exclude(*excluded).exclude(*Array($license_excluded)).select { |fn| File.file?(fn) }
+    required = task.prerequisites.select { |fn| File.file?(fn) }
     missing = required.reject { |fn| 
       comments = File.read(fn).scan(/(\/\*(.*?)\*\/)|^#\s+(.*?)$|<!--(.*?)-->/m).
         map { |match| match.compact }.flatten.join("\n")
@@ -34,57 +33,62 @@ namespace 'apache' do
     fail "#{missing.join(', ')} missing Apache License, please add it before making a release!" unless missing.empty?
     puts 'OK'
   end
+  task('license').prerequisites.exclude('.class', '.png', '.jar', '.tif', '.textile', '.haml',
+    'README', 'LICENSE', 'CHANGELOG', 'DISCLAIMER', 'NOTICE', 'KEYS', 'spec/spec.opts')
 
-  file 'incubating'=>'package' do
-    rm_rf 'incubating'
-    mkpath 'incubating'
-    print 'Creating -incubating packages ... '
-    packages = FileList['pkg/*.{gem,zip,tgz}'].map do |package|
-      package.pathmap('incubating/%n-incubating%x').tap do |incubating|
-        cp package, incubating
-      end
-    end
-    puts 'Done'
+  task 'check' do
+    ENV['GPG_USER'] or fail 'Please set GPG_USER (--local-user) environment variable so we know which key to use.'
   end
 
-  task 'sign', :incubating do |task, args|
-    file('incubating').invoke if args.incubating
-    sources = FileList[args.incubating ? 'incubating/*' : 'pkg/*']
 
+  file 'staged/distro'=>'package' do
+    puts 'Copying and signing release files ...'
+    mkpath 'staged/distro'
+    FileList['pkg/*.{gem,zip,tgz}'].each do |pkg|
+      cp pkg, pkg.pathmap('staged/distro/%n-incubating%x') 
+    end
+  end
+
+  task 'sign'=>['KEYS', 'staged/distro'] do
     gpg_user = ENV['GPG_USER'] or fail 'Please set GPG_USER (--local-user) environment variable so we know which key to use.'
-    print 'Signing release files ...'
-    sources.each do |fn|
-      contents = File.open(fn, 'rb') { |file| file.read }
-      File.open(fn + '.md5', 'w') { |file| file.write MD5.hexdigest(contents) << ' ' << File.basename(fn) }
-      File.open(fn + '.sha1', 'w') { |file| file.write SHA1.hexdigest(contents) << ' ' << File.basename(fn) }
-      sh 'gpg', '--local-user', gpg_user, '--armor', '--output', fn + '.asc', '--detach-sig', fn, :verbose=>true
+    FileList['staged/distro/*.{gem,zip,tgz}'].each do |pkg|
+      bytes = File.open(pkg, 'rb') { |file| file.read }
+      File.open(pkg + '.md5', 'w') { |file| file.write MD5.hexdigest(bytes) << ' ' << File.basename(pkg) }
+      File.open(pkg + '.sha1', 'w') { |file| file.write SHA1.hexdigest(bytes) << ' ' << File.basename(pkg) }
+      sh 'gpg', '--local-user', gpg_user, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
     end
+    cp 'KEYS', 'staged/distro'
+  end
+
+  # Publish prerequisites to distro server.
+  task 'publish:distro' do |task, args|
+    target = args.incubating ? "people.apache.org:/www/www.apache.org/dist/incubator/#{spec.name}" :
+      "people.apache.org:/www/www.apache.org/dist/#{spec.name}"
+      "people.apache.org:/www/#{spec.name}.apache.org"
+    puts 'Uploading packages to Apache distro ...'
+    sh 'rsync', '--progress', 'published/distro/*', target
     puts 'Done'
   end
 
-  task 'upload', :project, :incubating, :depends=>['site', 'KEYS', 'sign'] do |task, args|
-    fail 'No project specified' unless project
 
-    target = 'people.apache.org:/www.apache.org/dist/'
-    target << 'incubator/' if args.incubating
-    target << "#{project}/"
+  file 'staged/site'=>'site' do
+    mkpath 'staged'
+    rm_rf 'staged/site'
+    cp_r 'site', 'staged'
+  end
 
-    dir = task('sign').prerequisite.find { |prereq| File.directory?(prereq.name) }
-    fail 'Please enhance sign task with directory containing files to release' unless dir
-    puts 'Uploading packages to Apache dist ...'
-    args = FileList["#{dir}/*", 'KEYS'].flatten << target
-    
-    sh 'rsync', '-progress', *args
+  # Publish prerequisites to Web site.
+  task 'publish:site' do |task, args|
+    target = args.incubating ? "people.apache.org:/www/incubator.apache.org/#{spec.name}" :
+      "people.apache.org:/www/#{spec.name}.apache.org"
+    puts 'Uploading Apache Web site ...'
+    sh 'rsync', '--progress', 'published/distro/site/', target
     puts 'Done'
   end
 
 end
 
 
-task 'clobber' do
-  rm_rf 'incubating'
-end
-
-namespace 'release' do
-  task 'check'=>'apache:license'
-end
+task 'stage:check'=>['apache:license', 'apache:check']
+task 'stage:prepare'=>['staged/distro', 'apache:sign', 'staged/site']
+task 'release:publish'=>['apache:publish:distro', 'apache:publish:site']

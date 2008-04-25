@@ -44,15 +44,14 @@ begin
   require 'docter'
   require 'docter/server'
 
-  file 'reports/specs.html'=>'reports'
-
   #Docter.filter_for(:footnote) do |html|
   #  html.gsub(/<p id="fn(\d+)">(.*?)<\/p>/, %{<p id="fn\\1" class="footnote">\\2</p>})
   #end
 
   collection = Docter.collection(spec.name).using('doc/site.toc.yaml').include('doc/pages', 'LICENSE', 'CHANGELOG')
+  # TODO:  Add coverage reports when we get them to run.
   template   = Docter.template('doc/site.haml').
-    include('doc/css', 'doc/images', 'doc/scripts', 'reports/specs.html', 'reports/coverage', 'rdoc', 'print/buildr.pdf')
+    include('doc/css', 'doc/images', 'doc/scripts', 'reports/specs.html', 'rdoc', 'print/buildr.pdf')
 
   desc 'Run Docter server on port 3000'
   Docter::Rake.serve 'docter', collection, template, :port=>3000
@@ -64,21 +63,39 @@ begin
     Docter.collection(spec.name).using('doc/print.toc.yaml').include('doc/pages', 'LICENSE'),
     Docter.template('doc/print.haml').include('doc/css', 'doc/images'), :one_page
 
-  file('site/buildr.pdf'=>'print') do |task|
+  file('print/buildr.pdf'=>'print') do |task|
     mkpath 'site'
     sh 'prince', 'print/index.html', '-o', task.name, '--media=print' do |ok, res|
       fail 'Failed to create PDF, see errors above' unless ok
     end
   end
+  task 'site'=>'print/buildr.pdf' do
+    cp 'print/buildr.pdf', 'site'
+  end
 
   desc 'Produce PDF'
-  task 'pdf'=>'site/buildr.pdf' do |task|
-    sh 'open', 'site/buildr.pdf'
+  task 'pdf'=>'print/buildr.pdf' do |task|
+    sh 'open', 'print/buildr.pdf'
   end
 
   task 'clobber' do
     rm_rf 'print'
     rm_rf 'site'
+  end
+
+  task 'site:prepare'=>'site' do
+    print 'Checking that we have site documentation, RDoc and PDF ... '
+    fail 'No PDF generated, you need to install PrinceXML!' unless File.exist?('site/buildr.pdf')
+    fail 'No RDocs in site directory' unless File.exist?('site/rdoc/files/lib/buildr_rb.html')
+    fail 'No site documentation in site directory' unless File.exist?('site/index.html')
+    fail 'No specifications site directory' unless File.exist?('site/specs.html')
+    puts 'OK'
+  end
+
+  task 'site:stage' do
+    puts 'Copying site over to release directory ...'
+    cp_r 'site', 'release'
+    puts 'Done'
   end
 
 rescue LoadError
@@ -92,12 +109,5 @@ rescue LoadError
 end
 
 
-namespace 'release' do
-  task 'prepare'=>'docs' do
-    print 'Checking that we have site documentation, RDoc and PDF ... '
-    fail 'No PDF generated, you need to install PrinceXML!' unless File.exist?('site/buildr.pdf')
-    fail 'No RDocs in site directory' unless File.exist?('site/rdoc/files/lib/buildr_rb.html')
-    fail 'No site documentation in site directory' unless File.exist?('site/index.html')
-    puts 'OK'
-  end
-end
+task 'release:prepare'=>'site:prepare'
+task 'release:stage'=>'site:stage'

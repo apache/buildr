@@ -64,30 +64,31 @@ def spec(platform = nil)
 end
 
 
-$license_excluded = ['spec/spec.opts', '.textile', '.haml']
-
-
 desc 'Compile Java libraries used by Buildr'
 task 'compile' do
   puts 'Compiling Java libraries ...'
   sh Config::CONFIG['ruby_install_name'], '-Ilib', '-Iaddon', 'bin/buildr', 'compile'
   puts 'OK'
 end
+file Rake::GemPackageTask.new(spec).package_dir=>'compile'
+file Rake::GemPackageTask.new(spec).package_dir_path=>'compile'
 
-Rake::GemPackageTask.new(spec('ruby')) do |pkg|
-  pkg.need_tar = pkg.need_zip = true
-  file pkg.package_dir_path=>'compile'
-  file pkg.package_dir=>'compile'
-end
-Rake::GemPackageTask.new(spec('java')) do |pkg|
-  file pkg.package_dir_path=>'compile'
+# We also need the other package (JRuby if building on Ruby, and vice versa)
+Rake::GemPackageTask.new spec(RUBY_PLATFORM =~ /java/ ? 'ruby' : 'java') do |task|
+  # Block necessary otherwise doesn't do full job.
 end
 
-namespace 'release' do
 
-  task 'make' do
-    task('rubyforge').invoke
-    task('apache:upload').invoke('buildr', true)
-  end
+ENV['staging'] = "people.apache.org:~/public_html/#{spec.name}-#{spec.version}"
 
+task 'apache:license'=>spec.files
+# TODO: Switch fully to our own coloring scheme.
+task('apache:license').prerequisites.exclude('doc/css/syntax.css')
+
+task 'spec:check' do
+  print 'Checking that we have JRuby, Scala and Groovy available ... '
+  fail 'Full testing requires JRuby!' unless which('jruby')
+  fail 'Full testing requires Scala!' unless which('scala')
+  fail 'Full testing requires Groovy!' unless which('groovy')
+  puts 'OK'
 end

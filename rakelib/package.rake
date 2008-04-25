@@ -20,15 +20,15 @@ require 'rake/gempackagetask'
 desc 'Clean up all temporary directories used for running tests, creating documentation, packaging, etc.'
 task 'clobber'
 
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.need_tar = pkg.need_zip = true
+package = Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.need_tar = true
+  pkg.need_zip = true
 end
 
-current = Rake::GemPackageTask.new(spec)
 desc 'Install the package locally'
-task 'install'=>"#{current.package_dir}/#{current.gem_file}" do |task|
+task 'install'=>"#{package.package_dir}/#{package.gem_file}" do |task|
   print "Installing #{spec.name} ... "
-  args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', "#{current.package_dir}/#{current.gem_file}"]
+  args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', "#{package.package_dir}/#{package.gem_file}"]
   args.unshift('sudo') unless windows?
   sh *args
   puts 'Done'
