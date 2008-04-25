@@ -34,7 +34,7 @@ rescue LoadError
   task 'setup' do
     install_gem 'allison'
   end
-  task 'release:check' do
+  task 'stage:check' do
     fail 'Please run rake setup to install the Allison RDoc template'
   end
 end
@@ -92,22 +92,12 @@ begin
     puts 'OK'
   end
 
-  task 'site:stage' do
-    puts 'Copying site over to release directory ...'
-    cp_r 'site', 'release'
-    puts 'Done'
-  end
-
 rescue LoadError
   puts 'Please run rake setup to install the Docter document generation library'
   task 'setup' do
     install_gem 'docter', '~>1.1.3'
   end
-  task 'release:check' do
+  task 'stage:check' do
     fail 'Please run rake setup to install the Docter document generation library'
   end
 end
-
-
-task 'release:prepare'=>'site:prepare'
-task 'release:stage'=>'site:stage'

@@ -25,14 +25,15 @@ namespace 'changelog' do
     puts 'OK'
   end
 
-  task 'prepare'=>'CHANGELOG' do
+  file 'staged/CHANGES'=>'CHANGELOG' do |task|
     # Read the changes for this release.
     print 'Looking for changes between this release and previous one ... '
     pattern = /(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/
     changes = File.read('CHANGELOG').scan(pattern).inject({}) { |hash, set| hash[set[1]] = set[2] ; hash }
     current = changes[spec.version.to_s]
     fail "No changeset found for version #{spec.version}" unless current
-    File.open 'stage/CHANGES', 'w' do |file|
+    File.open task.name, 'w' do |file|
+      file.write "#{spec.version} (#{Time.now.strftime('%Y-%m-%d')})\n"
       file.write current
     end
     puts 'OK'
@@ -51,5 +52,5 @@ namespace 'changelog' do
 end
 
 task 'stage:check'=>'changelog:check'
-task 'stage:prepare'=>'changelog:prepare'
+task 'stage:prepare'=>'staged/CHANGES'
 task 'release:wrapup'=>'changelog:wrapup'
