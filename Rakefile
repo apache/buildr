@@ -26,8 +26,7 @@ def spec(platform = nil)
     if platform =~ /java/
       spec.add_dependency 'ci_reporter', '~> 1.5'
     else
-      #spec.add_dependency 'rjb', '1.1.2'
-      spec.add_dependency 'rjb', '~>1.1', '!=1.1.3' # 1.1.3 is missing Windows Gem.
+      spec.add_dependency 'rjb', '~>1.1'
     end
     spec
   end
@@ -53,7 +52,6 @@ ENV['incubating'] = 'true'
 ENV['staging'] = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
 
 task 'apache:license'=>spec.files
-# TODO: Switch fully to our own coloring scheme.
 task('apache:license').prerequisites.exclude('doc/css/syntax.css')
 
 task 'spec:check' do
