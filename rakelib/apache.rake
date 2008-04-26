@@ -69,7 +69,8 @@ namespace 'apache' do
     puts 'Done'
   end
 
-  task 'distro-links', :path do |task, args|
+
+  task 'distro-links'=>['staged/site', 'apache:sign'] do |task, args|
     url = args.incubating ? "http://www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
       "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
     rows = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
@@ -90,43 +91,17 @@ namespace 'apache' do
     </table>
     <p style="text-align:right"> (<a href="#{url}/KEYS">Release signing keys</a>)</p>
     HTML
-    file_name = File.join(args.path || 'site', 'download.html')
+    file_name = 'staged/site/download.html'
     modified = File.read(file_name).sub(/<h2.*binaries.*source.*<\/h2>.*/i) { |header| "#{header}\n#{html}\n" }
     File.open file_name, 'w' do |file|
       file.write modified
     end
   end
 
-=begin
-  task 'distro-links-old' do |task, args|
-    url = args.incubating ? "http://www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
-      "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
-    links = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
-      name = File.basename(pkg)
-      md5 = File.read("#{pkg}.md5").split.first
-      %{| "#{name}":#{url}/#{name} | "#{md5}":#{url}/#{name}.md5 | "PGP":#{url}/#{name}.asc |}
-    }
-    textile = <<-TEXTILE
-h3. #{spec.name} #{spec.version}-incubating
-
-|_. Package |_. MD5 Checksum |_. Signature |
-#{links.join("\n")}
-
-p>.  ("Signing keys":#{url}/KEYS)
-    TEXTILE
-    downloads = 'doc/pages/download.textile'
-    modified = File.read(args.file).sub(/^h2.*binaries.*source.*$/i) { |header| "#{header}\n\n#{textile}" }
-    File.open args.file, 'w' do |file|
-      file.write modified
-    end
-  end
-=end
-
-  file 'staged/site'=>['distro-links', 'site'] do
+  file 'staged/site'=>'site' do
     mkpath 'staged'
     rm_rf 'staged/site'
     cp_r 'site', 'staged'
-    task('apache:distro-links').invoke('staged/site')
   end
 
   # Publish prerequisites to Web site.
@@ -142,7 +117,7 @@ end
 
 
 task 'stage:check'=>['apache:license', 'apache:check']
-task 'stage:prepare'=>['staged/distro', 'staged/site'] do |task|
+task 'stage:prepare'=>['staged/distro', 'staged/site', 'apache:distro-links'] do |task|
   # Since this requires input (passphrase), do it at the very end.
   task.enhance do
     task('apache:sign').invoke
