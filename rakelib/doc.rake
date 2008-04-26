@@ -92,20 +92,6 @@ begin
     rm_rf 'site'
   end
 
-  task 'download-links', :url, :packages do |task, args|
-    url = args.url
-    lines = ["h3. #{spec.name} #{spec.version} (#{Time.now.strftime('%Y-%m-%d')})", ''] +
-      args.packages.map { |pkg|
-        name = pkg[:name]
-        %{| "#{name}":#{url}/#{name} | "#{pkg[:md5]}":#{url}/#{name}.md5 | "PGP":#{url}/#{name}.asc |} } +
-      ['', %{p>.  ("Signing keys":#{url}/KEYS)} ]
-    downloads = 'doc/pages/download.textile'
-    modified = File.read(downloads).sub(/^h2.*binaries.*source.*$/i) { |header| "#{header}\n\n#{lines.join("\n")}\n" }
-    File.open downloads, 'w' do |file|
-      file.write modified
-    end
-  end
-
 rescue LoadError
   puts 'Please run rake setup to install the Docter document generation library'
   task 'setup' do

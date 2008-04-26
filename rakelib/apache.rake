@@ -69,12 +69,32 @@ namespace 'apache' do
     puts 'Done'
   end
 
-  task 'distro-links' do |task, args|
+  task 'distro-links', :path do |task, args|
     url = args.incubating ? "http://www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
       "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
-    packages = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
-      { :name=>File.basename(pkg), :md5=>File.read("#{pkg}.md5").split.first } }
-    task('download-links').invoke(url, packages)
+    rows = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
+      name, md5 = File.basename(pkg), File.read("#{pkg}.md5").split.first
+      <<-HTML
+      <tr>
+        <td><a href="#{url}/#{name}">#{name}</a></td>
+        <td><a href="#{url}/#{name}.md5">#{md5}</a></td>
+        <td><a href="#{url}/#{name}.asc">Sig</a></td>
+      </tr>
+      HTML
+    }
+    html = <<-HTML
+    <h3>#{spec.name} #{spec.version}#{args.incubating && "-incubating"} (#{Time.now.strftime('%Y-%m-%d')})</h3>
+    <table>
+      <thead><th>Package</th><th>MD5 Checksum</th><th>PGP</th></thead>
+    #{rows.join("\n")}
+    </table>
+    <p style="text-align:right"> (<a href="#{url}/KEYS">Release signing keys</a>)</p>
+    HTML
+    file_name = File.join(args.path || 'site', 'download.html')
+    modified = File.read(file_name).sub(/<h2.*binaries.*source.*<\/h2>.*/i) { |header| "#{header}\n#{html}\n" }
+    File.open file_name, 'w' do |file|
+      file.write modified
+    end
   end
 
 =begin
@@ -106,6 +126,7 @@ p>.  ("Signing keys":#{url}/KEYS)
     mkpath 'staged'
     rm_rf 'staged/site'
     cp_r 'site', 'staged'
+    task('apache:distro-links').invoke('staged/site')
   end
 
   # Publish prerequisites to Web site.
@@ -120,7 +141,6 @@ p>.  ("Signing keys":#{url}/KEYS)
 end
 
 
-task 'stage'=>'apache:distro-links'
 task 'stage:check'=>['apache:license', 'apache:check']
 task 'stage:prepare'=>['staged/distro', 'staged/site'] do |task|
   # Since this requires input (passphrase), do it at the very end.
