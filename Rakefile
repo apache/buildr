@@ -20,48 +20,19 @@ require 'rake/gempackagetask'
 def spec(platform = nil)
   @specs ||= {}
   platform ||= RUBY_PLATFORM =~ /java/ ? 'java' : 'ruby'
-  @specs[platform] ||= Gem::Specification.new do |spec|
-    spec.name           = 'buildr'
-    spec.version        = File.read(__FILE__.pathmap('%d/lib/buildr.rb')).scan(/VERSION\s*=\s*(['"])(.*)\1/)[0][1]
-    spec.author         = 'Apache Buildr'
-    spec.email          = 'buildr-user@incubator.apache.org'
-    spec.homepage       = "http://incubator.apache.org/#{spec.name}/"
-    spec.summary        = 'A build system that doesn\'t suck'
-
-    spec.files          = FileList['lib/**/*', 'addon/**/*', 'README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'KEYS',
-                                   'Rakefile', 'rakelib/**/*', 'spec/**/*', 'doc/**/*'].to_ary
-    spec.require_paths  = ['lib', 'addon']
-    spec.bindir         = 'bin'                               # Use these for applications.
-    spec.executable     = 'buildr'
-
-    spec.has_rdoc           = true
-    spec.extra_rdoc_files   = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']
-    spec.rdoc_options       << '--title' << "Buildr -- #{spec.summary}" <<
-                               '--main' << 'README' << '--line-numbers' << '--inline-source' << '-p' <<
-                               '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
-    spec.rubyforge_project  = 'buildr'
-
-    spec.platform  = platform
-    # Tested against these dependencies.
-    spec.add_dependency 'rake',                 '~> 0.8'
-    spec.add_dependency 'builder',              '~> 2.1'
-    spec.add_dependency 'net-ssh',              '~> 1.1'
-    spec.add_dependency 'net-sftp',             '~> 1.1'
-    spec.add_dependency 'rubyzip',              '~> 0.9'
-    spec.add_dependency 'highline',             '~> 1.4'
-    spec.add_dependency 'Antwrap',              '~> 0.7'
-    spec.add_dependency 'rspec',                '~> 1.1'
-    spec.add_dependency 'xml-simple',           '~> 1.0'
-    spec.add_dependency 'archive-tar-minitar',  '~> 0.5'
-    spec.add_dependency 'rubyforge',            '~> 0.4'
+  @specs[platform] ||= begin
+    spec = Gem::Specification.load(File.join(File.dirname(__FILE__), 'buildr.gemspec'))
+    spec.platform = platform
     if platform =~ /java/
       spec.add_dependency 'ci_reporter', '~> 1.5'
     else
-      #spec.add_dependency 'rjb',        '~> 1.1', '!= 1.1.3'
+      #spec.add_dependency 'rjb',        '~> 1.1', '!= 1.1.3' # TODO: look at this
       spec.add_dependency 'rjb',         '~> 1.1'
     end
+    spec
   end
 end
+
 
 
 desc 'Compile Java libraries used by Buildr'
