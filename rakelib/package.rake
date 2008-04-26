@@ -26,7 +26,7 @@ package = Rake::GemPackageTask.new(spec) do |pkg|
 end
 
 desc 'Install the package locally'
-task 'install'=>"#{package.package_dir}/#{package.gem_file}" do |task|
+task 'install'=>['setup', "#{package.package_dir}/#{package.gem_file}"] do |task|
   print "Installing #{spec.name} ... "
   args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', "#{package.package_dir}/#{package.gem_file}"]
   args.unshift('sudo') unless windows?

@@ -43,7 +43,7 @@ def install_gem(name, ver_requirement = nil)
     fail "#{dep} not found in local or remote repository!" unless spec
     puts "Installing #{spec} ..."
     args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', spec.name, '-v', spec.version.to_s]
-    args.unshift('sudo') unless windows?
+    args.unshift('sudo', 'env', 'JAVA_HOME=' + ENV['JAVA_HOME']) unless windows?
     sh *args
   end
 end

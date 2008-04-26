@@ -26,13 +26,12 @@ def spec(platform = nil)
     if platform =~ /java/
       spec.add_dependency 'ci_reporter', '~> 1.5'
     else
-      #spec.add_dependency 'rjb',        '~> 1.1', '!= 1.1.3' # TODO: look at this
-      spec.add_dependency 'rjb',         '~> 1.1'
+      #spec.add_dependency 'rjb', '1.1.2'
+      spec.add_dependency 'rjb', '~>1.1', '!=1.1.3' # 1.1.3 is missing Windows Gem.
     end
     spec
   end
 end
-
 
 
 desc 'Compile Java libraries used by Buildr'

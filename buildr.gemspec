@@ -31,4 +31,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'xml-simple',           '~> 1.0'
   spec.add_dependency 'archive-tar-minitar',  '~> 0.5'
   spec.add_dependency 'rubyforge',            '~> 0.4'
+  spec.add_dependency 'rjb', '~>1.1', '!=1.1.3' # 1.1.3 is missing Windows Gem.
 end
