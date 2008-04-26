@@ -26,8 +26,7 @@ task 'clobber' do
 end
 
 namespace 'release' do
-  #task 'prepare'=>['setup', 'clobber', 'published'] # TODO: uncomment
-  task 'prepare'=>'published'
+  task 'prepare'=>['setup', 'clobber', 'published']
 
   task 'publish'
 
@@ -36,7 +35,6 @@ end
 
 desc "Make a release using previously staged files"
 task 'release'=>['release:prepare', 'release:publish', 'release:wrapup']
-
 
 
 task 'next_version' do

@@ -726,7 +726,6 @@ end
 =end
 
 
-# TODO: how do we test this?
 describe Rake::Task, 'buildr:initialize' do
   it 'should be ready to run as the first task' do
     Buildr.application.top_level_tasks.first.should eql('buildr:initialize')

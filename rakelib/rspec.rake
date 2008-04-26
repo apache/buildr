@@ -25,7 +25,7 @@ begin
 
   desc 'Run all specs'
   Spec::Rake::SpecTask.new('spec'=>'reports') do |task|
-    task.spec_files = FileList['spec/**/common_spec.rb'] # TODO: fix back to *_
+    task.spec_files = FileList['spec/**/*_spec.rb']
     task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failing' <<
       '--format' << 'html:reports/specs.html' << '--backtrace'
   end
@@ -33,7 +33,7 @@ begin
 
   desc 'Run all failing examples from previous run'
   Spec::Rake::SpecTask.new('failing') do |task|
-    task.spec_files = FileList['spec/**/common_spec.rb'] # TODO: fix back to *_
+    task.spec_files = FileList['spec/**/*_spec.rb']
     task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failing' << '--example' << 'failing'
   end
 
@@ -78,4 +78,4 @@ end
 
 task 'stage:prepare'=>'spec'
 task 'stage:prepare'=>RUBY_PLATFORM =~ /java/ ? 'spec:ruby' : 'spec:jruby'
-# TODO:  Add Rcov when we get it implemented.
+# TODO:  Add Rcov when we get it working again.
