@@ -90,5 +90,10 @@ end
 
 
 task 'stage:check'=>['apache:license', 'apache:check']
-task 'stage:prepare'=>['staged/distro', 'apache:sign', 'staged/site']
+task 'stage:prepare'=>['staged/distro', 'staged/site'] do |task|
+  # Since this requires input (passphrase), do it at the very end.
+  task.enhance do
+    task('apache:sign').invoke
+  end
+end
 task 'release:publish'=>['apache:publish:distro', 'apache:publish:site']
