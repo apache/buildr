@@ -62,12 +62,34 @@ namespace 'apache' do
 
   # Publish prerequisites to distro server.
   task 'publish:distro' do |task, args|
-    target = args.incubating ? "people.apache.org:/www/www.apache.org/dist/incubator/#{spec.name}" :
-      "people.apache.org:/www/www.apache.org/dist/#{spec.name}"
-      "people.apache.org:/www/#{spec.name}.apache.org"
+    target = args.incubating ? "people.apache.org:/www/www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
+      "people.apache.org:/www/www.apache.org/dist/#{spec.name}/#{spec.version}"
     puts 'Uploading packages to Apache distro ...'
     sh 'rsync', '--progress', 'published/distro/*', target
     puts 'Done'
+  end
+
+  task 'add-links' do |task, args|
+    url = args.incubating ? "http://www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
+      "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
+    links = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
+      name = File.basename(pkg)
+      md5 = File.read("#{pkg}.md5").split.first
+      %{| "#{name}":#{url}/#{name} | "#{md5}":#{url}/#{name}.md5 | "PGP":#{url}/#{name}.asc |}
+    }
+    textile = <<-TEXTILE
+h3. #{spec.name} #{spec.version}-incubating
+
+|_. Package |_. MD5 Checksum |_. Signature |
+#{links.join("\n")}
+
+p>.  ("Signing keys":#{url}/KEYS)
+    TEXTILE
+    fn = 'doc/pages/download.textile'
+    modified = File.read(fn).sub(/^h2.*binaries.*source.*$/i) { |header| "#{header}\n\n#{textile}" }
+    File.open fn, 'w' do |file|
+      file.write modified
+    end
   end
 
 

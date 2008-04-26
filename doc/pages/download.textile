@@ -13,11 +13,8 @@ installation scripts.
 
 h2.  Binaries and Source Code
 
-At the moment we do not make offical Apache binary and source distributions.
-Unofficial binary and source distributions are available form
-"RubyForge":http://rubyforge.org/projects/buildr.
 
-p(note). When downloading from a mirror please check the
+p(note). When downloading from files please check the
 "md5sum":http://www.apache.org/dev/release-signing#md5 and verify the
 "OpenPGP":http://www.apache.org/dev/release-signing#openpgp compatible
 signature from the main Apache site. This
