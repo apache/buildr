@@ -69,7 +69,16 @@ namespace 'apache' do
     puts 'Done'
   end
 
-  task 'add-links' do |task, args|
+  task 'distro-links' do |task, args|
+    url = args.incubating ? "http://www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
+      "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
+    packages = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
+      { :name=>File.basename(pkg), :md5=>File.read("#{pkg}.md5").split.first } }
+    task('download-links').invoke(url, packages)
+  end
+
+=begin
+  task 'distro-links-old' do |task, args|
     url = args.incubating ? "http://www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
       "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
     links = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
@@ -85,15 +94,15 @@ h3. #{spec.name} #{spec.version}-incubating
 
 p>.  ("Signing keys":#{url}/KEYS)
     TEXTILE
-    fn = 'doc/pages/download.textile'
-    modified = File.read(fn).sub(/^h2.*binaries.*source.*$/i) { |header| "#{header}\n\n#{textile}" }
-    File.open fn, 'w' do |file|
+    downloads = 'doc/pages/download.textile'
+    modified = File.read(args.file).sub(/^h2.*binaries.*source.*$/i) { |header| "#{header}\n\n#{textile}" }
+    File.open args.file, 'w' do |file|
       file.write modified
     end
   end
+=end
 
-
-  file 'staged/site'=>'site' do
+  file 'staged/site'=>['distro-links', 'site'] do
     mkpath 'staged'
     rm_rf 'staged/site'
     cp_r 'site', 'staged'
@@ -111,6 +120,7 @@ p>.  ("Signing keys":#{url}/KEYS)
 end
 
 
+task 'stage'=>'apache:distro-links'
 task 'stage:check'=>['apache:license', 'apache:check']
 task 'stage:prepare'=>['staged/distro', 'staged/site'] do |task|
   # Since this requires input (passphrase), do it at the very end.
