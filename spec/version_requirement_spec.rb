@@ -30,6 +30,10 @@ describe Buildr::VersionRequirement, '.create' do
     lambda { create('1.0') }.should_not raise_error(Exception)
     lambda { create('1.0rc3') }.should_not raise_error(Exception)
   end
+  
+  it 'should allow versions using hyphen' do
+    lambda { create('1.0-rc3') }.should_not raise_error(Exception)
+  end
 
   it 'should create a single version requirement' do 
     create('1.0').should_not have_alternatives

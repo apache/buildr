@@ -173,6 +173,7 @@ module Buildr
         standard_exception_handling do
           find_buildfile
           load_gems
+          load_artifacts
           load_buildfile
           top_level
           load_tasks
@@ -187,6 +188,16 @@ module Buildr
       end
     end
 
+    # Load artifact specs from the build.yaml file, making them available 
+    # by name ( ruby symbols ).
+    def load_artifacts #:nodoc:
+      hash = settings.build['artifacts']
+      return unless hash
+      raise "Expected 'artifacts' element to be a hash" unless Hash === hash
+      # Currently we only use one artifact namespace to rule them all. (the root NS)
+      Buildr::ArtifactNamespace.load(:root => hash)
+    end
+      
     # Load/install all Gems specified in build.yaml file.
     def load_gems #:nodoc:
       missing_deps, installed = listed_gems.partition { |gem| gem.is_a?(Gem::Dependency) }

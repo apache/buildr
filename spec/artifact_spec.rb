@@ -424,6 +424,15 @@ describe Buildr, '#artifact' do
     artifact = artifact('group:id:jar:1.0').from('test.jar')
     lambda { artifact.invoke }.should change { File.exist?(artifact.to_s) }.to(true)
   end
+
+  it 'should reference artifacts defined on build.yaml by using ruby symbols' do
+    write 'build.yaml', <<-YAML
+      artifacts: 
+        j2ee: geronimo-spec:geronimo-spec-j2ee:jar:1.4-rc4
+    YAML
+    Buildr.application.load_artifacts
+    artifact(:j2ee).to_s.pathmap('%f').should == 'geronimo-spec-j2ee-1.4-rc4.jar'
+  end
 end
 
 

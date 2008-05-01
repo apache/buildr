@@ -496,13 +496,25 @@ module Buildr
 
       # Return an artifact spec without the version part.
       def unversioned_spec
-        to_spec[/^([a-zA-Z._-]+(:[a-zA-Z._-]+){2,3})/]
+        str = to_spec
+        return nil if str =~ /^:+/
+        ary = str.split(':')
+        ary = ary[0...-1] if ary.size > 3
+        ary.join(':')
       end
     
       class << self
         # Return an artifact spec without the version part.
         def unversioned_spec(spec)
-          spec.to_s[/^([a-zA-Z._-]+(:[a-zA-Z._-]+){2,3})/] || new(spec).unversioned_spec
+          str = spec.to_s
+          return nil if str =~ /^:+/
+          ary = str.split(':')
+          ary = ary[0...-1] if ary.size > 3
+          if ary.size > 2
+            ary.join(':')
+          else
+            new(spec).unversioned_spec
+          end
         end
       end
     end

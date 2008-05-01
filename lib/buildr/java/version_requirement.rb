@@ -24,8 +24,8 @@ module Buildr
     CMP_REGEX = Gem::Requirement::OP_RE.dup
     CMP_CHARS = CMP_PROCS.keys.join
     BOOL_CHARS = '\|\&\!'
-    VER_CHARS = '\w\.'
-    
+    VER_CHARS = '\w\.\-'
+
     class << self
       # is +str+ a version string?
       def version?(str)
