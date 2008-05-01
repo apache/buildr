@@ -40,7 +40,8 @@ task 'release'=>['release:prepare', 'release:publish', 'release:wrapup']
 task 'next_version' do
   ver_file = "lib/#{spec.name}.rb"
   if File.exist?(ver_file)
-    next_version = spec.version.to_ints.zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
+    next_version = spec.version.to_s.split('.').map { |v| v.to_i }.
+      zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
     print "Updating #{ver_file} to next version number (#{next_version}) ... "
     modified = File.read(ver_file).sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" } 
     File.open ver_file, 'w' do |file|

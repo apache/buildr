@@ -65,7 +65,10 @@ namespace 'apache' do
     target = args.incubating ? "people.apache.org:/www/www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
       "people.apache.org:/www/www.apache.org/dist/#{spec.name}/#{spec.version}"
     puts 'Uploading packages to Apache distro ...'
-    sh 'rsync', '--progress', 'published/distro/*', target
+    host, remote_dir = target.split(':')
+    sh 'ssh', host, 'rm', '-rf', remote_dir rescue nil
+    sh 'ssh', host, 'mkdir', remote_dir
+    sh 'rsync', '--progress', '--recursive', 'published/distro/', target
     puts 'Done'
   end
 
@@ -109,7 +112,7 @@ namespace 'apache' do
     target = args.incubating ? "people.apache.org:/www/incubator.apache.org/#{spec.name}" :
       "people.apache.org:/www/#{spec.name}.apache.org"
     puts 'Uploading Apache Web site ...'
-    sh 'rsync', '--progress', '--recursive', '--delete', 'published/distro/site/', target
+    sh 'rsync', '--progress', '--recursive', '--delete', 'published/site/', target
     puts 'Done'
   end
 

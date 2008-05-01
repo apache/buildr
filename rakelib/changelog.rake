@@ -40,7 +40,8 @@ namespace 'changelog' do
   end
 
   task 'wrapup'=>'CHANGELOG' do
-    next_version = spec.version.to_ints.zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
+    next_version = spec.version.to_s.split('.').map { |v| v.to_i }.
+      zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
     print 'Adding new entry to CHANGELOG ... '
     modified = "#{next_version} (Pending)\n\n" + File.read('CHANGELOG')
     File.open 'CHANGELOG', 'w' do |file|
