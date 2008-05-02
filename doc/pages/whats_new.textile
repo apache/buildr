@@ -385,5 +385,5 @@ with the documentation.
 * The "Extending Buildr":extending.html page that deals with writing your own
 tasks, creating extensions and specifying alternative layouts.
 
-* The site also includes "RSpec report":specs.html and "Test coverage
-report":coverage/index.html.
+* The site also includes "RSpec report":specs.html which provides the official
+  specification against which we test each release.

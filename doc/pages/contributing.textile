@@ -115,8 +115,8 @@ $ rake spec
 
 We always @rake spec@ before making a release.
 
-You can also check out the "RSpec report":report.html and "test coverage
-report":coverage/index.html for the current version of Buildr.  And if you want to help us on the journey to 100% test coverage, we'll be ever so grateful!
+You can also check out the "RSpec report":report.html which provides the
+official specification against which we test each release.
 
 
 h2.  Documentation

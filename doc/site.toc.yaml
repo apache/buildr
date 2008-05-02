@@ -14,7 +14,7 @@
 # the License.
 
 - Main:  
-  - Welcome: /
+  - Welcome: index.html
   - Download and Installation: download.html
   - Printable PDF: buildr.pdf
   - New: whats_new.html
