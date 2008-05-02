@@ -210,6 +210,11 @@ describe Buildr, 'settings' do
       Buildr.settings.user.should == { 'foo'=>'bar' }
     end
 
+    it 'should return loaded settings.yml file' do
+      write 'home/.buildr/settings.yml', 'foo: bar'
+      Buildr.settings.user.should == { 'foo'=>'bar' }
+    end
+
     it 'should fail if settings.yaml file is not a hash' do
       write 'home/.buildr/settings.yaml', 'foo bar'
       lambda { Buildr.settings.user }.should raise_error(RuntimeError, /expecting.*settings.yaml/i)
@@ -231,6 +236,11 @@ describe Buildr, 'settings' do
       Buildr.settings.build.should == { 'foo'=>'bar' }
     end
 
+    it 'should return loaded build.yml file' do
+      write 'build.yml', 'foo: bar'
+      Buildr.settings.build.should == { 'foo'=>'bar' }
+    end
+
     it 'should fail if build.yaml file is not a hash' do
       write 'build.yaml', 'foo bar'
       lambda { Buildr.settings.build }.should raise_error(RuntimeError, /expecting.*build.yaml/i)
@@ -249,6 +259,14 @@ describe Buildr, 'settings' do
 
     it 'should return loaded profiles.yaml file' do
       write 'profiles.yaml', <<-YAML
+        development:
+          foo: bar
+      YAML
+      Buildr.settings.profiles.should == { 'development'=> { 'foo'=>'bar' } }
+    end
+
+    it 'should return loaded profiles.yml file' do
+      write 'profiles.yml', <<-YAML
         development:
           foo: bar
       YAML
