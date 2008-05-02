@@ -94,7 +94,7 @@ th, td {
   background-color: #FFFFFF;
 }
 
-th {
+th, thead td {
   border-bottom: none;
   background-color: #E5E5E5;
   text-align: left;

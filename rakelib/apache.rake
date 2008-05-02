@@ -72,10 +72,32 @@ namespace 'apache' do
     puts 'Done'
   end
 
-
-  task 'distro-links'=>['staged/site', 'apache:sign'] do |task, args|
+  task 'distro-links'=>'staged/distro' do |task, args|
     url = args.incubating ? "http://www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
       "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
+    rows = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
+      name, md5 = File.basename(pkg), MD5.file(pkg).to_s
+      %{| "#{name}":#{url}/#{name} | "#{md5}":#{url}/#{name}.md5 | "Sig":#{url}/#{name}.asc |}
+    }
+    textile = <<-TEXTILE
+h3. #{spec.name} #{spec.version}#{args.incubating && "-incubating"} (#{Time.now.strftime('%Y-%m-%d')})
+
+|_. Package |_. MD5 Checksum |_. PGP |
+#{rows.join("\n")}
+
+p>. ("Release signing keys":#{url}/KEYS)
+    TEXTILE
+    file_name = 'doc/pages/download.textile'
+    print "Adding download links to #{file_name} ... "
+    modified = File.read(file_name).sub(/h2.*binaries.*source.*/i) { |header| "#{header}\n\n#{textile}" }
+    File.open file_name, 'w' do |file|
+      file.write modified
+    end
+    puts 'Done'
+  end
+
+=begin
+  task 'distro-links'=>['staged/site', 'apache:sign'] do |task, args|
     rows = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
       name, md5 = File.basename(pkg), File.read("#{pkg}.md5").split.first
       <<-HTML
@@ -100,9 +122,9 @@ namespace 'apache' do
       file.write modified
     end
   end
+=end
 
-  file 'staged/site'=>'site' do
-    mkpath 'staged'
+  file 'staged/site'=>['distro-links', 'staged', 'site'] do
     rm_rf 'staged/site'
     cp_r 'site', 'staged'
   end
@@ -120,7 +142,7 @@ end
 
 
 task 'stage:check'=>['apache:license', 'apache:check']
-task 'stage:prepare'=>['staged/distro', 'staged/site', 'apache:distro-links'] do |task|
+task 'stage:prepare'=>['staged/distro', 'staged/site'] do |task|
   # Since this requires input (passphrase), do it at the very end.
   task.enhance do
     task('apache:sign').invoke

@@ -13,6 +13,16 @@ installation scripts.
 
 h2.  Binaries and Source Code
 
+h3. buildr 1.3.0-incubating (2008-05-01)
+
+|_. Package |_. MD5 Checksum |_. PGP |
+| "buildr-1.3.0-incubating.gem":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-incubating.gem | "37758d0a8dabc570799b0a58d23d19f0":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-incubating.gem.md5 | "Sig":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-incubating.gem.asc |
+| "buildr-1.3.0-java-incubating.gem":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-java-incubating.gem | "6a3a86740077f739c111514e0e2b9e06":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-java-incubating.gem.md5 | "Sig":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-java-incubating.gem.asc |
+| "buildr-1.3.0-incubating.tgz":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-incubating.tgz | "acd84ad8c5031962e65b0036f3bc2e76":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-incubating.tgz.md5 | "Sig":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-incubating.tgz.asc |
+| "buildr-1.3.0-incubating.zip":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-incubating.zip | "d85945f05efd0e512e6d769e3dd1cc98":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-incubating.zip.md5 | "Sig":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/buildr-1.3.0-incubating.zip.asc |
+
+p>. ("Release signing keys":http://www.apache.org/dist/incubator/buildr/1.3.0-incubating/KEYS)
+
 
 p(note). When downloading from files please check the
 "md5sum":http://www.apache.org/dev/release-signing#md5 and verify the
