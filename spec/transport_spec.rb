@@ -298,3 +298,106 @@ describe URI::HTTP, '#read' do
     URI("http://john:secret@#{@host_domain}").read
   end
 end
+
+
+describe URI::HTTP, '#write' do
+end
+
+
+describe URI::SFTP, '#write' do
+  before do
+    @uri = URI('sftp://john:secret@localhost/path/readme')
+    @content = 'Readme. Please!'
+
+    @ssh_session = mock('Net::SSH::Session')
+    @sftp_session = mock('Net::SFTP::Session')
+    @file_factory = mock('Net::SFTP::Operations::FileFactory')
+    Net::SSH.stub!(:start).with('localhost', 'john', :password=>'secret', :port=>22) do
+      Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
+      @sftp_session.should_receive(:connect!).and_return(@sftp_session)
+      @sftp_session.should_receive(:loop)
+      @sftp_session.stub!(:mkdir)
+      @sftp_session.should_receive(:file).with.and_return(@file_factory)
+      @file_factory.stub!(:open)
+      @ssh_session.should_receive(:close)
+      @ssh_session
+    end
+  end
+
+  it 'should open connection to SFTP server' do
+    @uri.write @content
+  end
+
+  it 'should create path recursively on SFTP server' do
+    @sftp_session.should_receive(:mkdir).ordered.with('', {})
+    @sftp_session.should_receive(:mkdir).ordered.with('/path', {})
+    @uri.write @content
+  end
+
+  it 'should only create paths that don\'t exist' do
+    @sftp_session.should_receive(:realpath).any_number_of_times
+    @sftp_session.should_not_receive(:mkdir)
+    @uri.write @content
+  end
+
+  it 'should open file for writing' do
+    @file_factory.should_receive(:open).with('/path/readme', 'w')
+    @uri.write @content
+  end
+
+  it 'should write contents to file' do
+    file = mock('Net::SFTP::Operations::File')
+    file.should_receive(:write).with(@content)
+    @file_factory.should_receive(:open).with('/path/readme', 'w').and_yield(file)
+    @uri.write @content
+  end
+
+end
+
+
+describe URI::SFTP, '#read' do
+  before do
+    @uri = URI('sftp://john:secret@localhost/path/readme')
+    @content = 'Readme. Please!'
+
+    @ssh_session = mock('Net::SSH::Session')
+    @sftp_session = mock('Net::SFTP::Session')
+    @file_factory = mock('Net::SFTP::Operations::FileFactory')
+    Net::SSH.stub!(:start).with('localhost', 'john', :password=>'secret', :port=>22) do
+      Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
+      @sftp_session.should_receive(:connect!).and_return(@sftp_session)
+      @sftp_session.should_receive(:loop)
+      @sftp_session.should_receive(:file).with.and_return(@file_factory)
+      @file_factory.stub!(:open)
+      @ssh_session.should_receive(:close)
+      @ssh_session
+    end
+  end
+
+  it 'should open connection to SFTP server' do
+    @uri.read
+  end
+
+  it 'should open file for reading' do
+    @file_factory.should_receive(:open).with('/path/readme', 'r')
+    @uri.read
+  end
+
+  it 'should read contents of file and return it' do
+    file = mock('Net::SFTP::Operations::File')
+    file.should_receive(:read).with(an_instance_of(Numeric)).once.and_return(@content, nil)
+    @file_factory.should_receive(:open).with('/path/readme', 'r').and_yield(file)
+    @uri.read.should eql(@content)
+  end
+
+  it 'should read contents of file and pass it to block' do
+    file = mock('Net::SFTP::Operations::File')
+    file.should_receive(:read).with(an_instance_of(Numeric)).once.and_return(@content, nil)
+    @file_factory.should_receive(:open).with('/path/readme', 'r').and_yield(file)
+    content = ''
+    @uri.read do |chunk|
+      content << chunk
+    end
+    content.should eql(@content)
+  end
+end

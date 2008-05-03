@@ -20,7 +20,6 @@ require 'net/https'
 require 'net/ssh'
 require 'net/sftp'
 require 'uri'
-require 'uri/sftp'
 require 'digest/md5'
 require 'digest/sha1'
 require 'tempfile'
@@ -342,7 +341,10 @@ module URI
   end
 
 
-  class SFTP #:nodoc:
+  class SFTP < Generic #:nodoc:
+
+    DEFAULT_PORT = 22
+    COMPONENT = [ :scheme, :userinfo, :host, :port, :path ].freeze
 
     class << self
       # Caching of passwords, so we only need to ask once.
@@ -351,16 +353,40 @@ module URI
       end
     end
 
-  protected
+    def initialize(*arg)
+      super
+    end
 
-    def write_internal(options, &block) #:nodoc:
+    def read(options = {}, &block)
       # SSH options are based on the username/password from the URI.
-      ssh_options = { :port=>port, :username=>user, :password=>password }.merge(options[:ssh_options] || {})
+      ssh_options = { :port=>port, :password=>password }.merge(options[:ssh_options] || {})
       ssh_options[:password] ||= SFTP.passwords[host]
       begin
         puts "Connecting to #{host}" if Buildr.application.options.trace
-        session = Net::SSH.start(host, ssh_options)
-        SFTP.passwords[host] = ssh_options[:password]
+        result = nil
+        Net::SFTP.start(host, user, ssh_options) do |sftp|
+          SFTP.passwords[host] = ssh_options[:password]
+          puts 'connected' if Buildr.application.options.trace
+
+          with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
+            puts "Downloading to #{path}" if Buildr.application.options.trace
+            sftp.file.open(path, 'r') do |file|
+              if block
+                while chunk = file.read(32 * 4096)
+                  block.call chunk
+                  progress << chunk
+                end
+              else
+                result = ''
+                while chunk = file.read(32 * 4096)
+                  result << chunk
+                  progress << chunk
+                end
+              end
+            end
+          end
+        end
+        return result
       rescue Net::SSH::AuthenticationFailed=>ex
         # Only if running with console, prompt for password.
         if !ssh_options[:password] && $stdout.isatty
@@ -370,38 +396,54 @@ module URI
         end
         raise
       end
+    end
 
-      session.sftp.connect do |sftp|
-        puts 'connected' if Buildr.application.options.trace
+  protected
 
-        # To create a path, we need to create all its parent. We use realpath to determine if
-        # the path already exists, otherwise mkdir fails.
-        puts "Creating path #{path}" if Buildr.application.options.trace
-        File.dirname(path).split('/').inject('') do |base, part|
-          combined = base + part
-          sftp.realpath combined rescue sftp.mkdir combined, {}
-          "#{combined}/"
-        end
+    def write_internal(options, &block) #:nodoc:
+      # SSH options are based on the username/password from the URI.
+      ssh_options = { :port=>port, :password=>password }.merge(options[:ssh_options] || {})
+      ssh_options[:password] ||= SFTP.passwords[host]
+      begin
+        puts "Connecting to #{host}" if Buildr.application.options.trace
+        Net::SFTP.start(host, user, ssh_options) do |sftp|
+          SFTP.passwords[host] = ssh_options[:password]
+          puts 'connected' if Buildr.application.options.trace
 
-        with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
-          puts "Uploading to #{path}" if Buildr.application.options.trace
-          sftp.open_handle(path, 'w') do |handle|
-            # Writing in chunks gives us the benefit of a progress bar,
-            # but also require that we maintain a position in the file,
-            # since write() with two arguments always writes at position 0.
-            pos = 0
-            while chunk = yield(32 * 4096)
-              sftp.write(handle, chunk, pos)
-              pos += chunk.size
-              progress << chunk
+          # To create a path, we need to create all its parent. We use realpath to determine if
+          # the path already exists, otherwise mkdir fails.
+          puts "Creating path #{path}" if Buildr.application.options.trace
+          File.dirname(path).split('/').inject('') do |base, part|
+            combined = base + part
+            sftp.realpath combined rescue sftp.mkdir combined, {}
+            "#{combined}/"
+          end
+
+          with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
+            puts "Uploading to #{path}" if Buildr.application.options.trace
+            sftp.file.open(path, 'w') do |file|
+              while chunk = yield(32 * 4096)
+                file.write chunk
+                progress << chunk
+              end
+              sftp.setstat(path, :permissions => options[:permissions]) if options[:permissions]
             end
-            sftp.setstat(path, :permissions => options[:permissions]) if options[:permissions]
           end
         end
+      rescue Net::SSH::AuthenticationFailed=>ex
+        # Only if running with console, prompt for password.
+        if !ssh_options[:password] && $stdout.isatty
+          password = ask("Password for #{host}:") { |q| q.echo = '*' }
+          ssh_options[:password] = password
+          retry
+        end
+        raise
       end
     end
 
   end
+
+  @@schemes['SFTP'] = SFTP
 
 
   # File URL. Keep in mind that file URLs take the form of <code>file://host/path</code>, although the host

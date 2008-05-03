@@ -18,7 +18,6 @@ require 'rake'
 require 'tempfile'
 require 'open-uri'
 $LOADED_FEATURES << 'rubygems/open-uri.rb' # avoid loading rubygems' open-uri
-require 'uri/open-sftp'
 require 'buildr/core/util'
 require 'buildr/core/transports'
 

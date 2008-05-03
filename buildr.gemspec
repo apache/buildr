@@ -38,8 +38,8 @@ Gem::Specification.new do |spec|
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '~> 0.8'
   spec.add_dependency 'builder',              '~> 2.1'
-  spec.add_dependency 'net-ssh',              '~> 1.1'
-  spec.add_dependency 'net-sftp',             '~> 1.1'
+  spec.add_dependency 'net-ssh',              '~> 2.0'
+  spec.add_dependency 'net-sftp',             '~> 2.0'
   spec.add_dependency 'rubyzip',              '~> 0.9'
   spec.add_dependency 'highline',             '~> 1.4'
   spec.add_dependency 'Antwrap',              '~> 0.7'
