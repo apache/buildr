@@ -24,6 +24,7 @@ def spec(platform = nil)
     spec = Gem::Specification.load(File.join(File.dirname(__FILE__), 'buildr.gemspec'))
     spec.platform = platform
     if platform =~ /java/
+      spec.add_dependency 'jruby-openssl', '~> 0.2'
       spec.add_dependency 'ci_reporter', '~> 1.5'
     else
       spec.add_dependency 'rjb', '~>1.1'
