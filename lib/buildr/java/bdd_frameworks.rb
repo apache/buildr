@@ -49,7 +49,7 @@ module Buildr
       project.task('test:resources').tap do |res|
         res.send :associate_with, project, bdd_dir
         res.filter.clear
-        project.path_to(:source, bdd_dir, :resources).tap { |dir| resources.from dir if File.exist?(dir) }
+        project.path_to(:source, bdd_dir, :resources).tap { |dir| res.from dir if File.exist?(dir) }
       end
       super
     end
@@ -59,7 +59,10 @@ module Buildr
     include TestFramework::JavaBDD
     self.lang = :ruby
 
-    REQUIRES = ['org.jruby:jruby-complete:jar:1.1']
+    
+    REQUIRES = []
+    REQUIRES.unshift 'org.jruby:jruby-complete:jar:1.1.1' unless RUBY_PLATFORM =~ /java/
+    
     TESTS_PATTERN = [ /_spec.rb$/ ]
     OPTIONS = [:properties, :java_args]
 
@@ -77,7 +80,9 @@ module Buildr
 
     def run(tests, dependencies) #:nodoc:
       cmd_options = task.options.only(:properties, :java_args)
+      dependencies.push *Dir.glob(File.join(jruby_home, "lib/*.jar")) if RUBY_PLATFORM =~ /java/
       cmd_options.update :classpath => dependencies, :project => task.project
+
       # TODO:  Setting up JRuby is something to do before running Buildr.
       #install_gems(cmd_options)
 
@@ -86,7 +91,6 @@ module Buildr
       ENV['CI_REPORTS'] = report_dir
 
       jruby("-Ilib", "-S", "spec",
-      #"--require", gem_path(task.project, "ci_reporter", "lib/ci/reporter/rake/rspec_loader"),
       "--require", "ci/reporter/rake/rspec_loader",
       "--format", "CI::Reporter::RSpecDoc", tests,
       cmd_options.merge({:name => "RSpec"}))
@@ -94,7 +98,7 @@ module Buildr
     end
 
     private
-    def jruby_home(project)
+    def jruby_home
       @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : File.expand_path(".jruby", ENV['HOME'])
     end
 
@@ -113,16 +117,10 @@ module Buildr
       java_args << {} unless Hash === args.last
       cmd_options = java_args.last
       project = cmd_options.delete(:project)
-      if RUBY_PLATFORM =~ /java/
-        # when run from within JRuby, use jars in launched-JRuby's classpath rather than the
-        # stated dependency
-        cmd_options[:classpath].delete_if {|e| File.basename(e) =~ /^jruby-complete-.*\.jar$/ }
-        cmd_options[:classpath].unshift *(java.lang.System.getProperty("java.class.path").split(File::PATH_SEPARATOR))
-      end
       cmd_options[:java_args] ||= []
       cmd_options[:java_args] << "-Xmx512m" unless cmd_options[:java_args].detect {|a| a =~ /^-Xmx/}
       cmd_options[:properties] ||= {}
-      cmd_options[:properties]["jruby.home"] = jruby_home(project)
+      cmd_options[:properties]["jruby.home"] = jruby_home
       Java::Commands.java(*java_args)
     end
 
