@@ -17,7 +17,7 @@
 
 
 require 'rubygems/source_info_cache'
-
+require 'stringio' # for Gem::RemoteFetcher
 
 def windows?
   Config::CONFIG['host_os'] =~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i
@@ -38,11 +38,12 @@ end
 
 def install_gem(name, ver_requirement = nil)
   dep = Gem::Dependency.new(name, ver_requirement)
+  rb_bin = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
   if Gem::SourceIndex.from_installed_gems.search(dep).empty?
     spec = Gem::SourceInfoCache.search(dep).last
     fail "#{dep} not found in local or remote repository!" unless spec
     puts "Installing #{spec} ..."
-    args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', spec.name, '-v', spec.version.to_s]
+    args = [rb_bin, '-S', 'gem', 'install', spec.name, '-v', spec.version.to_s]
     args.unshift('sudo', 'env', 'JAVA_HOME=' + ENV['JAVA_HOME']) unless windows?
     sh *args
   end
