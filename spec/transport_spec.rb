@@ -221,7 +221,9 @@ describe URI::HTTP, '#read' do
     @proxy = 'http://john:smith@myproxy:8080'
     @domain = 'domain'
     @host_domain = "host.#{@domain}"
-    @uri = URI("http://#{@host_domain}")
+    @path = "/foo/bar/baz"
+    @query = "?query"
+    @uri = URI("http://#{@host_domain}#{@path}#{@query}")
     @no_proxy_args = [@host_domain, 80]
     @proxy_args = @no_proxy_args + ['myproxy', 8080, 'john', 'smith']
     @http = mock('http')
@@ -297,6 +299,14 @@ describe URI::HTTP, '#read' do
     request.should_receive(:basic_auth).with('john', 'secret')
     URI("http://john:secret@#{@host_domain}").read
   end
+
+  it 'should include the query part when performing HTTP GET' do
+    # should this test be generalized or shared with any other URI subtypes?
+    Net::HTTP.stub!(:new).and_return(@http)
+    Net::HTTP::Get.should_receive(:new).with(/#{Regexp.escape(@query)}$/, nil)
+    @uri.read
+  end
+
 end
 
 

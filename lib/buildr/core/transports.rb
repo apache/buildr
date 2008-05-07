@@ -299,7 +299,7 @@ module URI
       http.use_ssl = true if self.instance_of? URI::HTTPS
 
       puts "Requesting #{self}"  if Buildr.application.options.trace
-      request = Net::HTTP::Get.new(path.empty? ? '/' : path, headers)
+      request = Net::HTTP::Get.new(request_uri.empty? ? '/' : request_uri, headers)
       request.basic_auth self.user, self.password if self.user
       http.request request do |response|
         case response
