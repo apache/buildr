@@ -393,10 +393,11 @@ def perform(options)
     # Create github origin aliases
     `git config alias.get "!git apache-fetch && git fetch origin"`
     `git config alias.mrg "!git apache-merge && git merge origin"`
+    `git config alias.rbs "!git rebase --onto #{svn_branch} origin/master master"`
     `git config alias.put "!git apache-push && git push origin"`
     
     # This is Victor's cronjob
-    `git config alias.synchronize "!git get && git mrg && git put"`
+    `git config alias.synchronize "!git get && git rbs && git put"`
     
     # Final notices.
     puts <<-NOTICE + notice
