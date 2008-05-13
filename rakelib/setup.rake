@@ -40,7 +40,7 @@ def install_gem(name, ver_requirement = nil)
   dep = Gem::Dependency.new(name, ver_requirement)
   rb_bin = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
   if Gem::SourceIndex.from_installed_gems.search(dep).empty?
-    spec = Gem::SourceInfoCache.search(dep).last
+    spec = Gem::SourceInfoCache.search(dep, true, true).last
     fail "#{dep} not found in local or remote repository!" unless spec
     puts "Installing #{spec} ..."
     args = [rb_bin, '-S', 'gem', 'install', spec.name, '-v', spec.version.to_s]

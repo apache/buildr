@@ -27,7 +27,8 @@ def spec(platform = nil)
       spec.add_dependency 'jruby-openssl', '~> 0.2'
       spec.add_dependency 'ci_reporter', '~> 1.5'
     else
-      spec.add_dependency 'rjb', '~>1.1'
+      # Place first on the dependency list, otherwise AntWrap picks the latest RJB.
+      spec.dependencies.unshift Gem::Dependency.new('rjb', ['~>1.1', '!= 1.1.3'])
     end
     spec
   end
