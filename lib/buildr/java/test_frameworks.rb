@@ -200,7 +200,8 @@ module Buildr
         ant.junit forking.merge(:clonevm=>options[:clonevm] || false, :dir=>task.send(:project).path_to) do
           ant.classpath :path=>dependencies.join(File::PATH_SEPARATOR)
           (options[:properties] || []).each { |key, value| ant.sysproperty :key=>key, :value=>value }
-          (options[:environment] || []).each { |key, value| ant.env :key=>key, :value=>value }
+          (options[:properties] || []).each { |key, value| ant.sysproperty :key=>key, :value=>value }
+          Array(options[:java_args]).each { |value| ant.jvmarg :value=>value }
           ant.formatter :type=>'plain'
           ant.formatter :type=>'plain', :usefile=>false # log test
           ant.formatter :type=>'xml'

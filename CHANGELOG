@@ -3,6 +3,8 @@
 * Changed: Upgraded to Net::SSH 2.0 and Net::SFTP 2.0.
 * Fixed: BUILDR-67 HTTP GET now works with query parameters (Tommy Knowlton).
 * Fixed: BUILDR-68 Now accepting JAVA_HOME setting on OS X (Nathan Hamblen).
+* Fixed: JUnit now accepts java_args and passes these arguments to the JVM
+(only applicable when forking).
 
 1.3.0 (2008-04-25)
 * Added: Testing with EasyB (Nicolas Modrzyk).
