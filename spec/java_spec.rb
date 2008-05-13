@@ -13,14 +13,26 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+require File.join(File.dirname(__FILE__), 'spec_helpers')
 
-ENV['JAVA_HOME'] ||= '/System/Library/Frameworks/JavaVM.framework/Home' if Config::CONFIG['host_os'] =~ /darwin/i
-require PLATFORM == 'java' ? 'buildr/java/jruby' : 'buildr/java/rjb'
+describe ENV, 'JAVA_HOME on OS X' do
+  before do
+    @old_home, ENV['JAVA_HOME'] = ENV['JAVA_HOME'], nil
+    Config::CONFIG.should_receive(:[]).with('host_os').and_return('darwin0.9')
+  end
 
+  it 'should point to default JVM' do
+    load File.expand_path('../lib/buildr/java.rb')
+    ENV['JAVA_HOME'].should == '/System/Library/Frameworks/JavaVM.framework/Home'
+  end
 
-require 'buildr/java/compilers'
-require 'buildr/java/test_frameworks'
-require 'buildr/java/bdd_frameworks'
-require 'buildr/java/packaging'
-require 'buildr/java/commands'
-require 'buildr/java/deprecated'
+  it 'should use value of environment variable if specified' do
+    ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.specified'
+    load File.expand_path('../lib/buildr/java.rb')
+    ENV['JAVA_HOME'].should == '/System/Library/Frameworks/JavaVM.specified'
+  end
+
+  after do
+    ENV['JAVA_HOME'] = @old_home
+  end
+end
