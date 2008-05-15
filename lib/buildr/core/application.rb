@@ -174,8 +174,8 @@ module Buildr
           find_buildfile
           load_gems
           load_artifacts
-          load_buildfile
           load_tasks
+          load_buildfile
           top_level
         end
       end
