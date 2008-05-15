@@ -175,8 +175,8 @@ module Buildr
           load_gems
           load_artifacts
           load_buildfile
-          top_level
           load_tasks
+          top_level
         end
       end
       if verbose
