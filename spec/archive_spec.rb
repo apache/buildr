@@ -42,7 +42,6 @@ describe 'ArchiveTask', :shared=>true do
 
   def create_for_merge
     zip(@archive + '.src').include(@files).tap do |task|
-      task.invoke
       yield task
     end
   end
