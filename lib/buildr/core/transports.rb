@@ -258,7 +258,7 @@ module URI
     # The block is yielded with a progress object that implements a single method.
     # Call << for each block of bytes down/uploaded.
     def with_progress_bar(show, file_name, size, &block) #:nodoc:
-      options = { :total=>size, :title=>file_name }
+      options = { :total=>size || 0, :title=>file_name }
       options[:hidden] = true unless show
       ProgressBar.start options, &block
     end
