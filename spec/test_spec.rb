@@ -374,11 +374,13 @@ describe Buildr::Project, '#test' do
 
   it 'should inherit options from parent project' do
     define 'foo' do
-      test.using :fail_on_failure=>false, :fork=>:each, :properties=>{ :foo=>'bar' }
+      test.using :fail_on_failure=>false, :fork=>:each, :properties=>{ :foo=>'bar' }, :environment=>{ 'config'=>'config.yaml' }
       define 'bar' do
+        test.using :junit
         test.options[:fail_on_failure].should be_false
         test.options[:fork].should == :each
         test.options[:properties][:foo].should == 'bar'
+        test.options[:environment]['config'].should == 'config.yaml'
       end
     end
   end
@@ -386,11 +388,13 @@ describe Buildr::Project, '#test' do
   it 'should clone options from parent project' do
     define 'foo' do
       define 'bar' do
-        test.using :fail_on_failure=>false, :fork=>:each, :properties=>{ :foo=>'bar' }
+        test.using :fail_on_failure=>false, :fork=>:each, :properties=>{ :foo=>'bar' }, :environment=>{ 'config'=>'config.yaml' }
+        test.using :junit
       end.invoke
       test.options[:fail_on_failure].should be_true
       test.options[:fork].should == :once
-      test.options[:other].should be_nil
+      test.options[:properties].should be_empty
+      test.options[:environment].should be_empty
     end
   end
 end

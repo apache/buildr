@@ -179,6 +179,18 @@ describe Buildr::JUnit do
     project('foo').test.invoke
   end
 
+  it 'should pass environment to JVM' do
+    write 'src/test/java/EnvironmentTest.java', <<-JAVA
+      public class EnvironmentTest extends junit.framework.TestCase {
+        public void testEnvironment() {
+          assertEquals("value", System.getenv("NAME"));
+        }
+      }
+    JAVA
+    define('foo').test.using :environment=>{ 'NAME'=>'value' }
+    project('foo').test.invoke
+  end
+
   it 'should set current directory' do
     mkpath 'baz'
     expected = File.expand_path('baz')
