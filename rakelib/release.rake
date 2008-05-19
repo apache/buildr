@@ -38,13 +38,24 @@ task 'release'=>['release:prepare', 'release:publish', 'release:wrapup']
 
 
 task 'next_version' do
+  next_version = spec.version.to_s.split('.').map { |v| v.to_i }.
+    zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
+
   ver_file = "lib/#{spec.name}.rb"
   if File.exist?(ver_file)
-    next_version = spec.version.to_s.split('.').map { |v| v.to_i }.
-      zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
     print "Updating #{ver_file} to next version number (#{next_version}) ... "
     modified = File.read(ver_file).sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" } 
     File.open ver_file, 'w' do |file|
+      file.write modified
+    end
+    puts 'Done'
+  end
+
+  spec_file = "#{spec.name}.gemspec"
+  if File.exist?(spec_file)
+    print "Updating #{spec_file} to next version number (#{next_version}) ... "
+    modified = File.read(spec_file).sub(/(s(?:pec)?\.version\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" } 
+    File.open spec_file, 'w' do |file|
       file.write modified
     end
     puts 'Done'
