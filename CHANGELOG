@@ -12,6 +12,7 @@ Peterson).
 * Fixed: BUILDR-75 Filter now runs if there's a target directory, even if
 there are no source files to copy over, since everyone else just checks
 resources.target for existence before depending on it.
+* Fixed: BUILDR-63 Possible fix.
 
 1.3.0 (2008-04-25)
 * Added: Testing with EasyB (Nicolas Modrzyk).
