@@ -83,7 +83,7 @@ module Buildr
     # For example:
     #   filter.from('src').into('target').using('build'=>Time.now)
     def into(dir)
-      @target = file(File.expand_path(dir.to_s)) { |task| run if target == task && !sources.empty? }
+      @target = file(File.expand_path(dir.to_s)) { |task| run if target == task }
       self
     end
 
@@ -160,7 +160,6 @@ module Buildr
     #
     # Runs the filter.
     def run
-      raise 'No source directory specified, where am I going to find the files to filter?' if sources.empty?
       sources.each { |source| raise "Source directory #{source} doesn't exist" unless File.exist?(source.to_s) }
       raise 'No target directory specified, where am I going to copy the files to?' if target.nil?
 
@@ -176,10 +175,10 @@ module Buildr
         map
       end
         
+      mkpath target.to_s
       return false if copy_map.empty?
 
       verbose(Buildr.application.options.trace || false) do
-        mkpath target.to_s
         copy_map.each do |path, source|
           dest = File.expand_path(path, target.to_s)
           if File.directory?(source)
@@ -198,7 +197,7 @@ module Buildr
                 mapped = regexp_mapper(content) { |key| mapping[key] }
               end
                 #gsub(/\$\{[^}]*\}/) { |str| mapping[str[2..-2]] || str }
-              File.open(dest, 'wb') { |file| file.write mapped }
+                File.open(dest, 'wb') { |file| file.write mapped }
             when nil # No mapping.
               cp source, dest
               File.chmod(0664, dest)
@@ -207,7 +206,7 @@ module Buildr
             end
           end
         end
-        touch target.to_s 
+        touch target.to_s
       end
       true
     end

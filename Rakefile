@@ -28,7 +28,7 @@ def spec(platform = nil)
       spec.add_dependency 'ci_reporter', '1.5.1' # must come after builder dependency
     else
       # Place first on the dependency list, otherwise AntWrap picks the latest RJB.
-      spec.dependencies.unshift Gem::Dependency.new('rjb', '=>1.1.0', '<= 1.1.2'])
+      spec.dependencies.unshift Gem::Dependency.new('rjb', ['>=1.1.0', '<= 1.1.2'])
     end
     spec
   end

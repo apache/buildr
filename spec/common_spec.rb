@@ -411,10 +411,6 @@ describe Buildr::Filter do
     @filter.from('src').into('target').run.should be(false)
   end
 
-  it 'should fail is source directory not set' do
-    lambda { Filter.new.into('target').run }.should raise_error(RuntimeError, /No source directory/)
-  end
-
   it 'should fail if source directory doesn\'t exist' do
     lambda { Filter.new.from('srced').into('target').run }.should raise_error(RuntimeError, /doesn't exist/)
   end

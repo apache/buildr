@@ -403,7 +403,7 @@ module Buildr
       @filter = Buildr::Filter.new
       @filter.using Buildr.settings.profile['filter'] if Hash === Buildr.settings.profile['filter']
       enhance do
-        filter.run if target && !sources.empty?
+        filter.run if target
       end
     end
 

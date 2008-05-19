@@ -458,6 +458,7 @@ end
 describe Buildr::Project, 'test:resources' do
   it 'should ignore resources unless they exist' do
     define('foo').test.resources.sources.should be_empty
+    project('foo').test.resources.target.should be_nil
   end
 
   it 'should pick resources from src/test/resources if found' do
@@ -469,6 +470,11 @@ describe Buildr::Project, 'test:resources' do
     write 'src/test/resources/foo', 'Foo'
     define('foo', :target=>'targeted').test.invoke
     file('targeted/test/resources/foo').should contain('Foo')
+  end
+
+  it 'should create target directory even if no files to copy' do
+    define('foo').test.resources.filter.into('resources')
+    lambda { file(File.expand_path('resources')).invoke }.should change { File.exist?('resources') }.to(true)
   end
 
   it 'should execute alongside compile task' do
