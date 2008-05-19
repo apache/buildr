@@ -71,7 +71,7 @@ module Buildr
 
     def initialize(xml) #:nodoc:
       @project = XmlSimple.xml_in(xml)
-      @parent = POM.load(pom_to_hash(project["parent"].first, properties).merge(:type=>'pom'))
+      @parent = POM.load(pom_to_hash(project["parent"].first).merge(:type=>'pom')) if project['parent']
     end
 
     # :call-seq:

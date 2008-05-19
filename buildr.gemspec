@@ -16,7 +16,7 @@
 
 Gem::Specification.new do |spec|
   spec.name           = 'buildr'
-  spec.version        = '1.3.0'
+  spec.version        = '1.3.1'
   spec.author         = 'Apache Buildr'
   spec.email          = "#{spec.name}-user@incubator.apache.org"
   spec.homepage       = "http://incubator.apache.org/#{spec.name}/"
