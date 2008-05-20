@@ -311,6 +311,129 @@ end
 
 
 describe URI::HTTP, '#write' do
+  before do
+    @content = 'Readme. Please!'
+    @uri = URI('http://john:secret@host.domain/foo/bar/baz.jar')
+    @http = mock('Net::HTTP')
+    @http.stub!(:request).and_return(Net::HTTPOK.new(nil, nil, nil))
+    Net::HTTP.stub!(:new).and_return(@http)
+  end
+
+  it 'should open connection to HTTP server' do
+    Net::HTTP.should_receive(:new).with('host.domain', 80).and_return(@http)
+    @uri.write @content
+  end
+
+  it 'should use HTTP basic authentication' do
+    @http.should_receive(:request) do |request|
+      request['authorization'].should == ('Basic ' + ['john:secret'].pack('m').delete("\r\n"))
+      Net::HTTPOK.new(nil, nil, nil)
+    end
+    @uri.write @content
+  end
+
+  it 'should use HTTPS if applicable' do
+    Net::HTTP.should_receive(:new).with('host.domain', 443).and_return(@http)
+    @http.should_receive(:use_ssl=).with(true)
+    URI(@uri.to_s.sub(/http/, 'https')).write @content
+  end
+
+  it 'should upload file with PUT request' do
+    @http.should_receive(:request) do |request|
+      request.should be_kind_of(Net::HTTP::Put)
+      Net::HTTPOK.new(nil, nil, nil)
+    end
+    @uri.write @content
+  end
+
+  it 'should set Content-Length header' do
+    @http.should_receive(:request) do |request|
+      request.content_length.should == @content.size
+      Net::HTTPOK.new(nil, nil, nil)
+    end
+    @uri.write @content
+  end
+
+  it 'should set Content-MD5 header' do
+    @http.should_receive(:request) do |request|
+      request['Content-MD5'].should == Digest::MD5.hexdigest(@content)
+      Net::HTTPOK.new(nil, nil, nil)
+    end
+    @uri.write @content
+  end
+
+  it 'should send entire content' do
+    @http.should_receive(:request) do |request|
+      body_stream = request.body_stream
+      body_stream.read(1024).should == @content
+      body_stream.read(1024).should be_nil
+      Net::HTTPOK.new(nil, nil, nil)
+    end
+    @uri.write @content
+  end
+
+  it 'should fail on 4xx response' do
+    @http.should_receive(:request) do |request|
+      Net::HTTPBadRequest.new(nil, nil, nil)
+    end
+    lambda { @uri.write @content }.should raise_error(RuntimeError, /failed to upload/i)
+  end
+
+  it 'should fail on 5xx response' do
+    @http.should_receive(:request) do |request|
+      Net::HTTPServiceUnavailable.new(nil, nil, nil)
+    end
+    lambda { @uri.write @content }.should raise_error(RuntimeError, /failed to upload/i)
+  end
+
+end
+
+
+describe URI::SFTP, '#read' do
+  before do
+    @uri = URI('sftp://john:secret@localhost/path/readme')
+    @content = 'Readme. Please!'
+
+    @ssh_session = mock('Net::SSH::Session')
+    @sftp_session = mock('Net::SFTP::Session')
+    @file_factory = mock('Net::SFTP::Operations::FileFactory')
+    Net::SSH.stub!(:start).with('localhost', 'john', :password=>'secret', :port=>22) do
+      Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
+      @sftp_session.should_receive(:connect!).and_return(@sftp_session)
+      @sftp_session.should_receive(:loop)
+      @sftp_session.should_receive(:file).with.and_return(@file_factory)
+      @file_factory.stub!(:open)
+      @ssh_session.should_receive(:close)
+      @ssh_session
+    end
+  end
+
+  it 'should open connection to SFTP server' do
+    @uri.read
+  end
+
+  it 'should open file for reading' do
+    @file_factory.should_receive(:open).with('/path/readme', 'r')
+    @uri.read
+  end
+
+  it 'should read contents of file and return it' do
+    file = mock('Net::SFTP::Operations::File')
+    file.should_receive(:read).with(an_instance_of(Numeric)).once.and_return(@content, nil)
+    @file_factory.should_receive(:open).with('/path/readme', 'r').and_yield(file)
+    @uri.read.should eql(@content)
+  end
+
+  it 'should read contents of file and pass it to block' do
+    file = mock('Net::SFTP::Operations::File')
+    file.should_receive(:read).with(an_instance_of(Numeric)).once.and_return(@content, nil)
+    @file_factory.should_receive(:open).with('/path/readme', 'r').and_yield(file)
+    content = ''
+    @uri.read do |chunk|
+      content << chunk
+    end
+    content.should eql(@content)
+  end
 end
 
 
@@ -362,52 +485,4 @@ describe URI::SFTP, '#write' do
     @uri.write @content
   end
 
-end
-
-
-describe URI::SFTP, '#read' do
-  before do
-    @uri = URI('sftp://john:secret@localhost/path/readme')
-    @content = 'Readme. Please!'
-
-    @ssh_session = mock('Net::SSH::Session')
-    @sftp_session = mock('Net::SFTP::Session')
-    @file_factory = mock('Net::SFTP::Operations::FileFactory')
-    Net::SSH.stub!(:start).with('localhost', 'john', :password=>'secret', :port=>22) do
-      Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
-      @sftp_session.should_receive(:connect!).and_return(@sftp_session)
-      @sftp_session.should_receive(:loop)
-      @sftp_session.should_receive(:file).with.and_return(@file_factory)
-      @file_factory.stub!(:open)
-      @ssh_session.should_receive(:close)
-      @ssh_session
-    end
-  end
-
-  it 'should open connection to SFTP server' do
-    @uri.read
-  end
-
-  it 'should open file for reading' do
-    @file_factory.should_receive(:open).with('/path/readme', 'r')
-    @uri.read
-  end
-
-  it 'should read contents of file and return it' do
-    file = mock('Net::SFTP::Operations::File')
-    file.should_receive(:read).with(an_instance_of(Numeric)).once.and_return(@content, nil)
-    @file_factory.should_receive(:open).with('/path/readme', 'r').and_yield(file)
-    @uri.read.should eql(@content)
-  end
-
-  it 'should read contents of file and pass it to block' do
-    file = mock('Net::SFTP::Operations::File')
-    file.should_receive(:read).with(an_instance_of(Numeric)).once.and_return(@content, nil)
-    @file_factory.should_receive(:open).with('/path/readme', 'r').and_yield(file)
-    content = ''
-    @uri.read do |chunk|
-      content << chunk
-    end
-    content.should eql(@content)
-  end
 end

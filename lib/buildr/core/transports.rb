@@ -22,6 +22,7 @@ require 'net/sftp'
 require 'uri'
 require 'digest/md5'
 require 'digest/sha1'
+require 'stringio'
 require 'tempfile'
 require 'buildr/core/progressbar'
 
@@ -264,11 +265,11 @@ module URI
     end
 
     # :call-seq:
-    #   proxy_uri() => URI?
+    #   proxy_uri => URI?
     #
     # Returns the proxy server to use. Obtains the proxy from the relevant environment variable (e.g. HTTP_PROXY).
     # Supports exclusions based on host name and port number from environment variable NO_PROXY.
-    def proxy_uri()
+    def proxy_uri
       proxy = ENV["#{scheme.upcase}_PROXY"]
       proxy = URI.parse(proxy) if String === proxy
       excludes = ENV['NO_PROXY'].to_s.split(/\s*,\s*/).compact
@@ -288,8 +289,89 @@ module URI
     # See URI::Generic#read
     def read(options = nil, &block)
       options ||= {}
-      headers = { 'If-Modified-Since' => CGI.rfc1123_date(options[:modified].utc) } if options[:modified]
+      connect do |http|
+        puts "Requesting #{self}"  if Buildr.application.options.trace
+        headers = { 'If-Modified-Since' => CGI.rfc1123_date(options[:modified].utc) } if options[:modified]
+        request = Net::HTTP::Get.new(request_uri.empty? ? '/' : request_uri, headers)
+        request.basic_auth self.user, self.password if self.user
+        http.request request do |response|
+          case response
+          when Net::HTTPNotModified
+            # No modification, nothing to do.
+            puts 'Not modified since last download' if Buildr.application.options.trace
+            return nil
+          when Net::HTTPRedirection
+            # Try to download from the new URI, handle relative redirects.
+            puts "Redirected to #{response['Location']}" if Buildr.application.options.trace
+            return (self + URI.parse(response['location'])).read(options, &block)
+          when Net::HTTPOK
+            puts "Downloading #{self}" if verbose
+            result = nil
+            with_progress_bar options[:progress], path.split('/').last, response.content_length do |progress|
+              if block
+                response.read_body do |chunk|
+                  block.call chunk
+                  progress << chunk
+                end
+              else
+                result = ''
+                response.read_body do |chunk|
+                  result << chunk
+                  progress << chunk
+                end
+              end
+            end
+            return result
+          when Net::HTTPNotFound
+            raise NotFoundError, "Looking for #{self} and all I got was a 404!"
+          else
+            raise RuntimeError, "Failed to download #{self}: #{response.message}"
+          end
+        end
+      end
+    end
 
+  private
+
+    def write_internal(options, &block) #:nodoc:
+      options ||= {}
+      connect do |http|
+        puts "Uploading to #{path}" if Buildr.application.options.trace
+        content = StringIO.new
+        while chunk = yield(32 * 4096)
+          content << chunk
+        end
+        headers = { 'Content-MD5'=>Digest::MD5.hexdigest(content.string) }
+        request = Net::HTTP::Put.new(request_uri.empty? ? '/' : request_uri, headers)
+        request.basic_auth self.user, self.password if self.user
+        response = nil
+        with_progress_bar options[:progress], path.split('/').last, content.size do |progress|
+          request.content_length = content.size
+          content.rewind
+          stream = Object.new
+          class << stream ; self ;end.send :define_method, :read do |count|
+            bytes = content.read(count)
+            progress << bytes if bytes
+            bytes
+          end
+          request.body_stream = stream
+          response = http.request(request)
+        end
+
+        case response
+        when Net::HTTPRedirection
+          # Try to download from the new URI, handle relative redirects.
+          puts "Redirected to #{response['Location']}" if Buildr.application.options.trace
+          content.rewind
+          return (self + URI.parse(response['location'])).write_internal(options) { |bytes| content.read(bytes) }
+        when Net::HTTPSuccess
+        else
+          raise RuntimeError, "Failed to upload #{self}: #{response.message}"
+        end
+      end
+    end
+
+    def connect
       if proxy = proxy_uri
         proxy = URI.parse(proxy) if String === proxy
         http = Net::HTTP.new(host, port, proxy.host, proxy.port, proxy.user, proxy.password)
@@ -297,45 +379,7 @@ module URI
         http = Net::HTTP.new(host, port)
       end
       http.use_ssl = true if self.instance_of? URI::HTTPS
-
-      puts "Requesting #{self}"  if Buildr.application.options.trace
-      request = Net::HTTP::Get.new(request_uri.empty? ? '/' : request_uri, headers)
-      request.basic_auth self.user, self.password if self.user
-      http.request request do |response|
-        case response
-        #case response = http.request(request)
-        when Net::HTTPNotModified
-          # No modification, nothing to do.
-          puts 'Not modified since last download' if Buildr.application.options.trace
-          return nil
-        when Net::HTTPRedirection
-          # Try to download from the new URI, handle relative redirects.
-          puts "Redirected to #{response['Location']}" if Buildr.application.options.trace
-          return (self + URI.parse(response['location'])).read(options, &block)
-        when Net::HTTPOK
-          puts "Downloading #{self}" if verbose
-          result = nil
-          with_progress_bar options[:progress], path.split('/').last, response.content_length do |progress|
-            if block
-              response.read_body do |chunk|
-                block.call chunk
-                progress << chunk
-              end
-            else
-              result = ''
-              response.read_body do |chunk|
-                result << chunk
-                progress << chunk
-              end
-            end
-          end
-          return result
-        when Net::HTTPNotFound
-          raise NotFoundError, "Looking for #{self} and all I got was a 404!"
-        else
-          raise RuntimeError, "Failed to download #{self}: #{response.message}"
-        end
-      end
+      yield http
     end
 
   end
@@ -490,14 +534,14 @@ module URI
       end
     end
 
-    def to_s()
+    def to_s
       "file://#{host}#{path}"
     end
 
     # The URL path always starts with a backslash. On most operating systems (Linux, Darwin, BSD) it points
     # to the absolute path on the file system. But on Windows, it comes before the drive letter, creating an
     # unusable path, so real_path fixes that. Ugly but necessary hack.
-    def real_path() #:nodoc:
+    def real_path #:nodoc:
       RUBY_PLATFORM =~ /win32/ && path =~ /^\/[a-zA-Z]:\// ? path[1..-1] : path
     end
 
