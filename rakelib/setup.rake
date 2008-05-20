@@ -45,6 +45,7 @@ def install_gem(name, ver_requirement = nil)
     puts "Installing #{spec} ..."
     args = [rb_bin, '-S', 'gem', 'install', spec.name, '-v', spec.version.to_s]
     args.unshift('sudo', 'env', 'JAVA_HOME=' + ENV['JAVA_HOME']) unless windows?
+    args = args.map{|a| a.inspect}.join(' ') if windows?
     sh *args
   end
 end
