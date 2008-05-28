@@ -36,7 +36,7 @@ def which(name)
 end
 
 
-def install_gem(name, ver_requirement = nil)
+def install_gem(name, ver_requirement = ['> 0'])
   dep = Gem::Dependency.new(name, ver_requirement)
   rb_bin = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
   if Gem::SourceIndex.from_installed_gems.search(dep).empty?
