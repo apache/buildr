@@ -43,8 +43,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rubyzip',              '0.9.1'
   spec.add_dependency 'highline',             '1.4.0'
   spec.add_dependency 'Antwrap',              '0.7.0'
-  spec.add_dependency 'rspec',                '1.1.3'
+  spec.add_dependency 'rspec',                '1.1.4'
   spec.add_dependency 'xml-simple',           '1.0.11'
   spec.add_dependency 'archive-tar-minitar',  '0.5.2'
-  spec.add_dependency 'rubyforge',            '0.4.5'
+  spec.add_dependency 'rubyforge',            '1.0.0'
 end

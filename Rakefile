@@ -16,7 +16,6 @@
 
 require 'rake/gempackagetask'
 
-
 def spec(platform = nil)
   @specs ||= {}
   platform ||= RUBY_PLATFORM =~ /java/ ? 'java' : 'ruby'
