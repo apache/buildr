@@ -177,19 +177,9 @@ describe 'scalac compiler options' do
     scalac_args.should_not include('-optimise')
   end
 
-  it 'should not set source option by default' do
-    compile_task.options.source.should be_nil
-    scalac_args.should_not include('-source')
-  end
-
   it 'should not set target option by default' do
     compile_task.options.target.should be_nil
     scalac_args.should_not include('-target')
-  end
-
-  it 'should use -source nn argument if source option set' do
-    compile_task.using(:source=>'1.5')
-    scalac_args.should include('-source', '1.5')
   end
 
   it 'should use -target:xxx argument if target option set' do
@@ -219,13 +209,12 @@ describe 'scalac compiler options' do
 
   it 'should inherit options from parent' do
     define 'foo' do
-      compile.using(:warnings=>true, :debug=>true, :deprecation=>true, :source=>'1.5', :target=>'1.4')
+      compile.using(:warnings=>true, :debug=>true, :deprecation=>true, :target=>'1.4')
       define 'bar' do
         compile.using(:scalac)
         compile.options.warnings.should be_true
         compile.options.debug.should be_true
         compile.options.deprecation.should be_true
-        compile.options.source.should eql('1.5')
         compile.options.target.should eql('1.4')
       end
     end

@@ -100,7 +100,6 @@ module Buildr
     # * :warnings    -- Generate warnings if true (opposite of -nowarn).
     # * :deprecation -- Output source locations where deprecated APIs are used.
     # * :optimise    -- Generates faster bytecode by applying optimisations to the program.
-    # * :source      -- Source compatibility with specified release.
     # * :target      -- Class file compatibility with specified release.
     # * :debug       -- Generate debugging info.
     # * :other       -- Array of options to pass to the Scalac compiler as is, e.g. -Xprint-types
@@ -119,7 +118,7 @@ module Buildr
         end
       end
 
-      OPTIONS = [:warnings, :deprecation, :optimise, :source, :target, :debug, :other]
+      OPTIONS = [:warnings, :deprecation, :optimise, :target, :debug, :other]
       Java.classpath << dependencies unless Scalac.use_fsc
 
       specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
@@ -167,7 +166,6 @@ module Buildr
         args << "-g" if options[:debug]
         args << "-deprecation" if options[:deprecation]
         args << "-optimise" if options[:optimise]
-        args << "-source" << options[:source].to_s if options[:source]
         args << "-target:jvm-" + options[:target].to_s if options[:target]
         args + Array(options[:other])
       end
