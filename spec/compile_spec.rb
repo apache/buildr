@@ -23,19 +23,18 @@ module CompilerHelper
   end
 
   def sources
-    @sources ||= ['Test1.java', 'Test2.java'].map { |f| File.join('src/java', f) }.
+    @sources ||= ['Test1.java', 'Test2.java'].map { |f| File.join('src/main/java', f) }.
       each { |src| write src, "class #{src.pathmap('%n')} {}" }
   end
 
   def jars
     @jars ||= begin
-      write 'src/main/java/Dependency.java', 'class Dependency { }'
-      define 'jars', :version=>'1.0' do
-        compile.into('dependency')
+      write 'jars/src/main/java/Dependency.java', 'class Dependency { }'
+      define 'jars', :version=>'1.0', :base_dir => 'jars' do
         package(:jar, :id=>'jar1')
         package(:jar, :id=>'jar2')
       end
-      project('jars').packages.each(&:invoke).map(&:to_s)
+      project('jars').packages.map(&:to_s)
     end
   end
 end
@@ -188,7 +187,7 @@ describe Buildr::CompileTask, '#dependencies' do
   end
 
   it 'should allow artifacts' do
-    artifact('group:id:jar:1.0') { |task| mkpath File.dirname(task.to_s) ; cp jars.first.to_s, task.to_s }
+    artifact('group:id:jar:1.0') { |task| mkpath File.dirname(task.to_s) ; cp jars.first.to_s, task.to_s }.enhance jars
     compile_task.from(sources).with('group:id:jar:1.0').into('classes').invoke
   end
 
@@ -325,6 +324,7 @@ describe Buildr::CompileTask, '#invoke' do
   end
 
   it 'should force compilation if dependencies newer than compiled' do
+    jars; project('jars').task("package").invoke
     # On my machine the times end up the same, so need to push dependencies in the past.
     time = Time.now
     sources.map { |src| src.pathmap("#{compile_task.target}/%n.class") }.
@@ -334,10 +334,11 @@ describe Buildr::CompileTask, '#invoke' do
   end
 
   it 'should not force compilation if dependencies older than compiled' do
+    jars; project('jars').task("package").invoke
     time = Time.now
-    sources.map { |src| src.pathmap("#{compile_task.target}/%n.class") }.
+    jars.each { |jar| File.utime(time - 1 , time - 1, jar) }
+    sources.map { |src| File.utime(time, time, src); src.pathmap("#{compile_task.target}/%n.class") }.
       each { |kls| write kls ; File.utime(time, time, kls) }
-    jars.each { |jar| File.utime(time - 1, time - 1, jar) }
     lambda { compile_task.from(sources).with(jars).invoke }.should_not run_task('foo:compile')
   end
 

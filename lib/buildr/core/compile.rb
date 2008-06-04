@@ -168,17 +168,17 @@ module Buildr
       def compile_map(sources, target)
         target_ext = self.class.target_ext
         ext_glob = Array(self.class.source_ext).join(',')
-        sources.flatten.inject({}) do |map, source|
+        sources.flatten.map{|f| File.expand_path(f)}.inject({}) do |map, source|
           if File.directory?(source)
             FileList["#{source}/**/*.{#{ext_glob}}"].reject { |file| File.directory?(file) }.
-              each { |file| map[file] = File.join(target, Util.relative_path(source, file).ext(target_ext)) }
+              each { |file| map[file] = File.join(target, Util.relative_path(file, source).ext(target_ext)) }
           else
             map[source] = File.join(target, File.basename(source).ext(target_ext))
           end
           map
         end
       end
-
+      
     end
 
   end
@@ -223,7 +223,7 @@ module Buildr
           raise 'No compiler selected and can\'t determine which compiler to use' unless compiler
           raise 'No target directory specified' unless target
           mkpath target.to_s, :verbose=>false
-          puts "Compiling #{task.name.gsub(/:[^:]*$/, '')}" if verbose
+          puts "Compiling #{task.name.gsub(/:[^:]*$/, '')} into #{target.to_s}" if verbose
           @compiler.compile(sources.map(&:to_s), target.to_s, dependencies.map(&:to_s))
           # By touching the target we let other tasks know we did something,
           # and also prevent recompiling again for dependencies.
