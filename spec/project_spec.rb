@@ -194,6 +194,18 @@ describe Layout do
     @layout[:foo, :bar] = 'none'
     @layout.expand(:foo, :bar).should eql('none')
   end
+
+  it 'should map strings to path' do
+    @layout[:foo, "bar"] = 'none'
+    @layout.expand(:foo, :bar).should eql('none')
+    @layout.expand(:foo, 'bar').should eql('none')
+  end
+
+  it 'should ignore nil elements' do
+    @layout[:foo, :bar] = 'none'
+    @layout.expand(:foo, nil, :bar).should eql('none')
+    @layout.expand(nil, :foo).should eql('foo')
+  end
   
   it 'should return nil if path not mapped' do
     @layout[:foo].should be_nil
