@@ -36,7 +36,11 @@ describe Buildr::VersionRequirement, '.create' do
   end
 
   it 'should create a single version requirement' do 
-    create('1.0').should_not have_alternatives
+    create('1.0').should_not be_composed
+  end
+
+  it 'should create a composed version requirement' do 
+    create('1.0 | 2.1').should be_composed
   end
 end
 
