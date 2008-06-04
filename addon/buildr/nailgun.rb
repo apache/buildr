@@ -315,6 +315,7 @@ module Buildr
     end
 
     module Util
+      extend Buildr::Util
       extend self
 
       def find_buildfile(pwd, candidates, nosearch=false)
@@ -457,7 +458,7 @@ module Buildr
         end
 
         def last_modification
-          File.timestamp(path)
+          Util.timestamp(path)
         end
         
         def should_be_loaded?
@@ -841,7 +842,7 @@ module Buildr
         puts "Starting #{$nailgun_server}"
         $nailgun_server.start_server
 
-        is_win = Buildr::Util.win_os?
+        is_win = Util.win_os?
         bin_path = File.expand_path(installed_bin.to_s.pathmap("%d"))
         bin_name = installed_bin.to_s.pathmap("%f")
 
