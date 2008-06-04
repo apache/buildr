@@ -64,6 +64,7 @@ module Buildr
     #   puts default.expand(:source, :main, :java)
     #   => "src/main/java"
     def expand(*args)
+      args = args.compact.reject { |s| s.to_s.empty? }.map(&:to_sym)
       return '' if args.empty?
       @mapping[args] ||= File.join(*[expand(*args[0..-2]), args.last.to_s].reject(&:empty?)) if args.size > 1
       return @mapping[args] || args.first.to_s
