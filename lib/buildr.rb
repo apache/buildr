@@ -24,7 +24,7 @@ require 'highline/import'
 require 'builder' # A different kind of buildr, one we use to create XML.
 
 module Buildr
-  VERSION = '1.3.1'.freeze # unless const_defined?(:VERSION)
+  VERSION = '1.3.2'.freeze # unless const_defined?(:VERSION)
 end
 
 require 'buildr/core'
