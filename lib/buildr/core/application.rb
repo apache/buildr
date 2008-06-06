@@ -35,6 +35,7 @@
 # SOFTWARE.
 
 
+require 'highline/import'
 require 'benchmark'
 require 'rake'
 require 'rubygems/source_info_cache'
