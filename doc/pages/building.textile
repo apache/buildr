@@ -249,7 +249,6 @@ also override this by setting the environment variable @debug@ to @off@. |
 program. |
 | @:other@        | Array of options passed to the compiler (e.g.
 @:other=>'-Xprint-types'@). |
-| @:source@       | Source code compatibility (e.g. '1.5'). |
 | @:target@       | Bytecode compatibility (e.g. '1.4'). |
 | @:warnings@     | Issue warnings when compiling.  True when running in verbose
 mode. |
