@@ -18,6 +18,7 @@ $LOADED_FEATURES << 'jruby' unless RUBY_PLATFORM =~ /java/ # Pretend to have JRu
 require 'buildr/jetty'
 require 'buildr/nailgun'
 repositories.remote << 'http://repo1.maven.org/maven2'
+repositories.remote << 'http://scala-tools.org/repo-releases/'
 
 
 define 'buildr' do
