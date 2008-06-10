@@ -312,8 +312,7 @@ module Buildr
 
     # ScalaTest ant task
     Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}"
-    Java.classpath << "org.scalatest:scalatest:jar:#{VERSION}"
-    #Java.classpath << REQUIRES
+    Java.classpath << REQUIRES
 
     include TestFramework::JavaTest
 
