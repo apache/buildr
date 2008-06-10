@@ -90,7 +90,22 @@ module Buildr
     REQUIRES = ["jmock:jmock:jar:#{VERSION}"]
   end
 
+  # Specs is available when using ScalaTest
+  module ScalaSpecs
+    # Specs version number.
+    VERSION = '1.2.9' unless const_defined?('VERSION')
+    # Specs artifact(s)
+    REQUIRES = ["org.specs:specs:jar:#{VERSION}"]
+  end
 
+  # ScalaCheck is available when using ScalaTest
+  module ScalaCheck
+    # ScalaCheck version number.
+    VERSION = '1.3' unless const_defined?('VERSION')
+    # ScalaCheck artifact(s)
+    REQUIRES = ["org.scalacheck:scalacheck:jar:#{VERSION}"]
+  end
+  
   # JUnit test framework, the default test framework for Java tests.
   #
   # Support the following options:
@@ -249,7 +264,7 @@ module Buildr
   class TestNG < TestFramework::Base
 
     # TestNG version number.
-    VERSION = '5.5' unless const_defined?('VERSION')
+    VERSION = '5.7' unless const_defined?('VERSION')
     # TestNG specification.
     REQUIRES = ["org.testng:testng:jar:jdk15:#{VERSION}"] + JMock::REQUIRES
 
@@ -278,11 +293,131 @@ module Buildr
 
   end
 
-end
+  # ScalaTest framework, the default test framework for Scala tests.
+  #
+  # Support the following options:
+  # * :properties  -- Hash of system properties available to the test case.
+  # * :environment -- Hash of environment variables available to the test case.
+  # * :java_args   -- Arguments passed as is to the JVM.
+  class ScalaTest < TestFramework::Base
+    
+    # ScalaTest version number.
+    VERSION = '0.9.3' unless const_defined?('VERSION')
+    
+    # ScalaTest dependencies
+    REQUIRES = ["org.scalatest:scalatest:jar:#{VERSION}"] + 
+               JMock::REQUIRES + 
+               ScalaSpecs::REQUIRES + 
+               ScalaCheck::REQUIRES
+
+    # ScalaTest ant task
+    Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}"
+    Java.classpath << "org.scalatest:scalatest:jar:#{VERSION}"
+    #Java.classpath << REQUIRES
+
+    include TestFramework::JavaTest
+
+    # annotation-based group inclusion
+    attr_accessor :group_includes
+    
+    # annotation-based gropu exclusion
+    attr_accessor :group_excludes
+    
+    def initialize(test_task, options)
+      super
+      @group_includes = []
+      @group_excludes = []
+    end
+
+    def tests(dependencies) #:nodoc:
+      suites = filter_classes(dependencies, :interfaces => %w{org.scalatest.Suite})
+      # we should really filter using :class => %w{org.specs.Specification} instead of naming convention
+      specs = filter_classes(dependencies, :class_names => [/Specs?$/])
+      [suites, specs].flatten
+    end
+
+    def run(tests, dependencies) #:nodoc:
+      mkpath task.report_to.to_s
+      success = []
+      scalatest = tests.select { |t| t !~ /Specs?$/ }
+      specs = tests.select { |t| t =~ /Specs?$/ }
+
+      # Specs
+      #options = { :nostacktrace => false }.merge(options)
+      nostacktrace = (options[:nostacktrace]) ? "-ns" : ""
+      cmd_options = { :properties => options[:properties],
+                      :java_args => options[:java_args],
+                      :classpath => dependencies}
+      specs.each do |spec|
+        Java.load
+        begin
+          Java::Commands.java(spec, {:classpath => dependencies})
+        rescue => e
+          print e.message
+        else
+          success << spec
+        end
+      end
+
+      # ScalaTest
+      reporter_options = 'TFGBSAR' # testSucceeded, testFailed, testIgnored, suiteAborted, runStopped, runAborted, runCompleted
+      scalatest.each do |suite|
+        puts "ScalaTest #{suite.inspect}" if verbose
+        # Use Ant to execute the ScalaTest task, gives us performance and reporting.
+        reportFile = File.join(task.report_to.to_s, "TEST-#{suite}.txt")
+        Buildr.ant('scalatest') do |ant|
+          ant.taskdef :name=>'scalatest', :classname=>'org.scalatest.tools.ScalaTestTask'
+          ant.scalatest :runpath=>dependencies.join(File::PATH_SEPARATOR) do
+            ant.suite    :classname=>suite
+            ant.reporter :type=>'stdout', :config=>reporter_options
+            ant.reporter :type=>'file', :filename=> reportFile, :config=>reporter_options
+            ant.includes group_includes.join(" ") if group_includes
+            ant.excludes group_excludes.join(" ") if group_excludes
+            (options[:properties] || []).each { |name, value| ant.property :name=>name, :value=>value }
+          end
+        end
+        
+        # Parse for failures, errors, etc.
+        # This is a bit of a pain right now because ScalaTest doesn't flush its
+        # output synchronously before the Ant test finishes so we have to loop 
+        # and wait for an indication that the test run was completed. 
+        failed = false
+        completed = false
+        wait = 0
+        while (!completed) do
+          File.open(reportFile, "r") do |input|
+            while (line = input.gets) do
+              failed = (line =~ /(TEST FAILED -)|(RUN STOPPED)|(RUN ABORTED)/) unless failed
+              completed |= (line =~ /Run completed\./)
+              break if (failed || completed)
+            end
+          end
+          wait += 1
+          break if (failed || wait > 10) 
+          unless completed
+            sleep(1)
+          end
+        end
+        success << suite if (completed && !failed)
+      end
+      
+      success
+    end # run
+
+    class << self
+      def applies_to?(project) #:nodoc:
+        project.test.compile.language == :scala
+      end        
+    end
+
+  end # ScalaTest
+
+end # Buildr
 
 
 Buildr::TestFramework << Buildr::JUnit
 Buildr::TestFramework << Buildr::TestNG
+Buildr::TestFramework << Buildr::ScalaTest
 
 # Backward compatibility crap.
 Buildr::JUnit::JUNIT_REQUIRES = Buildr::JUnit::REQUIRES

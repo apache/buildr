@@ -119,7 +119,7 @@ module Buildr
       end
 
       OPTIONS = [:warnings, :deprecation, :optimise, :target, :debug, :other]
-      Java.classpath << dependencies unless Scalac.use_fsc
+      Java.classpath << dependencies
 
       specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
