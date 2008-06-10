@@ -78,7 +78,7 @@ module Buildr
         verbose(false) do
           base = generated.to_s
           FileList["#{base}/**/*.{class,xsb,xsd}"].each do |file|
-            target = File.join(compile.target.to_s, Util.relative_path(base, file))
+            target = File.join(compile.target.to_s, Util.relative_path(file, base))
             mkpath File.dirname(target) ; cp file, target
           end
         end
