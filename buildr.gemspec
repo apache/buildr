@@ -22,7 +22,7 @@ Gem::Specification.new do |spec|
   spec.homepage       = "http://incubator.apache.org/#{spec.name}/"
   spec.summary        = 'A build system that doesn\'t suck'
 
-  spec.files          = Dir['lib/**/*', 'addon/**/*', 'README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'KEYS',
+  spec.files          = FileList['lib/**/*', 'addon/**/*', 'README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'KEYS',
                          '*.gemspec', 'Rakefile', 'rakelib/**/*', 'spec/**/*', 'doc/**/*']
   spec.require_paths  = ['lib', 'addon']
   spec.bindir         = 'bin'                               # Use these for applications.
