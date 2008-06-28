@@ -556,11 +556,11 @@ module Buildr
 
     after_define do |project|
       test = project.test
-      # Dependency on compiled code, its dependencies and resources.
-      test.with project.compile.dependencies
-      test.with [project.compile.target, project.resources.target].compact
       # Dependency on compiled tests and resources.  Dependencies added using with.
       test.dependencies.concat [test.compile.target, test.resources.target].compact
+      # Dependency on compiled code, its dependencies and resources.
+      test.with [project.compile.target, project.resources.target].compact
+      test.with project.compile.dependencies
       # Picking up the test frameworks adds further dependencies.
       test.framework
 

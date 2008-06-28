@@ -203,9 +203,25 @@ describe Buildr::TestTask do
     project('foo').test.dependencies.should include(project('foo').test.compile.target)
   end
 
+  it 'should add test compile target ahead of regular compile target' do
+    write 'src/main/java/Code.java'
+    write 'src/test/java/Test.java'
+    define 'foo'
+    depends = project('foo').test.dependencies
+    depends.index(project('foo').test.compile.target).should < depends.index(project('foo').compile.target)
+  end
+
   it 'should include the test resources target in its dependencies' do
     write 'src/test/resources/test'
     define('foo').test.dependencies.should include(project('foo').test.resources.target)
+  end
+
+  it 'should add test resource target ahead of regular resource target' do
+    write 'src/main/resources/test'
+    write 'src/test/resources/test'
+    define 'foo'
+    depends = project('foo').test.dependencies
+    depends.index(project('foo').test.resources.target).should < depends.index(project('foo').resources.target)
   end
 
   it 'should clean after itself (test files)' do
