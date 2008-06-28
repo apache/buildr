@@ -6,6 +6,7 @@
 * Fixed: BUILDR-79: Remove :source option for Scala compiler
 * Fixed: BUILDR-82: Temporary work around for Net::SSH 2.0.2 attempting to
 load Pageant DLLs when running on JRuby/Windows.
+* Fixed: BUILDR-73 idea7x task incorrect adds target/resources to the sources paths
 
 1.3.1.1 (2008-06-04)
 * Fixed: BUILDR-78 Broken dependency on Rubyforge Gem.

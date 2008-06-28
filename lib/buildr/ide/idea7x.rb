@@ -76,9 +76,6 @@ module Buildr
         # Separate artifacts from Maven2 repository
         m2_libs, others = others.partition { |path| path.to_s.index(m2repo) == 0 }
 
-        # Generated: classpath elements in the project are assumed to be generated
-        generated, libs = others.partition { |path| path.to_s.index(project.path_to.to_s) == 0 }
-
         # Project type is going to be the first package type
         if package = project.packages.first
           puts "Writing #{task.name}" if verbose
@@ -89,11 +86,11 @@ module Buildr
 
                 Buildr::Idea7x.generate_compile_output(project, xml, relative)
 
-                Buildr::Idea7x.generate_content(project, xml, generated, relative)
+                Buildr::Idea7x.generate_content(project, xml, relative)
 
                 Buildr::Idea7x.generate_order_entries(project_libs, xml)
 
-                ext_libs = libs.map {|path| "#{MODULE_DIR}/#{path.to_s}" } + m2_libs.map { |path| path.to_s.sub(m2repo, "$M2_REPO$") }
+                ext_libs = m2_libs.map { |path| path.to_s.sub(m2repo, "$M2_REPO$") }
                 Buildr::Idea7x.generate_module_libs(xml, ext_libs)
 
                 xml.orderEntryProperties
@@ -124,13 +121,13 @@ module Buildr
 
       def generate_compile_output(project, xml, relative)
         xml.output(:url=>"#{MODULE_DIR_URL}/#{relative[project.compile.target.to_s]}") if project.compile.target
-        xml.tag!("output-test", :url=>"#{MODULE_DIR_URL}/#{relative[project.test.compile.target.to_s]}") if project.test.compile.target  
+        xml.tag!("output-test", :url=>"#{MODULE_DIR_URL}/#{relative[project.test.compile.target.to_s]}") if project.test.compile.target
       end
 
-      def generate_content(project, xml, generated, relative)
+      def generate_content(project, xml, relative)
         xml.content(:url=>"#{MODULE_DIR_URL}") do
           unless project.compile.sources.empty?
-            srcs = project.compile.sources.map { |src| relative[src.to_s] } + generated.map { |src| relative[src.to_s] }
+            srcs = project.compile.sources.map { |src| relative[src.to_s] }
             srcs.sort.uniq.each do |path|
               xml.sourceFolder :url=>"#{MODULE_DIR_URL}/#{path}", :isTestSource=>"false"
             end
@@ -142,7 +139,7 @@ module Buildr
                 xml.sourceFolder :url=>"#{MODULE_DIR_URL}/#{path}", :isTestSource=>"true"
               end
             end
-          end          
+          end
           [project.resources=>false, project.test.resources=>true].each do |resources, test|
             resources.each do |path|
               path[0].sources.each do |srcpath|
