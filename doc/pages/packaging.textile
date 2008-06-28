@@ -508,13 +508,16 @@ Of course, you'll need to tell Buildr about the release server:
 repositories.release_to = 'sftp://john:secret@release/usr/share/repo'
 }}}
 
-We're using the SFTP protocol, currently the only protocol Buildr uses for
-uploads.  The URL contains the release server ("release"), path to repository
-("user/share/repo") and username/password for access.  The way SFTP works, you
-specify the path on the release server, and give the user permissions to create
-directories and files inside the repository.  The file system path is different
-from the path you use to download these artifacts through an HTTP server, and
-starts at the root, not the user's home directory.
+This example uses the SFTP protocol.  In addition, you can use the HTTP
+protocol -- Buildr supports HTTP and HTTPS, Basic Authentication and uploads
+using PUT -- or point to a directory on your file system.
+
+The URL in this example contains the release server ("release"), path to
+repository ("user/share/repo") and username/password for access.  The way SFTP
+works, you specify the path on the release server, and give the user
+permissions to create directories and files inside the repository.  The file
+system path is different from the path you use to download these artifacts
+through an HTTP server, and starts at the root, not the user's home directory.
 
 Of course, you'll want to specify the release server URL in the Buildfile, but
 leave the username/password settings private in your local @buildr.rb@ file.
