@@ -121,6 +121,25 @@ describe Buildr::JUnit do
     project('foo').test.tests.should eql(['InnerClassTest'])
   end
 
+  it 'should ignore abstract classes' do
+    write 'src/test/java/AbstractClassTest.java', <<-JAVA
+      public abstract class AbstractClassTest extends junit.framework.TestCase {
+        public void testNothing() { }
+      }
+    JAVA
+    define('foo').test.invoke
+    project('foo').test.tests.should be_empty
+  end
+
+  it 'should ignore classes with no tests in them' do
+    write 'src/test/java/NoTests.java', <<-JAVA
+      public class NoTests {
+      }
+    JAVA
+    define('foo').test.invoke
+    project('foo').test.tests.should be_empty
+  end
+
   it 'should pass when JUnit test case passes' do
     write 'src/test/java/PassingTest.java', <<-JAVA
       public class PassingTest extends junit.framework.TestCase {

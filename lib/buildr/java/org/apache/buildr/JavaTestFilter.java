@@ -18,6 +18,7 @@
 package org.apache.buildr;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -70,6 +71,8 @@ public class JavaTestFilter {
   }
   
   private boolean isTest(Class cls) {
+    if (Modifier.isAbstract(cls.getModifiers()) || !Modifier.isPublic(cls.getModifiers()))
+      return false;
     if (interfaces != null) {
       for (Iterator it = interfaces.iterator(); it.hasNext(); ) {
         Class iface = (Class) it.next();
