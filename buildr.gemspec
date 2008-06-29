@@ -38,7 +38,7 @@ Gem::Specification.new do |spec|
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.8.1'
   spec.add_dependency 'builder',              '2.1.2'
-  spec.add_dependency 'net-ssh',              '2.0.2'
+  spec.add_dependency 'net-ssh',              '2.0.3'
   spec.add_dependency 'net-sftp',             '2.0.1'
   spec.add_dependency 'rubyzip',              '0.9.1'
   spec.add_dependency 'highline',             '1.4.0'
