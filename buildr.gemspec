@@ -43,7 +43,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rubyzip',              '0.9.1'
   spec.add_dependency 'highline',             '1.4.0'
   spec.add_dependency 'rubyforge',            '1.0.0'
-  spec.add_dependency 'hoe',                  '1.5.3'
+  spec.add_dependency 'hoe',                  '1.6.0'
   spec.add_dependency 'Antwrap',              '0.7.0'
   spec.add_dependency 'rspec',                '1.1.4'
   spec.add_dependency 'xml-simple',           '1.0.11'
