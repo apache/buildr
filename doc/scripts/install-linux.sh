@@ -26,12 +26,12 @@ if [ -z `which ruby` ] ; then
     sudo apt-get install ruby-full ruby1.8-dev libopenssl-ruby build-essential 
     # RubyGems broken on Ubunutu, installing directly from source.
     echo "Installing RubyGems from RubyForge"
-    curl -OL http://rubyforge.org/frs/download.php/29548/rubygems-1.0.1.tgz
-    tar xzf rubygems-1.0.1.tgz
-    cd rubygems-1.0.1
+    curl -OL http://rubyforge.org/frs/download.php/38646/rubygems-1.2.0.tgz 
+    tar xzf rubygems-1.2.0.tgz
+    cd rubygems-1.2.0
     sudo ruby setup.rb
     cd ..
-    rm -rf rubygems-1.0.1
+    rm -rf rubygems-1.2.0
     # ruby is same as ruby1.8, we need gem that is same as gem1.8
     sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
   else

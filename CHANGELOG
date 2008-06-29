@@ -14,6 +14,7 @@ load Pageant DLLs when running on JRuby/Windows.
 * Fixed: BUILDR-89 JUnit (and all other Java frameworks) no longer include
 abstract classes.
 * Fixed: BUILDR-90 Installing from source doesn't work with JRuby.
+* Fixed: Installation instructions updated for RubyGems 1.2.0.
 
 1.3.1.1 (2008-06-04)
 * Fixed: BUILDR-78 Broken dependency on Rubyforge Gem.
