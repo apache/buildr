@@ -90,9 +90,11 @@ module Buildr
 
                 Buildr::Idea7x.generate_order_entries(project_libs, xml)
 
-                ext_libs = m2_libs.map { |path| path.to_s.sub(m2repo, "$M2_REPO$") }
+                ext_libs = m2_libs.map { |path| "jar://#{path.to_s.sub(m2repo, "$M2_REPO$")}!/" }
+                ext_libs << "#{MODULE_DIR_URL}/#{relative[project.test.resources.target.to_s]}" if project.test.resources.target
+                ext_libs << "#{MODULE_DIR_URL}/#{relative[project.resources.target.to_s]}" if project.resources.target
+                
                 Buildr::Idea7x.generate_module_libs(xml, ext_libs)
-
                 xml.orderEntryProperties
               end
             end
@@ -122,6 +124,7 @@ module Buildr
       def generate_compile_output(project, xml, relative)
         xml.output(:url=>"#{MODULE_DIR_URL}/#{relative[project.compile.target.to_s]}") if project.compile.target
         xml.tag!("output-test", :url=>"#{MODULE_DIR_URL}/#{relative[project.test.compile.target.to_s]}") if project.test.compile.target
+        xml.tag!("exclude-output")
       end
 
       def generate_content(project, xml, relative)
@@ -147,7 +150,8 @@ module Buildr
               end
             end
           end
-          xml.excludeFolder :url=>"#{MODULE_DIR_URL}/#{relative[project.compile.target.to_s]}" if project.compile.target
+          xml.excludeFolder :url=>"#{MODULE_DIR_URL}/#{relative[project.resources.target.to_s]}" if project.resources.target
+          xml.excludeFolder :url=>"#{MODULE_DIR_URL}/#{relative[project.test.resources.target.to_s]}" if project.test.resources.target
         end
       end
 
@@ -156,7 +160,7 @@ module Buildr
           xml.orderEntry :type=>"module-library" do
             xml.library do
               xml.CLASSES do
-                xml.root :url=>"jar://#{path}!/"
+                xml.root :url=> path
               end
               xml.JAVADOC
               xml.SOURCES
