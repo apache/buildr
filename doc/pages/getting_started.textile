@@ -200,7 +200,7 @@ you are using by default.  If you see @(JRuby ...)@, Buildr is running on that
 version of JRuby.
 
 
-h2. Conventions
+h2. Document Conventions
 
 Lines that start with @$@ are command lines, for example:
 
@@ -320,10 +320,17 @@ method before the project or task definition.
 So next let's talk about "projects":projects.html.
 
 
-h2. More Info
+h2. Learning More
 
-*API* The "Buildr API":http://incubator.apache.org/buildr/rdoc/index.html
-documentation.
+*Ruby*  It pays to pick up Ruby as a second (or first) programming language.
+It's fun, powerful and slightly addictive.  If you're interested in learning
+Ruby the language, a good place to start is "Programming Ruby: The Pragmatic
+Programmer's Guide":http://www.pragprog.com/titles/ruby/programming-ruby,
+fondly known as the _Pickaxe book_.
+
+For a quicker read (and much more humor), "Why’s (Poignant) Guide to
+Ruby":http://poignantguide.net/ruby/ is available online.  More resources are
+listed on the "ruby-lang web site":http://www.ruby-lang.org/en/documentation/.
 
 *Rake* Buildr is based on Rake, a Ruby build system that handles tasks and
 dependencies.  Check out the "Rake documentation":http://docs.rubyrake.org/ for
