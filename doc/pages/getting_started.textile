@@ -3,12 +3,16 @@ h1. Getting Started
 h2.  Installing Buildr
 
 The installation instructions are slightly different for each operating system.
-If you are using Ruby, pick the one that best matches your operating system and
-target platform.
+Pick the one that best matches your operating system and target platform.
 
-p(note).  The current release of Buildr for Ruby does not work with Java 6 and
-can only be used with Java 1.5 or earlier.  "Buildr for JRuby":#jruby works
-nicely with Java 6, consider using that instead.
+The @gem install@ and @gem update@ commands install Buildr from a binary
+distribution provided through "RubyForge":http://rubyforge.org/projects/buildr.
+This distribution is maintained by contributors to this project, but is *not*
+an official Apache distribution.  You can obtain the official Apache
+distribution files from the "download page":download.html.
+
+The current release of Buildr for Ruby may not work well with Java 6, only
+Java 1.5 or earlier.  If you need to use Java 6, consider "Buildr for JRuby":#jruby.
 
 
 h3.  Linux

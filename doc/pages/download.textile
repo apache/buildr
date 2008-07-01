@@ -4,14 +4,27 @@ h1. Download
 h2.  Installing Buildr
 
 The easiest way to install Buildr is using the fabulous RubyGems package
-manager.  Of course, you will need either Ruby or JRuby, and we recommend a
-recent version of RubyGems and if this sounds foreign to you, don't worry.
-We'll show you how to install Buildr on Linux, OS/X, Windows and JRuby in the
-"Getting Started guide":getting_started.html, we even provide automated
-installation scripts.
+manager.  Of course, you will need either Ruby or JRuby, and we recommend
+upgrading to the most recent version of RubyGems.  If this sounds foreign to
+you, don't worry.  We'll show you how to install Buildr on Linux, OS/X, Windows
+and JRuby in the "Getting Started guide":getting_started.html, we even provide
+automated installation scripts.
+
+The *official Apache distribution* consists of the digitally signed binaries
+(gems) and source packages "available below":#binaries_and_source_code.  To
+install these binaries, you must first download them to disk and then install
+them using the @gem install@ command (or @rake install@ for a source
+distribution).
+
+In addition, contributors to this project maintain a separate distribution over
+on "RubyForge":http://rubyforge.org/projects/buildr.  Using this distribution,
+you're able to install Buildr directly from the remote gem repository and to
+automatically upgrade when a new release comes out.  The RubyForge distribution
+is *not* an official Apache distribution.
 
 
 h2.  Binaries and Source Code
+
 
 h3. buildr 1.3.1-incubating (2008-05-19)
 

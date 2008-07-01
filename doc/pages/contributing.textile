@@ -55,6 +55,8 @@ Did we mention Buildr is an open source project?  In fact, when you install
 Buildr you get all the source code, documentation, test case and everything you
 need to use it, extend it and patch it.  Have a look in your Gem directory.
 
+h4. Using SVN
+
 But if you want to work with the latest and greatest, you'll want to check out
 "Buildr from SVN":http://svn.apache.org/repos/asf/incubator/buildr:
 
@@ -65,12 +67,30 @@ $ svn co http://svn.apache.org/repos/asf/incubator/buildr/trunk buildr
 You can also browse the "Buildr
 repository":http://svn.apache.org/repos/asf/incubator/buildr.
 
+h4. Using Git
+
 Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from
-Github":http://github.com/vic/buildr/tree/master:
+GitHub":http://github.com/vic/buildr/tree/master:
 
 {{{!sh
 $ git clone git://github.com/vic/buildr.git
 }}}
+
+The GitHub repository is maintained by contributors to this project, but is
+*not* an official Apache repository.  To obtain Buildr from the official Apache
+repository, consider using @giv-svn@ instead.
+
+If you want to learn more about Git, you can start by watching Scott Chacon’s
+"Git presentation":http://en.oreilly.com/rails2008/public/asset/attachment/2816
+(PDF), or any of the "Git screencasts":http://www.gitcasts.com/.  For more,
+there's also the "Git Internals
+book":http://peepcode.com/products/git-internals-pdf.
+
+And keep this "Git cheat
+sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet-medium.png handy at
+hand. Very useful.
+
+h4. Installing from Source
 
 To install Buildr from the source directory:
 
