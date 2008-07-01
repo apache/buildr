@@ -1,43 +1,52 @@
-/**
- * From Syntax, Copyright © 2005 Jamis Buck
+/* Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with this
+ * work for additional information regarding copyright ownership.  The ASF
+ * licenses this file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
  */
 
+
 .ruby .normal   {}
-.ruby .comment  { color: #7f7f7f; }
-.ruby .keyword  { color: #153582; font-weight: bold; }
-.ruby .method   { color: #066; }
-.ruby .class    { color: #074; }
-.ruby .module   { color: #050; }
-.ruby .punct    { color: #447; font-weight: bold; }
-.ruby .symbol   { color: #099; }
-.ruby .string   { color: #944; background: #FFE; }
-.ruby .char     { color: #F07; }
-.ruby .ident    { color: #004; }
-.ruby .constant { color: #07F; }
-.ruby .regex    { color: #B66; background: #FEF; }
-.ruby .number   { color: #F99; }
-.ruby .attribute { color: #7BB; }
-.ruby .global   { color: #7FB; }
-.ruby .expr     { color: #227; }
-.ruby .escape   { color: #277; }
+.ruby .comment  { color: gray; }
+.ruby .method   { color: lightblue; }
+.ruby .punct    {  color: darkblue; }
+.ruby .keyword, .ruby .symbol   { color: blue; }
+.ruby .string, .ruby .regex { color: green; }
+.ruby .char     { }
+.ruby .ident    { color: black; }
+.ruby .constant, ruby .class, ruby .module { color: darkblue; }
+.ruby .number   { color: blue; }
+.ruby .attribute { }
+.ruby .global   { }
+.ruby .expr     { }
+.ruby .escape   { }
 
 .xml .normal    {}
-.xml .namespace { color: #B66; font-weight: bold; }
-.xml .tag       { color: #4c00ff; }
-.xml .comment   { color: #7f7f7f; }
-.xml .punct     { color: #447; font-weight: bold; }
-.xml .string    { color: #944; }
-.xml .number    { color: #F99; }
-.xml .attribute { color: #BB7; }
+.xml .namespace { color: darkblue; }
+.xml .tag       { color: blue; }
+.xml .comment   { color: gray; }
+.xml .punct     { color: darkblue; }
+.xml .string    { }
+.xml .number    { }
+.xml .attribute { color: blue; }
 
 .yaml .document { }
 .yaml .type     { }
-.yaml .key      { color: #4c00ff}
-.yaml .comment  { color: #7f7f7f; }
-.yaml .punct    { }
+.yaml .key      { color: blue; }
+.yaml .comment  { color: gray; }
+.yaml .punct    { color: darkblue; }
 .yaml .string   { }
 .yaml .number   { }
 .yaml .time     { }
 .yaml .date     { }
-.yaml .ref      { color: #00c0c0 }
-.yaml .anchor   { color: #00c0c0 }
+.yaml .ref      { color: green; }
+.yaml .anchor   { color: green; }

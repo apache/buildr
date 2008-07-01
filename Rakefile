@@ -53,7 +53,7 @@ ENV['incubating'] = 'true'
 ENV['staging'] = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
 
 task 'apache:license'=>spec.files
-task('apache:license').prerequisites.exclude('doc/css/syntax.css')
+#task('apache:license').prerequisites.exclude( ..not ASL.. )
 
 task 'spec:check' do
   print 'Checking that we have JRuby, Scala and Groovy available ... '
