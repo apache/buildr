@@ -125,7 +125,7 @@ module Buildr
         version = with_next_version do |filename, version| 
           options = ['--buildfile', filename, 'DEBUG=no']
           options << '--environment' << Buildr.environment unless Buildr.environment.to_s.empty?
-          sh "#{command} clean upload #{options.join(' ')}"
+          sh "#{command} _#{Buildr::VERSION}_ clean upload #{options.join(' ')}"
         end
         tag version
         commit version + '-SNAPSHOT'
