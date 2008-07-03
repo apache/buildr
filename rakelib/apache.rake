@@ -21,6 +21,20 @@ require 'sha1'
 # Tasks specific to Apache projects (license, release, etc).
 namespace 'apache' do
 
+  desc 'Upload snapshot packages over to people.apache.org'
+  task 'snapshot'=>'package' do
+    rm_rf 'snapshot' # Always start with empty directory
+    puts "Copying existing gems from Apache"
+    sh 'rsync', '--progress', '--recursive', 'people.apache.org:public_html/buildr/snapshot', './'
+    puts "Copying new gems over"
+    cp FileList['pkg/{*.gem,*.tgz,*.zip}'], 'snapshot/gems'
+    puts "Generating gem index ..."
+    sh 'gem', 'generate_index', '--directory', 'snapshot'
+    puts "Copying gem and index back to Apache" 
+    sh 'rsync', '--progress', '--recursive', 'snapshot', 'people.apache.org:public_html/buildr/'
+  end
+
+
   desc 'Check that source files contain the Apache license'
   task 'license' do |task|
     print 'Checking that files contain the Apache license ... '

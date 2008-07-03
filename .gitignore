@@ -4,5 +4,6 @@ reports
 rdoc
 site
 print
+snapshot
 stage
 release
