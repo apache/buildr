@@ -18,7 +18,7 @@ if [ -z `which jruby` ] ; then
   target=/opt/jruby
   echo "Installing JRuby ${version} in ${target}"
   sudo mkdir -p $(dirname ${target})
-  curl -OL http://dist.codehaus.org/jruby/jruby-bin-${version}.tar.gz
+  wget http://dist.codehaus.org/jruby/jruby-bin-${version}.tar.gz
   tar -xz < jruby-bin-${version}.tar.gz
   sudo mv jruby-${version} ${target}
   rm jruby-bin-${version}.tar.gz

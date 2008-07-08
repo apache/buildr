@@ -38,7 +38,7 @@ The Debian package for @rubygems@ will not allow you to install Buildr, so you
 need to install RubyGems from source:
 
 {{{!sh
-$ curl -OL http://rubyforge.org/frs/download.php/38646/rubygems-1.2.0.tgz 
+$ wget http://rubyforge.org/frs/download.php/38646/rubygems-1.2.0.tgz 
 $ tar xzf rubygems-1.2.0.tgz
 $ cd rubygems-1.2.0
 $ sudo ruby setup.rb
