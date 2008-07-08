@@ -189,7 +189,7 @@ describe Buildr::TestTask do
   end
 
   it 'should include the main resources target in its dependencies' do
-    write 'src/main/resources/test'
+    write 'src/main/resources/config.xml'
     define('foo').test.dependencies.should include(project('foo').resources.target)
   end
 
@@ -212,13 +212,13 @@ describe Buildr::TestTask do
   end
 
   it 'should include the test resources target in its dependencies' do
-    write 'src/test/resources/test'
+    write 'src/test/resources/config.xml'
     define('foo').test.dependencies.should include(project('foo').test.resources.target)
   end
 
   it 'should add test resource target ahead of regular resource target' do
-    write 'src/main/resources/test'
-    write 'src/test/resources/test'
+    write 'src/main/resources/config.xml'
+    write 'src/test/resources/config.xml'
     define 'foo'
     depends = project('foo').test.dependencies
     depends.index(project('foo').test.resources.target).should < depends.index(project('foo').resources.target)
@@ -483,9 +483,9 @@ describe Buildr::Project, 'test:resources' do
   end
 
   it 'should copy to the resources target directory' do
-    write 'src/test/resources/foo', 'Foo'
+    write 'src/test/resources/config.xml', '</xml>'
     define('foo', :target=>'targeted').test.invoke
-    file('targeted/test/resources/foo').should contain('Foo')
+    file('targeted/test/resources/config.xml').should contain('</xml>')
   end
 
   it 'should create target directory even if no files to copy' do
