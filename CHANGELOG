@@ -3,6 +3,7 @@
 * Changed: BUILDR-86 Use newest versions of net-ssh and net-sftp gems.
 * Changed: BUILDR-88 Test classes/resources should come before compile
 classes/resources so they load up earlier in java classpath.
+* Changed: BUILDR-102 Update JUnit Version to 4.4.
 * Fixed: BUILDR-73 idea7x task incorrect adds target/resources to the sources
 paths.
 * Fixed: BUILDR-76 Added more specs and fixes to compile task.

@@ -182,7 +182,7 @@ module Buildr
     end
 
     # JUnit version number.
-    VERSION = '4.3.1' unless const_defined?('VERSION')
+    VERSION = '4.4' unless const_defined?('VERSION')
     
     REQUIRES = ["junit:junit:jar:#{VERSION}"] + JMock::REQUIRES
 
