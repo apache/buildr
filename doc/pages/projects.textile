@@ -79,9 +79,9 @@ projects.
 
 Java projects are laid out so the source files are in the @src/main/java@
 directory and compile into the @target/classes@ directory.  Resource files go
-in the @src/main/resources@ directory, also copied over to @target/classes@.
-Likewise, unit tests come from @src/test/java@ and @src/test/resources@, and
-end life in @target/test/classes@.
+in the @src/main/resources@ directory, and copied over to @target/resources@.
+Likewise, tests come from @src/test/java@ and @src/test/resources@, and end
+life in @target/test/classes@ and @target/test/resources@, respectively.
 
 WAR packages pick up additional files from the aptly named @src/main/webapp@.
 And most stuff, including generated source files are parked under the @target@
