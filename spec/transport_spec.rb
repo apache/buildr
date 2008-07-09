@@ -391,7 +391,7 @@ end
 
 describe URI::SFTP, '#read' do
   before do
-    @uri = URI('sftp://john:secret@localhost/path/readme')
+    @uri = URI('sftp://john:secret@localhost/root/path/readme')
     @content = 'Readme. Please!'
 
     @ssh_session = mock('Net::SSH::Session')
@@ -413,21 +413,21 @@ describe URI::SFTP, '#read' do
   end
 
   it 'should open file for reading' do
-    @file_factory.should_receive(:open).with('/path/readme', 'r')
+    @file_factory.should_receive(:open).with('/root/path/readme', 'r')
     @uri.read
   end
 
   it 'should read contents of file and return it' do
     file = mock('Net::SFTP::Operations::File')
     file.should_receive(:read).with(an_instance_of(Numeric)).once.and_return(@content, nil)
-    @file_factory.should_receive(:open).with('/path/readme', 'r').and_yield(file)
+    @file_factory.should_receive(:open).with('/root/path/readme', 'r').and_yield(file)
     @uri.read.should eql(@content)
   end
 
   it 'should read contents of file and pass it to block' do
     file = mock('Net::SFTP::Operations::File')
     file.should_receive(:read).with(an_instance_of(Numeric)).once.and_return(@content, nil)
-    @file_factory.should_receive(:open).with('/path/readme', 'r').and_yield(file)
+    @file_factory.should_receive(:open).with('/root/path/readme', 'r').and_yield(file)
     content = ''
     @uri.read do |chunk|
       content << chunk
@@ -439,7 +439,7 @@ end
 
 describe URI::SFTP, '#write' do
   before do
-    @uri = URI('sftp://john:secret@localhost/path/readme')
+    @uri = URI('sftp://john:secret@localhost/root/path/readme')
     @content = 'Readme. Please!'
 
     @ssh_session = mock('Net::SSH::Session')
@@ -449,7 +449,9 @@ describe URI::SFTP, '#write' do
       Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
       @sftp_session.should_receive(:connect!).and_return(@sftp_session)
       @sftp_session.should_receive(:loop)
-      @sftp_session.stub!(:mkdir)
+      @sftp_session.stub!(:opendir!).and_return { fail }
+      @sftp_session.stub!(:close)
+      @sftp_session.stub!(:mkdir!)
       @sftp_session.should_receive(:file).with.and_return(@file_factory)
       @file_factory.stub!(:open)
       @ssh_session.should_receive(:close)
@@ -461,27 +463,41 @@ describe URI::SFTP, '#write' do
     @uri.write @content
   end
 
-  it 'should create path recursively on SFTP server' do
-    @sftp_session.should_receive(:mkdir).ordered.with('', {})
-    @sftp_session.should_receive(:mkdir).ordered.with('/path', {})
+  it 'should check that path exists on server' do
+    paths = ['/root', '/root/path']
+    @sftp_session.should_receive(:opendir!).with(anything()).twice { |path| paths.shift.should == path }
     @uri.write @content
   end
 
-  it 'should only create paths that don\'t exist' do
-    @sftp_session.should_receive(:realpath).any_number_of_times
-    @sftp_session.should_not_receive(:mkdir)
+  it 'should close all opened directories' do
+    @sftp_session.should_receive(:opendir!).with(anything()).twice do |path| 
+      @sftp_session.should_receive(:close).with(handle = Object.new)
+      handle
+    end
+    @uri.write @content
+  end
+
+  it 'should create missing paths on server' do
+    @sftp_session.should_receive(:opendir!).twice { |path| fail unless path == '/root' }
+    @sftp_session.should_receive(:mkdir!).once.with('/root/path', {})
+    @uri.write @content
+  end
+
+  it 'should create missing directories recursively' do
+    paths = ['/root', '/root/path']
+    @sftp_session.should_receive(:mkdir!).with(anything(), {}).twice { |path, options| paths.shift.should == path }
     @uri.write @content
   end
 
   it 'should open file for writing' do
-    @file_factory.should_receive(:open).with('/path/readme', 'w')
+    @file_factory.should_receive(:open).with('/root/path/readme', 'w')
     @uri.write @content
   end
 
   it 'should write contents to file' do
     file = mock('Net::SFTP::Operations::File')
     file.should_receive(:write).with(@content)
-    @file_factory.should_receive(:open).with('/path/readme', 'w').and_yield(file)
+    @file_factory.should_receive(:open).with('/root/path/readme', 'w').and_yield(file)
     @uri.write @content
   end
 

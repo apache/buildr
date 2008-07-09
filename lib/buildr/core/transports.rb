@@ -459,9 +459,9 @@ module URI
           # To create a path, we need to create all its parent. We use realpath to determine if
           # the path already exists, otherwise mkdir fails.
           puts "Creating path #{path}" if Buildr.application.options.trace
-          File.dirname(path).split('/').inject('') do |base, part|
+          File.dirname(path).split('/').reject(&:empty?).inject('/') do |base, part|
             combined = base + part
-            sftp.realpath combined rescue sftp.mkdir combined, {}
+            sftp.close(sftp.opendir!(combined)) rescue sftp.mkdir! combined, {}
             "#{combined}/"
           end
 
