@@ -54,6 +54,8 @@ module Buildr
           'Require MODULE before executing buildfile.'],
         ['--trace',    '-t', GetoptLong::NO_ARGUMENT,
           'Turn on invoke/execute tracing, enable full backtrace.'],
+        ['--prereqs',  '-P', GetoptLong::OPTIONAL_ARGUMENT,
+          'Display tasks and dependencies, then exit.'],
         ['--version',  '-v', GetoptLong::NO_ARGUMENT,
           'Display the program version.'],
         ['--environment', '-e', GetoptLong::REQUIRED_ARGUMENT,
@@ -92,6 +94,9 @@ module Buildr
         ENV['BUILDR_ENV'] = value
       when '--require'
         requires << value
+      when '--prereqs'
+        options.show_prereqs = true
+        options.show_task_pattern = Regexp.new(value || '.')
       when '--nosearch', '--quiet', '--trace'
         super
       end
@@ -104,6 +109,8 @@ module Buildr
     def version
       "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby '+JRUBY_VERSION+')'}"
     end
+
+  private
 
     def usage
       puts version
@@ -129,6 +136,6 @@ module Buildr
       puts 'For help with your buildfile:'
       puts '  buildr help'
     end
-    
+   
   end
 end

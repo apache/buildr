@@ -451,11 +451,11 @@ module Buildr
       filter.target
     end
 
-  protected
-
     def prerequisites #:nodoc:
       super + filter.sources.flatten
     end
+
+  protected
 
     # Associates this task with project and particular usage (:main, :test).
     def associate_with(project, usage) #:nodoc:

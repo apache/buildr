@@ -273,6 +273,16 @@ module Buildr
     end
     private :load_tasks
 
+    def display_prerequisites
+      invoke_task('buildr:initialize')
+      tasks.each do |task|
+        if task.name =~ options.show_task_pattern
+          puts "buildr #{task.name}"
+          task.prerequisites.each { |prereq| puts "    #{prereq}" }
+        end
+      end
+    end
+
     # :call-seq:
     #   deprecated(message)
     #
