@@ -301,15 +301,46 @@ module Buildr
   # * :java_args   -- Arguments passed as is to the JVM.
   class ScalaTest < TestFramework::Base
     
-    # ScalaTest version number.
-    VERSION = '0.9.3' unless const_defined?('VERSION')
-    
-    # ScalaTest dependencies
-    REQUIRES = ["org.scalatest:scalatest:jar:#{VERSION}"] + 
-               JMock::REQUIRES + 
-               ScalaSpecs::REQUIRES + 
-               ScalaCheck::REQUIRES
+    class << self
+      # ScalaTest version number.
+      VERSION = '0.9.3' unless const_defined?('VERSION')
 
+      # ScalaTest dependencies
+      DEPENDS = ["org.scalatest:scalatest:jar:#{VERSION}"] + 
+                 JMock::REQUIRES + 
+                 ScalaSpecs::REQUIRES + 
+                 ScalaCheck::REQUIRES
+
+      ENABLED = DEPENDS.all? { |d| File.exist?(Buildr::Repositories.instance.locate(d)) } 
+
+      desc "Download Scala artifacts"
+      task "buildr:scala:download" do
+        ScalaTest.download_dependencies
+      end
+        
+      def required_artifacts
+        ENABLED ? DEPENDS : []
+      end
+      
+      def download_dependencies
+        DEPENDS.each { |d| Buildr.artifact(d).invoke }
+      end
+      
+      def applies_to?(project) #:nodoc:
+        if project.test.compile.language == :scala && !ENABLED
+          download_dependencies
+          fail "You must re-run buildr after downloading Scala artifacts for the first time"
+        end
+        project.test.compile.language == :scala
+      end  
+
+      def available?(artifact_spec) #:nodoc:
+        File.exist?(Buildr::Repositories.instance.locate(artifact_spec))
+      end
+    end
+
+    REQUIRES = required_artifacts
+    
     # ScalaTest ant task
     Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}"
     Java.classpath << REQUIRES
@@ -319,7 +350,7 @@ module Buildr
     # annotation-based group inclusion
     attr_accessor :group_includes
     
-    # annotation-based gropu exclusion
+    # annotation-based group exclusion
     attr_accessor :group_excludes
     
     def initialize(test_task, options)
@@ -402,12 +433,6 @@ module Buildr
       
       success
     end # run
-
-    class << self
-      def applies_to?(project) #:nodoc:
-        project.test.compile.language == :scala
-      end        
-    end
 
   end # ScalaTest
 
