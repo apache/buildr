@@ -20,8 +20,9 @@ abstract classes.
 * Fixed: BUILDR-90 Installing from source doesn't work with JRuby.
 * Fixed: BUILDR-91 When doing a release, buildr should spawn the same version of buildr
 * Fixed: BUILDR-92 IDEA 7x: add resources directories to classpath.
-* Fixed: Installation instructions updated for RubyGems 1.2.0.
+* Fixed: BUILDR-95: Only download Scala test framework artifacts when required
 * Fixed: BUILDR-100 Directory structure documentation needs updating.
+* Fixed: Installation instructions updated for RubyGems 1.2.0.
 
 1.3.1.1 (2008-06-04)
 * Fixed: BUILDR-78 Broken dependency on Rubyforge Gem.
