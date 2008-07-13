@@ -110,8 +110,6 @@ module Buildr
       "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby '+JRUBY_VERSION+')'}"
     end
 
-  private
-
     def usage
       puts version
       puts
