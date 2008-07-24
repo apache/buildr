@@ -163,3 +163,6 @@ task 'stage:prepare'=>['staged/distro', 'staged/site'] do |task|
   end
 end
 task 'release:publish'=>['apache:publish:distro', 'apache:publish:site']
+task 'clobber' do
+  rm_rf 'snapshot'
+end
