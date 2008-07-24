@@ -121,10 +121,11 @@ module Buildr
       @top_level_tasks = []
       parse_options
       collect_tasks
-      top_level_tasks.unshift 'buildr:initialize'
       @home_dir = File.expand_path('.buildr', ENV['HOME'])
       mkpath @home_dir unless File.exist?(@home_dir)
       @environment = ENV['BUILDR_ENV'] ||= 'development'
+      @on_completion = []
+      @on_failure = []
     end
 
     # Returns list of Gems associated with this buildfile, as listed in build.yaml.
@@ -170,23 +171,25 @@ module Buildr
     private :listed_gems
 
     def run
-      times = Benchmark.measure do
+      @times = Benchmark.measure do
         standard_exception_handling do
           find_buildfile
           load_gems
           load_artifacts
           load_tasks
           load_buildfile
+          task('buildr:initialize').invoke
           top_level
         end
       end
       if verbose
         real = []
-        real << ("%ih" % (times.real / 3600)) if times.real >= 3600
-        real << ("%im" % ((times.real / 60) % 60)) if times.real >= 60
-        real << ("%.3fs" % (times.real % 60))
+        real << ("%ih" % (@times.real / 3600)) if @times.real >= 3600
+        real << ("%im" % ((@times.real / 60) % 60)) if @times.real >= 60
+        real << ("%.3fs" % (@times.real % 60))
         puts "Completed in #{real.join}"
       end
+      @on_completion.each { |block| block.call }
     end
 
     # Load artifact specs from the build.yaml file, making them available 
@@ -312,7 +315,44 @@ module Buildr
         @scope = current
       end
     end
+    
+    # Yields to block on successful completion. Primarily used for notifications.
+    def on_completion(&block)
+      @on_completion << block
+    end
 
+    # Yields to block on failure with exception. Primarily used for notifications.
+    def on_failure(&block)
+      @on_failure << block
+    end
+
+  private
+
+    # Provide standard execption handling for the given block.
+    def standard_exception_handling
+      begin
+        yield
+      rescue SystemExit => ex
+        # Exit silently with current status
+        exit(ex.status)
+      rescue SystemExit, GetoptLong::InvalidOption => ex
+        # Exit silently
+        exit(1)
+      rescue Exception => ex
+        @on_failure.each { |block| block.call(ex) }
+        # Exit with error message
+        $stderr.puts "buildr aborted!"
+        $stderr.puts $terminal.color(ex.message, :red)
+        if options.trace
+          $stderr.puts ex.backtrace.join("\n")
+        else
+          $stderr.puts ex.backtrace.select { |str| str =~ /#{buildfile}/ }.map { |line| $terminal.color(line, :red) }.join("\n")
+          $stderr.puts "(See full trace by running task with --trace)"
+        end
+        exit(1)
+      end
+    end
+    
   end
 
 
@@ -348,20 +388,46 @@ module Buildr
 end
 
 
-# Add a touch of colors (red) to warnings.
+# Add a touch of color when available and running in terminal.
 if $stdout.isatty
   begin
     require 'Win32/Console/ANSI' if Config::CONFIG['host_os'] =~ /mswin/
     HighLine.use_color = true
   rescue LoadError
   end
+else
+  HighLine.use_color = false
 end
+
+
+
+# Let's see if we know how to use Growl.
+begin
+  require 'osx/cocoa'
+  # Register with Growl, that way you can turn notifications on/off from system preferences.
+  OSX::NSDistributedNotificationCenter.defaultCenter.
+    postNotificationName_object_userInfo_deliverImmediately(:GrowlApplicationRegistrationNotification, nil,
+      {:ApplicationName=>'Buildr', :AllNotifications=>['Completed', 'Failed']}, true)
+  def growl(type, title, message)
+    OSX::NSDistributedNotificationCenter.defaultCenter.
+      postNotificationName_object_userInfo_deliverImmediately(:GrowlNotification, nil,
+        {:ApplicationName=>'Buildr', :NotificationName=>type, :NotificationTitle=>title, :NotificationDescription=>message}, true)
+  end
+  Buildr.application.on_completion do
+    growl 'Completed', 'Your build has completed', Dir.pwd if verbose
+  end
+  Buildr.application.on_failure do |ex|
+    growl 'Failed', 'Your build failed with an error', "#{Dir.pwd}:\n#{ex.message}" if verbose
+  end
+rescue Error
+end
+
 
 if HighLine.use_color?
   module Kernel #:nodoc:
     alias :warn_without_color :warn
     def warn(message)
-      warn_without_color $terminal.color(message.to_s, :red)
+      warn_without_color $terminal.color(message.to_s, :blue)
     end
   end
 end

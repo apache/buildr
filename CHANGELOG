@@ -1,4 +1,8 @@
 1.3.3 (Pending)
+* Added: Growl notifications (OS X only).
+* Changed: Error reporting now shows 'buildr aborted!' (used to say rake),
+more of the stack trace without running --trace, and when running with
+supported terminal, error message is red.
 
 1.3.2 (2008-07-18)
 * Added: --prereqs command line argument to show all tasks and their
@@ -20,7 +24,8 @@ load Pageant DLLs when running on JRuby/Windows.
 * Fixed: BUILDR-89 JUnit (and all other Java frameworks) no longer include
 abstract classes.
 * Fixed: BUILDR-90 Installing from source doesn't work with JRuby.
-* Fixed: BUILDR-91 When doing a release, buildr should spawn the same version of buildr
+* Fixed: BUILDR-91 When doing a release, buildr should spawn the same version
+of buildr
 * Fixed: BUILDR-92 IDEA 7x: add resources directories to classpath.
 * Fixed: BUILDR-95: Only download Scala test framework artifacts when required
 * Fixed: BUILDR-100 Directory structure documentation needs updating.

@@ -23,7 +23,7 @@ repositories.remote << 'http://scala-tools.org/repo-releases/'
 define 'buildr' do
   compile.using :source=>'1.4', :target=>'1.4', :debug=>false
 
-  define 'java' do
+  define 'java' do  
     compile.using(:javac).from(FileList['lib/buildr/java/**/*.java']).into('lib/buildr/java').with(Buildr::Nailgun.artifact)
   end
 
