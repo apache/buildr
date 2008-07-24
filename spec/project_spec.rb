@@ -739,10 +739,6 @@ end
 
 
 describe Rake::Task, 'buildr:initialize' do
-  it 'should be ready to run as the first task' do
-    Buildr.application.top_level_tasks.first.should eql('buildr:initialize')
-  end
-
   it 'should evaluate all project definitions' do
     defined = false
     Buildr.define('foo') { defined = true }

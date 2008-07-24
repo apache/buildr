@@ -426,7 +426,7 @@ if $stdout.isatty
     Buildr.application.on_failure do |ex|
       growl 'Failed', 'Your build failed with an error', "#{Dir.pwd}:\n#{ex.message}" if verbose
     end
-  rescue Error
+  rescue Exception
   end
 end
 
