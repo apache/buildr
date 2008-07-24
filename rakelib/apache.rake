@@ -162,6 +162,9 @@ task 'stage:prepare'=>['staged/distro', 'staged/site'] do |task|
     task('apache:sign').invoke
   end
 end
+task 'stage' do
+  task('apache:snapshot').invoke
+end
 task 'release:publish'=>['apache:publish:distro', 'apache:publish:site']
 task 'clobber' do
   rm_rf 'snapshot'
