@@ -1,5 +1,7 @@
 h1. Welcome
 
+h2.  What is Buildr?
+
 Buildr is a build system for Java applications.  We wanted something that's
 simple and intuitive to use, so we only need to tell it what to do, and it
 takes care of the rest.  But also something we can easily extend for those
@@ -26,6 +28,9 @@ functions.
 write code using variables, functions and objects.
 * Simple way to upgrade to new versions.
 * Did we mention fast?
+
+So let's get started.  You can "read the documentation
+online":getting_started.html, or "download the PDF":buildr.pdf.
 
 
 h2.  News

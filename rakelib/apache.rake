@@ -22,7 +22,7 @@ require 'sha1'
 namespace 'apache' do
 
   desc 'Upload snapshot packages over to people.apache.org'
-  task 'snapshot'=>'package' do
+  task 'snapshot'=>['spec', 'package'] do
     rm_rf 'snapshot' # Always start with empty directory
     puts "Copying existing gems from Apache"
     sh 'rsync', '--progress', '--recursive', 'people.apache.org:public_html/buildr/snapshot', './'

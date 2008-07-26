@@ -264,6 +264,7 @@ $ buildr --help
 | @-r/--require [file]@     | Require MODULE before executing buildfile.              |
 | @-t/--trace@              | Turn on invoke/execute tracing, enable full backtrace.  |
 | @-v/--version@            | Display the program version.                            |
+| @-P/--prereqs@            | Display tasks and dependencies, then exit.              |
 
 You can tell Buildr to run specific tasks and the order to run them.  For
 example:

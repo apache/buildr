@@ -3,8 +3,14 @@ h1. Contributing
 Buildr is a community effort, and we welcome all contributors.  Here's your
 chance to get involved and help your fellow developers.
 
+h2.  Getting involved
 
-h2.  Mailing Lists
+All our discussions are done in the open, over "email":mailing_lists.html, and
+that would be the first place to look for answers, raise ideas, etc.  For bug
+reports, issues and patches, "see below":#bugs_aka_issues.
+
+
+h3.  Mailing Lists
 
 We run two mailing lists, the
 "buildr-user":http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/
@@ -19,7 +25,7 @@ Check the "mailing lists":mailing_lists.html page for more information on
 subscribing, searching and posting to the mailing list.
 
 
-h2.  Bugs (aka Issues)
+h3.  Bugs (aka Issues)
 
 We really do try to keep bugs to a minimum, and anticipate everything you'll
 ever want to do with Buildr.  We're also, not perfect.  So you may have found a
@@ -43,19 +49,34 @@ $ buildr --version
 $ java --version
 }}}
 
+
+h3.  Contributing Code
+
+Yes, please.
+
 If you have a patch to submit, do it through
 "JIRA":http://issues.apache.org/jira/browse/Buildr.  We want to make sure
 Apache gets the right to use your contribution, and the JIRA upload form
 includes a simple contribution agreement.  Lawyer not included.
 
+If you want to work on a cool new feature, but not quite ready to submit a
+patch, there's still a way you can get the Buildr community involved.  We're
+experimenting with using Git for that.  You can use Git to maintain a fork
+of Buildr that can keep up with changes in the main branch (tip: use
+@git rebase@), while developing your own changes/features on it.
 
-h2.  Source Code
+That way you can get other people involved, checking out the code, and
+eventually merge it back with the main branch.  Check out the
+"Git section":#Git below.
+
+
+h2.  Living on the edge
 
 Did we mention Buildr is an open source project?  In fact, when you install
 Buildr you get all the source code, documentation, test case and everything you
 need to use it, extend it and patch it.  Have a look in your Gem directory.
 
-h4. Using SVN
+h3.  SVN
 
 But if you want to work with the latest and greatest, you'll want to check out
 "Buildr from SVN":http://svn.apache.org/repos/asf/incubator/buildr:
@@ -67,7 +88,7 @@ $ svn co http://svn.apache.org/repos/asf/incubator/buildr/trunk buildr
 You can also browse the "Buildr
 repository":http://svn.apache.org/repos/asf/incubator/buildr.
 
-h4. Using Git
+h3.  Git
 
 Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from
 GitHub":http://github.com/vic/buildr/tree/master:
@@ -87,10 +108,10 @@ there's also the "Git Internals
 book":http://peepcode.com/products/git-internals-pdf.
 
 And keep this "Git cheat
-sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet-medium.png handy at
+sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet-medium.png close at
 hand. Very useful.
 
-h4. Installing from Source
+h3. Installing from Source
 
 To install Buildr from the source directory:
 
@@ -107,7 +128,33 @@ $ jruby -S rake setup install
 }}}
 
 
-h2.  Testing/Specs
+h3. Using development build
+
+Occasionally we'll make development builds from the current code in trunk/head.
+We appreciate if you can take the time to test those out and report any bugs.
+To install development builds, use the Gem repository at
+@people.apache.org/~assaf/buildr/snapshot@:
+
+{{{!sh
+gem source --add http://people.apache.org/~assaf/buildr/snapshot
+}}}
+
+Since Ruby Gems only upgrades when it notices a new version number, you have
+to @gem install buildr@ to get the most recent development build.
+
+If you want to go back to using the RubyForge releases:
+
+{{{!sh
+gem source --remove http://people.apache.org/~assaf/buildr/snapshot
+gem install buildr
+}}}
+
+
+h2.  Tested and Documented
+
+Two things we definitely encourage!
+
+h3.  Testing/Specs
 
 Obviously we won't turn down patches, but we'll love you even more if you
 include a test case.  One that will fail without the patch, and run
@@ -139,7 +186,7 @@ You can also check out the "RSpec report":report.html which provides the
 official specification against which we test each release.
 
 
-h2.  Documentation
+h3.  Documentation
 
 Yes, we do make typos, spelling errors and sometimes we write things that don't
 make sense, so if you find a documentation bug, or want to help make the
