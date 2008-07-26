@@ -111,7 +111,7 @@ module Buildr
       # Download to a file created by the task.
       fail unless args.keys.size == 1
       uri = URI.parse(args.values.first.to_s)
-      file(args.keys.first).tap do |task|
+      file(args.keys.first.to_s).tap do |task|
         task.sources << uri
         task.enhance { uri.download task.name }
       end

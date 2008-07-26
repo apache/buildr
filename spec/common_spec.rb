@@ -110,42 +110,62 @@ describe Buildr.method(:download) do
   end
 
   it 'should accept a String and download from that URL' do
-    download('http://localhost/download').tap do |task|
-      task.source.should_receive(:read).and_yield [@content]
-      task.invoke
-      task.should contain(@content)
+    define 'foo' do
+      download('http://localhost/download').tap do |task|
+        task.source.should_receive(:read).and_yield [@content]
+        task.invoke
+        task.should contain(@content)
+      end
     end
   end
 
   it 'should accept a URI and download from that URL' do
-    download(URI.parse('http://localhost/download')).tap do |task|
-      task.source.should_receive(:read).and_yield [@content]
-      task.invoke
-      task.should contain(@content)
+    define 'foo' do
+      download(URI.parse('http://localhost/download')).tap do |task|
+        task.source.should_receive(:read).and_yield [@content]
+        task.invoke
+        task.should contain(@content)
+      end
     end
   end
 
   it 'should accept a path and String and download from that URL' do
-    download('downloaded'=>'http://localhost/download').tap do |task|
-      task.source.should_receive(:read).and_yield [@content]
-      task.invoke
-      task.should contain(@content)
+    define 'foo' do
+      download('downloaded'=>'http://localhost/download').tap do |task|
+        task.source.should_receive(:read).and_yield [@content]
+        task.invoke
+        task.should contain(@content)
+      end
+    end
+  end
+
+  it 'should accept an artifact and String and download from that URL' do
+    define 'foo' do
+      artifact('com.example:library:jar:2.0').tap do |artifact|
+        download(artifact=>'http://localhost/download').source.should_receive(:read).and_yield [@content]
+        artifact.invoke
+        artifact.should contain(@content)
+      end
     end
   end
 
   it 'should accept a path and URI and download from that URL' do
-    download('downloaded'=>URI.parse('http://localhost/download')).tap do |task|
-      task.source.should_receive(:read).and_yield [@content]
-      task.invoke
-      task.should contain(@content)
+    define 'foo' do
+      download('downloaded'=>URI.parse('http://localhost/download')).tap do |task|
+        task.source.should_receive(:read).and_yield [@content]
+        task.invoke
+        task.should contain(@content)
+      end
     end
   end
 
   it 'should create path for download' do
-    download('path/downloaded'=>URI.parse('http://localhost/download')).tap do |task|
-      task.source.should_receive(:read).and_yield [@content]
-      task.invoke
-      task.should contain(@content)
+    define 'foo' do
+      download('path/downloaded'=>URI.parse('http://localhost/download')).tap do |task|
+        task.source.should_receive(:read).and_yield [@content]
+        task.invoke
+        task.should contain(@content)
+      end
     end
   end
 
@@ -166,10 +186,12 @@ describe Buildr.method(:download) do
   end
 
   it 'should execute only if file does not already exist' do
-    download('downloaded'=>'http://localhost/download').tap do |task|
-      task.source.should_not_receive(:read)
-      write task.to_s, 'not really'
-      task.invoke
+    define 'foo' do
+      download('downloaded'=>'http://localhost/download').tap do |task|
+        task.source.should_not_receive(:read)
+        write task.to_s, 'not really'
+        task.invoke
+      end
     end
   end
 
