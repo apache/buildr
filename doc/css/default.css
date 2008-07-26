@@ -20,7 +20,8 @@ body {
   color: #000;
   font-family: "DejaVu Sans", Verdana, Helvetica;
   text-align: center;
-	line-height: 1.5em;
+  line-height: 150%;
+  font-size: 12pt;
 }
 
 a:link, a:visited{
@@ -36,42 +37,48 @@ img {
   border: none;
 }
 
-pre, code { font-family: "DejaVu Sans Mono", "Courier New", "Courier"; }
-pre { padding: 1em; }
-pre.wrapped {
+pre, code {
+  font-family: "DejaVu Sans Mono", "Courier New", "Courier";
+  font-size: 11pt;
+}
+pre {
+  margin: 0.3em 0 0.3em 0.9em;
+  padding: 0;
+  line-height: 135%;
   white-space: pre-wrap;       /* css-3 */
   white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
 }
 
 h1, h2, h3 {
-  padding: 0.3em;
-  margin: 2.5em 0 0.5em -0.3em;
+  padding: 0;
+  margin: 1.6em 0 0.6em -0.9em;
   line-height: 1.25em;
   letter-spacing: 0.03em;
 }
 
 h1 {
-  border-bottom: 1px solid #808080;
   font-size: 2em;
   margin-top: 0;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #808080;
 }
 
 h2 {
-  border-bottom: 1px solid #a0a0a0;
   font-size: 1.3em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid #a0a0a0;
 }
 
 h3 {
-  border-bottom: 1px solid #c0c0c0;
   font-size: 1.1em;
 }
 
 blockquote {
-	padding-left: 2em;
-	padding-right: 2em;
-	margin-left: 0.3em;
+  padding-left: 2em;
+  padding-right: 2em;
+  margin-left: 0.3em;
   margin-right: 0;
-	border-left: 1px solid #3c78b5;
+  border-left: 1px solid #3c78b5;
 }
 
 ul { 
@@ -84,7 +91,9 @@ ul ul {
 }
 
 table {
-  border-spacing: 0.2em 0;
+  border-spacing: 0;
+  width: 100%;
+  margin: 0.3em 0 0.3em 0;
 }
 
 th, td {
@@ -96,7 +105,8 @@ th, td {
 
 th, thead td {
   border-bottom: none;
-  background-color: #E5E5E5;
+  background-color: #669966;
+  color: #ffffff;
   text-align: left;
 }
 
@@ -104,7 +114,7 @@ th, thead td {
 #wrap{
   margin: 1em auto 2em auto;
   text-align: left;
-  width: 60em;
+  width: 65em;
 }
 
 
@@ -131,29 +141,27 @@ th, thead td {
   float: left;
   text-align: left;
   margin-right: 2em;
+  font-family: "DejaVu Sans", Verdana, Helvetica;
+  font-size: 11pt;
 }
-
 #pages ol {
   list-style: none;
-  font-weight: bold;
   padding: 0;
+  margin: 0;
 }
-
 #pages ol li {
+  padding: 0.3em 0 0.3em 0em;
+  color: #669966;
+  font-weight: bold; 
+}
+#pages ol li ol {
   border-top: 1px solid #E9E9E9;
-  padding: 0.3em 0 0.5em 0.5em;
+  margin-top: 0.3em;
+  padding: 0.3em 0 0.9em 0.9em;
 }
-
-#pages ol li a:link,  #pages ol li a:visited  {
-  color: #606060;
-  text-decoration: none;
+#pages ol li a  {
+  font-weight: normal;
 }
-
-#pages ol li a:hover {
-  color: #222;
-  text-decoration: none;
-}
-
 #pages form {
   margin-top: 2em;
   padding: 0.3em 0 0.5em 0.5em;
@@ -171,22 +179,15 @@ th, thead td {
 ol.toc {
   list-style: none;
   padding: 0;
-  margin-bottom: 2em !important;
+  margin: 0 0 2em 0;
 }
-
 ol.toc li {
-  padding: 0.3em 0 0.3em 0 !important;
+  padding: 0.3em 0 0.3em 0;
   margin: 0;
 }
-
-ol.toc ol.toc {
-  list-style: none;
-  margin: 0.3em 0 0 0 !important;
-  padding: 0;
-}
-
-ol.toc ol.toc li {
-  padding-left: 0.5em !important;
+ol.toc li ol.toc {
+  margin: 0;
+  padding-left: 0.9em;
 }
 
 

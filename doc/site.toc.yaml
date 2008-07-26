@@ -13,10 +13,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-- Main:  
+- Start Here:  
   - Welcome: index.html
   - Download and Installation: download.html
-  - Printable PDF: buildr.pdf
+  - User Guide (PDF): buildr.pdf
   - New: whats_new.html
 - Using Buildr:
   - Getting Started: getting_started.html
@@ -34,7 +34,7 @@
   - Rake: http://docs.rubyrake.org
   - Antwrap: http://antwrap.rubyforge.org
   - Troubleshooting: troubleshooting.html
-- Getting Involved:
+- Get Involved:
   - Contributing: contributing.html
   - Mailing Lists: mailing_lists.html
   - Issues/Bugs: http://issues.apache.org/jira/browse/Buildr

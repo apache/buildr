@@ -15,9 +15,12 @@
  */
 
 
-@page { margin: 1in 0.75in 1in 0.75in; }
-@page {
-  font-family: "DejaVu Sans", Verdana, Helvetica;
+@page { 
+  margin: 1in 0.75in 1in 0.75in;
+  @top-left, @top-right {
+    font-family: "Gill Sans", "DejaVu Sans", Verdana, Helvetica;
+    font-weight: normal;
+  }
 }
 @page:left {
   @top-left { content: counter(page); }
@@ -32,64 +35,63 @@
   @top-right { content: normal }
 }
 
-title {
-  string-set: doctitle content();
-}
+@media print {
+  title { string-set: doctitle content(); }
 
-body {
-  font-size: 12pt;
-  margin: 0;
-  color: black;
-  background: white;
-}
+  body {
+    font-family: "Palatino", "DejaVu Serif", Helvetica;
+    font-size: 12pt;
+    margin: 0;
+    color: black;
+    background: white;
+  }
 
-h1 {
-  string-set: pagetitle content();
-  page-break-before: always;
-}
-h1:first-child { page-break-before: avoid; }
-pre, p, blockquote { page-break-inside: avoid; }
-pre {
-  line-height: 1.3em;
-  white-space: pre-wrap; /* css-3 */
-  padding: 0.3em 0 0.9em 0.6em;
-  margin: 0;
-}
-a:link, a:visited {
-  background: transparent;
-  text-decoration: none;
-}
+  h1 {
+    string-set: pagetitle content();
+    page-break-before: always;
+  }
+  h1:first-child { page-break-before: avoid; }
+  h1, h2, h3, ol.toc {
+    font-family: "Gill Sans", "Courier", "DejaVu Sans", Verdana, Helvetica;
+  }
+  pre, p, blockquote { page-break-inside: avoid; }
+  pre, code {
+    font-family: "Monaco", "DejaVu Sans Mono", "Courier New", "Courier";
+    font-size: 10pt;
+  }
+  a:link, a:visited {
+    background: transparent;
+    text-decoration: none;
+  }
+  #wrap, #content, #footer {
+    float: none !important;
+    color: black;
+    background: transparent;
+    width: auto !important;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
 
+  #header {
+    margin-bottom: 5%;
+    font-size: 120%;
+  }
+  #header img { width: 4in; }
+  #header .tagline {
+    float: none !important;
+    position: static !important;
+    font-size: 1.2em;
+    text-align: center;
+  }
 
-#wrap, #content, #footer {
-  float: none !important;
-  color: black;
-  background: transparent;
-  width: auto !important;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
+  #pages, .noprint { display: none; }
 
-#header {
-  margin-bottom: 5%;
-  font-size: 120%;
-}
-#header img { width: 4in; }
-#header .tagline {
-  float: none !important;
-  position: static !important;
-  font-size: 1.2em;
-  text-align: center;
-}
+  ol.toc a:link, ol.toc a:visited { text-decoration: none; }
+  ol.toc a:after { content: leader('.') target-counter(attr(href), page); }
 
-#pages, .noprint { display: none; }
+  #footer { margin-top: 5%; }
 
-ol.toc a:link, ol.toc a:visited { text-decoration: none; }
-ol.toc a:after { content: leader('.') target-counter(attr(href), page); }
+  #license { padding-top: 1in; }
 
-#footer { margin-top: 5%; }
-
-#license {
-  padding-top: 1in;
 }
