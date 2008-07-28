@@ -304,7 +304,7 @@ describe Buildr::Filter do
 
   it 'should respond to :include and use these inclusion patterns' do
     @filter.from('src').into('target').include('file2', 'file3').run
-    Dir['target/*'].should eql(['target/file2', 'target/file3'])
+    Dir['target/*'].sort.should eql(['target/file2', 'target/file3'])
   end
 
   it 'should respond to :exclude and return self' do
