@@ -503,8 +503,15 @@ describe Buildr, '#group' do
     list.should include(artifact('saxon:saxon-xpath:jar:8.4'))
     list.size.should be(3)
   end
+  
+  it 'should accept a type' do
+    list = group('struts-bean', 'struts-html', :under=>'struts', :type=>'tld', :version=>'1.1')
+    list.should include(artifact('struts:struts-bean:tld:1.1'))
+    list.should include(artifact('struts:struts-html:tld:1.1'))
+    list.size.should be(2)
+  end
+  
 end
-
 
 describe Builder, '#install' do
   before do

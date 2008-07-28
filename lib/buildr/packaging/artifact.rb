@@ -671,10 +671,11 @@ module Buildr
   # :call-seq:
   #   group(ids, :under=>group_name, :version=>number) => artifacts
   #
-  # Convenience method for defining multiple artifacts that belong to the same group and version.
-  # Accepts multiple artifact identifiers follows by two hash values:
+  # Convenience method for defining multiple artifacts that belong to the same group, type and version.
+  # Accepts multiple artifact identifiers followed by two or three hash values:
   # * :under -- The group identifier
   # * :version -- The version number
+  # * :type -- The artifact type (optional)
   #
   # For example:
   #   group 'xbean', 'xbean_xpath', 'xmlpublic', :under=>'xmlbeans', :version=>'2.1.0'
@@ -682,7 +683,7 @@ module Buildr
   #   group %w{xbean xbean_xpath xmlpublic}, :under=>'xmlbeans', :version=>'2.1.0'
   def group(*args)
     hash = args.pop
-    args.flatten.map { |id| artifact :group=>hash[:under], :version=>hash[:version], :id=>id }
+    args.flatten.map { |id| artifact :group=>hash[:under], :type=>hash[:type], :version=>hash[:version], :id=>id }
   end 
 
   # :call-seq:
