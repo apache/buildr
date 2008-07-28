@@ -122,6 +122,8 @@ module Buildr
         map = compile_map(sources, target)
         return false if map.empty?
         return true unless File.exist?(target.to_s)
+        source_files_not_yet_compiled = map.select { |source, target| !File.exist?(target) }
+        puts "Compile needed because source file #{source_files_not_yet_compiled[0][0]} has no corresponding #{source_files_not_yet_compiled[0][1]}" if Buildr.application.options.trace && !source_files_not_yet_compiled.empty?
         return true if map.any? { |source, target| !File.exist?(target) || File.stat(source).mtime > File.stat(target).mtime }
         oldest = map.map { |source, target| File.stat(target).mtime }.min
         return dependencies.any? { |path| file(path).timestamp > oldest }

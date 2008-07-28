@@ -5,6 +5,7 @@ more of the stack trace without running --trace, and when running with
 supported terminal, error message is red.
 * Changed: BUILDR-104 Buildr::group has :under and :version, but not :type.
 Now it has :type too (Lacton).
+* Fixed: BUILDR-108 Trace to explain why a compile is done (Lacton).
 * Fixed: BUILDR-106 download(artifact(...)=>url) broken in certain cases
 (Lacton).
 
