@@ -150,7 +150,7 @@ EOF
 
         #get plugins configurations
         plugins = project['build'].first['plugins'].first['plugin'] rescue {}
-        if plugin
+        if plugins
           compile_plugin = plugins.find{|pl| (pl['groupId'].nil? or pl['groupId'].first == 'org.apache.maven.plugins') and pl['artifactId'].first == 'maven-compiler-plugin'}
           if compile_plugin
             source = compile_plugin.first['configuration'].first['source'] rescue nil
