@@ -546,7 +546,7 @@ module Buildr
           return @descriptor if @descriptor
           descriptor_path = path_to('META-INF/application.xml')
           @descriptor = file(descriptor_path) do |task|
-            puts "Creating EAR Descriptor: #{task.to_s}" if Buildr.application.options.trace
+            trace "Creating EAR Descriptor: #{task.to_s}"
             mkpath File.dirname(task.name), :verbose=>false
             File.open(task.name, 'w') { |file| file.print task.xml }
           end

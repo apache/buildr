@@ -45,11 +45,11 @@ module Buildr
               if File.directory?(path)
                 in_directory path do |file, rel_path|
                   dest = "#{@path}#{rel_path}"
-                  puts "Adding #{dest}" if Buildr.application.options.trace
+                  trace "Adding #{dest}"
                   file_map[dest] = file
                 end
               else
-                puts "Adding #{@path}#{File.basename(path)}" if Buildr.application.options.trace
+                trace "Adding #{@path}#{File.basename(path)}"
                 file_map["#{@path}#{File.basename(path)}"] = path
               end
             end
@@ -150,11 +150,11 @@ module Buildr
                 path = rel_path.split('/')[1..-1]
                 path.unshift as unless as == '.'
                 dest = "#{@path}#{path.join('/')}"
-                puts "Adding #{dest}" if Buildr.application.options.trace
+                trace "Adding #{dest}"
                 file_map[dest] = file
               end
             else
-              puts "Adding #{@path}#{as}" if Buildr.application.options.trace
+              trace "Adding #{@path}#{as}"
               file_map["#{@path}#{as}"] = file
             end
           end
@@ -218,7 +218,7 @@ module Buildr
             if @includes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) } &&
                !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) }
               dest = path =~ /^\/?$/ ? entry.name : Util.relative_path(path + "/" + entry.name)
-              puts "Adding #{dest}" if Buildr.application.options.trace
+              trace "Adding #{dest}"
               file_map[dest] = lambda { |output| output.write source.read(entry) }
             end
           end
@@ -546,7 +546,7 @@ module Buildr
           patterns.map(entries).each do |dest, entry|
             next if entry.directory?
             dest = File.expand_path(dest, target.to_s)
-            puts "Extracting #{dest}" if Buildr.application.options.trace
+            trace "Extracting #{dest}"
             mkpath File.dirname(dest), :verbose=>false rescue nil
             entry.extract(dest) { true }
           end

@@ -63,7 +63,7 @@ module Buildr
         cmd_args += javac_args
         cmd_args += files_from_sources(sources)
         unless Buildr.application.options.dryrun
-          puts (['javac'] + cmd_args).join(' ') if Buildr.application.options.trace
+          trace((['javac'] + cmd_args).join(' '))
           Java.load
           Java.com.sun.tools.javac.Main.compile(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to compile, see errors above'
@@ -144,7 +144,7 @@ module Buildr
 
         unless Buildr.application.options.dryrun
           Scalac.scala_home or fail 'Are we forgetting something? SCALA_HOME not set.'
-          puts (['scalac'] + cmd_args).join(' ') if Buildr.application.options.trace
+          trace((['scalac'] + cmd_args).join(' '))
           if Scalac.use_fsc
             system(([File.expand_path('bin/fsc', Scalac.scala_home)] + cmd_args).join(' ')) or
               fail 'Failed to compile, see errors above'
@@ -338,8 +338,8 @@ module Buildr
         end
         cmd_args += sources.flatten.uniq
         unless Buildr.application.options.dryrun
-          puts "Generating Javadoc for #{name}" if verbose
-          puts (['javadoc'] + cmd_args).join(' ') if Buildr.application.options.trace
+          info "Generating Javadoc for #{name}"
+          trace (['javadoc'] + cmd_args).join(' ')
           Java.load
           Java.com.sun.tools.javadoc.Main.execute(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to generate Javadocs, see errors above'
@@ -410,8 +410,8 @@ module Buildr
         cmd_args += (sources.map(&:to_s) - [task.name]).
           map { |file| File.directory?(file) ? FileList["#{file}/**/*.java"] : file }.flatten
         unless Buildr.application.options.dryrun
-          puts 'Running apt' if verbose
-          puts (['apt'] + cmd_args).join(' ') if Buildr.application.options.trace
+          info 'Running apt'
+          trace (['apt'] + cmd_args).join(' ')
           Java.com.sun.tools.apt.Main.process(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to process annotations, see errors above'
         end

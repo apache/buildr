@@ -292,7 +292,7 @@ module URI
     def read(options = nil, &block)
       options ||= {}
       connect do |http|
-        puts "Requesting #{self}"  if Buildr.application.options.trace
+        trace "Requesting #{self}"
         headers = { 'If-Modified-Since' => CGI.rfc1123_date(options[:modified].utc) } if options[:modified]
         request = Net::HTTP::Get.new(request_uri.empty? ? '/' : request_uri, headers)
         request.basic_auth self.user, self.password if self.user
@@ -300,14 +300,14 @@ module URI
           case response
           when Net::HTTPNotModified
             # No modification, nothing to do.
-            puts 'Not modified since last download' if Buildr.application.options.trace
+            trace 'Not modified since last download'
             return nil
           when Net::HTTPRedirection
             # Try to download from the new URI, handle relative redirects.
-            puts "Redirected to #{response['Location']}" if Buildr.application.options.trace
+            trace "Redirected to #{response['Location']}"
             return (self + URI.parse(response['location'])).read(options, &block)
           when Net::HTTPOK
-            puts "Downloading #{self}" if verbose
+            info "Downloading #{self}"
             result = nil
             with_progress_bar options[:progress], path.split('/').last, response.content_length do |progress|
               if block
@@ -338,7 +338,7 @@ module URI
     def write_internal(options, &block) #:nodoc:
       options ||= {}
       connect do |http|
-        puts "Uploading to #{path}" if Buildr.application.options.trace
+        trace "Uploading to #{path}"
         content = StringIO.new
         while chunk = yield(32 * 4096)
           content << chunk
@@ -363,7 +363,7 @@ module URI
         case response
         when Net::HTTPRedirection
           # Try to download from the new URI, handle relative redirects.
-          puts "Redirected to #{response['Location']}" if Buildr.application.options.trace
+          trace "Redirected to #{response['Location']}"
           content.rewind
           return (self + URI.parse(response['location'])).write_internal(options) { |bytes| content.read(bytes) }
         when Net::HTTPSuccess
@@ -408,14 +408,14 @@ module URI
       ssh_options = { :port=>port, :password=>password }.merge(options[:ssh_options] || {})
       ssh_options[:password] ||= SFTP.passwords[host]
       begin
-        puts "Connecting to #{host}" if Buildr.application.options.trace
+        trace "Connecting to #{host}"
         result = nil
         Net::SFTP.start(host, user, ssh_options) do |sftp|
           SFTP.passwords[host] = ssh_options[:password]
-          puts 'connected' if Buildr.application.options.trace
+          trace 'connected'
 
           with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
-            puts "Downloading to #{path}" if Buildr.application.options.trace
+            trace "Downloading to #{path}"
             sftp.file.open(path, 'r') do |file|
               if block
                 while chunk = file.read(32 * 4096)
@@ -451,14 +451,14 @@ module URI
       ssh_options = { :port=>port, :password=>password }.merge(options[:ssh_options] || {})
       ssh_options[:password] ||= SFTP.passwords[host]
       begin
-        puts "Connecting to #{host}" if Buildr.application.options.trace
+        trace "Connecting to #{host}"
         Net::SFTP.start(host, user, ssh_options) do |sftp|
           SFTP.passwords[host] = ssh_options[:password]
-          puts 'connected' if Buildr.application.options.trace
+          trace 'Connected'
 
           # To create a path, we need to create all its parent. We use realpath to determine if
           # the path already exists, otherwise mkdir fails.
-          puts "Creating path #{path}" if Buildr.application.options.trace
+          trace "Creating path #{path}"
           File.dirname(path).split('/').reject(&:empty?).inject('/') do |base, part|
             combined = base + part
             sftp.close(sftp.opendir!(combined)) rescue sftp.mkdir! combined, {}
@@ -466,7 +466,7 @@ module URI
           end
 
           with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
-            puts "Uploading to #{path}" if Buildr.application.options.trace
+            trace "Uploading to #{path}"
             sftp.file.open(path, 'w') do |file|
               while chunk = yield(32 * 4096)
                 file.write chunk

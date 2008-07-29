@@ -51,7 +51,7 @@ module Buildr
         when String
           filename = File.expand_path(source)
           unless pom = cache[filename]
-            puts "Loading m2 pom file from #{filename}" if Buildr.application.options.trace
+            trace "Loading m2 pom file from #{filename}"
             pom = POM.new(IO.read(filename))
             cache[filename] = pom
           end

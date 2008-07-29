@@ -78,7 +78,7 @@ module Buildr
 
         # Project type is going to be the first package type
         if package = project.packages.first
-          puts "Writing #{task.name}" if verbose
+          info "Writing #{task.name}"
           File.open(task.name, "w") do |file|
             xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
             xml.module(:version=>"4", :relativePaths=>"true", :type=>"JAVA_MODULE") do
@@ -173,7 +173,7 @@ module Buildr
         task_name = project.path_to("#{project.name.gsub(':', '-')}-7x.ipr")
         idea7x.enhance [ file(task_name) ]
         file(task_name=>sources) do |task|
-          puts "Writing #{task.name}" if verbose
+          info "Writing #{task.name}"
 
           # Generating just the little stanza that chanages from one project to another
           partial = StringIO.new

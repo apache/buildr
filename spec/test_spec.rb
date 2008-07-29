@@ -244,7 +244,7 @@ describe Buildr::TestTask, 'with no tests' do
   end
 
   it 'should report no failed tests' do
-    lambda { verbose(true) { define('foo').test.invoke } }.should_not warn_that(/fail/i)
+    lambda { verbose(true) { define('foo').test.invoke } }.should_not show_error(/fail/i)
   end
   
   it 'should return no failed tests' do
@@ -284,7 +284,7 @@ describe Buildr::TestTask, 'with passing tests' do
   end
 
   it 'should report no failed tests' do
-    lambda { verbose(true) { test_task.invoke } }.should_not warn_that(/fail/i)
+    lambda { verbose(true) { test_task.invoke } }.should_not show_error(/fail/i)
   end
   
   it 'should return passed tests' do
@@ -322,7 +322,7 @@ describe Buildr::TestTask, 'with failed test' do
   end
 
   it 'should report failed tests' do
-    lambda { verbose(true) { test_task.invoke rescue nil } }.should warn_that(/FailingTest/)
+    lambda { verbose(true) { test_task.invoke rescue nil } }.should show_error(/FailingTest/)
   end
 
   it 'should return failed tests' do
@@ -342,7 +342,7 @@ describe Buildr::TestTask, 'with failed test' do
 
   it 'should report failed tests even if fail_on_failure is false' do
     test_task.using(:fail_on_failure=>false)
-    lambda { verbose(true) { test_task.invoke } }.should warn_that(/FailingTest/)
+    lambda { verbose(true) { test_task.invoke } }.should show_error(/FailingTest/)
   end
 
   it 'should return failed tests even if fail_on_failure is false' do
@@ -668,7 +668,7 @@ describe Buildr::Options, 'test' do
 
   it 'should be true and warn for any other value' do
     ENV['TEST'] = 'funky'
-    lambda { Buildr.options.test.should be(true) }.should warn_that(/expecting the environment variable/i)
+    lambda { Buildr.options.test.should be(true) }.should show_warning(/expecting the environment variable/i)
   end
 end
 

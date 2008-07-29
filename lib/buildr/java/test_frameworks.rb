@@ -67,7 +67,7 @@ module Buildr
           end
           result.concat filter.filter(candidates.to_java(Java.java.lang.String)).map(&:to_s)
         rescue =>ex
-          puts "#{ex.class}: #{ex.message}" if verbose
+          info "#{ex.class}: #{ex.message}"
           raise
         end
         result.uniq
@@ -246,7 +246,7 @@ module Buildr
       desc "Generate JUnit tests report in #{report.target}"
       task('report') do |task|
         report.generate Project.projects
-        puts "Generated JUnit tests report in #{report.target}" if verbose
+        info "Generated JUnit tests report in #{report.target}"
       end
     end
 
@@ -392,7 +392,7 @@ module Buildr
       # ScalaTest
       reporter_options = 'TFGBSAR' # testSucceeded, testFailed, testIgnored, suiteAborted, runStopped, runAborted, runCompleted
       scalatest.each do |suite|
-        puts "ScalaTest #{suite.inspect}" if verbose
+        info "ScalaTest #{suite.inspect}"
         # Use Ant to execute the ScalaTest task, gives us performance and reporting.
         reportFile = File.join(task.report_to.to_s, "TEST-#{suite}.txt")
         Buildr.ant('scalatest') do |ant|

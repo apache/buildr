@@ -187,7 +187,7 @@ module Buildr
         real << ("%ih" % (@times.real / 3600)) if @times.real >= 3600
         real << ("%im" % ((@times.real / 60) % 60)) if @times.real >= 60
         real << ("%.3fs" % (@times.real % 60))
-        puts "Completed in #{real.join}"
+        puts $terminal.color("Completed in #{real.join}", :green)
       end
       @on_completion.each { |block| block.call }
     end
@@ -430,13 +430,29 @@ if $stdout.isatty
   end
 end
 
-if HighLine.use_color?
-  module Kernel #:nodoc:
-    alias :warn_without_color :warn
-    def warn(message)
-      warn_without_color $terminal.color(message.to_s, :blue)
-    end
-  end
+
+alias :warn_without_color :warn
+
+# Show warning message.
+def warn(message)
+  warn_without_color $terminal.color(message.to_s, :blue) if verbose
+end
+
+# Show error message.  Use this when you need to show an error message and not throwing
+# an exception that will stop the build.
+def error(message)
+  puts $terminal.color(message.to_s, :red)
+end
+
+# Show optional information.  The message is printed only when running in verbose
+# mode (the default).
+def info(message)
+  puts message if verbose
+end
+
+# Show message.  The message is printed out only when running in trace mode.
+def trace(message)
+  puts message if Buildr.application.options.trace
 end
 
 

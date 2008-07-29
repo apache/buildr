@@ -58,7 +58,7 @@ module Buildr
 
       # The only thing we need to look for is a change in the Buildfile.
       file(task_name=>sources) do |task|
-        puts "Writing #{task.name}" if verbose
+        info "Writing #{task.name}"
 
         # Idea handles modules slightly differently if they're WARs
         idea_types = Hash.new("JAVA_MODULE")
@@ -154,7 +154,7 @@ module Buildr
         idea.enhance [ file(task_name) ]
 
         file(task_name=>sources) do |task|
-          puts "Writing #{task.name}" if verbose
+          info "Writing #{task.name}"
 
           # Generating just the little stanza that chanages from one project to another
           partial = StringIO.new

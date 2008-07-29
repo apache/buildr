@@ -237,7 +237,7 @@ module Buildr
       # Executes SVN command and returns the output.
       def svn(*args)
         cmd = 'svn ' + args.map { |arg| arg[' '] ? %Q{"#{arg}"} : arg }.join(' ')
-        puts cmd if verbose
+        info cmd
         `#{cmd}`.tap { fail 'SVN command failed' unless $?.exitstatus == 0 }
       end
 

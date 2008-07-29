@@ -123,7 +123,7 @@ module Buildr
         return false if map.empty?
         return true unless File.exist?(target.to_s)
         source_files_not_yet_compiled = map.select { |source, target| !File.exist?(target) }
-        puts "Compile needed because source file #{source_files_not_yet_compiled[0][0]} has no corresponding #{source_files_not_yet_compiled[0][1]}" if Buildr.application.options.trace && !source_files_not_yet_compiled.empty?
+        trace "Compile needed because source file #{source_files_not_yet_compiled[0][0]} has no corresponding #{source_files_not_yet_compiled[0][1]}" unless source_files_not_yet_compiled.empty?
         return true if map.any? { |source, target| !File.exist?(target) || File.stat(source).mtime > File.stat(target).mtime }
         oldest = map.map { |source, target| File.stat(target).mtime }.min
         return dependencies.any? { |path| file(path).timestamp > oldest }
@@ -175,7 +175,7 @@ module Buildr
             FileList["#{source}/**/*.{#{ext_glob}}"].reject { |file| File.directory?(file) }.
               each { |file| map[file] = File.join(target, Util.relative_path(file, source).ext(target_ext)) }
           else
-            map[source] = File.join(target, File.basename(source).ext(target_ext))
+            map[source] = target # File.join(target, File.basename(source).ext(target_ext))
           end
           map
         end
@@ -225,7 +225,7 @@ module Buildr
           raise 'No compiler selected and can\'t determine which compiler to use' unless compiler
           raise 'No target directory specified' unless target
           mkpath target.to_s, :verbose=>false
-          puts "Compiling #{task.name.gsub(/:[^:]*$/, '')} into #{target.to_s}" if verbose
+          info "Compiling #{task.name.gsub(/:[^:]*$/, '')} into #{target.to_s}"
           @compiler.compile(sources.map(&:to_s), target.to_s, dependencies.map(&:to_s))
           # By touching the target we let other tasks know we did something,
           # and also prevent recompiling again for dependencies.
@@ -498,9 +498,7 @@ module Buildr
         # This comes last because the target path is set inside the project definition.
         project.build project.compile.target
         project.clean do
-          verbose(false) do
-            rm_rf project.compile.target.to_s
-          end
+          rm_rf project.compile.target.to_s, :verbose=>false
         end
       end
     end

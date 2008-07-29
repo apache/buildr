@@ -57,7 +57,7 @@ module Buildr
 
         # The only thing we need to look for is a change in the Buildfile.
         file(project.path_to(".classpath")=>sources) do |task|
-          puts "Writing #{task.name}" if verbose
+          info "Writing #{task.name}"
 
           # Find a path relative to the project's root directory.
           relative = lambda do |path|
@@ -143,7 +143,7 @@ module Buildr
 
         # The only thing we need to look for is a change in the Buildfile.
         file(project.path_to(".project")=>sources) do |task|
-          puts "Writing #{task.name}" if verbose
+          info "Writing #{task.name}"
           File.open(task.name, "w") do |file|
             xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
             xml.projectDescription do

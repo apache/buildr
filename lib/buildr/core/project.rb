@@ -319,7 +319,7 @@ module Buildr
       def local_task(args, &block)
         task args do |task|
           local_projects do |project|
-            puts block.call(project.name) if block && verbose
+            info block.call(project.name) if block
             task("#{project.name}:#{task.name}").invoke
           end
         end
@@ -342,7 +342,7 @@ module Buildr
           local_projects(File.dirname(dir), &block)
         elsif block
           if projects.empty?
-            warn "No projects defined for directory #{Buildr.application.original_dir}" if verbose
+            warn "No projects defined for directory #{Buildr.application.original_dir}"
           else
             projects.each { |project| block[project] }
           end

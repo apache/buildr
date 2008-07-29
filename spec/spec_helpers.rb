@@ -28,7 +28,7 @@ unless self.class.const_defined?('SpecHelpers')
 
     include Checks::Matchers
 
-    module ::Kernel #:nodoc:
+    class ::Object #:nodoc:
       def warn(message)
         $warning ||= []
         $warning << message
@@ -66,8 +66,43 @@ unless self.class.const_defined?('SpecHelpers')
     #
     # For example:
     #   lambda { warn 'ze test' }.should warn_that(/ze test/)
-    def warn_that(message)
+    def show_warning(message)
       WarningMatcher.new message
+    end
+
+    class ::Object  #:nodoc:
+      def error(message)
+        $error ||= []
+        $error << message
+      end
+    end
+
+    class ErrorMessageMatcher
+      def initialize(message)
+        @expect = message
+      end
+
+      def matches?(target)
+        $error = []
+        target.call
+        return Regexp === @expect ? $error.join('\n') =~ @expect : $error.include?(@expect.to_s)
+      end
+
+      def failure_message
+        $error ? "Expected error #{@expect.source}, found #{$error}" : "Expected error #{@expect.source}, no error issued"
+      end
+
+      def negative_failure_message
+        "Found unexpected #{$error}"
+      end
+    end
+    
+    # Test if error message was shown.  You can use a string or regular expression.
+    #
+    # For example:
+    #   lambda { error 'ze test' }.should show_error(/ze test/)
+    def show_error(message)
+      ErrorMessageMatcher.new message
     end
 
 

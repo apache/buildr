@@ -47,7 +47,7 @@ module Java
         cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
         cmd_args += args.flatten.compact
         unless Buildr.application.options.dryrun
-          puts "Running #{name}" if verbose
+          info "Running #{name}"
           block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
           puts cmd_args.join(' ') if Buildr.application.options.trace
           cmd_args = cmd_args.map(&:inspect).join(' ') if Util.win_os?
@@ -88,8 +88,8 @@ module Java
         cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         cmd_args += files
         unless Buildr.application.options.dryrun
-          puts 'Running apt' if verbose
-          puts (['apt'] + cmd_args).join(' ') if Buildr.application.options.trace
+          info 'Running apt'
+          trace (['apt'] + cmd_args).join(' ')
           Java.load
           Java.com.sun.tools.apt.Main.process(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to process annotations, see errors above'
@@ -124,8 +124,8 @@ module Java
         cmd_args += options[:javac_args].flatten if options[:javac_args]
         cmd_args += files
         unless Buildr.application.options.dryrun
-          puts "Compiling #{files.size} source files in #{name}" if verbose
-          puts (['javac'] + cmd_args).join(' ') if Buildr.application.options.trace
+          info "Compiling #{files.size} source files in #{name}"
+          trace (['javac'] + cmd_args).join(' ')
           Java.load
           Java.com.sun.tools.javac.Main.compile(cmd_args.to_java(Java.java.lang.String)) == 0 or 
             fail 'Failed to compile, see errors above'
@@ -174,8 +174,8 @@ module Java
         cmd_args += args.flatten.uniq
         name = options[:name] || Dir.pwd
         unless Buildr.application.options.dryrun
-          puts "Generating Javadoc for #{name}" if verbose
-          puts (['javadoc'] + cmd_args).join(' ') if Buildr.application.options.trace
+          info "Generating Javadoc for #{name}"
+          trace (['javadoc'] + cmd_args).join(' ')
           Java.load
           Java.com.sun.tools.javadoc.Main.execute(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to generate Javadocs, see errors above'

@@ -159,7 +159,7 @@ module Buildr
           # !(foo ^ bar) tests for equality and accepts nil as false (and select is less obfuscated than reject on ^).
           projects = ([project] + project.projects).select { |project| !(project.test.options[:integration] ^ integration) }
           projects.each do |project|
-            puts "Testing #{project.name}" if verbose
+            info "Testing #{project.name}"
             begin
               project.test.invoke
             rescue
@@ -424,11 +424,11 @@ module Buildr
       if @tests.empty?
         @passed_tests, @failed_tests = [], []
       else
-        puts "Running tests in #{@project.name}" if verbose
+        info "Running tests in #{@project.name}"
         @passed_tests = @framework.run(@tests, dependencies)
         @failed_tests = @tests - @passed_tests
         unless @failed_tests.empty?
-          warn "The following tests failed:\n#{@failed_tests.join("\n")}" if verbose
+          error "The following tests failed:\n#{@failed_tests.join("\n")}"
           fail 'Tests failed!'
         end
       end
@@ -458,7 +458,7 @@ module Buildr
       @setup = task("#{name}:setup")
       @teardown = task("#{name}:teardown")
       enhance do
-        puts 'Running integration tests...'  if verbose
+        info 'Running integration tests...'
         TestTask.run_local_tests true
       end
     end
@@ -565,10 +565,8 @@ module Buildr
       test.framework
 
       project.clean do
-        verbose(false) do
-          rm_rf test.compile.target.to_s if test.compile.target
-          rm_rf test.report_to.to_s
-        end
+        rm_rf test.compile.target.to_s, :verbose=>false if test.compile.target
+        rm_rf test.report_to.to_s, :verbose=>false
       end
     end
 

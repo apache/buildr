@@ -120,7 +120,7 @@ module Buildr
           mkpath File.dirname(installed)
           cp name, installed
         end
-        puts "Installed #{installed}" if verbose
+        info "Installed #{installed}"
       end
     end
 
@@ -161,7 +161,7 @@ module Buildr
       uri.password = upload_to[:password] if upload_to[:password]
 
       # Upload artifact relative to base URL, need to create path before uploading.
-      puts "Deploying #{to_spec}" if verbose
+      info "Deploying #{to_spec}"
       path = group.gsub('.', '/') + "/#{id}/#{version}/#{File.basename(name)}"
       URI.upload uri + path, name, :permissions=>upload_to[:permissions]
     end
@@ -298,7 +298,7 @@ module Buildr
         # so don't perform it if the task found a different way to create the artifact.
         task.enhance do
           unless File.exist?(name)
-            puts "Downloading #{to_spec}" if verbose
+            info "Downloading #{to_spec}"
             download
             pom.invoke rescue nil if pom && pom != self
           end
@@ -320,7 +320,7 @@ module Buildr
           mkpath File.dirname(name)
           pom.invoke unless type == :pom
           cp path, name
-          puts "Installed #{path} as #{to_spec}" if verbose
+          info "Installed #{path} as #{to_spec}"
         end
       end
       unless type == :pom
@@ -346,7 +346,7 @@ module Buildr
     # This method attempts to download the artifact from each repository in the order in
     # which they are returned from #remote, until successful. It always downloads the POM first.
     def download
-      puts "Downloading #{to_spec}" if Buildr.application.options.trace
+      trace "Downloading #{to_spec}"
       remote = Buildr.repositories.remote.map { |repo_url| URI === repo_url ? repo_url : URI.parse(repo_url) }
       remote = remote.each { |repo_url| repo_url.path += '/' unless repo_url.path[-1] == '/' }
       fail 'No remote repositories defined!' if remote.empty?
@@ -358,8 +358,8 @@ module Buildr
         rescue URI::NotFoundError
           false
         rescue Exception=>error
-          puts error if verbose
-          puts error.backtrace.join("\n") if Buildr.application.options.trace
+          info error
+          trace error.backtrace.join("\n")
           false
         end
       end
