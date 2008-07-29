@@ -119,3 +119,28 @@ artifact 'axis:axis-jaxrpc:pom:1.3' do |task|
 end
 }}}
 
+
+h2. Buildr fails to run after install with a "stack level too deep
+(SystemStackError)" error
+
+A particular quirk of an existing Ruby setup can cause problems when running
+Buildr.  If a system already has several Ruby directories that are in the
+@PATH@, it is often nice (appropriate?) to have them in @RUBYLIB@ as well (to
+be able to require them).  If there are several of them a user may decide that
+@RUBYLIB=$PATH@ is a good way to handle this (or some less automated method
+that has the same effect).
+
+The culprit is having the Gem's binary directory show up in @RUBYLIB@.  For
+example, Buildr's @bin/buildr@ includes this line:
+
+{{{!sh
+require 'buildr'
+}}}
+
+Under normal circumstances, this tells RubyGems to load @buildr.rb@ from
+the Gem's library directory.  When @RUBYLIB@ points to the Gem's @bin@
+directory, it ends up loading itself repeatedly. 
+
+To solve this, remove Buildr's @bin@ directory from @RUBYLIB@.  Removing all
+directories that you don't actually need is better (other Gems may have the
+same problem).

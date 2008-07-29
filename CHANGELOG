@@ -14,6 +14,8 @@ use these inclusion patterns" (Lacton).
 * Fixed: BUILDR-110 Error creating buildfile from POM when missing plugin
 configuration (Geoffrey Ruscoe).
 * Fixed: BUILDR-112 Using a user gem repository with 'rake setup' (Lacton).
+* Docs: BUILDR-111 Troubleshoot tip when Buildr's bin directory shows up in
+RUBYLIB (Geoffrey Ruscoe).
 
 1.3.2 (2008-07-18)
 * Added: --prereqs command line argument to show all tasks and their
