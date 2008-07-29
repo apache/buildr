@@ -150,13 +150,15 @@ EOF
 
         #get plugins configurations
         plugins = project['build'].first['plugins'].first['plugin'] rescue {}
-        compile_plugin = plugins.find{|pl| (pl['groupId'].nil? or pl['groupId'].first == 'org.apache.maven.plugins') and pl['artifactId'].first == 'maven-compiler-plugin'}
-        if compile_plugin
-          source = compile_plugin.first['configuration'].first['source'] rescue nil
-          target = compile_plugin.first['configuration'].first['target'] rescue nil
+        if plugin
+          compile_plugin = plugins.find{|pl| (pl['groupId'].nil? or pl['groupId'].first == 'org.apache.maven.plugins') and pl['artifactId'].first == 'maven-compiler-plugin'}
+          if compile_plugin
+            source = compile_plugin.first['configuration'].first['source'] rescue nil
+            target = compile_plugin.first['configuration'].first['target'] rescue nil
 
-          script << "  compile.options.source = '#{source}'" if source
-          script << "  compile.options.target = '#{target}'" if target
+            script << "  compile.options.source = '#{source}'" if source
+            script << "  compile.options.target = '#{target}'" if target
+          end
         end
 
         compile_dependencies = pom.dependencies

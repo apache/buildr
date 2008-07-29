@@ -11,6 +11,8 @@ Now it has :type too (Lacton).
 * Fixed: BUILDR-108 Trace to explain why a compile is done (Lacton).
 * Fixed: BUILDR-109 Failure of "Buildr::Filter should respond to :include and
 use these inclusion patterns" (Lacton).
+* Fixed: BUILDR-110 Error creating buildfile from POM when missing plugin
+configuration (Geoffrey Ruscoe),
 
 1.3.2 (2008-07-18)
 * Added: --prereqs command line argument to show all tasks and their
