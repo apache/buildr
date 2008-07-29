@@ -573,9 +573,14 @@ name1=with\tand\r
 
 name2=with\\nand\f
 
-name3=double\\hash
+name3=double\\\\hash
 PROPS
-    hash.should == {'name1'=>"with\tand\r", 'name2'=>"with\nand\f", 'name3'=>"double\\hash"}
+    hash.should == {'name1'=>"with\tand", 'name2'=>"with\nand\f", 'name3'=>'double\hash'}
+  end
+  
+  it 'should ignore whitespace' do
+    hash = Hash.from_java_properties('name1 = value1')
+    hash.should == {'name1'=>'value1'}
   end
 end
 
@@ -589,7 +594,7 @@ describe Hash, '#to_java_properties' do
   end
 
   it 'should handle \t, \r, \n and \f' do
-    props = {'name1'=>"with\tand\r", 'name2'=>"with\nand\f", 'name3'=>"double\\hash"}.to_java_properties
+    props = {'name1'=>"with\tand\r", 'name2'=>"with\nand\f", 'name3'=>'double\hash'}.to_java_properties
     props.split("\n").should include("name1=with\\tand\\r")
     props.split("\n").should include("name2=with\\nand\\f")
     props.split("\n").should include("name3=double\\\\hash")

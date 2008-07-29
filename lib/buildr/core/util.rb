@@ -187,10 +187,16 @@ class Hash
     #   Hash.from_properties(str)
     #   => { 'foo'=>'bar', 'baz'=>'fab' }.to_properties
     def from_java_properties(string)
-      string.gsub(/\\\n/, '').split("\n").select { |line| line =~ /^[^#].*=.*/ }.
-        map { |line| line.gsub(/\\[trnf\\]/) { |escaped| {?t=>"\t", ?r=>"\r", ?n=>"\n", ?f=>"\f", ?\\=>"\\"}[escaped[1]] } }.
-        map { |line| line.split('=') }.
-        inject({}) { |hash, (name, value)| hash.merge(name=>value) }
+      hash = {}
+      input_stream = Java.java.io.StringBufferInputStream.new(string)
+      java_properties = Java.java.util.Properties.new
+      java_properties.load input_stream
+      keys = java_properties.keySet.iterator
+      while keys.hasNext do
+        key = keys.next.toString
+        hash[key] = java_properties.getProperty(key)
+      end
+      hash
     end
 
   end
