@@ -19,22 +19,22 @@ begin
 
   directory 'reports'
   task 'clobber' do
-    rm 'failing' rescue nil
+    rm_r 'failed'
     rm_rf 'reports'
   end
 
   desc 'Run all specs'
   Spec::Rake::SpecTask.new('spec'=>'reports') do |task|
     task.spec_files = FileList['spec/**/*_spec.rb']
-    task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failing' <<
+    task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failed' <<
       '--format' << 'html:reports/specs.html' << '--backtrace'
   end
   file 'reports/specs.html'=>'spec'
 
-  desc 'Run all failing examples from previous run'
-  Spec::Rake::SpecTask.new('failing') do |task|
+  desc 'Run all failed examples from previous run'
+  Spec::Rake::SpecTask.new('failed') do |task|
     task.spec_files = FileList['spec/**/*_spec.rb']
-    task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failing' << '--example' << 'failing'
+    task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failed' << '--example' << 'failed'
   end
 
   # Useful for testing with JRuby when using Ruby and vice versa.
