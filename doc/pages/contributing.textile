@@ -59,6 +59,29 @@ If you have a patch to submit, do it through
 Apache gets the right to use your contribution, and the JIRA upload form
 includes a simple contribution agreement.  Lawyer not included.
 
+h4.  The Perfect Patch
+
+If you want to get your patch accepted quickly:
+
+#  Provide a good summary of the bug/fix.  We use that to decide which issue
+   we can do quickly, and also copy and paste it into the changelog.
+#  Provide short explanation of what failed, under what conditions, why, and
+   what else could be affected by the change (when relevant).  The helps us
+   understand the problem and move on to the next step.
+#  Provide a patch with relevant specs, or a fix to incomplete/broken specs.
+   First thing we have to do is replicate the problem, before applying the
+   change, and then make sure the change fixes that problem.  And we need to
+   have those specs in there, they make sure we don't accidentally break it
+   again in the future.
+#  Provide a patch with the fix/change itself.  Keep it separate from the
+   specs, so it's easy to apply them individually.
+
+If you don't know how to fix it, but can at least write a spec for the correct
+behavior (which, obviously would fail), do just that.  A spec is preferred to
+a fix.
+
+h4.  Working on a new feature?
+
 If you want to work on a cool new feature, but not quite ready to submit a
 patch, there's still a way you can get the Buildr community involved.  We're
 experimenting with using Git for that.  You can use Git to maintain a fork
@@ -67,7 +90,8 @@ of Buildr that can keep up with changes in the main branch (tip: use
 
 That way you can get other people involved, checking out the code, and
 eventually merge it back with the main branch.  Check out the
-"Git section":#Git below.
+"Git section":#Git below and the post "Git forking for fun and
+profit":http://blog.labnotes.org/2008/04/30/git-forking-for-fun-and-profit/.
 
 
 h2.  Living on the edge
