@@ -330,7 +330,7 @@ describe Buildr::CompileTask, '#invoke' do
     # On my machine the times end up the same, so need to push dependencies in the past.
     time = Time.now
     sources.map { |src| src.pathmap("#{compile_task.target}/thepackage/%n.class") }.
-      each { |kls| write kls ; File.utime(time, time, kls) }
+      each { |kls| write kls ; File.utime(time - 1, time - 1, kls) }
     jars.each { |jar| File.utime(time + 1, time + 1, jar) }
     lambda { compile_task.from(sources).with(jars).invoke }.should run_task('foo:compile')
   end

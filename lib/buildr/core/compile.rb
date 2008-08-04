@@ -246,6 +246,7 @@ module Buildr
     #   compile.from('src/java').into('classes').with('module1.jar')
     def from(*sources)  
       @sources |= sources.flatten
+      guess_compiler if @compiler.nil? && sources.flatten.any? { |source| File.exist?(source) }
       self
     end
 
@@ -318,10 +319,7 @@ module Buildr
     # based on existing source directories (e.g. src/main/java), or by requesting
     # a specific compiler (see #using).
     def compiler
-      unless @compiler
-        candidate = Compiler.compilers.detect { |cls| cls.applies_to?(project, self) }
-        self.compiler = candidate if candidate
-      end
+      guess_compiler unless @compiler
       @compiler && @compiler.class.to_sym
     end
 
@@ -365,7 +363,11 @@ module Buildr
     # Associates this task with project and particular usage (:main, :test).
     def associate_with(project, usage) #:nodoc:
       @project, @usage = project, usage
-      # Try to guess if we have a compiler to match source files.
+      guess_compiler
+    end
+    
+    # Try to guess if we have a compiler to match source files.
+    def guess_compiler #:nodoc:
       candidate = Compiler.compilers.detect { |cls| cls.applies_to?(project, self) }
       self.compiler = candidate if candidate
     end

@@ -18,6 +18,8 @@ configuration (Geoffrey Ruscoe).
 * Fixed: BUILDR-112 Using a user gem repository with 'rake setup' (Lacton).
 * Fixed: BUILDR-114 Hash.from_java_properties does not behave
 like java.util.Properties (Lacton).
+* Fixed: BUILDR-116: TestTask should include the main compile target in its
+dependencies, even when using non standard directories (Lacton).
 * Docs: BUILDR-111 Troubleshoot tip when Buildr's bin directory shows up in
 RUBYLIB (Geoffrey Ruscoe).
 

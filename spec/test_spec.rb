@@ -203,6 +203,12 @@ describe Buildr::TestTask do
     project('foo').test.dependencies.should include(project('foo').test.compile.target)
   end
 
+  it 'should include the test compile target in its dependencies, even when using non standard directories' do
+    write 'src/test/Test.java', 'class Test {}'
+    define('foo') { test.compile path_to('src/test') }
+    project('foo').test.dependencies.should include(project('foo').test.compile.target)
+  end
+
   it 'should add test compile target ahead of regular compile target' do
     write 'src/main/java/Code.java'
     write 'src/test/java/Test.java'
