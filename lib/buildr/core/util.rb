@@ -192,8 +192,13 @@ class Hash
       java_properties = Java.java.util.Properties.new
       java_properties.load input_stream
       keys = java_properties.keySet.iterator
-      while keys.hasNext do
-        key = keys.next.toString
+      while keys.hasNext
+        # Calling key.next in JRuby returns a java.lang.String, behaving as a Ruby string and life is good.
+        # MRI, unfortunately, treats next() like the interface says returning an object that's not a String,
+        # and the Hash doesn't work the way we need it to.  Unfortunately, we can call toString on MRI's object,
+        # but not on the JRuby one; calling to_s on the JRuby object returns what we need, but ... you guessed it.
+        #  So this seems like the one hack to unite them both.
+        key = Java.java.lang.String.valueOf(keys.next)
         hash[key] = java_properties.getProperty(key)
       end
       hash
