@@ -227,7 +227,8 @@ patch.
 
 We use "Textile":http://www.textism.com/tools/textile/ as the markup language,
 it takes all of a few minutes to learn, it's intuitive to use, and produces
-clean HTML.  Also check out the "Textile Quick
+clean HTML.  You can learn it all in a few minutes from the "Textile Reference
+Manual":http://redcloth.org/textile.  Also check out the "Textile Quick
 Reference":http://hobix.com/textile/quick.html.
 
 You can always check the documentation to see which conventions we use, and
