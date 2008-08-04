@@ -89,16 +89,10 @@ module Buildr
               # Generated: classpath elements in the project are assumed to be generated
               generated, libs = others.partition { |path| path.to_s.index(project.path_to.to_s) == 0 }
 
-              srcs = project.compile.sources
-
-              srcs = srcs.map { |src| relative[src] } + generated.map { |src| relative[src] }
-              srcs.sort.uniq.each do |path|
-                xml.classpathentry :kind=>'src', :path=>path, :excluding=>excludes
-              end
-
               # Main resources implicitly copied into project.compile.target
-              main_resource_sources = project.resources.sources.map { |src| relative[src] }
-              main_resource_sources.each do |path|
+              srcs = (project.compile.sources + generated + project.resources.sources).map { |src| relative[src] }
+
+              srcs.sort.uniq.each do |path|
                 if File.exist? project.path_to(path)
                   xml.classpathentry :kind=>'src', :path=>path, :excluding=>excludes
                 end
