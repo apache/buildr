@@ -197,7 +197,9 @@ module Buildr
           template_xml = REXML::Document.new(File.open(File.join(File.dirname(__FILE__), IPR_TEMPLATE)))
           include_xml = REXML::Document.new(partial.string)
           template_xml.root.add_element(include_xml.root)
-          template_xml.write(File.new(task.name, "w"))
+          File.open task.name, 'w' do |file|
+            template_xml.write file
+          end
         end
       end
 
