@@ -188,6 +188,12 @@ describe Buildr::TestTask do
     project('foo').test.dependencies.should include(project('foo').compile.target)
   end
 
+  it 'should include the main compile target in its dependencies, even when using non standard directories' do
+    write 'src/java/Nothing.java', 'class Nothing {}'
+    define('foo') { compile path_to('src/java') }
+    project('foo').test.dependencies.should include(project('foo').compile.target)
+  end
+
   it 'should include the main resources target in its dependencies' do
     write 'src/main/resources/config.xml'
     define('foo').test.dependencies.should include(project('foo').resources.target)
