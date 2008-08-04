@@ -1,4 +1,6 @@
 1.3.3 (Pending)
+* Fixed: BUILDR-117 Shared directory for both code and resources produces 
+  duplicate Eclipse classpath entries  (Nathan Hamblen)
 * Added: Growl notifications (OS X only).
 * Added: error, info and trace methods.
 * Changed: Error reporting now shows 'buildr aborted!' (used to say rake),
