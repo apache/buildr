@@ -2,26 +2,18 @@ h1. Getting Started
 
 h2.  Installing Buildr
 
-The installation instructions are slightly different for each operating system.
-Pick the one that best matches your operating system and target platform.
+The installation instructions are slightly different for each operating system. Pick the one that best matches your operating system and target platform.
 
-The @gem install@ and @gem update@ commands install Buildr from a binary
-distribution provided through "RubyForge":http://rubyforge.org/projects/buildr.
-This distribution is maintained by contributors to this project, but is *not*
-an official Apache distribution.  You can obtain the official Apache
-distribution files from the "download page":download.html.
+The @gem install@ and @gem update@ commands install Buildr from a binary distribution provided through "RubyForge":http://rubyforge.org/projects/buildr. This distribution is maintained by contributors to this project, but is *not* an official Apache distribution.  You can obtain the official Apache distribution files from the "download page":download.html.
 
-The current release of Buildr for Ruby may not work well with Java 6, only
-Java 1.5 or earlier.  If you need to use Java 6, consider "Buildr for JRuby":#jruby.
+The current release of Buildr for Ruby may not work well with Java 6, only Java 1.5 or earlier.  If you need to use Java 6, consider "Buildr for JRuby":#jruby.
 
 
 h3.  Linux
 
-To get started you will need a recent version of Ruby, Ruby Gems and build
-tools for compiling native libraries (@make@, @gcc@ and standard headers).
+To get started you will need a recent version of Ruby, Ruby Gems and build tools for compiling native libraries (@make@, @gcc@ and standard headers).
 
-On *RedHat/Fedora* you can use yum to install Ruby and RubyGems, and then
-upgrade to the most recent version of RubyGems:
+On *RedHat/Fedora* you can use yum to install Ruby and RubyGems, and then upgrade to the most recent version of RubyGems:
 
 {{{!sh
 $ sudo yum install ruby rubygems ruby-devel gcc
@@ -34,8 +26,7 @@ On *Ubuntu* you have to install several packages:
 $ sudo apt-get install ruby-full ruby1.8-dev libopenssl-ruby build-essential 
 }}}
 
-The Debian package for @rubygems@ will not allow you to install Buildr, so you
-need to install RubyGems from source:
+The Debian package for @rubygems@ will not allow you to install Buildr, so you need to install RubyGems from source:
 
 {{{!sh
 $ wget http://rubyforge.org/frs/download.php/38646/rubygems-1.2.0.tgz 
@@ -45,8 +36,7 @@ $ sudo ruby setup.rb
 $ sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
 }}}
 
-Before installing Buildr, please set the @JAVA_HOME@ environment variable to
-point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
+Before installing Buildr, please set the @JAVA_HOME@ environment variable to point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
 
 {{{!sh
 $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr
@@ -59,19 +49,12 @@ $ sudo env JAVA_HOME=$JAVA_HOME gem update buildr
 $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr -v 1.3.0
 }}}
 
-You can also use this script "to install Buildr on
-Linux":scripts/install-linux.sh.  This script will install Buildr or if already
-installed, upgrade to a more recent version.  It will also install Ruby 1.8.6
-if not already installed (using @yum@ or @apt-get@) and upgrage RubyGems to
-1.0.1.
+You can also use this script "to install Buildr on Linux":scripts/install-linux.sh.  This script will install Buildr or if already installed, upgrade to a more recent version.  It will also install Ruby 1.8.6 if not already installed (using @yum@ or @apt-get@) and upgrage RubyGems to 1.0.1.
 
 
 h3.  OS/X
 
-OS/X 10.5 (Leopard) comes with a recent version of Ruby 1.8.6.  OS/X 10.4
-(Tiger) includes an older version of Ruby, we recommend you first install Ruby
-1.8.6 using MacPorts (@sudo port install ruby rb-rubygems@), Fink or the
-"Ruby One-Click Installer for OS/X":http://rubyosx.rubyforge.org/.
+OS/X 10.5 (Leopard) comes with a recent version of Ruby 1.8.6.  OS/X 10.4 (Tiger) includes an older version of Ruby, we recommend you first install Ruby 1.8.6 using MacPorts (@sudo port install ruby rb-rubygems@), Fink or the "Ruby One-Click Installer for OS/X":http://rubyosx.rubyforge.org/.
 
 We recommend you first upgrade to the latest version of Ruby gems:
 
@@ -79,8 +62,7 @@ We recommend you first upgrade to the latest version of Ruby gems:
 $ sudo gem update --system
 }}}
 
-Before installing Buildr, please set the @JAVA_HOME@ environment variable to
-point to your JDK distribution:
+Before installing Buildr, please set the @JAVA_HOME@ environment variable to point to your JDK distribution:
 
 {{{!sh
 $ export JAVA_HOME=/Library/Java/Home
@@ -99,17 +81,12 @@ $ sudo env JAVA_HOME=$JAVA_HOME gem update buildr
 $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr -v 1.3.0
 }}}
 
-You can also use this script "to install Buildr on
-OS/X":scripts/install-osx.sh.  This script will install Buildr or if already
-installed, upgrade to a more recent version.  It will also install Ruby 1.8.6
-if not already installed (using MacPorts) and upgrage RubyGems to 1.0.1.
+You can also use this script "to install Buildr on OS/X":scripts/install-osx.sh.  This script will install Buildr or if already installed, upgrade to a more recent version.  It will also install Ruby 1.8.6 if not already installed (using MacPorts) and upgrage RubyGems to 1.0.1.
 
 
 h3. Windows
 
-If you don't already have Ruby installed, now is the time to do it.  The
-easiest way to install Ruby is using the "one-click
-installer":http://rubyinstaller.rubyforge.org/.
+If you don't already have Ruby installed, now is the time to do it.  The easiest way to install Ruby is using the "one-click installer":http://rubyinstaller.rubyforge.org/.
 
 We recommend you first upgrade to the latest version of Ruby gems:
 
@@ -117,17 +94,13 @@ We recommend you first upgrade to the latest version of Ruby gems:
 > gem update --system
 }}}
 
-Before installing Buildr, please set the @JAVA_HOME@ environment variable to
-point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
+Before installing Buildr, please set the @JAVA_HOME@ environment variable to point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
 
 {{{!sh
 > gem install buildr
 }}}
 
-Buildr uses several libraries that include native extensions.  During
-installation it will ask you to pick a platform for these libraries.  By
-selecting @mswin32@ it will download and install pre-compiled DLLs for these
-extensions.
+Buildr uses several libraries that include native extensions.  During installation it will ask you to pick a platform for these libraries.  By selecting @mswin32@ it will download and install pre-compiled DLLs for these extensions.
 
 To upgrade to a new version or install a specific version:
 
@@ -139,11 +112,9 @@ To upgrade to a new version or install a specific version:
 
 h3. JRuby
 
-If you don't already have JRuby 1.1 or later installed, you can download it
-from the "JRuby site":http://dist.codehaus.org/jruby/.
+If you don't already have JRuby 1.1 or later installed, you can download it from the "JRuby site":http://dist.codehaus.org/jruby/.
 
-After uncompressing JRuby, update your @PATH@ to include both @java@ and @jruby@
-executables.
+After uncompressing JRuby, update your @PATH@ to include both @java@ and @jruby@ executables.
 
 For Linux and OS/X:
 
@@ -166,29 +137,17 @@ $ jruby -S gem update buildr
 $ jruby -S gem install buildr -v 1.3.0
 }}}
 
-You can also use this script "to install Buildr on
-JRuby":scripts/install-jruby.sh.  This script will install Buildr or if already
-installed, upgrade to a more recent version.  If necessary, it will also
-install JRuby 1.1 in @/opt/jruby@ and update the @PATH@ variable in
-@~/.bash_profile@ or @~/.profile@.
+You can also use this script "to install Buildr on JRuby":scripts/install-jruby.sh.  This script will install Buildr or if already installed, upgrade to a more recent version.  If necessary, it will also install JRuby 1.1 in @/opt/jruby@ and update the @PATH@ variable in @~/.bash_profile@ or @~/.profile@.
 
 *Important: Running JRuby and Ruby side by side*
 
-Ruby and JRuby maintain separate Gem repositories, and in fact install
-slightly different versions of the Buildr Gem (same functionality, different
-dependencies).  Installing Buildr for Ruby does not install it for JRuby and
-vice versa.
+Ruby and JRuby maintain separate Gem repositories, and in fact install slightly different versions of the Buildr Gem (same functionality, different dependencies).  Installing Buildr for Ruby does not install it for JRuby and vice versa.
 
-If you have JRuby installed but not Ruby, the @gem@ and @buildr@ commands will
-use JRuby.  If you have both JRuby and Ruby installed, follow the instructions
-below.  To find out if you have Ruby installed (some operating systems include
-it by default), run @ruby --version@ from the command line.
+If you have JRuby installed but not Ruby, the @gem@ and @buildr@ commands will use JRuby.  If you have both JRuby and Ruby installed, follow the instructions below.  To find out if you have Ruby installed (some operating systems include it by default), run @ruby --version@ from the command line.
 
-To work exclusively with JRuby, make sure it shows first on the path, for example,
-by setting @PATH=/opt/jruby/bin:$PATH@.
+To work exclusively with JRuby, make sure it shows first on the path, for example, by setting @PATH=/opt/jruby/bin:$PATH@.
 
-You can use JRuby and Ruby side by side, by running scripts with the @-S@
-command line argument.  For example:
+You can use JRuby and Ruby side by side, by running scripts with the @-S@ command line argument.  For example:
 
 {{{!
 $ # with Ruby
@@ -199,9 +158,7 @@ $ jruby -S gem install buildr
 $ jruby -S buildr
 }}}
 
-Run @buildr --version@ from the command line to find which version of Buildr
-you are using by default.  If you see @(JRuby ...)@, Buildr is running on that
-version of JRuby.
+Run @buildr --version@ from the command line to find which version of Buildr you are using by default.  If you see @(JRuby ...)@, Buildr is running on that version of JRuby.
 
 
 h2. Document Conventions
@@ -213,35 +170,26 @@ $ # Run Buildr
 $ buildr
 }}}
 
-Lines that start with @=>@ show output from the console or the result of a
-method, for example:
+Lines that start with @=>@ show output from the console or the result of a method, for example:
 
 {{{!sh
 puts 'Hello world'
 => "Hello world"
 }}}
 
-And as you guessed, everything else is Buildfile Ruby or Java code.  You can
-figure out which language is which.
+And as you guessed, everything else is Buildfile Ruby or Java code.  You can figure out which language is which.
 
 
 
 h2. Running Buildr
 
-You need a *Buildfile*, a build script that tells Buildr all about the projects
-it's building, what they contain, what to produce, and so on.  The Buildfile
-resides in the root directory of your project.  We'll talk more about it in
-"the next chapter":projects.html.  If you don't already have one, ask Buildr to
-create it:
+You need a *Buildfile*, a build script that tells Buildr all about the projects it's building, what they contain, what to produce, and so on.  The Buildfile resides in the root directory of your project.  We'll talk more about it in "the next chapter":projects.html.  If you don't already have one, ask Buildr to create it:
 
 {{{!sh
 $ buildr
 }}}
 
-p(tip). You'll notice that Buildr creates a file called @buildfile@.  It's
-case sensitive, but Buildr will look for either @buildfile@ or @Buildfile@.
-You can also use @Rakefile@ or @rakefile@ for compatibility with previous
-versions of Buildr.
+p(tip). You'll notice that Buildr creates a file called @buildfile@.  It's case sensitive, but Buildr will look for either @buildfile@ or @Buildfile@.
 
 You use Buildr by running the @buildr@ command:
 
@@ -266,8 +214,7 @@ $ buildr --help
 | @-v/--version@            | Display the program version.                            |
 | @-P/--prereqs@            | Display tasks and dependencies, then exit.              |
 
-You can tell Buildr to run specific tasks and the order to run them.  For
-example:
+You can tell Buildr to run specific tasks and the order to run them.  For example:
 
 {{{!sh
 # Clean and rebuild
@@ -276,15 +223,9 @@ buildr clean build
 buildr install
 }}}
 
-If you don't specify a task, Buildr will run the "@build@ task":building.html,
-compiling source code and running test cases.  Running a task may run other
-tasks as well, for example, running the @install@ task will also run @package@.
+If you don't specify a task, Buildr will run the "@build@ task":building.html, compiling source code and running test cases.  Running a task may run other tasks as well, for example, running the @install@ task will also run @package@.
 
-There are several "environment
-variables":settings_profiles.html#environment_variables that let you control
-how Buildr works, for example, to skip test cases during a build, or specify
-options for the JVM.  Depending on the variable, you may want to set it once in
-your environment, or set a different value each time you run Buildr.
+There are several "environment variables":settings_profiles.html#environment_variables that let you control how Buildr works, for example, to skip test cases during a build, or specify options for the JVM.  Depending on the variable, you may want to set it once in your environment, or set a different value each time you run Buildr.
 
 For example:
 
@@ -296,10 +237,7 @@ $ buildr TEST=no
 
 h2. Help Tasks
 
-Buildr includes a number of informative tasks.  Currently that number stands at
-two, but we'll be adding more tasks in future releases.  These tasks report
-information from the Buildfile, so you need one to run them.  For more general
-help (version number, command line arguments, etc) use @buildr --help@.
+Buildr includes a number of informative tasks.  Currently that number stands at two, but we'll be adding more tasks in future releases.  These tasks report information from the Buildfile, so you need one to run them.  For more general help (version number, command line arguments, etc) use @buildr --help@.
 
 To start with, type:
 
@@ -307,8 +245,7 @@ To start with, type:
 $ buildr help
 }}}
 
-You can list the name and description of all your projects using the
-@help:projects@ task.  For example:
+You can list the name and description of all your projects using the @help:projects@ task.  For example:
 
 {{{!sh
 $ buildr help:projects
@@ -318,32 +255,19 @@ killer-app:teh-impl        # All those implementation details
 killer-app:la-web          # What our users see
 }}}
 
-You are, of course, describing your projects for the sake of those who will
-maintain your code, right?  To describe a project, or a task, call the @desc@
-method before the project or task definition.
+You are, of course, describing your projects for the sake of those who will maintain your code, right?  To describe a project, or a task, call the @desc@ method before the project or task definition.
 
 So next let's talk about "projects":projects.html.
 
 
 h2. Learning More
 
-*Ruby*  It pays to pick up Ruby as a second (or first) programming language.
-It's fun, powerful and slightly addictive.  If you're interested in learning
-Ruby the language, a good place to start is "Programming Ruby: The Pragmatic
-Programmer's Guide":http://www.pragprog.com/titles/ruby/programming-ruby,
-fondly known as the _Pickaxe book_.
+*Ruby*  It pays to pick up Ruby as a second (or first) programming language. It's fun, powerful and slightly addictive.  If you're interested in learning Ruby the language, a good place to start is "Programming Ruby: The Pragmatic Programmer's Guide":http://www.pragprog.com/titles/ruby/programming-ruby, fondly known as the _Pickaxe book_.
 
-For a quicker read (and much more humor), "Why’s (Poignant) Guide to
-Ruby":http://poignantguide.net/ruby/ is available online.  More resources are
-listed on the "ruby-lang web site":http://www.ruby-lang.org/en/documentation/.
+For a quicker read (and much more humor), "Why’s (Poignant) Guide to Ruby":http://poignantguide.net/ruby/ is available online.  More resources are listed on the "ruby-lang web site":http://www.ruby-lang.org/en/documentation/.
 
-*Rake* Buildr is based on Rake, a Ruby build system that handles tasks and
-dependencies.  Check out the "Rake documentation":http://docs.rubyrake.org/ for
-more information.
+*Rake* Buildr is based on Rake, a Ruby build system that handles tasks and dependencies.  Check out the "Rake documentation":http://docs.rubyrake.org/ for more information.
 
-*AntWrap* Buildr uses AntWrap, for configuring and running Ant tasks.  You can
-learn more from the "Antwrap documentation":http://antwrap.rubyforge.org/.
+*AntWrap* Buildr uses AntWrap, for configuring and running Ant tasks.  You can learn more from the "Antwrap documentation":http://antwrap.rubyforge.org/.
 
-*YAML* Buildr uses YAML for its profiles.  You can "learn more about YAML
-here":http://www.yaml.org, and use this handy "YAML quick
-reference":http://www.yaml.org/refcard.html.
+*YAML* Buildr uses YAML for its profiles.  You can "learn more about YAML here":http://www.yaml.org, and use this handy "YAML quick reference":http://www.yaml.org/refcard.html.

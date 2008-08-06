@@ -2,18 +2,12 @@ h1.  What's New
 
 h2.  Buildr 1.3.2
 
-* New @--prereqs@ command line argument lists all the tasks and their
-  dependencies. You can also filter specific tasks by following with a regular
-  expression, for example, @--prereqs foo@.
+* New @--prereqs@ command line argument lists all the tasks and their dependencies. You can also filter specific tasks by following with a regular expression, for example, @--prereqs foo@.
 * Upgraded to latest release of Net::SSH, Net::SFTP, RubyForge and RubyGems.
-* Upgraded to JUnit 4.4 and fixed case where abstract classes extending
-  TestCase would lead to tests failing.
-* The target/test/class and /resources directories now come first in the
-  classpath, ahead of any code compiled code and resources copied over from
-  src/main.
+* Upgraded to JUnit 4.4 and fixed case where abstract classes extending TestCase would lead to tests failing.
+* The target/test/class and /resources directories now come first in the classpath, ahead of any code compiled code and resources copied over from src/main.
 * Fixed: BUILDR-90 Installing from source doesn't work with JRuby.
-* Fixed: BUILDR-91 When doing a release, buildr should spawn the same version
-  of buildr
+* Fixed: BUILDR-91 When doing a release, buildr should spawn the same version of buildr
 * Fixed: BUILDR-92 IDEA 7x: add resources directories to classpath.
 * Fixed: BUILDR-95: Only download Scala test framework artifacts when required
 * Fixed: BUILDR-100 Directory structure documentation needs updating.
@@ -22,66 +16,36 @@ h2.  Buildr 1.3.2
 h2.  Buildr 1.3.1
 
 * Fixed to specific Gem dependencies, so should install cleanly on Windows.
-* Buildr now supports publishing files to HTTP server for remote repositories
-  that support HTTP uploads (PUT).
-* Buildr now supports reading files from SFTP server and upgrades to 
-  Net::SSH 2.0 and Net::SFTP 2.0.
+* Buildr now supports publishing files to HTTP server for remote repositories that support HTTP uploads (PUT).
+* Buildr now supports reading files from SFTP server and upgrades to  Net::SSH 2.0 and Net::SFTP 2.0.
 * HTTP downloads now accept URLs with query parameters (Tommy Knowlton).
-* On OS X if you are not using the default JDK, you can set the JAVA_HOME
-  environment variable to point to any other JDK (Nathan Hamblen).
-* JUnit properly passes options[:environment] as environment variables to the
-  test case.  In addition options[:java_args] are now passed as arguments to
-  the JVM, for example to set heap size, only applicable when forking (the
-  default mode when running JUnit).
-* Fixed BUILDR-75: Filter now runs if there's a target directory, even if
-  there are no source files to copy over, and creates an empty target
-  directory.  The previous behavior caused some problems with code that checked
-  if resource.target was nil, but didn't check if there are any
-  resource.sources to process.
-* Added the jibx_bind method to use JiBX for Java<=>XML binding (by David
-  Peterson).
+* On OS X if you are not using the default JDK, you can set the JAVA_HOME environment variable to point to any other JDK (Nathan Hamblen).
+* JUnit properly passes options[:environment] as environment variables to the test case.  In addition options[:java_args] are now passed as arguments to the JVM, for example to set heap size, only applicable when forking (the default mode when running JUnit).
+* Fixed BUILDR-75: Filter now runs if there's a target directory, even if there are no source files to copy over, and creates an empty target directory.  The previous behavior caused some problems with code that checked if resource.target was nil, but didn't check if there are any resource.sources to process.
+* Added the jibx_bind method to use JiBX for Java<=>XML binding (by David Peterson).
 
 
 h2.  Buildr 1.3
 
 h3.  Multiple Languages
 
-The main focus of this release is supporting multiple languages for compiling
-and testing.
+The main focus of this release is supporting multiple languages for compiling and testing.
 
-For each project, Buildr will attempt to infer which compiler to use based on
-the source files it finds, for example, if it finds @.java@ files in the
-@src/main/java@ directory, it will switch to the javac compiler, if it finds
-@.scala@ files in the @src/main/scala@ directory, to the scalac compiler and so
-forth.
+For each project, Buildr will attempt to infer which compiler to use based on the source files it finds, for example, if it finds @.java@ files in the @src/main/java@ directory, it will switch to the javac compiler, if it finds @.scala@ files in the @src/main/scala@ directory, to the scalac compiler and so forth.
 
-Different compilers may use different target directory, @target/classes@ is
-picked for JVM compilers (Java, Scala, Groovy, etc), so resources are not copied to
-their own directory, @target/resources@.  The prepare task has been removed.
+Different compilers may use different target directory, @target/classes@ is picked for JVM compilers (Java, Scala, Groovy, etc), so resources are not copied to their own directory, @target/resources@.  The prepare task has been removed.
 
-Not all languages have classpaths, so @compile.classpath@ is now known as
-@compile.dependencies@, but the old attribute still exists for backward
-compatibility.
+Not all languages have classpaths, so @compile.classpath@ is now known as @compile.dependencies@, but the old attribute still exists for backward compatibility.
 
-Also, for consistency, the test target directories have changed to
-@target/test/classes@ and @target/test/resources@, respectively.
+Also, for consistency, the test target directories have changed to @target/test/classes@ and @target/test/resources@, respectively.
 
-Speaking of tests, you can compile code in one language and use a different
-language to test it, say, if you're interested in compiling Java code and
-testing it with Ruby, or compiling Flash and running a Java test suite.
+Speaking of tests, you can compile code in one language and use a different language to test it, say, if you're interested in compiling Java code and testing it with Ruby, or compiling Flash and running a Java test suite.
 
-As before, you can pick the test framework by calling
-@test.using(<framework>)@.  Buildr will attempt to pick one by default, for
-example, if the tests are written in Java, it will default to JUnit.
+As before, you can pick the test framework by calling @test.using(<framework>)@.  Buildr will attempt to pick one by default, for example, if the tests are written in Java, it will default to JUnit.
 
-And, since not all languages package to JARs, the default packaging is either
-inferred from the compiler (so @:jar@ when compiling Java code), otherwise to
-@:zip@.  All this defaulting means that @package()@ with no arguments does the
-right thing in more cases, and most probably won't break anyone's buildfiles.
+And, since not all languages package to JARs, the default packaging is either inferred from the compiler (so @:jar@ when compiling Java code), otherwise to @:zip@.  All this defaulting means that @package()@ with no arguments does the right thing in more cases, and most probably won't break anyone's buildfiles.
 
-I've tried to keep the compiler API as simple as possible, making it easy to
-add new compilers; however, I had to change the test framework API to
-accommodate the new features, so old test frameworks will not work on 1.3.
+I've tried to keep the compiler API as simple as possible, making it easy to add new compilers; however, I had to change the test framework API to accommodate the new features, so old test frameworks will not work on 1.3.
 
 
 h3.  Scala Support
@@ -100,20 +64,15 @@ Read more about "using Groovy":building.html#compiling_groovy.
 
 h3.  Packaging Files
 
-The @package@ method is convenient enough that you can now use it to generate
-artifacts, an in addition to generate regular file tasks, specifying the file
-name using the @:file@ attribute.  For example:
+The @package@ method is convenient enough that you can now use it to generate artifacts, an in addition to generate regular file tasks, specifying the file name using the @:file@ attribute.  For example:
 
 {{{!ruby
 package :zip, :file=>_('target/interesting.zip')
 }}}
 
-Since this package is not an artifact and does not have a specification, it
-will not automatically install itself in the local repository or upload to a
-remote repository.  For these, use the @package@ method as before.
+Since this package is not an artifact and does not have a specification, it will not automatically install itself in the local repository or upload to a remote repository.  For these, use the @package@ method as before.
 
-Read more about "the package
-method":packaging.html#specifying_and_referencing_packages.
+Read more about "the package method":packaging.html#specifying_and_referencing_packages.
 
 
 h3.  Packaging EARs
@@ -133,44 +92,29 @@ package(:ear) << project('coolWebService').package(:war)
 package(:ear).add project('commonLib') # By default, the JAR package
 }}}
 
-EAR packages include an @application.xml@ file in the @META-INF@ directory that
-describes the application and its component.  This file is created for you
-during packaging, by referencing all the components added to the EAR.  There
-are a couple of things you will typically want to change.
+EAR packages include an @application.xml@ file in the @META-INF@ directory that describes the application and its component.  This file is created for you during packaging, by referencing all the components added to the EAR.  There are a couple of things you will typically want to change.
 
-* *display-name* -- The application's display name defaults to the project's
-identifier.  You can change that by setting the @display_name@ attribute.
+* *display-name* -- The application's display name defaults to the project's identifier.  You can change that by setting the @display_name@ attribute.
 
-* *context-root* -- WAR components specify a context root, based on the package
-identifier, for example, "cool-web-1.0.war" will have the context root
-"cool-web".  To specify a different context root, add the WAR package with the
-@context_root@ option.
+* *context-root* -- WAR components specify a context root, based on the package identifier, for example, "cool-web-1.0.war" will have the context root "cool-web".  To specify a different context root, add the WAR package with the @context_root@ option.
 
 "Read more ...":packaging.html#packaging_ears
 
 
 h3.  JRuby Support
 
-We now offer two versions of Buildr, one for Ruby and one for JRuby.  They're
-exactly the same, except the Ruby version will also install RJB (Ruby Java
-Bridge), the JRuby version obviously can do well without it.
+We now offer two versions of Buildr, one for Ruby and one for JRuby.  They're exactly the same, except the Ruby version will also install RJB (Ruby Java Bridge), the JRuby version obviously can do well without it.
 
 "Read more ...":download.html#jruby
 
-Buildr provides a "Nailgun":http://www.martiansoftware.com/nailgun/index.html
-server when running on JRuby. Using the integrated BuildrServer allows for 
-faster task execution and avoid frequent JVM startup overhead. 
+Buildr provides a "Nailgun":http://www.martiansoftware.com/nailgun/index.html server when running on JRuby. Using the integrated BuildrServer allows for  faster task execution and avoid frequent JVM startup overhead. 
 
 "Read more ...":more_stuff.html#nailgun
 
 
 h3. Behaviour-Driven Development
 
-Given that many languages are now supported by Buildr, the same is true for
-testing, the convention is to store BDD files under the @src/spec/{lang}@ 
-directory. 
-The following table shows the framework's name you can use to select them 
-for your projects. Buildr follows each framework's naming convention.
+Given that many languages are now supported by Buildr, the same is true for testing, the convention is to store BDD files under the @src/spec/{lang}@  directory.  The following table shows the framework's name you can use to select them  for your projects. Buildr follows each framework's naming convention.
 
 |_. test.using     |_. Test file name convention                  |
 | @:jbehave@       |  @src/spec/java/**/*Behaviour.java@            |
@@ -182,12 +126,9 @@ for your projects. Buildr follows each framework's naming convention.
 
 h3.  Profiles
 
-Different environments may require different configurations, some you will want
-to control with code, others you will want to specify in the profiles file.
+Different environments may require different configurations, some you will want to control with code, others you will want to specify in the profiles file.
 
-The profiles file is a YAML file called @profiles.yaml@ that you place in the
-same directory as the Buildfile.  We selected YAML because it's easier to read
-and edit than XML.
+The profiles file is a YAML file called @profiles.yaml@ that you place in the same directory as the Buildfile.  We selected YAML because it's easier to read and edit than XML.
 
 For example, to support three different database configurations, we could write:
 
@@ -208,20 +149,16 @@ production:
   jdbc: oracle:thin:@bigstrong:1521:mighty
 }}}
 
-You can also use profiles to specify default filters for the "@resources@
-task":building.html#resources.
+You can also use profiles to specify default filters for the "@resources@ task":building.html#resources.
 
 "Read more ...":settings_profiles.html#profiles
 
 
 h3.  Settings and build YAML files
 
-In addition to profiles, we also allow you to specify personal and build
-settings using two YAML files.
+In addition to profiles, we also allow you to specify personal and build settings using two YAML files.
 
-Personal settings are placed in the @.buildr/settings.yaml@ file under your
-home directory. Settings stored there will be applied the same across all
-builds.
+Personal settings are placed in the @.buildr/settings.yaml@ file under your home directory. Settings stored there will be applied the same across all builds.
 
 For example:
 
@@ -247,10 +184,7 @@ im:
 
 "Read more ...":settings_profiles.html#personal_settings
 
-Build settings are placed in the @build.yaml@ file located in the same
-directory that the @buildfile@. Normally this file would be managed by the
-project revision control system, so settings here are shared between
-developers.
+Build settings are placed in the @build.yaml@ file located in the same directory that the @buildfile@. Normally this file would be managed by the project revision control system, so settings here are shared between developers.
 
 For example:
 
@@ -280,23 +214,11 @@ jira:
 
 h3.  Using Gems for extensions and 3rd party libraries
 
-"RubyGems":http://rubygems.rubyforge.org provides the @gem@ command line tool
-that you can use to search, install, upgrade, package and distribute gems. It
-installs all gems into a local repository that is shared across your builds and
-all other Ruby applications you may have running.  You can install a gem from a
-local file, or download and install it from any number of remote repositories.
+"RubyGems":http://rubygems.rubyforge.org provides the @gem@ command line tool that you can use to search, install, upgrade, package and distribute gems. It installs all gems into a local repository that is shared across your builds and all other Ruby applications you may have running.  You can install a gem from a local file, or download and install it from any number of remote repositories.
 
-If your build depends on other gems, you will want to specify these
-dependencies as part of your build and check that configuration into source
-control.  That way you can have a specific environment that will guarantee
-repeatable builds, whether you're building a particular version, moving between
-branches, or joining an existing project.  Buildr will take care of installing
-all the necessary dependencies, which you can then manage with the @gem@
-command.
+If your build depends on other gems, you will want to specify these dependencies as part of your build and check that configuration into source control.  That way you can have a specific environment that will guarantee repeatable builds, whether you're building a particular version, moving between branches, or joining an existing project.  Buildr will take care of installing all the necessary dependencies, which you can then manage with the @gem@ command.
 
-Use the @build.yaml@ file to specify these dependencies (see "Build
-Settings":settings_profiles.html#build_settings for more information), for
-example:
+Use the @build.yaml@ file to specify these dependencies (see "Build Settings":settings_profiles.html#build_settings for more information), for example:
 
 {{{!yaml
 # This project requires the following gems
@@ -324,9 +246,7 @@ Java.java.lang.String.isInstance(str)
 Java.com.sun.tools.javac.Main.compile(args)
 }}}
 
-The @classpath@ attribute allows Buildr to add JARs and directories to the
-classpath, for example, we use it to load Ant and various Ant tasks, code
-generators, test frameworks, and so forth.
+The @classpath@ attribute allows Buildr to add JARs and directories to the classpath, for example, we use it to load Ant and various Ant tasks, code generators, test frameworks, and so forth.
 
 For example, Ant is loaded as follows:
 
@@ -334,21 +254,14 @@ For example, Ant is loaded as follows:
 Java.classpath << 'org.apache.ant:ant:jar:1.7.0'
 }}}
 
-Artifacts can only be downloaded after the Buildfile has loaded, giving it a
-chance to specify which remote repositories to use, so adding to classpath does
-not by itself load any libraries.  You must call @Java.load@ before accessing any
-Java classes to give Buildr a chance to load the libraries specified in the
-classpath.
+Artifacts can only be downloaded after the Buildfile has loaded, giving it a chance to specify which remote repositories to use, so adding to classpath does not by itself load any libraries.  You must call @Java.load@ before accessing any Java classes to give Buildr a chance to load the libraries specified in the classpath.
 
 "Read more ...":more_stuff.html#using_java_libraries
 
 
 h3.  Creating Extensions
 
-A module defines instance methods that are then mixed into the project and
-become instance methods of the project.  There are two general ways for
-extending projects.  You can extend all projects by including the module in
-Project:
+A module defines instance methods that are then mixed into the project and become instance methods of the project.  There are two general ways for extending projects.  You can extend all projects by including the module in Project:
 
 {{{!ruby
 class Project
@@ -356,8 +269,7 @@ class Project
 end
 }}}
 
-You can also extend a given project instance and only that instance by
-extending it with the module:
+You can also extend a given project instance and only that instance by extending it with the module:
 
 {{{!ruby
 define 'foo' do
@@ -365,57 +277,35 @@ define 'foo' do
 end
 }}}
 
-Some extensions require tighter integration with the project, specifically for
-setting up tasks and properties, or for configuring tasks based on the project
-definition.  You can do that by adding callbacks to the process.
+Some extensions require tighter integration with the project, specifically for setting up tasks and properties, or for configuring tasks based on the project definition.  You can do that by adding callbacks to the process.
 
 "Read more ...":extending.html#creating_extensions
 
 
 h3.  Using Alternative Layouts
 
-Buildr follows a common convention for project layouts: Java source files
-appear in @src/main/java@ and compile to @target/classes@, resources are
-copied over from @src/main/resources@ and so forth.  Not all projects follow
-this convention, so it's now possible to specify an alternative project
-layout.
+Buildr follows a common convention for project layouts: Java source files appear in @src/main/java@ and compile to @target/classes@, resources are copied over from @src/main/resources@ and so forth.  Not all projects follow this convention, so it's now possible to specify an alternative project layout.
 
-A layout is an object that implements the @expand@ method.  The easiest way to
-define a custom layout is to create a new @Layout@ object and specify mapping
-between names used by Buildr and actual paths within the project.
+A layout is an object that implements the @expand@ method.  The easiest way to define a custom layout is to create a new @Layout@ object and specify mapping between names used by Buildr and actual paths within the project.
 
 "Read more ...":extending.html#using_alternative_layouts
 
 
 h3.  Other
 
-* Buildr 1.3 upgrades to Rake 0.8, RSpec 1.1, RJB 1.1 and OpenJPA
-1.0.1.  Buildr no longer includes or uses Facets.
-* JUnit tests now operate on all compiled test classes that extend
-@junit.framework.TestCase@ or use the @Test@ annotation; TestNG test cases are
-filtered by annotation.  Test cases no longer have to use a specific file name.
+* Buildr 1.3 upgrades to Rake 0.8, RSpec 1.1, RJB 1.1 and OpenJPA 1.0.1.  Buildr no longer includes or uses Facets.
+* JUnit tests now operate on all compiled test classes that extend @junit.framework.TestCase@ or use the @Test@ annotation; TestNG test cases are filtered by annotation.  Test cases no longer have to use a specific file name.
 * Remote repositories now support HTTP Basic Authentication.
-* The prepare task has been removed, if you need to, simply add a prerequisite
-to the compile task.
+* The prepare task has been removed, if you need to, simply add a prerequisite to the compile task.
 
 
 h3.  Documentation
 
-* The "What's new?":whats_new.html page (this one, actually), summarizes all
-the important new features and changes in each release.
-* The "Recipes":recipes.html page (also available in the PDF) lists recipes for
-using Buildr, collected from the mailing list.  Feel free to contribute tips,
-tricks and techniques.
-* The "Troubleshooting":troubleshooting.html page (also available in the PDF)
-collects troubleshooting ideas from the mailing list.
-* The "Getting Started":getting_started.html has been rewritten to cover all
-you need to know about downloading and installing Buildr on Linux, OS/X,
-Windows and with JRuby (1.1 or later).
-* A new "Contributing":contributing.html page has more details on how to file
-bugs, policy for submitting patches, running Buildr test cases, and helping
-with the documentation.
+* The "What's new?":whats_new.html page (this one, actually), summarizes all the important new features and changes in each release.
+* The "Recipes":recipes.html page (also available in the PDF) lists recipes for using Buildr, collected from the mailing list.  Feel free to contribute tips, tricks and techniques.
+* The "Troubleshooting":troubleshooting.html page (also available in the PDF) collects troubleshooting ideas from the mailing list.
+* The "Getting Started":getting_started.html has been rewritten to cover all you need to know about downloading and installing Buildr on Linux, OS/X, Windows and with JRuby (1.1 or later).
+* A new "Contributing":contributing.html page has more details on how to file bugs, policy for submitting patches, running Buildr test cases, and helping with the documentation.
 * A new page for "Settings and Profiles":settings_profiles.html.
-* The "Extending Buildr":extending.html page that deals with writing your own
-tasks, creating extensions and specifying alternative layouts.
-* The site also includes "RSpec report":specs.html which provides the official
-  specification against which we test each release.
+* The "Extending Buildr":extending.html page that deals with writing your own tasks, creating extensions and specifying alternative layouts.
+* The site also includes "RSpec report":specs.html which provides the official specification against which we test each release.

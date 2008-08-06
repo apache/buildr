@@ -3,44 +3,19 @@ h1. More Stuff
 
 h2.  Using Gems
 
-The purpose of the buildfile is to define your projects, and the various tasks
-and functions used for building them.  Some of these are specific to your
-projects, others are more general in nature, and you may want to share them
-across projects.
+The purpose of the buildfile is to define your projects, and the various tasks and functions used for building them.  Some of these are specific to your projects, others are more general in nature, and you may want to share them across projects.
 
-There are several mechanisms for developing extensions and build features
-across projects which we cover in more details in the section "Extending
-Buildr":extending.html.  Here we will talk about using extensions that are
-distributed in the form of RubyGems.
+There are several mechanisms for developing extensions and build features across projects which we cover in more details in the section "Extending Buildr":extending.html.  Here we will talk about using extensions that are distributed in the form of RubyGems.
 
-"RubyGems":http://rubygems.rubyforge.org provides the @gem@ command line tool
-that you can use to search, install, upgrade, package and distribute gems. It
-installs all gems into a local repository that is shared across your builds and
-all other Ruby applications you may have running.  You can install a gem from a
-local file, or download and install it from any number of remote repositories.
+"RubyGems":http://rubygems.rubyforge.org provides the @gem@ command line tool that you can use to search, install, upgrade, package and distribute gems. It installs all gems into a local repository that is shared across your builds and all other Ruby applications you may have running.  You can install a gem from a local file, or download and install it from any number of remote repositories.
 
-RubyGems is preconfigured to use the "RubyForge":http://rubyforge.org
-repository.  You'll find a large number of open source Ruby libraries there,
-including Buildr itself and all its dependencies.  RubyForge provides a free
-account that you can use to host your projects and distribute your gems (you
-can use RubyForge strictly for distribution, as we do with Buildr).
+RubyGems is preconfigured to use the "RubyForge":http://rubyforge.org repository.  You'll find a large number of open source Ruby libraries there, including Buildr itself and all its dependencies.  RubyForge provides a free account that you can use to host your projects and distribute your gems (you can use RubyForge strictly for distribution, as we do with Buildr).
 
-You can also set up your own private repository and use it instead or in
-addition to RubyForge.  Use the @gem sources@ command to add repositories, and
-the @gem server@ command to run a remote repository.  You can see all available
-options by running @gem help@.
+You can also set up your own private repository and use it instead or in addition to RubyForge.  Use the @gem sources@ command to add repositories, and the @gem server@ command to run a remote repository.  You can see all available options by running @gem help@.
 
-If your build depends on other gems, you will want to specify these
-dependencies as part of your build and check that configuration into source
-control.  That way you can have a specific environment that will guarantee
-repeatable builds, whether you're building a particular version, moving between
-branches, or joining an existing project.  Buildr will take care of installing
-all the necessary dependencies, which you can then manage with the @gem@
-command.
+If your build depends on other gems, you will want to specify these dependencies as part of your build and check that configuration into source control.  That way you can have a specific environment that will guarantee repeatable builds, whether you're building a particular version, moving between branches, or joining an existing project.  Buildr will take care of installing all the necessary dependencies, which you can then manage with the @gem@ command.
 
-Use the @build.yaml@ file to specify these dependencies (see "Build
-Settings":settings_profiles.html#build_settings for more information), for
-example:
+Use the @build.yaml@ file to specify these dependencies (see "Build Settings":settings_profiles.html#build_settings for more information), for example:
 
 {{{!yaml
 # This project requires the following gems
@@ -52,52 +27,29 @@ gems:
   - ci_reporter
 }}}
 
-Gems contain executable code, and for that reason Buildr will not install gems
-without your permission.  When you run a build that includes any dependencies
-that are not already installed on your machine, Buildr will ask for permission
-before installing them.  On Unix-based operating systems, you will also need
-sudo privileges and will be asked for your password before proceeding.
+Gems contain executable code, and for that reason Buildr will not install gems without your permission.  When you run a build that includes any dependencies that are not already installed on your machine, Buildr will ask for permission before installing them.  On Unix-based operating systems, you will also need sudo privileges and will be asked for your password before proceeding.
 
-Since this step requires your input, it will only happen when running Buildr
-interactively from the command line.  In all other cases, Buildr will fail and
-report the missing dependencies.  If you have an automated build environment,
-make sure to run the build once manually to install all the necessary
-dependencies.
+Since this step requires your input, it will only happen when running Buildr interactively from the command line.  In all other cases, Buildr will fail and report the missing dependencies.  If you have an automated build environment, make sure to run the build once manually to install all the necessary dependencies.
 
-When installing a gem for the first time, Buildr will automatically look for
-the latest available version.  You can specify a particular version number, or
-a set of version numbers known to work with that build.  You can use equality
-operations to specify a range of versions, for example, @1.2.3@ to install only
-version 1.2.3, and @=> 1.2.3@ to install version 1.2.3 or later.
+When installing a gem for the first time, Buildr will automatically look for the latest available version.  You can specify a particular version number, or a set of version numbers known to work with that build.  You can use equality operations to specify a range of versions, for example, @1.2.3@ to install only version 1.2.3, and @=> 1.2.3@ to install version 1.2.3 or later.
 
-You can also specify a range up to one version bump, for example, @~> 1.2.3@ is
-the same as @>= 1.2.3 < 1.3.0@, and @~> 1.2@ is the same as @>= 1.2.0 < 2.0.0@.
-If necessary, you can exclude a particular version number, for example, @~>
-1.2.3 != 1.2.7@.
+You can also specify a range up to one version bump, for example, @~> 1.2.3@ is the same as @>= 1.2.3 < 1.3.0@, and @~> 1.2@ is the same as @>= 1.2.0 < 2.0.0@. If necessary, you can exclude a particular version number, for example, @~> 1.2.3 != 1.2.7@.
 
-Buildr will install the latest version that matches the version requirement.
-To keep up with newer versions, execute the @gem update@ command periodically.
-You can also use @gem outdated@ to determine which new versions are available.
+Buildr will install the latest version that matches the version requirement. To keep up with newer versions, execute the @gem update@ command periodically. You can also use @gem outdated@ to determine which new versions are available.
 
-Most gems include documentation that you can access in several forms.  You can
-use the @ri@ command line tool to find out more about a class, module or
-specific method.  For example:
+Most gems include documentation that you can access in several forms.  You can use the @ri@ command line tool to find out more about a class, module or specific method.  For example:
 
 {{{!sh
 $ ri Buildr::Jetty
 $ ri Buildr::Jetty.start
 }}}
 
-You can also access documentation from a Web browser by running @gem server@
-and pointing your browser to "http://localhost:8808":http://localhost:8808.
-Note that after installing a new gem, you will need to restart the gem server
-to see its documentation.
+You can also access documentation from a Web browser by running @gem server@ and pointing your browser to "http://localhost:8808":http://localhost:8808. Note that after installing a new gem, you will need to restart the gem server to see its documentation.
 
 
 h2.  Using Java Libraries
 
-Buildr runs along side a JVM, using either RJB or JRuby.  The Java module
-allows you to access Java classes and create Java objects.
+Buildr runs along side a JVM, using either RJB or JRuby.  The Java module allows you to access Java classes and create Java objects.
 
 Java classes are accessed as static methods on the @Java@ module, for example:
 
@@ -110,12 +62,9 @@ Java.java.lang.String.isInstance(str)
 Java.com.sun.tools.javac.Main.compile(args)
 }}}
 
-The @classpath@ attribute allows Buildr to add JARs and directories to the
-classpath, for example, we use it to load Ant and various Ant tasks, code
-generators, test frameworks, and so forth.
+The @classpath@ attribute allows Buildr to add JARs and directories to the classpath, for example, we use it to load Ant and various Ant tasks, code generators, test frameworks, and so forth.
 
-When using an artifact specification, Buildr will automatically download and
-install the artifact before adding it to the classpath.
+When using an artifact specification, Buildr will automatically download and install the artifact before adding it to the classpath.
 
 For example, Ant is loaded as follows:
 
@@ -123,37 +72,21 @@ For example, Ant is loaded as follows:
 Java.classpath << 'org.apache.ant:ant:jar:1.7.0'
 }}}
 
-Artifacts can only be downloaded after the Buildfile has loaded, giving it a
-chance to specify which remote repositories to use, so adding to classpath does
-not by itself load any libraries.  You must call @Java.load@ before accessing any
-Java classes to give Buildr a chance to load the libraries specified in the
-classpath.
+Artifacts can only be downloaded after the Buildfile has loaded, giving it a chance to specify which remote repositories to use, so adding to classpath does not by itself load any libraries.  You must call @Java.load@ before accessing any Java classes to give Buildr a chance to load the libraries specified in the classpath.
 
 When building an extension, make sure to follow these rules:
 
-# Add to the @classpath@ when the extension is loaded (i.e. in module or class
-definition), so the first call to @Java.load@ anywhere in the code will include
-the libraries you specify.
-# Call @Java.load@ once before accessing any Java classes, allowing Buildr to
-set up the classpath.
-# Only call @Java.load@ when invoked, otherwise you may end up loading the JVM
-with a partial classpath, or before all remote repositories are listed.
+# Add to the @classpath@ when the extension is loaded (i.e. in module or class definition), so the first call to @Java.load@ anywhere in the code will include the libraries you specify.
+# Call @Java.load@ once before accessing any Java classes, allowing Buildr to set up the classpath.
+# Only call @Java.load@ when invoked, otherwise you may end up loading the JVM with a partial classpath, or before all remote repositories are listed.
 # Check on a clean build with empty local repository.
 
 
 h2. Nailgun
 
-"Nailgun":http://www.martiansoftware.com/nailgun/index.html is a client,
-protocol, and server for running Java programs from the command line without 
-incurring the JVM startup overhead. 
-Nailgun integration is available only when running Buildr within JRuby.
+"Nailgun":http://www.martiansoftware.com/nailgun/index.html is a client, protocol, and server for running Java programs from the command line without  incurring the JVM startup overhead.  Nailgun integration is available only when running Buildr within JRuby.
 
-Buildr provides a custom nailgun server, allowing you to start a single JVM
-and let buildr create a queue of runtimes.
-These JRuby runtimes can be cached (indexed by buildfile path) and are 
-automatically reloaded when the buildfile has been modified.
-Runtime caching allows you to execute tasks without spending time creating 
-the buildr environment. 
+Buildr provides a custom nailgun server, allowing you to start a single JVM and let buildr create a queue of runtimes. These JRuby runtimes can be cached (indexed by buildfile path) and are  automatically reloaded when the buildfile has been modified. Runtime caching allows you to execute tasks without spending time creating  the buildr environment. 
 
 Start the BuildrServer by executing
 
@@ -161,11 +94,7 @@ Start the BuildrServer by executing
 $ jruby -S buildr -rbuildr/nailgun nailgun:start
 }}}
 
-Server output will display a message when it becomes ready, you
-will also see messages when the JRuby runtimes are being created,
-or when a new buildr environment is being loaded on them.
-After the runtime queues have been populated, you can start calling
-buildr as you normally do, by invoking the $NAILGUN_HOME/ng binary:
+Server output will display a message when it becomes ready, you will also see messages when the JRuby runtimes are being created, or when a new buildr environment is being loaded on them. After the runtime queues have been populated, you can start calling buildr as you normally do, by invoking the $NAILGUN_HOME/ng binary:
 
 {{{!sh
 # on another terminal, change directory to a project.
@@ -180,29 +109,22 @@ ng nailgun:tasks                     # display overview of ng tasks
 ng clean compile                # just invoke those two tasks
 }}}
 
-Some nailgun tasks have been provided to manage the cached runtimes, 
-to get an overview of them execute the @nailgun:tasks@ task.
+Some nailgun tasks have been provided to manage the cached runtimes,  to get an overview of them execute the @nailgun:tasks@ task.
 
 Be sure to read the nailgun help by executing the @nailgun:help@ task.
 
 
 h2. Eclipse, IDEA
 
-If you're using Eclipse, you can generate @.classpath@ and @.project@ from
-your Buildfile and use them to create a project in your workspace:
+If you're using Eclipse, you can generate @.classpath@ and @.project@ from your Buildfile and use them to create a project in your workspace:
 
 {{{!sh
 $ buildr eclipse
 }}}
 
-The @eclipse@ task will generate a @.classpath@ and @.project@ file for each
-of projects (and sub-project) that compiles source code.  It will not generate
-files for other projects, for examples, projects you use strictly for
-packaging a distribution, or creating command line scripts, etc.
+The @eclipse@ task will generate a @.classpath@ and @.project@ file for each of projects (and sub-project) that compiles source code.  It will not generate files for other projects, for examples, projects you use strictly for packaging a distribution, or creating command line scripts, etc.
 
-If you add a new project, change the dependencies, or make any other change to
-your Buildfile, just run the @eclipse@ task again to re-generate the Eclipse
-project files.
+If you add a new project, change the dependencies, or make any other change to your Buildfile, just run the @eclipse@ task again to re-generate the Eclipse project files.
 
 If you prefer IntelliJ IDEA, you can always:
 
@@ -210,33 +132,18 @@ If you prefer IntelliJ IDEA, you can always:
 $ buildr idea
 }}}
 
-It will generate a @.iml@ file for every project (or subproject) and a @.ipr@
-that you can directly open for the root project.  To allow IntelliJ Idea to
-resolve external dependencies properly, you will need to add a @M2_REPO@
-variable pointing to your Maven2 repository directory (@Settings / Path
-Variables@).
+It will generate a @.iml@ file for every project (or subproject) and a @.ipr@ that you can directly open for the root project.  To allow IntelliJ Idea to resolve external dependencies properly, you will need to add a @M2_REPO@ variable pointing to your Maven2 repository directory (@Settings / Path Variables@).
 
-If you're using IDEA 7 or later, use the @buildr idea7x@ task instead.  This
-task creates the proper @.ipr@ and @.iml@ files for IDEA version 7.  It
-includes the @-7x@ suffix in the generated files, so you can use the @idea@ and
-@idea7x@ tasks side by side on the same project.
+If you're using IDEA 7 or later, use the @buildr idea7x@ task instead.  This task creates the proper @.ipr@ and @.iml@ files for IDEA version 7.  It includes the @-7x@ suffix in the generated files, so you can use the @idea@ and @idea7x@ tasks side by side on the same project.
 
-Also, check out the "Buildr plugin for
-IDEA":http://www.digitalsanctum.com/buildr-plug-in/ (IDEA 7 and later).  Once
-installed, open your project with IDEA.  If IDEA finds that you have Buildr
-installed and finds a buildfile in the project's directory, it will show all
-the tasks available for that project.  To run a task, double-click it.  When
-the task completes, IDEA will show the results in the Buildr Output window.
+Also, check out the "Buildr plugin for IDEA":http://www.digitalsanctum.com/buildr-plug-in/ (IDEA 7 and later).  Once installed, open your project with IDEA.  If IDEA finds that you have Buildr installed and finds a buildfile in the project's directory, it will show all the tasks available for that project.  To run a task, double-click it.  When the task completes, IDEA will show the results in the Buildr Output window.
 
 
 h2. Cobertura, JDepend
 
-You can use "Cobertura":http://cobertura.sourceforge.net/ to instrument your
-code, run the tests and create a test coverage report in either HTML or XML
-format.
+You can use "Cobertura":http://cobertura.sourceforge.net/ to instrument your code, run the tests and create a test coverage report in either HTML or XML format.
 
-There are two tasks, both of which generate a test coverage report in the
-@reports/cobertura@ directory.  For example:
+There are two tasks, both of which generate a test coverage report in the @reports/cobertura@ directory.  For example:
 
 {{{!sh
 $ buildr test cobertura:html
@@ -244,16 +151,13 @@ $ buildr test cobertura:html
 
 As you can guess, the other task is @cobertura:xml@.
 
-If you want to generate cobertura reports only for a specific project, you
-can do so by using the project name as prefix to cobertura tasks. 
+If you want to generate cobertura reports only for a specific project, you can do so by using the project name as prefix to cobertura tasks. 
 
 {{{!sh
 $ buildr subModule:cobertura:html
 }}}
 
-Each project can specify which classes to include or exclude from cobertura
-instrumentation by giving a class-name regexp to the @cobertura.include@ or 
-@cobertura.exclude@ methods:
+Each project can specify which classes to include or exclude from cobertura instrumentation by giving a class-name regexp to the @cobertura.include@ or  @cobertura.exclude@ methods:
 
 {{{!ruby
 define 'someModule' do 
@@ -264,9 +168,7 @@ define 'someModule' do
 end
 }}}
 
-You can use "JDepend":http://clarkware.com/software/JDepend.html on to
-generate design quality metrics.  There are three tasks this time, the eye
-candy one:
+You can use "JDepend":http://clarkware.com/software/JDepend.html on to generate design quality metrics.  There are three tasks this time, the eye candy one:
 
 {{{!sh
 $ buildr jdepend:swing
@@ -274,22 +176,16 @@ $ buildr jdepend:swing
 
 The other two tasks are @jdepend:text@ and @jdepend:xml@.
 
-We want Buildr to load fast, and not everyone cares for these tasks, so we
-don't include them by default.  If you want to use either one, you need to
-require it explicitly.  The proper way to do it in Ruby:
+We want Buildr to load fast, and not everyone cares for these tasks, so we don't include them by default.  If you want to use either one, you need to require it explicitly.  The proper way to do it in Ruby:
 
 {{{!ruby
 require 'buildr/cobertura'
 require 'buildr/jdepend'
 }}}
 
-You may want to add those to the Buildfile.  Alternatively, you can use these
-tasks for all your projects without modifying the Buildfile.  One convenient
-method is to add these two likes to the @buildr.rb@ file in your home
-directory.
+You may want to add those to the Buildfile.  Alternatively, you can use these tasks for all your projects without modifying the Buildfile.  One convenient method is to add these two likes to the @buildr.rb@ file in your home directory.
 
-Another option is to require it from the command line (@--require@ or @-r@),
-for example:
+Another option is to require it from the command line (@--require@ or @-r@), for example:
 
 {{{!sh
 $ buildr --require buildr/jdepend jdepend:swing
@@ -299,18 +195,11 @@ $ buildr -rbuildr/cobertura cobertura:html
 
 h2. Anything Ruby Can Do
 
-Buildr is Ruby code.  That's an implementation detail for some, but a useful
-features for others.  You can use Ruby to keep your build scripts simple and
-DRY, tackle ad hoc tasks and write reusable features without the complexity of
-"plugins".
+Buildr is Ruby code.  That's an implementation detail for some, but a useful features for others.  You can use Ruby to keep your build scripts simple and DRY, tackle ad hoc tasks and write reusable features without the complexity of "plugins".
 
-We already showed you one example where Ruby could help.  You can use Ruby to
-manage dependency by setting constants and reusing them, grouping related
-dependencies into arrays and structures.
+We already showed you one example where Ruby could help.  You can use Ruby to manage dependency by setting constants and reusing them, grouping related dependencies into arrays and structures.
 
-You can use Ruby to perform ad hoc tasks.  For example, Buildr doesn't have
-any pre-canned task for setting file permissions.  But Ruby has a method for
-that, so it's just a matter of writing a task:
+You can use Ruby to perform ad hoc tasks.  For example, Buildr doesn't have any pre-canned task for setting file permissions.  But Ruby has a method for that, so it's just a matter of writing a task:
 
 {{{!ruby
 bins = file('target/bin'=>FileList[_('src/main/dist/bin/*')]) do |task|
@@ -320,10 +209,7 @@ bins = file('target/bin'=>FileList[_('src/main/dist/bin/*')]) do |task|
 end
 }}}
 
-You can use functions to keep your code simple.  For example, in the ODE
-project we create two binary distributions, both of which contain a common set
-of files, and one additional file unique to each distribution.  We use a
-method to define the common distribution:
+You can use functions to keep your code simple.  For example, in the ODE project we create two binary distributions, both of which contain a common set of files, and one additional file unique to each distribution.  We use a method to define the common distribution:
 
 {{{!ruby
 def distro(project, id)
@@ -352,9 +238,7 @@ define 'distro-axis2' do
 end
 }}}
 
-Ruby's functional style and blocks make some task extremely easy.  For
-example, let's say we wanted to count how many source files we have, and total
-number of lines:
+Ruby's functional style and blocks make some task extremely easy.  For example, let's say we wanted to count how many source files we have, and total number of lines:
 
 {{{!ruby
 sources = projects.map { |prj| prj.compile.sources.

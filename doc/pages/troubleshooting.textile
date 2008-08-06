@@ -5,18 +5,14 @@ Common troubleshooting tips collected from the mailing list.
 
 h2.  Running out of heap space
 
-You can give the JVM more heap space by setting the @JAVA_OPTS@ environment
-variables.  This environment variable provides arguments for staring the JVM.
-For example, to set the heap space to 1GB:
+You can give the JVM more heap space by setting the @JAVA_OPTS@ environment variables.  This environment variable provides arguments for staring the JVM. For example, to set the heap space to 1GB:
 
 {{{!sh
 $ export "JAVA_OPTS=-Xms1g -Xmx1g"
 $ buildr compile
 }}}
 
-If you're sharing the build with other developers, you'll want to specify these
-options in the Buildfile itself.  You can set the environment variable within
-the Buildfile, but make sure to do so at the very top of the Buildfile.
+If you're sharing the build with other developers, you'll want to specify these options in the Buildfile itself.  You can set the environment variable within the Buildfile, but make sure to do so at the very top of the Buildfile.
 
 For example:
 
@@ -27,13 +23,9 @@ ENV['JAVA_OPTS'] = '-Xms1g -Xmx1g'
 
 h2.  RJB fails to compile
 
-On Linux, BSD and Cygwin, RJB locates the JDK headers files -- which it uses to
-compile a native C extension -- based on the @JAVA_HOME@ environment variable.
-Make sure @JAVA_HOME@ points to the JDK, not JRE.
+On Linux, BSD and Cygwin, RJB locates the JDK headers files -- which it uses to compile a native C extension -- based on the @JAVA_HOME@ environment variable. Make sure @JAVA_HOME@ points to the JDK, not JRE.
 
-If you are using @sudo gem install@, note that some environments do not pass
-the @JAVA_HOME@ environment variable over to @sudo@.  To get around this, run
-@gem@ with the @env JAVA_HOME=$JAVA_HOME@ option:
+If you are using @sudo gem install@, note that some environments do not pass the @JAVA_HOME@ environment variable over to @sudo@.  To get around this, run @gem@ with the @env JAVA_HOME=$JAVA_HOME@ option:
 
 {{{!sh
 $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr
@@ -42,13 +34,9 @@ $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr
 
 h2.  Segmentation Fault when running Java code
 
-This is most likely a JVM inconsistency, for example, when part of the RJB
-library uses JDK 1.6, the other part uses JDK 1.5.
+This is most likely a JVM inconsistency, for example, when part of the RJB library uses JDK 1.6, the other part uses JDK 1.5.
 
-During installation RJB builds a native C extension using header files supplied by
-the JVM, and compiles a Java bridge class using the Javac.  It is possible for RJB
-to use two different versions of the JVM, for example, if @JAVA_HOME@ points to
-JDK 1.5, but @/usr/bin/javac@ points to JDK 1.6.
+During installation RJB builds a native C extension using header files supplied by the JVM, and compiles a Java bridge class using the Javac.  It is possible for RJB to use two different versions of the JVM, for example, if @JAVA_HOME@ points to JDK 1.5, but @/usr/bin/javac@ points to JDK 1.6.
 
 Make sure @JAVA_HOME@ and @/usr/bin/javac@ both point to the same JDK:
 
@@ -57,54 +45,34 @@ echo $JAVA_HOME
 ls -l /usr/bin/javac
 }}}
 
-*Note:*  It seems that RJB works with Java 6, except when it doesn't, and for a
-few people it doesn't.  In that case, either switch to Java 1.5, or simply run
-Buildr on JRuby using Java 6.
+*Note:*  It seems that RJB works with Java 6, except when it doesn't, and for a few people it doesn't.  In that case, either switch to Java 1.5, or simply run Buildr on JRuby using Java 6.
 
 
 h2.  Bugs resulting from a dangling comma or period
 
-Ruby statements don't need a delimiter and can span multiple lines, which can
-lead to bugs resulting from dangling commas and periods left at the end of the
-line.  For example:
+Ruby statements don't need a delimiter and can span multiple lines, which can lead to bugs resulting from dangling commas and periods left at the end of the line.  For example:
 
 {{{!ruby
 compile.with 'org.apache.axis2:axis2:jar:1.2',
 test.with 'log4j:log4j:jar:1.1'
 }}}
 
-This is actually a single method call with two arguments, separated by a comma.
-The second argument is the result of calling @test.with@, and makes the test
-task a pre-requisite of the compile task, leading to a circular dependency.
+This is actually a single method call with two arguments, separated by a comma. The second argument is the result of calling @test.with@, and makes the test task a pre-requisite of the compile task, leading to a circular dependency.
 
-As you can imagine this happens usually after editing, specifically for commas
-and periods which are small enough that you won't notice them from a cursory
-glance at the code, so if all else fails, search for lines that end with one of
-these characters.
+As you can imagine this happens usually after editing, specifically for commas and periods which are small enough that you won't notice them from a cursory glance at the code, so if all else fails, search for lines that end with one of these characters.
 
 
 h2.  Missing POM breaks transitive dependencies
 
-Occasionally, artifacts are deployed to remote repositories with missing or
-broken POMs.  Buildr will fail when attempting to resolve transitive
-dependencies with broken or missing POMs.
+Occasionally, artifacts are deployed to remote repositories with missing or broken POMs.  Buildr will fail when attempting to resolve transitive dependencies with broken or missing POMs.
 
-In this particular case, failing is doing the right thing.  There's no way for
-Buildr to tell whether the POM is nowhere to be found, or just a temporary
-problem accessing the remote server.
+In this particular case, failing is doing the right thing.  There's no way for Buildr to tell whether the POM is nowhere to be found, or just a temporary problem accessing the remote server.
 
-If you can determine that the POM file is missing you can work around the
-problem in three ways.  If you published the artifact, make the release again,
-getting it to upload the missing files.
+If you can determine that the POM file is missing you can work around the problem in three ways.  If you published the artifact, make the release again, getting it to upload the missing files.
 
-If the source repository is not under your control, but you are also using your
-own repository for the project, you can always create a dummy POM in your own
-repository.  Buildr will attempt to download the file from either repository,
-using the first file it finds.
+If the source repository is not under your control, but you are also using your own repository for the project, you can always create a dummy POM in your own repository.  Buildr will attempt to download the file from either repository, using the first file it finds.
 
-Alternatively, you can make Buildr create a dummy POM file in the local
-repository, instead of downloading it from a remote repository.  This example
-creates a dummy POM for Axis JAX-RPC:
+Alternatively, you can make Buildr create a dummy POM file in the local repository, instead of downloading it from a remote repository.  This example creates a dummy POM for Axis JAX-RPC:
 
 {{{!ruby
 artifact 'axis:axis-jaxrpc:pom:1.3' do |task|
@@ -120,27 +88,16 @@ end
 }}}
 
 
-h2. Buildr fails to run after install with a "stack level too deep
-(SystemStackError)" error
+h2. Buildr fails to run after install with a "stack level too deep (SystemStackError)" error
 
-A particular quirk of an existing Ruby setup can cause problems when running
-Buildr.  If a system already has several Ruby directories that are in the
-@PATH@, it is often nice (appropriate?) to have them in @RUBYLIB@ as well (to
-be able to require them).  If there are several of them a user may decide that
-@RUBYLIB=$PATH@ is a good way to handle this (or some less automated method
-that has the same effect).
+A particular quirk of an existing Ruby setup can cause problems when running Buildr.  If a system already has several Ruby directories that are in the @PATH@, it is often nice (appropriate?) to have them in @RUBYLIB@ as well (to be able to require them).  If there are several of them a user may decide that @RUBYLIB=$PATH@ is a good way to handle this (or some less automated method that has the same effect).
 
-The culprit is having the Gem's binary directory show up in @RUBYLIB@.  For
-example, Buildr's @bin/buildr@ includes this line:
+The culprit is having the Gem's binary directory show up in @RUBYLIB@.  For example, Buildr's @bin/buildr@ includes this line:
 
 {{{!sh
 require 'buildr'
 }}}
 
-Under normal circumstances, this tells RubyGems to load @buildr.rb@ from
-the Gem's library directory.  When @RUBYLIB@ points to the Gem's @bin@
-directory, it ends up loading itself repeatedly. 
+Under normal circumstances, this tells RubyGems to load @buildr.rb@ from the Gem's library directory.  When @RUBYLIB@ points to the Gem's @bin@ directory, it ends up loading itself repeatedly. 
 
-To solve this, remove Buildr's @bin@ directory from @RUBYLIB@.  Removing all
-directories that you don't actually need is better (other Gems may have the
-same problem).
+To solve this, remove Buildr's @bin@ directory from @RUBYLIB@.  Removing all directories that you don't actually need is better (other Gems may have the same problem).

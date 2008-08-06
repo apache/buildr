@@ -1,47 +1,28 @@
 h1. Contributing
 
-Buildr is a community effort, and we welcome all contributors.  Here's your
-chance to get involved and help your fellow developers.
+Buildr is a community effort, and we welcome all contributors.  Here's your chance to get involved and help your fellow developers.
 
 h2.  Getting involved
 
-All our discussions are done in the open, over "email":mailing_lists.html, and
-that would be the first place to look for answers, raise ideas, etc.  For bug
-reports, issues and patches, "see below":#bugs_aka_issues.
+All our discussions are done in the open, over "email":mailing_lists.html, and that would be the first place to look for answers, raise ideas, etc.  For bug reports, issues and patches, "see below":#bugs_aka_issues.
 
 
 h3.  Mailing Lists
 
-We run two mailing lists, the
-"buildr-user":http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/
-mailing list for developers working with Buildr, that would be you if you're
-using Buildr or interested in using it.  There's the 
-"buildr-dev":http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/
-mailing list for talking about development of Buildr itself, and 
-"commits":http://mail-archives.apache.org/mod_mbox/incubator-buildr-commits/
-mailing list for following SVN commits and JIRA issues.
+We run two mailing lists, the "buildr-user":http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/ mailing list for developers working with Buildr, that would be you if you're using Buildr or interested in using it.  There's the  "buildr-dev":http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/ mailing list for talking about development of Buildr itself, and  "commits":http://mail-archives.apache.org/mod_mbox/incubator-buildr-commits/ mailing list for following SVN commits and JIRA issues.
 
-Check the "mailing lists":mailing_lists.html page for more information on
-subscribing, searching and posting to the mailing list.
+Check the "mailing lists":mailing_lists.html page for more information on subscribing, searching and posting to the mailing list.
 
 
 h3.  Bugs (aka Issues)
 
-We really do try to keep bugs to a minimum, and anticipate everything you'll
-ever want to do with Buildr.  We're also, not perfect.  So you may have found a
-bug, or have an enhancement in mind, or better yet, a patch to contribute.
-Here's what you can do.
+We really do try to keep bugs to a minimum, and anticipate everything you'll ever want to do with Buildr.  We're also, not perfect.  So you may have found a bug, or have an enhancement in mind, or better yet, a patch to contribute. Here's what you can do.
 
-If it's a bug, enhancement or patch, add it to
-"JIRA":http://issues.apache.org/jira/browse/Buildr.  For trivial stuff, that's
-good enough.
+If it's a bug, enhancement or patch, add it to "JIRA":http://issues.apache.org/jira/browse/Buildr.  For trivial stuff, that's good enough.
 
-If it needs more attention, start a discussion over on the mailing list.  We
-will still use JIRA to log the progress, but the mailing list is a better place
-for talking things through.
+If it needs more attention, start a discussion over on the mailing list.  We will still use JIRA to log the progress, but the mailing list is a better place for talking things through.
 
-When reporting a bug, please tell us which version of Ruby, Buildr and Java you
-are using, and also which operating system you are on:
+When reporting a bug, please tell us which version of Ruby, Buildr and Java you are using, and also which operating system you are on:
 
 {{{!sh
 $ ruby --version
@@ -54,86 +35,53 @@ h3.  Contributing Code
 
 Yes, please.
 
-If you have a patch to submit, do it through
-"JIRA":http://issues.apache.org/jira/browse/Buildr.  We want to make sure
-Apache gets the right to use your contribution, and the JIRA upload form
-includes a simple contribution agreement.  Lawyer not included.
+If you have a patch to submit, do it through "JIRA":http://issues.apache.org/jira/browse/Buildr.  We want to make sure Apache gets the right to use your contribution, and the JIRA upload form includes a simple contribution agreement.  Lawyer not included.
 
 h4.  The Perfect Patch
 
 If you want to get your patch accepted quickly:
 
-#  Provide a good summary of the bug/fix.  We use that to decide which issue
-   we can do quickly, and also copy and paste it into the changelog.
-#  Provide short explanation of what failed, under what conditions, why, and
-   what else could be affected by the change (when relevant).  The helps us
-   understand the problem and move on to the next step.
-#  Provide a patch with relevant specs, or a fix to incomplete/broken specs.
-   First thing we have to do is replicate the problem, before applying the
-   change, and then make sure the change fixes that problem.  And we need to
-   have those specs in there, they make sure we don't accidentally break it
-   again in the future.
-#  Provide a patch with the fix/change itself.  Keep it separate from the
-   specs, so it's easy to apply them individually.
+#  Provide a good summary of the bug/fix.  We use that to decide which issue we can do quickly, and also copy and paste it into the changelog.
+#  Provide short explanation of what failed, under what conditions, why, and what else could be affected by the change (when relevant).  The helps us understand the problem and move on to the next step.
+#  Provide a patch with relevant specs, or a fix to incomplete/broken specs. First thing we have to do is replicate the problem, before applying the change, and then make sure the change fixes that problem.  And we need to have those specs in there, they make sure we don't accidentally break it again in the future.
+#  Provide a patch with the fix/change itself.  Keep it separate from the specs, so it's easy to apply them individually.
 
-If you don't know how to fix it, but can at least write a spec for the correct
-behavior (which, obviously would fail), do just that.  A spec is preferred to
-a fix.
+If you don't know how to fix it, but can at least write a spec for the correct behavior (which, obviously would fail), do just that.  A spec is preferred to a fix.
 
 h4.  Working on a new feature?
 
-If you want to work on a cool new feature, but not quite ready to submit a
-patch, there's still a way you can get the Buildr community involved.  We're
-experimenting with using Git for that.  You can use Git to maintain a fork
-of Buildr that can keep up with changes in the main branch (tip: use
-@git rebase@), while developing your own changes/features on it.
+If you want to work on a cool new feature, but not quite ready to submit a patch, there's still a way you can get the Buildr community involved.  We're experimenting with using Git for that.  You can use Git to maintain a fork of Buildr that can keep up with changes in the main branch (tip: use @git rebase@), while developing your own changes/features on it.
 
-That way you can get other people involved, checking out the code, and
-eventually merge it back with the main branch.  Check out the
-"Git section":#Git below and the post "Git forking for fun and
-profit":http://blog.labnotes.org/2008/04/30/git-forking-for-fun-and-profit/.
+That way you can get other people involved, checking out the code, and eventually merge it back with the main branch.  Check out the "Git section":#Git below and the post "Git forking for fun and profit":http://blog.labnotes.org/2008/04/30/git-forking-for-fun-and-profit/.
 
 
 h2.  Living on the edge
 
-Did we mention Buildr is an open source project?  In fact, when you install
-Buildr you get all the source code, documentation, test case and everything you
-need to use it, extend it and patch it.  Have a look in your Gem directory.
+Did we mention Buildr is an open source project?  In fact, when you install Buildr you get all the source code, documentation, test case and everything you need to use it, extend it and patch it.  Have a look in your Gem directory.
 
 h3.  SVN
 
-But if you want to work with the latest and greatest, you'll want to check out
-"Buildr from SVN":http://svn.apache.org/repos/asf/incubator/buildr:
+But if you want to work with the latest and greatest, you'll want to check out "Buildr from SVN":http://svn.apache.org/repos/asf/incubator/buildr:
 
 {{{!sh
 $ svn co http://svn.apache.org/repos/asf/incubator/buildr/trunk buildr
 }}}
 
-You can also browse the "Buildr
-repository":http://svn.apache.org/repos/asf/incubator/buildr.
+You can also browse the "Buildr repository":http://svn.apache.org/repos/asf/incubator/buildr.
 
 h3.  Git
 
-Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from
-GitHub":http://github.com/vic/buildr/tree/master:
+Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from GitHub":http://github.com/vic/buildr/tree/master:
 
 {{{!sh
 $ git clone git://github.com/vic/buildr.git
 }}}
 
-The GitHub repository is maintained by contributors to this project, but is
-*not* an official Apache repository.  To obtain Buildr from the official Apache
-repository, consider using @giv-svn@ instead.
+The GitHub repository is maintained by contributors to this project, but is *not* an official Apache repository.  To obtain Buildr from the official Apache repository, consider using @giv-svn@ instead.
 
-If you want to learn more about Git, you can start by watching Scott Chacon’s
-"Git presentation":http://en.oreilly.com/rails2008/public/asset/attachment/2816
-(PDF), or any of the "Git screencasts":http://www.gitcasts.com/.  For more,
-there's also the "Git Internals
-book":http://peepcode.com/products/git-internals-pdf.
+If you want to learn more about Git, you can start by watching Scott Chacon’s "Git presentation":http://en.oreilly.com/rails2008/public/asset/attachment/2816 (PDF), or any of the "Git screencasts":http://www.gitcasts.com/.  For more, there's also the "Git Internals book":http://peepcode.com/products/git-internals-pdf.
 
-And keep this "Git cheat
-sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet-medium.png close at
-hand. Very useful.
+And keep this "Git cheat sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet-medium.png close at hand. Very useful.
 
 h3. Installing from Source
 
@@ -154,17 +102,13 @@ $ jruby -S rake setup install
 
 h3. Using development build
 
-Occasionally we'll make development builds from the current code in trunk/head.
-We appreciate if you can take the time to test those out and report any bugs.
-To install development builds, use the Gem repository at
-@people.apache.org/~assaf/buildr/snapshot@:
+Occasionally we'll make development builds from the current code in trunk/head. We appreciate if you can take the time to test those out and report any bugs. To install development builds, use the Gem repository at @people.apache.org/~assaf/buildr/snapshot@:
 
 {{{!sh
 gem source --add http://people.apache.org/~assaf/buildr/snapshot
 }}}
 
-Since Ruby Gems only upgrades when it notices a new version number, you have
-to @gem install buildr@ to get the most recent development build.
+Since Ruby Gems only upgrades when it notices a new version number, you have to @gem install buildr@ to get the most recent development build.
 
 If you want to go back to using the RubyForge releases:
 
@@ -180,16 +124,9 @@ Two things we definitely encourage!
 
 h3.  Testing/Specs
 
-Obviously we won't turn down patches, but we'll love you even more if you
-include a test case.  One that will fail without the patch, and run
-successfully with it.  If not for our love, then think of the benefit to you:
-once we add that test case, we won't accidentally break that feature in the
-next release.
+Obviously we won't turn down patches, but we'll love you even more if you include a test case.  One that will fail without the patch, and run successfully with it.  If not for our love, then think of the benefit to you: once we add that test case, we won't accidentally break that feature in the next release.
 
-We test using "RSpec":http://rspec.info/, a Behavior-Driven Development test
-framework.  The main difference between RSpec and xUnit is that RSpec helps you
-formulate test cases in terms of specifications: you describe how the code
-should behave, and run RSpec to make sure it matches that specification.
+We test using "RSpec":http://rspec.info/, a Behavior-Driven Development test framework.  The main difference between RSpec and xUnit is that RSpec helps you formulate test cases in terms of specifications: you describe how the code should behave, and run RSpec to make sure it matches that specification.
 
 You can run an individual specifications using the @spec@ command, for example:
 
@@ -197,8 +134,7 @@ You can run an individual specifications using the @spec@ command, for example:
 $ spec spec/compiler_spec.rb -l 409
 }}}
 
-To make sure your change did not break anything else, you can run all the
-specifications (be patient, we have a lot of these):
+To make sure your change did not break anything else, you can run all the specifications (be patient, we have a lot of these):
 
 {{{!sh
 $ rake spec
@@ -206,49 +142,26 @@ $ rake spec
 
 We always @rake spec@ before making a release.
 
-You can also check out the "RSpec report":report.html which provides the
-official specification against which we test each release.
+You can also check out the "RSpec report":report.html which provides the official specification against which we test each release.
 
 
 h3.  Documentation
 
-Yes, we do make typos, spelling errors and sometimes we write things that don't
-make sense, so if you find a documentation bug, or want to help make the
-documentation even better, here's the way to do it.
+Yes, we do make typos, spelling errors and sometimes we write things that don't make sense, so if you find a documentation bug, or want to help make the documentation even better, here's the way to do it.
 
-For simple typos and quick fixes, just send a message to the mailing list or
-log an issue in JIRA.
+For simple typos and quick fixes, just send a message to the mailing list or log an issue in JIRA.
 
-If you end up rewriting a significant piece of text, or add new documentation
-(your rock!), send a patch.  Making documentation patches is fairly easy.  All
-the documentation is generated from text files in the @doc/pages@ directory, so
-all you need to do is check it out from SVN, edit, and @svn diff@ to create a
-patch.
+If you end up rewriting a significant piece of text, or add new documentation (your rock!), send a patch.  Making documentation patches is fairly easy.  All the documentation is generated from text files in the @doc/pages@ directory, so all you need to do is check it out from SVN, edit, and @svn diff@ to create a patch.
 
-We use "Textile":http://www.textism.com/tools/textile/ as the markup language,
-it takes all of a few minutes to learn, it's intuitive to use, and produces
-clean HTML.  You can learn it all in a few minutes from the "Textile Reference
-Manual":http://redcloth.org/textile.  Also check out the "Textile Quick
-Reference":http://hobix.com/textile/quick.html.
+We use "Textile":http://www.textism.com/tools/textile/ as the markup language, it takes all of a few minutes to learn, it's intuitive to use, and produces clean HTML.  You can learn it all in a few minutes from the "Textile Reference Manual":http://redcloth.org/textile.  Also check out the "Textile Quick Reference":http://hobix.com/textile/quick.html.
 
-You can always check the documentation to see which conventions we use, and
-also a couple of extensions we have for styling source code (with syntax
-highlighting!) and handling footnotes.  The table of contents is auto-generated
-form H1/H2 headers.
+You can always check the documentation to see which conventions we use, and also a couple of extensions we have for styling source code (with syntax highlighting!) and handling footnotes.  The table of contents is auto-generated form H1/H2 headers.
 
-The tool we use for this is called Docter, which we developed specifically for
-Buildr, and use to create the Web site and printable PDF.  If you want to try
-it out you'll need to first @gem install docter@.  To generate a copy of the
-Web site, simple run @rake html@ .
+The tool we use for this is called Docter, which we developed specifically for Buildr, and use to create the Web site and printable PDF.  If you want to try it out you'll need to first @gem install docter@.  To generate a copy of the Web site, simple run @rake html@ .
 
-If you're thinking of editing the docs, and using @rake html@ to see what the
-HTML looks like, you may want to try something simpler.  Start by running the
-Docter Web server with @rake docter@ and then point your browser at
-@http://localhost:3000@.  To see your edits, simply refresh the page.
+If you're thinking of editing the docs, and using @rake html@ to see what the HTML looks like, you may want to try something simpler.  Start by running the Docter Web server with @rake docter@ and then point your browser at @http://localhost:3000@.  To see your edits, simply refresh the page.
 
-Generating the PDF is a bit more tricky, we use the HTML in combination with
-print media CSS stylesheets and run them through the wonderful
-"PrinceXML":http://www.princexml.com/, so you'll need to install PrinceXML
+Generating the PDF is a bit more tricky, we use the HTML in combination with print media CSS stylesheets and run them through the wonderful "PrinceXML":http://www.princexml.com/, so you'll need to install PrinceXML
 first before you can @rake pdf@.
 
 
@@ -264,7 +177,4 @@ Here is the list of people who are actively working and committing on Buildr:
 
 *Victor Hugo Borja* (vborja at apache.org)
 
-Currently a Java Developer at
-"http://jwmsolutions.com":http://jwmsolutions.com, Victor has been enjoying and
-using Apache's software since 1999 when he started with Java, now he prefers
-programming Ruby and is happy to help on Apache's first ruby project. 
+Currently a Java Developer at "http://jwmsolutions.com":http://jwmsolutions.com, Victor has been enjoying and using Apache's software since 1999 when he started with Java, now he prefers programming Ruby and is happy to help on Apache's first ruby project. 

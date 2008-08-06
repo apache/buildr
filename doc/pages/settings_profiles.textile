@@ -3,10 +3,7 @@ h1. Settings/Profiles
 
 h2.  Environment Variables
 
-Buildr uses several environment variables that help you control how it works.
-Some environment variables you will only set once or change infrequently.  You
-can set these in your profile, OS settings or any tool you use to launch Buildr
-(e.g. continuous integration).
+Buildr uses several environment variables that help you control how it works. Some environment variables you will only set once or change infrequently.  You can set these in your profile, OS settings or any tool you use to launch Buildr (e.g. continuous integration).
 
 For example:
 
@@ -14,63 +11,42 @@ For example:
 $ export HTTP_PROXY=http://myproxy:8080
 }}}
 
-There are other environment variables you will want to set when running Buildr,
-for example, to do a full build without running the tests:
+There are other environment variables you will want to set when running Buildr, for example, to do a full build without running the tests:
 
 {{{!sh
 $ buildr test=no
 }}}
 
-For convenience, when you set environment variables on the command line, the
-variable name is case insensitive, you can use either @test=no@ or @TEST=no@.
-Any other way (@export@, @ENV@, etc) the variable names are case sensitive.
+For convenience, when you set environment variables on the command line, the variable name is case insensitive, you can use either @test=no@ or @TEST=no@. Any other way (@export@, @ENV@, etc) the variable names are case sensitive.
 
-You can also set environment variables from within your Buildfile.  For
-example, if you discover that building your project requires gobs of JVM heap
-space, and you want all other team members to run with the same settings:
+You can also set environment variables from within your Buildfile.  For example, if you discover that building your project requires gobs of JVM heap space, and you want all other team members to run with the same settings:
 
 {{{!ruby
 # This project builds a lot of code.
 ENV['JAVA_OPTS'] ||= '-Xms1g -Xmx1g'
 }}}
 
-Make sure to set any environment variables at the very top of the Buildfile,
-above any Ruby statement (even @require@).
+Make sure to set any environment variables at the very top of the Buildfile, above any Ruby statement (even @require@).
 
-p(tip).  Using @||=@ sets the environment variable, if not already set, so
-it's still possible for other developers to override this environment variable
-without modifying the Buildfile.
+p(tip).  Using @||=@ sets the environment variable, if not already set, so it's still possible for other developers to override this environment variable without modifying the Buildfile.
 
 Buildr supports the following environment variables:
 
 |_. Variable    |_. Description |
-| @BUILDR_ENV@  | Environment name (development, production, test, etc).
-Another way to set this is using the @-e@ command line option. |
-| @DEBUG@       | Set to @no/off@ if you want Buildr to compile without
-debugging information (default when running the @release@ task, see
-"Compiling":building.html#compiling). |
+| @BUILDR_ENV@  | Environment name (development, production, test, etc). Another way to set this is using the @-e@ command line option. |
+| @DEBUG@       | Set to @no/off@ if you want Buildr to compile without debugging information (default when running the @release@ task, see "Compiling":building.html#compiling). |
 | @HOME@        | Your home directory. |
-| @HTTP_PROXY@  | URL for HTTP proxy server (see "Specifying
-Repositories":artifacts.html#specifying_repositories). |
+| @HTTP_PROXY@  | URL for HTTP proxy server (see "Specifying Repositories":artifacts.html#specifying_repositories). |
 | @JAVA_HOME@   | Points to your JDK, required when using Java and Ant. |
 | @JAVA_OPTS@   | Command line options to pass to the JDK (e.g. @'-Xms1g'@). |
-| @M2_REPO@     | Location of the Maven2 local repository.  Defaults to the
-@.m2@ directory in your home directory (@ENV['HOME']@). |
-| @NO_PROXY@    | Comma separated list of hosts and domain that should not be
-proxied (see "Specifying Repositories":artifacts.html#specifying_repositories).  |
-| @TEST@        | Set to @no/off@ to tell Buildr to skip tests, or @all@ to
-tell Buildr to run all tests and ignore failures (see "Running
-Tests":testing.html#running_tests). |
-| @USER@        | Tasks that need your user name, for example to log to remote
-servers, will use this environment variable. |
+| @M2_REPO@     | Location of the Maven2 local repository.  Defaults to the @.m2@ directory in your home directory (@ENV['HOME']@). |
+| @NO_PROXY@    | Comma separated list of hosts and domain that should not be proxied (see "Specifying Repositories":artifacts.html#specifying_repositories).  |
+| @TEST@        | Set to @no/off@ to tell Buildr to skip tests, or @all@ to tell Buildr to run all tests and ignore failures (see "Running Tests":testing.html#running_tests). |
+| @USER@        | Tasks that need your user name, for example to log to remote servers, will use this environment variable. |
 
-p(note). Buildr does not check any of the arguments in @JAVA_OPTS@.  A common
-mistake is to pass an option like @mx512mb@, where it should be @Xmx512mb@.
-Make sure to double check @JAVA_OPTS@.
+p(note). Buildr does not check any of the arguments in @JAVA_OPTS@.  A common mistake is to pass an option like @mx512mb@, where it should be @Xmx512mb@. Make sure to double check @JAVA_OPTS@.
 
-Some extensions may use additional environment variables, and of course, you
-can always add your own.  This example uses two environment variables for
-specifying the username and password:
+Some extensions may use additional environment variables, and of course, you can always add your own.  This example uses two environment variables for specifying the username and password:
 
 {{{!ruby
 repositories.upload_to[:username] = ENV['USERNAME']
@@ -80,17 +56,11 @@ repositories.upload_to[:password] = ENV['PASSWORD']
 
 h2. Personal Settings
 
-Some things clearly do not belong in the Buildfile.  For example, the username
-and password you use to upload releases.  If you're working in a team or on an
-open source project, you'd want to keep these in a separate place.
+Some things clearly do not belong in the Buildfile.  For example, the username and password you use to upload releases.  If you're working in a team or on an open source project, you'd want to keep these in a separate place.
 
-You may want to use personal settings for picking up a different location for
-the local repository, or use a different set of preferred remote repositories,
-and so forth.
+You may want to use personal settings for picking up a different location for the local repository, or use a different set of preferred remote repositories, and so forth.
 
-The prefered way to store personal settings is to create a @.buildr/settings.yaml@
-file under your home directory. Settings stored there will be applied the same
-across all builds.
+The prefered way to store personal settings is to create a @.buildr/settings.yaml@ file under your home directory. Settings stored there will be applied the same across all builds.
 
 Here's an example @settings.yaml@:
 
@@ -119,8 +89,7 @@ im:
   pwd: secret
 }}}
 
-Later your buildfile or addons can reference user preferences using the 
-hash returned by the @Buildr.settings.user@ accessor.
+Later your buildfile or addons can reference user preferences using the  hash returned by the @Buildr.settings.user@ accessor.
 
 {{{!ruby
 task 'relase-notification' do
@@ -133,14 +102,9 @@ end
 
 h2. Build Settings
 
-Build settings are local to the project being built, and are placed in the
-@build.yaml@ file located in the same directory that the @buildfile@. Normally
-this file would be managed by the project revision control system, so settings
-here are shared between developers.
+Build settings are local to the project being built, and are placed in the @build.yaml@ file located in the same directory that the @buildfile@. Normally this file would be managed by the project revision control system, so settings here are shared between developers.
 
-They help keep the buildfile and build.yaml file simple and readable, working
-to the advantages of each one.  Example for build settings are gems,
-repositories and artifacts used by that build.
+They help keep the buildfile and build.yaml file simple and readable, working to the advantages of each one.  Example for build settings are gems, repositories and artifacts used by that build.
 
 {{{!yaml
 # This project requires the following ruby gems, buildr addons
@@ -171,12 +135,9 @@ jira:
   uri: https://jira.corp.org
 }}}
 
-When buildr is loaded, required ruby gems will be installed if needed, thus adding
-features like the imaginary twitter notifier addon.
+When buildr is loaded, required ruby gems will be installed if needed, thus adding features like the imaginary twitter notifier addon.
 
-Artifacts defined on @build.yaml@ can be referenced on your buildfile by supplying
-the ruby symbol to the @Buildr.artifact@ and @Buildr.artifacts@ methods. 
-The @compile.with@, @test.with@ methods can also be given these names.
+Artifacts defined on @build.yaml@ can be referenced on your buildfile by supplying the ruby symbol to the @Buildr.artifact@ and @Buildr.artifacts@ methods.  The @compile.with@, @test.with@ methods can also be given these names.
 
 {{{!ruby
 define 'my_project' do 
@@ -199,13 +160,9 @@ Build settings can be retreived using the @Buildr.settings.build@ accessor.
 
 h2. Non constant settings
 
-Before loading the Buildfile, Buildr will attempt to load two other files: the
-@buildr.rb@ file it finds in your home directory, followed by the @buildr.rb@
-file it finds in the build directory.
+Before loading the Buildfile, Buildr will attempt to load two other files: the @buildr.rb@ file it finds in your home directory, followed by the @buildr.rb@ file it finds in the build directory.
 
-The loading order allows you to place global settings that affect all your
-builds in your home directory's @buildr.rb@, but also over-ride those with
-settings for a given project.
+The loading order allows you to place global settings that affect all your builds in your home directory's @buildr.rb@, but also over-ride those with settings for a given project.
 
 Here's an example @buildr.rb@:
 
@@ -220,16 +177,9 @@ repositories.remote << 'http://inside-the-firewall'
 
 h2. Environments
 
-One common use case is adapting the build to different environments.  For
-example, to compile code with debugging information during development and
-testing, but strip it for production.  Another example is using different
-databases for development, testing and production, or running services at
-different URLs.
+One common use case is adapting the build to different environments.  For example, to compile code with debugging information during development and testing, but strip it for production.  Another example is using different databases for development, testing and production, or running services at different URLs.
 
-So let's start by talking about the build environment.  Buildr has a global
-attributes that indicates which environment it's running in, accessible from the
-@environment@ method.  You can set the current build environment in one of two
-ways.  Using the @-e/--environment@ command line option:
+So let's start by talking about the build environment.  Buildr has a global attributes that indicates which environment it's running in, accessible from the @environment@ method.  You can set the current build environment in one of two ways.  Using the @-e/--environment@ command line option:
 
 {{{!sh
 $ buildr -e test
@@ -244,11 +194,9 @@ $ buildr
 (in /home/john/project, production)
 }}}
 
-Unless you tell it otherwise, Buildr assumes you're developing and sets the
-environment to @development@.
+Unless you tell it otherwise, Buildr assumes you're developing and sets the environment to @development@.
 
-Here's a simple example for handling different environments within the
-Buildfile:
+Here's a simple example for handling different environments within the Buildfile:
 
 {{{!ruby
 project 'db-module' do
@@ -257,8 +205,7 @@ project 'db-module' do
 end
 }}}
 
-We recommend picking a convention for your different environments and following
-it across all your projects.  For example:
+We recommend picking a convention for your different environments and following it across all your projects.  For example:
 
 |_. Environment |_. Use when ... |
 | development   | Developing on your machine. |
@@ -268,12 +215,9 @@ it across all your projects.  For example:
 
 h2.  Profiles
 
-Different environments may require different configurations, some you will want
-to control with code, others you will want to specify in the profiles file.
+Different environments may require different configurations, some you will want to control with code, others you will want to specify in the profiles file.
 
-The profiles file is a YAML file called @profiles.yaml@ that you place in the
-same directory as the Buildfile.  We selected YAML because it's easier to read
-and edit than XML.
+The profiles file is a YAML file called @profiles.yaml@ that you place in the same directory as the Buildfile.  We selected YAML because it's easier to read and edit than XML.
 
 For example, to support three different database configurations, we could write:
 
@@ -306,21 +250,13 @@ project 'db-module' do
 end
 }}}
 
-The @profile@ method returns the current profile, selected based on the current
-"environment":#environments.  You can get a list of all profiles by calling
-@profiles@.
+The @profile@ method returns the current profile, selected based on the current "environment":#environments.  You can get a list of all profiles by calling @profiles@.
 
-When you run the above example in @development@, the current profile will
-return the hash @{ 'db'=>'hsql', 'jdbc'=>'hsqldb:mem:devdb' }@.
+When you run the above example in @development@, the current profile will return the hash @{ 'db'=>'hsql', 'jdbc'=>'hsqldb:mem:devdb' }@.
 
-We recommend following conventions and using the same environments in all your
-projects, but sometimes the profiles end up being the same, so here's a trick
-you can use to keep your profiles DRY.
+We recommend following conventions and using the same environments in all your projects, but sometimes the profiles end up being the same, so here's a trick you can use to keep your profiles DRY.
 
-YAML allows you to use anchors (@&@), similar to ID attributes in XML,
-reference the anchored element (@*@) elsewhere, and merge one element into
-another (@<<@).  For example:
-
+YAML allows you to use anchors (@&@), similar to ID attributes in XML, reference the anchored element (@*@) elsewhere, and merge one element into another (@<<@).  For example:
 
 {{{!yaml
 # We'll reference this one as common.
@@ -335,5 +271,4 @@ test:
   jdbc: hsqldb:file:testdb
 }}}
 
-You can "learn more about YAML here":http://www.yaml.org, and use this
-handy "YAML quick reference":http://www.yaml.org/refcard.html.
+You can "learn more about YAML here":http://www.yaml.org, and use this handy "YAML quick reference":http://www.yaml.org/refcard.html.

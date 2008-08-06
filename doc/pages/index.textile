@@ -2,35 +2,22 @@ h1. Welcome
 
 h2.  What is Buildr?
 
-Buildr is a build system for Java applications.  We wanted something that's
-simple and intuitive to use, so we only need to tell it what to do, and it
-takes care of the rest.  But also something we can easily extend for those
-one-off tasks, with a language that's a joy to use.  And of course, we wanted
-it to be fast, reliable and have outstanding dependency management.
+Buildr is a build system for Java applications.  We wanted something that's simple and intuitive to use, so we only need to tell it what to do, and it takes care of the rest.  But also something we can easily extend for those one-off tasks, with a language that's a joy to use.  And of course, we wanted it to be fast, reliable and have outstanding dependency management.
 
 Here's what we got:
 
-* A simple way to specify projects, and build large projects out of smaller
-sub-projects.
-* Pre-canned tasks that require the least amount of configuration, keeping the
-build script DRY and simple.
-* Compiling, copying and filtering resources, JUnit/TestNG test cases, APT
-source code generation, Javadoc and more.
-* A dependency mechanism that only builds what has changed since the last
-release.
-* A drop-in replacement for Maven 2.0, Buildr uses the same file layout,
-artifact specifications, local and remote repositories.
-* All your Ant tasks belong to us! Anything you can do with Ant, you can do
-with Buildr.
-* No overhead for building "plugins" or configuration. Just write new tasks or
-functions.
-* Buildr is Ruby all the way down.  No one-off task is too demanding when you
-write code using variables, functions and objects.
+* A simple way to specify projects, and build large projects out of smaller sub-projects.
+* Pre-canned tasks that require the least amount of configuration, keeping the build script DRY and simple.
+* Compiling, copying and filtering resources, JUnit/TestNG test cases, APT source code generation, Javadoc and more.
+* A dependency mechanism that only builds what has changed since the last release.
+* A drop-in replacement for Maven 2.0, Buildr uses the same file layout, artifact specifications, local and remote repositories.
+* All your Ant tasks belong to us! Anything you can do with Ant, you can do with Buildr.
+* No overhead for building "plugins" or configuration. Just write new tasks or functions.
+* Buildr is Ruby all the way down.  No one-off task is too demanding when you write code using variables, functions and objects.
 * Simple way to upgrade to new versions.
 * Did we mention fast?
 
-So let's get started.  You can "read the documentation
-online":getting_started.html, or "download the PDF":buildr.pdf.
+So let's get started.  You can "read the documentation online":getting_started.html, or "download the PDF":buildr.pdf.
 
 
 h2.  News
@@ -51,18 +38,8 @@ Check out "all that's new in Buildr 1.3.2":whats_new.html.
 
 h2.  Notices
 
-The Apache Software Foundation is a non-profit organization, consider
-"sponsoring":http://www.apache.org/foundation/sponsorship.html and check the
-"thanks":http://www.apache.org/foundation/thanks.html page.
+The Apache Software Foundation is a non-profit organization, consider "sponsoring":http://www.apache.org/foundation/sponsorship.html and check the "thanks":http://www.apache.org/foundation/thanks.html page.
 
-Apache Buildr is an effort undergoing incubation at The Apache Software
-Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of
-all newly accepted projects until a further review indicates that the
-infrastructure, communications, and decision making process have stabilized in
-a manner consistent with other successful ASF projects. While incubation status
-is not necessarily a reflection of the completeness or stability of the code,
-it does indicate that the project has yet to be fully endorsed by the ASF.
+Apache Buildr is an effort undergoing incubation at The Apache Software Foundation (ASF), sponsored by the Apache Incubator. Incubation is required of all newly accepted projects until a further review indicates that the infrastructure, communications, and decision making process have stabilized in a manner consistent with other successful ASF projects. While incubation status is not necessarily a reflection of the completeness or stability of the code, it does indicate that the project has yet to be fully endorsed by the ASF.
 
-"ColorCons":http://www.mouserunner.com/Spheres_ColoCons1_Free_Icons.html,
-copyright of Ken Saunders.  "DejaVu fonts":http://dejavu.sourceforge.net,
-copyright of Bitstream, Inc.
+"ColorCons":http://www.mouserunner.com/Spheres_ColoCons1_Free_Icons.html, copyright of Ken Saunders.  "DejaVu fonts":http://dejavu.sourceforge.net, copyright of Bitstream, Inc.
