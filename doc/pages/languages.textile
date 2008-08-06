@@ -1,0 +1,214 @@
+h1. Languages
+
+
+h2. Java
+
+
+h3. Compiling Java
+
+The Java compiler looks for source files in the project's @src/main/java@ directory, and defaults to compiling them into the @target/classes@ directory. It looks for test cases in the project's @src/test/java@ and defaults to compile them into the @target/test/classes@ directory.
+
+If you point the @compile@ task at any other source directory, it will use the Java compiler if any of these directories contains files with the extension @.java@.
+
+When using the Java compiler, if you don't specify the packaging type, it defaults to JAR.  If you don't specify the test framework, it defaults to JUnit.
+
+The Java compiler supports the following options:
+
+|_. Option        |_. Usage |
+| @:debug@        | Generates bytecode with debugging information.  You can also override this by setting the environment variable @debug@ to @off@. |
+| @:deprecation@  | If true, shows deprecation messages.  False by default. |
+| @:lint@         | Defaults to false.  Set this option to true to use all lint options, or specify a specific lint option (e.g. @:lint=>'cast'@). |
+| @:other@        | Array of options passed to the compiler (e.g. @:other=>'-implicit:none'@). |
+| @:source@       | Source code compatibility (e.g. '1.5'). |
+| @:target@       | Bytecode compatibility (e.g. '1.4'). |
+| @:warnings@     | Issue warnings when compiling.  True when running in verbose mode. |
+
+
+h3.  Testing Java
+
+h4. JUnit
+
+The default test framework for Java projects is JUnit 4.
+
+When you use JUnit, the dependencies includes JUnit, and Buildr picks up all test classes from the project by looking for classes that either subclass  @junit.framework.TestCase@, include methods annotated with @org.junit.Test@, or test suites annotated with @org.org.junit.runner.RunWith@.
+
+The JUnit test framework supports the following options:
+
+|_. Option        |_. Value |
+| @:fork@         | VM forking, defaults to true. |
+| @:clonevm@      | If true clone the VM each time it is forked. |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:environment@  | Hash of environment variables available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |
+
+For example, to pass properties to the test case:
+
+{{{!ruby
+test.using :properties=>{ :currency=>'USD' }
+}}}
+
+There are benefits to running test cases in separate VMs.  The default forking
+mode is @:once@, and you can change it by setting the @:fork@ option.
+
+|_. :fork=> |_. Behavior |
+| @:once@   | Create one VM to run all test classes in the project, separate VMs for each project. |
+| @:each@   | Create one VM for each test case class.  Slow but provides the best isolation between test classes. |
+| @false@   | Without forking, Buildr runs all test cases in a single VM.  This option runs fastest, but at the risk of running out of memory and causing test cases to interfere with each other. |
+
+You can see your tests running in the console, and if any tests fail, Buildr will show a list of the failed test classes.  In addition, JUnit produces text and XML report files in the project's @reports/junit@ directory.  You can use that to get around too-much-stuff-in-my-console, or when using an automated test system.
+
+In addition, you can get a consolidated XML or HTML report by running the @junit:report@ task.  For example:
+
+{{{!sh
+$ buildr test junit:report test=all
+$ firefox report/junit/html/index.html
+}}}
+
+The @junit:report@ task generates a report from all tests run so far.  If you run tests in a couple of projects, it will generate a report only for these two projects.  The example above runs tests in all the projects before generating the reports.
+
+h4. TestNG
+
+You can also use TestNG in your project by telling your project to use TestNG:
+
+{{{!ruby
+test.using :testng
+}}}
+
+Like all other options you can set with @test.using@, it affects the projects and all its sub-projects, so you only need to do this once at the top-most project to use TestNG throughout.  You can also mix TestNG and JUnit by setting different projects to use different frameworks, but you can't mix both frameworks in the same project.  (And yes, @test.using :junit@ will switch a project back to using JUnit)
+
+TestNG works much like JUnit, it gets included in the dependency list, Buildr picks test classes that contain methods annotated with  @org.testng.annotations.Test@, and generates test reports in the @reports/testng@ directory.  At the moment we don't have consolidated HTML reports for TestNG.
+
+The TestNG test framework supports the following options:
+
+|_. Option        |_. Value |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |
+
+h4. JBehave 
+
+"JBehave":http://jbehave.org/ is a pure Java BDD framework, stories and behaviour specifications are written in the Java language. 
+
+To use JBehave in your project you can select it with @test.using :jbehave@.
+
+This framework will search for the following patterns under your project:
+
+{{{
+src/spec/java/**/*Behaviour.java
+}}}
+
+Supports the following options:
+
+|_. Option        |_. Value |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |
+
+
+h2. Scala
+
+Before using the Scala compiler, you must first set the environment variable @SCALA_HOME@.
+
+h3. Compiling Scala
+
+The Scala compiler looks for source files in the project's @src/main/scala@ directory, and defaults to compiling them into the @target/classes@ directory. It looks for test cases in the project's @src/test/scala@ and defaults to compile them into the @target/test/classes@ directory.
+
+If you point the @compile@ task at any other source directory, it will use the Scala compiler if any of these directories contains files with the extension @.scala@.
+
+When using the Scala compiler, if you don't specify the packaging type, it defaults to JAR.
+
+The Scala compiler supports the following options:
+
+|_. Option        |_. Usage |
+| @:debug@        | Generates bytecode with debugging information.  You can also override this by setting the environment variable @debug@ to @off@. |
+| @:deprecation@  | If true, shows deprecation messages.  False by default. |
+| @:optimise@     | Generates faster bytecode by applying optimisations to the program. |
+| @:other@        | Array of options passed to the compiler (e.g. @:other=>'-Xprint-types'@). |
+| @:target@       | Bytecode compatibility (e.g. '1.4'). |
+| @:warnings@     | Issue warnings when compiling.  True when running in verbose mode. |
+
+You may use @fsc@, the Fast Scala Compiler, which submits compilation jobs to a compilation daemon, by setting the environment variable @USE_FSC@ to @yes@. Note that @fsc@ _may_ cache class libraries -- don't forget to run @fsc -reset@ if you upgrade a library.
+
+
+h2. Groovy
+
+
+h3. Compiling Groovy
+
+Before using the Groovy compiler, you must first require it on your buildfile:
+
+{{{!ruby
+require 'buildr/java/groovyc'
+}}}
+
+Once loaded, the groovyc compiler will be automatically selected if any .groovy source files are found under @src/main/groovy@ directory, compiling them by default into the @target/classes@ directory.
+
+If the project has java sources in @src/main/java@ they will get compiled using the groovyc joint compiler.
+
+Sources found in @src/test/groovy@ are compiled into the @target/test/classes@.
+
+If you don't specify the packaging type, it defaults to JAR.
+
+The Groovy compiler supports the following options:
+
+|_. Option        |_. Usage |
+| @encoding@          | Encoding of source files. |
+| @verbose@           | Asks the compiler for verbose output, true when running in verbose mode. |
+| @fork@              | Whether to execute groovyc using a spawned instance of the JVM.  Defaults to no. |
+| @memoryInitialSize@ | The initial size of the memory for the underlying VM, if using fork mode, ignored otherwise.  Defaults to the standard VM memory setting. (Examples: @83886080@, @81920k@, or @80m@) |
+| @memoryMaximumSize@ | The maximum size of the memory for the underlying VM, if using fork mode, ignored otherwise.  Defaults to the standard VM memory setting. (Examples: @83886080@, @81920k@, or @80m@) |
+| @listfiles@         | Indicates whether the source files to be compiled will be listed.  Defaults to no. |
+| @stacktrace@        | If true each compile error message will contain a stacktrace. |
+| @warnings@          | Issue warnings when compiling.  True when running in verbose mode. |
+| @debug@             | Generates bytecode with debugging information.  Set from the debug environment variable/global option. |
+| @deprecation@       | If true, shows deprecation messages.  False by default. |
+| @optimise@          | Generates faster bytecode by applying optimisations to the program. |
+| @source@            | Source code compatibility. |
+| @target@            | Bytecode compatibility. |
+| @javac@             | Hash of options passed to the ant javac task. |
+
+
+h3. Testing Groovy
+
+h4. EasyB
+
+"EasyB":http://www.easyb.org/ is a BDD framework using "Groovy":http://groovy.codehaus.org/. 
+
+Specifications are written in the Groovy language, of course you get seamless Java integration as with all things groovy. 
+
+To use this framework in your project you can select it with @test.using :easyb@.
+
+This framework will search for the following patterns under your project:
+
+{{{
+src/spec/groovy/**/*Behavior.groovy
+src/spec/groovy/**/*Story.groovy
+}}}
+
+Supports the following options:
+
+|_. Option        |_. Value |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |
+| @:format@       | Report format, either @:txt@ or @:xml@ |
+
+
+h2.  Ruby
+
+h3.  Using RSpec
+
+"RSpec":http://rspec.info/ is the de-facto BDD framework for ruby. It's the framework used to test Buildr itself. 
+
+Specifications are written in "Ruby":http://www.ruby-lang.org/en/ language, but are run by using "JRuby":http://jruby.codehaus.org/.  That means you have access to all your Java classes and any Java or Ruby tool out there.
+
+To use this framework in your project you can select it with @test.using :rspec@.
+
+This framework will search for the following patterns under your project:
+
+{{{
+src/spec/ruby/**/*_spec.rb
+}}}
+
+Supports the following options:
+
+|_. Option        |_. Value |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |

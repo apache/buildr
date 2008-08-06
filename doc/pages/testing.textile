@@ -32,89 +32,7 @@ cases.
 
 Once compiled, the @test@ task runs all the tests.
 
-
-h2. Using JUnit
-
-The default test framework for Java projects is JUnit 4.
-
-When you use JUnit, the dependencies includes JUnit, and Buildr picks up all
-test classes from the project by looking for classes that either subclass 
-@junit.framework.TestCase@, include methods annotated with @org.junit.Test@,
-or test suites annotated with @org.org.junit.runner.RunWith@.
-
-The JUnit test framework supports the following options:
-
-|_. Option        |_. Value |
-| @:fork@         | VM forking, defaults to true. |
-| @:clonevm@      | If true clone the VM each time it is forked. |
-| @:properties@   | Hash of system properties available to the test case. |
-| @:environment@  | Hash of environment variables available to the test case. |
-| @:java_args@    | Arguments passed as is to the JVM. |
-
-For example, to pass properties to the test case:
-
-{{{!ruby
-test.using :properties=>{ :currency=>'USD' }
-}}}
-
-There are benefits to running test cases in separate VMs.  The default forking
-mode is @:once@, and you can change it by setting the @:fork@ option.
-
-|_. :fork=> |_. Behavior |
-| @:once@   | Create one VM to run all test classes in the project, separate
-VMs for each project. |
-| @:each@   | Create one VM for each test case class.  Slow but provides the
-best isolation between test classes. |
-| @false@   | Without forking, Buildr runs all test cases in a single VM.  This
-option runs fastest, but at the risk of running out of memory and causing test
-cases to interfere with each other. |
-
-You can see your tests running in the console, and if any tests fail, Buildr
-will show a list of the failed test classes.  In addition, JUnit produces text
-and XML report files in the project's @reports/junit@ directory.  You can use
-that to get around too-much-stuff-in-my-console, or when using an automated
-test system.
-
-In addition, you can get a consolidated XML or HTML report by running the
-@junit:report@ task.  For example:
-
-{{{!sh
-$ buildr test junit:report test=all
-$ firefox report/junit/html/index.html
-}}}
-
-The @junit:report@ task generates a report from all tests run so far.  If you
-run tests in a couple of projects, it will generate a report only for these two
-projects.  The example above runs tests in all the projects before generating
-the reports.
-
-
-h2. Using TestNG
-
-You can also use TestNG in your project by telling your project to use TestNG:
-
-{{{!ruby
-test.using :testng
-}}}
-
-Like all other options you can set with @test.using@, it affects the projects
-and all its sub-projects, so you only need to do this once at the top-most
-project to use TestNG throughout.  You can also mix TestNG and JUnit by setting
-different projects to use different frameworks, but you can't mix both
-frameworks in the same project.  (And yes, @test.using :junit@ will switch a
-project back to using JUnit)
-
-TestNG works much like JUnit, it gets included in the dependency list, Buildr
-picks test classes that contain methods annotated with 
-@org.testng.annotations.Test@, and generates test reports in
-the @reports/testng@ directory.  At the moment we don't have consolidated HTML
-reports for TestNG.
-
-The TestNG test framework supports the following options:
-
-|_. Option        |_. Value |
-| @:properties@   | Hash of system properties available to the test case. |
-| @:java_args@    | Arguments passed as is to the JVM. |
+Different languages use different test frameworks.  You can find out more about available test frameworks in the "Languages":languages.html section.
 
 
 h2. Excluding Tests and Ignoring Failures
@@ -370,10 +288,7 @@ Buildr provides the following matchers:
 |_. Method |_. Checks that ... |
 | @exist@   | Given a file task checks that the file (or directory) exists. |
 | @empty@   | Given a file task checks that the file (or directory) is empty. |
-| @contain@ | Given a file task referencing a file, checks its contents, using
-string or regular expression.  For a file task referencing a directory, checks
-that it contains the specified files; global patterns using @*@ and @**@ are
-allowed. |
+| @contain@ | Given a file task referencing a file, checks its contents, using string or regular expression.  For a file task referencing a directory, checks that it contains the specified files; global patterns using @*@ and @**@ are allowed. |
 
 All these matchers operate against a file task.  If you run them against a
 ZipTask (including JAR, WAR, etc) they can also check the contents of the ZIP
@@ -399,76 +314,8 @@ Buildr supports several Behaviour-Driven Development(BDD) frameworks for
 testing your projects.  Buildr follows each framework naming conventions,
 searching for files under the @src/spec/{lang}@ directory.
 
+You can learn more about each BDD framework in the "Languages":languages.html section.
 
-h4. JBehave 
-
-"JBehave":http://jbehave.org/ is a pure Java BDD framework, stories and
-behaviour specifications are written in the Java language. 
-
-To use JBehave in your project you can select it with @test.using :jbehave@.
-
-This framework will search for the following patterns under your project:
-
-{{{
-src/spec/java/**/*Behaviour.java
-}}}
-
-Supports the following options:
-
-|_. Option        |_. Value |
-| @:properties@   | Hash of system properties available to the test case. |
-| @:java_args@    | Arguments passed as is to the JVM. |
-
-
-h4. RSpec
-
-"RSpec":http://rspec.info/ is the de-facto BDD framework for ruby. It's the
-framework used to test Buildr itself. 
-
-Specifications are written in "Ruby":http://www.ruby-lang.org/en/ language, but
-are run by using "JRuby":http://jruby.codehaus.org/.  That means you have
-access to all your Java classes and any Java or Ruby tool out there.
-
-To use this framework in your project you can select it with @test.using
-:rspec@.
-
-This framework will search for the following patterns under your project:
-
-{{{
-src/spec/ruby/**/*_spec.rb
-}}}
-
-Supports the following options:
-
-|_. Option        |_. Value |
-| @:properties@   | Hash of system properties available to the test case. |
-| @:java_args@    | Arguments passed as is to the JVM. |
-
-
-h4. EasyB
-
-"EasyB":http://www.easyb.org/ is a BDD framework using
-"Groovy":http://groovy.codehaus.org/. 
-
-Specifications are written in the Groovy language, of course you get seamless
-Java integration as with all things groovy. 
-
-To use this framework in your project you can select it with @test.using
-:easyb@.
-
-This framework will search for the following patterns under your project:
-
-{{{
-src/spec/groovy/**/*Behavior.groovy
-src/spec/groovy/**/*Story.groovy
-}}}
-
-Supports the following options:
-
-|_. Option        |_. Value |
-| @:properties@   | Hash of system properties available to the test case. |
-| @:java_args@    | Arguments passed as is to the JVM. |
-| @:format@       | Report format, either @:txt@ or @:xml@ |
 
 
 Next, let's talk about "customizing your environment and using
