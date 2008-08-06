@@ -653,10 +653,12 @@ module Buildr
         includes = @include || ['**/*']
         excludes = @exclude || []
         entries.inject({}) do |map, entry|
-          short = entry.name.sub(@path, '')
-          if includes.any? { |pat| File.fnmatch(pat, short, File::FNM_PATHNAME) } &&
-             !excludes.any? { |pat| File.fnmatch(pat, short, File::FNM_PATHNAME) }
-            map[short] = entry
+          if entry.name =~ /^#{@path}/
+            short = entry.name.sub(@path, '')
+            if includes.any? { |pat| File.fnmatch(pat, short, File::FNM_PATHNAME) } &&
+               !excludes.any? { |pat| File.fnmatch(pat, short, File::FNM_PATHNAME) }
+              map[short] = entry
+            end
           end
           map
         end

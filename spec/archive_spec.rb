@@ -464,7 +464,7 @@ describe Unzip do
       FileList[File.join(@target, 'path/*')].size.should be(2)
     end
   end
-
+  
   it 'should exclude with relative path' do
     with_zip @files, :path=>'test' do
       except = File.basename(@files.first)
@@ -472,6 +472,16 @@ describe Unzip do
       FileList[File.join(@target, '*')].should include(File.join(@target, File.basename(@files[1])))
       FileList[File.join(@target, '*')].size.should be(@files.size - 1)
     end
+  end
+
+  it "should handle relative paths without any includes or excludes" do
+    lib_files = %w{Test3.so Test4.rb}.
+      map { |file| File.join(@dir, file) }.
+      each { |file| write file, content_for(file) }
+    zip(@zip).include(@files, :path => 'src').include(lib_files, :path => 'lib').invoke
+
+    unzip(@target=>@zip).tap { |unzip| unzip.from_path('lib') }.target.invoke
+    FileList[File.join(@target, '**/*')].should have(2).files
   end
 
   it 'should return itself from root method' do

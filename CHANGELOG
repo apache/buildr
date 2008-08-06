@@ -22,6 +22,7 @@ configuration (Geoffrey Ruscoe).
 like java.util.Properties (Lacton).
 * Fixed: BUILDR-116: TestTask should include the main compile target in its
 dependencies, even when using non standard directories (Lacton).
+* Fixed: BUILDR-124 unzip(...).from_path does not work correctly without include (Rhett Sutphin).
 * Docs: BUILDR-111 Troubleshoot tip when Buildr's bin directory shows up in
 RUBYLIB (Geoffrey Ruscoe).
 
