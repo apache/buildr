@@ -24,7 +24,7 @@ The Java compiler supports the following options:
 | @:warnings@     | Issue warnings when compiling.  True when running in verbose mode. |
 
 
-h3.  Testing Java
+h3.  Testing with Java
 
 h4. JUnit
 
@@ -105,13 +105,34 @@ Supports the following options:
 
 h2. Scala
 
-Before using the Scala compiler, you must first set the environment variable @SCALA_HOME@.
+Before using Scala features, you must first set the @SCALA_HOME@ environment 
+variable to point to the root of your Scala distribution.
+
+On Windows:
+
+{{{!sh
+> set SCALA_HOME=C:\Path\To\Scala-2.7.1
+}}}
+<br>
+On Linux and other Unix variants,
+{{{!sh
+> export SCALA_HOME=/path/to/scala-2.7.1
+}}}
+<br>
+The @SCALA_HOME@ base directory should be such that Scala core libraries are 
+located directly under the "lib" subdirectory, and Scala scripts are under the 
+"bin" directory.
 
 h3. Compiling Scala
 
-The Scala compiler looks for source files in the project's @src/main/scala@ directory, and defaults to compiling them into the @target/classes@ directory. It looks for test cases in the project's @src/test/scala@ and defaults to compile them into the @target/test/classes@ directory.
+The Scala compiler looks for source files in the project's @src/main/scala@ 
+directory, and defaults to compiling them into the @target/classes@ directory. 
+It looks for test cases in the project's @src/test/scala@ and defaults to 
+compile them into the @target/test/classes@ directory.
 
-If you point the @compile@ task at any other source directory, it will use the Scala compiler if any of these directories contains files with the extension @.scala@.
+If you point the @compile@ task at any other source directory, it will use the 
+Scala compiler if any of these directories contains files with the extension 
+@.scala@.
 
 When using the Scala compiler, if you don't specify the packaging type, it defaults to JAR.
 
@@ -125,8 +146,127 @@ The Scala compiler supports the following options:
 | @:target@       | Bytecode compatibility (e.g. '1.4'). |
 | @:warnings@     | Issue warnings when compiling.  True when running in verbose mode. |
 
-You may use @fsc@, the Fast Scala Compiler, which submits compilation jobs to a compilation daemon, by setting the environment variable @USE_FSC@ to @yes@. Note that @fsc@ _may_ cache class libraries -- don't forget to run @fsc -reset@ if you upgrade a library.
+h4. Fast Scala Compiler
 
+You may use @fsc@, the Fast Scala Compiler, which submits compilation jobs to a 
+compilation daemon, by setting the environment variable @USE_FSC@ to @yes@. Note
+that @fsc@ _may_ cache class libraries -- don't forget to run @fsc -reset@ if 
+you upgrade a library.
+
+h4. Rebuild detection
+
+The Scala compiler task assumes that each @.scala@ source file generates a 
+corresponding @.class@ file under @target/classes@ (or @target/test/classses@ 
+for tests). The source may generate more @.class@ files if it contains more than
+one class, object, trait or for anonymous functions and closures.
+
+For example, @src/main/scala/com/example/MyClass.scala@ should generate at least
+@target/classes/com/example/MyClass.class@. If that it not the case, Buildr will
+always recompile your sources because it will assume this is a new source file
+that has never been compiled before.
+
+h3. Testing with Scala
+
+Buildr supports three Scala testing frameworks:  
+"ScalaTest":http://www.artima.com/scalatest, 
+"ScalaCheck":http://code.google.com/p/scalacheck/ and 
+"Specs":http://code.google.com/p/specs/.
+
+Scala testing is automatically enabled if you have any @.scala@ source files under @src/test/scala@.  If you are not using this convention, you can explicit set the test framework by doing,
+
+{{{!ruby
+test.using(:scalatest)
+}}}
+
+The @:scalatest@ test framework handles ScalaTest, Specs and ScalaCheck therefore all 3 frameworks may be used within the same project.
+
+h4. ScalaTest
+
+Buildr automatically detects and runs tests that extend the @org.scalatest.Suite@ interface.
+
+A very simplistic test class might look like,
+
+{{{!scala
+class MySuite extends org.scalatest.FunSuite {
+  test("addition") {
+    val sum = 1 + 1
+    assert(sum === 2)
+  }
+}
+}}}
+
+You can also pass properties to your tests by doing,
+
+{{{!ruby
+test.using :properties => { 'name'=>'value' }
+}}}
+
+and by overriding the @Suite.runTests@ method in a manner similar to:
+
+{{{!scala
+import org.scalatest._
+
+class PropertyTestSuite extends FunSuite {
+  var properties = Map[String, Any]()
+  
+  test("testProperty") {
+    assert(properties("name") === "value")
+  }
+
+  protected override def runTests(testName: Option[String], 
+    reporter: Reporter, stopper: Stopper, includes: Set[String], 
+    excludes: Set[String], properties: Map[String, Any])
+  {
+    this.properties = properties;                              
+    super.runTests(testName, reporter, stopper, 
+                   includes, excludes, properties)
+  }
+}
+}}}
+
+h4. Specs
+
+The @:scalatest@ framework currently recognizes specifications with class names ending with "Specs", e.g., org.example.StringSpecs.
+
+A simple specification might look like this:
+
+{{{!scala
+import org.specs._
+import org.specs.runner._
+
+object StringSpecs extends Specification {
+  "empty string" should {
+    "have a zero length" in {
+      ("".length) mustEqual(0)
+    }
+  }
+}
+}}}
+
+h4. ScalaCheck
+
+You may use ScalaCheck inside ScalaTest- and Specs-inherited classes.  Here is an example illustrating checks inside a ScalaTest suite,
+
+{{{!scala
+import org.scalatest.prop.PropSuite
+import org.scalacheck.Arbitrary._
+import org.scalacheck.Prop._
+
+class MySuite extends PropSuite {
+
+  test("list concatenation") {
+    val x = List(1, 2, 3)
+    val y = List(4, 5, 6)
+    assert(x ::: y === List(1, 2, 3, 4, 5, 6))
+    check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
+  }
+
+  test(
+    "list concatenation using a test method",
+    (a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size
+  )
+}
+}}}
 
 h2. Groovy
 
@@ -166,7 +306,7 @@ The Groovy compiler supports the following options:
 | @javac@             | Hash of options passed to the ant javac task. |
 
 
-h3. Testing Groovy
+h3. Testing with Groovy
 
 h4. EasyB
 
