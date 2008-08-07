@@ -171,23 +171,14 @@ module Buildr
     private :listed_gems
 
     def run
-      @times = Benchmark.measure do
-        standard_exception_handling do
-          find_buildfile
-          load_gems
-          load_artifacts
-          load_tasks
-          load_buildfile
-          task('buildr:initialize').invoke
-          top_level
-        end
-      end
-      if verbose
-        real = []
-        real << ("%ih" % (@times.real / 3600)) if @times.real >= 3600
-        real << ("%im" % ((@times.real / 60) % 60)) if @times.real >= 60
-        real << ("%.3fs" % (@times.real % 60))
-        puts $terminal.color("Completed in #{real.join}", :green)
+      standard_exception_handling do
+        find_buildfile
+        load_gems
+        load_artifacts
+        load_tasks
+        load_buildfile
+        task('buildr:initialize').invoke
+        top_level
       end
       @on_completion.each { |block| block.call }
     end
