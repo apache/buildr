@@ -47,8 +47,7 @@ For example, to pass properties to the test case:
 test.using :properties=>{ :currency=>'USD' }
 }}}
 
-There are benefits to running test cases in separate VMs.  The default forking
-mode is @:once@, and you can change it by setting the @:fork@ option.
+There are benefits to running test cases in separate VMs.  The default forking mode is @:once@, and you can change it by setting the @:fork@ option.
 
 |_. :fork=> |_. Behavior |
 | @:once@   | Create one VM to run all test classes in the project, separate VMs for each project. |
@@ -105,34 +104,27 @@ Supports the following options:
 
 h2. Scala
 
-Before using Scala features, you must first set the @SCALA_HOME@ environment 
-variable to point to the root of your Scala distribution.
+Before using Scala features, you must first set the @SCALA_HOME@ environment variable to point to the root of your Scala distribution.
 
 On Windows:
 
 {{{!sh
 > set SCALA_HOME=C:\Path\To\Scala-2.7.1
 }}}
-<br>
+
 On Linux and other Unix variants,
+
 {{{!sh
 > export SCALA_HOME=/path/to/scala-2.7.1
 }}}
-<br>
-The @SCALA_HOME@ base directory should be such that Scala core libraries are 
-located directly under the "lib" subdirectory, and Scala scripts are under the 
-"bin" directory.
+
+The @SCALA_HOME@ base directory should be such that Scala core libraries are  located directly under the "lib" subdirectory, and Scala scripts are under the  "bin" directory.
 
 h3. Compiling Scala
 
-The Scala compiler looks for source files in the project's @src/main/scala@ 
-directory, and defaults to compiling them into the @target/classes@ directory. 
-It looks for test cases in the project's @src/test/scala@ and defaults to 
-compile them into the @target/test/classes@ directory.
+The Scala compiler looks for source files in the project's @src/main/scala@  directory, and defaults to compiling them into the @target/classes@ directory.  It looks for test cases in the project's @src/test/scala@ and defaults to  compile them into the @target/test/classes@ directory.
 
-If you point the @compile@ task at any other source directory, it will use the 
-Scala compiler if any of these directories contains files with the extension 
-@.scala@.
+If you point the @compile@ task at any other source directory, it will use the  Scala compiler if any of these directories contains files with the extension @.scala@.
 
 When using the Scala compiler, if you don't specify the packaging type, it defaults to JAR.
 
@@ -148,29 +140,17 @@ The Scala compiler supports the following options:
 
 h4. Fast Scala Compiler
 
-You may use @fsc@, the Fast Scala Compiler, which submits compilation jobs to a 
-compilation daemon, by setting the environment variable @USE_FSC@ to @yes@. Note
-that @fsc@ _may_ cache class libraries -- don't forget to run @fsc -reset@ if 
-you upgrade a library.
+You may use @fsc@, the Fast Scala Compiler, which submits compilation jobs to a  compilation daemon, by setting the environment variable @USE_FSC@ to @yes@. Note that @fsc@ _may_ cache class libraries -- don't forget to run @fsc -reset@ if  you upgrade a library.
 
 h4. Rebuild detection
 
-The Scala compiler task assumes that each @.scala@ source file generates a 
-corresponding @.class@ file under @target/classes@ (or @target/test/classses@ 
-for tests). The source may generate more @.class@ files if it contains more than
-one class, object, trait or for anonymous functions and closures.
+The Scala compiler task assumes that each @.scala@ source file generates a  corresponding @.class@ file under @target/classes@ (or @target/test/classses@  for tests). The source may generate more @.class@ files if it contains more than one class, object, trait or for anonymous functions and closures.
 
-For example, @src/main/scala/com/example/MyClass.scala@ should generate at least
-@target/classes/com/example/MyClass.class@. If that it not the case, Buildr will
-always recompile your sources because it will assume this is a new source file
-that has never been compiled before.
+For example, @src/main/scala/com/example/MyClass.scala@ should generate at least @target/classes/com/example/MyClass.class@. If that it not the case, Buildr will always recompile your sources because it will assume this is a new source file that has never been compiled before.
 
 h3. Testing with Scala
 
-Buildr supports three Scala testing frameworks:  
-"ScalaTest":http://www.artima.com/scalatest, 
-"ScalaCheck":http://code.google.com/p/scalacheck/ and 
-"Specs":http://code.google.com/p/specs/.
+Buildr supports three Scala testing frameworks:   "ScalaTest":http://www.artima.com/scalatest,  "ScalaCheck":http://code.google.com/p/scalacheck/ and  "Specs":http://code.google.com/p/specs/.
 
 Scala testing is automatically enabled if you have any @.scala@ source files under @src/test/scala@.  If you are not using this convention, you can explicit set the test framework by doing,
 
@@ -195,13 +175,7 @@ class MySuite extends org.scalatest.FunSuite {
 }
 }}}
 
-You can also pass properties to your tests by doing,
-
-{{{!ruby
-test.using :properties => { 'name'=>'value' }
-}}}
-
-and by overriding the @Suite.runTests@ method in a manner similar to:
+You can also pass properties to your tests by doing @test.using :properties => { 'name'=>'value' }@, and by overriding the @Suite.runTests@ method in a manner similar to:
 
 {{{!scala
 import org.scalatest._

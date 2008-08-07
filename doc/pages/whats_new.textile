@@ -50,8 +50,7 @@ I've tried to keep the compiler API as simple as possible, making it easy to add
 
 h3.  Scala Support
 
-Buildr now supports "Scala":http://www.scala-lang.org/, using both native and 
-fast Scala compiler.
+Buildr now supports "Scala":http://www.scala-lang.org/, using both native and  fast Scala compiler.
 
 Read more about "using Scala":languages.html#scala.
 
