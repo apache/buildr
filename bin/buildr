@@ -15,16 +15,15 @@
 # the License.
 
 
-require 'benchmark'
-times = Benchmark.measure do
-  require 'rubygems'
-  require 'buildr'
-  Buildr.application.run
-end
+start = Time.now
+require 'rubygems'
+require 'buildr'
+Buildr.application.run
 if verbose
+  elapsed = Time.now - start
   real = []
-  real << ("%ih" % (times.real / 3600)) if times.real >= 3600
-  real << ("%im" % ((times.real / 60) % 60)) if times.real >= 60
-  real << ("%.3fs" % (times.real % 60))
+  real << ("%ih" % (elapsed / 3600)) if elapsed >= 3600
+  real << ("%im" % ((elapsed / 60) % 60)) if elapsed >= 60
+  real << ("%.3fs" % (elapsed % 60))
   puts $terminal.color("Completed in #{real.join}", :green)
 end
