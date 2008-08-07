@@ -56,7 +56,7 @@ module Buildr
     def clear
       @include = []
       @exclude = []
-      @sources = []
+      @sources = FileList[]
       self
     end
 
