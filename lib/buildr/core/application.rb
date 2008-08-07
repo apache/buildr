@@ -36,7 +36,6 @@
 
 
 require 'highline/import'
-require 'benchmark'
 require 'rake'
 require 'rubygems/source_info_cache'
 require 'buildr/core/application_cli'
@@ -46,6 +45,7 @@ require 'buildr/core/util'
 # Gem::user_home is nice, but ENV['HOME'] lets you override from the environment.
 ENV["HOME"] ||= File.expand_path(Gem::user_home)
 ENV['BUILDR_ENV'] ||= 'development'
+
 
 module Buildr
 
@@ -395,29 +395,28 @@ end
 # Let's see if we know how to use Growl.  Only when running in terminal,
 # if you're running Buildr from CI, you'll want to get Growl notifications
 # from there instead. 
-if $stdout.isatty
-  begin
+if $stdout.isatty && RUBY_PLATFORM =~ /darwin/
+  def growl(type, title, message)
     require 'osx/cocoa'
     icon = OSX::NSApplication.sharedApplication.applicationIconImage
     icon = OSX::NSImage.alloc.initWithContentsOfFile(File.join(File.dirname(__FILE__), '../resources/buildr.icns'))
-    
+
     # Register with Growl, that way you can turn notifications on/off from system preferences.
     OSX::NSDistributedNotificationCenter.defaultCenter.
       postNotificationName_object_userInfo_deliverImmediately(:GrowlApplicationRegistrationNotification, nil,
         { :ApplicationName=>'Buildr', :AllNotifications=>['Completed', 'Failed'], 
           :ApplicationIcon=>icon.TIFFRepresentation }, true)
-    def growl(type, title, message)
-      OSX::NSDistributedNotificationCenter.defaultCenter.
-        postNotificationName_object_userInfo_deliverImmediately(:GrowlNotification, nil,
-          { :ApplicationName=>'Buildr', :NotificationName=>type, :NotificationTitle=>title, :NotificationDescription=>message }, true)
-    end
-    Buildr.application.on_completion do
-      growl 'Completed', 'Your build has completed', Dir.pwd if verbose
-    end
-    Buildr.application.on_failure do |ex|
-      growl 'Failed', 'Your build failed with an error', "#{Dir.pwd}:\n#{ex.message}" if verbose
-    end
-  rescue Exception
+
+    OSX::NSDistributedNotificationCenter.defaultCenter.
+      postNotificationName_object_userInfo_deliverImmediately(:GrowlNotification, nil,
+        { :ApplicationName=>'Buildr', :NotificationName=>type, :NotificationTitle=>title, :NotificationDescription=>message }, true)
+    rescue Exception
+  end
+  Buildr.application.on_completion do
+    growl 'Completed', 'Your build has completed', Dir.pwd if verbose
+  end
+  Buildr.application.on_failure do |ex|
+    growl 'Failed', 'Your build failed with an error', "#{Dir.pwd}:\n#{ex.message}" if verbose
   end
 end
 
