@@ -396,7 +396,7 @@ end
 # if you're running Buildr from CI, you'll want to get Growl notifications
 # from there instead. 
 if $stdout.isatty && RUBY_PLATFORM =~ /darwin/
-  def growl(type, title, message)
+  def notify(type, title, message)
     require 'osx/cocoa'
     icon = OSX::NSApplication.sharedApplication.applicationIconImage
     icon = OSX::NSImage.alloc.initWithContentsOfFile(File.join(File.dirname(__FILE__), '../resources/buildr.icns'))
@@ -412,14 +412,23 @@ if $stdout.isatty && RUBY_PLATFORM =~ /darwin/
         { :ApplicationName=>'Buildr', :NotificationName=>type, :NotificationTitle=>title, :NotificationDescription=>message }, true)
     rescue Exception
   end
-  Buildr.application.on_completion do
-    growl 'Completed', 'Your build has completed', Dir.pwd if verbose
-  end
-  Buildr.application.on_failure do |ex|
-    growl 'Failed', 'Your build failed with an error', "#{Dir.pwd}:\n#{ex.message}" if verbose
+end
+
+# Send notifications using BUILDR_NOTIFY environment variable, if defined 
+if ENV['BUILDR_NOTIFY']
+  def notify(type, title, message)
+    cmd = ENV['BUILDR_NOTIFY'].sub('{type}', type).sub('{title}', title).sub('{message}', message)
+    system cmd
+    rescue Exception
   end
 end
 
+Buildr.application.on_completion do
+  notify 'Completed', 'Your build has completed', Dir.pwd if verbose
+end
+Buildr.application.on_failure do |ex|
+  notify 'Failed', 'Your build failed with an error', "#{Dir.pwd}:\n#{ex.message}" if verbose
+end
 
 alias :warn_without_color :warn
 
