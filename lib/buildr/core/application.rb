@@ -391,43 +391,46 @@ else
 end
 
 
-
-# Let's see if we know how to use Growl.  Only when running in terminal,
-# if you're running Buildr from CI, you'll want to get Growl notifications
-# from there instead. 
-if $stdout.isatty && RUBY_PLATFORM =~ /darwin/
-  def notify(type, title, message)
-    require 'osx/cocoa'
-    icon = OSX::NSApplication.sharedApplication.applicationIconImage
-    icon = OSX::NSImage.alloc.initWithContentsOfFile(File.join(File.dirname(__FILE__), '../resources/buildr.icns'))
-
-    # Register with Growl, that way you can turn notifications on/off from system preferences.
-    OSX::NSDistributedNotificationCenter.defaultCenter.
-      postNotificationName_object_userInfo_deliverImmediately(:GrowlApplicationRegistrationNotification, nil,
-        { :ApplicationName=>'Buildr', :AllNotifications=>['Completed', 'Failed'], 
-          :ApplicationIcon=>icon.TIFFRepresentation }, true)
-
-    OSX::NSDistributedNotificationCenter.defaultCenter.
-      postNotificationName_object_userInfo_deliverImmediately(:GrowlNotification, nil,
-        { :ApplicationName=>'Buildr', :NotificationName=>type, :NotificationTitle=>title, :NotificationDescription=>message }, true)
-    rescue Exception
+begin
+  # Let's see if we know how to use Growl.  Only when running in terminal,
+  # if you're running Buildr from CI, you'll want to get Growl notifications
+  # from there instead. 
+  if $stdout.isatty && RUBY_PLATFORM =~ /darwin/
+    def notify(type, title, message)
+      require 'osx/cocoa'
+      icon = OSX::NSApplication.sharedApplication.applicationIconImage
+      icon = OSX::NSImage.alloc.initWithContentsOfFile(File.join(File.dirname(__FILE__), '../resources/buildr.icns'))
+  
+      # Register with Growl, that way you can turn notifications on/off from system preferences.
+      OSX::NSDistributedNotificationCenter.defaultCenter.
+        postNotificationName_object_userInfo_deliverImmediately(:GrowlApplicationRegistrationNotification, nil,
+          { :ApplicationName=>'Buildr', :AllNotifications=>['Completed', 'Failed'], 
+            :ApplicationIcon=>icon.TIFFRepresentation }, true)
+  
+      OSX::NSDistributedNotificationCenter.defaultCenter.
+        postNotificationName_object_userInfo_deliverImmediately(:GrowlNotification, nil,
+          { :ApplicationName=>'Buildr', :NotificationName=>type, :NotificationTitle=>title, :NotificationDescription=>message }, true)
+      rescue Exception
+    end
   end
-end
-
-# Send notifications using BUILDR_NOTIFY environment variable, if defined 
-if ENV['BUILDR_NOTIFY']
-  def notify(type, title, message)
-    cmd = ENV['BUILDR_NOTIFY'].sub('{type}', type).sub('{title}', title).sub('{message}', message)
-    system cmd
-    rescue Exception
+  
+  # Send notifications using BUILDR_NOTIFY environment variable, if defined 
+  if ENV['BUILDR_NOTIFY'] && ENV['BUILDR_NOTIFY'].length > 0
+    def notify(type, title, message)
+      cmd = ENV['BUILDR_NOTIFY'].sub('{type}', type).sub('{title}', title).sub('{message}', message)
+      system cmd
+      rescue Exception
+    end
   end
-end
 
-Buildr.application.on_completion do
-  notify 'Completed', 'Your build has completed', Dir.pwd if verbose
-end
-Buildr.application.on_failure do |ex|
-  notify 'Failed', 'Your build failed with an error', "#{Dir.pwd}:\n#{ex.message}" if verbose
+  if defined? notify
+    Buildr.application.on_completion do
+      notify 'Completed', 'Your build has completed', Dir.pwd if verbose
+    end
+    Buildr.application.on_failure do |ex|
+      notify 'Failed', 'Your build failed with an error', "#{Dir.pwd}:\n#{ex.message}" if verbose
+    end
+  end
 end
 
 alias :warn_without_color :warn
