@@ -393,39 +393,28 @@ else
 end
 
 
-# We only do this when running from the console in verbose mode.
-if $stdout.isatty && verbose
-  # Send notifications using BUILDR_NOTIFY environment variable, if defined 
-  if ENV['BUILDR_NOTIFY'] && ENV['BUILDR_NOTIFY'].length > 0
-    notify = lambda do |type, title, message|
-      require 'shellwords'
-      args = { '{type}'=>type, '{title}'=>title, '{message}'=>message }
-      system Shellwords.shellwords(ENV['BUILDR_NOTIFY']).map { |arg| args[arg] || arg }.map(&:inspect).join(' ')
-    end  
-    Buildr.application.on_completion { |title, message| notify['completed', title, message] }
-    Buildr.application.on_failure { |title, message, ex| notify['failed', title, message] }
-  elsif RUBY_PLATFORM =~ /darwin/
-    # Let's see if we can use Growl.  We do this at the very end, loading Ruby Cocoa
-    # could slow the build down, so later is better.
-    notify = lambda do |type, title, message|
-      require 'osx/cocoa'
-      icon = OSX::NSApplication.sharedApplication.applicationIconImage
-      icon = OSX::NSImage.alloc.initWithContentsOfFile(File.join(File.dirname(__FILE__), '../resources/buildr.icns'))
+# Let's see if we can use Growl.  We do this at the very end, loading Ruby Cocoa
+# could slow the build down, so later is better.  We only do this when running 
+# from the console in verbose mode.
+if $stdout.isatty && verbose && RUBY_PLATFORM =~ /darwin/
+  notify = lambda do |type, title, message|
+    require 'osx/cocoa'
+    icon = OSX::NSApplication.sharedApplication.applicationIconImage
+    icon = OSX::NSImage.alloc.initWithContentsOfFile(File.join(File.dirname(__FILE__), '../resources/buildr.icns'))
 
-      # Register with Growl, that way you can turn notifications on/off from system preferences.
-      OSX::NSDistributedNotificationCenter.defaultCenter.
-        postNotificationName_object_userInfo_deliverImmediately(:GrowlApplicationRegistrationNotification, nil,
-          { :ApplicationName=>'Buildr', :AllNotifications=>['Completed', 'Failed'], 
-            :ApplicationIcon=>icon.TIFFRepresentation }, true)
+    # Register with Growl, that way you can turn notifications on/off from system preferences.
+    OSX::NSDistributedNotificationCenter.defaultCenter.
+      postNotificationName_object_userInfo_deliverImmediately(:GrowlApplicationRegistrationNotification, nil,
+        { :ApplicationName=>'Buildr', :AllNotifications=>['Completed', 'Failed'], 
+          :ApplicationIcon=>icon.TIFFRepresentation }, true)
 
-      OSX::NSDistributedNotificationCenter.defaultCenter.
-        postNotificationName_object_userInfo_deliverImmediately(:GrowlNotification, nil,
-          { :ApplicationName=>'Buildr', :NotificationName=>type,
-            :NotificationTitle=>title, :NotificationDescription=>message }, true)
-    end
-    Buildr.application.on_completion { |title, message| notify['Completed', title, message] }
-    Buildr.application.on_failure { |title, message, ex| notify['Failed', title, message] }
+    OSX::NSDistributedNotificationCenter.defaultCenter.
+      postNotificationName_object_userInfo_deliverImmediately(:GrowlNotification, nil,
+        { :ApplicationName=>'Buildr', :NotificationName=>type,
+          :NotificationTitle=>title, :NotificationDescription=>message }, true)
   end
+  Buildr.application.on_completion { |title, message| notify['Completed', title, message] }
+  Buildr.application.on_failure { |title, message, ex| notify['Failed', title, message] }
 end
 
 
