@@ -51,7 +51,7 @@ def install_gem(name, ver_requirement = ['> 0'])
 end
 
 # Setup environment for running this Rakefile (RSpec, Docter, etc).
-desc "If you're building from sources, run this task one to setup the necessary dependencies."
+desc "If you're building from sources, run this task first to setup the necessary dependencies."
 missing = spec.dependencies.select { |dep| Gem::SourceIndex.from_installed_gems.search(dep).empty? }
 task 'setup' do
   missing.each do |dep|
