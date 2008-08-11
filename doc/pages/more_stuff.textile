@@ -129,15 +129,11 @@ Here is an example using these extension points to send notifications using "Qub
 # Send notifications using Qube 
 notify = lambda do |type, title, message|
   param = case type
-    when 'completed'
-      '-i'
-    when 'failed'
-      '-e'
-    else
-      '-i'
+    when 'completed'; '-i'
+    when 'failed'; '-e'
+    else '-i'
   end
-  quote = lambda { |str| return '"' + str + '"' }
-  system exec("qube #{param} #{quote[title]} #{quote[message]}")
+  system "qube #{param} #{title.inspect} #{message.inspect}"
 end
   
 Buildr.application.on_completion do |title, message| 
