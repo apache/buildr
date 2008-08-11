@@ -179,7 +179,9 @@ module Buildr
     end
 
     # Default options already set on each test task.
-    DEFAULT_OPTIONS = { :fail_on_failure=>true, :fork=>:once, :properties=>{}, :environment=>{} }
+    def default_options
+      { :fail_on_failure=>true, :fork=>:once, :properties=>{}, :environment=>{} }
+    end
 
     def initialize(*args) #:nodoc:
       super
@@ -188,9 +190,9 @@ module Buildr
       @exclude = []
       parent_task = Project.parent_task(name)
       if parent_task.respond_to?(:options)
-        @options = OpenObject.new { |hash, key| parent_task.options[key] }
+        @options = OpenObject.new { |hash, key| parent_task.options[key].clone rescue parent_task.options[key] }
       else
-        @options = OpenObject.new(DEFAULT_OPTIONS)
+        @options = OpenObject.new(default_options)
       end
       enhance do
         run_tests if framework

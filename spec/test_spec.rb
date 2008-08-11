@@ -413,7 +413,7 @@ describe Buildr::Project, '#test' do
     end
   end
 
-  it 'should clone options from parent project' do
+  it 'should clone options from parent project when using #using' do
     define 'foo' do
       define 'bar' do
         test.using :fail_on_failure=>false, :fork=>:each, :properties=>{ :foo=>'bar' }, :environment=>{ 'config'=>'config.yaml' }
@@ -421,8 +421,33 @@ describe Buildr::Project, '#test' do
       end.invoke
       test.options[:fail_on_failure].should be_true
       test.options[:fork].should == :once
-      test.options[:properties].should be_empty
-      test.options[:environment].should be_empty
+      test.options[:properties].should == {}
+      test.options[:environment].should == {}
+    end
+  end
+  
+  it 'should clone options from parent project when using #options' do
+    define 'foo' do
+      define 'bar' do
+        test.options[:fail_on_failure] = false
+        test.options[:fork] = :each
+        test.options[:properties][:foo] = 'bar'
+        test.options[:environment]['config'] = 'config.yaml'
+        test.using :junit
+      end.invoke
+      test.options[:fail_on_failure].should be_true
+      test.options[:fork].should == :once
+      test.options[:properties].should == {}
+      test.options[:environment].should == {}
+    end
+  end
+  
+  it 'should not change options of unrelated projects when using #options' do
+    define 'foo' do
+      test.options[:properties][:foo] = 'bar'
+    end
+    define 'bar' do
+      test.options[:properties].should == {}
     end
   end
 end
