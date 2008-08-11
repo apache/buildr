@@ -114,6 +114,42 @@ Some nailgun tasks have been provided to manage the cached runtimes,  to get an 
 Be sure to read the nailgun help by executing the @nailgun:help@ task.
 
 
+h2. Growl, Qube
+
+For OS/X users, Buildr supports "Growl":http://growl.info/ out of the box to send "completed and "failed" notifications to the user.
+
+For other platforms or if you want to notify the user differently, Buildr offers two extension points:
+
+* @Buildr.application.on_completion@
+* @Buildr.application.on_failure@
+
+Here is an example using these extension points to send notifications using "Qube":http://launchpad.net/qube:
+
+{{{!ruby
+# Send notifications using Qube 
+notify = lambda do |type, title, message|
+  param = case type
+    when 'completed'
+      '-i'
+    when 'failed'
+      '-e'
+    else
+      '-i'
+  end
+  quote = lambda { |str| return '"' + str + '"' }
+  system exec("qube #{param} #{quote[title]} #{quote[message]}")
+end
+  
+Buildr.application.on_completion do |title, message| 
+  notify['completed', title, message]
+end
+Buildr.application.on_failure do |title, message, ex| 
+  notify['failed', title, message] 
+end
+}}}
+
+You can place this code inside @buildr.rb@ in your home directory.
+
 h2. Eclipse, IDEA
 
 If you're using Eclipse, you can generate @.classpath@ and @.project@ from your Buildfile and use them to create a project in your workspace:
