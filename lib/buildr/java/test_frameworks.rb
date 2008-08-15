@@ -101,7 +101,7 @@ module Buildr
   # ScalaCheck is available when using ScalaTest
   module ScalaCheck
     # ScalaCheck version number.
-    VERSION = '1.4' unless const_defined?('VERSION')
+    VERSION = '1.3' unless const_defined?('VERSION')
     # ScalaCheck artifact(s)
     REQUIRES = ["org.scalacheck:scalacheck:jar:#{VERSION}"]
   end
