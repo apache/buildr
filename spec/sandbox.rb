@@ -55,14 +55,16 @@ module Sandbox
   @rules = Buildr.application.instance_variable_get(:@rules)
 
   def sandbox
+    @_sandbox = {}
+    
     # Create a temporary directory where we can create files, e.g,
     # for projects, compilation. We need a place that does not depend
     # on the current directory.
+    @_sandbox[:original_dir] = Dir.pwd
     temp = File.join(File.dirname(__FILE__), '../tmp')
     FileUtils.mkpath temp
     Dir.chdir temp
 
-    @_sandbox = {}
     Buildr.application = Buildr::Application.new
     Sandbox.tasks.each { |block| block.call }
     Buildr.application.instance_variable_set :@rules, Sandbox.rules.clone
@@ -115,6 +117,8 @@ module Sandbox
     # Restore options.
     Buildr.options.test = nil
     (ENV.keys - @_sandbox[:env_keys]).each { |key| ENV.delete key }
+
+    Dir.chdir @_sandbox[:original_dir]
   end
 
 end

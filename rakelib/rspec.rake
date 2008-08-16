@@ -37,18 +37,20 @@ begin
     task.spec_opts << '--options' << 'spec/spec.opts' << '--format' << 'failing_examples:failed' << '--example' << 'failed'
   end
 
+  # TODO: Horribly broken!  Fix some other time.
+  desc 'Run RSpec and generate Spec and coverage reports (slow)'
+  Spec::Rake::SpecTask.new('rcov') do |task|
+    task.spec_files = FileList['spec/**/*spec.rb']
+    task.spec_opts '--format' << 'html:reports/specs.html' << '--backtrace'
+    task.rcov = true
+    task.rcov_dir = 'reports/coverage'
+    task.rcov_opts << '--exclude' << "spec,bin,#{Config::CONFIG['sitedir']},#{Gem.path.join(',')}"
+    task.rcov_opts << '--text-summary'
+  end
+  file 'reports/coverage'=>'rcov'
+
   # Useful for testing with JRuby when using Ruby and vice versa.
   namespace 'spec' do
-=begin
-    # TODO: Horribly broken!  Fix some other time.
-    desc 'Run RSpec and generate Spec and coverage reports (slow)'
-    Spec::Rake::SpecTask.new('rcov') do |task|
-      task.spec_files = FileList['spec/**/*spec.rb']
-      task.rcov = true
-      task.rcov_opts = '--exclude', 'spec,bin'
-      task.rcov_dir = 'coverage'
-    end
-=end
 
     desc 'Run all specs specifically with Ruby'
     task 'ruby' do
