@@ -41,11 +41,10 @@ begin
   desc 'Run RSpec and generate Spec and coverage reports (slow)'
   Spec::Rake::SpecTask.new('rcov') do |task|
     task.spec_files = FileList['spec/**/*spec.rb']
-    task.spec_opts '--format' << 'html:reports/specs.html' << '--backtrace'
+    task.spec_opts << '--format' << 'html:reports/specs.html' << '--backtrace'
     task.rcov = true
     task.rcov_dir = 'reports/coverage'
-    task.rcov_opts << '--exclude' << "spec,bin,#{Config::CONFIG['sitedir']},#{Gem.path.join(',')}"
-    task.rcov_opts << '--text-summary'
+    task.rcov_opts = '--exclude' << "spec,bin,#{Config::CONFIG['sitedir']},#{Gem.path.join(',')}" << '--text-summary'
   end
   file 'reports/coverage'=>'rcov'
 
