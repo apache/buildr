@@ -44,9 +44,9 @@ def install_gem(name, ver_requirement = ['> 0'])
     fail "#{dep} not found in local or remote repository!" unless spec
     puts "Installing #{spec.full_name} ..."
     args = [rb_bin, '-S', 'gem', 'install', spec.name, '-v', spec.version.to_s]
+    fail "Please set JAVA_HOME first #{'(no need to run as sudo)' if ENV['USER'] == 'root'}" unless ENV['JAVA_HOME']
     args.unshift('sudo', 'env', 'JAVA_HOME=' + ENV['JAVA_HOME']) unless windows? || ENV['GEM_HOME']
-    args = args.map{|a| a.inspect}.join(' ') if windows?
-    sh *args
+    sh *args.map{ |a| a.inspect }.join(' ')
   end
 end
 
