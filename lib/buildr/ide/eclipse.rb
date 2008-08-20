@@ -130,8 +130,8 @@ module Buildr
                 end
               end
 
-              xml.classpathentry :kind=>'con', :path=>'org.eclipse.jdt.launching.JRE_CONTAINER'
               xml.classpathentry :kind=>'con', :path=>'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER' if scala
+              xml.classpathentry :kind=>'con', :path=>'org.eclipse.jdt.launching.JRE_CONTAINER'
             end
           end
         end
@@ -145,20 +145,19 @@ module Buildr
               xml.name project.id
               xml.projects
               xml.buildSpec do
-                xml.buildCommand do
-                  xml.name "org.eclipse.jdt.core.javabuilder"
-                end
                 if scala
                   xml.buildCommand do
                     xml.name "ch.epfl.lamp.sdt.core.scalabuilder"
-                    #xml.name "scala.plugin.scalabuilder"
+                  end
+                else
+                  xml.buildCommand do
+                    xml.name "org.eclipse.jdt.core.javabuilder"
                   end
                 end
               end
               xml.natures do
-                xml.nature "org.eclipse.jdt.core.javanature"
                 xml.nature "ch.epfl.lamp.sdt.core.scalanature" if scala
-                #xml.nature "scala.plugin.scalanature" if scala
+                xml.nature "org.eclipse.jdt.core.javanature"
               end
             end
           end
