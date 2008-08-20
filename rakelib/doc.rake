@@ -51,7 +51,7 @@ begin
   collection = Docter.collection(spec.name).using('doc/site.toc.yaml').include('doc/pages', 'LICENSE', 'CHANGELOG')
   # TODO:  Add coverage reports when we get them to run.
   template   = Docter.template('doc/site.haml').
-    include('doc/css', 'doc/images', 'doc/scripts', 'reports/specs.html', 'rdoc', 'print/buildr.pdf')
+    include('doc/css', 'doc/images', 'doc/scripts', 'reports/coverage', 'reports/specs.html', 'rdoc', 'print/buildr.pdf')
 
   desc 'Run Docter server on port 3000'
   Docter::Rake.serve 'docter', collection, template, :port=>3000
