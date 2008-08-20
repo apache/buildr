@@ -143,6 +143,9 @@ th, thead td {
   margin-right: 2em;
   font-family: "DejaVu Sans", Verdana, Helvetica;
   font-size: 11pt;
+  text-align: right;
+  border-right: 1px solid #ccc;
+  padding-right: 2em;
 }
 #pages ol {
   list-style: none;
@@ -155,7 +158,6 @@ th, thead td {
   font-weight: bold; 
 }
 #pages ol li ol {
-  border-top: 1px solid #E9E9E9;
   margin-top: 0.3em;
   padding: 0.3em 0 0.9em 0.9em;
 }
