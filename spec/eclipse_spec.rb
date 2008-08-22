@@ -16,6 +16,16 @@
 
 require File.join(File.dirname(__FILE__), 'spec_helpers')
 
+
+module EclipseHelper
+  def classpath_sources attribute='path'
+    task('eclipse').invoke
+    REXML::Document.new(File.open('.classpath')).
+      root.elements.collect("classpathentry[@kind='src']") { |n| n.attributes[attribute] }
+  end
+end
+
+
 describe Buildr::Eclipse do
 
   describe "eclipse's .project file" do
@@ -87,6 +97,7 @@ describe Buildr::Eclipse do
     end
     
     describe 'source folders' do
+       include EclipseHelper
       
       def classpath_sources attribute='path'
         task('eclipse').invoke
@@ -109,6 +120,11 @@ describe Buildr::Eclipse do
         define('foo') { compile path_to('src/java') }
         write 'src/java/Foo.java'
         classpath_sources.should include('src/java')
+      end
+      
+      it 'should accept a file task as a main source folder' do
+        define('foo') { compile apt }
+        classpath_sources.should include('target/generated/apt')
       end
       
       it 'should accept a default test source folder' do

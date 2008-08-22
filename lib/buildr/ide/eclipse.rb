@@ -93,9 +93,7 @@ module Buildr
               srcs = (project.compile.sources + generated + project.resources.sources).map { |src| relative[src] }
 
               srcs.sort.uniq.each do |path|
-                if File.exist? project.path_to(path)
-                  xml.classpathentry :kind=>'src', :path=>path, :excluding=>excludes
-                end
+                xml.classpathentry :kind=>'src', :path=>path, :excluding=>excludes
               end
 
               if project.test.compile.target
@@ -110,9 +108,7 @@ module Buildr
                 # Test resources go in separate output directory as well
                 test_resource_sources = project.test.resources.sources.map { |src| relative[src] }
                 test_resource_sources.each do |path|
-                  if File.exist? project.path_to(path)
-                    xml.classpathentry :kind=>'src', :path=>path, :output => relative[project.test.compile.target], :excluding=>excludes
-                  end
+                  xml.classpathentry :kind=>'src', :path=>path, :output => relative[project.test.compile.target], :excluding=>excludes
                 end
               end
 
