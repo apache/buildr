@@ -1,3 +1,17 @@
-#!/usr/bin/env sh
+#!/usr/bin/env ruby
+
 # Run buildr from source, specifically for testing stuff without doing a rake install.
-ruby -Ilib -Iaddon bin/buildr $*
+# The _BUILDR_RB environment variable can be used to set the path to the ruby/jruby executable.
+# For example to use jruby:
+#   export _BUILDR_RB=/path/to/jruby
+
+buildr_root = File.dirname(__FILE__)
+buildr_ruby = ENV['_BUILDR_RB'] || "ruby"
+cmd = [
+    buildr_ruby,
+    "-I"+File.join(buildr_root, "lib"),
+    "-I"+File.join(buildr_root, "addon"),
+    File.join(buildr_root, "bin", "buildr"),
+] + ARGV
+
+exec *cmd
