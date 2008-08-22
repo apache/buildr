@@ -130,7 +130,7 @@ module Buildr
           instrumented = project.file(cobertura.instrumented_dir => file(project.compile.target)) do |task|
             mkdir_p task.to_s, :verbose => false
             unless project.compile.sources.empty?
-              puts "Instrumenting classes with cobertura data file #{cobertura.data_file}"
+              info "Instrumenting classes with cobertura data file #{cobertura.data_file}"
               Buildr.ant "cobertura" do |ant|
                 ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
                 ant.send "cobertura-instrument", :todir=>task.to_s, :datafile=>cobertura.data_file do
@@ -159,7 +159,7 @@ module Buildr
           task 'instrument' => instrumented
           [:xml, :html].each do |format|
             task format => ['instrument', 'test'] do 
-              puts "Creating test coverage reports in #{cobertura.report_to(format)}"
+              info "Creating test coverage reports in #{cobertura.report_to(format)}"
               Buildr.ant "cobertura" do |ant|
                 ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
                 ant.send "cobertura-report", :format=>format, 
@@ -207,7 +207,7 @@ module Buildr
         report_target = report_to(format)
         desc "Run the test cases and produce code coverage reports in #{report_target}"
         task format => ["instrument", "test"] do
-          puts "Creating test coverage reports in #{report_target}"
+          info "Creating test coverage reports in #{report_target}"
           Buildr.ant "cobertura" do |ant|
             ant.taskdef :classpath=>requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
             ant.send "cobertura-report", :destdir=>report_target, :format=>format, :datafile=>data_file do
