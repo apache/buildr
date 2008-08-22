@@ -40,6 +40,16 @@ module Sandbox
       spec.before(:each) { sandbox }
       spec.after(:each) { reset }
     end
+    
+    # Require an addon without letting its callbacks pollute the Project class.
+    def require_addon addon_require_path
+      project_callbacks_without_addon = Project.class_eval { @callbacks }.dup
+      begin
+        require addon_require_path
+      ensure
+        Project.class_eval { @callbacks = project_callbacks_without_addon }
+      end
+    end
   end
 
   @tasks = Buildr.application.tasks.collect do |original|
@@ -75,6 +85,7 @@ module Sandbox
     
     # Later on we'll want to lose all the on_define created during the test.
     @_sandbox[:on_define] = Project.class_eval { (@on_define || []).dup }
+    @_sandbox[:callbacks] = Project.class_eval { (@callbacks || []).dup }
     @_sandbox[:layout] = Layout.default.clone
 
     # Create a local repository we can play with. However, our local repository will be void
@@ -105,6 +116,8 @@ module Sandbox
     Project.clear
     on_define = @_sandbox[:on_define]
     Project.class_eval { @on_define = on_define }
+    callbacks = @_sandbox[:callbacks]
+    Project.class_eval { @callbacks = callbacks }
     Layout.default = @_sandbox[:layout].clone
 
     $LOAD_PATH.replace @_sandbox[:load_path]

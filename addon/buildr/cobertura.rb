@@ -42,7 +42,7 @@ module Buildr
     class << self
 
       REQUIRES = ["net.sourceforge.cobertura:cobertura:jar:1.9", "log4j:log4j:jar:1.2.9",
-        "asm:asm:jar:2.2.1", "asm:asm-tree:jar:2.2.1", "oro:oro:jar:2.0.8"]
+        "asm:asm:jar:2.2.1", "asm:asm-tree:jar:2.2.1", "oro:oro:jar:2.0.8"] unless const_defined?('REQUIRES')
 
       def requires()
         @requires ||= Buildr.artifacts(REQUIRES).each(&:invoke).map(&:to_s)
