@@ -26,6 +26,7 @@
 * Fixed:  BUILDR-119 Eclipse task does not accept test resource folders
           (Lacton)
 * Fixed:  BUILDR-122: eclipse task should not check for directory existence
+* Fixed:  BUILDR-123: eclipse task should honor ResourceTask's target directory
 * Fixed:  BUILDR-124 unzip(...).from_path does not work correctly without
           include (Rhett Sutphin).
 * Fixed:  BUILDR-126  Tests options are shared between unrelated projects when

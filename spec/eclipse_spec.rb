@@ -18,10 +18,20 @@ require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
 module EclipseHelper
-  def classpath_sources attribute='path'
+  def classpath_xml_elements
     task('eclipse').invoke
-    REXML::Document.new(File.open('.classpath')).
-      root.elements.collect("classpathentry[@kind='src']") { |n| n.attributes[attribute] }
+    REXML::Document.new(File.open('.classpath')).root.elements
+  end
+
+  def classpath_sources attribute='path'
+    classpath_xml_elements.collect("classpathentry[@kind='src']") { |n| n.attributes[attribute] }
+  end
+
+  def classpath_output path
+    specific_output = classpath_xml_elements.collect("classpathentry[@path='#{path}']") { |n| n.attributes['output'] }
+    raise "expected: one output attribute for path '#{path}, got: #{specific_output} " if specific_output.length > 1
+    default_output = classpath_xml_elements.collect("classpathentry[@kind='output']") { |n| n.attributes['path'] }
+    specific_output[0] || default_output[0]
   end
 end
 
@@ -99,61 +109,128 @@ describe Buildr::Eclipse do
     describe 'source folders' do
        include EclipseHelper
       
-      def classpath_sources attribute='path'
-        task('eclipse').invoke
-        REXML::Document.new(File.open('.classpath')).
-          root.elements.collect("classpathentry[@kind='src']") { |n| n.attributes[attribute] }
-      end
-
       before do
         write 'buildfile'
         write 'src/main/java/Main.java'
         write 'src/test/java/Test.java'
       end
       
-      it 'should accept a default main source folder' do
+      describe 'source', :shared=>true do
+        it 'should ignore CVS and SVN files' do
+          define('foo')
+          classpath_sources('excluding').each do |excluding_attribute|
+            excluding = excluding_attribute.split('|')
+            excluding.should include('**/.svn/')
+            excluding.should include('**/CVS/')
+          end
+        end
+      end
+      
+      describe 'main code' do
+      it_should_behave_like 'source'
+        
+      it 'should accept to come from the default directory' do
         define('foo')
         classpath_sources.should include('src/main/java')
       end
-      
-      it 'should accept a user-defined main source folder' do
+        
+      it 'should accept to come from a user-defined directory' do
         define('foo') { compile path_to('src/java') }
-        write 'src/java/Foo.java'
         classpath_sources.should include('src/java')
       end
-      
+        
       it 'should accept a file task as a main source folder' do
         define('foo') { compile apt }
         classpath_sources.should include('target/generated/apt')
       end
+        
+      it 'should go to the default target directory' do
+        define('foo')
+        classpath_output('src/main/java').should == 'target/classes'
+      end
+      end
       
-      it 'should accept a default test source folder' do
+      describe 'test code' do
+      it_should_behave_like 'source'
+
+      it 'should accept to come from the default directory' do
         define('foo')
         classpath_sources.should include('src/test/java')
       end
-      
-      it 'should accept a user-defined test source folder' do
+
+      it 'should accept to come from a user-defined directory' do
         define('foo') { test.compile path_to('src/test') }
         classpath_sources.should include('src/test')
       end
+
+      it 'should go to the default target directory' do
+        define('foo')
+        classpath_output('src/test/java').should == 'target/test/classes'
+      end
+      end
       
-      it 'should accept a default main resource folder' do
+      describe 'main resources' do
+      it_should_behave_like 'source'
+
+      before do
         write 'src/main/resources/config.xml'
+      end
+
+      it 'should accept to come from the default directory' do
         define('foo')
         classpath_sources.should include('src/main/resources')
       end
-    
-      it 'should accept a default test resource folder' do
+
+      it 'should share a classpath entry if it comes from a directory with code' do
+        write 'src/main/java/config.properties'
+        define('foo') { resources.from('src/main/java').exclude('**/*.java') }
+        classpath_sources.select { |path| path == 'src/main/java'}.length.should == 1
+      end
+
+      it 'should go to the default target directory' do
+        define('foo')
+        classpath_output('src/main/resources').should == 'target/resources'
+      end
+      end
+      
+      describe 'test resources' do
+      it_should_behave_like 'source'
+
+      before do
         write 'src/test/resources/config-test.xml'
+      end
+
+      it 'should accept to come from the default directory' do
         define('foo')
         classpath_sources.should include('src/test/resources')
       end
-    
-      it 'should ignore CVS and SVN files' do
+
+      it 'should share a classpath entry if it comes from a directory with code' do
+        write 'src/test/java/config-test.properties'
+        define('foo') { test.resources.from('src/test/java').exclude('**/*.java') }
+        classpath_sources.select { |path| path == 'src/test/java'}.length.should == 1
+      end
+
+      it 'should go to the default target directory' do
         define('foo')
-        classpath_sources('excluding').uniq.should == ['**/.svn/|**/CVS/']
+        classpath_output('src/test/resources').should == 'target/test/resources'
+      end
       end
       
+      describe 'project depending on another project' do
+        
+        it 'should have the underlying project in its classpath' do
+          mkdir 'bar'
+          define('myproject') {
+            project.version = '1.0'
+            define('foo') { package :jar }
+            define('bar') { compile.using(:javac).with project('foo'); }
+          }
+          task('eclipse').invoke
+          REXML::Document.new(File.open(File.join('bar', '.classpath'))).root.
+            elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.should include('/myproject-foo')
+        end
+      end
     end
   end
 end

@@ -59,20 +59,13 @@ module Buildr
         file(project.path_to(".classpath")=>sources) do |task|
           info "Writing #{task.name}"
 
-          # Find a path relative to the project's root directory.
-          relative = lambda do |path|
-            path or raise "Invalid path '#{path.inspect}'"
-            msg = [:to_path, :to_str, :to_s].find { |msg| path.respond_to? msg }
-            path = path.__send__(msg)
-            Util.relative_path(File.expand_path(path), project.path_to)
-          end
-
           m2repo = Buildr::Repositories.instance.local
-          excludes = [ '**/.svn/', '**/CVS/' ].join('|')
 
           File.open(task.name, "w") do |file|
             xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
             xml.classpath do
+              classpathentry = ClasspathEntryWriter.new project, xml
+
               # Note: Use the test classpath since Eclipse compiles both "main" and "test" classes using the same classpath
               cp = project.test.compile.dependencies.map(&:to_s) - [ project.compile.target.to_s, project.resources.target.to_s ]
               cp = cp.uniq
@@ -89,45 +82,23 @@ module Buildr
               # Generated: classpath elements in the project are assumed to be generated
               generated, libs = others.partition { |path| path.to_s.index(project.path_to.to_s) == 0 }
 
-              # Main resources implicitly copied into project.compile.target
-              srcs = (project.compile.sources + generated + project.resources.sources).map { |src| relative[src] }
-
-              srcs.sort.uniq.each do |path|
-                xml.classpathentry :kind=>'src', :path=>path, :excluding=>excludes
-              end
+              classpathentry.src project.compile.sources + generated
+              classpathentry.src project.resources
 
               if project.test.compile.target
-                # Test classes are generated in a separate output directory
-                test_sources = project.test.compile.sources.map { |src| relative[src] }
-                test_sources.each do |paths|
-                  paths.sort.uniq.each do |path|
-                    xml.classpathentry :kind=>'src', :path=>path, :output => relative[project.test.compile.target], :excluding=>excludes
-                  end
-                end
-
-                # Test resources go in separate output directory as well
-                test_resource_sources = project.test.resources.sources.map { |src| relative[src] }
-                test_resource_sources.each do |path|
-                  xml.classpathentry :kind=>'src', :path=>path, :output => relative[project.test.compile.target], :excluding=>excludes
-                end
+                classpathentry.src project.test.compile
+                classpathentry.src project.test.resources
               end
 
               # Classpath elements from other projects
-              project_libs.map(&:id).sort.uniq.each do |project_id|
-                xml.classpathentry :kind=>'src', :combineaccessrules=>"false", :path=>"/#{project_id}" 
-              end
+              classpathentry.src_projects project_libs
 
-              { :output => relative[project.compile.target],
-                :lib    => libs.map(&:to_s),
-                :var    => m2_libs.map { |path| path.to_s.sub(m2repo, 'M2_REPO') }
-              }.each do |kind, paths|
-                paths.sort.uniq.each do |path|
-                  xml.classpathentry :kind=>kind, :path=>path
-                end
-              end
+              classpathentry.output project.compile.target
+              classpathentry.lib libs
+              classpathentry.var m2_libs, 'M2_REPO', m2repo
 
-              xml.classpathentry :kind=>'con', :path=>'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER' if scala
-              xml.classpathentry :kind=>'con', :path=>'org.eclipse.jdt.launching.JRE_CONTAINER'
+              classpathentry.con 'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER' if scala
+              classpathentry.con 'org.eclipse.jdt.launching.JRE_CONTAINER'
             end
           end
         end
@@ -160,6 +131,83 @@ module Buildr
         end
       end
 
+    end
+
+    # Writes 'classpathentry' tags in an xml file.
+    # It converts tasks to paths.
+    # It converts absolute paths to relative paths.
+    # It ignores duplicate directories.
+    class ClasspathEntryWriter
+      def initialize project, xml_builder
+        @project = project
+        @xml = xml_builder
+        @excludes = [ '**/.svn/', '**/CVS/' ].join('|')
+        @paths_written = []
+      end
+      
+      def con path
+        @xml.classpathentry :kind=>'con', :path=>path
+      end
+
+      def lib libs
+        libs.map(&:to_s).sort.uniq.each do |path|
+          @xml.classpathentry :kind=>'lib', :path=>path
+        end
+      end
+
+      # Write a classpathentry of kind 'src'.
+      # Accepts an array of absolute paths or a task.
+      def src arg
+        if [:sources, :target].all? { |message| arg.respond_to?(message) }
+          src_from_task arg
+        else
+          src_from_absolute_paths arg
+        end
+      end
+
+      # Write a classpathentry of kind 'src' for dependent projects.
+      # Accepts an array of projects.
+      def src_projects project_libs
+        project_libs.map(&:id).sort.uniq.each do |project_id|
+          @xml.classpathentry :kind=>'src', :combineaccessrules=>"false", :path=>"/#{project_id}"
+        end
+      end
+      
+      def output target
+        @xml.classpathentry :kind=>'output', :path=>relative(target)
+      end
+
+      def var libs, var_name, var_value
+        libs.map { |lib| lib.to_s.sub(var_value, var_name) }.sort.uniq.each do |path|
+          @xml.classpathentry :kind=>'var', :path=>path
+        end
+      end
+              
+      private
+
+      # Find a path relative to the project's root directory.
+      def relative path
+        path or raise "Invalid path '#{path.inspect}'"
+        msg = [:to_path, :to_str, :to_s].find { |msg| path.respond_to? msg }
+        path = path.__send__(msg)
+        Util.relative_path(File.expand_path(path), @project.path_to)
+      end
+
+      def src_from_task task
+        src_from_absolute_paths task.sources, task.target
+      end
+
+      def src_from_absolute_paths absolute_paths, output=nil
+        relative_paths = absolute_paths.map { |src| relative(src) }
+        relative_paths.sort.uniq.each do |path|
+          unless @paths_written.include?(path)
+            attributes = { :kind=>'src', :path=>path, :excluding=>@excludes }
+            attributes[:output] = relative(output) if output
+            @xml.classpathentry attributes
+            @paths_written << path
+          end
+        end
+      end
     end
 
   end
