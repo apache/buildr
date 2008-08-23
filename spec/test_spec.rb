@@ -658,7 +658,8 @@ describe 'test rule' do
   it 'should execute only the named tests' do
     write 'src/test/java/TestSomething.java',
       'public class TestSomething extends junit.framework.TestCase { public void testNothing() {} }'
-    write 'src/test/java/TestFails.java', 'class TestFails {}'
+    write 'src/test/java/TestFails.java',
+      'public class TestFails extends junit.framework.TestCase { public void testFailure() { fail(); } }'
     define 'foo'
     task('test:Something').invoke
   end
@@ -925,10 +926,12 @@ describe 'integration rule' do
     project('foo').test.tests.should_not include('baz')
   end
 
-  it 'should execute only the named tasts' do
+  it 'should execute only the named tests' do
     write 'src/test/java/TestSomething.java',
       'public class TestSomething extends junit.framework.TestCase { public void testNothing() {} }'
-    write 'src/test/java/TestFails.java', 'class TestFails {}'
+    write 'src/test/java/TestFails.java',
+      'public class TestFails extends junit.framework.TestCase { public void testFailure() { fail(); } }'
+    define('foo') { test.using :junit, :integration }
     task('integration:Something').invoke
   end
 end
