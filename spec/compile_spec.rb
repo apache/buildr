@@ -436,7 +436,7 @@ describe Project, '#compile' do
     lambda { project('foo').compile.invoke }.should run_task('foo:bar:compile')
   end
 
-  it 'sould be a local task' do
+  it 'should be a local task' do
     write 'bar/src/main/java/Test.java', 'class Test {}'
     define('foo') { define 'bar' }
     lambda do
