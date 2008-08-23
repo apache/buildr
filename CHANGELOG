@@ -7,7 +7,6 @@
           with supported terminal, error message is red.
 * Change: BUILDR-104 Buildr::group has :under and :version, but not :type.
           Now it has :type too (Lacton).
-* Change: Upgrade to ScalaCheck 1.4
 * Change: Eclipse task updated to documented Scala plugin requirements
           (http://www.scala-lang.org/node/94)
 * Fixed:  BUILDR-106 download(artifact(...)=>url) broken in certain cases
