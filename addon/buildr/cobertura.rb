@@ -127,7 +127,7 @@ module Buildr
         namespace 'cobertura' do
           # Instrumented bytecode goes in a different directory. This task creates before running the test
           # cases and monitors for changes in the generate bytecode.
-          instrumented = project.file(cobertura.instrumented_dir => file(project.compile.target)) do |task|
+          instrumented = project.file(cobertura.instrumented_dir => project.compile.target) do |task|
             mkdir_p task.to_s, :verbose => false
             unless project.compile.sources.empty?
               info "Instrumenting classes with cobertura data file #{cobertura.data_file}"
