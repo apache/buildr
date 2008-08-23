@@ -171,25 +171,25 @@ If you're using IDEA 7 or later, use the @buildr idea7x@ task instead.  This tas
 Also, check out the "Buildr plugin for IDEA":http://www.digitalsanctum.com/buildr-plug-in/ (IDEA 7 and later).  Once installed, open your project with IDEA.  If IDEA finds that you have Buildr installed and finds a buildfile in the project's directory, it will show all the tasks available for that project.  To run a task, double-click it.  When the task completes, IDEA will show the results in the Buildr Output window.
 
 
-h2. Cobertura, JDepend
+h2. Cobertura, Emma, JDepend
 
-You can use "Cobertura":http://cobertura.sourceforge.net/ to instrument your code, run the tests and create a test coverage report in either HTML or XML format.
+You can use "Cobertura":http://cobertura.sourceforge.net/ or "Emma":http://emma.sourceforge.net/ to instrument your code, run the tests and create a test coverage report in either HTML or XML format.
 
-There are two tasks, both of which generate a test coverage report in the @reports/cobertura@ directory.  For example:
+There are two tasks for each tool, both of which generate a test coverage report in the @reports/cobertura@ (respectively @reports/emma@) directory.  For example:
 
 {{{!sh
 $ buildr test cobertura:html
 }}}
 
-As you can guess, the other task is @cobertura:xml@.
+As you can guess, the other tasks are @cobertura:xml@, @emma:html@ and @emma:xml@.
 
-If you want to generate cobertura reports only for a specific project, you can do so by using the project name as prefix to cobertura tasks. 
+If you want to generate a test coverage report only for a specific project, you can do so by using the project name as prefix to the tasks. 
 
 {{{!sh
 $ buildr subModule:cobertura:html
 }}}
 
-Each project can specify which classes to include or exclude from cobertura instrumentation by giving a class-name regexp to the @cobertura.include@ or  @cobertura.exclude@ methods:
+Each project can specify which classes to include or exclude from cobertura instrumentation by giving a class-name regexp to the @cobertura.include@ or @cobertura.exclude@ methods:
 
 {{{!ruby
 define 'someModule' do 
@@ -200,6 +200,8 @@ define 'someModule' do
 end
 }}}
 
+Emma has @include@ and @exclude@ methods too, but they take glob patterns instead of regexps.
+
 You can use "JDepend":http://clarkware.com/software/JDepend.html on to generate design quality metrics.  There are three tasks this time, the eye candy one:
 
 {{{!sh
@@ -208,14 +210,15 @@ $ buildr jdepend:swing
 
 The other two tasks are @jdepend:text@ and @jdepend:xml@.
 
-We want Buildr to load fast, and not everyone cares for these tasks, so we don't include them by default.  If you want to use either one, you need to require it explicitly.  The proper way to do it in Ruby:
+We want Buildr to load fast, and not everyone cares for these tasks, so we don't include them by default.  If you want to use one of them, you need to require it explicitly.  The proper way to do it in Ruby:
 
 {{{!ruby
 require 'buildr/cobertura'
+require 'buildr/emma'
 require 'buildr/jdepend'
 }}}
 
-You may want to add those to the Buildfile.  Alternatively, you can use these tasks for all your projects without modifying the Buildfile.  One convenient method is to add these two likes to the @buildr.rb@ file in your home directory.
+You may want to add those to the Buildfile.  Alternatively, you can use these tasks for all your projects without modifying the Buildfile.  One convenient method is to add these lines to the @buildr.rb@ file in your home directory.
 
 Another option is to require it from the command line (@--require@ or @-r@), for example:
 

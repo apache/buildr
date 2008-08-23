@@ -28,13 +28,15 @@ unless self.class.const_defined?('SpecHelpers')
 
     include Checks::Matchers
 
-    class ::Object #:nodoc:
-      def warn(message)
-        $warning ||= []
-        $warning << message
+    [:info, :warn, :error].each do |severity|
+      ::Object.class_eval do
+        define_method severity do |message|
+          $messages ||= {}
+          ($messages[severity] ||= []) << message
+        end
       end
     end
-
+    
     class << Buildr.application
       alias :deprecated_without_capture :deprecated
       def deprecated(message)
@@ -42,24 +44,34 @@ unless self.class.const_defined?('SpecHelpers')
       end
     end
 
-    class WarningMatcher
-      def initialize(message)
+    class MessageWithSeverityMatcher
+      def initialize(severity, message)
+        @severity = severity
         @expect = message
       end
 
       def matches?(target)
-        $warning = []
+        $messages[@severity] = []
         target.call
-        return Regexp === @expect ? $warning.join('\n') =~ @expect : $warning.include?(@expect.to_s)
+        return Regexp === @expect ? $messages[@severity].join('\n') =~ @expect : $messages[@severity].include?(@expect.to_s)
       end
 
       def failure_message
-        $warning ? "Expected warning #{@expect.source}, found #{$warning}" : "Expected warning #{@expect.source}, no warning issued"
+        $messages ? "Expected #{@severity} '#{@expect.source}', found #{$messages[@severity]}" : \
+          "Expected #{@severity} '#{@expect.source}', no #{@severity} issued"
       end
 
       def negative_failure_message
-        "Found unexpected #{$warning}"
+        "Found unexpected '#{$messages[@severity]}'"
       end
+    end
+
+    # Test if an info message was shown.  You can use a string or regular expression.
+    #
+    # For example:
+    #   lambda { info 'ze test' }.should show_info(/ze test/)
+    def show_info(message)
+      MessageWithSeverityMatcher.new :info, message
     end
 
     # Tests if a warning was issued. You can use a string or regular expression.
@@ -67,42 +79,15 @@ unless self.class.const_defined?('SpecHelpers')
     # For example:
     #   lambda { warn 'ze test' }.should show_warning(/ze test/)
     def show_warning(message)
-      WarningMatcher.new message
+      MessageWithSeverityMatcher.new :warn, message
     end
 
-    class ::Object  #:nodoc:
-      def error(message)
-        $error ||= []
-        $error << message
-      end
-    end
-
-    class ErrorMessageMatcher
-      def initialize(message)
-        @expect = message
-      end
-
-      def matches?(target)
-        $error = []
-        target.call
-        return Regexp === @expect ? $error.join('\n') =~ @expect : $error.include?(@expect.to_s)
-      end
-
-      def failure_message
-        $error ? "Expected error #{@expect.source}, found #{$error}" : "Expected error #{@expect.source}, no error issued"
-      end
-
-      def negative_failure_message
-        "Found unexpected #{$error}"
-      end
-    end
-    
-    # Test if error message was shown.  You can use a string or regular expression.
+    # Test if an error message was shown.  You can use a string or regular expression.
     #
     # For example:
     #   lambda { error 'ze test' }.should show_error(/ze test/)
     def show_error(message)
-      ErrorMessageMatcher.new message
+      MessageWithSeverityMatcher.new :error, message
     end
 
 

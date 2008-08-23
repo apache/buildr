@@ -1,6 +1,7 @@
 1.3.3 (Pending)
 * Added:  Growl notifications (OS X only).
 * Added:  error, info and trace methods.
+* Added:  BUILDR-128 Emma support
 * Change: Error reporting now shows 'buildr aborted!' (used to say rake),
           more of the stack trace without running --trace, and when running
           with supported terminal, error message is red.
