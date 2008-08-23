@@ -22,11 +22,11 @@ module EclipseHelper
     task('eclipse').invoke
     REXML::Document.new(File.open('.classpath')).root.elements
   end
-
+  
   def classpath_sources attribute='path'
     classpath_xml_elements.collect("classpathentry[@kind='src']") { |n| n.attributes[attribute] }
   end
-
+  
   def classpath_output path
     specific_output = classpath_xml_elements.collect("classpathentry[@path='#{path}']") { |n| n.attributes['output'] }
     raise "expected: one output attribute for path '#{path}, got: #{specific_output} " if specific_output.length > 1
@@ -37,14 +37,14 @@ end
 
 
 describe Buildr::Eclipse do
-
+  
   describe "eclipse's .project file" do
     
     describe 'scala project' do
-
+      
       SCALA_NATURE = 'ch.epfl.lamp.sdt.core.scalanature'
       JAVA_NATURE  = 'org.eclipse.jdt.core.javanature'
-
+      
       SCALA_BUILDER = 'ch.epfl.lamp.sdt.core.scalabuilder'
       JAVA_BUILDER  = 'org.eclipse.jdt.core.javabuilder'
       
@@ -53,13 +53,13 @@ describe Buildr::Eclipse do
         REXML::Document.new(File.open('.project')).
           root.elements.collect("natures/nature") { |n| n.text }
       end
-
+      
       def build_commands
         task('eclipse').invoke
         REXML::Document.new(File.open('.project')).
           root.elements.collect("buildSpec/buildCommand/name") { |n| n.text }
       end
-
+      
       before do
         write 'buildfile'
         write 'src/main/scala/Main.scala'
@@ -71,7 +71,7 @@ describe Buildr::Eclipse do
         project_natures.should include(JAVA_NATURE)
         project_natures.index(SCALA_NATURE).should < project_natures.index(JAVA_NATURE)
       end
-
+      
       it 'should have Scala build command and no Java build command' do
         define('foo')
         build_commands.should include(SCALA_BUILDER)
@@ -83,7 +83,7 @@ describe Buildr::Eclipse do
   describe "eclipse's .classpath file" do
     
     describe 'scala project' do
-
+      
       SCALA_CONTAINER = 'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER'
       JAVA_CONTAINER  = 'org.eclipse.jdt.launching.JRE_CONTAINER'
       
@@ -92,7 +92,7 @@ describe Buildr::Eclipse do
         REXML::Document.new(File.open('.classpath')).
           root.elements.collect("classpathentry[@kind='con']") { |n| n.attributes[attribute] }
       end
-
+      
       before do
         write 'buildfile'
         write 'src/main/scala/Main.scala'
@@ -107,7 +107,7 @@ describe Buildr::Eclipse do
     end
     
     describe 'source folders' do
-       include EclipseHelper
+      include EclipseHelper
       
       before do
         write 'buildfile'
@@ -127,94 +127,94 @@ describe Buildr::Eclipse do
       end
       
       describe 'main code' do
-      it_should_behave_like 'source'
+        it_should_behave_like 'source'
         
-      it 'should accept to come from the default directory' do
-        define('foo')
-        classpath_sources.should include('src/main/java')
-      end
+        it 'should accept to come from the default directory' do
+          define('foo')
+          classpath_sources.should include('src/main/java')
+        end
         
-      it 'should accept to come from a user-defined directory' do
-        define('foo') { compile path_to('src/java') }
-        classpath_sources.should include('src/java')
-      end
+        it 'should accept to come from a user-defined directory' do
+          define('foo') { compile path_to('src/java') }
+          classpath_sources.should include('src/java')
+        end
         
-      it 'should accept a file task as a main source folder' do
-        define('foo') { compile apt }
-        classpath_sources.should include('target/generated/apt')
-      end
+        it 'should accept a file task as a main source folder' do
+          define('foo') { compile apt }
+          classpath_sources.should include('target/generated/apt')
+        end
         
-      it 'should go to the default target directory' do
-        define('foo')
-        classpath_output('src/main/java').should == 'target/classes'
-      end
+        it 'should go to the default target directory' do
+          define('foo')
+          classpath_output('src/main/java').should == 'target/classes'
+        end
       end
       
       describe 'test code' do
-      it_should_behave_like 'source'
-
-      it 'should accept to come from the default directory' do
-        define('foo')
-        classpath_sources.should include('src/test/java')
-      end
-
-      it 'should accept to come from a user-defined directory' do
-        define('foo') { test.compile path_to('src/test') }
-        classpath_sources.should include('src/test')
-      end
-
-      it 'should go to the default target directory' do
-        define('foo')
-        classpath_output('src/test/java').should == 'target/test/classes'
-      end
+        it_should_behave_like 'source'
+        
+        it 'should accept to come from the default directory' do
+          define('foo')
+          classpath_sources.should include('src/test/java')
+        end
+        
+        it 'should accept to come from a user-defined directory' do
+          define('foo') { test.compile path_to('src/test') }
+          classpath_sources.should include('src/test')
+        end
+        
+        it 'should go to the default target directory' do
+          define('foo')
+          classpath_output('src/test/java').should == 'target/test/classes'
+        end
       end
       
       describe 'main resources' do
-      it_should_behave_like 'source'
-
-      before do
-        write 'src/main/resources/config.xml'
-      end
-
-      it 'should accept to come from the default directory' do
-        define('foo')
-        classpath_sources.should include('src/main/resources')
-      end
-
-      it 'should share a classpath entry if it comes from a directory with code' do
-        write 'src/main/java/config.properties'
-        define('foo') { resources.from('src/main/java').exclude('**/*.java') }
-        classpath_sources.select { |path| path == 'src/main/java'}.length.should == 1
-      end
-
-      it 'should go to the default target directory' do
-        define('foo')
-        classpath_output('src/main/resources').should == 'target/resources'
-      end
+        it_should_behave_like 'source'
+        
+        before do
+          write 'src/main/resources/config.xml'
+        end
+        
+        it 'should accept to come from the default directory' do
+          define('foo')
+          classpath_sources.should include('src/main/resources')
+        end
+        
+        it 'should share a classpath entry if it comes from a directory with code' do
+          write 'src/main/java/config.properties'
+          define('foo') { resources.from('src/main/java').exclude('**/*.java') }
+          classpath_sources.select { |path| path == 'src/main/java'}.length.should == 1
+        end
+        
+        it 'should go to the default target directory' do
+          define('foo')
+          classpath_output('src/main/resources').should == 'target/resources'
+        end
       end
       
       describe 'test resources' do
-      it_should_behave_like 'source'
-
-      before do
-        write 'src/test/resources/config-test.xml'
-      end
-
-      it 'should accept to come from the default directory' do
-        define('foo')
-        classpath_sources.should include('src/test/resources')
-      end
-
-      it 'should share a classpath entry if it comes from a directory with code' do
-        write 'src/test/java/config-test.properties'
-        define('foo') { test.resources.from('src/test/java').exclude('**/*.java') }
-        classpath_sources.select { |path| path == 'src/test/java'}.length.should == 1
-      end
-
-      it 'should go to the default target directory' do
-        define('foo')
-        classpath_output('src/test/resources').should == 'target/test/resources'
-      end
+        it_should_behave_like 'source'
+        
+        before do
+          write 'src/test/resources/config-test.xml'
+        end
+        
+        it 'should accept to come from the default directory' do
+          define('foo')
+          classpath_sources.should include('src/test/resources')
+        end
+        
+        it 'should share a classpath entry if it comes from a directory with code' do
+          write 'src/test/java/config-test.properties'
+          define('foo') { test.resources.from('src/test/java').exclude('**/*.java') }
+          classpath_sources.select { |path| path == 'src/test/java'}.length.should == 1
+        end
+        
+        it 'should go to the default target directory' do
+          define('foo')
+          classpath_output('src/test/resources').should == 'target/test/resources'
+        end
       end
       
       describe 'project depending on another project' do
