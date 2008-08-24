@@ -314,6 +314,7 @@ describe Buildr::CompileTask, '#invoke' do
     sources.each { |src| File.utime(time + 1, time + 1, src) }
     sources.map { |src| src.pathmap("#{compile_task.target}/thepackage/%n.class") }.
       each { |kls| write kls ; File.utime(time, time, kls) }
+    File.utime(time - 1, time - 1, project('foo').compile.target.to_s)
     lambda { compile_task.from(sources).invoke }.should run_task('foo:compile')
   end
 
