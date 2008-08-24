@@ -51,19 +51,18 @@ unless self.class.const_defined?('SpecHelpers')
       end
 
       def matches?(target)
-        $messages ||= {}
-        $messages[@severity] = []
+        $messages = {@severity => []}
         target.call
         return Regexp === @expect ? $messages[@severity].join('\n') =~ @expect : $messages[@severity].include?(@expect.to_s)
       end
 
       def failure_message
-        $messages ? "Expected #{@severity} '#{@expect.source}', found #{$messages[@severity]}" : \
-          "Expected #{@severity} '#{@expect.source}', no #{@severity} issued"
+        "Expected #{@severity} '#{@expect.source}', " +
+          ($messages[@severity].empty? ? "no #{@severity} issued" : "found #{$messages[@severity].inspect}")
       end
 
       def negative_failure_message
-        "Found unexpected '#{$messages[@severity]}'"
+        "Found unexpected #{$messages[@severity].inspect}"
       end
     end
 
