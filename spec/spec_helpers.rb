@@ -51,6 +51,7 @@ unless self.class.const_defined?('SpecHelpers')
       end
 
       def matches?(target)
+        $messages ||= {}
         $messages[@severity] = []
         target.call
         return Regexp === @expect ? $messages[@severity].join('\n') =~ @expect : $messages[@severity].include?(@expect.to_s)
