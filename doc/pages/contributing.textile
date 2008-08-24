@@ -178,3 +178,7 @@ Here is the list of people who are actively working and committing on Buildr:
 *Victor Hugo Borja* (vborja at apache.org)
 
 Currently a Java Developer at "http://jwmsolutions.com":http://jwmsolutions.com, Victor has been enjoying and using Apache's software since 1999 when he started with Java, now he prefers programming Ruby and is happy to help on Apache's first ruby project. 
+
+*Lacton* (lacton at apache.org)
+
+A test-infected developer since 2001, Lacton yearns for a development infrastructure that would shorten feedback loops so much that testing, building, refactoring and committing would feel as easy and natural as breathing air.
