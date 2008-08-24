@@ -245,7 +245,7 @@ module Buildr
 
     def load_buildfile
       @requires.each { |name| require name }
-      puts "(in #{Dir.pwd}, #{environment})"
+      info "(in #{Dir.pwd}, #{environment})"
       load File.expand_path(@rakefile) if @rakefile != ''
       load_imports
     end

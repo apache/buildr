@@ -45,6 +45,11 @@ describe Buildr::Application do
       ENV['BUILDR_ENV'].should eql('test')
     end
     
+    it 'should be echoed to user' do
+      write 'buildfile'
+      lambda { Buildr.application.load_buildfile }.should show_info(%r{(in .*, development)})
+    end
+    
     after do
       ENV['BUILDR_ENV'] = nil
     end
