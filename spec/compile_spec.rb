@@ -331,6 +331,7 @@ describe Buildr::CompileTask, '#invoke' do
     time = Time.now
     sources.map { |src| src.pathmap("#{compile_task.target}/thepackage/%n.class") }.
       each { |kls| write kls ; File.utime(time - 1, time - 1, kls) }
+    File.utime(time - 1, time - 1, project('foo').compile.target.to_s)
     jars.each { |jar| File.utime(time + 1, time + 1, jar) }
     lambda { compile_task.from(sources).with(jars).invoke }.should run_task('foo:compile')
   end
