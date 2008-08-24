@@ -602,7 +602,7 @@ module Buildr
   #   artifacts(*spec) => artifacts
   #
   # Handles multiple artifacts at a time. This method is the plural equivalent of
-  # #artifacts, but can do more things.
+  # #artifact, but can do more things.
   #
   # Returns an array of artifacts built using the supplied
   # specifications, each of which can be:
