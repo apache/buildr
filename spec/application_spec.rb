@@ -44,7 +44,7 @@ describe Buildr::Application do
       Buildr::Application.new.environment.should eql('test')
       ENV['BUILDR_ENV'].should eql('test')
     end
-
+    
     after do
       ENV['BUILDR_ENV'] = nil
     end
@@ -94,6 +94,7 @@ describe Buildr::Application do
         spec.name = 'foo'
         spec.version = '1.2'
       end
+      $stdout.stub!(:isatty).and_return(true)
     end
 
     it 'should do nothing if no gems specified' do
