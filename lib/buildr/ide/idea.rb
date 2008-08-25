@@ -39,12 +39,6 @@ module Buildr
       idea = project.task("idea")
       # We need paths relative to the top project's base directory.
       root_path = lambda { |p| f = lambda { |p| p.parent ? f[p.parent] : p.base_dir }; f[p] }[project]
-      # We want the Eclipse files changed every time the Buildfile changes, but also anything loaded by
-      # the Buildfile (buildr.rb, separate file listing dependencies, etc), so we add anything required
-      # after the Buildfile. So which don't know where Buildr shows up exactly, ignore files that show
-      # in $LOADED_FEATURES that we cannot resolve.
-      sources = Buildr.application.build_files.map { |file| File.expand_path(file) }.select { |file| File.exist?(file) }
-      sources << File.expand_path(Buildr.application.buildfile, root_path) if Buildr.application.buildfile
 
       # Find a path relative to the project's root directory.
       relative = lambda { |path| Util.relative_path(path.to_s, project.path_to) }
@@ -57,7 +51,7 @@ module Buildr
       idea.enhance [ file(task_name) ]
 
       # The only thing we need to look for is a change in the Buildfile.
-      file(task_name=>sources) do |task|
+      file(task_name=>Buildr.application.buildfile) do |task|
         info "Writing #{task.name}"
 
         # Idea handles modules slightly differently if they're WARs
@@ -153,7 +147,7 @@ module Buildr
         task_name = project.path_to("#{project.name.gsub(':', '-')}.ipr")
         idea.enhance [ file(task_name) ]
 
-        file(task_name=>sources) do |task|
+        file(task_name=>Buildr.application.buildfile) do |task|
           info "Writing #{task.name}"
 
           # Generating just the little stanza that chanages from one project to another

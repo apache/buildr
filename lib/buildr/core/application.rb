@@ -52,7 +52,7 @@ module Buildr
   # Provide settings that come from three sources.
   #
   # User settings are placed in the .buildr/settings.yaml file located in the user's home directory.
-  # The should only be used for settings that are specific to the user and applied the same way
+  # They should only be used for settings that are specific to the user and applied the same way
   # across all builds.  Example for user settings are preferred repositories, path to local repository,
   # user/name password for uploading to remote repository.
   #
@@ -124,6 +124,7 @@ module Buildr
       @home_dir = File.expand_path('.buildr', ENV['HOME'])
       mkpath @home_dir unless File.exist?(@home_dir)
       @environment = ENV['BUILDR_ENV'] ||= 'development'
+      @build_files = []
       @on_completion = []
       @on_failure = []
     end
@@ -138,6 +139,9 @@ module Buildr
     # Copied from BUILD_ENV.
     attr_reader :environment
 
+    # Files that complement the buildfile itself
+    attr_reader :build_files
+    
     # Returns the Settings associated with this build.
     def settings
       @settings ||= Settings.new(self)
@@ -145,16 +149,9 @@ module Buildr
 
     # :call-seq:
     #   buildfile
+    # Returns the buildfile as a task that you can use as a dependency.
     def buildfile
-      rakefile
-    end
-
-    # :call-seq:
-    #   build_files => files
-    #
-    # Returns a list of build files. These are files used by the build, 
-    def build_files
-      [buildfile].compact + Array(@build_files)
+      @buildfile_task ||= BuildfileTask.define_task(rakefile)
     end
 
     # Returns Gem::Specification for every listed and installed Gem, Gem::Dependency
@@ -250,20 +247,21 @@ module Buildr
       load_imports
     end
 
-    # Loads buildr.rake files from users home directory and project directory.
+    # Loads buildr.rb files from users home directory and project directory.
     # Loads custom tasks from .rake files in tasks directory.
     def load_tasks #:nodoc:
-      @build_files = [ File.expand_path('buildr.rb', ENV['HOME']), 'buildr.rb' ].select { |file| File.exist?(file) }
-      @build_files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
+      build_files = [ File.expand_path('buildr.rb', ENV['HOME']), 'buildr.rb' ].select { |file| File.exist?(file) }
+      build_files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
         select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
       #Load local tasks that can be used in the Buildfile.
-      @build_files += Dir["#{Dir.pwd}/tasks/*.rake"]
-      @build_files.each do |file|
+      build_files += Dir["#{Dir.pwd}/tasks/*.rake"]
+      build_files.each do |file|
         unless $LOADED_FEATURES.include?(file)
           load file
           $LOADED_FEATURES << file
         end
       end
+      @build_files += build_files
       true
     end
     private :load_tasks
@@ -346,6 +344,17 @@ module Buildr
       end
     end
     
+  end
+  
+  
+  # This task stands for the buildfile and all its associated helper files (e.g., buildr.rb, build.yaml).
+  # By using this task as a prerequisite for other tasks, you can ensure these tasks will be needed
+  # whenever the buildfile changes.
+  class BuildfileTask < Rake::Task
+    
+    def timestamp
+      ([@application.rakefile] + @application.build_files).map { |f| File.stat(f).mtime }.max
+    end
   end
 
 

@@ -38,13 +38,6 @@ module Buildr
       # We need paths relative to the top project's base directory.
       root_path = lambda { |p| f = lambda { |p| p.parent ? f[p.parent] : p.base_dir } ; f[p] }[project]
 
-      # We want the Eclipse files changed every time the Buildfile changes, but also anything loaded by
-      # the Buildfile (buildr.rb, separate file listing dependencies, etc), so we add anything required
-      # after the Buildfile. So which don't know where Buildr shows up exactly, ignore files that show
-      # in $LOADED_FEATURES that we cannot resolve.
-      sources = Buildr.application.build_files.map { |file| File.expand_path(file) }.select { |file| File.exist?(file) }
-      sources << File.expand_path(Buildr.application.buildfile, root_path) if Buildr.application.buildfile
-
       # Check if project has scala facet
       scala = project.compile.language == :scala
 
@@ -56,7 +49,7 @@ module Buildr
         eclipse.enhance [ file(project.path_to(".classpath")), file(project.path_to(".project")) ]
 
         # The only thing we need to look for is a change in the Buildfile.
-        file(project.path_to(".classpath")=>sources) do |task|
+        file(project.path_to(".classpath")=>Buildr.application.buildfile) do |task|
           info "Writing #{task.name}"
 
           m2repo = Buildr::Repositories.instance.local
@@ -104,7 +97,7 @@ module Buildr
         end
 
         # The only thing we need to look for is a change in the Buildfile.
-        file(project.path_to(".project")=>sources) do |task|
+        file(project.path_to(".project")=>Buildr.application.buildfile) do |task|
           info "Writing #{task.name}"
           File.open(task.name, "w") do |file|
             xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)

@@ -67,7 +67,7 @@ describe Buildr::Application do
     end
 
     it 'should return empty array if no gems specified' do
-      Buildr.application.load_gems 
+      Buildr.application.load_gems
       Buildr.application.gems.should be_empty
     end
 
@@ -312,9 +312,44 @@ describe Buildr, 'settings' do
       YAML
       Buildr.settings.profile.should == { 'foo'=>'bar' }
     end
-
   end
 
+  describe 'buildfile task' do
+    before do
+      @buildfile_time = Time.now - 10
+      write 'buildfile'; File.utime(@buildfile_time, @buildfile_time, 'buildfile')
+    end
+    
+    it 'should point to the buildfile' do
+      Buildr.application.buildfile.should point_to_path('buildfile')
+    end
+    
+    it 'should be a defined task' do
+      Buildr.application.buildfile.should == file(File.expand_path('buildfile'))
+    end
+    
+    it 'should have the same timestamp as the buildfile' do
+      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time, 1)
+    end
+    
+    it 'should have the same timestamp as build.yaml if the latter is newer' do
+      write 'build.yaml'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'build.yaml')
+      Buildr.application.run
+      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
+    end
+    
+    it 'should have the same timestamp as the buildfile if build.yaml is older' do
+      write 'build.yaml'; File.utime(@buildfile_time - 5, @buildfile_time - 5, 'build.yaml')
+      Buildr.application.run
+      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time, 1)
+    end
+    
+    it 'should have the same timestamp as build.rb in home dir if the latter is newer' do
+      write 'home/buildr.rb'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'home/buildr.rb')
+      Buildr.application.send :load_tasks
+      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
+    end
+  end
 end
 
 

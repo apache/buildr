@@ -49,9 +49,6 @@ module Buildr
       # We need paths relative to the top project's base directory.
       root_path = lambda { |p| f = lambda { |p| p.parent ? f[p.parent] : p.base_dir }; f[p] }[project]
 
-      sources = Buildr.application.build_files.map { |file| File.expand_path(file) }.select { |file| File.exist?(file) }
-      sources << File.expand_path(Buildr.application.buildfile, root_path) if Buildr.application.buildfile
-
       # Find a path relative to the project's root directory.
       relative = lambda { |path| Util.relative_path(File.expand_path(path.to_s), project.path_to) }
 
@@ -63,7 +60,7 @@ module Buildr
       idea7x.enhance [ file(task_name) ]
 
       # The only thing we need to look for is a change in the Buildfile.
-      file(task_name=>sources) do |task|
+      file(task_name=>Buildr.application.buildfile) do |task|
         # Note: Use the test classpath since Eclipse compiles both "main" and "test" classes using the same classpath
         deps = project.test.compile.dependencies.map(&:to_s) - [ project.compile.target.to_s ]
 
@@ -104,7 +101,7 @@ module Buildr
 
       # Root project aggregates all the subprojects.
       if project.parent == nil
-        Buildr::Idea7x.generate_ipr(project, idea7x, sources)
+        Buildr::Idea7x.generate_ipr(project, idea7x, Buildr.application.buildfile)
       end
 
     end # after_define
