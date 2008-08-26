@@ -16,21 +16,9 @@
 
 require 'rake/gempackagetask'
 
-def spec(platform = nil)
-  @specs ||= {}
-  platform ||= RUBY_PLATFORM =~ /java/ ? 'java' : 'ruby'
-  @specs[platform] ||= begin
-    spec = Gem::Specification.load(File.join(File.dirname(__FILE__), 'buildr.gemspec'))
-    spec.platform = platform
-    if platform =~ /java/
-      spec.add_dependency 'jruby-openssl', '0.2'
-      spec.add_dependency 'ci_reporter', '1.5.1' # must come after builder dependency
-    else
-      # Place first on the dependency list, otherwise AntWrap picks the latest RJB.
-      spec.dependencies.unshift Gem::Dependency.new('rjb', '1.1.4')
-    end
-    spec
-  end
+def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
+  @specs ||= ['ruby', 'java'].inject({}) { |hash, $platform| hash.update($platform=>Gem::Specification.load('buildr.gemspec')) }
+  @specs[platform]
 end
 
 

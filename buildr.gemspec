@@ -18,22 +18,25 @@ Gem::Specification.new do |spec|
   spec.name           = 'buildr'
   spec.version        = '1.3.3'
   spec.author         = 'Apache Buildr'
-  spec.email          = "#{spec.name}-user@incubator.apache.org"
-  spec.homepage       = "http://incubator.apache.org/#{spec.name}/"
+  spec.email          = "buildr-user@incubator.apache.org"
+  spec.homepage       = "http://incubator.apache.org/buildr"
   spec.summary        = 'A build system that doesn\'t suck'
+  spec.rubyforge_project  = 'buildr'
 
-  spec.files          = Dir['lib/**/*', 'addon/**/*', 'README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'KEYS',
+  # Rakefile needs to create spec for both platforms (ruby and java), using the
+  # $platform global variable.  In all other cases, we figure it out from RUBY_PLATFORM.
+  spec.platform       = $platform || RUBY_PLATFORM[/java/] || 'ruby'
+  spec.files          = Dir['lib/**/*', 'addon/**/*', 'README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'KEYS',
                          '*.gemspec', 'Rakefile', 'rakelib/**/*', 'spec/**/*', 'doc/**/*']
   spec.require_paths  = ['lib', 'addon']
   spec.bindir         = 'bin'                               # Use these for applications.
   spec.executable     = 'buildr'
 
-  spec.has_rdoc           = true
-  spec.extra_rdoc_files   = ['README', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']
-  spec.rdoc_options       << '--title' << "Buildr -- #{spec.summary}" <<
-                             '--main' << 'README' << '--line-numbers' << '--inline-source' << '-p' <<
-                             '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/#{spec.name}/trunk/'
-  spec.rubyforge_project  = 'buildr'
+  spec.has_rdoc         = true
+  spec.extra_rdoc_files = ['README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']
+  spec.rdoc_options     << '--title' << "Buildr" << '--main' << 'README.rdoc' <<
+                           '--line-numbers' << '--inline-source' << '-p' <<
+                           '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
 
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.8.1'
@@ -44,8 +47,11 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'highline',             '1.4.0'
   spec.add_dependency 'rubyforge',            '1.0.0'
   spec.add_dependency 'hoe',                  '1.6.0'
+  spec.add_dependency 'rjb',                  '1.1.4' if spec.platform.to_s == 'ruby' 
   spec.add_dependency 'Antwrap',              '0.7.0'
   spec.add_dependency 'rspec',                '1.1.4'
   spec.add_dependency 'xml-simple',           '1.0.11'
   spec.add_dependency 'archive-tar-minitar',  '0.5.2'
+  spec.add_dependency 'jruby-openssl',        '0.2'   if spec.platform.to_s == 'java'
+  spec.add_dependency 'ci_reporter',          '1.5.1' if spec.platform.to_s == 'java'
 end
