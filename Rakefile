@@ -25,7 +25,7 @@ end
 desc 'Compile Java libraries used by Buildr'
 task 'compile' do
   puts 'Compiling Java libraries ...'
-  sh Config::CONFIG['ruby_install_name'], '-Ilib', '-Iaddon', 'bin/buildr', 'compile'
+  sh Config::CONFIG['ruby_install_name'], '-Ilib', '-Iaddon', 'bin/buildr', '--buildfile=buildr.buildfile', 'compile'
   puts 'OK'
 end
 file Rake::GemPackageTask.new(spec).package_dir=>'compile'
