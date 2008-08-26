@@ -17,7 +17,8 @@
   - Welcome: index.html
   - Download and Installation: download.html
   - User Guide (PDF): buildr.pdf
-  - New: whats_new.html
+  - What's New: whats_new.html
+  - Community Wiki: http://cwiki.apache.org/confluence/display/BUILDR/Index
 - Using Buildr:
   - Getting Started: getting_started.html
   - Projects: projects.html
@@ -36,9 +37,9 @@
   - Antwrap: http://antwrap.rubyforge.org
   - Troubleshooting: troubleshooting.html
 - Get Involved:
-  - Contributing: contributing.html
   - Mailing Lists: mailing_lists.html
   - Issues/Bugs: http://issues.apache.org/jira/browse/Buildr
+  - Contributing: contributing.html
 - Project Status:
   - License: license.html
   - Change Log: changelog.html

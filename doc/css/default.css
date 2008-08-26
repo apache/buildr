@@ -119,11 +119,7 @@ th, thead td {
 
 
 #header {
-  margin: 0;
-}
-
-#header img {
-  margin: 0 0 1em 0em;
+  margin: 0 0 3em 18em;
 }
 
 #header .tagline {
@@ -153,13 +149,16 @@ th, thead td {
   margin: 0;
 }
 #pages ol li {
-  padding: 0.3em 0 0.3em 0em;
+  padding: 0.3em 0 0.6em 0em;
   color: #669966;
   font-weight: bold; 
 }
 #pages ol li ol {
   margin-top: 0.3em;
   padding: 0.3em 0 0.9em 0.9em;
+}
+#pages ol li ol li {
+  padding: 0.3em 0 0.3em 0em;
 }
 #pages ol li a  {
   font-weight: normal;
@@ -220,7 +219,8 @@ ol.toc li ol.toc {
 
 
 #footer {
-  border-top: 1px solid #444;
+  color: #888;
+  border-top: 1px solid #ccc;
   font-size: 0.9em;
   padding: 0.3em;
   margin: 2em 0 3em 0em;

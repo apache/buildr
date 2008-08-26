@@ -92,6 +92,9 @@
 
   #footer { margin-top: 5%; }
 
-  #license { padding-top: 1in; }
+  #license {
+    page-break-before: always;
+    padding-top: 1in;
+  }
 
 }

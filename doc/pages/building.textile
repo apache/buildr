@@ -139,8 +139,7 @@ You can specify a different format by passing it as the first argument. Supporte
 | @:ant@    | Map from <code>@key@</code> to value. |
 | @:maven@  | Map from @${key}@ to value (default). |
 | @:ruby@   | Map from @#{key}@ to value. |
-| @Regexp@  | Map using the matched value of the regular expression (e.g.
-@/=(.*?)=/@). |
+| @Regexp@  | Map using the matched value of the regular expression (e.g. @/=(.*?)=/@). |
 
 For example, using the @:ruby@ format instead of the default @:maven@ format:
 
