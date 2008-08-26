@@ -17,6 +17,14 @@
 require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
+module TestHelper
+  def set_last_successful_test_run test_task, timestamp
+    test_task.record_successful_run
+    File.utime(timestamp, timestamp, test_task.last_successful_run_file)
+  end
+end
+
+
 describe Buildr::TestTask do
   def test_task
     @test_task ||= define('foo').test
@@ -235,6 +243,10 @@ describe Buildr::TestTask do
     depends = project('foo').test.dependencies
     depends.index(project('foo').test.resources.target).should < depends.index(project('foo').resources.target)
   end
+  
+  it 'should not have a last successful run timestamp before the tests are run' do
+    test_task.timestamp.should == Rake::EARLY
+  end
 
   it 'should clean after itself (test files)' do
     define('foo') { test.compile.using(:javac) }
@@ -312,10 +324,17 @@ describe Buildr::TestTask, 'with passing tests' do
   it 'should execute teardown task' do
     lambda { test_task.invoke }.should run_task('foo:test:teardown')
   end
+  
+  it 'should update the last successful run timestamp' do
+    before = Time.now ; test_task.invoke ; after = Time.now
+    (before-1..after+1).should include(test_task.timestamp)
+  end
 end
 
 
 describe Buildr::TestTask, 'with failed test' do
+  include TestHelper
+  
   def test_task
     @test_task ||= begin
       define 'foo' do
@@ -364,6 +383,13 @@ describe Buildr::TestTask, 'with failed test' do
 
   it 'should execute teardown task' do
     lambda { test_task.invoke rescue nil }.should run_task('foo:test:teardown')
+  end
+  
+  it 'should not update the last successful run timestamp' do
+    a_second_ago = Time.now - 1
+    set_last_successful_test_run test_task, a_second_ago
+    test_task.invoke rescue nil
+    test_task.timestamp.should <= a_second_ago
   end
 end
 
@@ -450,6 +476,13 @@ describe Buildr::Project, '#test' do
       test.options[:properties].should == {}
     end
   end
+  
+  it "should run from project's build task" do
+    write 'src/main/java/Foo.java'
+    write 'src/test/java/FooTest.java'
+    define('foo')
+    lambda { task('foo:build').invoke }.should run_task('foo:test')
+  end
 end
 
 
@@ -508,7 +541,7 @@ describe Buildr::Project, '#test.compile' do
 end
 
 
-describe Buildr::Project, 'test:resources' do
+describe Buildr::Project, '#test.resources' do
   it 'should ignore resources unless they exist' do
     define('foo').test.resources.sources.should be_empty
     project('foo').test.resources.target.should be_nil
@@ -537,6 +570,99 @@ describe Buildr::Project, 'test:resources' do
   end
 end
 
+
+describe Buildr::TestTask, '#invoke' do
+  include TestHelper
+  
+  def test_task
+    @test_task ||= define('foo') {
+      test.using(:junit)
+      test.instance_eval do
+        @framework.stub!(:tests).and_return(['PassingTest'])
+        @framework.stub!(:run).and_return(['PassingTest'])
+      end
+    }.test
+  end
+  
+  it 'should require dependencies to exist' do
+    lambda { test_task.with('no-such.jar').invoke }.should \
+      raise_error(RuntimeError, /Don't know how to build/)
+  end
+
+  it 'should run all dependencies as prerequisites' do
+    file(File.expand_path('no-such.jar')) { task('prereq').invoke }
+    lambda { test_task.with('no-such.jar').invoke }.should run_tasks(['prereq', 'foo:test'])
+  end
+
+  it 'should run tests if they have never run' do
+    lambda { test_task.invoke }.should run_task('foo:test')
+  end
+  
+  it 'should not run tests if test option is off' do
+    Buildr.options.test = false
+    lambda { test_task.invoke }.should_not run_task('foo:test')
+  end
+  
+  describe 'when there was a successful test run already' do
+    before do
+      @a_second_ago = Time.now - 1
+      src = ['main/java/Foo.java', 'main/resources/config.xml', 'test/java/FooTest.java', 'test/resources/config-test.xml'].map { |f| File.join('src', f) }
+      target = ['classes/Foo.class', 'resources/config.xml', 'test/classes/FooTest.class', 'test/resources/config-test.xml'].map { |f| File.join('target', f) }
+      files = ['buildfile'] + src + target
+      files.each { |file| write file }
+      (files + files.map { |file| file.pathmap('%d') }).each { |file| File.utime(@a_second_ago, @a_second_ago, file) }
+      set_last_successful_test_run test_task, @a_second_ago
+    end
+    
+    it 'should not run tests if nothing changed' do
+      lambda { test_task.invoke }.should_not run_task('foo:test')
+    end
+    
+    it 'should run tests if options.test is :all' do
+      Buildr.options.test = :all
+      lambda { test_task.invoke }.should run_task('foo:test')
+    end
+    
+    it 'should run tests if main compile target changed' do
+      touch project('foo').compile.target.to_s
+      lambda { test_task.invoke }.should run_task('foo:test')
+    end
+    
+    it 'should run tests if test compile target changed' do
+      touch test_task.compile.target.to_s
+      lambda { test_task.invoke }.should run_task('foo:test')
+    end
+    
+    it 'should run tests if main resources changed' do
+      touch project('foo').resources.target.to_s
+      lambda { test_task.invoke }.should run_task('foo:test')
+    end
+    
+    it 'should run tests if test resources changed' do
+      touch test_task.resources.target.to_s
+      lambda { test_task.invoke }.should run_task('foo:test')
+    end
+    
+    it 'should run tests if compile-dependent project changed' do
+      write 'bar/src/main/java/Bar.java', 'public class Bar {}'
+      define('bar', :version=>'1.0', :base_dir=>'bar') { package :jar }
+      project('foo').compile.with project('bar')
+      lambda { test_task.invoke }.should run_task('foo:test')
+    end
+    
+    it 'should run tests if test-dependent project changed' do
+      write 'bar/src/main/java/Bar.java', 'public class Bar {}'
+      define('bar', :version=>'1.0', :base_dir=>'bar') { package :jar }
+      test_task.with project('bar')
+      lambda { test_task.invoke }.should run_task('foo:test')
+    end
+    
+    it 'should run tests if buildfile changed' do
+      touch 'buildfile'
+      lambda { test_task.invoke }.should run_task('foo:test')
+    end
+  end
+end
 
 describe Rake::Task, 'test' do
   it 'should be recursive' do
@@ -604,6 +730,8 @@ end
 
 
 describe 'test rule' do
+  include TestHelper
+  
   it 'should execute test task on local project' do
     define('foo') { define 'bar' }
     lambda { task('test:something').invoke }.should run_task('foo:test')
@@ -663,18 +791,26 @@ describe 'test rule' do
     define 'foo'
     task('test:Something').invoke
   end
-end
-
-
-describe Rake::Task, 'build' do
-  it 'should run test task if test option is on' do
-    Buildr.options.test = true
-    lambda { task('build').invoke }.should run_tasks('test')
+  
+  it 'should execute the named tests even if the test task is not needed' do
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+    end
+    project('foo').test.record_successful_run
+    task('test:something').invoke
+    project('foo').test.tests.should include('something')
   end
-
-  it 'should not run test task if test option is off' do
-    Buildr.options.test = false
-    lambda { task('build').invoke }.should_not run_task('test')
+  
+  it 'should not update the last successful test run timestamp' do
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+    end
+    a_second_ago = Time.now - 1
+    set_last_successful_test_run project('foo').test, a_second_ago
+    task('test:something').invoke
+    project('foo').test.timestamp.should <= a_second_ago
   end
 end
 
@@ -857,7 +993,7 @@ describe Rake::Task, 'integration' do
       define('bar') { test.using :integration=>false }
     end
     lambda { task('package').invoke }.should run_tasks(['foo:package', 'foo:test'],
-      ['foo:bar:build', 'foo:bar:test', 'foo:bar:package'])
+      ['foo:bar:test', 'foo:bar:package'])
   end
 
   it 'should not execute by local package task if test=no' do

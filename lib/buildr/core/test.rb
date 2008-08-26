@@ -188,13 +188,14 @@ module Buildr
       @dependencies = FileList[]
       @include = []
       @exclude = []
+      @forced_need = false
       parent_task = Project.parent_task(name)
       if parent_task.respond_to?(:options)
         @options = OpenObject.new { |hash, key| parent_task.options[key].clone rescue parent_task.options[key] }
       else
         @options = OpenObject.new(default_options)
       end
-      enhance do
+      enhance [application.buildfile.name] do
         run_tests if framework
       end
     end
@@ -217,6 +218,10 @@ module Buildr
     end
 
     def execute(args) #:nodoc:
+      if Buildr.options.test == false
+        info "Skipping tests for #{project.name}"
+        return
+      end
       setup.invoke
       begin
         super
@@ -274,7 +279,7 @@ module Buildr
     # :call-seq:
     #   with(*specs) => self
     #
-    # Specify artifacts (specs, tasks, files, etc) to include in the depdenenciest list
+    # Specify artifacts (specs, tasks, files, etc) to include in the dependencies list
     # when compiling and running tests.
     def with(*artifacts)
       @dependencies |= Buildr.artifacts(artifacts.flatten).uniq
@@ -390,6 +395,22 @@ module Buildr
       @report_to ||= file(@project.path_to(:reports, framework)=>self)
     end
 
+    # The path to the file that stores the time stamp of the last successful test run.
+    def last_successful_run_file #:nodoc:
+      File.join(report_to.to_s, 'last_successful_run')
+    end
+    
+    # The time stamp of the last successful test run.  Or Rake::EARLY if no successful test run recorded.
+    def timestamp #:nodoc:
+      File.exist?(last_successful_run_file) ? File.mtime(last_successful_run_file) : Rake::EARLY
+    end
+    
+    # Call this method when a test run is successful to record the current system time.
+    def record_successful_run #:nodoc:
+      mkdir_p report_to.to_s
+      touch last_successful_run_file
+    end
+    
     # The project this task belongs to.
     attr_reader :project
 
@@ -434,12 +455,14 @@ module Buildr
           fail 'Tests failed!'
         end
       end
+      record_successful_run unless @forced_need
     end
 
     # Limit running tests to specific list.
     def only_run(tests)
       @include = Array(tests)
       @exclude.clear
+      @forced_need = true
     end
 
     def invoke_prerequisites(args, chain) #:nodoc:
@@ -447,6 +470,14 @@ module Buildr
       super
     end
 
+    def needed? #:nodoc:
+      latest_prerequisite = @prerequisites.map { |p| application[p, @scope] }.sort_by(&:timestamp).last
+      needed = (timestamp == Rake::EARLY) || latest_prerequisite.timestamp > timestamp
+      trace "Testing#{needed ? ' ' : ' not '}needed. " +
+        "Latest prerequisite change: #{latest_prerequisite.timestamp} (#{latest_prerequisite.to_s}). " +
+        "Last successful test run: #{timestamp}."
+      return needed || @forced_need || Buildr.options.test == :all
+    end
   end
 
 
@@ -508,20 +539,12 @@ module Buildr
       #   buildr test:MyTest
       # will run the test com.example.MyTest, if such a test exists for this project.
       #
-      # If you want to run multiple test, separate tham with a comma. You can also use glob
+      # If you want to run multiple test, separate them with a comma. You can also use glob
       # (* and ?) patterns to match multiple tests, see the TestTask#include method.
       rule /^test:.*$/ do |task|
         # The map works around a JRuby bug whereby the string looks fine, but fails in fnmatch.
         TestTask.only_run task.name.scan(/test:(.*)/)[0][0].split(',').map { |t| "#{t}" }
         task('test').invoke
-      end
-
-      task 'build' do |task|
-        # Make sure this happens as the last action on the build, so all other enhancements
-        # are made to run before starting the tests.
-        task.enhance do
-          task('test').invoke unless Buildr.options.test == false
-        end
       end
 
       IntegrationTestsTask.define_task('integration')
@@ -565,6 +588,8 @@ module Buildr
       test.with project.compile.dependencies
       # Picking up the test frameworks adds further dependencies.
       test.framework
+      
+      project.build test unless test.options[:integration]
 
       project.clean do
         rm_rf test.compile.target.to_s, :verbose=>false if test.compile.target
