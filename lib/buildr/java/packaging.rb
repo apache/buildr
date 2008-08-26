@@ -31,7 +31,7 @@ module Buildr
 
         class << self
 
-          # :call_seq:
+          # :call-seq:
           #   parse(str) => manifest
           #
           # Parse a string in MANIFEST.MF format and return a new Manifest.
@@ -51,7 +51,7 @@ module Buildr
             }
           end
 
-          # :call_seq:
+          # :call-seq:
           #   from_zip(file) => manifest
           #
           # Parse the MANIFEST.MF entry of a ZIP (or JAR) file and return a new Manifest.
@@ -62,7 +62,7 @@ module Buildr
             end
           end
 
-          # :call_seq:
+          # :call-seq:
           #   update_manifest(file) { |manifest| ... }
           #
           # Updates the MANIFEST.MF entry of a ZIP (or JAR) file.  Reads the MANIFEST.MF,
