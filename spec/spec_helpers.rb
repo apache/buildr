@@ -115,7 +115,8 @@ unless self.class.const_defined?('SpecHelpers')
 
       def failure_message
         return @but_not.negative_failure_message if all_ran? && @but_not
-        "Expected the tasks #{expected} to run, but #{remaining} did not run, or not in the order we expected them to."
+        "Expected the tasks #{expected} to run, but #{remaining} did not run, or not in the order we expected them to." +
+          "  Tasks that ran: #{$executed.inspect}"
       end
 
       def negative_failure_message
