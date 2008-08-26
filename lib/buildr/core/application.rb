@@ -93,7 +93,8 @@ module Buildr
   private
 
     def load_from(base_name, dir = nil)
-      file_name = ['yaml', 'yml'].map { |ext| File.expand_path("#{base_name}.#{ext}", dir) }.find { |fn| File.exist?(fn) }
+      base_name = File.expand_path(base_name, dir) if dir
+      file_name = ['yaml', 'yml'].map { |ext| "#{base_name}.#{ext}" }.find { |fn| File.exist?(fn) }
       return {} unless file_name
       yaml = YAML.load(File.read(file_name)) || {}
       fail "Expecting #{file_name} to be a map (name: value)!" unless Hash === yaml
@@ -255,7 +256,7 @@ module Buildr
       files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
         select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
       #Load local tasks that can be used in the Buildfile.
-      files += Dir["#{Dir.pwd}/tasks/*.rake"]
+      files += Dir['tasks/*.rake']
       files.each do |file|
         unless $LOADED_FEATURES.include?(file)
           load file
