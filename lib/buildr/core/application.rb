@@ -352,10 +352,10 @@ module Buildr
   # This task stands for the buildfile and all its associated helper files (e.g., buildr.rb, build.yaml).
   # By using this task as a prerequisite for other tasks, you can ensure these tasks will be needed
   # whenever the buildfile changes.
-  class BuildfileTask < Rake::Task
+  class BuildfileTask < Rake::FileTask
     
     def timestamp
-      ([name] + prerequisites).map { |f| File.stat(f).mtime }.max
+      ([name] + prerequisites).map { |f| File.stat(f).mtime }.max rescue Time.now
     end
   end
 

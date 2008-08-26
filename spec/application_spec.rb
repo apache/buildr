@@ -328,6 +328,12 @@ describe Buildr, 'settings' do
       Buildr.application.buildfile.should == file(File.expand_path('buildfile'))
     end
     
+    it 'should ignore any rake namespace' do
+      namespace 'dummy_ns' do
+        Buildr.application.buildfile.should point_to_path('buildfile')
+      end
+    end
+    
     it 'should have the same timestamp as the buildfile' do
       Buildr.application.buildfile.timestamp.should be_close(@buildfile_time, 1)
     end
