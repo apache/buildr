@@ -18,9 +18,11 @@ require File.join(File.dirname(__FILE__), 'spec_helpers')
 
 
 module TestHelper
-  def set_last_successful_test_run test_task, timestamp
-    test_task.record_successful_run
-    File.utime(timestamp, timestamp, test_task.last_successful_run_file)
+  def touch_last_successful_test_run(test_task, timestamp = Time.now)
+    test_task.instance_eval do
+      record_successful_run
+      File.utime(timestamp, timestamp, last_successful_run_file)
+    end
   end
 end
 
@@ -387,7 +389,7 @@ describe Buildr::TestTask, 'with failed test' do
   
   it 'should not update the last successful run timestamp' do
     a_second_ago = Time.now - 1
-    set_last_successful_test_run test_task, a_second_ago
+    touch_last_successful_test_run test_task, a_second_ago
     test_task.invoke rescue nil
     test_task.timestamp.should <= a_second_ago
   end
@@ -611,7 +613,7 @@ describe Buildr::TestTask, '#invoke' do
       files = ['buildfile'] + src + target
       files.each { |file| write file }
       (files + files.map { |file| file.pathmap('%d') }).each { |file| File.utime(@a_second_ago, @a_second_ago, file) }
-      set_last_successful_test_run test_task, @a_second_ago
+      touch_last_successful_test_run test_task, @a_second_ago
     end
     
     it 'should not run tests if nothing changed' do
@@ -797,7 +799,7 @@ describe 'test rule' do
       test.using(:junit)
       test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
     end
-    project('foo').test.record_successful_run
+    touch_last_successful_test_run project('foo').test
     task('test:something').invoke
     project('foo').test.tests.should include('something')
   end
@@ -808,7 +810,7 @@ describe 'test rule' do
       test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
     end
     a_second_ago = Time.now - 1
-    set_last_successful_test_run project('foo').test, a_second_ago
+    touch_last_successful_test_run project('foo').test, a_second_ago
     task('test:something').invoke
     project('foo').test.timestamp.should <= a_second_ago
   end

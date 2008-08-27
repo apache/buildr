@@ -405,12 +405,6 @@ module Buildr
       File.exist?(last_successful_run_file) ? File.mtime(last_successful_run_file) : Rake::EARLY
     end
     
-    # Call this method when a test run is successful to record the current system time.
-    def record_successful_run #:nodoc:
-      mkdir_p report_to.to_s
-      touch last_successful_run_file
-    end
-    
     # The project this task belongs to.
     attr_reader :project
 
@@ -458,6 +452,12 @@ module Buildr
       record_successful_run unless @forced_need
     end
 
+    # Call this method when a test run is successful to record the current system time.
+    def record_successful_run #:nodoc:
+      mkdir_p report_to.to_s
+      touch last_successful_run_file
+    end
+    
     # Limit running tests to specific list.
     def only_run(tests)
       @include = Array(tests)
@@ -471,7 +471,8 @@ module Buildr
     end
 
     def needed? #:nodoc:
-      latest_prerequisite = @prerequisites.map { |p| application[p, @scope] }.sort_by(&:timestamp).last
+      latest_prerequisite = @prerequisites.map { |p| application[p, @scope] }.
+        inject { |latest, task| task.timestamp > latest.timestamp ? task :latest }
       needed = (timestamp == Rake::EARLY) || latest_prerequisite.timestamp > timestamp
       trace "Testing#{needed ? ' ' : ' not '}needed. " +
         "Latest prerequisite change: #{latest_prerequisite.timestamp} (#{latest_prerequisite.to_s}). " +
