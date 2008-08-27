@@ -116,7 +116,7 @@ Be sure to read the nailgun help by executing the @nailgun:help@ task.
 
 h2. Growl, Qube
 
-For OS/X users, Buildr supports "Growl":http://growl.info/ out of the box to send "completed and "failed" notifications to the user.
+For OS X users, Buildr supports "Growl":http://growl.info/ out of the box to send "completed and "failed" notifications to the user.
 
 For other platforms or if you want to notify the user differently, Buildr offers two extension points:
 

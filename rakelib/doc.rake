@@ -60,7 +60,7 @@ begin
   Docter::Rake.generate 'site', collection, template
 
   Docter::Rake.generate 'print',
-    Docter.collection(spec.name).using('doc/print.toc.yaml').include('doc/pages', 'LICENSE'),
+    Docter.collection(spec.name).using('doc/print.toc.yaml').include('doc/pages'),
     Docter.template('doc/print.haml').include('doc/css', 'doc/images'), :one_page
 
   file('print/buildr.pdf'=>'print') do |task|

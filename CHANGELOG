@@ -438,7 +438,7 @@ will come in due time (and it's not always necessary anyway).
 buildr/jdepend)
 * Added: Cobertura test coverage tasks, reporting both html and xml. (Requires
 buildr/cobertura)
-* Changed: tools_jar now returns empty array on OS/X, part of the ongoing
+* Changed: tools_jar now returns empty array on OS X, part of the ongoing
 Write Once/Test Everywere effort. (Credit Paul Brown)
 * Fixed: Work around keep_alive bug in Net::HTTP.
 (http://blade.nagaokaut.ac.jp/cgi-bin/scat.rb/ruby/ruby-core/10818)
@@ -448,7 +448,7 @@ Write Once/Test Everywere effort. (Credit Paul Brown)
 TestSuite.
 * Changed: You can now run rake test:{foo,bar} to match against either foo or
 bar (requires \{..\} on UNIX).
-* Changed: JAVA_HOME now required on all platforms, along with more OS/X
+* Changed: JAVA_HOME now required on all platforms, along with more OS X
 fixes. (Credit Paul Brown)
 * Fixed: You can now run rake test:<name> from any directory, and it will find
 just the right test cases.
@@ -476,7 +476,7 @@ projects on a project instead.
 * Fixed: Local directory tasks now work from any directory in the project.
 * Fixed: Artifacts no longer created with timestamp from server.
 * Fixed: Buildr no longer fails when run without tools.jar or JAVA_HOME
-(OS/X). (Credit Lyle Johnson)
+(OS X). (Credit Lyle Johnson)
 * Fixed: Manifest gets EOL to keep EOF company. (Credit Tommy Knowlton)
 * Fixed: Compile tasks clean after themselves when target directory changed.
 (Credit Lyle Johnson)

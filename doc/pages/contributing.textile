@@ -82,13 +82,13 @@ Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from GitHub"
 $ git clone git://github.com/vic/buildr.git
 }}}
 
-The GitHub repository is maintained by contributors to this project, but is *not* an official Apache repository.  To obtain Buildr from the official Apache repository, consider using @giv-svn@ instead.
-
 If you want to learn more about Git, you can start by watching Scott Chacon’s "Git presentation":http://en.oreilly.com/rails2008/public/asset/attachment/2816 (PDF), or any of the "Git screencasts":http://www.gitcasts.com/.  For more, there's also the "Git Internals book":http://peepcode.com/products/git-internals-pdf.
 
 And keep this "Git cheat sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet-medium.png close at hand. Very useful.
 
-h3. Installing from Source
+*Note:* The GitHub repository is maintained by contributors to this project, but is *not* an official Apache repository.  To obtain Buildr from the official Apache repository, consider using @giv-svn@ instead.
+
+h3. Working with Source Code
 
 To install Buildr from the source directory:
 
@@ -104,6 +104,12 @@ $ cd buildr
 $ jruby -S rake setup install
 }}}
 
+The _setup_ task takes care of installing all the necessary dependencies used for building, testing and running Buildr. Once in a while we upgrade or add new dependencies, if you're experiencing a missing dependency, simply run @rake setup@ again.
+
+The _install_ task creates a Gem in your working directory (_pkg/_) and install it in your local repository. Since Ruby Gems uses version numbers to detect new releases, if you installed Buildr this way and want to upgrade to the latest official release, you need to use @gem install buildr@ rather than @gem upgrade@.
+
+Both _setup_ and _install_ tasks use the @sudo@ command on platforms that require it (i.e. not Windows), so there's no need to run @sudo rake@ when working with the Buildr source code.
+
 
 h3. Using development build
 
@@ -113,7 +119,7 @@ Occasionally we'll make development builds from the current code in trunk/head. 
 gem source --add http://people.apache.org/~assaf/buildr/snapshot
 }}}
 
-Since Ruby Gems only upgrades when it notices a new version number, you have to @gem install buildr@ to get the most recent development build.
+Since Ruby Gems uses version numbers to detect new releases, if you installed Buildr from a snapshot and want to upgrade to a newer snapshot or the latest official release, you need to use @gem install buildr@ rather than @gem upgrade@.
 
 If you want to go back to using the RubyForge releases:
 
@@ -136,8 +142,11 @@ We test using "RSpec":http://rspec.info/, a Behavior-Driven Development test fra
 You can run an individual specifications using the @spec@ command, for example:
 
 {{{!sh
+$ spec spec/compiler_spec.rb
 $ spec spec/compiler_spec.rb -l 409
 }}}
+
+The first command will run all the specifications in @compiler_spec@, the second command will run only the specification identified by line 409 of that file. You can use line numbers to point at a particular specification (lines starting with @it@), or set of specifications (lines starting with @describe@). You can also use the @-e@ command line option to name a particular specification.
 
 To make sure your change did not break anything else, you can run all the specifications (be patient, we have a lot of these):
 
@@ -145,9 +154,17 @@ To make sure your change did not break anything else, you can run all the specif
 $ rake spec
 }}}
 
+If you get any failures, you can use @rake failed@ to run only the failed specs, and repeat until there are no more failed specs to run. The list of failed specs is stored in the file _failed_.
+
 We always @rake spec@ before making a release.
 
-You can also check out the "RSpec report":report.html which provides the official specification against which we test each release.
+For full test coverage:
+
+{{{!sh
+$ rake coverage
+}}}
+
+Specification and coverage reports are HTML files you can view with a Web browser, look for them in the _reports_ directory. You can also check out the "RSpec report":specs.html and "test coverage":coverage/index.html we publish with each release.
 
 
 h3.  Documentation

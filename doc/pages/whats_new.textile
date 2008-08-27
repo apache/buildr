@@ -304,7 +304,7 @@ h3.  Documentation
 * The "What's new?":whats_new.html page (this one, actually), summarizes all the important new features and changes in each release.
 * The "Recipes":recipes.html page (also available in the PDF) lists recipes for using Buildr, collected from the mailing list.  Feel free to contribute tips, tricks and techniques.
 * The "Troubleshooting":troubleshooting.html page (also available in the PDF) collects troubleshooting ideas from the mailing list.
-* The "Getting Started":getting_started.html has been rewritten to cover all you need to know about downloading and installing Buildr on Linux, OS/X, Windows and with JRuby (1.1 or later).
+* The "Getting Started":getting_started.html has been rewritten to cover all you need to know about downloading and installing Buildr on Linux, OS X, Windows and with JRuby (1.1 or later).
 * A new "Contributing":contributing.html page has more details on how to file bugs, policy for submitting patches, running Buildr test cases, and helping with the documentation.
 * A new page for "Settings and Profiles":settings_profiles.html.
 * The "Extending Buildr":extending.html page that deals with writing your own tasks, creating extensions and specifying alternative layouts.

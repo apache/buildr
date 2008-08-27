@@ -20,7 +20,7 @@ Make sure to set JAVA_HOME environment variable first, then:
 
   gem install buildr
 
-(Use sudo for Linux and OS/X)
+(Use sudo for Linux and OS X)
 
 More installation and setup instructions available online
 http://incubator.apache.org/buildr/
@@ -79,7 +79,7 @@ point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
 
 When prompted for a platform, select ruby.
 
-=== OS/X
+=== OS X
 
 Leopard includes the latest version of Ruby, if you are using Tiger or an older
 release, we recommend re-installing the latest:

@@ -231,7 +231,7 @@ You can run @buildr@ from any directory in your project.  To keep tasks consiste
 
 But in practice, you'll want to use the @path_to@ method.  This method calculates a path relative to the project, a better way if you ever need to refactor your code, say turn a ad hoc task into a function you reuse.
 
-The @path_to@ method takes an array of strings and concatenates them into a path.  Absolute paths are returned as they are, relative paths are expanded relative to the project's base directory.  Slashes, if you don't already know, work very well on both Windows, Linux and OS/X.  And as a shortcut, you can use @_@.
+The @path_to@ method takes an array of strings and concatenates them into a path.  Absolute paths are returned as they are, relative paths are expanded relative to the project's base directory.  Slashes, if you don't already know, work very well on both Windows, Linux and OS X.  And as a shortcut, you can use @_@.
 
 For example:
 

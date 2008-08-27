@@ -38,14 +38,14 @@ begin
 
   # TODO: Horribly broken!  Fix some other time.
   desc 'Run RSpec and generate Spec and coverage reports (slow)'
-  Spec::Rake::SpecTask.new('rcov') do |task|
-    task.spec_files = Dir['spec/**/*spec.rb']
+  Spec::Rake::SpecTask.new('coverage') do |task|
+    task.spec_files = Dir['spec/**/*_spec.rb']
     task.spec_opts = %W{--format progress --colour --format failing_examples:failed --format html:reports/specs.html --backtrace}    
     task.rcov = true
     task.rcov_dir = 'reports/coverage'
     task.rcov_opts = %W{--exclude spec,bin,#{Config::CONFIG['sitedir']},#{Gem.path.join(',')} --text-summary}
   end
-  file 'reports/coverage'=>'rcov'
+  file 'reports/coverage'=>'coverage'
 
   # Useful for testing with JRuby when using Ruby and vice versa.
   namespace 'spec' do
