@@ -40,15 +40,13 @@ namespace 'apache' do
     print 'Checking that files contain the Apache license ... '
     required = task.prerequisites.select { |fn| File.file?(fn) }
     missing = required.reject { |fn| 
-      comments = File.read(fn).scan(/(\/\*(.*?)\*\/)|^#\s+(.*?)$|<!--(.*?)-->/m).
+      comments = File.read(fn).scan(/(\/\*(.*?)\*\/)|^#\s+(.*?)$|^-#\s+(.*?)$|<!--(.*?)-->/m).
         map { |match| match.compact }.flatten.join("\n")
       comments =~ /Licensed to the Apache Software Foundation/ && comments =~ /http:\/\/www.apache.org\/licenses\/LICENSE-2.0/
     }
     fail "#{missing.join(', ')} missing Apache License, please add it before making a release!" unless missing.empty?
     puts 'OK'
   end
-  task('license').prerequisites.exclude('.class', '.png', '.jar', '.tif', '.textile', '.haml',
-    'README', 'LICENSE', 'CHANGELOG', 'DISCLAIMER', 'NOTICE', 'KEYS', 'spec/spec.opts')
 
   task 'check' do
     ENV['GPG_USER'] or fail 'Please set GPG_USER (--local-user) environment variable so we know which key to use.'
@@ -63,7 +61,7 @@ namespace 'apache' do
     end
   end
 
-  task 'sign'=>['KEYS', 'staged/distro'] do
+  task 'sign'=>['etc/KEYS', 'staged/distro'] do
     gpg_user = ENV['GPG_USER'] or fail 'Please set GPG_USER (--local-user) environment variable so we know which key to use.'
     FileList['staged/distro/*.{gem,zip,tgz}'].each do |pkg|
       bytes = File.open(pkg, 'rb') { |file| file.read }
@@ -71,7 +69,7 @@ namespace 'apache' do
       File.open(pkg + '.sha1', 'w') { |file| file.write SHA1.hexdigest(bytes) << ' ' << File.basename(pkg) }
       sh 'gpg', '--local-user', gpg_user, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
     end
-    cp 'KEYS', 'staged/distro'
+    cp 'etc/KEYS', 'staged/distro'
   end
 
   # Publish prerequisites to distro server.
@@ -109,34 +107,6 @@ p>. ("Release signing keys":#{url}/KEYS)
     end
     puts 'Done'
   end
-
-=begin
-  task 'distro-links'=>['staged/site', 'apache:sign'] do |task, args|
-    rows = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
-      name, md5 = File.basename(pkg), File.read("#{pkg}.md5").split.first
-      <<-HTML
-      <tr>
-        <td><a href="#{url}/#{name}">#{name}</a></td>
-        <td><a href="#{url}/#{name}.md5">#{md5}</a></td>
-        <td><a href="#{url}/#{name}.asc">Sig</a></td>
-      </tr>
-      HTML
-    }
-    html = <<-HTML
-    <h3>#{spec.name} #{spec.version}#{args.incubating && "-incubating"} (#{Time.now.strftime('%Y-%m-%d')})</h3>
-    <table>
-      <thead><th>Package</th><th>MD5 Checksum</th><th>PGP</th></thead>
-    #{rows.join("\n")}
-    </table>
-    <p style="text-align:right"> (<a href="#{url}/KEYS">Release signing keys</a>)</p>
-    HTML
-    file_name = 'staged/site/download.html'
-    modified = File.read(file_name).sub(/<h2.*binaries.*source.*<\/h2>.*/i) { |header| "#{header}\n#{html}\n" }
-    File.open file_name, 'w' do |file|
-      file.write modified
-    end
-  end
-=end
 
   file 'staged/site'=>['distro-links', 'staged', 'site'] do
     rm_rf 'staged/site'

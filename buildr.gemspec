@@ -26,8 +26,10 @@ Gem::Specification.new do |spec|
   # Rakefile needs to create spec for both platforms (ruby and java), using the
   # $platform global variable.  In all other cases, we figure it out from RUBY_PLATFORM.
   spec.platform       = $platform || RUBY_PLATFORM[/java/] || 'ruby'
-  spec.files          = Dir['lib/**/*', 'addon/**/*', 'README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'KEYS',
-                         '*.gemspec', 'Rakefile', 'rakelib/**/*', 'spec/**/*', 'doc/**/*']
+  
+  spec.files          = Dir['lib/**/*', 'bin/**/*', 'addon/**/*', 'doc/**/*', 'spec/**/*',
+                            'README.rdoc', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'CHANGELOG',
+                            'buildr.*', 'Rakefile', 'rakelib/**/*', '_buildr', 'etc/**/*']
   spec.require_paths  = ['lib', 'addon']
   spec.bindir         = 'bin'                               # Use these for applications.
   spec.executable     = 'buildr'
