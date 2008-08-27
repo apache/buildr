@@ -471,8 +471,7 @@ module Buildr
     end
 
     def needed? #:nodoc:
-      latest_prerequisite = @prerequisites.map { |p| application[p, @scope] }.
-        inject { |latest, task| task.timestamp > latest.timestamp ? task :latest }
+      latest_prerequisite = @prerequisites.map { |p| application[p, @scope] }.max { |a,b| a.timestamp<=>b.timestamp }
       needed = (timestamp == Rake::EARLY) || latest_prerequisite.timestamp > timestamp
       trace "Testing#{needed ? ' ' : ' not '}needed. " +
         "Latest prerequisite change: #{latest_prerequisite.timestamp} (#{latest_prerequisite.to_s}). " +
