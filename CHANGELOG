@@ -2,6 +2,8 @@
 * Added:  Growl notifications (OS X only).
 * Added:  error, info and trace methods.
 * Added:  BUILDR-128 Emma support
+* Added:  Release task support for alternative SVN repository layout
+          (e.g., http://my.repo.org/trunk/foo).
 * Change: Error reporting now shows 'buildr aborted!' (used to say rake),
           more of the stack trace without running --trace, and when running
           with supported terminal, error message is red.
@@ -34,6 +36,7 @@
 * Fixed:  BUILDR-126  Tests options are shared between unrelated projects when
           using #options instead of #using (Lacton).
 * Fixed:  Should not display "(in `pwd`, development)" when using --quiet.
+* Fixed:  Release task's regexp to find either THIS_VERSION and VERSION_NUMBER.
 * Docs:   BUILDR-111 Troubleshoot tip when Buildr's bin directory shows up in
           RUBYLIB (Geoffrey Ruscoe).
 

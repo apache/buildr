@@ -191,3 +191,184 @@ describe Project, '#reports' do
     @project.reports.should eql('baz')
   end
 end
+
+
+describe Buildr::Release, '#check' do
+  before do
+    Buildr::Svn.stub!(:uncommitted_files).and_return('')
+  end
+  
+  it 'should accept to release from the trunk' do
+    Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
+    lambda { Release.check }.should_not raise_error
+  end
+  
+  it 'should accept to release from a branch' do
+    Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/branches/1.0')
+    lambda { Release.check }.should_not raise_error
+  end
+  
+  it 'should reject to release from a tag' do
+    Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/tags/1.0.0')
+    lambda { Release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
+  end
+  
+  it 'should reject a non standard repository layout' do
+    Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/bar')
+    lambda { Release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
+  end
+  
+  it 'should reject an uncommitted file' do
+    Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
+    Buildr::Svn.stub!(:uncommitted_files).and_return('M      foo.rb')
+    lambda { Release.check }.should raise_error(RuntimeError,
+      "Uncommitted SVN files violate the First Principle Of Release!\n" +
+      "M      foo.rb")
+  end
+end
+  
+
+describe Buildr::Release, '#extract_versions' do
+  
+  it 'should extract VERSION_NUMBER and NEXT_VERSION with single quotes' do
+    buildfile = ["VERSION_NUMBER = '1.0.0-SNAPSHOT'", "NEXT_VERSION = '1.0.1'"].join("\n")
+    Release.extract_versions(buildfile).should == ['1.0.0-SNAPSHOT', '1.0.1']
+  end
+  
+  it 'should extract VERSION_NUMBER and NEXT_VERSION with double quotes' do
+    buildfile = [%{VERSION_NUMBER = "1.0.1-SNAPSHOT"}, %{NEXT_VERSION = "1.0.2"}].join("\n")
+    Release.extract_versions(buildfile).should == ['1.0.1-SNAPSHOT', '1.0.2']
+  end
+  
+  it 'should extract VERSION_NUMBER and NEXT_VERSION without any spaces' do
+    buildfile = ["VERSION_NUMBER='1.0.2-SNAPSHOT'", "NEXT_VERSION='1.0.3'"].join("\n")
+    Release.extract_versions(buildfile).should == ['1.0.2-SNAPSHOT', '1.0.3']
+  end
+  
+  it 'should extract THIS_VERSION as an alternative to VERSION_NUMBER' do
+    buildfile = ["THIS_VERSION = '1.0.3-SNAPSHOT'", "NEXT_VERSION = '1.0.4'"].join("\n")
+    Release.extract_versions(buildfile).should == ['1.0.3-SNAPSHOT', '1.0.4']
+  end
+  
+  it 'should complain if no current version number' do
+    buildfile = "NEXT_VERSION = '1.0.1'"
+    lambda { Release.extract_versions(buildfile) }.should raise_error('Looking for THIS_VERSION = "..." in your Buildfile, none found')
+  end
+  
+  it 'should complain if no next version number' do
+    buildfile = "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
+    lambda { Release.extract_versions(buildfile) }.should raise_error('Looking for NEXT_VERSION = "..." in your Buildfile, none found')
+  end
+end
+
+
+describe Buildr::Svn, '#repo_url' do
+  it 'should extract the SVN URL from svn info' do
+    Svn.stub!(:svn, 'info').and_return(<<EOF)
+Path: .
+URL: http://my.repo.org/foo/trunk
+Repository Root: http://my.repo.org
+Repository UUID: 12345678-9abc-def0-1234-56789abcdef0
+Revision: 112
+Node Kind: directory
+Schedule: normal
+Last Changed Author: Lacton
+Last Changed Rev: 110
+Last Changed Date: 2008-08-19 12:00:00 +0200 (Tue, 19 Aug 2008)
+EOF
+    Svn.repo_url.should == 'http://my.repo.org/foo/trunk'
+  end
+end
+
+
+# Reference: http://svnbook.red-bean.com/en/1.4/svn.reposadmin.planning.html#svn.reposadmin.projects.chooselayout
+describe Buildr::Release, '#tag url' do
+  it 'should accept to tag foo/trunk' do
+    Release.tag_url('http://my.repo.org/foo/trunk', '1.0.0').should == 'http://my.repo.org/foo/tags/1.0.0'
+  end
+  
+  it 'should accept to tag foo/branches/1.0' do
+    Release.tag_url('http://my.repo.org/foo/branches/1.0', '1.0.1').should == 'http://my.repo.org/foo/tags/1.0.1'
+  end
+  
+  it 'should accept to tag trunk/foo' do
+    Release.tag_url('http://my.repo.org/trunk/foo', '1.0.0').should == 'http://my.repo.org/tags/foo/1.0.0'
+  end
+  
+  it 'should accept to tag branches/foo/1.0' do
+    Release.tag_url('http://my.repo.org/branches/foo/1.0', '1.0.0').should == 'http://my.repo.org/tags/foo/1.0.0'
+  end
+end
+
+
+describe Buildr::Release, '#with_next_version' do
+  before do
+    Buildr.application.stub!(:buildfile).and_return(file('buildfile'))
+    write 'buildfile', <<-EOF
+      THIS_VERSION = '1.1.0'
+      NEXT_VERSION = '1.2.0'
+      EOF
+  end
+  
+  it 'should yield the name of an updated buildfile' do
+    Release.send :with_next_version do |new_filename|
+      File.read(new_filename).should == <<-EOF
+      THIS_VERSION = "1.2.0"
+      NEXT_VERSION = "1.2.1"
+      EOF
+    end
+  end
+  
+  it 'should yield a name different from the original buildfile' do
+    Release.send :with_next_version do |new_filename|
+      new_filename.should_not point_to_path('buildfile')
+    end
+  end
+  
+  it 'should return the new version number' do
+    new_version = Release.send(:with_next_version) {}
+    new_version.should == '1.2.0'
+  end
+end
+
+
+describe Buildr::Release, '#tag' do
+  before do
+    Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
+    Svn.stub!(:copy)
+  end
+  
+  it 'should tag the working copy' do
+    Svn.stub!(:remove)
+    Svn.should_receive(:copy).with(Dir.pwd, 'http://my.repo.org/foo/tags/1.0.1', 'Release 1.0.1')
+    Release.send :tag, '1.0.1'
+  end
+  
+  it 'should remove the tag if it already exists' do
+    Svn.should_receive(:remove).with('http://my.repo.org/foo/tags/1.0.1', 'Removing old copy')
+    Release.send :tag, '1.0.1'
+  end
+  
+  it 'should accept that the tag does not exist' do
+    Svn.stub!(:remove).and_raise(RuntimeError)
+    Release.send :tag, '1.0.1'
+  end
+end
+
+
+describe Buildr::Release, '#commit' do
+  before do
+    write 'buildfile', 'THIS_VERSION = "1.0.0"'
+  end
+  
+  it 'should update the buildfile with the given version number' do
+    Svn.stub!(:commit)
+    Release.send :commit, '1.0.1-SNAPSHOT'
+    file('buildfile').should contain('THIS_VERSION = "1.0.1-SNAPSHOT"')
+  end
+  
+    it 'should commit the new buildfile on the trunk' do
+      Svn.should_receive(:commit).with(File.expand_path('buildfile'), 'Changed version number to 1.0.1-SNAPSHOT')
+      Release.send :commit, '1.0.1-SNAPSHOT'
+    end
+end
