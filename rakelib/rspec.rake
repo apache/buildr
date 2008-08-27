@@ -38,7 +38,7 @@ begin
 
   # TODO: Horribly broken!  Fix some other time.
   desc 'Run RSpec and generate Spec and coverage reports (slow)'
-  Spec::Rake::SpecTask.new('coverage') do |task|
+  Spec::Rake::SpecTask.new('coverage'=>'reports') do |task|
     task.spec_files = Dir['spec/**/*_spec.rb']
     task.spec_opts = %W{--format progress --colour --format failing_examples:failed --format html:reports/specs.html --backtrace}    
     task.rcov = true
