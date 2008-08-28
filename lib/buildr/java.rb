@@ -15,7 +15,7 @@
 
 
 ENV['JAVA_HOME'] ||= '/System/Library/Frameworks/JavaVM.framework/Home' if Config::CONFIG['host_os'] =~ /darwin/i
-require PLATFORM == 'java' ? 'buildr/java/jruby' : 'buildr/java/rjb'
+require RUBY_PLATFORM == 'java' ? 'buildr/java/jruby' : 'buildr/java/rjb'
 
 
 require 'buildr/java/compilers'

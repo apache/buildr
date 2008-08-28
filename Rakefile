@@ -17,7 +17,10 @@
 require 'rake/gempackagetask'
 
 def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
-  @specs ||= ['ruby', 'java'].inject({}) { |hash, $platform| hash.update($platform=>Gem::Specification.load('buildr.gemspec')) }
+  @specs ||= ['ruby', 'java'].inject({}) { |hash, platform|
+    $platform = platform
+    hash.update(platform=>Gem::Specification.load('buildr.gemspec'))
+  }
   @specs[platform]
 end
 

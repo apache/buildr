@@ -112,32 +112,33 @@ module Buildr
 end
 
 
-module Kernel #:nodoc:
-  # Borrowed from Ruby 1.9.
-  def tap
-    yield self if block_given?
-    self
-  end unless method_defined?('tap')
-end
+if RUBY_VERSION < '1.9.0'
+  module Kernel #:nodoc:
+    # Borrowed from Ruby 1.9.
+    def tap
+      yield self if block_given?
+      self
+    end unless method_defined?('tap')
+  end
 
 
-class Symbol #:nodoc:
-  # Borrowed from Ruby 1.9.
-  def to_proc
-    Proc.new{|*args| args.shift.__send__(self, *args)}
-  end unless method_defined?('to_proc')
-end
+  class Symbol #:nodoc:
+    # Borrowed from Ruby 1.9.
+    def to_proc
+      Proc.new{|*args| args.shift.__send__(self, *args)}
+    end unless method_defined?('to_proc')
+  end
 
+  # Also borrowed from Ruby 1.9.
+  class BasicObject #:nodoc:
+    (instance_methods - ['__send__', '__id__', '==', 'send', 'send!', 'respond_to?', 'equal?', 'object_id']).
+      each do |method|
+        undef_method method
+      end
 
-# Also borrowed from Ruby 1.9.
-class BasicObject #:nodoc:
-  (instance_methods - ['__send__', '__id__', '==', 'send', 'send!', 'respond_to?', 'equal?', 'object_id']).
-    each do |method|
-      undef_method method
+    def self.ancestors
+      [Kernel]
     end
-
-  def self.ancestors
-    [Kernel]
   end
 end
 

@@ -44,7 +44,7 @@ module Buildr
   class Jetty
 
     # Which version of Jetty we're using by default (change with options.jetty.version).
-    VERSION = "6.1.3" unless const_defined?('VERSION')
+    VERSION = "6.1.3"
     SLF4J_VERSION = "1.4.3"
     
     # Libraries used by Jetty.

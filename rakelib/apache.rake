@@ -14,8 +14,8 @@
 # the License.
 
 
-require 'md5'
-require 'sha1'
+require 'digest/md5'
+require 'digest/sha1'
 
 
 # Tasks specific to Apache projects (license, release, etc).

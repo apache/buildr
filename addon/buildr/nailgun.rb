@@ -39,7 +39,7 @@ module Buildr
     attr_accessor :server, :port, :jruby_queue_size, :buildr_queue_size
     attr_accessor :jruby_home, :home
     
-    self.jruby_home = if PLATFORM =~ /java/
+    self.jruby_home = if RUBY_PLATFORM =~ /java/
                         Config::CONFIG['prefix']
                       else
                         ENV['JRUBY_HOME'] || File.join(ENV['HOME'], '.jruby')

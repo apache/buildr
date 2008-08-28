@@ -14,7 +14,6 @@
 # the License.
 
 
-$KCODE = 'utf8'
 module Buildr
   VERSION = '1.3.3'.freeze # unless const_defined?(:VERSION)
 end

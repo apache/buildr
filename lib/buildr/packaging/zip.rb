@@ -14,6 +14,7 @@
 # the License.
 
 
+$LOADED_FEATURES.unshift 'ftools' if RUBY_VERSION >= '1.9.0'
 require 'zip/zip'
 require 'zip/zipfilesystem'
 

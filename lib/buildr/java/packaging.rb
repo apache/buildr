@@ -168,14 +168,14 @@ module Buildr
             if manifest
               # Tempfiles gets deleted on garbage collection, so we're going to hold on to it
               # through instance variable not closure variable.
-              Tempfile.open 'MANIFEST.MF' do |@manifest_tmp|
-                self.manifest = File.read(manifest.to_s) if String === manifest || Rake::Task === manifest
-                self.manifest = Manifest.new(manifest) unless Manifest === manifest
-                @manifest_tmp.write Manifest::STANDARD_HEADER
-                @manifest_tmp.write manifest.to_s
-                @manifest_tmp.write "\n"
-                path('META-INF').include @manifest_tmp.path, :as=>'MANIFEST.MF'
-              end
+              @manifest_tmp = Tempfile.new('MANIFEST.MF')
+              self.manifest = File.read(manifest.to_s) if String === manifest || Rake::Task === manifest
+              self.manifest = Manifest.new(manifest) unless Manifest === manifest
+              @manifest_tmp.write Manifest::STANDARD_HEADER
+              @manifest_tmp.write manifest.to_s
+              @manifest_tmp.write "\n"
+              @manifest_tmp.rewind
+              path('META-INF').include @manifest_tmp.path, :as=>'MANIFEST.MF'
             end
           end
         end

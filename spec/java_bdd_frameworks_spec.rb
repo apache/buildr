@@ -43,7 +43,7 @@ describe Buildr::RSpec do
   end
 
 
-end if PLATFORM =~ /java/ # RSpec
+end if RUBY_PLATFORM =~ /java/ # RSpec
 
 describe Buildr::JtestR do
 
