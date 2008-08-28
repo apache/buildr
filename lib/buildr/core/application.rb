@@ -408,7 +408,7 @@ end
 # could slow the build down, so later is better.  We only do this when running 
 # from the console in verbose mode.
 if $stdout.isatty && verbose && RUBY_PLATFORM =~ /darwin/
-  notify = lambda do |type, title, message|
+  begin
     require 'osx/cocoa'
     icon = OSX::NSApplication.sharedApplication.applicationIconImage
     icon = OSX::NSImage.alloc.initWithContentsOfFile(File.join(File.dirname(__FILE__), '../resources/buildr.icns'))
@@ -418,14 +418,17 @@ if $stdout.isatty && verbose && RUBY_PLATFORM =~ /darwin/
       postNotificationName_object_userInfo_deliverImmediately(:GrowlApplicationRegistrationNotification, nil,
         { :ApplicationName=>'Buildr', :AllNotifications=>['Completed', 'Failed'], 
           :ApplicationIcon=>icon.TIFFRepresentation }, true)
-
-    OSX::NSDistributedNotificationCenter.defaultCenter.
-      postNotificationName_object_userInfo_deliverImmediately(:GrowlNotification, nil,
-        { :ApplicationName=>'Buildr', :NotificationName=>type,
-          :NotificationTitle=>title, :NotificationDescription=>message }, true)
+    
+    notify = lambda do |type, title, message|
+      OSX::NSDistributedNotificationCenter.defaultCenter.
+        postNotificationName_object_userInfo_deliverImmediately(:GrowlNotification, nil,
+          { :ApplicationName=>'Buildr', :NotificationName=>type,
+            :NotificationTitle=>title, :NotificationDescription=>message }, true)
+    end
+    Buildr.application.on_completion { |title, message| notify['Completed', title, message] }
+    Buildr.application.on_failure { |title, message, ex| notify['Failed', title, message] }
+  rescue Exception # No growl
   end
-  Buildr.application.on_completion { |title, message| notify['Completed', title, message] }
-  Buildr.application.on_failure { |title, message, ex| notify['Failed', title, message] }
 end
 
 
