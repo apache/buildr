@@ -367,8 +367,8 @@ describe Buildr::Release, '#commit' do
     file('buildfile').should contain('THIS_VERSION = "1.0.1-SNAPSHOT"')
   end
   
-    it 'should commit the new buildfile on the trunk' do
-      Svn.should_receive(:commit).with(File.expand_path('buildfile'), 'Changed version number to 1.0.1-SNAPSHOT')
-      Release.send :commit, '1.0.1-SNAPSHOT'
-    end
+  it 'should commit the new buildfile on the trunk' do
+    Svn.should_receive(:commit).with(File.expand_path('buildfile'), 'Changed version number to 1.0.1-SNAPSHOT')
+    Release.send :commit, '1.0.1-SNAPSHOT'
+  end
 end
