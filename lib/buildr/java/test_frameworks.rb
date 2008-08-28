@@ -106,6 +106,7 @@ module Buildr
     REQUIRES = ["org.scalacheck:scalacheck:jar:#{VERSION}"]
   end
   
+  
   # JUnit test framework, the default test framework for Java tests.
   #
   # Support the following options:
@@ -300,50 +301,20 @@ module Buildr
   # * :environment -- Hash of environment variables available to the test case.
   # * :java_args   -- Arguments passed as is to the JVM.
   class ScalaTest < TestFramework::Base
+
+    # ScalaTest version number.
+    VERSION = '0.9.3' unless const_defined?('VERSION')
+    # ScalaTest dependencies
+    REQUIRES = ["org.scalatest:scalatest:jar:#{VERSION}"] + 
+                JMock::REQUIRES + 
+                ScalaSpecs::REQUIRES + 
+                ScalaCheck::REQUIRES
     
     class << self
-      # ScalaTest version number.
-      VERSION = '0.9.3' unless const_defined?('VERSION')
-
-      # ScalaTest dependencies
-      DEPENDS = ["org.scalatest:scalatest:jar:#{VERSION}"] + 
-                 JMock::REQUIRES + 
-                 ScalaSpecs::REQUIRES + 
-                 ScalaCheck::REQUIRES
-
-      ENABLED = DEPENDS.all? { |d| File.exist?(Buildr::Repositories.instance.locate(d)) } 
-
-      desc "Download Scala artifacts"
-      task "buildr:scala:download" do
-        ScalaTest.download_dependencies
-      end
-        
-      def required_artifacts
-        ENABLED ? DEPENDS : []
-      end
-      
-      def download_dependencies
-        DEPENDS.each { |d| Buildr.artifact(d).invoke }
-      end
-      
       def applies_to?(project) #:nodoc:
-        if project.test.compile.language == :scala && !ENABLED
-          download_dependencies
-          fail "You must re-run buildr after downloading Scala artifacts for the first time"
-        end
         project.test.compile.language == :scala
-      end  
-
-      def available?(artifact_spec) #:nodoc:
-        File.exist?(Buildr::Repositories.instance.locate(artifact_spec))
-      end
+      end 
     end
-
-    REQUIRES = required_artifacts
-    
-    # ScalaTest ant task
-    Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}"
-    Java.classpath << REQUIRES
 
     include TestFramework::JavaTest
 
@@ -367,6 +338,7 @@ module Buildr
     end
 
     def run(tests, dependencies) #:nodoc:
+      self.class.dependencies.each(&:invoke)
       mkpath task.report_to.to_s
       success = []
       scalatest = tests.select { |t| t !~ /Specs?$/ }
@@ -396,7 +368,8 @@ module Buildr
         # Use Ant to execute the ScalaTest task, gives us performance and reporting.
         reportFile = File.join(task.report_to.to_s, "TEST-#{suite}.txt")
         Buildr.ant('scalatest') do |ant|
-          ant.taskdef :name=>'scalatest', :classname=>'org.scalatest.tools.ScalaTestTask'
+          ant.taskdef :name=>'scalatest', :classname=>'org.scalatest.tools.ScalaTestTask',
+            :classpath=>self.class.dependencies.join(File::PATH_SEPARATOR)
           ant.scalatest :runpath=>dependencies.join(File::PATH_SEPARATOR) do
             ant.suite    :classname=>suite
             ant.reporter :type=>'stdout', :config=>reporter_options

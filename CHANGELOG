@@ -37,6 +37,8 @@
           using #options instead of #using (Lacton).
 * Fixed:  Should not display "(in `pwd`, development)" when using --quiet.
 * Fixed:  Release task's regexp to find either THIS_VERSION and VERSION_NUMBER.
+* Fixed:  BUILDR-138 ScalaTest premature use of Buildr::Repositories
+          inconsistent with customizing locations.
 * Docs:   BUILDR-111 Troubleshoot tip when Buildr's bin directory shows up in
           RUBYLIB (Geoffrey Ruscoe).
 

@@ -24,7 +24,6 @@ repositories.remote << 'http://scala-tools.org/repo-releases'
 require 'buildr/java/groovyc'
 Java.load # Anything added to the classpath.
 task('buildr:scala:download').invoke
-Buildr::ScalaTest::ENABLED = true
 artifacts(TestFramework.frameworks.map(&:dependencies).flatten).each { |a| file(a).invoke }
 
 ENV['HOME'] = File.expand_path('tmp/home')

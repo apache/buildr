@@ -85,7 +85,7 @@ module Buildr
         # Returns a list of dependencies for this framework.  Defaults to obtaining a list of
         # artifact specifications from the REQUIRES constant.
         def dependencies
-          @dependencies ||= FileList[*(const_get('REQUIRES') rescue [])]
+          @dependencies ||= Buildr.artifacts(*(const_get('REQUIRES') rescue []))
         end
 
       end
