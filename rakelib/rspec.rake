@@ -26,21 +26,24 @@ begin
   desc 'Run all specs'
   Spec::Rake::SpecTask.new('spec'=>'reports') do |task|
     task.spec_files = Dir['spec/**/*_spec.rb']
-    task.spec_opts = %w{--format specdoc --colour --format failing_examples:failed --format html:reports/specs.html --loadby mtime --backtrace}    
+    task.spec_opts = %w{--format specdoc --format failing_examples:failed --format html:reports/specs.html --loadby mtime --backtrace}    
+    task.spec_opts << '--colour' if $stdout.isatty
   end
   file 'reports/specs.html'=>'spec'
 
   desc 'Run all failed examples from previous run'
   Spec::Rake::SpecTask.new('failed') do |task|
     task.spec_files = Dir['spec/**/*_spec.rb']
-    task.spec_opts = %w{--format specdoc --colour --format failing_examples:failed --example failed --backtrace}    
+    task.spec_opts = %w{--format specdoc --format failing_examples:failed --example failed --backtrace}    
+    task.spec_opts << '--colour' if $stdout.isatty
   end
 
   # TODO: Horribly broken!  Fix some other time.
   desc 'Run RSpec and generate Spec and coverage reports (slow)'
   Spec::Rake::SpecTask.new('coverage'=>'reports') do |task|
     task.spec_files = Dir['spec/**/*_spec.rb']
-    task.spec_opts = %W{--format progress --colour --format failing_examples:failed --format html:reports/specs.html --backtrace}    
+    task.spec_opts = %W{--format progress --format failing_examples:failed --format html:reports/specs.html --backtrace}    
+    task.spec_opts << '--colour' if $stdout.isatty
     task.rcov = true
     task.rcov_dir = 'reports/coverage'
     task.rcov_opts = %W{--exclude spec,bin,#{Config::CONFIG['sitedir']},#{Gem.path.join(',')} --text-summary}
