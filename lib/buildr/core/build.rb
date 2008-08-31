@@ -150,7 +150,6 @@ module Buildr
   class Release
 
     THIS_VERSION_PATTERN  = /(THIS_VERSION|VERSION_NUMBER)\s*=\s*(["'])(.*)\2/
-    NEXT_VERSION_PATTERN  = /NEXT_VERSION\s*=\s*(["'])(.*)\1/
 
     class << self
 
@@ -160,32 +159,25 @@ module Buildr
       # Make a release.
       def make()
         check
-        version = with_next_version do |filename| 
-          options = ['--buildfile', filename, 'DEBUG=no']
+        with_release_candidate_version do |release_candidate_buildfile| 
+          options = ['--buildfile', release_candidate_buildfile, 'DEBUG=no']
           options << '--environment' << Buildr.environment unless Buildr.environment.to_s.empty?
-          sh "#{command} _#{Buildr::VERSION}_ clean upload #{options.join(' ')}"
+          buildr %w{clean upload}, options
         end
-        tag version
-        commit version + '-SNAPSHOT'
+        tag_release
+        commit_new_snapshot
       end
 
       # :call-seq:
-      #   extract_versions(buildfile) => this_version, next_version
+      #   extract_version() => this_version
       #
-      # Extract the current and next version numbers from a buildfile.
+      # Extract the current version number from the buildfile.
       # Raise an error if not found.
-      def extract_versions buildfile
-        begin
-          this_version = buildfile.scan(THIS_VERSION_PATTERN)[0][2]
-        rescue
-          fail 'Looking for THIS_VERSION = "..." in your Buildfile, none found'
-        end
-        begin
-          next_version = buildfile.scan(NEXT_VERSION_PATTERN)[0][1]
-        rescue
-          fail 'Looking for NEXT_VERSION = "..." in your Buildfile, none found'
-        end
-        [this_version, next_version]
+      def extract_version
+        buildfile = File.read(Buildr.application.buildfile.to_s)
+        buildfile.scan(THIS_VERSION_PATTERN)[0][2]
+      rescue
+        fail 'Looking for THIS_VERSION = "..." in your Buildfile, none found'
       end
       
       # :call-seq:
@@ -216,86 +208,92 @@ module Buildr
 
     protected
 
+      # :call-seq:
+      #   buildr(tasks, options)
+      #
+      # Calls another instance of buildr.
+      def buildr tasks, options
+          sh "#{command} _#{Buildr::VERSION}_ #{tasks.join(' ')} #{options.join(' ')}"
+      end
+      
       def command() #:nodoc:
         Config::CONFIG['arch'] =~ /dos|win32/i ? $PROGRAM_NAME.ext('cmd') : $PROGRAM_NAME
       end
 
       # :call-seq:
-      #   with_next_version() { |filename| ... } => version
+      #   with_release_candidate_version() { |filename| ... }
       #
-      # Yields to block with upgraded version number, before committing to use it. Returns the *new*
-      # current version number.
+      # Yields to block with release candidate buildfile, before committing to use it.
       #
       # We need a Buildfile with upgraded version numbers to run the build, but we don't want the
-      # Buildfile modified unless the build succeeds. So this method updates the version numbers in
+      # Buildfile modified unless the build succeeds. So this method updates the version number in
       # a separate (Buildfile.next) file, yields to the block with that filename, and if successful
       # copies the new file over the existing one.
       #
-      # Version numbers are updated as follows. The next release version becomes the current one,
-      # and the next version is upgraded by one to become the new next version. So:
-      #   THIS_VERSION = 1.1.0
-      #   NEXT_VERSION = 1.2.0
+      # The release version is the current version without '-SNAPSHOT'.  So:
+      #   THIS_VERSION = 1.1.0-SNAPSHOT
       # becomes:
-      #   THIS_VERSION = 1.2.0
-      #   NEXT_VERSION = 1.2.1
-      # and the method will return 1.2.0.
-      def with_next_version()
-        new_filename = Buildr.application.buildfile.to_s + '.next'
-        modified = change_version do |this_version, next_version|
-          one_after = next_version.split('.')
-          one_after[-1] = one_after[-1].to_i + 1
-          [ next_version, one_after.join('.') ]
+      #   THIS_VERSION = 1.1.0
+      # for the release buildfile.
+      def with_release_candidate_version
+        release_candidate_buildfile = Buildr.application.buildfile.to_s + '.next'
+        release_candidate_buildfile_contents = change_version do |version|
+          release_candidate_version = version.split('.')
+          release_candidate_version[-1] = release_candidate_version[-1].to_i
+          release_candidate_version.join('.')
         end
-        File.open(new_filename, 'w') { |file| file.write modified }
+        File.open(release_candidate_buildfile, 'w') { |file| file.write release_candidate_buildfile_contents }
         begin
-          yield new_filename
-          mv new_filename, Buildr.application.buildfile.to_s
+          yield release_candidate_buildfile
+          mv release_candidate_buildfile, Buildr.application.buildfile.to_s
         ensure
-          rm new_filename rescue nil
+          rm release_candidate_buildfile rescue nil
         end
-        extract_versions(File.read(Buildr.application.buildfile.to_s))[0]
       end
 
       # :call-seq:
-      #   change_version() { |this, next| ... } => buildfile
+      #   change_version() { |this_version| ... } => buildfile
       #
-      # Change version numbers in the current Buildfile, but without writing a new file (yet).
-      # Returns the contents of the Buildfile with the modified version numbers.
+      # Change version number in the current Buildfile, but without writing a new file (yet).
+      # Returns the contents of the Buildfile with the modified version number.
       #
-      # This method yields to the block with the current (this) and next version numbers and expects
-      # an array with the new this and next version numbers.
+      # This method yields to the block with the current (this) version number and expects
+      # a new version number.
       def change_version()
-        buildfile = File.read(Buildr.application.buildfile.to_s)
-        this_version, next_version = extract_versions buildfile
-        this_version, next_version = yield(this_version, next_version)
+        this_version = extract_version
+        new_version = yield(this_version)
         if verbose
-          puts 'Upgrading version numbers:'
+          puts 'Upgrading version numbers:' # TODO Add tests on this
           puts "  This:  #{this_version}"
-          puts "  Next:  #{next_version}"
+          puts "  Next:  #{new_version}"
         end
-        buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{this_version}"}) }.
-          gsub(NEXT_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{next_version}"}) }
+        buildfile = File.read(Buildr.application.buildfile.to_s)
+        buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{new_version}"}) }
       end
 
       # :call-seq:
-      #   tag(version)
+      #   tag_release()
       #
       # Tags the current working copy with the release version number.
-      def tag(version)
+      def tag_release
+        version = extract_version
         url = tag_url Svn.repo_url, version
         Svn.remove url, 'Removing old copy' rescue nil
         Svn.copy Dir.pwd, url, "Release #{version}"
       end
 
       # :call-seq:
-      #   commit(version)
+      #   commit_new_snapshot()
       #
-      # Last, we commit what we currently have in the working copy.
-      def commit(version)
-        buildfile = File.read(Buildr.application.buildfile.to_s).
-          gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{version}"}) }
+      # Last, we commit what we currently have in the working copy with an upgraded version number.
+      def commit_new_snapshot
+        buildfile = change_version do |version|
+          version = version.split('.')
+          version[-1] = version[-1].to_i + 1
+          version.join('.') + '-SNAPSHOT'
+        end
         File.open(Buildr.application.buildfile.to_s, 'w') { |file| file.write buildfile }
-        Svn.commit Buildr.application.buildfile.to_s, "Changed version number to #{version}"
+        Svn.commit Buildr.application.buildfile.to_s, "Changed version number to #{extract_version}"
       end
     end
   end

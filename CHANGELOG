@@ -13,6 +13,7 @@
           (http://www.scala-lang.org/node/94)
 * Change: Buildr.application.buildfile returns a task instead of a String.
 * Change: BUILDR-139 Incremental test run.
+* Change: BUILDR-141 Removed NEXT_VERSION from release task.
 * Fixed:  BUILDR-106 download(artifact(...)=>url) broken in certain cases
           (Lacton).
 * Fixed:  BUILDR-108 Trace to explain why a compile is done (Lacton).

@@ -193,6 +193,39 @@ describe Project, '#reports' do
 end
 
 
+describe Buildr::Release, '#make' do
+  before do
+    write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
+    # Prevent a real call to a spawned buildr process.
+    Release.stub!(:buildr)
+    Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
+    Svn.stub!(:uncommitted_files).and_return('')
+    Svn.stub!(:remove)
+    Svn.stub!(:copy)
+    Svn.stub!(:commit)
+  end
+  
+  it 'should tag a release with the release version' do
+    Svn.should_receive(:copy).with(Dir.pwd, 'http://my.repo.org/foo/tags/1.0.0', 'Release 1.0.0').and_return {
+      file('buildfile').should contain('VERSION_NUMBER = "1.0.0"')
+    }
+    Release.make
+  end
+  
+  it 'should update the buildfile with the next version number' do
+    Release.make
+    file('buildfile').should contain('VERSION_NUMBER = "1.0.1-SNAPSHOT"')
+  end
+  
+  it 'should commit the updated buildfile' do
+    Svn.should_receive(:commit).with(File.expand_path('buildfile'), 'Changed version number to 1.0.1-SNAPSHOT').and_return {
+      file('buildfile').should contain('VERSION_NUMBER = "1.0.1-SNAPSHOT"')
+    }
+    Release.make
+  end
+end
+
+
 describe Buildr::Release, '#check' do
   before do
     Buildr::Svn.stub!(:uncommitted_files).and_return('')
@@ -208,7 +241,7 @@ describe Buildr::Release, '#check' do
     lambda { Release.check }.should_not raise_error
   end
   
-  it 'should reject to release from a tag' do
+  it 'should reject releasing from a tag' do
     Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/tags/1.0.0')
     lambda { Release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
   end
@@ -228,36 +261,31 @@ describe Buildr::Release, '#check' do
 end
   
 
-describe Buildr::Release, '#extract_versions' do
+describe Buildr::Release, '#extract_version' do
   
-  it 'should extract VERSION_NUMBER and NEXT_VERSION with single quotes' do
-    buildfile = ["VERSION_NUMBER = '1.0.0-SNAPSHOT'", "NEXT_VERSION = '1.0.1'"].join("\n")
-    Release.extract_versions(buildfile).should == ['1.0.0-SNAPSHOT', '1.0.1']
+  it 'should extract VERSION_NUMBER with single quotes' do
+    write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
+    Release.extract_version.should == '1.0.0-SNAPSHOT'
   end
   
-  it 'should extract VERSION_NUMBER and NEXT_VERSION with double quotes' do
-    buildfile = [%{VERSION_NUMBER = "1.0.1-SNAPSHOT"}, %{NEXT_VERSION = "1.0.2"}].join("\n")
-    Release.extract_versions(buildfile).should == ['1.0.1-SNAPSHOT', '1.0.2']
+  it 'should extract VERSION_NUMBER with double quotes' do
+    write 'buildfile', %{VERSION_NUMBER = "1.0.1-SNAPSHOT"}
+    Release.extract_version.should == '1.0.1-SNAPSHOT'
   end
   
-  it 'should extract VERSION_NUMBER and NEXT_VERSION without any spaces' do
-    buildfile = ["VERSION_NUMBER='1.0.2-SNAPSHOT'", "NEXT_VERSION='1.0.3'"].join("\n")
-    Release.extract_versions(buildfile).should == ['1.0.2-SNAPSHOT', '1.0.3']
+  it 'should extract VERSION_NUMBER without any spaces' do
+    write 'buildfile', "VERSION_NUMBER='1.0.2-SNAPSHOT'"
+    Release.extract_version.should == '1.0.2-SNAPSHOT'
   end
   
   it 'should extract THIS_VERSION as an alternative to VERSION_NUMBER' do
-    buildfile = ["THIS_VERSION = '1.0.3-SNAPSHOT'", "NEXT_VERSION = '1.0.4'"].join("\n")
-    Release.extract_versions(buildfile).should == ['1.0.3-SNAPSHOT', '1.0.4']
+    write 'buildfile', "THIS_VERSION = '1.0.3-SNAPSHOT'"
+    Release.extract_version.should == '1.0.3-SNAPSHOT'
   end
   
   it 'should complain if no current version number' do
-    buildfile = "NEXT_VERSION = '1.0.1'"
-    lambda { Release.extract_versions(buildfile) }.should raise_error('Looking for THIS_VERSION = "..." in your Buildfile, none found')
-  end
-  
-  it 'should complain if no next version number' do
-    buildfile = "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
-    lambda { Release.extract_versions(buildfile) }.should raise_error('Looking for NEXT_VERSION = "..." in your Buildfile, none found')
+    write 'buildfile', 'define foo'
+    lambda { Release.extract_version }.should raise_error('Looking for THIS_VERSION = "..." in your Buildfile, none found')
   end
 end
 
@@ -301,39 +329,29 @@ describe Buildr::Release, '#tag url' do
 end
 
 
-describe Buildr::Release, '#with_next_version' do
+describe Buildr::Release, '#with_release_candidate_version' do
   before do
     Buildr.application.stub!(:buildfile).and_return(file('buildfile'))
-    write 'buildfile', <<-EOF
-      THIS_VERSION = '1.1.0'
-      NEXT_VERSION = '1.2.0'
-      EOF
+    write 'buildfile', "THIS_VERSION = '1.1.0-SNAPSHOT'"
   end
   
-  it 'should yield the name of an updated buildfile' do
-    Release.send :with_next_version do |new_filename|
-      File.read(new_filename).should == <<-EOF
-      THIS_VERSION = "1.2.0"
-      NEXT_VERSION = "1.2.1"
-      EOF
+  it 'should yield the name of the release candidate buildfile' do
+    Release.send :with_release_candidate_version do |new_filename|
+      File.read(new_filename).should == %{THIS_VERSION = "1.1.0"}
     end
   end
   
   it 'should yield a name different from the original buildfile' do
-    Release.send :with_next_version do |new_filename|
+    Release.send :with_release_candidate_version do |new_filename|
       new_filename.should_not point_to_path('buildfile')
     end
-  end
-  
-  it 'should return the new version number' do
-    new_version = Release.send(:with_next_version) {}
-    new_version.should == '1.2.0'
   end
 end
 
 
-describe Buildr::Release, '#tag' do
+describe Buildr::Release, '#tag_release' do
   before do
+    write 'buildfile', "THIS_VERSION = '1.0.1'"
     Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
     Svn.stub!(:copy)
   end
@@ -341,34 +359,34 @@ describe Buildr::Release, '#tag' do
   it 'should tag the working copy' do
     Svn.stub!(:remove)
     Svn.should_receive(:copy).with(Dir.pwd, 'http://my.repo.org/foo/tags/1.0.1', 'Release 1.0.1')
-    Release.send :tag, '1.0.1'
+    Release.send :tag_release
   end
   
   it 'should remove the tag if it already exists' do
     Svn.should_receive(:remove).with('http://my.repo.org/foo/tags/1.0.1', 'Removing old copy')
-    Release.send :tag, '1.0.1'
+    Release.send :tag_release
   end
   
   it 'should accept that the tag does not exist' do
     Svn.stub!(:remove).and_raise(RuntimeError)
-    Release.send :tag, '1.0.1'
+    Release.send :tag_release
   end
 end
 
 
-describe Buildr::Release, '#commit' do
+describe Buildr::Release, '#commit_new_snapshot' do
   before do
     write 'buildfile', 'THIS_VERSION = "1.0.0"'
   end
   
-  it 'should update the buildfile with the given version number' do
+  it 'should update the buildfile with a new version number' do
     Svn.stub!(:commit)
-    Release.send :commit, '1.0.1-SNAPSHOT'
+    Release.send :commit_new_snapshot
     file('buildfile').should contain('THIS_VERSION = "1.0.1-SNAPSHOT"')
   end
   
   it 'should commit the new buildfile on the trunk' do
     Svn.should_receive(:commit).with(File.expand_path('buildfile'), 'Changed version number to 1.0.1-SNAPSHOT')
-    Release.send :commit, '1.0.1-SNAPSHOT'
+    Release.send :commit_new_snapshot
   end
 end
