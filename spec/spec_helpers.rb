@@ -57,7 +57,7 @@ unless self.class.const_defined?('SpecHelpers')
       end
 
       def failure_message
-        "Expected #{@severity} '#{@expect.source}', " +
+        "Expected #{@severity} #{@expect.inspect}, " +
           ($messages[@severity].empty? ? "no #{@severity} issued" : "found #{$messages[@severity].inspect}")
       end
 
