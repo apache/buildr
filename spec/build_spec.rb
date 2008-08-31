@@ -228,32 +228,32 @@ end
 
 describe Buildr::Release, '#check' do
   before do
-    Buildr::Svn.stub!(:uncommitted_files).and_return('')
+    Svn.stub!(:uncommitted_files).and_return('')
   end
   
   it 'should accept to release from the trunk' do
-    Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
+    Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
     lambda { Release.check }.should_not raise_error
   end
   
   it 'should accept to release from a branch' do
-    Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/branches/1.0')
+    Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/branches/1.0')
     lambda { Release.check }.should_not raise_error
   end
   
   it 'should reject releasing from a tag' do
-    Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/tags/1.0.0')
+    Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/tags/1.0.0')
     lambda { Release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
   end
   
   it 'should reject a non standard repository layout' do
-    Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/bar')
+    Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/bar')
     lambda { Release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
   end
   
   it 'should reject an uncommitted file' do
-    Buildr::Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-    Buildr::Svn.stub!(:uncommitted_files).and_return('M      foo.rb')
+    Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
+    Svn.stub!(:uncommitted_files).and_return('M      foo.rb')
     lambda { Release.check }.should raise_error(RuntimeError,
       "Uncommitted SVN files violate the First Principle Of Release!\n" +
       "M      foo.rb")
