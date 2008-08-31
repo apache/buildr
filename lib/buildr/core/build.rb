@@ -237,11 +237,7 @@ module Buildr
       # for the release buildfile.
       def with_release_candidate_version
         release_candidate_buildfile = Buildr.application.buildfile.to_s + '.next'
-        release_candidate_buildfile_contents = change_version do |version|
-          release_candidate_version = version.split('.')
-          release_candidate_version[-1] = release_candidate_version[-1].to_i
-          release_candidate_version.join('.')
-        end
+        release_candidate_buildfile_contents = change_version { |version| version[-1] = version[-1].to_i }
         File.open(release_candidate_buildfile, 'w') { |file| file.write release_candidate_buildfile_contents }
         begin
           yield release_candidate_buildfile
@@ -257,11 +253,13 @@ module Buildr
       # Change version number in the current Buildfile, but without writing a new file (yet).
       # Returns the contents of the Buildfile with the modified version number.
       #
-      # This method yields to the block with the current (this) version number and expects
-      # a new version number.
+      # This method yields to the block with the current (this) version number as an array and expects
+      # the block to update it.
       def change_version()
         this_version = extract_version
-        new_version = yield(this_version)
+        new_version = this_version.split('.')
+        yield(new_version)
+        new_version = new_version.join('.')
         if verbose
           puts 'Upgrading version numbers:' # TODO Add tests on this
           puts "  This:  #{this_version}"
@@ -287,11 +285,7 @@ module Buildr
       #
       # Last, we commit what we currently have in the working copy with an upgraded version number.
       def commit_new_snapshot
-        buildfile = change_version do |version|
-          version = version.split('.')
-          version[-1] = version[-1].to_i + 1
-          version.join('.') + '-SNAPSHOT'
-        end
+        buildfile = change_version { |version| version[-1] = (version[-1].to_i + 1).to_s + '-SNAPSHOT' }
         File.open(Buildr.application.buildfile.to_s, 'w') { |file| file.write buildfile }
         Svn.commit Buildr.application.buildfile.to_s, "Changed version number to #{extract_version}"
       end
