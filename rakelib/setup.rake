@@ -12,13 +12,14 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 # License for the specific language governing permissions and limitations under
 # the License.
-# True if running on the Windows operating sytem.  Different from Gem.win_platform?
-# which returns true if running on the Windows platform of MRI, false when using JRuby.
 
 
 require 'rubygems/source_info_cache'
 require 'stringio' # for Gem::RemoteFetcher
 
+
+# True if running on the Windows operating sytem.  Different from Gem.win_platform?
+# which returns true if running on the Windows platform of MRI, false when using JRuby.
 def windows?
   Config::CONFIG['host_os'] =~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i
 end
