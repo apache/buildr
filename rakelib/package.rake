@@ -29,7 +29,7 @@ desc 'Install the package locally'
 task 'install'=>['setup', "#{package.package_dir}/#{package.gem_file}"] do |task|
   print "Installing #{spec.name} ... "
   args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', "#{package.package_dir}/#{package.gem_file}"]
-  args.unshift('sudo') unless windows?
+  args.unshift('sudo') if sudo_needed?
   sh *args
   puts 'Done'
 end
@@ -38,7 +38,7 @@ desc 'Uninstall previously installed packaged'
 task 'uninstall' do |task|
   print "Uninstalling #{spec.name} ... "
   args = [Config::CONFIG['ruby_install_name'], '-S', 'gem', 'uninstall', spec.name, '--version', spec.version.to_s]
-  args.unshift('sudo') unless windows?
+  args.unshift('sudo') if sudo_needed?
   sh *args
   puts 'Done'
 end

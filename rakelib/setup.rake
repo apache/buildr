@@ -25,6 +25,11 @@ def windows?
 end
 
 
+def sudo_needed?
+  !windows? && (ENV['GEM_HOME'].nil?)
+end
+
+
 # Finds and returns path to executable.  Consults PATH environment variable.
 # Returns nil if executable not found.
 def which(name)
@@ -46,7 +51,7 @@ def install_gem(name, ver_requirement = ['> 0'])
     puts "Installing #{spec.full_name} ..."
     args = [rb_bin, '-S', 'gem', 'install', spec.name, '-v', spec.version.to_s]
     fail "Please set JAVA_HOME first #{'(no need to run as sudo)' if ENV['USER'] == 'root'}" unless ENV['JAVA_HOME']
-    args.unshift('sudo', 'env', 'JAVA_HOME=' + ENV['JAVA_HOME']) unless windows? || ENV['GEM_HOME']
+    args.unshift('sudo', 'env', 'JAVA_HOME=' + ENV['JAVA_HOME']) if sudo_needed?
     sh *args.map{ |a| a.inspect }.join(' ')
   end
 end
