@@ -75,25 +75,20 @@ module Java
     def load
       return self if @loaded
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
-      #cp ||= java.lang.System.getProperty('java.class.path').split(':').compact
-      # Use system ClassLoader to add classpath.
-      sysloader = java.lang.ClassLoader.getSystemClassLoader
-      add_url_method = java.lang.Class.forName('java.net.URLClassLoader').
-        getDeclaredMethod('addURL', [java.net.URL].to_java(java.lang.Class))
-      add_url_method.setAccessible(true)
-      add_path = lambda { |path| add_url_method.invoke(sysloader, [java.io.File.new(path).toURI.toURL].to_java(java.net.URL)) }
-      # Include tools (compiler, Javadoc, etc) for all platforms except OS X.
-      unless Config::CONFIG['host_os'] =~ /darwin/i
+      cp.each { |j| $CLASSPATH << j }
+      java_home = ENV['JAVA_HOME'] || java.lang.System.getProperty("java.home")
+      tools_jar = File.expand_path('lib/tools.jar', java_home)
+      tools_jar = File.expand_path('../lib/tools.jar', java_home) unless File.file?(tools_jar)
+      unless File.file?(tools_jar)
         home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
         tools = File.expand_path('lib/tools.jar', home)
         raise "Missing #{tools}, perhaps your JAVA_HOME is not correclty set" unless File.file?(tools)
-        add_path[tools]
       end
-      cp.each { |path| add_path[path] }
+      $CLASSPATH << tools_jar
       @loaded = true
       self
     end
-
+    
   end
 
 end
