@@ -73,6 +73,12 @@ module Java
   end
 
   class << self
+    
+    # Returns the path to JAVA_HOME on environment. 
+    # Raises an exception if no JAVA_HOME is set.
+    def java_home
+      ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
+    end
 
     # Returns the classpath, an array listing directories, JAR files and
     # artifacts.  Use when loading the extension to add any additional
@@ -90,13 +96,8 @@ module Java
     # that append to the classpath and specify which remote repositories to use.
     def load
       return self if @loaded
-      unless RUBY_PLATFORM =~ /darwin/i
-        home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
-        tools = File.expand_path('lib/tools.jar', home)
-        raise "I need tools.jar to compile, can't find it in #{home}/lib" unless File.exist?(tools)
-        classpath << tools
-      end
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
+      cp << tools_jar
       java_opts = (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split
       ::Rjb.load cp.join(File::PATH_SEPARATOR), java_opts
 

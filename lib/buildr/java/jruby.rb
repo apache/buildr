@@ -58,6 +58,11 @@ module Java
 
   class << self
 
+    # Returns the path to JAVA_HOME
+    def java_home
+      ENV['JAVA_HOME'] || java.lang.System.getProperty("java.home")
+    end
+
     # Returns the classpath, an array listing directories, JAR files and
     # artifacts.  Use when loading the extension to add any additional
     # libraries used by that extension.
@@ -75,20 +80,25 @@ module Java
     def load
       return self if @loaded
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
-      cp.each { |j| $CLASSPATH << j }
-      java_home = ENV['JAVA_HOME'] || java.lang.System.getProperty("java.home")
-      tools_jar = File.expand_path('lib/tools.jar', java_home)
-      tools_jar = File.expand_path('../lib/tools.jar', java_home) unless File.file?(tools_jar)
-      unless File.file?(tools_jar)
-        home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
-        tools = File.expand_path('lib/tools.jar', home)
-        raise "Missing #{tools}, perhaps your JAVA_HOME is not correclty set" unless File.file?(tools)
-      end
-      $CLASSPATH << tools_jar
+
+      # Adding jars to the jruby's $CLASSPATH should be the correct thing, however it
+      # seems like some tools require their jars on system class loader (javadoc, junit, etc)
+      # cp.each { |path| $CLASSPATH << path }
+
+      # Use system ClassLoader to add classpath
+      sysloader = java.lang.ClassLoader.getSystemClassLoader
+      add_url_method = java.lang.Class.forName('java.net.URLClassLoader').
+        getDeclaredMethod('addURL', [java.net.URL.java_class].to_java(java.lang.Class))
+      add_url_method.setAccessible(true)
+      add_path = lambda { |path| add_url_method.invoke(sysloader, [java.io.File.new(path).toURI.toURL].to_java(java.net.URL)) }
+
+      add_path[tools_jar]
+      cp.each(&add_path)
+      
       @loaded = true
       self
     end
-    
+
   end
 
 end
