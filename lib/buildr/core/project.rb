@@ -337,7 +337,8 @@ module Buildr
 
       def local_projects(dir = nil, &block) #:nodoc:
         dir = File.expand_path(dir || Buildr.application.original_dir)
-        projects = Project.projects.select { |project| project.base_dir == dir }
+        projects = @projects ? @projects.values : []
+        projects = projects.select { |project| project.base_dir == dir }
         if projects.empty? && dir != Dir.pwd && File.dirname(dir) != dir
           local_projects(File.dirname(dir), &block)
         elsif block

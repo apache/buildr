@@ -169,14 +169,42 @@ module Buildr
     end
     private :listed_gems
 
+    # :nodoc:
+    # Change directory to options.project if it is an existing directory.
+    # Use this method if user intends to run buildr on a different working dir.
+    # returns Dir.pwd if chdir was performed
+    def chdir_before_loading
+      if options.project && File.directory?(options.project)
+        Dir.chdir(options.project) # change dir before seaching buildfile
+        @original_dir = Dir.pwd
+      end
+    end
+    private :chdir_before_loading
+
+    # :nodo:
+    # Change directory to the basedir of project named in options.project
+    # returns Dir.pwd if chdir was performed
+    def chdir_before_tasks
+      if options.project && !File.directory?(options.project)
+        # if options.project was a project name, we chdir to it's base dir.
+        project_name = options.project.gsub(File::SEPARATOR, ':')
+        project = Buildr.project(project_name)
+        Dir.chdir(project.path_to(nil))
+        @original_dir = Dir.pwd
+      end
+    end
+    private :chdir_before_tasks
+
     def run
       standard_exception_handling do
+        chdir_before_loading
         find_buildfile
         load_gems
         load_artifacts
         load_tasks
         load_buildfile
         task('buildr:initialize').invoke
+        chdir_before_tasks
         top_level
       end
       title, message = 'Your build has completed', "#{Dir.pwd}\nbuildr #{@top_level_tasks.join(' ')}"
@@ -226,7 +254,8 @@ module Buildr
     end
 
     def find_buildfile
-      here = Dir.pwd
+      here = original_dir
+      Dir.chdir(here) unless Dir.pwd == here
       while ! have_rakefile
         Dir.chdir('..')
         if Dir.pwd == here || options.nosearch
@@ -267,6 +296,26 @@ module Buildr
       true
     end
     private :load_tasks
+
+    # :nodoc:
+    # Lookup for a task using the given task_name.
+    # This method extends Rake's functionality to obtain the task for a file path
+    # or the build task if given a project basedir.
+    def lookup(task_name, initial_scope=nil)
+      unless task = super
+        path = File.expand_path(task_name, Buildr.application.original_dir)
+        if !(task = @tasks[path]) && project = Buildr::Project.local_projects(path).first
+          project_path = project.path_to(nil)
+          if project_path == path
+            task = @tasks[project.name + ':build']
+          else
+            project_task = path.sub(/^#{project_path}\/?/, '').gsub('/',':')
+            task = @tasks[project.name + ':' + project_task] || @tasks[project_task]
+          end
+        end
+      end
+      task
+    end
 
     def display_prerequisites
       invoke_task('buildr:initialize')
