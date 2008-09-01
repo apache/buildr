@@ -213,6 +213,7 @@ $ buildr --help
 | @-t/--trace@              | Turn on invoke/execute tracing, enable full backtrace.  |
 | @-v/--version@            | Display the program version.                            |
 | @-P/--prereqs@            | Display tasks and dependencies, then exit.              |
+| @-p/--project [dir]@      | Chage to project directory before executing tasks.      |
 
 You can tell Buildr to run specific tasks and the order to run them.  For example:
 
