@@ -572,12 +572,19 @@ module Buildr
 
       before_define do |project|
         ::Java.load
-        project.manifest ||= project.parent && project.parent.manifest ||
-          { 'Build-By'=>ENV['USER'], 'Build-Jdk'=>ENV_JAVA['java.version'],
+        if project.parent && project.parent.manifest 
+          project.manifest = project.parent.manifest.dup
+        else
+          project.manifest = { 
+            'Build-By'=>ENV['USER'], 'Build-Jdk'=>ENV_JAVA['java.version'],
             'Implementation-Title'=>project.comment || project.name,
             'Implementation-Version'=>project.version }
-        project.meta_inf ||= project.parent && project.parent.meta_inf ||
-          [project.file('LICENSE')].select { |file| File.exist?(file.to_s) }
+        end
+        if project.parent && project.parent.meta_inf
+          project.meta_inf = project.parent.meta_inf.dup
+        else
+          project.meta_inf = [project.file('LICENSE')].select { |file| File.exist?(file.to_s) }
+        end
       end
 
 
