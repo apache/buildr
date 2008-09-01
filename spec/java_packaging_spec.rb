@@ -66,8 +66,8 @@ shared_examples_for 'package with manifest' do
     end
   end
 
-  def inspect_manifest
-    package = project('foo').package(@packaging)
+  def inspect_manifest(package = nil)
+    package ||= project('foo').package(@packaging)
     package.invoke
     yield Buildr::Packaging::Java::Manifest.from_zip(package)
   end
@@ -201,6 +201,67 @@ shared_examples_for 'package with manifest' do
     package.invoke
     Zip::ZipFile.open(package.to_s) do |zip|
       zip.entries.map(&:to_s).should include('META-INF/')
+    end
+  end
+
+  it 'should inherit manifest from parent project' do
+    packaging = @packaging
+    package = nil
+    define('foo', :version => '1.0') do
+      manifest['Foo'] = '1'
+      package(packaging)
+      define('bar', :version => '1.0') do 
+        manifest['bar'] = 'Bar'
+        package(:jar)
+        package = packages.first
+      end
+    end
+    inspect_manifest(package) do |manifest|
+      manifest.sections.size.should be(1)
+      manifest.main['Manifest-Version'].should eql('1.0')
+      manifest.main['Created-By'].should eql('Buildr')
+      manifest.main['Foo'].should eql('1')
+      manifest.main['bar'].should eql('Bar')
+    end
+  end
+
+  it 'should not modify manifest of parent project' do
+    packaging = @packaging
+    define('foo', :version => '1.0') do
+      manifest['Foo'] = '1'
+      package(packaging)
+      define('bar', :version => '1.0') do 
+        manifest['bar'] = 'Bar'
+        package(:jar)
+      end
+      define('baz', :version => '1.0') do 
+        manifest['baz'] = 'Baz'
+        package(:jar)
+      end
+    end
+    inspect_manifest(project('foo').packages.first) do |manifest|
+      manifest.sections.size.should be(1)
+      manifest.main['Manifest-Version'].should eql('1.0')
+      manifest.main['Created-By'].should eql('Buildr')
+      manifest.main['Foo'].should eql('1')
+      manifest.main['bar'].should be_nil
+      manifest.main['baz'].should be_nil
+    end
+    inspect_manifest(project('foo:bar').packages.first) do |manifest|
+      manifest.sections.size.should be(1)
+      manifest.main['Manifest-Version'].should eql('1.0')
+      manifest.main['Created-By'].should eql('Buildr')
+      manifest.main['Foo'].should eql('1')
+      manifest.main['bar'].should eql('Bar')
+      manifest.main['baz'].should be_nil
+    end
+    inspect_manifest(project('foo:baz').packages.first) do |manifest|
+      manifest.sections.size.should be(1)
+      manifest.main['Manifest-Version'].should eql('1.0')
+      manifest.main['Created-By'].should eql('Buildr')
+      manifest.main['Foo'].should eql('1')
+      manifest.main['baz'].should eql('Baz')
+      manifest.main['bar'].should be_nil
     end
   end
 end
