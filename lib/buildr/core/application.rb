@@ -429,6 +429,10 @@ if $stdout.isatty && verbose && RUBY_PLATFORM =~ /darwin/
     Buildr.application.on_failure { |title, message, ex| notify['Failed', title, message] }
   rescue Exception # No growl
   end
+elsif $stdout.isatty && verbose
+  notify = lambda { |type, title, message| $stdout.puts "[#{type}] #{title}: #{message}" }
+  Buildr.application.on_completion { |title, message| notify['Completed', title, message] }
+  Buildr.application.on_failure { |title, message, ex| notify['Failed', title, message] }
 end
 
 
