@@ -148,7 +148,7 @@ module Buildr
     #   buildfile
     # Returns the buildfile as a task that you can use as a dependency.
     def buildfile
-      @buildfile_task ||= BuildfileTask.define_task(rakefile)
+      @buildfile_task ||= BuildfileTask.define_task(File.expand_path(rakefile))
     end
     
     # Files that complement the buildfile itself
@@ -276,6 +276,7 @@ module Buildr
       info "(in #{Dir.pwd}, #{environment})"
       load File.expand_path(@rakefile) if @rakefile != ''
       load_imports
+      buildfile.enhance @requires.select { |f| File.file?(f) }.map{ |f| File.expand_path(f) }
     end
 
     # Loads buildr.rb files from users home directory and project directory.
@@ -285,7 +286,7 @@ module Buildr
       files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
         select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
       #Load local tasks that can be used in the Buildfile.
-      files += Dir['tasks/*.rake']
+      files += Dir[File.expand_path('tasks/*.rake', original_dir)]
       files.each do |file|
         unless $LOADED_FEATURES.include?(file)
           load file

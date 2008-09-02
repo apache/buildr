@@ -354,6 +354,15 @@ describe Buildr, 'settings' do
       Buildr.application.send :load_tasks
       Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
     end
+
+    it 'should include explicitly required files as dependencies' do
+      write 'some/file.rb'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'some/file.rb')
+      Buildr.application.instance_variable_set(:@requires, ['rbconfig', 'some/file.rb'])
+      Buildr.application.send :load_buildfile
+      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
+      Buildr.application.buildfile.prerequisites.should include(File.expand_path('some/file.rb'))
+      Buildr.application.buildfile.prerequisites.should_not include('rbconfig')
+    end
   end
 end
 
