@@ -39,6 +39,76 @@ module Buildr #:nodoc:
     BUILDR_PATHS = [File.expand_path('../', File.dirname(__FILE__)),
                     File.expand_path('../../lib', File.dirname(__FILE__))]
 
+    HELP = <<-HELP.strip.gsub(/ *\n +/, "\n  ")
+          NailGun is a client, protocol, and server for running Java 
+          programs from the command line without incurring the JVM
+          startup overhead. Nailgun integration is currently available
+          only when running Buildr with JRuby.
+
+          Buildr provides a custom nailgun server, allowing you to 
+          start a single JVM and let buildr create a queue of runtimes.
+          These JRuby runtimes can be cached (indexed by buildfile path)
+          and are automatically reloaded when the buildfile has been modified.
+          Runtime caching allows you to execute tasks without
+          spending time creating the buildr environment. Some nailgun 
+          tasks have been provided to manage the cached runtimes.
+
+          To start the buildr server execute the following task:
+
+              nailgun:start
+
+          Server output will display a message when it becomes ready, you
+          will also see messages when the JRuby runtimes are being created,
+          or when a new buildr environment is being loaded on them.
+          After the runtime queues have been populated, you can start calling
+          buildr as you normally do, by invoking the $NAILGUN_HOME/ng binary:
+
+              # on another terminal, change directory to a project.
+              # if this project is the same nailgun:start was invoked on, it's 
+              # runtime has been cached, so no loading is performed unless 
+              # the buildfile has been modified. otherwise the buildfile 
+              # will be loaded on a previously loaded fresh-buildr runtime
+              # and it will be cached.
+              cd /some/buildr/project
+              ng nailgun:help                 # display nailgun help
+              ng nailgun:tasks                # display overview of ng tasks
+              ng clean compile                # just invoke those two tasks
+
+             Configuration and Environment Variables.
+
+          Before starting the server, buildr will check if you have 
+          nailgun already installed by seeking the nailgun jar under
+
+              $NAILGUN_HOME
+
+          You can override this environment variable to tell buildr where
+          to find or where to install nailgun. If missing, NAILGUN_HOME
+          defaults to the $JRUBY_HOME/tool/nailgun directory.
+
+          Buildr will also check that the nailgun client binary (ng.exe for 
+          Windows systems, ng otherwise) is installed on NAILGUN_HOME. 
+          If no binary is found, buildr will download nailgun and 
+          compile+install it.          
+          
+          The buildr server binds itself to localhost, port 2113. You can 
+          override this when starting the nailgun server:
+
+              buildr nailgun:start[4444,127.0.0.1]
+
+          If you provided custom host/port settings you need
+          to tell the nailgun client where to connect:
+
+              ng --nailgun-server 127.0.0.1 --nailgun-port 4444 nailgun:tasks
+
+          The buildr server starts a RuntimeFactory responsible for providing
+          a pool of preloaded Buildr runtimes ready for task execution. 
+          You can provide a third argument to the nailgun:start task, to set
+          the buildr queue size. You may want to increase this value if you
+          need to load many buildfiles on the same server.
+ 
+          Execute nailgun:tasks get an overview of available nailgun tasks.
+    HELP
+
     private
     
     # Returns the path to JRUBY_HOME.
@@ -85,6 +155,7 @@ module Buildr #:nodoc:
 
     server_tasks = lambda do 
 
+      desc 'Start the nailgun server'
       task('start', :port, :iface, :queue_size) do |task, args|
         
         [ng.installed_bin, ng.artifact].map(&:invoke)
@@ -109,20 +180,72 @@ module Buildr #:nodoc:
         ng.server.start
       end
 
+      desc 'Show nailgun help'
       task('help') do
-        info "HELP"
-      end
-
-      task('list') do
-        info "HELLO"
+        info HELP
+        exit(0)
       end
       
+      desc 'List nailgun tasks'
+      task('tasks') do
+        task_hash = Buildr.application.instance_variable_get(:@tasks)
+        tasks = task_hash.keys.select { |k| k =~ /^nailgun:/ }
+        width = [tasks.map { |t| task_hash[t].name_with_args.size }, 20].flatten.max
+        tasks.each do |name|
+          task = task_hash[name]
+          title = task.name_with_args
+          comment = task.full_comment
+          info comment.empty? ? title : ("  %-#{width}s  # %s" % [title, comment])
+        end
+        exit(0)
+      end
+
+      desc 'List currently cached runtimes'
+      task('list') do
+        if Nailgun.ng.server
+          Nailgun.ng.server.cached_stamps.each_pair do |bf, time|
+            loaded = Nailgun.ng.server.loaded_times[bf]
+            ary = [bf, "Load Timestamp", loaded, "Modification Timestamp", time]
+            info("* %s\n  %-25s %s\n  %-25s %s\n\n" % ary)
+          end
+        else
+          info "Not running on nailgun server"
+        end
+        exit(0)
+      end
+
+      desc 'Remove all cached runtimes'
+      task('clear') do
+        if Nailgun.ng.server
+          Nailgun.ng.server.cached_runtimes.clear
+          Nailgun.ng.server.cached_stamps.clear
+          Nailgun.ng.server.loaded_times.clear
+          info "Cleared all cached runtimes"
+        else
+          info "Not running on nailgun server"
+        end
+        exit(0)
+      end
+
+      desc 'Remove runtime for this buildfile'
+      task('delete', :buildfile) do |task, args|
+        if Nailgun.ng.server
+          if args[:buildfile]
+            buildfile = File.expand_path(args[:buildfile])
+          else
+            buildfile = Buildr.application.buildfile.to_s
+          end
+          Nailgun.ng.server.cached_runtimes.delete(buildfile)
+          Nailgun.ng.server.cached_stamps.delete(buildfile)
+          Nailgun.ng.server.loaded_times.delete(buildfile)
+          info "Deleted #{buildfile} from runtime cache"
+        else
+          info "Not running on nailgun server"
+        end
+        exit(0)
+      end
+
     end # server_tasks
-
-    client_tasks = lambda do
-
-
-    end # client_tasks
 
     # Load java classes on server side.
     ng.server_setup = lambda do 
@@ -488,11 +611,13 @@ module Buildr #:nodoc:
       attr_reader :runtime_factory
       attr_reader :cached_runtimes
       attr_reader :cached_stamps
+      attr_reader :loaded_times
 
       def initialize(host = 'localhost', port = 2113, buildr_factory = nil)
         super(java.net.InetAddress.get_by_name(host), port)
         @cached_runtimes = {}
         @cached_stamps = {}
+        @loaded_times = {}
         cache(runtime, Buildr.application.buildfile)
         @runtime_factory = buildr_factory
         @host, @port = host, port
@@ -501,6 +626,7 @@ module Buildr #:nodoc:
       def cache(runtime, buildfile)
         cached_runtimes[buildfile.to_s] = runtime
         cached_stamps[buildfile.to_s] = buildfile.timestamp
+        loaded_times[buildfile.to_s] = Time.now
       end
 
       def runtime
