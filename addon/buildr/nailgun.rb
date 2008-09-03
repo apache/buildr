@@ -21,7 +21,7 @@ require 'rbconfig'
 require 'thread'
 require 'buildr/core/application_cli'
 
-module Buildr
+module Buildr #:nodoc:
 
   module Nailgun
 
@@ -60,7 +60,7 @@ module Buildr
       dist_zip = Buildr.download(tmp_path(NAME + '.zip') => URL)
       dist_dir = Buildr.unzip(tmp_path(NAME) => dist_zip)
       
-      nailgun_jar = file(File.expand_path(NAME + '.jar', nailgun_home))
+      nailgun_jar = file(tmp_path(NAME, NAME, NAME + '.jar'))
       ng.artifact = Buildr.artifact(ARTIFACT_SPEC).from(nailgun_jar)
       unless File.exist?(nailgun_jar.to_s)
         nailgun_jar.enhance [dist_dir]
@@ -85,20 +85,21 @@ module Buildr
 
     server_tasks = lambda do 
 
-      task('start', :port, :iface, :queue_size => [ng.artifact, ng.installed_bin]) do |task, args|
+      task('start', :port, :iface, :queue_size) do |task, args|
+        
+        [ng.installed_bin, ng.artifact].map(&:invoke)
         
         iface = args[:iface].to_s.empty? ? '127.0.0.1' : args[:iface]
         port  = args[:port].to_s.empty? ? 2113 : args[:port].to_i
-        queue_size = args[:queue_size].to_s.empty? ? 1 : args[:queue_size].to_i
+        queue_size = args[:queue_size].to_s.empty? ? 3 : args[:queue_size].to_i
 
-        if ng.server || ng.nail
-          fail "Already running on Nailgun server: #{ng.server || ng.nail}"
-        end
+        fail "Already running on Nailgun server: #{ng.server || ng.nail}" if ng.server || ng.client
+        
         info 'Booting Buildr nailgun server...'
         top_level = Buildr.application.instance_eval { @top_level_tasks.dup }
         top_level.delete_if { |t| t[/nailgun/] }
         unless top_level.empty?
-          raise 'Don\'t specify more targets when starting Nailgun server'
+          raise 'Don\'t specify more targets when starting Nailgun server: #{top_level}'
         end
         ng.server_setup.call
 
@@ -111,14 +112,15 @@ module Buildr
       task('help') do
         info "HELP"
       end
+
+      task('list') do
+        info "HELLO"
+      end
       
     end # server_tasks
 
     client_tasks = lambda do
 
-      task('list') do
-        info "HELLO"
-      end
 
     end # client_tasks
 
@@ -132,8 +134,9 @@ module Buildr
       Util.add_to_sysloader ng.artifact.to_s
       Util.add_to_sysloader File.dirname(__FILE__)
 
-      class Client
+      class NGClient
         include org.apache.buildr.BuildrNail
+        include Client
       end
 
       class NGServer < com.martiansoftware.nailgun.NGServer
@@ -168,23 +171,25 @@ module Buildr
         result
       end
 
-      def find_buildfile(pwd, candidates, nosearch=false)
+      def find_file(pwd, candidates, nosearch=false)
         candidates = [candidates].flatten
         buildfile = candidates.find { |c| File.file?(File.expand_path(c, pwd)) }
         return File.expand_path(buildfile, pwd) if buildfile
         return nil if nosearch
         updir = File.dirname(pwd)
         return nil if File.expand_path(updir) == File.expand_path(pwd)
-        find_buildfile(updir, candidates)
+        find_file(updir, candidates)
       end
 
-      def exception_handling(raise_again = true)
+      def exception_handling(raise_again = true, show_error = true)
         begin
           yield
         rescue => e
-          error "#{e.backtrace.shift}: #{e.message}"
-          e.backtrace.each { |i| error "\tfrom #{i}" }
-          raise e if raise_again
+          if show_error
+            error "#{e.backtrace.shift}: #{e.message}"
+            e.backtrace.each { |i| error "\tfrom #{i}" }
+          end
+          raise if raise_again
         end
       end
 
@@ -282,52 +287,73 @@ module Buildr
       end
     end
 
-    class Client
-
-      module NailMethods
+    module NailMethods
         
-        def self.extend_object(obj)
-          super
-          (class << obj; self; end).module_eval do
-            alias_method :pwd, :getWorkingDirectory
-            alias_method :server, :getNGServer
-          end
+      def self.extend_object(obj)
+        super
+        (class << obj; self; end).module_eval do
+          alias_method :pwd, :getWorkingDirectory
+          alias_method :server, :getNGServer
         end
+      end
+      
+      def argv
+        [command] + args
+      end
 
-        def argv
-          [command] + args
-        end
-
-        def attach_runtime(runtime)
-          runtime.evalScriptlet %q{
-            require 'ostruct'
-            module Buildr
-              module Nailgun
-                extend self
-                attr_reader :ng
-                @ng = OpenStruct.new
-              end
+      def attach_runtime(runtime)
+        runtime.extend RuntimeMixin
+        runtime.evalScriptlet %q{
+          require 'ostruct'
+          module Buildr
+            module Nailgun
+              extend self
+              attr_reader :ng
+              @ng = OpenStruct.new
             end
-          }
-          runtime.object.const_get(:Buildr)::Nailgun.ng.nail = self
-          runtime.load_service.require __FILE__
-          runtime
+          end
+        }
+        runtime.Buildr::Nailgun.ng.nail = self
+        runtime.load_service.require __FILE__
+        runtime
+      end
+      private :attach_runtime
+      
+      def jruby
+        @jruby ||= server.runtime_factory.new_jruby.tap do |runtime|
+          attach_runtime(runtime)
         end
-        private :attach_runtime
-
-        def jruby
-          @jruby ||= attach_runtime(server.runtime_factory.new_jruby)
+      end
+      
+      def buildr
+        @buildr ||= server.runtime_factory.new_buildr.tap do |runtime|
+          attach_runtime(runtime)
         end
+      end
+      
+      def options
+        @options ||= OpenStruct.new
+      end
+      
+    end # NailMethods
 
-        def buildr
-          @buildr ||= server.runtime_factory.new_buildr
-        end
+    module RuntimeMixin
+      def Buildr
+        object.const_get(:Buildr)
+      end
+    end
+    
+    module AppMixin        
+      def load_tasks
+        trace "Not loading tasks again"
+      end
+      
+      def load_buildfile
+        trace "Not loading buildfile again"
+      end        
+    end
 
-        def options
-          @options ||= OpenStruct.new
-        end
-
-      end # NailMethods
+    module Client
 
       class << self
         include Buildr::CommandLineInterface
@@ -384,26 +410,12 @@ module Buildr
         end
         
         def client(runtime, nail, &block)
-          runtime.object.const_get(:Buildr)::Nailgun.ng.nail = nail
-          runtime.object.const_get(:Buildr)::Nailgun::Client.attach_runtime
-          if block_given?
-            Util.on_runtime(runtime) do 
-               runtime.object.const_get(:Buildr)::Nailgun::Client.instance_eval(&block)
-            end
-          end
+          Util.set_stdio(runtime, nail)
+          nailgun_module = runtime.Buildr::Nailgun
+          nailgun_module.ng.nail = nail
+          nailgun_module::Client.attach_runtime
+          nailgun_module::Client.instance_eval(&block)
         end
-      end
-
-      module AppMixin
-        
-        def load_tasks
-          trace "Not loading tasks again"
-        end
-        
-        def load_buildfile
-          trace "Not loading buildfile again"
-        end
-        
       end
 
       def main(nail)
@@ -422,7 +434,7 @@ module Buildr
             Dir.chdir(options.project)
           end
           
-          bf = Util.find_buildfile(Dir.pwd, options.rakefiles, options.nosearch)
+          bf = Util.find_file(Dir.pwd, options.rakefiles, options.nosearch)
           unless bf
             nail.out.println "No buildfile found at #{Dir.pwd}"
             nail.exit(0)
@@ -430,34 +442,42 @@ module Buildr
           
           rt = nail.server.cached_runtimes[bf]
           old_stamp = nail.server.cached_stamps[bf] || Rake::EARLY
-          new_stamp = rt ? rt.object.const_get(:Buildr).application.buildfile.timestamp : Rake::EARLY
+          new_stamp = rt ? rt.Buildr.application.buildfile.timestamp : Rake::EARLY
           
           if rt.nil? || new_stamp > old_stamp
             rt = nail.buildr
-            nail.server.cached_runtimes[bf] = rt
-            Client.client(rt, nail) do
-              bldr = rt.object.const_get(:Buildr)
-              bldr.application.run
-              nail.server.cache(rt, bldr.application.buildfile)
-            end
+            app = rt.Buildr.application
           else
-            Client.client(rt, nail) do
-              buildr = rt.object.const_get(:Buildr)
-              app = buildr.application.extend AppMixin
-              app.lookup('buildr:initialize').instance_eval do 
-                @already_invoked = false
-                @actions = []
+            app = rt.Buildr.application.extend AppMixin
+            app.lookup('buildr:initialize').instance_eval do 
+              @already_invoked = false
+              @actions = []
+            end
+            app.instance_eval do
+              @tasks.values.each do |task|
+                is_project = rt.Buildr::Project.instance_variable_get(:@projects).key?(task.name)
+                task.instance_variable_set(:@already_invoked, false) unless is_project
               end
-              app.instance_variable_get(:@tasks).values.each do |task|
-                task.instance_variable_set(:@already_invoked, false)
-              end
-              app.instance_variable_set(:@original_dir, nail.pwd)
-              app.parse_options
-              app.collect_tasks
-              app.run
             end
           end
-          
+
+          app.instance_eval do
+            @original_dir = nail.pwd
+          end
+
+          Client.client(rt, nail) do
+            Util.exception_handling do
+              begin
+                app.parse_options
+                app.collect_tasks
+                app.run
+              rescue SystemExit => e
+                nail.exit(1)
+              end
+            end
+          end
+
+          nail.server.cache(rt, app.buildfile)
         end
       end
       
@@ -484,14 +504,14 @@ module Buildr
       end
 
       def runtime
-        JRuby.runtime
+        JRuby.runtime.extend RuntimeMixin
       end
 
       def start
         self.allow_nails_by_class_name = false
         
-        Client::Main.nail = Client.new
-        self.default_nail_class = Client::Main
+        NGClient::Main.nail = NGClient.new
+        self.default_nail_class = NGClient::Main
         runtime_factory.start
         
         @thread = java.lang.Thread.new(self)
@@ -517,9 +537,9 @@ module Buildr
       attr_accessor :buildrs_size, :jrubys_size
       
       def initialize(buildrs_size = 1, jrubys_size = nil)
-        jrubys_size ||= buildrs_size
+        # jrubys_size ||= buildrs_size
         @buildrs_size = buildrs_size < 1 ? 1 : buildrs_size
-        @jrubys_size = jrubys_size < 1 ? 1 : jrubys_size
+        # @jrubys_size = jrubys_size < 1 ? 1 : jrubys_size
 
         @buildrs = [].extend(MonitorMixin)
         @buildrs_ready = @buildrs.new_cond
@@ -527,11 +547,11 @@ module Buildr
         
         @buildrs_creators = [].extend(MonitorMixin)
 
-        @jrubys = [].extend(MonitorMixin)
-        @jrubys_ready = @jrubys.new_cond
-        @jrubys_needed = @jrubys.new_cond
+        # @jrubys = [].extend(MonitorMixin)
+        # @jrubys_ready = @jrubys.new_cond
+        # @jrubys_needed = @jrubys.new_cond
         
-        @jrubys_creators = [].extend(MonitorMixin)
+        # @jrubys_creators = [].extend(MonitorMixin)
       end
       
       def new_buildr
@@ -632,12 +652,9 @@ module Buildr
           trace "Creating jruby[#{creator}]"
           Util.benchmark do |header|
             cfg = org.jruby.RubyInstanceConfig.new
-            cfg.setOutput(java.io.PrintStream.new(java.lang.System.out))
-            cfg.setError(java.io.PrintStream.new(java.lang.System.err))
-            cfg.setInput(java.io.BufferedInputStream.new(java.lang.System.in))
             yield cfg if block_given?
             jruby = org.jruby.Ruby.newInstance(cfg)
-            jruby.load_service.load_path.concat BUILDR_PATHS
+            jruby.load_service.load_path.unshift *BUILDR_PATHS
             header.replace ["Created jruby[#{creator}]", jruby]
             jruby
           end
@@ -663,11 +680,8 @@ module Buildr
     if Buildr.respond_to?(:application) && ng.nail.nil?
       Buildr.application.in_namespace(:nailgun, &file_tasks)
       Buildr.application.in_namespace(:nailgun, &server_tasks)
-    elsif ng.nail
-      
     end
 
   end # module Nailgun
   
 end
-
