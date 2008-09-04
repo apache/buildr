@@ -939,13 +939,13 @@ describe Rake::Task, 'integration' do
   it 'should run setup task before any project integration tests' do
     define('foo') { test.using :integration }
     define('bar') { test.using :integration }
-    lambda { task('integration').invoke }.should run_tasks([integration.setup, 'bar:test', 'foo:test'])
+    lambda { task('integration').invoke }.should run_tasks([integration.setup, 'bar:test'], [integration.setup, 'foo:test'])
   end
 
   it 'should run teardown task after all project integrations tests' do
     define('foo') { test.using :integration }
     define('bar') { test.using :integration }
-    lambda { task('integration').invoke }.should run_tasks(['bar:test', 'foo:test', integration.teardown])
+    lambda { task('integration').invoke }.should run_tasks(['bar:test', integration.teardown], ['foo:test', integration.teardown])
   end
 
   it 'should run test cases marked for integration' do
