@@ -390,9 +390,11 @@ end
 
 
 describe Buildr::Application do
+
   describe  '--project option' do
     it 'should change directory before loading buildfile' do
-      Dir.chdir('.') do 
+      orig_path = Dir.pwd
+      begin
         write('buildfile', 'define("invalid") { }')
         path = File.expand_path('path/to/project')
         write(path+'/buildfile', 'define("valid") { }')
@@ -404,11 +406,14 @@ describe Buildr::Application do
           Buildr::Project.project("valid").path_to(nil).should == path
         end
         lambda { Buildr.application.run }.should_not raise_error
+      ensure
+        Dir.chdir(orig_path)
       end
     end
     
     it 'should change to project basedir before executing tasks' do
-      Dir.chdir('.') do 
+      orig_path = Dir.pwd
+      begin
         path = File.expand_path('bar/baz')
         mkpath('bar/baz')
         write('buildfile', 'define("foo") { define("bar") { define("baz") { } } }')
@@ -418,11 +423,14 @@ describe Buildr::Application do
           Dir.pwd.should == Buildr.application.original_dir
         end
         lambda { Buildr.application.run }.should_not raise_error
+      ensure
+        Dir.chdir(orig_path)
       end
     end
 
     it 'should change to project basedir before executing tasks (allow use file_separator for project name)' do
-      Dir.chdir('.') do 
+      orig_path = Dir.pwd
+      begin
         path = File.expand_path('bar/baz')
         mkpath('bar/baz')
         write('buildfile', 'define("foo") { define("bar") { define("baz") { } } }')
@@ -432,6 +440,8 @@ describe Buildr::Application do
           Dir.pwd.should == Buildr.application.original_dir
         end
         lambda { Buildr.application.run }.should_not raise_error
+      ensure
+        Dir.chdir(orig_path)
       end
     end
 
