@@ -684,7 +684,7 @@ describe Rake::Task, 'test' do
   it 'should stop at first failure' do
     define('foo') { test { fail } }
     define('bar') { test { fail } }
-    lambda { task('test').invoke rescue nil }.should run_tasks('bar:test').but_not('foo:test')
+    lambda { task('test').invoke rescue nil }.should run_tasks('foo:test').but_not('bar:test')
   end
 
   it 'should ignore failure if options.test is :all' do
