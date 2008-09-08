@@ -59,9 +59,7 @@ module Buildr
         ['--version',  '-v', GetoptLong::NO_ARGUMENT,
           'Display the program version.'],
         ['--environment', '-e', GetoptLong::REQUIRED_ARGUMENT,
-          'Environment name (e.g. development, test, production).'],
-        ['--project', '-p', GetoptLong::REQUIRED_ARGUMENT,
-          'Change to project directory before executing tasks.']
+          'Environment name (e.g. development, test, production).']
       ]
 
     def collect_tasks
@@ -99,8 +97,6 @@ module Buildr
       when '--prereqs'
         options.show_prereqs = true
         options.show_task_pattern = Regexp.new(value || '.')
-      when '--project'
-        options.project = value
       when '--nosearch', '--quiet', '--trace'
         super
       end
