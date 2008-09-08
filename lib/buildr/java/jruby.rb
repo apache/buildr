@@ -56,12 +56,10 @@ require 'jruby'
 # 4. Check on a clean build with empty local repository.
 module Java
 
-  class << self
+  # Since we already have a JVM loaded, we can use it to guess where JAVA_HOME is.
+  ENV['JAVA_HOME'] ||= java.lang.System.getProperty("java.home")
 
-    # Returns the path to JAVA_HOME
-    def java_home
-      ENV['JAVA_HOME'] || java.lang.System.getProperty("java.home")
-    end
+  class << self
 
     # Returns the classpath, an array listing directories, JAR files and
     # artifacts.  Use when loading the extension to add any additional
@@ -79,7 +77,6 @@ module Java
     # that append to the classpath and specify which remote repositories to use.
     def load
       return self if @loaded
-      cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
 
       # Adding jars to the jruby's $CLASSPATH should be the correct thing, however it
       # seems like some tools require their jars on system class loader (javadoc, junit, etc)
@@ -92,8 +89,18 @@ module Java
       add_url_method.setAccessible(true)
       add_path = lambda { |path| add_url_method.invoke(sysloader, [java.io.File.new(path).toURI.toURL].to_java(java.net.URL)) }
 
-      add_path[tools_jar]
-      cp.each(&add_path)
+      # Most platforms requires tools.jar to be on the classpath, tools.jar contains the
+      # Java compiler (OS X and AIX are two exceptions we know about, may be more).
+      # Guess where tools.jar is from JAVA_HOME, which hopefully points to the JDK,
+      # but maybe the JRE.
+      tools_jar = [File.expand_path('lib/tools.jar', ENV['JAVA_HOME']), File.expand_path('../lib/tools.jar', ENV['JAVA_HOME'])].
+        find { |path| File.exist?(path) }
+      add_path[tools_jar] if tools_jar
+      
+      Buildr.artifacts(classpath).map(&:to_s).each do |path|
+        file(path).invoke
+        add_path[path]
+        end
       
       @loaded = true
       self

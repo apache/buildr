@@ -15,24 +15,26 @@
 
 require File.join(File.dirname(__FILE__), 'spec_helpers')
 
-describe ENV, 'JAVA_HOME on OS X' do
-  before do
-    @old_home, ENV['JAVA_HOME'] = ENV['JAVA_HOME'], nil
-    Config::CONFIG.should_receive(:[]).with('host_os').and_return('darwin0.9')
-  end
+unless RUBY_PLATFORM =~ /java/
+  describe ENV, 'JAVA_HOME on OS X' do
+    before do
+      @old_home, ENV['JAVA_HOME'] = ENV['JAVA_HOME'], nil
+      Config::CONFIG.should_receive(:[]).with('host_os').and_return('darwin0.9')
+    end
 
-  it 'should point to default JVM' do
-    load File.expand_path('../lib/buildr/java.rb')
-    ENV['JAVA_HOME'].should == '/System/Library/Frameworks/JavaVM.framework/Home'
-  end
+    it 'should point to default JVM' do
+      load File.expand_path('../lib/buildr/java/rjb.rb')
+      ENV['JAVA_HOME'].should == '/System/Library/Frameworks/JavaVM.framework/Home'
+    end
 
-  it 'should use value of environment variable if specified' do
-    ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.specified'
-    load File.expand_path('../lib/buildr/java.rb')
-    ENV['JAVA_HOME'].should == '/System/Library/Frameworks/JavaVM.specified'
-  end
+    it 'should use value of environment variable if specified' do
+      ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.specified'
+      load File.expand_path('../lib/buildr/java/rjb.rb')
+      ENV['JAVA_HOME'].should == '/System/Library/Frameworks/JavaVM.specified'
+    end
 
-  after do
-    ENV['JAVA_HOME'] = @old_home
+    after do
+      ENV['JAVA_HOME'] = @old_home
+    end
   end
 end

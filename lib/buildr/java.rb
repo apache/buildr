@@ -14,23 +14,7 @@
 # the License.
 
 
-ENV['JAVA_HOME'] ||= '/System/Library/Frameworks/JavaVM.framework/Home' if Config::CONFIG['host_os'] =~ /darwin/i
 require RUBY_PLATFORM == 'java' ? 'buildr/java/jruby' : 'buildr/java/rjb'
-
-module Java
-  class << self
-    # Returns the path to the tools.jar in JAVA_HOME
-    def tools_jar
-      home = java_home
-      tools_jar = File.expand_path('lib/tools.jar', home)
-      # if java_home is a jre inside jdk...
-      tools_jar = File.expand_path('../lib/tools.jar', home) unless File.exist?(tools_jar)
-      raise "I need tools.jar, can't find it in #{home}/lib" unless File.exist?(tools_jar)
-      tools_jar
-    end
-  end
-end
-
 require 'buildr/java/compilers'
 require 'buildr/java/test_frameworks'
 require 'buildr/java/bdd_frameworks'
