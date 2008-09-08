@@ -170,52 +170,6 @@ To see a list of all the tasks provided by Buildr:
 $ buildr help:tasks
 }}}
 
-h3. Running in other project directory
-
-The @--project@ (@-p@) option is like @make@'s @-C@, using it you can instruct @Buildr@ to run in other directory. 
-The following example runs the @clean@ and @compile@ tasks on project defined in @my_project@ directory:
-
-{{{!sh
-cd /tmp/republic/of/nowhere
-buidlr -p /projects/my_project clean compile
-}}}
-
-The argument to @--project@ can also be a project name, in that case, execution is performed having the
-project's basedir as working directory. 
-
-{{{!sh
-# instead of 
-buildr foo:bar:clean foo:bar:compile
-# you can do a more scriptable and easy to the eyes
-buildr -p foo:bar clean compile
-}}}
-
-h3. Path-like command line arguments
-
-Buildr allows you to specify a task in path-like form. This can be really useful when working with shell file
-completion.
-Some examples:
-
-{{{!sh
-# run the 'build' task on foo:bar project
-buildr foo:bar
-# same as above but using shell completion.
-buildr foo/bar
-
-# you can also append the task name to execute
-buildr foo/bar/compile
-
-# or specify a file-task to be executed.
-# this example will trigger execution of 'compile' task.
-buildr foo/bar/target/classes
-
-# while you are working on a subproject (foo:bar)
-cd foo/bar
-# you may want to execute a task on another one
-# (generated_file at foo:baz:bat)
-buildr ../baz/bat/generated_file
-}}}
-
 h2. Setting Project Properties
 
 We mentioned the group identifier, version number and base directory.  These are project properties.  There are a few more properties we'll cover later on.
