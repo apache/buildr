@@ -19,6 +19,7 @@ unless RUBY_PLATFORM =~ /java/
   describe ENV, 'JAVA_HOME on OS X' do
     before do
       @old_home, ENV['JAVA_HOME'] = ENV['JAVA_HOME'], nil
+      @old_env_java = ENV_JAVA
       Config::CONFIG.should_receive(:[]).with('host_os').and_return('darwin0.9')
     end
 
@@ -35,6 +36,7 @@ unless RUBY_PLATFORM =~ /java/
 
     after do
       ENV['JAVA_HOME'] = @old_home
+      ENV_JAVA = @old_env_java
     end
   end
 end
