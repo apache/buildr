@@ -59,9 +59,10 @@ module Java
     # but maybe the JRE.  Return nil if not found.
     # If given a block, it yields the path to tools.jar, if tools.jar was found.
     def tools_jar
-      tools_jar = [File.expand_path('lib/tools.jar', ENV['JAVA_HOME']), File.expand_path('../lib/tools.jar', ENV['JAVA_HOME'])].find { |path| File.exist?(path) }
-      yield tools_jar if block_given? && !tools_jar.nil?
-      tools_jar
+      location_candidates = ['lib/tools.jar', '../lib/tools.jar']
+      tools_jar_path = location_candidates.map { |path| File.expand_path(path, ENV['JAVA_HOME']) }.find { |path| File.exist?(path) }
+      yield tools_jar_path if block_given? && !tools_jar_path.nil?
+      tools_jar_path
     end
   end
 end
