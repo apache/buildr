@@ -89,12 +89,7 @@ module Java
       add_url_method.setAccessible(true)
       add_path = lambda { |path| add_url_method.invoke(sysloader, [java.io.File.new(path).toURI.toURL].to_java(java.net.URL)) }
 
-      # Most platforms requires tools.jar to be on the classpath, tools.jar contains the
-      # Java compiler (OS X and AIX are two exceptions we know about, may be more).
-      # Guess where tools.jar is from JAVA_HOME, which hopefully points to the JDK,
-      # but maybe the JRE.
-      tools_jar = [File.expand_path('lib/tools.jar', ENV['JAVA_HOME']), File.expand_path('../lib/tools.jar', ENV['JAVA_HOME'])].
-        find { |path| File.exist?(path) }
+      # Most platforms requires tools.jar to be on the classpath.
       add_path[tools_jar] if tools_jar
       
       Buildr.artifacts(classpath).map(&:to_s).each do |path|
