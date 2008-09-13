@@ -54,13 +54,8 @@ module Buildr
       def compile(sources, target, dependencies) #:nodoc:
         check_options options, OPTIONS
         cmd_args = []
-        # Most platforms requires tools.jar to be on the classpath, tools.jar contains the
-        # Java compiler (OS X and AIX are two exceptions we know about, may be more).
-        # Guess where tools.jar is from JAVA_HOME, which hopefully points to the JDK,
-        # but maybe the JRE.
-        tools_jar = [File.expand_path('lib/tools.jar', ENV['JAVA_HOME']), File.expand_path('../lib/tools.jar', ENV['JAVA_HOME'])].
-          find { |path| File.exist?(path) }
-        dependencies << tools_jar if File.exist?(tools_jar)
+        # tools.jar contains the Java compiler.
+        Java.tools_jar { |tools_jar| dependencies << tools_jar }
         cmd_args << '-classpath' << dependencies.join(File::PATH_SEPARATOR) unless dependencies.empty?
         source_paths = sources.select { |source| File.directory?(source) }
         cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?

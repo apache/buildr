@@ -57,8 +57,11 @@ module Java
     # Java compiler (OS X and AIX are two exceptions we know about, may be more).
     # Guess where tools.jar is from JAVA_HOME, which hopefully points to the JDK,
     # but maybe the JRE.  Return nil if not found.
+    # If given a block, it yields the path to tools.jar, if tools.jar was found.
     def tools_jar
-      [File.expand_path('lib/tools.jar', ENV['JAVA_HOME']), File.expand_path('../lib/tools.jar', ENV['JAVA_HOME'])].find { |path| File.exist?(path) }
+      tools_jar = [File.expand_path('lib/tools.jar', ENV['JAVA_HOME']), File.expand_path('../lib/tools.jar', ENV['JAVA_HOME'])].find { |path| File.exist?(path) }
+      yield tools_jar if block_given? && !tools_jar.nil?
+      tools_jar
     end
   end
 end

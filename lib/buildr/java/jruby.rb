@@ -90,7 +90,7 @@ module Java
       add_path = lambda { |path| add_url_method.invoke(sysloader, [java.io.File.new(path).toURI.toURL].to_java(java.net.URL)) }
 
       # Most platforms requires tools.jar to be on the classpath.
-      add_path[tools_jar] if tools_jar
+      tools_jar { |tools_jar| add_path[tools_jar] }
       
       Buildr.artifacts(classpath).map(&:to_s).each do |path|
         file(path).invoke

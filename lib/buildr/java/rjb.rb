@@ -98,7 +98,7 @@ module Java
     def load
       return self if @loaded
       ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
-      classpath << Java.tools_jar if Java.tools_jar
+      tools_jar { |tools_jar| classpath << tools_jar }
       
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
       java_opts = (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split

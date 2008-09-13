@@ -42,26 +42,59 @@ unless RUBY_PLATFORM =~ /java/
 end
 
 
-describe Java, 'tools_jar' do
+describe Java, '#tools_jar' do
   before do
     @old_home = ENV['JAVA_HOME']
   end
   
-  it 'should return $JAVA_HOME/lib/tools.jar if JAVA_HOME points to JDK' do
-    write 'jdk/lib/tools.jar'
-    ENV['JAVA_HOME'] = File.expand_path('jdk')
-    Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
+  describe 'when JAVA_HOME points to a JDK' do
+    before do
+      write 'jdk/lib/tools.jar'
+      ENV['JAVA_HOME'] = File.expand_path('jdk')
+    end
+  
+    it 'should return the path to tools.jar' do
+      Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
+    end
+    
+    it 'should accept a block and yield the path to tools.jar' do
+      tools_jar_received_by_block = nil
+      Java.tools_jar { |tools_jar| tools_jar_received_by_block = tools_jar }
+      tools_jar_received_by_block.should point_to_path('jdk/lib/tools.jar')
+    end
   end
   
-  it 'should return $JAVA_HOME/../lib/tools.jar if JAVA_HOME points to a JRE inside a JDK' do
-    write 'jdk/lib/tools.jar'
-    ENV['JAVA_HOME'] = File.expand_path('jdk/jre')
-    Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
+  describe 'when JAVA_HOME points to a JRE inside a JDK' do
+    before do
+      write 'jdk/lib/tools.jar'
+      ENV['JAVA_HOME'] = File.expand_path('jdk/jre')
+    end
+    
+    it 'should return the path to tools.jar' do
+      Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
+    end
+    
+    it 'should accept a block and yield the path to tools.jar' do
+      tools_jar_received_by_block = nil
+      Java.tools_jar { |tools_jar| tools_jar_received_by_block = tools_jar }
+      tools_jar_received_by_block.should point_to_path('jdk/lib/tools.jar')
+    end
   end
   
-  it 'should return nil if tools.jar not found' do
-    ENV['JAVA_HOME'] = File.expand_path('jdk')
-    Java.tools_jar.should be(nil)
+  describe 'when there is no tools.jar' do
+    before do
+      ENV['JAVA_HOME'] = File.expand_path('jdk')
+    end
+    
+    it 'should return nil' do
+      Java.tools_jar.should be(nil)
+    end
+    
+    it 'should accept a block and not yield to it' do
+      block_called = false
+      Java.tools_jar { block_called = true }
+      block_called.should be(false)
+    end
   end
   
   after do
