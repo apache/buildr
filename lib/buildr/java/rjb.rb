@@ -97,14 +97,8 @@ module Java
     # that append to the classpath and specify which remote repositories to use.
     def load
       return self if @loaded
-      # Most platforms requires tools.jar to be on the classpath, tools.jar contains the
-      # Java compiler (OS X and AIX are two exceptions we know about, may be more).
-      # Guess where tools.jar is from JAVA_HOME, which hopefully points to the JDK,
-      # but maybe the JRE.
       ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
-      tools = [File.expand_path('lib/tools.jar', ENV['JAVA_HOME']), File.expand_path('../lib/tools.jar', ENV['JAVA_HOME'])].
-        find { |path| File.exist?(path) }
-      classpath << tools if tools
+      classpath << Java.tools_jar if Java.tools_jar
       
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
       java_opts = (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split

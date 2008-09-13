@@ -38,3 +38,31 @@ unless RUBY_PLATFORM =~ /java/
     end
   end
 end
+
+
+describe Java, 'tools_jar' do
+  before do
+    @old_home = ENV['JAVA_HOME']
+  end
+  
+  it 'should return $JAVA_HOME/lib/tools.jar if JAVA_HOME points to JDK' do
+    write 'jdk/lib/tools.jar'
+    ENV['JAVA_HOME'] = File.expand_path('jdk')
+    Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
+  end
+  
+  it 'should return $JAVA_HOME/../lib/tools.jar if JAVA_HOME points to a JRE inside a JDK' do
+    write 'jdk/lib/tools.jar'
+    ENV['JAVA_HOME'] = File.expand_path('jdk/jre')
+    Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
+  end
+  
+  it 'should return nil if tools.jar not found' do
+    ENV['JAVA_HOME'] = File.expand_path('jdk')
+    Java.tools_jar.should be(nil)
+  end
+  
+  after do
+    ENV['JAVA_HOME'] = @old_home
+  end
+end
