@@ -95,7 +95,7 @@ module Java
       Buildr.artifacts(classpath).map(&:to_s).each do |path|
         file(path).invoke
         add_path[path]
-        end
+      end
       
       @loaded = true
       self
