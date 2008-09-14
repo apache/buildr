@@ -122,7 +122,7 @@ module Buildr
       
       # Return the current SVN URL
       def repo_url
-        url = svn('info').scan(/URL: (.*)/)[0][0]
+        svn('info').scan(/URL: (.*)/)[0][0]
       end
       
       def remove url, message
