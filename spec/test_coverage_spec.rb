@@ -43,6 +43,10 @@ module TestCoverageHelper
     end
   end
   
+  # Test if a directory contains at least one file matching a given glob pattern.
+  #
+  # For example, to check that a directory contains at least one HTML file:
+  #   '/path/to/some/directory'.should have_files_matching('*.html')
   def have_files_matching pattern
     FileNamePatternMatcher.new pattern
   end
