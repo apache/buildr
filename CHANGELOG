@@ -1,7 +1,4 @@
 1.3.3 (Pending)
-* Added:  BUILDR-142 User can specify tasks (and file-tasks) as path-like 
-          arguments on command line. Added --project option to change 
-          working directory before execution.
 * Added:  Growl notifications (OS X only).
 * Added:  error, info and trace methods.
 * Added:  BUILDR-128 Emma support
