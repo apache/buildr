@@ -354,10 +354,10 @@ describe Buildr::Release, '#tag_release' do
     write 'buildfile', "THIS_VERSION = '1.0.1'"
     Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
     Svn.stub!(:copy)
+    Svn.stub!(:remove)
   end
   
   it 'should tag the working copy' do
-    Svn.stub!(:remove)
     Svn.should_receive(:copy).with(Dir.pwd, 'http://my.repo.org/foo/tags/1.0.1', 'Release 1.0.1')
     Release.send :tag_release
   end
@@ -371,16 +371,20 @@ describe Buildr::Release, '#tag_release' do
     Svn.stub!(:remove).and_raise(RuntimeError)
     Release.send :tag_release
   end
+  
+  it 'should inform the user' do
+    lambda { Release.send :tag_release }.should show_info('Tagging release 1.0.1')
+  end
 end
 
 
 describe Buildr::Release, '#commit_new_snapshot' do
   before do
     write 'buildfile', 'THIS_VERSION = "1.0.0"'
+    Svn.stub!(:commit)
   end
   
   it 'should update the buildfile with a new version number' do
-    Svn.stub!(:commit)
     Release.send :commit_new_snapshot
     file('buildfile').should contain('THIS_VERSION = "1.0.1-SNAPSHOT"')
   end
@@ -388,5 +392,9 @@ describe Buildr::Release, '#commit_new_snapshot' do
   it 'should commit the new buildfile on the trunk' do
     Svn.should_receive(:commit).with(File.expand_path('buildfile'), 'Changed version number to 1.0.1-SNAPSHOT')
     Release.send :commit_new_snapshot
+  end
+  
+  it 'should inform the user of the new version' do
+    lambda { Release.send :commit_new_snapshot }.should show_info('Current version is now 1.0.1-SNAPSHOT')
   end
 end

@@ -140,7 +140,7 @@ module Buildr
       # Executes SVN command and returns the output.
       def svn(*args)
         cmd = 'svn ' + args.map { |arg| arg[' '] ? %Q{"#{arg}"} : arg }.join(' ')
-        info cmd
+        trace cmd
         `#{cmd}`.tap { fail 'SVN command failed' unless $?.exitstatus == 0 }
       end
     end
@@ -260,11 +260,6 @@ module Buildr
         new_version = this_version.split('.')
         yield(new_version)
         new_version = new_version.join('.')
-        if verbose
-          puts 'Upgrading version numbers:' # TODO Add tests on this
-          puts "  This:  #{this_version}"
-          puts "  Next:  #{new_version}"
-        end
         buildfile = File.read(Buildr.application.buildfile.to_s)
         buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{new_version}"}) }
       end
@@ -275,6 +270,7 @@ module Buildr
       # Tags the current working copy with the release version number.
       def tag_release
         version = extract_version
+        info "Tagging release #{version}"
         url = tag_url Svn.repo_url, version
         Svn.remove url, 'Removing old copy' rescue nil
         Svn.copy Dir.pwd, url, "Release #{version}"
@@ -288,6 +284,7 @@ module Buildr
         buildfile = change_version { |version| version[-1] = (version[-1].to_i + 1).to_s + '-SNAPSHOT' }
         File.open(Buildr.application.buildfile.to_s, 'w') { |file| file.write buildfile }
         Svn.commit Buildr.application.buildfile.to_s, "Changed version number to #{extract_version}"
+        info "Current version is now #{extract_version}"
       end
     end
   end
