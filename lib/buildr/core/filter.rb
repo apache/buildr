@@ -93,7 +93,7 @@ module Buildr
     # Specifies files to include and returns self. See FileList#include.
     #
     # By default all files are included. You can use this method to only include specific
-    # files form the source directory.
+    # files from the source directory.
     def include(*files)
       @include += files
       self
