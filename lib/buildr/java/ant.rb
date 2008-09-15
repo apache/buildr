@@ -26,7 +26,7 @@ module Buildr
     VERSION = '1.7.1' unless const_defined?('VERSION')
 
     # Libraries used by Ant.
-    REQUIRES = [ "org.apache.ant:ant:jar:#{VERSION}", "org.apache.ant:ant-launcher:jar:#{VERSION}", 'xerces:xercesImpl:jar:2.6.2' ]
+    REQUIRES = "org.apache.ant:ant:jar:#{VERSION}", "org.apache.ant:ant-launcher:jar:#{VERSION}"
     Java.classpath << REQUIRES
 
     # :call-seq:

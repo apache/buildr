@@ -152,6 +152,8 @@ module Buildr
         rm_rf html_in ; mkpath html_in
         
         Buildr.ant('junit-report') do |ant|
+          ant.taskdef :name=>'junitreport', :classname=>'org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator',
+            :classpath=>Buildr.artifacts(JUnit::ANT_JUNIT).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
           ant.junitreport :todir=>target do
             projects.select { |project| project.test.framework == :junit }.
               map { |project| project.test.report_to.to_s }.select { |path| File.exist?(path) }.
@@ -186,9 +188,7 @@ module Buildr
     VERSION = '4.4' unless const_defined?('VERSION')
     
     REQUIRES = ["junit:junit:jar:#{VERSION}"] + JMock::REQUIRES
-
-    # Ant-JUnit requires for JUnit and JUnit reports tasks.
-    Java.classpath << "org.apache.ant:ant-junit:jar:#{Ant::VERSION}"
+    ANT_JUNIT = "org.apache.ant:ant-junit:jar:#{Ant::VERSION}" #:nodoc:
 
     include TestFramework::JavaTest
     
@@ -213,6 +213,8 @@ module Buildr
           fail 'Option fork must be :once, :each or false.'
         end
         mkpath task.report_to.to_s
+        ant.taskdef :name=>'junit', :classname=>'org.apache.tools.ant.taskdefs.optional.junit.JUnitTask',
+          :classpath=>Buildr.artifacts(ANT_JUNIT).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
         ant.junit forking.merge(:clonevm=>options[:clonevm] || false, :dir=>task.send(:project).path_to) do
           ant.classpath :path=>dependencies.join(File::PATH_SEPARATOR)
           (options[:properties] || []).each { |key, value| ant.sysproperty :key=>key, :value=>value }
