@@ -43,10 +43,8 @@ end
 ENV['incubating'] = 'true'
 ENV['staging'] = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
 
-task('apache.license').prerequisites.include(spec.files).
-  exclude('.class', '.png', '.jar', '.tif', '.textile', '.icns',
-           'README', 'LICENSE', 'CHANGELOG', 'DISCLAIMER', 'NOTICE', 'etc/KEYS', 'etc/git-svn-authors')
-
+task('apache:license').enhance FileList[spec.files].exclude('.class', '.png', '.jar', '.tif', '.textile', '.icns',
+   'README', 'LICENSE', 'CHANGELOG', 'DISCLAIMER', 'NOTICE', 'etc/KEYS', 'etc/git-svn-authors')
 
 task 'spec:check' do
   print 'Checking that we have JRuby, Scala and Groovy available ... '
