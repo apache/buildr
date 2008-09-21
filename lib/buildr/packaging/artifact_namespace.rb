@@ -697,10 +697,13 @@ module Buildr
               raise "Unsatisfied dependency #{previous} " +
                 "not satisfied by #{artifact}" unless satisfied
               previous.version = artifact.version # OK, set new version
+              artifact = previous # use the same object for aliases  
             else # not a requirement, set the new values
-              previous.copy_attrs(artifact)
+              unless artifact.id == previous.id && name != previous.name
+                previous.copy_attrs(artifact)
+                artifact = previous
+              end
             end
-            artifact = previous # use the same object for aliases
           else
             if unvers.nil? && # we only have the version
                 (previous = get(unvers, true, false, false))
@@ -722,8 +725,8 @@ module Buildr
           group(name, *(names + [{:namespace => self}]))
         elsif artifact.id
           unvers = artifact.unversioned_spec
-          registry[unvers] = artifact
-          registry.alias name, unvers unless name.to_s[/^\s*$/]
+          registry[name] = artifact
+          registry.alias unvers, name
         else
           registry[name] = artifact
         end
