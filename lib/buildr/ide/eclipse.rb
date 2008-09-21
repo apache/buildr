@@ -53,10 +53,8 @@ module Buildr
           m2repo = Buildr::Repositories.instance.local
 
           File.open(task.name, "w") do |file|
-            xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
-            xml.classpath do
-              classpathentry = ClasspathEntryWriter.new project, xml
-
+            classpathentry = ClasspathEntryWriter.new project, file
+            classpathentry.write do
               # Note: Use the test classpath since Eclipse compiles both "main" and "test" classes using the same classpath
               cp = project.test.compile.dependencies.map(&:to_s) - [ project.compile.target.to_s, project.resources.target.to_s ]
               cp = cp.uniq
@@ -129,11 +127,15 @@ module Buildr
     # It converts absolute paths to relative paths.
     # It ignores duplicate directories.
     class ClasspathEntryWriter
-      def initialize project, xml_builder
+      def initialize project, target
         @project = project
-        @xml = xml_builder
+        @xml = Builder::XmlMarkup.new(:target=>target, :indent=>2)
         @excludes = [ '**/.svn/', '**/CVS/' ].join('|')
         @paths_written = []
+      end
+      
+      def write &block
+        @xml.classpath &block
       end
       
       def con path
