@@ -35,8 +35,6 @@ module Buildr
 
     after_define do |project|
       eclipse = project.task("eclipse")
-      # We need paths relative to the top project's base directory.
-      root_path = lambda { |p| f = lambda { |p| p.parent ? f[p.parent] : p.base_dir } ; f[p] }[project]
 
       # Check if project has scala facet
       scala = project.compile.language == :scala
