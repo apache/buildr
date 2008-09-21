@@ -33,10 +33,16 @@ module EclipseHelper
     default_output = classpath_xml_elements.collect("classpathentry[@kind='output']") { |n| n.attributes['path'] }
     specific_output[0] || default_output[0]
   end
+  
+  def project_xml_elements
+    task('eclipse').invoke
+    REXML::Document.new(File.open('.project')).root.elements
+  end
 end
 
 
 describe Buildr::Eclipse do
+  include EclipseHelper
   
   describe "eclipse's .project file" do
     
@@ -49,15 +55,11 @@ describe Buildr::Eclipse do
       JAVA_BUILDER  = 'org.eclipse.jdt.core.javabuilder'
       
       def project_natures
-        task('eclipse').invoke
-        REXML::Document.new(File.open('.project')).
-          root.elements.collect("natures/nature") { |n| n.text }
+        project_xml_elements.collect("natures/nature") { |n| n.text }
       end
       
       def build_commands
-        task('eclipse').invoke
-        REXML::Document.new(File.open('.project')).
-          root.elements.collect("buildSpec/buildCommand/name") { |n| n.text }
+        project_xml_elements.collect("buildSpec/buildCommand/name") { |n| n.text }
       end
       
       before do
@@ -88,9 +90,7 @@ describe Buildr::Eclipse do
       JAVA_CONTAINER  = 'org.eclipse.jdt.launching.JRE_CONTAINER'
       
       def classpath_containers attribute='path'
-        task('eclipse').invoke
-        REXML::Document.new(File.open('.classpath')).
-          root.elements.collect("classpathentry[@kind='con']") { |n| n.attributes[attribute] }
+        classpath_xml_elements.collect("classpathentry[@kind='con']") { |n| n.attributes[attribute] }
       end
       
       before do
@@ -107,7 +107,6 @@ describe Buildr::Eclipse do
     end
     
     describe 'source folders' do
-      include EclipseHelper
       
       before do
         write 'buildfile'
