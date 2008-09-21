@@ -27,11 +27,18 @@ module EclipseHelper
     classpath_xml_elements.collect("classpathentry[@kind='src']") { |n| n.attributes[attribute] }
   end
   
-  def classpath_output path
+  # <classpathentry path="PATH" output="RETURNED_VALUE"/>
+  def classpath_specific_output path
     specific_output = classpath_xml_elements.collect("classpathentry[@path='#{path}']") { |n| n.attributes['output'] }
     raise "expected: one output attribute for path '#{path}, got: #{specific_output} " if specific_output.length > 1
+    specific_output[0]
+  end
+  
+  # <classpathentry path="RETURNED_VALUE" kind="output"/>
+  def classpath_default_output
     default_output = classpath_xml_elements.collect("classpathentry[@kind='output']") { |n| n.attributes['path'] }
-    specific_output[0] || default_output[0]
+    raise "expected: one path attribute for kind='output', got: #{default_output}" if default_output.length > 1
+    default_output[0]
   end
   
   def project_xml_elements
@@ -145,7 +152,8 @@ describe Buildr::Eclipse do
         
         it 'should go to the default target directory' do
           define('foo')
-          classpath_output('src/main/java').should == 'target/classes'
+          classpath_specific_output('src/main/java').should be(nil)
+          classpath_default_output.should == 'target/classes'
         end
       end
       
@@ -164,7 +172,7 @@ describe Buildr::Eclipse do
         
         it 'should go to the default target directory' do
           define('foo')
-          classpath_output('src/test/java').should == 'target/test/classes'
+          classpath_specific_output('src/test/java').should == 'target/test/classes'
         end
       end
       
@@ -188,7 +196,7 @@ describe Buildr::Eclipse do
         
         it 'should go to the default target directory' do
           define('foo')
-          classpath_output('src/main/resources').should == 'target/resources'
+          classpath_specific_output('src/main/resources').should == 'target/resources'
         end
       end
       
@@ -212,7 +220,7 @@ describe Buildr::Eclipse do
         
         it 'should go to the default target directory' do
           define('foo')
-          classpath_output('src/test/resources').should == 'target/test/resources'
+          classpath_specific_output('src/test/resources').should == 'target/test/resources'
         end
       end
       
