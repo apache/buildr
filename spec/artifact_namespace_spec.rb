@@ -247,6 +247,17 @@ describe Buildr::ArtifactNamespace do
         artifact_ns[:copied].should be_nil
       end
     end
+
+    it 'should register two artifacts with different version on namespace' do
+      define 'one' do
+        artifact_ns.use :foo => 'a:b:c:1'
+        artifact_ns.use :bar => 'a:b:c:2'
+        artifact_ns[:foo].version.should == '1'
+        artifact_ns[:bar].version.should == '2'
+        # unversioned references the last version set.
+        artifact_ns['a:b:c'].version.should == '2'
+      end
+    end
     
     it 'should complain if namespace requirement is not satisfied' do
       define 'one' do
