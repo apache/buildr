@@ -30,14 +30,14 @@ module EclipseHelper
   # <classpathentry path="PATH" output="RETURNED_VALUE"/>
   def classpath_specific_output path
     specific_output = classpath_xml_elements.collect("classpathentry[@path='#{path}']") { |n| n.attributes['output'] }
-    raise "expected: one output attribute for path '#{path}, got: #{specific_output} " if specific_output.length > 1
+    raise "expected: one output attribute for path '#{path}, got: #{specific_output.inspect}" if specific_output.length > 1
     specific_output[0]
   end
   
   # <classpathentry path="RETURNED_VALUE" kind="output"/>
   def classpath_default_output
     default_output = classpath_xml_elements.collect("classpathentry[@kind='output']") { |n| n.attributes['path'] }
-    raise "expected: one path attribute for kind='output', got: #{default_output}" if default_output.length > 1
+    raise "expected: one path attribute for kind='output', got: #{default_output.inspect}" if default_output.length > 1
     default_output[0]
   end
   
