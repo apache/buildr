@@ -108,6 +108,7 @@ module Java
       return self if @loaded
       classpath << tools_jar if tools_jar
       
+      classpath.map! { |path| Proc === path ? path.call : path }
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
       java_opts = (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split
       ::Rjb.load cp.join(File::PATH_SEPARATOR), java_opts

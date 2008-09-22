@@ -102,6 +102,7 @@ module Java
       # Most platforms requires tools.jar to be on the classpath.
       add_path[tools_jar] if tools_jar
       
+      classpath.map! { |path| Proc === path ? path.call : path }      
       Buildr.artifacts(classpath).map(&:to_s).each do |path|
         file(path).invoke
         add_path[path]
