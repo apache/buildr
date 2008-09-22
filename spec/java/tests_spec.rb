@@ -40,12 +40,27 @@ describe Buildr::JUnit do
     project('foo').test.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
   end
   
+  it 'should pick JUnit version from junit build settings' do
+    Buildr::JUnit.instance_eval { @dependencies = nil }
+    write 'build.yaml', 'junit: 1.2.3'
+    define('foo') { test.using(:junit) }
+    project('foo').test.compile.dependencies.should include(artifact("junit:junit:jar:1.2.3"))
+  end
+
   it 'should include JMock dependencies' do
     define('foo') { test.using(:junit) }
     project('foo').test.compile.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
     project('foo').test.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
   end
 
+  it 'should pick JUnit version from junit build settings' do
+    Buildr::JUnit.instance_eval { @dependencies = nil } # JUnit caches JMock dependencies
+    Buildr::JMock.instance_eval { @dependencies = nil }
+    write 'build.yaml', 'jmock: 1.2.3'
+    define('foo') { test.using(:junit) }
+    project('foo').test.compile.dependencies.should include(artifact("jmock:jmock:jar:1.2.3"))
+  end
+  
   it 'should include public classes extending junit.framework.TestCase' do
     write 'src/test/java/com/example/FirstTest.java', <<-JAVA
       package com.example;
