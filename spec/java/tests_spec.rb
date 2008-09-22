@@ -46,7 +46,7 @@ describe Buildr::JUnit do
     define('foo') { test.using(:junit) }
     project('foo').test.compile.dependencies.should include(artifact("junit:junit:jar:1.2.3"))
   end
-
+  
   it 'should include JMock dependencies' do
     define('foo') { test.using(:junit) }
     project('foo').test.compile.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
@@ -280,6 +280,12 @@ describe Buildr::JUnit do
   it 'should run each test case in separate same VM if fork is each' do
     fork_tests :each
     project('foo').test.failed_tests.should be_empty
+  end
+  
+  after do
+    # Yes, this is ugly.  Better solution?
+    Buildr::JUnit.instance_eval { @dependencies = nil }
+    Buildr::JMock.instance_eval { @dependencies = nil }
   end
 end
 
