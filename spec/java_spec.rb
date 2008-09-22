@@ -36,7 +36,7 @@ unless RUBY_PLATFORM =~ /java/
 
     after do
       ENV['JAVA_HOME'] = @old_home
-      ENV_JAVA = @old_env_java
+      ENV_JAVA.replace @old_env_java
     end
   end
 end
@@ -49,6 +49,7 @@ describe Java, '#tools_jar' do
   
   describe 'when JAVA_HOME points to a JDK' do
     before do
+      Java.instance_eval { @tools_jar = nil }
       write 'jdk/lib/tools.jar'
       ENV['JAVA_HOME'] = File.expand_path('jdk')
     end
@@ -56,16 +57,11 @@ describe Java, '#tools_jar' do
     it 'should return the path to tools.jar' do
       Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
     end
-    
-    it 'should accept a block and yield the path to tools.jar' do
-      tools_jar_received_by_block = nil
-      Java.tools_jar { |tools_jar| tools_jar_received_by_block = tools_jar }
-      tools_jar_received_by_block.should point_to_path('jdk/lib/tools.jar')
-    end
   end
   
   describe 'when JAVA_HOME points to a JRE inside a JDK' do
     before do
+      Java.instance_eval { @tools_jar = nil }
       write 'jdk/lib/tools.jar'
       ENV['JAVA_HOME'] = File.expand_path('jdk/jre')
     end
@@ -73,27 +69,16 @@ describe Java, '#tools_jar' do
     it 'should return the path to tools.jar' do
       Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
     end
-    
-    it 'should accept a block and yield the path to tools.jar' do
-      tools_jar_received_by_block = nil
-      Java.tools_jar { |tools_jar| tools_jar_received_by_block = tools_jar }
-      tools_jar_received_by_block.should point_to_path('jdk/lib/tools.jar')
-    end
   end
   
   describe 'when there is no tools.jar' do
     before do
+      Java.instance_eval { @tools_jar = nil }
       ENV['JAVA_HOME'] = File.expand_path('jdk')
     end
     
     it 'should return nil' do
-      Java.tools_jar.should be(nil)
-    end
-    
-    it 'should accept a block and not yield to it' do
-      block_called = false
-      Java.tools_jar { block_called = true }
-      block_called.should be(false)
+      Java.tools_jar.should be_nil
     end
   end
   

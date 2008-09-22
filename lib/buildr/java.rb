@@ -14,7 +14,6 @@
 # the License.
 
 
-require 'buildr/java/java'
 require RUBY_PLATFORM == 'java' ? 'buildr/java/jruby' : 'buildr/java/rjb'
 require 'buildr/java/compilers'
 require 'buildr/java/test_frameworks'

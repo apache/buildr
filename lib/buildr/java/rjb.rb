@@ -71,13 +71,10 @@ module Java
     end
 
   end
-
-
+  
   # On OS X we know where the default JDK is. We can try to guess for other OS.
-  case Config::CONFIG['host_os']
-  when /darwin/i ; ENV['JAVA_HOME'] ||= '/System/Library/Frameworks/JavaVM.framework/Home'
-  end
-
+  # We set JAVA_HOME early so we can use it without calling Java.load first.
+  ENV['JAVA_HOME'] ||= '/System/Library/Frameworks/JavaVM.framework/Home' if Config::CONFIG['host_os'] =~ /darwin/i
 
   class << self
     
@@ -90,15 +87,26 @@ module Java
     def classpath
       @classpath ||= []
     end
-
+    
+    # Most platforms requires tools.jar to be on the classpath, tools.jar contains the
+    # Java compiler (OS X and AIX are two exceptions we know about, may be more).
+    # Guess where tools.jar is from JAVA_HOME, which hopefully points to the JDK,
+    # but maybe the JRE.  Return nil if not found.
+    def tools_jar #:nodoc:
+      @tools_jar ||= begin
+        home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
+        ['lib/tools.jar', '../lib/tools.jar'].map { |path| File.expand_path(path, home) }.
+          find { |path| File.exist?(path) }
+      end
+    end
+    
     # Loads the JVM and all the libraries listed on the classpath.  Call this
     # method before accessing any Java class, but only call it from methods
     # used in the build, giving the Buildfile a chance to load all extensions
     # that append to the classpath and specify which remote repositories to use.
     def load
       return self if @loaded
-      ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
-      tools_jar { |tools_jar| classpath << tools_jar }
+      classpath << tools_jar if tools_jar
       
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
       java_opts = (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split

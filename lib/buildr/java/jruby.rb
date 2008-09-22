@@ -57,6 +57,7 @@ require 'jruby'
 module Java
 
   # Since we already have a JVM loaded, we can use it to guess where JAVA_HOME is.
+  # We set JAVA_HOME early so we can use it without calling Java.load first.
   ENV['JAVA_HOME'] ||= java.lang.System.getProperty("java.home")
 
   class << self
@@ -69,6 +70,15 @@ module Java
     #   Java.classpath << 'org.apache.ant:ant:jar:1.7.0'
     def classpath
       @classpath ||= []
+    end
+    
+    # Most platforms requires tools.jar to be on the classpath, tools.jar contains the
+    # Java compiler (OS X and AIX are two exceptions we know about, may be more).
+    # Guess where tools.jar is from JAVA_HOME, which hopefully points to the JDK,
+    # but maybe the JRE.  Return nil if not found.
+    def tools_jar #:nodoc:
+      @tools_jar ||= ['lib/tools.jar', '../lib/tools.jar'].map { |path| File.expand_path(path, ENV['JAVA_HOME']) }.
+        find { |path| File.exist?(path) }
     end
 
     # Loads the JVM and all the libraries listed on the classpath.  Call this
@@ -90,7 +100,7 @@ module Java
       add_path = lambda { |path| add_url_method.invoke(sysloader, [java.io.File.new(path).toURI.toURL].to_java(java.net.URL)) }
 
       # Most platforms requires tools.jar to be on the classpath.
-      tools_jar { |tools_jar| add_path[tools_jar] }
+      add_path[tools_jar] if tools_jar
       
       Buildr.artifacts(classpath).map(&:to_s).each do |path|
         file(path).invoke
