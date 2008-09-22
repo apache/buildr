@@ -24,10 +24,28 @@ module Buildr
 
     # Which version of Ant we're using by default.
     VERSION = '1.7.1' unless const_defined?('VERSION')
+    
+    class << self
+      # Current version of Ant being used.
+      def version
+        Buildr.settings.build['ant'] || VERSION
+      end
 
-    # Libraries used by Ant.
-    REQUIRES = "org.apache.ant:ant:jar:#{VERSION}", "org.apache.ant:ant-launcher:jar:#{VERSION}"
-    Java.classpath << REQUIRES
+      # Ant classpath dependencies.
+      def dependencies
+        ["org.apache.ant:ant:jar:#{version}", "org.apache.ant:ant-launcher:jar:#{version}"]
+      end
+      
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use Ant.version/dependencies instead of VERSION/REQUIRES"
+        dependencies
+      end
+    end    
+
+
+    Java.classpath << lambda { Ant.dependencies }
 
     # :call-seq:
     #   ant(name) { |AntProject| ... } => AntProject
@@ -65,7 +83,7 @@ module Buildr
 
   Buildr.help do
     Java.load
-    "\nUsing Java #{ENV_JAVA['java.version']}, Ant #{Ant::VERSION}."
+    "\nUsing Java #{ENV_JAVA['java.version']}, Ant #{Ant.version}."
   end
 
 end
