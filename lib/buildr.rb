@@ -15,7 +15,7 @@
 
 
 module Buildr
-  VERSION = '1.3.3'.freeze # unless const_defined?(:VERSION)
+  VERSION = '1.3.3'.freeze
 end
 
 require 'buildr/core'

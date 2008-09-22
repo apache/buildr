@@ -141,6 +141,7 @@ module Buildr
 
     # Returns the Settings associated with this build.
     def settings
+      fail "Internal error: Called Buildr.settings before buildfile located" unless rakefile
       @settings ||= Settings.new(self)
     end
 
