@@ -14,7 +14,7 @@
 # the License.
 
 
-module Buildr::Compiler
+module Buildr::Groovy
 
   # Groovyc compiler:
   #  compile.using(:groovyc)
@@ -48,7 +48,7 @@ module Buildr::Compiler
   # * :target            -- Bytecode compatibility.
   # * :javac             -- Hash of options passed to the ant javac task
   #
-  class Groovyc < Base
+  class Groovyc < Compiler::Base
     
     # The groovyc compiler jars are added to classpath at load time,
     # if you want to customize artifact versions, you must set them on the
@@ -135,4 +135,4 @@ end
 
 # Groovy compiler comes first, ahead of Javac, this allows it to pick
 # projects that mix Groovy and Java code by spotting Groovy code first.
-Buildr::Compiler.compilers.unshift Buildr::Compiler::Groovyc
+Buildr::Compiler.compilers.unshift Buildr::Groovy::Groovyc

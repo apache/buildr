@@ -17,7 +17,7 @@
 require RUBY_PLATFORM == 'java' ? 'buildr/java/jruby' : 'buildr/java/rjb'
 require 'buildr/java/compiler'
 require 'buildr/java/tests'
-require 'buildr/java/bdd_frameworks'
+require 'buildr/java/bdd'
 require 'buildr/java/packaging'
 require 'buildr/java/commands'
 require 'buildr/java/deprecated'

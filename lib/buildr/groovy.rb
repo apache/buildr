@@ -15,3 +15,4 @@
 
 
 require 'buildr/groovy/compiler'
+require 'buildr/groovy/bdd'

@@ -35,7 +35,7 @@ describe Buildr::RSpec do
   it 'should include src/spec/ruby/**/*_spec.rb' do
     verbose true
     foo do 
-      spec = _(:source, :spec, :ruby, 'some_spec.rb')
+      spec = _('src/spec/ruby/some_spec.rb')
       write spec, ''
       test.invoke
       test.tests.should include(spec)
@@ -84,19 +84,19 @@ describe Buildr::JBehave do
 
   it 'should apply to projects having JBehave sources' do
     define('one', :base_dir => 'one') do
-      write _(:source, :spec, :java, 'SomeBehaviour.java'), 'public class SomeBehaviour {}'
+      write _('src/spec/java/SomeBehaviour.java'), 'public class SomeBehaviour {}'
       JBehave.applies_to?(self).should be_true
     end
     define('two', :base_dir => 'two') do
-      write _(:source, :test, :java, 'SomeBehaviour.java'), 'public class SomeBehaviour {}'
+      write _('src/test/java/SomeBehaviour.java'), 'public class SomeBehaviour {}'
       JBehave.applies_to?(self).should be_false
     end
     define('three', :base_dir => 'three') do
-      write _(:source, :spec, :java, 'SomeBehavior.java'), 'public class SomeBehavior {}'
+      write _('src/spec/java/SomeBehavior.java'), 'public class SomeBehavior {}'
       JBehave.applies_to?(self).should be_true
     end
     define('four', :base_dir => 'four') do
-      write _(:source, :test, :java, 'SomeBehavior.java'), 'public class SomeBehavior {}'
+      write _('src/test/java/SomeBehavior.java'), 'public class SomeBehavior {}'
       JBehave.applies_to?(self).should be_false
     end
   end
@@ -106,8 +106,8 @@ describe Buildr::JBehave do
   end
 
   it 'should select a java compiler for its sources' do 
+    write 'src/test/java/SomeBehavior.java', 'public class SomeBehavior {}'
     foo do
-      write _(:source, :spec, :java, 'SomeBehavior.java'), 'public class SomeBehavior {}'
       test.compile.language.should eql(:java)
     end
   end
@@ -171,68 +171,3 @@ describe Buildr::JBehave do
   end
 
 end # JBehave
-
-describe Buildr::EasyB do
-  
-  def foo(*args, &prc)
-    define('foo', *args) do
-      test.using :easyb
-      if prc
-        instance_eval(&prc)
-      else
-        self
-      end
-    end
-  end
-
-  it 'should apply to a project having EasyB sources' do
-    define('one', :base_dir => 'one') do
-      write _(:source, :spec, :groovy, 'SomeBehaviour.groovy'), 'true;'
-      EasyB.applies_to?(self).should be_true
-    end
-    define('two', :base_dir => 'two') do
-      write _(:source, :test, :groovy, 'SomeBehaviour.groovy'), 'true;'
-      EasyB.applies_to?(self).should be_false
-    end
-    define('three', :base_dir => 'three') do
-      write _(:source, :spec, :groovy, 'SomeStory.groovy'), 'true;'
-      EasyB.applies_to?(self).should be_true
-    end
-    define('four', :base_dir => 'four') do
-      write _(:source, :test, :groovy, 'SomeStory.groovy'), 'true;'
-      EasyB.applies_to?(self).should be_false
-    end
-  end
-
-  it 'should be selected by :easyb name' do
-    foo { test.framework.should eql(:easyb) }
-  end
-
-  it 'should select a java compiler if java sources are found' do
-    foo do
-      write _(:source, :spec, :java, 'SomeBehavior.java'), 'public class SomeBehavior {}'
-      test.compile.language.should eql(:java)
-    end
-  end
-  
-  it 'should include src/spec/groovy/*Behavior.groovy' do
-    foo do 
-      spec = _(:source, :spec, :groovy, 'SomeBehavior.groovy')
-      write spec, 'true'
-      test.invoke
-      test.tests.should include(spec)
-    end
-  end
-
-  it 'should include src/spec/groovy/*Story.groovy' do
-    foo do 
-      spec = _(:source, :spec, :groovy, 'SomeStory.groovy')
-      write spec, 'true'
-      test.invoke
-      test.tests.should include(spec)
-    end
-  end
-  
-end # EasyB
-
-
