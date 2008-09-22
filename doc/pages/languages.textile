@@ -28,9 +28,9 @@ h3.  Testing with Java
 
 h4. JUnit
 
-The default test framework for Java projects is JUnit 4.
+The default test framework for Java projects is "JUnit 4":http://www.junit.org.
 
-When you use JUnit, the dependencies includes JUnit, and Buildr picks up all test classes from the project by looking for classes that either subclass  @junit.framework.TestCase@, include methods annotated with @org.junit.Test@, or test suites annotated with @org.org.junit.runner.RunWith@.
+When you use JUnit, the dependencies includes JUnit and "JMock":http://www.jmock.org, and Buildr picks up all test classes from the project by looking for classes that either subclass  @junit.framework.TestCase@, include methods annotated with @org.junit.Test@, or test suites annotated with @org.org.junit.runner.RunWith@.
 
 The JUnit test framework supports the following options:
 
@@ -65,9 +65,17 @@ $ firefox report/junit/html/index.html
 
 The @junit:report@ task generates a report from all tests run so far.  If you run tests in a couple of projects, it will generate a report only for these two projects.  The example above runs tests in all the projects before generating the reports.
 
+You can use the @build.yaml@ settings file to specify a particular version of JUnit or JMock.  For example, to force your build to use JUnit version 4.4 and JMock 2.0:
+
+{{{!yaml
+junit: 4.4
+jmock: 2.0
+}}}
+
+
 h4. TestNG
 
-You can also use TestNG in your project by telling your project to use TestNG:
+You can use "TestNG":http://testng.org instead of JUnit.  To select TestNG as the test framework, add this to your project:
 
 {{{!ruby
 test.using :testng
@@ -75,13 +83,20 @@ test.using :testng
 
 Like all other options you can set with @test.using@, it affects the projects and all its sub-projects, so you only need to do this once at the top-most project to use TestNG throughout.  You can also mix TestNG and JUnit by setting different projects to use different frameworks, but you can't mix both frameworks in the same project.  (And yes, @test.using :junit@ will switch a project back to using JUnit)
 
-TestNG works much like JUnit, it gets included in the dependency list, Buildr picks test classes that contain methods annotated with  @org.testng.annotations.Test@, and generates test reports in the @reports/testng@ directory.  At the moment we don't have consolidated HTML reports for TestNG.
+TestNG works much like JUnit, it gets included in the dependency list along with JMock, Buildr picks test classes that contain methods annotated with  @org.testng.annotations.Test@, and generates test reports in the @reports/testng@ directory.  At the moment we don't have consolidated HTML reports for TestNG.
 
 The TestNG test framework supports the following options:
 
 |_. Option        |_. Value |
 | @:properties@   | Hash of system properties available to the test case. |
 | @:java_args@    | Arguments passed as is to the JVM. |
+
+You can use the @build.yaml@ settings file to specify a particular version of TestNG, for example, to force your build to use TestNG 5.7:
+
+{{{!yaml
+testng: 5.7
+}}}
+
 
 h4. JBehave 
 
@@ -100,6 +115,12 @@ Supports the following options:
 |_. Option        |_. Value |
 | @:properties@   | Hash of system properties available to the test case. |
 | @:java_args@    | Arguments passed as is to the JVM. |
+
+You can use the @build.yaml@ settings file to specify a particular version of JBehave, for example, to force your build to use JBehave 1.0.1:
+
+{{{!yaml
+jbehave: 1.0.1
+}}}
 
 
 h2. Scala
