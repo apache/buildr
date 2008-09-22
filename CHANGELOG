@@ -4,6 +4,9 @@
 * Added:  BUILDR-128 Emma support
 * Added:  Release task support for alternative SVN repository layout
           (e.g., http://my.repo.org/trunk/foo).
+* Added:  BUILDR-148 It is now possible to set the version of various 3rd
+          party libraries from the build.yml file.  Supported libraries include
+          Ant and the various test and BDD frameworks.
 * Change: Error reporting now shows 'buildr aborted!' (used to say rake),
           more of the stack trace without running --trace, and when running
           with supported terminal, error message is red.
@@ -14,6 +17,8 @@
 * Change: Buildr.application.buildfile returns a task instead of a String.
 * Change: BUILDR-139 Incremental test run.
 * Change: BUILDR-141 Removed NEXT_VERSION from release task.
+* Change: BUILDR-148 ant-junit no longer included in root classpath, but
+          specified during taskdef.
 * Fixed:  BUILDR-129. Modifying a project manifest should not alter it's
           parent project manifest.
 * Fixed:  BUILDR-106 download(artifact(...)=>url) broken in certain cases
