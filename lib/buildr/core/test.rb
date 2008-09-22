@@ -24,7 +24,7 @@ module Buildr
   # The underlying test framework used by TestTask.
   # To add a new test framework, extend TestFramework::Base and add your framework using:
   #   Buildr::TestFramework << MyFramework
-  class TestFramework
+  module TestFramework
 
     class << self
 

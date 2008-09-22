@@ -19,7 +19,7 @@
 unless self.class.const_defined?('SpecHelpers')
 
   require 'rubygems'
-  $LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__))
+  $LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__)), File.expand_path('../addon', File.dirname(__FILE__))
   require 'buildr'
 
   require File.expand_path('sandbox', File.dirname(__FILE__))

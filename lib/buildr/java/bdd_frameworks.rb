@@ -14,30 +14,20 @@
 # the License.
 
 
-require 'buildr/java/test_frameworks'
+require 'buildr/java/tests'
 
 
 module Buildr
 
   # Mixin for test frameworks using src/spec/{lang}
-  module TestFramework::JavaBDD #:nodoc:
-    
-    class << self
-      def included(mod)
-        mod.module_eval do
-          include TestFramework::JavaTest
-          include ClassMethods
-        end
-        mod.extend ClassMethods
-        mod.bdd_dir = :spec
-        mod.lang = :java
-        super
-      end
-    end
+  class TestFramework::JavaBDD < TestFramework::Java #:nodoc:
 
-    module ClassMethods
-      attr_accessor :lang, :bdd_dir
+    class << self
+      attr_reader :lang, :bdd_dir
     end
+    @bdd_dir = :spec
+    @lang = :java
+    attr_accessor :lang, :bdd_dir
 
     def initialize(task, options)
       self.bdd_dir = self.class.bdd_dir
@@ -56,9 +46,8 @@ module Buildr
   end
   
   
-  class RSpec < TestFramework::Base
-    include TestFramework::JavaBDD
-    self.lang = :ruby
+  class RSpec < TestFramework::JavaBDD
+    @lang = :ruby
   
     TESTS_PATTERN = [ /_spec.rb$/ ]
     OPTIONS = [:properties, :java_args]
@@ -110,9 +99,8 @@ module Buildr
 
   end
 
-  class JtestR < TestFramework::Base
-    include TestFramework::JavaBDD
-    self.lang = :ruby
+  class JtestR < TestFramework::JavaBDD
+    @lang = :ruby
   end
 
   
@@ -127,8 +115,7 @@ module Buildr
   # Support the following options:
   # * :properties -- Hash of properties to the test suite
   # * :java_args -- Arguments passed to the JVM
-  class JBehave < TestFramework::Base
-    include TestFramework::JavaBDD
+  class JBehave < TestFramework::JavaBDD
 
     VERSION = "1.0.1" unless const_defined?('VERSION')
     TESTS_PATTERN = [ /Behaviou?r$/ ] #:nodoc:
@@ -191,9 +178,8 @@ module Buildr
   # * :format -- Report format :txt or :xml, default is :txt
   # * :properties -- Hash of properties passed to the test suite.
   # * :java_args -- Arguments passed to the JVM.
-  class EasyB < TestFramework::Base
-    include TestFramework::JavaBDD
-    self.lang = :groovy
+  class EasyB < TestFramework::JavaBDD
+    @lang = :groovy
 
     VERSION = "0.7" unless const_defined?(:VERSION)
     TESTS_PATTERN = [ /(Story|Behavior).groovy$/ ]

@@ -21,7 +21,9 @@ Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
 repositories.remote << 'http://repo1.maven.org/maven2'
 repositories.remote << 'http://scala-tools.org/repo-releases'
 
-require 'buildr/java/groovyc'
+require 'buildr/groovy'
+require 'buildr/scala'
+
 Java.load # Anything added to the classpath.
 task('buildr:scala:download').invoke
 artifacts(TestFramework.frameworks.map(&:dependencies).flatten, JUnit.ant_taskdef).each { |a| file(a).invoke }

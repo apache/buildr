@@ -123,7 +123,7 @@ module Buildr
       parse_options
       collect_tasks
       @home_dir = File.expand_path('.buildr', ENV['HOME'])
-      mkpath @home_dir unless File.exist?(@home_dir)
+      mkpath @home_dir, :verbose=>false unless File.exist?(@home_dir)
       @environment = ENV['BUILDR_ENV'] ||= 'development'
       @on_completion = []
       @on_failure = []
