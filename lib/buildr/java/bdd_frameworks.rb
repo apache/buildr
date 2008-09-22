@@ -55,14 +55,11 @@ module Buildr
     end
   end
   
+  
   class RSpec < TestFramework::Base
     include TestFramework::JavaBDD
     self.lang = :ruby
-
-    
-    REQUIRES = []
-    # REQUIRES.unshift 'org.jruby:jruby-complete:jar:1.1.1' unless RUBY_PLATFORM =~ /java/
-    
+  
     TESTS_PATTERN = [ /_spec.rb$/ ]
     OPTIONS = [:properties, :java_args]
 
@@ -93,22 +90,19 @@ module Buildr
       tests
     end
 
-    private
+  private
+  
     def jruby_home
       @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : ENV['JRUBY_HOME']
     end
 
-    def required_gems(options)
-      ["ci_reporter", options[:required_gems]].flatten.compact
-    end
-
     def jruby(*args)
-      java_args = ["org.jruby.Main", *args]
+      java_args = ['org.jruby.Main', *args]
       java_args << {} unless Hash === args.last
       cmd_options = java_args.last
       project = cmd_options.delete(:project)
       cmd_options[:java_args] ||= []
-      cmd_options[:java_args] << "-Xmx512m" unless cmd_options[:java_args].detect {|a| a =~ /^-Xmx/}
+      cmd_options[:java_args] << '-Xmx512m' unless cmd_options[:java_args].detect {|a| a =~ /^-Xmx/}
       cmd_options[:properties] ||= {}
       cmd_options[:properties]['jruby.home'] = jruby_home
       Java::Commands.java(*java_args)
@@ -120,6 +114,7 @@ module Buildr
     include TestFramework::JavaBDD
     self.lang = :ruby
   end
+
   
   # JBehave is a Java BDD framework. To use in your project:
   #   test.using :jbehave
@@ -136,16 +131,30 @@ module Buildr
     include TestFramework::JavaBDD
 
     VERSION = "1.0.1" unless const_defined?('VERSION')
-    REQUIRES = ["org.jbehave:jbehave:jar:#{VERSION}",
-                "jmock:jmock-cglib:jar:#{JMock::VERSION}",
-                "cglib:cglib-full:jar:2.0.2",
-               ] + JUnit::REQUIRES
-    TESTS_PATTERN = [ /Behaviou?r$/ ]
+    TESTS_PATTERN = [ /Behaviou?r$/ ] #:nodoc:
+    
+    class << self
+      def version
+        Buildr.settings.build['jbehave'] || VERSION
+      end
 
-    def self.applies_to?(project) #:nodoc:
-      %w{
-        **/*Behaviour.java **/*Behavior.java
-      }.any? { |glob| !Dir[project.path_to(:source, bdd_dir, lang, glob)].empty? }
+      def dependencies
+        @dependencies ||= ["org.jbehave:jbehave:jar:#{version}", "cglib:cglib-full:jar:2.0.2"] +
+          JMock.dependencies + JUnit.dependencies
+      end
+
+      def applies_to?(project) #:nodoc:
+        %w{
+          **/*Behaviour.java **/*Behavior.java
+        }.any? { |glob| !Dir[project.path_to(:source, bdd_dir, lang, glob)].empty? }
+      end
+
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use JBehave.dependencies/.version instead of JBehave::REQUIRES/VERSION"
+        dependencies
+      end
     end
 
     def tests(dependencies) #:nodoc:
@@ -168,6 +177,7 @@ module Buildr
     
   end
 
+
   # EasyB is a Groovy based BDD framework.
   # To use in your project:
   #
@@ -186,20 +196,34 @@ module Buildr
     self.lang = :groovy
 
     VERSION = "0.7" unless const_defined?(:VERSION)
-    REQUIRES = ["org.easyb:easyb:jar:#{VERSION}",
-                'org.codehaus.groovy:groovy:jar:1.5.3',
-                'asm:asm:jar:2.2.3',
-                'commons-cli:commons-cli:jar:1.0',
-                'antlr:antlr:jar:2.7.7']
     TESTS_PATTERN = [ /(Story|Behavior).groovy$/ ]
     OPTIONS = [:format, :properties, :java_args]
 
-    def self.applies_to?(project) #:nodoc:
-      %w{
-        **/*Behaviour.groovy **/*Behavior.groovy **/*Story.groovy
-      }.any? { |glob| !Dir[project.path_to(:source, bdd_dir, lang, glob)].empty? }
+    class << self
+      def version
+        Buildr.settings.build['jbehave'] || VERSION
+      end
+
+      def dependencies
+        @dependencies ||= ["org.easyb:easyb:jar:#{version}",
+          'org.codehaus.groovy:groovy:jar:1.5.3','asm:asm:jar:2.2.3',
+          'commons-cli:commons-cli:jar:1.0','antlr:antlr:jar:2.7.7']
+      end
+
+      def applies_to?(project) #:nodoc:
+        %w{
+          **/*Behaviour.groovy **/*Behavior.groovy **/*Story.groovy
+        }.any? { |glob| !Dir[project.path_to(:source, bdd_dir, lang, glob)].empty? }
+      end
+
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use JBehave.dependencies/.version instead of JBehave::REQUIRES/VERSION"
+        dependencies
+      end
     end
-   
+
     def tests(dependencies) #:nodoc:
       Dir[task.project.path_to(:source, bdd_dir, lang, "**/*.groovy")].
         select { |name| TESTS_PATTERN.any? { |pat| pat === name } }

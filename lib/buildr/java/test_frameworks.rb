@@ -31,7 +31,7 @@ module Buildr
         mod.extend ClassMethods
       end
 
-      private
+    private
       # :call-seq:
       #     filter_classes(dependencies, criteria)
       # 
@@ -82,31 +82,31 @@ module Buildr
     end
   end
 
+
   # JMock is available when using JUnit and TestNG, JBehave.
   module JMock
-    # JMock version.
+    
     VERSION = '1.2.0' unless const_defined?('VERSION')
-    # JMock specification.
-    REQUIRES = ["jmock:jmock:jar:#{VERSION}"]
+    
+    class << self
+      def version
+        Buildr.settings.build['jmock'] || VERSION
+      end
+
+      def dependencies
+        @dependencies ||= ["jmock:jmock:jar:#{version}"]
+      end
+      
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use JMock.dependencies/.version instead of JMock::REQUIRES/VERSION"
+        dependencies
+      end
+    end    
   end
 
-  # Specs is available when using ScalaTest
-  module ScalaSpecs
-    # Specs version number.
-    VERSION = '1.2.9' unless const_defined?('VERSION')
-    # Specs artifact(s)
-    REQUIRES = ["org.specs:specs:jar:#{VERSION}"]
-  end
 
-  # ScalaCheck is available when using ScalaTest
-  module ScalaCheck
-    # ScalaCheck version number.
-    VERSION = '1.3' unless const_defined?('VERSION')
-    # ScalaCheck artifact(s)
-    REQUIRES = ["org.scalacheck:scalacheck:jar:#{VERSION}"]
-  end
-  
-  
   # JUnit test framework, the default test framework for Java tests.
   #
   # Support the following options:
@@ -122,9 +122,6 @@ module Buildr
     # options for that task, for example:
     #   JUnit.report.frames = false
     class Report
-
-      # Ant-Trax required for running the JUnitReport task.
-      Java.classpath << "org.apache.ant:ant-trax:jar:#{Ant::VERSION}"
 
       # Parameters passed to the Ant JUnitReport task.
       attr_reader :params
@@ -153,7 +150,7 @@ module Buildr
         
         Buildr.ant('junit-report') do |ant|
           ant.taskdef :name=>'junitreport', :classname=>'org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator',
-            :classpath=>Buildr.artifacts(JUnit::ANT_JUNIT).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
+            :classpath=>Buildr.artifacts(JUnit.ant_taskdef).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
           ant.junitreport :todir=>target do
             projects.select { |project| project.test.framework == :junit }.
               map { |project| project.test.report_to.to_s }.select { |path| File.exist?(path) }.
@@ -169,8 +166,12 @@ module Buildr
 
     end
 
-    class << self
+    # JUnit version number.
+    VERSION = '4.4' unless const_defined?('VERSION')
 
+    include TestFramework::JavaTest
+    
+    class << self
       # :call-seq:
       #    report()
       #
@@ -182,16 +183,26 @@ module Buildr
         @report ||= Report.new
       end
 
-    end
+      def version
+        Buildr.settings.build['junit'] || VERSION
+      end
+      
+      def dependencies
+        @dependencies ||= ["junit:junit:jar:#{version}"]+ JMock.dependencies
+      end
+      
+      def ant_taskdef #:nodoc:
+        "org.apache.ant:ant-junit:jar:#{Ant.version}"
+      end
+      
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use JUnit.dependencies/.version instead of JUnit::REQUIRES/VERSION"
+        dependencies
+      end
+    end          
 
-    # JUnit version number.
-    VERSION = '4.4' unless const_defined?('VERSION')
-    
-    REQUIRES = ["junit:junit:jar:#{VERSION}"] + JMock::REQUIRES
-    ANT_JUNIT = "org.apache.ant:ant-junit:jar:#{Ant::VERSION}" #:nodoc:
-
-    include TestFramework::JavaTest
-    
     def tests(dependencies) #:nodoc:
       filter_classes(dependencies, 
                      :interfaces => %w{junit.framework.TestCase},
@@ -213,8 +224,11 @@ module Buildr
           fail 'Option fork must be :once, :each or false.'
         end
         mkpath task.report_to.to_s
-        ant.taskdef :name=>'junit', :classname=>'org.apache.tools.ant.taskdefs.optional.junit.JUnitTask',
-          :classpath=>Buildr.artifacts(ANT_JUNIT).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
+
+        taskdef = Buildr.artifact(JUnit.ant_taskdef)
+        taskdef.invoke
+        ant.taskdef :name=>'junit', :classname=>'org.apache.tools.ant.taskdefs.optional.junit.JUnitTask', :classpath=>taskdef.to_s
+
         ant.junit forking.merge(:clonevm=>options[:clonevm] || false, :dir=>task.send(:project).path_to) do
           ant.classpath :path=>dependencies.join(File::PATH_SEPARATOR)
           (options[:properties] || []).each { |key, value| ant.sysproperty :key=>key, :value=>value }
@@ -266,12 +280,26 @@ module Buildr
   # * :java_args -- Arguments passed to the JVM.
   class TestNG < TestFramework::Base
 
-    # TestNG version number.
     VERSION = '5.7' unless const_defined?('VERSION')
-    # TestNG specification.
-    REQUIRES = ["org.testng:testng:jar:jdk15:#{VERSION}"] + JMock::REQUIRES
 
     include TestFramework::JavaTest
+
+    class << self
+      def version
+        Buildr.settings.build['testng'] || VERSION
+      end
+      
+      def dependencies
+        ["org.testng:testng:jar:jdk15:#{version}"]+ JMock.dependencies
+      end  
+      
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use TestNG.dependencies/.version instead of TestNG::REQUIRES/VERSION"
+        dependencies
+      end
+    end          
 
     def tests(dependencies) #:nodoc:
       filter_classes(dependencies, 
@@ -296,6 +324,56 @@ module Buildr
 
   end
 
+
+  # Specs is available when using ScalaTest
+  module ScalaSpecs
+
+    VERSION = '1.2.9' unless const_defined?('VERSION')
+    
+    class << self
+      def version
+        Buildr.settings.build['scala.specs'] || VERSION
+      end
+      
+      def dependencies
+        ["org.specs:specs:jar:#{version}"]
+      end  
+
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use ScalaSpecs.dependencies/.version instead of ScalaSpecs::REQUIRES/VERSION"
+        dependencies
+      end
+    end          
+    
+  end
+
+  # ScalaCheck is available when using ScalaTest
+  module ScalaCheck
+
+    VERSION = '1.3' unless const_defined?('VERSION')
+    
+    class << self
+      def version
+        Buildr.settings.build['scala.check'] || VERSION
+      end
+      
+      # ScalaTest dependencies.
+      def dependencies
+        ["org.scalacheck:scalacheck:jar:#{version}"]
+      end  
+
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use ScalaCheck.dependencies/.version instead of ScalaCheck::REQUIRES/VERSION"
+        dependencies
+      end
+    end          
+    
+  end
+
   # ScalaTest framework, the default test framework for Scala tests.
   #
   # Support the following options:
@@ -304,21 +382,31 @@ module Buildr
   # * :java_args   -- Arguments passed as is to the JVM.
   class ScalaTest < TestFramework::Base
 
-    # ScalaTest version number.
-    VERSION = '0.9.3' unless const_defined?('VERSION')
-    # ScalaTest dependencies
-    REQUIRES = ["org.scalatest:scalatest:jar:#{VERSION}"] + 
-                JMock::REQUIRES + 
-                ScalaSpecs::REQUIRES + 
-                ScalaCheck::REQUIRES
+    include TestFramework::JavaTest
     
+    VERSION = '0.9.3' unless const_defined?('VERSION')
+
     class << self
+      def version
+        Buildr.settings.build['scala.test'] || VERSION
+      end
+      
+      def dependencies
+        ["org.scalatest:scalatest:jar:#{version}"] + ScalaSpecs.dependencies +
+          ScalaCheck.dependencies + JMock.dependencies
+      end  
+
       def applies_to?(project) #:nodoc:
         project.test.compile.language == :scala
       end 
-    end
-
-    include TestFramework::JavaTest
+      
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use ScalaTest.dependencies/.version instead of ScalaTest::REQUIRES/VERSION"
+        dependencies
+      end
+    end          
 
     # annotation-based group inclusion
     attr_accessor :group_includes
@@ -340,14 +428,12 @@ module Buildr
     end
 
     def run(tests, dependencies) #:nodoc:
-      self.class.dependencies.each(&:invoke)
       mkpath task.report_to.to_s
       success = []
       scalatest = tests.select { |t| t !~ /Specs?$/ }
       specs = tests.select { |t| t =~ /Specs?$/ }
 
       # Specs
-      #options = { :nostacktrace => false }.merge(options)
       nostacktrace = (options[:nostacktrace]) ? "-ns" : ""
       cmd_options = { :properties => options[:properties],
                       :java_args => options[:java_args],
@@ -355,7 +441,7 @@ module Buildr
       specs.each do |spec|
         Java.load
         begin
-          Java::Commands.java(spec, {:classpath => dependencies})
+          Java::Commands.java(spec, cmd_options)
         rescue => e
           print e.message
         else
@@ -369,9 +455,10 @@ module Buildr
         info "ScalaTest #{suite.inspect}"
         # Use Ant to execute the ScalaTest task, gives us performance and reporting.
         reportFile = File.join(task.report_to.to_s, "TEST-#{suite}.txt")
+        taskdef = Buildr.artifacts(self.class.dependencies).each(&:invoke).map(&:to_s)
         Buildr.ant('scalatest') do |ant|
           ant.taskdef :name=>'scalatest', :classname=>'org.scalatest.tools.ScalaTestTask',
-            :classpath=>self.class.dependencies.join(File::PATH_SEPARATOR)
+            :classpath=>taskdef.join(File::PATH_SEPARATOR)
           ant.scalatest :runpath=>dependencies.join(File::PATH_SEPARATOR) do
             ant.suite    :classname=>suite
             ant.reporter :type=>'stdout', :config=>reporter_options
@@ -417,9 +504,3 @@ end # Buildr
 Buildr::TestFramework << Buildr::JUnit
 Buildr::TestFramework << Buildr::TestNG
 Buildr::TestFramework << Buildr::ScalaTest
-
-# Backward compatibility crap.
-Buildr::JUnit::JUNIT_REQUIRES = Buildr::JUnit::REQUIRES
-Buildr::TestNG::TestNG_REQUIRES = Buildr::TestNG::REQUIRES
-Java::JUnit = Buildr::JUnit
-Java::TestNG = Buildr::TestNG

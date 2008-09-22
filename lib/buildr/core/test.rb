@@ -82,10 +82,10 @@ module Buildr
           raise 'Not implemented'
         end
 
-        # Returns a list of dependencies for this framework.  Defaults to obtaining a list of
-        # artifact specifications from the REQUIRES constant.
+        # Returns a list of dependencies for this framework.  Default is an empty list,
+        # override to add dependencies.
         def dependencies
-          @dependencies ||= Buildr.artifacts(*(const_get('REQUIRES') rescue []))
+          @dependencies ||= []
         end
 
       end

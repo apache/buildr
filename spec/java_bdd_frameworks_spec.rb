@@ -114,15 +114,15 @@ describe Buildr::JBehave do
 
   it 'should include JBehave dependencies' do
     foo do
-      test.compile.dependencies.should include(*artifacts(JBehave::REQUIRES))
-      test.dependencies.should include(*artifacts(JBehave::REQUIRES))
+      test.compile.dependencies.should include(artifact("org.jbehave:jbehave:jar::#{JBehave.version}"))
+      test.dependencies.should include(artifact("org.jbehave:jbehave:jar::#{JBehave.version}"))
     end
   end
 
   it 'should include JMock dependencies' do
     foo do
-      test.compile.dependencies.should include(*artifacts(JMock::REQUIRES))
-      test.dependencies.should include(*artifacts(JMock::REQUIRES))
+      test.compile.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
+      test.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
     end
   end
 

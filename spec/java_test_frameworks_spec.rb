@@ -36,14 +36,14 @@ describe Buildr::JUnit do
 
   it 'should include JUnit dependencies' do
     define('foo') { test.using(:junit) }
-    project('foo').test.compile.dependencies.should include(*artifacts(JUnit::REQUIRES))
-    project('foo').test.dependencies.should include(*artifacts(JUnit::REQUIRES))
+    project('foo').test.compile.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
+    project('foo').test.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
   end
-
+  
   it 'should include JMock dependencies' do
     define('foo') { test.using(:junit) }
-    project('foo').test.compile.dependencies.should include(*artifacts(JMock::REQUIRES))
-    project('foo').test.dependencies.should include(*artifacts(JMock::REQUIRES))
+    project('foo').test.compile.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
+    project('foo').test.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
   end
 
   it 'should include public classes extending junit.framework.TestCase' do
@@ -341,14 +341,14 @@ describe Buildr::TestNG do
 
   it 'should include TestNG dependencies' do
     define('foo') { test.using :testng }
-    project('foo').test.compile.dependencies.should include(*artifacts(TestNG::REQUIRES))
-    project('foo').test.dependencies.should include(*artifacts(TestNG::REQUIRES))
+    project('foo').test.compile.dependencies.should include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
+    project('foo').test.dependencies.should include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
   end
 
   it 'should include TestNG dependencies' do
     define('foo') { test.using :testng }
-    project('foo').test.compile.dependencies.should include(*artifacts(JMock::REQUIRES))
-    project('foo').test.dependencies.should include(*artifacts(JMock::REQUIRES))
+    project('foo').test.compile.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
+    project('foo').test.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
   end
 
   it 'should include classes using TestNG annotations' do
