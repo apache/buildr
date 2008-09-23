@@ -246,7 +246,7 @@ describe Buildr::JtestR do
   end
 
 
-end # JtestR
+end if RUBY_PLATFORM =~ /java/ # JtestR
 
 describe Buildr::JBehave do
   def foo(*args, &prc)
