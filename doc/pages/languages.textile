@@ -338,6 +338,16 @@ That means you have access to all your Java classes and any Java or Ruby tool ou
 Because of the use of JRuby, you will notice that running ruby tests is faster when running Buildr on JRuby, as in this case
 there's no need to run another JVM.
 
+When not running on JRuby, Buildr will download and install it unless you specify a valid @JRUBY_HOME@ environment
+variable. Default installation directory is @~/.jruby@, you can change this by setting @JRUBY_HOME@ to an empty directory.
+
+You can use the @build.yaml@ settings file to specify a particular version of JRuby (defaults to @1.1.4@).  For example:
+
+{{{!yaml
+jruby: 1.1.3
+}}}
+
+
 h4.  RSpec
 
 "RSpec":http://rspec.info/ is the de-facto BDD framework for ruby. It's the framework used to test Buildr itself. 
@@ -371,6 +381,14 @@ state of the art Ruby tools. Using JtestR you can describe your application beha
 testing frameworks at the same time.
 
 To use this framework in your project you can select it with @test.using :jtestr@.
+
+You can use the @build.yaml@ settings file to specify a particular version of JtestR (defaults to @0.3.1@).  For example:
+
+{{{!yaml
+jtestr: 0.3.1
+}}}
+
+To customize TestNG/JUnit versions refer to their respective section.
 
 When selected, Buildr will configure JtestR to use your project/testing classpath and will search for
 the following test patterns for each framework supported by JtestR:
