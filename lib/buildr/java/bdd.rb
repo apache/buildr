@@ -65,7 +65,7 @@ module Buildr
 
     def jruby(*args)
       java_args = ["org.jruby.Main", *args]
-      java_args <m< {} unless Hash === args.last
+      java_args << {} unless Hash === args.last
       cmd_options = java_args.last
       project = cmd_options.delete(:project)
       cmd_options[:java_args] ||= []
