@@ -280,7 +280,6 @@ module Buildr
     include TestFramework::JRubyBased
 
     VERSION = '0.3.1' unless const_defined?('VERSION')
-    JTESTR_ARTIFACT = "org.jtestr:jtestr:jar:#{VERSION}"
     
     # pattern for rspec stories
     STORY_PATTERN    = /_(steps|story)\.rb$/
