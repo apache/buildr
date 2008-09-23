@@ -49,7 +49,7 @@ describe Buildr::JtestR do
 
   def foo(*args, &prc)
     define('foo', *args) do
-      test.using :jtestr
+      test.using :jtestr, :output => false
       if prc
         instance_eval(&prc)
       else
@@ -62,11 +62,189 @@ describe Buildr::JtestR do
     foo { test.framework.should eql(:jtestr) }
   end
 
-  it 'should include src/spec/ruby/**/*_spec.rb'
-  it 'should auto generate jtestr configuration'
-  it 'should run runit test cases'
-  it 'should use a java compiler if java sources found'
-  it 'should run junit test cases'
+  it 'should apply to projects having test_unit sources' do
+    define('one', :base_dir => 'one') do
+      write _(:source, :spec, :ruby, 'one_test.rb')
+      JtestR.applies_to?(self).should be_true
+    end
+    define('two', :base_dir => 'two') do
+      write _(:source, :spec, :ruby, 'twoTest.rb')
+      JtestR.applies_to?(self).should be_true
+    end
+    define('three', :base_dir => 'three') do
+      write _(:source, :spec, :ruby, 'tc_three.rb')
+      JtestR.applies_to?(self).should be_true
+    end
+    define('four', :base_dir => 'four') do
+      write _(:source, :spec, :ruby, 'ts_four.rb')
+      JtestR.applies_to?(self).should be_true
+    end
+  end
+
+  it 'should apply to projects having rspec sources' do
+    define('one', :base_dir => 'one') do
+      write _(:source, :spec, :ruby, 'one_spec.rb')
+      JtestR.applies_to?(self).should be_true
+    end
+  end
+
+  it 'should apply to projects having expectations sources' do
+    define('one', :base_dir => 'one') do
+      write _(:source, :spec, :ruby, 'one_expect.rb')
+      JtestR.applies_to?(self).should be_true
+    end
+  end
+
+  it 'should apply to projects having junit sources' do
+    define('one', :base_dir => 'one') do
+      write _(:source, :test, :java, 'example/OneTest.java', <<-JAVA)
+        package example;
+        public class OneTest extends junit.framework.TestCase { }
+      JAVA
+      JtestR.applies_to?(self).should be_true
+    end
+  end
+
+  it 'should apply to projects having testng sources' do
+    define('one', :base_dir => 'one') do
+      write _(:source, :test, :java, 'example/OneTest.java', <<-JAVA)
+        package example;
+        public class OneTest { 
+           @org.testng.annotations.Test
+           public void testNothing() {}
+        }
+      JAVA
+      JtestR.applies_to?(self).should be_true
+    end
+  end
+
+  it 'should use a java compiler if java sources found' do
+    foo do
+      write _(:source, :spec, :java, 'Something.java'), 'public class Something {}'
+      test.compile.language.should eql(:java)
+    end
+  end
+
+  it 'should load user jtestr_config.rb' do
+    foo do 
+      hello = _('hello')
+      write('src/spec/ruby/jtestr_config.rb', "File.open('#{hello}', 'w') { |f| f.write 'HELLO' }")
+      test.invoke
+      File.exist?(hello).should == true
+      File.read(hello).should == 'HELLO'
+    end
+  end
+
+  it 'should run junit tests' do
+    write('src/test/java/example/SuccessTest.java', <<-JAVA)
+        package example;
+        public class SuccessTest extends junit.framework.TestCase { 
+           public void testSuccess() { assertTrue(true); }
+        }
+    JAVA
+    write('src/test/java/example/FailureTest.java', <<-JAVA)
+        package example;
+        public class FailureTest extends junit.framework.TestCase { 
+           public void testFailure() { assertTrue(false); }
+        }
+    JAVA
+    foo do
+      lambda { test.invoke }.should raise_error(/Tests failed/)
+      test.tests.should include('example.SuccessTest', 'example.FailureTest')
+      test.failed_tests.should include('example.FailureTest')
+      test.passed_tests.should include('example.SuccessTest')
+    end
+  end
+
+  it 'should run testng tests' do 
+    write('src/test/java/example/Success.java', <<-JAVA)
+        package example;
+        public class Success {
+          @org.testng.annotations.Test
+          public void annotated() { org.testng.Assert.assertTrue(true); }
+        }
+    JAVA
+    write('src/test/java/example/Failure.java', <<-JAVA)
+        package example;
+        public class Failure {
+          @org.testng.annotations.Test
+          public void annotated() { org.testng.Assert.fail("FAIL"); }
+        }
+    JAVA
+    foo do
+      lambda { test.invoke }.should raise_error(/Tests failed/)
+      test.tests.should include('example.Success', 'example.Failure')
+      test.failed_tests.should include('example.Failure')
+      test.passed_tests.should include('example.Success')
+    end
+  end
+
+  it 'should run test_unit' do 
+    success = File.expand_path('src/spec/ruby/success_test.rb')
+    write(success, <<-TESTUNIT)
+      require 'test/unit'
+      class TC_Success < Test::Unit::TestCase
+        def test_success
+          assert true
+        end
+      end
+    TESTUNIT
+    failure = File.expand_path('src/spec/ruby/failure_test.rb')
+    write(failure, <<-TESTUNIT)
+      require 'test/unit'
+      class TC_Failure < Test::Unit::TestCase
+        def test_failure
+          assert false
+        end
+      end
+    TESTUNIT
+    error = File.expand_path('src/spec/ruby/error_test.rb')
+    write(error, <<-TESTUNIT)
+      require 'test/unit'
+      class TC_Error < Test::Unit::TestCase
+        def test_error
+          eval('lambda')
+        end
+      end
+    TESTUNIT
+    foo do
+      lambda { test.invoke }.should raise_error(/Tests failed/)
+      test.tests.should include(success, failure, error)
+      test.failed_tests.should include(failure, error)
+      test.passed_tests.should include(success)
+    end
+  end
+
+  it 'should run expectations' do
+    success = File.expand_path('src/spec/ruby/success_expect.rb')
+    write(success, 'Expectations { expect(true) { true } }')
+    failure = File.expand_path('src/spec/ruby/failure_expect.rb')
+    write(failure, 'Expectations { expect(true) { false } }')
+    error = File.expand_path('src/spec/ruby/error_expect.rb')
+    write(error, 'Expectations { expect(nil) { eval("lambda") } }')
+    foo do
+      lambda { test.invoke }.should raise_error(/Tests failed/)
+      test.tests.should include(success, failure, error)
+      test.failed_tests.should include(failure, error)
+      test.passed_tests.should include(success)
+    end
+  end
+
+  it 'should run rspecs' do
+    success = File.expand_path('src/spec/ruby/success_spec.rb')
+    write(success, 'describe("success") { it("is true") { nil.should be_nil } }')
+    failure = File.expand_path('src/spec/ruby/failure_spec.rb')
+    write(failure, 'describe("failure") { it("is false") { true.should == false } }')
+    error = File.expand_path('src/spec/ruby/error_spec.rb')
+    write(error, 'describe("error") { it("raises") { eval("lambda") } }')
+    foo do
+      lambda { test.invoke }.should raise_error(/Tests failed/)
+      test.tests.should include(success, failure, error)
+      test.failed_tests.should include(failure, error)
+      test.passed_tests.should include(success)
+    end
+  end
+
 
 end # JtestR
 
