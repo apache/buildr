@@ -43,7 +43,7 @@ describe Buildr::RSpec do
   end
 
 
-end if RUBY_PLATFORM =~ /java/ || ENV['JRUBY_TEST'] # RSpec
+end if RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME'] # RSpec
 
 describe Buildr::JtestR do
 
@@ -246,7 +246,7 @@ describe Buildr::JtestR do
   end
 
 
-end if RUBY_PLATFORM =~ /java/ || ENV['JRUBY_TEST'] # JtestR
+end if RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME'] # JtestR
 
 describe Buildr::JBehave do
   def foo(*args, &prc)
