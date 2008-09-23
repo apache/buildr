@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 module Buildr
 
   # A filter knows how to copy files from one directory to another, applying mappings to the
@@ -57,6 +56,7 @@ module Buildr
       @include = []
       @exclude = []
       @sources = FileList[]
+      @mapper = Mapper.new
       self
     end
 
@@ -110,10 +110,14 @@ module Buildr
     end
 
     # The mapping. See #using.
-    attr_accessor :mapping
+    def mapping #:nodoc:
+      @mapper.config
+    end
 
     # The mapper to use. See #using.
-    attr_accessor :mapper
+    def mapper #:nodoc:
+      @mapper.mapper_type
+    end
 
     # :call-seq:
     #   using(mapping) => self
@@ -127,6 +131,7 @@ module Buildr
     # * :ant -- Map <code>@key@</code>.
     # * :maven -- Map <code>${key}</code> (default).
     # * :ruby -- Map <code>#{key}</code>.
+    # * :erb -- Map <code><%= key %></code>.
     # * Regexp -- Maps the matched data (e.g. <code>/=(.*?)=/</code>
     #
     # For example:
@@ -138,20 +143,10 @@ module Buildr
     # to return the mapped content.
     #
     # Without any mapping, all files are copied as is.
+    #
+    # To register new mapping type see the Mapper class.
     def using(*args, &block)
-      case args.first
-      when Hash # Maven hash mapping
-        using :maven, *args
-      when Symbol # Mapping from a method
-        raise ArgumentError, 'Expected mapper type followed by mapping hash' unless args.size == 2 && Hash === args[1]
-        @mapper, @mapping = *args
-      when Regexp # Mapping using a regular expression
-        raise ArgumentError, 'Expected regular expression followed by mapping hash' unless args.size == 2 && Hash === args[1]
-        @mapper, @mapping = *args
-      else
-        raise ArgumentError, 'Expected proc, method or a block' if args.size > 1 || (args.first && block)
-        @mapping = args.first || block
-      end
+      @mapper.using(*args, &block)
       self
     end
 
@@ -185,24 +180,12 @@ module Buildr
             mkpath dest
           else
             mkpath File.dirname(dest)
-            case mapping
-            when Proc, Method # Call on input, accept output.
-              mapped = mapping.call(path, File.open(source, 'rb') { |file| file.read })
+            if @mapper.mapper_type
+              mapped = @mapper.result(File.open(source, 'rb') { |file| file.read }, path)
               File.open(dest, 'wb') { |file| file.write mapped }
-            when Hash # Map ${key} to value
-              content = File.open(source, 'rb') { |file| file.read }
-              if Symbol === @mapper
-                mapped = send("#{@mapper}_mapper", content) { |key| mapping[key] }
-              else
-                mapped = regexp_mapper(content) { |key| mapping[key] }
-              end
-                #gsub(/\$\{[^}]*\}/) { |str| mapping[str[2..-2]] || str }
-                File.open(dest, 'wb') { |file| file.write mapped }
-            when nil # No mapping.
+            else # no mapping
               cp source, dest
               File.chmod(0664, dest)
-            else
-              fail "Filter can be a hash (key=>value), or a proc/method; I don't understand #{mapping}"
             end
           end
         end
@@ -216,23 +199,145 @@ module Buildr
       @target.to_s
     end
 
-  private
+    # This class implements content replacement logic for Filter.
+    #
+    # To register a new template engine @:foo@, extend this class with a method like: 
+    # 
+    #   def foo_result(content, path = nil)
+    #      # if this method yields a key, the value comes from the mapping hash
+    #      content.gsub(/world/) { |str| yield :bar }
+    #   end
+    #
+    # Then you can use :foo mapping type on a Filter
+    #   
+    #   filter.using :foo, :bar => :baz
+    #
+    # Or all by your own, simply
+    #
+    #   Mapper.new(:foo, :bar => :baz).result("Hello world") # => "Hello baz"
+    # 
+    # You can handle configuration arguments by providing a @*_config@ method like:
+    # 
+    #   # The return value of this method is available with the :config accessor.
+    #   def moo_config(*args, &block)
+    #      raise ArgumentError, "Expected moo block" unless block_given?
+    #      { :moos => args, :callback => block }
+    #   end
+    #
+    #   def moo_result(content, path = nil)
+    #      content.gsub(/moo+/i) do |str|
+    #        moos = yield :moos # same than config[:moos]
+    #        moo = moos[str.size - 3] || str
+    #        config[:callback].call(moo)
+    #      end
+    #   end
+    #
+    # Usage for the @:moo@ mapper would be something like:
+    # 
+    #   mapper = Mapper.new(:moo, 'ooone', 'twoo') do |str|
+    #     i = nil; str.capitalize.gsub(/\w/) { |s| s.send( (i = !i) ? 'upcase' : 'downcase' ) }
+    #   end
+    #   mapper.result('Moo cow, mooo cows singing mooooo') # => 'OoOnE cow, TwOo cows singing MoOoOo'
+    class Mapper
 
-    def maven_mapper(content)
-      content.gsub(/\$\{.*?\}/) { |str| yield(str[2..-2]) || str }
-    end
+      attr_reader :mapper_type, :config
 
-    def ant_mapper(content)
-      content.gsub(/@.*?@/) { |str| yield(str[1..-2]) || str }
-    end
+      def initialize(*args, &block) #:nodoc:
+        using(*args, &block)
+      end
+      
+      def using(*args, &block)
+        case args.first
+        when Hash # Maven hash mapping
+          using :maven, *args
+        when Binding # Erb binding
+          using :erb, *args
+        when Symbol # Mapping from a method
+          raise ArgumentError, "Unknown mapping type: #{args.first}" unless respond_to?("#{args.first}_result", true)
+          configure(*args, &block)
+        when Regexp # Mapping using a regular expression
+          raise ArgumentError, 'Expected regular expression followed by mapping hash' unless args.size == 2 && Hash === args[1]
+          @mapper_type, @config = *args
+        else
+          unless args.empty? && block.nil?
+            raise ArgumentError, 'Expected proc, method or a block' if args.size > 1 || (args.first && block)
+            @mapper_type = :callback
+            config = args.first || block
+            raise ArgumentError, 'Expected proc, method or callable' unless config.respond_to?(:call)
+            @config = config
+          end
+        end
+        self
+      end
 
-    def ruby_mapper(content)
-      content.gsub(/#\{.*?\}/) { |str| yield(str[2..-2]) || str }
-    end
+      def result(content, path = nil)
+        type = Regexp === mapper_type ? :regexp : mapper_type
+        raise ArgumentError, "Invalid mapper type: #{type.inspect}" unless respond_to?("#{type}_result", true)
+        self.__send__("#{type}_result", content, path) { |key| config[key] || config[key.to_s.to_sym] }
+      end
 
-    def regexp_mapper(content)
-      content.gsub(@mapper) { |str| yield(str.scan(@mapper).join) || str }
-    end
+     private
+      def configure(mapper_type, *args, &block)
+        configurer = method("#{mapper_type}_config") rescue nil
+        if configurer
+          @config = configurer.call(*args, &block)
+        else
+          raise ArgumentError, "Missing hash argument after :#{mapper_type}" unless args.size == 1 && Hash === args[0]
+          @config = *args
+        end
+        @mapper_type = mapper_type
+      end
+
+      def maven_result(content, path = nil)
+        content.gsub(/\$\{.*?\}/) { |str| yield(str[2..-2]) || str }
+      end
+      
+      def ant_result(content, path = nil)
+        content.gsub(/@.*?@/) { |str| yield(str[1..-2]) || str }
+      end
+      
+      def ruby_result(content, path = nil)
+        content.gsub(/#\{.*?\}/) { |str| yield(str[2..-2]) || str }
+      end
+      
+      def regexp_result(content, path = nil)
+        content.gsub(mapper_type) { |str| yield(str.scan(mapper_type).join) || str }
+      end
+
+      def callback_result(content, path = nil)
+        config.call(path, content)
+      end
+      
+      def erb_result(content, path = nil)
+        case config
+        when Binding, Proc
+          bnd = config
+        when Method
+          bnd = config.to_proc
+        when Hash
+          bnd = OpenStruct.new
+          table = config.inject({}) { |h, e| h[e.first.to_sym] = e.last; h }
+          bnd.instance_variable_set(:@table, table)
+          bnd = bnd.instance_eval { binding }
+        else
+          bnd = config.instance_eval { binding }
+        end
+        require 'erb'
+        ERB.new(content).result(bnd)
+      end
+
+      def erb_config(*args, &block)
+        if block_given?
+          raise ArgumentError, "Expected block or single argument, but both given." unless args.empty?
+          block
+        elsif args.size > 1
+          raise ArgumentError, "Expected block or single argument."
+        else
+          args.first
+        end
+      end
+
+    end # class Mapper
 
   end
 
