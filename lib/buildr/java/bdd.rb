@@ -160,6 +160,8 @@ module Buildr
   # Support the following options:
   # * :config -- path to JtestR config file. defaults to @spec/ruby/jtestr_config.rb@
   # * :output -- path to JtestR output dump. @false@ to supress output
+  # * :properties -- Hash of properties passed to the test suite.
+  # * :java_args -- Arguments passed to the JVM.
   class JtestR < TestFramework::JavaBDD
     @lang = :ruby
     @bdd_dir = :spec    
