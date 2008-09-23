@@ -47,7 +47,7 @@ describe Buildr::RSpec do
     end
   end
 
-end if true || RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME'] # RSpec
+end if RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME'] # RSpec
 
 describe Buildr::JtestR do
 
