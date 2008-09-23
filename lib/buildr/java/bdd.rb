@@ -44,17 +44,27 @@ module Buildr
   end
 
   module TestFramework::JRubyBased
-    
-    JRUBY_SPEC = 'org.jruby:jruby-complete:jar:1.1.4'
-    
-    def self.included(mod)
-      mod.extend ClassMethods
-      super
+
+    VERSION = '1.1.4' unless const_defined?('VERSION')
+
+    class << self
+      def version
+        Buildr.settings.build['jruby'] || VERSION
+      end
+      
+      def dependencies
+        ["org.jruby:jruby-complete:jar:#{version}"]
+      end
+
+      def included(mod)
+        mod.extend ClassMethods
+        super
+      end
     end
 
     module ClassMethods
       def dependencies
-        super + (RUBY_PLATFORM[/java/] ? [] : Buildr.artifacts(JRUBY_SPEC))
+        super + (RUBY_PLATFORM[/java/] ? [] : JRubyBased.dependencies)
       end
     end
 
@@ -159,8 +169,6 @@ module Buildr
     VERSION = '0.3.1' unless const_defined?('VERSION')
     JTESTR_ARTIFACT = "org.jtestr:jtestr:jar:#{VERSION}"
     
-    # REQUIRES = [JTESTR_ARTIFACT] + JUnit::REQUIRES + TestNG::REQUIRES
-
     # pattern for rspec stories
     STORY_PATTERN    = /_(steps|story)\.rb$/
     # pattern for test_unit files
@@ -177,7 +185,8 @@ module Buildr
       end
 
       def dependencies
-        @dependencies ||= Array(super) + ["org.jtestr:jtestr:jar:#{version}"]
+        @dependencies ||= Array(super) + ["org.jtestr:jtestr:jar:#{version}"] +
+          JUnit.dependencies + TestNG.dependencies
       end
     
       def applies_to?(project) #:nodoc:
@@ -185,7 +194,14 @@ module Buildr
           Dir[project.path_to(:source, bdd_dir, lang, '**/*.rb')].any? { |f| TESTS_PATTERN.any? { |r| r === f } } ||
           JUnit.applies_to?(project) || TestNG.applies_to?(project)
       end
-      
+
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use JtestR.dependencies/.version instead of JtestR::REQUIRES/VERSION"
+        dependencies
+      end
+
     end
 
     def initialize(task, options) #:nodoc:
