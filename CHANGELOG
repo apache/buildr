@@ -20,6 +20,7 @@
 * Change: BUILDR-141 Removed NEXT_VERSION from release task.
 * Change: BUILDR-148 ant-junit no longer included in root classpath, but
           specified during taskdef.
+* Fixed:  BUILDR-135. Extracted reusable replacement logic into Filter::Mapper
 * Fixed:  BUILDR-129. Modifying a project manifest should not alter it's
           parent project manifest.
 * Fixed:  BUILDR-106 download(artifact(...)=>url) broken in certain cases
