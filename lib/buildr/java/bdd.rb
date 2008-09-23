@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
+require 'yaml'
 require 'buildr/java/tests'
 
 module Buildr
@@ -24,6 +24,9 @@ module Buildr
     class << self
       attr_reader :lang, :bdd_dir
     end
+
+    @bdd_dir = :spec
+    @lang = :java
     attr_accessor :lang, :bdd_dir
 
     def initialize(task, options)
@@ -159,7 +162,7 @@ module Buildr
     VERSION = '0.3.1' unless const_defined?('VERSION')
     JTESTR_ARTIFACT = "org.jtestr:jtestr:jar:#{VERSION}"
     
-    REQUIRES = [JTESTR_ARTIFACT] + JUnit::REQUIRES + TestNG::REQUIRES
+    # REQUIRES = [JTESTR_ARTIFACT] + JUnit::REQUIRES + TestNG::REQUIRES
 
     # pattern for rspec stories
     STORY_PATTERN    = /_(steps|story)\.rb$/
@@ -169,11 +172,23 @@ module Buildr
     EXPECT_PATTERN   = /_expect\.rb$/
 
     TESTS_PATTERN = [STORY_PATTERN, TESTUNIT_PATTERN, EXPECT_PATTERN] + RSpec::TESTS_PATTERN
+
+    class << self
+
+      def version
+        Buildr.settings.build['jtestr'] || VERSION
+      end
+
+      def dependencies
+        @dependencies ||= Array(super) + ["org.jtestr:jtestr:jar:#{version}"]
+      end
     
-    def self.applies_to?(project) #:nodoc:
-      File.exist?(project.path_to(:source, bdd_dir, lang, 'jtestr_config.rb')) ||
-        Dir[project.path_to(:source, bdd_dir, lang, '**/*.rb')].any? { |f| TESTS_PATTERN.any? { |r| r === f } } ||
-        JUnit.applies_to?(project) || TestNG.applies_to?(project)
+      def applies_to?(project) #:nodoc:
+        File.exist?(project.path_to(:source, bdd_dir, lang, 'jtestr_config.rb')) ||
+          Dir[project.path_to(:source, bdd_dir, lang, '**/*.rb')].any? { |f| TESTS_PATTERN.any? { |r| r === f } } ||
+          JUnit.applies_to?(project) || TestNG.applies_to?(project)
+      end
+      
     end
 
     def initialize(task, options) #:nodoc:
