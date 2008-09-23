@@ -68,40 +68,40 @@ describe Buildr::JtestR do
 
   it 'should apply to projects having test_unit sources' do
     define('one', :base_dir => 'one') do
-      write _(:source, :spec, :ruby, 'one_test.rb')
+      write _('src/spec/ruby/one_test.rb')
       JtestR.applies_to?(self).should be_true
     end
     define('two', :base_dir => 'two') do
-      write _(:source, :spec, :ruby, 'twoTest.rb')
+      write _('src/spec/ruby/twoTest.rb')
       JtestR.applies_to?(self).should be_true
     end
     define('three', :base_dir => 'three') do
-      write _(:source, :spec, :ruby, 'tc_three.rb')
+      write _('src/spec/ruby/tc_three.rb')
       JtestR.applies_to?(self).should be_true
     end
     define('four', :base_dir => 'four') do
-      write _(:source, :spec, :ruby, 'ts_four.rb')
+      write _('src/spec/ruby/ts_four.rb')
       JtestR.applies_to?(self).should be_true
     end
   end
 
   it 'should apply to projects having rspec sources' do
     define('one', :base_dir => 'one') do
-      write _(:source, :spec, :ruby, 'one_spec.rb')
+      write _('src/spec/ruby/one_spec.rb')
       JtestR.applies_to?(self).should be_true
     end
   end
 
   it 'should apply to projects having expectations sources' do
     define('one', :base_dir => 'one') do
-      write _(:source, :spec, :ruby, 'one_expect.rb')
+      write _('src/spec/ruby/one_expect.rb')
       JtestR.applies_to?(self).should be_true
     end
   end
 
   it 'should apply to projects having junit sources' do
     define('one', :base_dir => 'one') do
-      write _(:source, :test, :java, 'example/OneTest.java', <<-JAVA)
+      write _('src/test/java/example/OneTest.java', <<-JAVA)
         package example;
         public class OneTest extends junit.framework.TestCase { }
       JAVA
@@ -111,7 +111,7 @@ describe Buildr::JtestR do
 
   it 'should apply to projects having testng sources' do
     define('one', :base_dir => 'one') do
-      write _(:source, :test, :java, 'example/OneTest.java', <<-JAVA)
+      write _('src/test/java/example/OneTest.java', <<-JAVA)
         package example;
         public class OneTest { 
            @org.testng.annotations.Test
@@ -124,7 +124,7 @@ describe Buildr::JtestR do
 
   it 'should use a java compiler if java sources found' do
     foo do
-      write _(:source, :spec, :java, 'Something.java'), 'public class Something {}'
+      write _('src/spec/java/Something.java'), 'public class Something {}'
       test.compile.language.should eql(:java)
     end
   end
