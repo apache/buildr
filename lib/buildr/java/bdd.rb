@@ -52,9 +52,13 @@ module Buildr
       def version
         Buildr.settings.build['jruby'] || VERSION
       end
+
+      def jruby_artifact
+        "org.jruby:jruby-complete:jar:#{version}"
+      end
       
       def dependencies
-        ["org.jruby:jruby-complete:jar:#{version}"]
+        [jruby_artifact]
       end
 
       def included(mod)
@@ -73,8 +77,8 @@ module Buildr
       end
     end
 
-
     def run(tests, dependencies)
+      maybe_install_jruby
       dependencies |= [task.compile.target.to_s]
       
       spec_dir = task.project.path_to(:source, :spec, :ruby)
@@ -112,10 +116,32 @@ module Buildr
     end
 
     def jruby_installed?
-      !Dir.glob(File.join(jruby_home, 'lib', 'jruby*.jar')).empty?
+      RUBY_PLATFORM[/java/] || !Dir.glob(File.join(jruby_home, 'lib', 'jruby*.jar')).empty?
     end
-
+    
   protected
+    def maybe_install_jruby
+      unless jruby_installed?
+        jruby_artifact = Buildr.artifact(TestFramework::JRubyBased.jruby_artifact)
+        install_cmd = ['-Djruby.home', jruby_home, '-jar', jruby_artifact.to_s, '-S' 'extract']
+
+        msg = "JRUBY_HOME is not correctly set or points to an invalid JRuby installation: #{jruby_home}"
+        puts msg
+        puts
+        puts "You need to install JRuby version #{jruby_artifact.version} using your system package manager."
+        puts "Or you can just execute the following command: "
+        puts
+        puts "   java -Djruby.home='#{jruby_home}' -jar #{jruby_artifact} -S extract"
+        puts 
+        print "Do you want me to execute it for you? [y/N]"
+        if gets.chomp.strip =~ /y(es)?/i
+          jruby_artifact.invoke
+          Java::Commands.java('-jar', jruby_artifact.to_s, '-S', 'extract', :properties => {'jruby.home' => jruby_home})
+        end
+        
+        fail msg unless jruby_installed?
+      end
+    end
     
     def jruby(*args)
       java_args = ["org.jruby.Main", *args]
@@ -149,10 +175,6 @@ module Buildr
           expected_version = '#{TestFramework::JRubyBased.version}'
           unless JRUBY_VERSION >= expected_version
             fail "Expected JRuby version \#{expected_version} installed at \#{jruby_home} but got \#{JRUBY_VERSION}"
-          end
-          if Dir.glob(File.join(jruby_home, 'lib', 'jruby*.jar')).empty?
-            require 'jruby/extract'
-            JRuby::Extract.new.extract
           end
           require 'rubygems'
           begin
