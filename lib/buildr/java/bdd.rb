@@ -40,16 +40,32 @@ module Buildr
       end
       super
     end
+    
   end
 
   module TestFramework::JRubyBased
+    
+    JRUBY_SPEC = 'org.jruby:jruby-complete:jar:1.1.4'
+    
+    def self.included(mod)
+      mod.extend ClassMethods
+      super
+    end
+
+    module ClassMethods
+      def dependencies
+        super + (RUBY_PLATFORM[/java/] ? [] : Buildr.artifacts(JRUBY_SPEC))
+      end
+    end
+
     def jruby_home
-      @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : ENV['JRUBY_HOME']
+      @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : 
+        ( ENV['JRUBY_HOME'] || File.expand_path("~/.jruby") )
     end
 
     def jruby(*args)
       java_args = ["org.jruby.Main", *args]
-      java_args << {} unless Hash === args.last
+      java_args <m< {} unless Hash === args.last
       cmd_options = java_args.last
       project = cmd_options.delete(:project)
       cmd_options[:java_args] ||= []
@@ -67,12 +83,14 @@ module Buildr
       yield config if block_given?
       Java.org.jruby.Ruby.newInstance config
     end
-
+    
   end
   
   class RSpec < TestFramework::JavaBDD
     @lang = :ruby
     @bdd_dir = :spec    
+
+    include TestFramework::JRubyBased
   
     TESTS_PATTERN = [ /_spec.rb$/ ]
     OPTIONS = [:properties, :java_args]
@@ -90,9 +108,9 @@ module Buildr
     end
 
     def run(tests, dependencies) #:nodoc:
-      jruby_home or fail "To use RSpec you must either run on JRuby or have JRUBY_HOME set"
+      #jruby_home or fail "To use RSpec you must either run on JRuby or have JRUBY_HOME set"
       cmd_options = task.options.only(:properties, :java_args)
-      dependencies.push *Dir.glob(File.join(jruby_home, "lib/*.jar")) if RUBY_PLATFORM =~ /java/
+      #dependencies.push *Dir.glob(File.join(jruby_home, "lib/*.jar")) if RUBY_PLATFORM =~ /java/
       cmd_options.update :classpath => dependencies, :project => task.project
 
       report_dir = task.report_to.to_s
@@ -142,7 +160,6 @@ module Buildr
     JTESTR_ARTIFACT = "org.jtestr:jtestr:jar:#{VERSION}"
     
     REQUIRES = [JTESTR_ARTIFACT] + JUnit::REQUIRES + TestNG::REQUIRES
-    REQUIRES.unshift 'org.jruby:jruby-complete:jar:1.1.4' unless RUBY_PLATFORM =~ /java/
 
     # pattern for rspec stories
     STORY_PATTERN    = /_(steps|story)\.rb$/
@@ -174,7 +191,7 @@ module Buildr
     end
 
     def tests(dependencies) #:nodoc:
-      dependencies += [task.compile.target]
+      dependencies += [task.compile.target.to_s]
       types = { :story => STORY_PATTERN, :rspec => RSpec::TESTS_PATTERN,
                 :testunit => TESTUNIT_PATTERN, :expect => EXPECT_PATTERN }
       tests = types.keys.inject({}) { |h, k| h[k] = []; h }
@@ -200,9 +217,15 @@ module Buildr
       runner_erb = File.join(File.dirname(__FILE__), 'jtestr_runner.rb.erb')
       runner = Filter::Mapper.new(:erb, binding).result(File.read(runner_erb))
       Buildr.write runner_file, runner
-      
-      runtime = new_runtime :current_directory => runner_file.pathmap('%d')
-      runtime.getLoadService.require runner_file
+
+      if /java/ === RUBY_PLATFORM
+        runtime = new_runtime :current_directory => runner_file.pathmap('%d')
+        runtime.getLoadService.require runner_file
+      else
+        cmd_options = task.options.only(:properties, :java_args)
+        cmd_options.update(:classpath => dependencies, :project => task.project)
+        jruby runner_file, cmd_options.merge(:name => 'JtestR')
+      end
 
       report = YAML::load(File.read(yaml_report))
       raise (Array(report[:error][:message]) + report[:error][:backtrace]).join("\n") if report[:error]

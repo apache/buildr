@@ -27,7 +27,7 @@
                   
 begin
   require 'jruby'
-  <%= dependencies.inspect %>.each { |dep| $CLASSPATH << dep }
+  <%= dependencies.map(&:to_s).inspect %>.each { |dep| $CLASSPATH << dep }
   require '<%= File.join(File.dirname(runner_erb), "jtestr_result_handler") %>'
 
   jtestr = JtestR::TestRunner.new
