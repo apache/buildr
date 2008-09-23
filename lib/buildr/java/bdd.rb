@@ -123,8 +123,6 @@ module Buildr
     def maybe_install_jruby
       unless jruby_installed?
         jruby_artifact = Buildr.artifact(TestFramework::JRubyBased.jruby_artifact)
-        install_cmd = ['-Djruby.home', jruby_home, '-jar', jruby_artifact.to_s, '-S' 'extract']
-
         msg = "JRUBY_HOME is not correctly set or points to an invalid JRuby installation: #{jruby_home}"
         puts msg
         puts
