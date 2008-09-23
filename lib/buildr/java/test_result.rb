@@ -28,38 +28,49 @@ module Buildr #:nodoc:
           @message = message
           @backtrace = backtrace
         end
-      end
-      
-      class << self
-        def for_rspec
-          unless const_defined?(:RSpec)
-            require 'spec/runner/formatter/base_formatter' # lazy loading only when using Rspec
-            cls = Class.new(Spec::Runner::Formatter::BaseFormatter) { include YamlFormatter }
-            const_set :RSpec, cls
-          end
-        end
-      
-        def for_jtestr
-          unless const_defined?(:JtestR)
-            for_rspec
-            require 'jtestr' # lazy loading only when using JtestR
-            cls = Class.new { include RSpecResultHandler }
-            const_set :JtestR, cls
-          end
-        end
-      end
 
+        def self.dump_yaml(file, e)
+          require 'fileutils'
+          FileUtils.mkdir_p(File.dirname(file))
+          File.open(file, 'w') { |f| f.puts(YAML.dump(Error.new(e.message, e.backtrace))) }
+        end
+
+        def self.guard(file)
+          begin 
+            yield
+          rescue
+            dump_yaml(file)
+          end
+        end
+      end
+      
       attr_accessor :failed, :succeeded
 
       def initialize
         @failed, @succeeded = [], []
       end
 
-      module YamlFormatter
+      # An Rspec formatter used by buildr
+      class YamlFormatter
         attr_reader :result
+
+        attr_accessor :example_group, :options, :where
         
+        def initialize(options, where)
+          @options = options
+          @where = where
+        end
+        
+        %w[ example_started example_passed example_failed example_pending
+            start_dump dump_failure dump_summary dump_pending ].each do |meth|
+          module_eval "def #{meth}(*args); end"
+        end
+
+        def add_example_group(example_group)
+          @example_group = example_group
+        end
+
         def start(example_count)
-          super
           @result = TestResult.new
         end
 
@@ -83,22 +94,57 @@ module Buildr #:nodoc:
         end
       end # YamlFormatter
 
-      
       # A JtestR ResultHandler
       # Using this handler we can use RSpec formatters, like html/ci_reporter with JtestR
       # Created for YamlFormatter
-      module RSpecResultHandler
-        def self.included(mod)
-          mod.extend ClassMethods
-          super
+      class RSpecResultHandler
+
+        # Workaround for http://jira.codehaus.org/browse/JTESTR-68
+        module TestNGResultHandlerMixin
+          def onTestSuccess(test_result)
+            @result_handler.succeed_single(test_result.name)
+          end
         end
 
-        module ClassMethods
+        class BacktraceTweaker
+          attr_reader :ignore_patterns
+          def initialize
+            @ignore_patterns = ::Spec::Runner::QuietBacktraceTweaker::IGNORE_PATTERNS.dup
+            # ignore jruby/jtestr backtrace
+            ignore_patterns << /org\.jruby\.javasupport\.JavaMethod\./
+            ignore_patterns << /jtestr.*\.jar!/i << /runner\.rb/
+          end
+          
+          def clean_up_double_slashes(line)
+            line.gsub!('//','/')
+          end
+
+          def tweak_backtrace(error)
+            return if error.backtrace.nil?
+            error.backtrace.collect! do |line|
+              clean_up_double_slashes(line)
+              ignore_patterns.each do |ignore|
+                if line =~ ignore
+                  line = nil
+                  break
+                end
+              end
+              line
+            end
+            error.backtrace.compact!
+          end
+        end
+        
+        class << self
           # an rspec reporter used to proxy events to rspec formatters
           attr_reader :reporter
 
-          def options=(options)
-            @reporter = Spec::Runner::Reporter.new(options)            
+          def init(argv = [], out = STDOUT, err = STDERR)
+            ::JtestR::TestNGResultHandler.module_eval { include TestNGResultHandlerMixin }
+            rspec_parser = ::Spec::Runner::OptionParser.new(err, out)
+            rspec_parser.order!(argv)
+            rspec_parser.options.backtrace_tweaker = BacktraceTweaker.new
+            @reporter = Spec::Runner::Reporter.new(rspec_parser.options)
           end
 
           def before
@@ -123,6 +169,13 @@ module Buildr #:nodoc:
 
         def initialize(name, desc, *args)
           self.example_group = ::Spec::Example::ExampleGroup.new(desc)
+          example_group.extend ExampleMethods
+          example_group.name = name.to_s
+          if example_group.name[/Spec/]
+            example_group.description = desc.to_s
+          else
+            example_group.description = name.to_s
+          end
           reporter.add_example_group(example_group)
         end
 
@@ -144,40 +197,42 @@ module Buildr #:nodoc:
           self.current_example = Object.new
           current_example.extend ::Spec::Example::ExampleMethods
           current_example.extend ExampleMethods
-          desc = name.to_s[/(.*)\(/] ? $1 : name.to_s
-          current_example.description = desc
-          current_example.__full_description = "#{example_group.description} #{desc}"
+          name = name.to_s
+          name[/\((pen?ding|error|failure|success)\)?$/]
+          name = $`
+          current_example.description = name
+          if example_group.name[/Spec/]
+            current_example.__full_description = "#{example_group.description} #{name}"
+          else
+            current_example.__full_description = "#{example_group.name}: #{name}"
+          end
           reporter.example_started(current_example)
+          #puts "STARTED #{name} #{current_example.__full_description}"
         end
 
         def succeed_single(name = nil)
-          fail_unless_current(name)
-          reporter.example_finished(current_example)
+          #puts "SUCC SINGLE #{name}"
+          reporter.example_finished(current_example, nil)
         end
-
+        
         def fail_single(name = nil)
-          fail_unless_current(name)
-          reporter.failure(current_example, current_error)
+          #puts "FAIL SINGLE #{name}"
+          reporter.example_finished(current_example, current_error)
         end
 
         def error_single(name = nil)
-          fail_unless_current(name)
+          #puts "ERR SINGLE #{name}"
           reporter.example_finished(current_example, current_error)
         end
 
         def pending_single(name = nil)
-          fail_unless_current(name)
+          #puts "PEND SINGLE #{name}"
           error = ::Spec::Example::ExamplePendingError.new(name)
           reporter.example_finished(current_example, error)
         end
 
       private
-        def fail_unless_current(name)
-          fail "Expected #{name.inspect} to be current example but was #{current_example.description}" unless current_example.description == name.to_s
-        end
-
-        def current_error
-          fault = current_failure
+        def current_error(fault = current_failure)
           case fault
           when nil
             nil
@@ -186,22 +241,37 @@ module Buildr #:nodoc:
           when Test::Unit::Error, Expectations::Results::Error, Spec::Runner::Reporter::Failure
             fault.exception
           when Expectations::Results
-            fault
+            file = fault.file
+            line = fault.line
+            Error.new(fault.message, ["#{fault.file}:#{fault.line}"])
           else
             if fault.respond_to?(:test_header)
               fault.test_header[/\((.+)\)/]
-              test = $1.to_s
-              self.class.add_failure(test)
+              test_cls, test_meth = $1.to_s, $`.to_s
+              exception = fault.exception
+              (class << exception; self; end).module_eval do
+                define_method(:backtrace) do 
+                  (["#{test_cls}:in `#{test_meth}'"] + stackTrace).map { |s| s.to_s }
+                end
+              end
+              exception
             elsif fault.respond_to?(:method)
-              test = fault.method.test_class.name
-              self.class.add_failure(test)
+              test_cls, test_meth = fault.method.test_class.name, fault.method.method_name
+              exception = fault.throwable
+              (class << exception; self; end).module_eval do
+                define_method(:backtrace) do 
+                  (["#{test_cls}:in `#{test_meth}'"] + stackTrace).map { |s| s.to_s }
+                end
+              end
+              exception
+            else
+              raise "Cannot handle fault #{fault.class}: #{fault.inspect}"
             end
           end
         end
 
-        
       end # RSpecResultHandler
-      
+
     end # TestResult
   end
 end

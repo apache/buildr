@@ -24,19 +24,16 @@
 # |_| |___|____|___|  PREFER TO EDIT JtestR CONFIGURATION FILE:
 #
 # <%= user_config %>
-                  
+
 begin
+
   <%= jruby_gem %>
-  JRuby.gem('rspec')
-
   <%= dependencies.map(&:to_s).inspect %>.each { |dep| $CLASSPATH << dep }
-  <%= gems.inspect %>.each { |ary| JRuby.gem(*ary.flatten) }
-  <%= requires.inspect %>.each { |rb| Kernel.require rb }
-
-  Buildr::TestFramework::TestResult.for_jtestr
-
+  <%= runner.gems.inspect %>.each { |ary| JRuby.gem(*ary.flatten) }
+  <%= runner.requires.inspect %>.each { |rb| Kernel.require rb }
+  
   jtestr = JtestR::TestRunner.new
-
+  
   class << jtestr
     def config(&block)
       @config_blocks ||= []
@@ -49,62 +46,69 @@ begin
       config.each { |block| @configuration.instance_eval(&block) }
     end
   end
-
+  
   jtestr.config do 
     classpath [] # already loaded
     add_common_classpath false
-  
+    
     <% ts = ( @jtestr_tests[:junit] & tests ).map { |c| 'Java.' + c } %>
     junit [<%= ts.join(', ') %>]
-  
+    
     <% ts = ( @jtestr_tests[:testng] & tests ).map { |c| 'Java.' + c } %>
     testng [<%= ts.join(', ') %>]
-  
+    
     <% ts = @jtestr_tests[:testunit] & tests %>
     test_unit <%= ts.inspect %>
-  
+      
     <% ts = @jtestr_tests[:story] & tests %>
     story <%= ts.inspect %>
-  
+      
     <% ts = @jtestr_tests[:rspec] & tests %>
     rspec <%= ts.inspect %>
-  
+      
     <% ts = @jtestr_tests[:expect] & tests %>
     expectations <%= ts.inspect %>
-  
+      
     ignore __FILE__
-
+  
     if File.file?(<%= user_config.inspect %>)
       ignore <%= user_config.inspect %>
       load <%= user_config.inspect %>
     end
   end # config
 
-  args =  [ '<%= spec_dir %>', # the directory to search for jtestr files
-            JtestR::SimpleLogger::ERR, # log level
-            JtestR::GenericResultHandler::QUIET, #output level 
-            StringIO.new, # output STDOUT
-            [], # groups to run 
-            Buildr::TestFramework::TestResult::JtestR, # result handler
-            []  # classpath
-          ]
+  fake_out = StringIO.new
 
-  rspec_parser = ::Spec::Runner::OptionParser.new(STDERR, STDOUT)
-  rspec_parser.order!(<%= argv.inspect %>)
-  Buildr::TestFramework::TestResult::JtestR.options = rspec_parser.options
+  <% if runner.output == false %>
+     output = fake_out
+  <% elsif runner.output.kind_of?(String) %>
+     output = File.open(<%= result.output.inspect %>, 'w')
+  <% else %>
+     output = STDOUT
+  <% end %>
+  
+  
+  args = [ '<%= spec_dir %>', # the directory to search for jtestr files
+           JtestR::SimpleLogger::ERR, # log level
+           JtestR::GenericResultHandler::QUIET, #output level 
+           fake_out, # output STDOUT
+           [], # groups to run 
+           Buildr::TestFramework::TestResult::RSpecResultHandler, # result handler
+           []  # classpath
+         ]
+  
+  argv = <%= runner.rspec.inspect %> || []
+  argv.push *<%= tests.inspect %>
+  Buildr::TestFramework::TestResult::RSpecResultHandler.init(argv, output, output)
   
   jtestr.run *args
 
 rescue => e
-  puts e, *e.backtrace
-  require 'fileutils'
-  FileUtils.mkdir_p(File.dirname('<%= result_file %>'))
-  File.open('<%= result_file %>', "w") do |f|
-    f.write YAML.dump(Buildr::TestFramework::TestResult::Error.new(e.message, e.backtrace))
-  end
+  Buildr::TestFramework::TestResult::Error.dump_yaml('<%= runner.result %>', e) rescue \
+  puts "-[--- ERROR ---]-", e.class, e.message, *e.backtrace
 end
-
-
+  
 # Local Variables:
 # mode: ruby
 # End:
+  
