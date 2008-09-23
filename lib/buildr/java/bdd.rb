@@ -260,7 +260,6 @@ module Buildr
       report[:success]
     end
     
-    @bdd_dir = :spec    
   end
 
   
