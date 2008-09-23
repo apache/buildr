@@ -376,6 +376,43 @@ describe Buildr::Filter do
     end
   end
 
+  it 'should use erb when given a binding' do
+    1.upto(4) { |i| write "src/file#{i}", "file#{i} with <%= key1 %> and <%= key2 * 2 %>" }
+    key1 = 'value1'
+    key2 = 12
+    @filter.from('src').into('target').using(binding).run
+    Dir['target/*'].each do |file|
+      read(file).should eql("#{File.basename(file)} with value1 and 24")
+    end
+  end
+
+  it 'should apply hash mapping using erb' do
+    1.upto(4) { |i| write "src/file#{i}", "file#{i} with <%= key1 %> and <%= key2 * 2 %>" }
+    @filter.from('src').into('target').using(:erb, 'key1'=>'value1', 'key2'=> 12).run
+    Dir['target/*'].each do |file|
+      read(file).should eql("#{File.basename(file)} with value1 and 24")
+    end
+  end
+
+  it 'should use an object binding when using erb' do
+    1.upto(4) { |i| write "src/file#{i}", "file#{i} with <%= key1 %> and <%= key2 * 2 %>" }
+    obj = Struct.new(:key1, :key2).new('value1', 12)
+    @filter.from('src').into('target').using(:erb, obj).run
+    Dir['target/*'].each do |file|
+      read(file).should eql("#{File.basename(file)} with value1 and 24")
+    end
+  end
+
+  it 'should use a given block context when using erb' do
+    1.upto(4) { |i| write "src/file#{i}", "file#{i} with <%= key1 %> and <%= key2 * 2 %>" }
+    key1 = 'value1'
+    key2 = 12
+    @filter.from('src').into('target').using(:erb){}.run
+    Dir['target/*'].each do |file|
+      read(file).should eql("#{File.basename(file)} with value1 and 24")
+    end
+  end
+
   it 'should using Maven mapper by default' do
     @filter.using('key1'=>'value1', 'key2'=>'value2').mapper.should eql(:maven)
   end
@@ -452,6 +489,32 @@ describe Buildr::Filter do
   end
 end
 
+describe Filter::Mapper do 
+  
+  module MooMapper
+    def moo_config(*args, &block)
+      raise ArgumentError, "Expected moo block" unless block_given?
+      { :moos => args, :callback => block }
+    end
+    
+    def moo_result(content, path = nil)
+      content.gsub(/moo+/i) do |str|
+        moos = yield :moos # same than config[:moos]
+        moo = moos[str.size - 3] || str
+        config[:callback].call(moo)
+      end
+    end
+  end
+
+  it 'should allow plugable mapping types' do
+    mapper = Filter::Mapper.new.extend(MooMapper)
+    mapper.using(:moo, 'ooone', 'twoo') do |str|
+      i = nil; str.capitalize.gsub(/\w/) { |s| s.send( (i = !i) ? 'upcase' : 'downcase' ) }
+    end
+    mapper.result('Moo cow, mooo cows singing mooooo').should == 'OoOnE cow, TwOo cows singing MoOoOo'
+  end
+
+end
 
 describe Buildr.method(:options) do
   it 'should return an Options object' do
@@ -467,7 +530,6 @@ describe Buildr.method(:options) do
     define('foo') { options.should be(Buildr.options) }
   end
 end
-
 
 describe Buildr::Options, 'proxy.exclude' do
   before do
