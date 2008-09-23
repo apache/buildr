@@ -330,11 +330,17 @@ h2.  Ruby
 
 h3.  Testing with Ruby
 
+Buildr provides integration with some ruby testing frameworks, allowing you to test your Java code with state of the art tools.
+
+Testing code is written in "Ruby":http://www.ruby-lang.org/en/ language, and is run by using "JRuby":http://jruby.codehaus.org/.
+That means you have access to all your Java classes and any Java or Ruby tool out there.
+
+Because of the use of JRuby, you will notice that running ruby tests is faster when running Buildr on JRuby, as in this case
+there's no need to run another JVM.
+
 h4.  RSpec
 
 "RSpec":http://rspec.info/ is the de-facto BDD framework for ruby. It's the framework used to test Buildr itself. 
-
-Specifications are written in "Ruby":http://www.ruby-lang.org/en/ language, but are run by using "JRuby":http://jruby.codehaus.org/.  That means you have access to all your Java classes and any Java or Ruby tool out there.
 
 To use this framework in your project you can select it with @test.using :rspec@.
 
@@ -374,6 +380,8 @@ by Buildr, this way you can add helpers or anything described on the "JtestR gui
 Supports the following options:
 
 |_. Option        |_. Value |
-| @:config@    | The JtestR config file to be loaded after being configured by Buildr. |
+| @:config@       | The JtestR config file to be loaded after being configured by Buildr. Defaults to @src/spec/ruby/jtestr_config.rb@. |
 | @:output@       | A file path where to store JtestR output. @false@ to suppress output, @true@ to use standard output. |
+| @:properties@   | Hash of system properties available to the test case. |
+| @:java_args@    | Arguments passed as is to the JVM. |
 
