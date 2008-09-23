@@ -294,23 +294,6 @@ module Buildr
       end
     end          
 
-    class << self
-      def version
-        Buildr.settings.build['testng'] || VERSION
-      end
-      
-      def dependencies
-        ["org.testng:testng:jar:jdk15:#{version}"]+ JMock.dependencies
-      end  
-      
-    private
-      def const_missing(const)
-        return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated "Please use TestNG.dependencies/.version instead of TestNG::REQUIRES/VERSION"
-        dependencies
-      end
-    end          
-
     def tests(dependencies) #:nodoc:
       filter_classes(dependencies, 
                      :class_annotations => %w{org.testng.annotations.Test},
