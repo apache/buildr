@@ -32,18 +32,22 @@ describe Buildr::RSpec do
     foo { test.framework.should eql(:rspec) }
   end
 
-  it 'should include src/spec/ruby/**/*_spec.rb' do
-    verbose true
-    foo do 
-      spec = _('src/spec/ruby/some_spec.rb')
-      write spec, ''
-      test.invoke
-      test.tests.should include(spec)
+  it 'should run rspecs' do
+    success = File.expand_path('src/spec/ruby/success_spec.rb')
+    write(success, 'describe("success") { it("is true") { nil.should be_nil } }')
+    failure = File.expand_path('src/spec/ruby/failure_spec.rb')
+    write(failure, 'describe("failure") { it("is false") { true.should == false } }')
+    error = File.expand_path('src/spec/ruby/error_spec.rb')
+    write(error, 'describe("error") { it("raises") { eval("lambda") } }')
+    foo do
+      lambda { test.invoke }.should raise_error(/Tests failed/)
+      test.tests.should include(success, failure, error)
+      test.failed_tests.should include(failure, error)
+      test.passed_tests.should include(success)
     end
   end
 
-
-end if RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME'] # RSpec
+end if true || RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME'] # RSpec
 
 describe Buildr::JtestR do
 
@@ -237,6 +241,8 @@ describe Buildr::JtestR do
     write(failure, 'describe("failure") { it("is false") { true.should == false } }')
     error = File.expand_path('src/spec/ruby/error_spec.rb')
     write(error, 'describe("error") { it("raises") { eval("lambda") } }')
+    pending =  File.expand_path('src/spec/ruby/pending_spec.rb')
+    write(pending, 'describe("peding") { it "is not implemented" }')
     foo do
       lambda { test.invoke }.should raise_error(/Tests failed/)
       test.tests.should include(success, failure, error)

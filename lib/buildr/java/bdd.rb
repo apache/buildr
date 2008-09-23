@@ -13,8 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'yaml'
 require 'buildr/java/tests'
+require 'buildr/java/test_result'
 
 module Buildr
 
@@ -44,6 +44,7 @@ module Buildr
   end
 
   module TestFramework::JRubyBased
+    extend self
 
     VERSION = '1.1.4' unless const_defined?('VERSION')
 
@@ -64,7 +65,11 @@ module Buildr
 
     module ClassMethods
       def dependencies
-        super + (RUBY_PLATFORM[/java/] ? [] : JRubyBased.dependencies)
+        deps = super
+        unless RUBY_PLATFORM[/java/] && TestFramework::JRubyBased.jruby_installed?
+          deps |= TestFramework::JRubyBased.dependencies
+        end
+        deps
       end
     end
 
@@ -73,11 +78,17 @@ module Buildr
         ( ENV['JRUBY_HOME'] || File.expand_path("~/.jruby") )
     end
 
+    def jruby_installed?
+      !Dir.glob(File.join(jruby_home, 'lib', 'jruby*.jar')).empty?
+    end
+
     def jruby(*args)
       java_args = ["org.jruby.Main", *args]
       java_args << {} unless Hash === args.last
       cmd_options = java_args.last
       project = cmd_options.delete(:project)
+      cmd_options[:classpath] ||= []
+      Dir.glob(File.join(jruby_home, 'lib', '*.jar')) { |jar| cmd_options[:classpath] << jar }
       cmd_options[:java_args] ||= []
       cmd_options[:java_args] << "-Xmx512m" unless cmd_options[:java_args].detect {|a| a =~ /^-Xmx/}
       cmd_options[:properties] ||= {}
@@ -93,12 +104,48 @@ module Buildr
       yield config if block_given?
       Java.org.jruby.Ruby.newInstance config
     end
+
+    def jruby_gem
+      %{
+       require 'jruby'
+       def JRuby.gem(name, version = '>0', *args)
+          require 'rbconfig'
+          jruby_home = Config::CONFIG['prefix']
+          expected_version = '#{TestFramework::JRubyBased.version}'
+          unless JRUBY_VERSION >= expected_version
+            fail "Expected JRuby version \#{expected_version} installed at \#{jruby_home} but got \#{JRUBY_VERSION}"
+          end
+          if Dir.glob(File.join(jruby_home, 'lib', 'jruby*.jar')).empty?
+            require 'jruby/extract'
+            JRuby::Extract.new.extract
+          end
+          require 'rubygems'
+          begin
+            Kernel.gem name, version
+          rescue LoadError, Gem::LoadError => e
+            require 'rubygems/gem_runner'
+            Gem.manage_gems
+            args = ['install', name, '--version', version] + args
+            Gem::GemRunner.new.run(args)
+            Kernel.gem name, version
+          end
+       end
+      }
+    end
     
   end
-  
+
+  # <a href="http://rspec.info">RSpec</a> is the defacto BDD framework for ruby.
+  # To test your project with RSpec use:
+  #   test.using :rspec
+  #
+  #
+  # Support the following options:
+  # * :properties -- Hash of properties passed to the test suite.
+  # * :java_args -- Arguments passed to the JVM.
   class RSpec < TestFramework::JavaBDD
     @lang = :ruby
-    @bdd_dir = :spec    
+    @bdd_dir = :spec
 
     include TestFramework::JRubyBased
   
@@ -118,18 +165,54 @@ module Buildr
     end
 
     def run(tests, dependencies) #:nodoc:
-      #jruby_home or fail "To use RSpec you must either run on JRuby or have JRUBY_HOME set"
+      dependencies |= [task.compile.target.to_s]
+      
       cmd_options = task.options.only(:properties, :java_args)
-      #dependencies.push *Dir.glob(File.join(jruby_home, "lib/*.jar")) if RUBY_PLATFORM =~ /java/
-      cmd_options.update :classpath => dependencies, :project => task.project
+      cmd_options.update :classpath => dependencies, :project => task.project, :name => 'RSpec'
 
       report_dir = task.report_to.to_s
       FileUtils.rm_rf report_dir
       ENV['CI_REPORTS'] = report_dir
 
-      jruby '-Ilib', '-S', 'spec', '--require', 'ci/reporter/rake/rspec_loader',
-        '--format', 'CI::Reporter::RSpecDoc', tests, cmd_options.merge(:name => 'RSpec')
-      tests
+      result_file = File.join(report_dir, 'result.yaml')
+
+      requires = task.options[:requires] || []
+      requires.push 'spec', File.join(File.dirname(__FILE__), 'test_result')
+      gems = task.options[:gems] || {}
+      argv = task.options[:args] || [ '--format', 'progress' ]
+      argv.push '--format', "Buildr::TestFramework::TestResult::RSpec:#{result_file}"
+      argv.push *tests
+
+      runner = %{
+        #{ jruby_gem }
+        JRuby.gem('rspec')
+        #{ dependencies.inspect }.each { |dep| $CLASSPATH << dep }
+        #{ gems.inspect }.each { |ary| JRuby.gem(*ary.flatten) }
+        #{ requires.inspect }.each { |rb| Kernel.require rb }
+        Buildr::TestFramework::TestResult.for_rspec
+        parser = ::Spec::Runner::OptionParser.new(STDERR, STDOUT)
+        parser.order!(#{argv.inspect})
+        $rspec_options = parser.options
+        ::Spec::Runner::CommandLine.run($rspec_options)
+      }
+
+      runner_file = task.project.path_to(:target, :spec, 'rspec_runner.rb')
+      Buildr.write runner_file, runner
+
+      if /java/ === RUBY_PLATFORM
+        runtime = new_runtime :current_directory => runner_file.pathmap('%d')
+        runtime.getLoadService.require runner_file
+      else
+        begin
+          jruby runner_file, tests, cmd_options
+        ensure
+          FileUtils.cp_r task.project.path_to(nil), '/tmp/foo'
+        end
+      end
+      
+      result = YAML.load(File.read(result_file))
+      raise result if Exception === result
+      result.succeeded
     end
 
   end
@@ -203,7 +286,7 @@ module Buildr
     end
 
     def tests(dependencies) #:nodoc:
-      dependencies += [task.compile.target.to_s]
+      dependencies |= [task.compile.target.to_s]
       types = { :story => STORY_PATTERN, :rspec => RSpec::TESTS_PATTERN,
                 :testunit => TESTUNIT_PATTERN, :expect => EXPECT_PATTERN }
       tests = types.keys.inject({}) { |h, k| h[k] = []; h }
@@ -220,9 +303,21 @@ module Buildr
     end
 
     def run(tests, dependencies) #:nodoc:
-      dependencies += [task.compile.target.to_s]
+      dependencies |= [task.compile.target.to_s]
+
+      result_file = File.join(task.report_to.to_s, 'result.yaml')
+
+      requires = task.options[:requires] || []
+      requires.push 'spec', 'jtestr', File.join(File.dirname(__FILE__), 'test_result')
+      gems = task.options[:gems] || {}
+      argv = task.options[:args] || [ '--format', 'progress' ]
+      argv.push '--format', "Buildr::TestFramework::TestResult::RSpec:#{result_file}"
+      argv.push *tests
+
+      report_dir = task.report_to.to_s
+      FileUtils.rm_rf report_dir
+      ENV['CI_REPORTS'] = report_dir
       
-      yaml_report = File.join(task.report_to.to_s, 'result.yaml')
       spec_dir = task.project.path_to(:source, :spec, :ruby)
 
       runner_file = task.project.path_to(:target, :spec, 'jtestr_runner.rb')
@@ -237,11 +332,12 @@ module Buildr
         cmd_options = task.options.only(:properties, :java_args)
         cmd_options.update(:classpath => dependencies, :project => task.project)
         jruby runner_file, cmd_options.merge(:name => 'JtestR')
+        FileUtils.cp_r task.project.path_to(nil), '/tmp/foo'
       end
 
-      report = YAML::load(File.read(yaml_report))
-      raise (Array(report[:error][:message]) + report[:error][:backtrace]).join("\n") if report[:error]
-      report[:success]
+      result = YAML::load(File.read(result_file))
+      raise result if Exception === result
+      result.succeeded
     end
     
   end

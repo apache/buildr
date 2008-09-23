@@ -26,9 +26,14 @@
 # <%= user_config %>
                   
 begin
-  require 'jruby'
+  <%= jruby_gem %>
+  JRuby.gem('rspec')
+
   <%= dependencies.map(&:to_s).inspect %>.each { |dep| $CLASSPATH << dep }
-  require '<%= File.join(File.dirname(runner_erb), "jtestr_result_handler") %>'
+  <%= gems.inspect %>.each { |ary| JRuby.gem(*ary.flatten) }
+  <%= requires.inspect %>.each { |rb| Kernel.require rb }
+
+  Buildr::TestFramework::TestResult.for_jtestr
 
   jtestr = JtestR::TestRunner.new
 
@@ -68,33 +73,34 @@ begin
     expectations <%= ts.inspect %>
   
     ignore __FILE__
-  
+
     if File.file?(<%= user_config.inspect %>)
       ignore <%= user_config.inspect %>
       load <%= user_config.inspect %>
     end
   end # config
 
-  args =  [ '<%= spec_dir %>' ] # the directory to search for jtestr files
-  args << JtestR::SimpleLogger::ERR # log level
-  args << JtestR::GenericResultHandler::QUIET # verbose level
-  <% if options[:output] == false %>
-    args << StringIO.new # output
-  <% elsif options[:output].kind_of?(String) %>
-    args << File.open('<%= options[:output] %>')
-  <% else %>
-    args << STDOUT # output
-  <% end %>
-  args << [] # groups_to_run
-  args << JtestR::YAMLResultHandler # result handler
+  args =  [ '<%= spec_dir %>', # the directory to search for jtestr files
+            JtestR::SimpleLogger::ERR, # log level
+            JtestR::GenericResultHandler::QUIET, #output level 
+            StringIO.new, # output STDOUT
+            [], # groups to run 
+            Buildr::TestFramework::TestResult::JtestR, # result handler
+            []  # classpath
+          ]
 
-  JtestR::YAMLResultHandler.report_to('<%= yaml_report %>')
-  JtestR::YAMLResultHandler.tests = <%= tests.inspect %>
+  rspec_parser = ::Spec::Runner::OptionParser.new(STDERR, STDOUT)
+  rspec_parser.order!(<%= argv.inspect %>)
+  Buildr::TestFramework::TestResult::JtestR.options = rspec_parser.options
+  
   jtestr.run *args
 
 rescue => e
-  File.open('<%= yaml_report %>', "w") do |f| 
-    f.write YAML.dump({:error => { :message => e.message, :backtrace => e.backtrace}})
+  puts e, *e.backtrace
+  require 'fileutils'
+  FileUtils.mkdir_p(File.dirname('<%= result_file %>'))
+  File.open('<%= result_file %>', "w") do |f|
+    f.write YAML.dump(Buildr::TestFramework::TestResult::Error.new(e.message, e.backtrace))
   end
 end
 
