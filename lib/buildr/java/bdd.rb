@@ -24,9 +24,6 @@ module Buildr
     class << self
       attr_reader :lang, :bdd_dir
     end
-
-    @bdd_dir = :spec
-    @lang = :java
     attr_accessor :lang, :bdd_dir
 
     def initialize(task, options)
@@ -247,6 +244,7 @@ module Buildr
       report[:success]
     end
     
+    @bdd_dir = :spec    
   end
 
   
