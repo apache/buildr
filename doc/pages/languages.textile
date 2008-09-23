@@ -353,8 +353,16 @@ src/spec/ruby/**/*_spec.rb
 Supports the following options:
 
 |_. Option        |_. Value |
+| @:gems@         | Hash of gems needed before running the tests. 
+                    Keys are gem names, values are the required gem version.
+                    An example use of this option would be to require the ci_reporter gem to generate xml reports |
+| @:requires@     | Array of ruby files to require before running the specs |
+| @:format@       | Array of valid RSpec @--format@ option values. 
+                    Defaults to html report on the @reports@ directory and text progress |
+| @:output@       | File path to output dump. @false@ to supress output |
+| @:fork@         | Run the tests on a new java vm. (enabled unless running on JRuby) |
 | @:properties@   | Hash of system properties available to the test case. |
-| @:java_args@    | Arguments passed as is to the JVM. |
+| @:java_args@    | Arguments passed as is to the JVM. (only when fork is enabled) |
 
 h4.  JtestR
 
@@ -375,13 +383,23 @@ the following test patterns for each framework supported by JtestR:
 | "TestNG":http://testng.org     | Classes from @src/test/java@ annotated with  @org.testng.annotations.Test@ |
 
 If you create a @src/spec/ruby/jtestr_config.rb@ file, it will be loaded by JtestR, just after being configured
-by Buildr, this way you can add helpers or anything described on the "JtestR guide":http://jtestr.codehaus.org/Configuration
+by Buildr, this way you can configure as described on "JtestR guide":http://jtestr.codehaus.org/Configuration.
+
+p(tip). If you have a @jtestr_config.rb@ file, don't set @JtestR::result_handler@. Buildr uses its (@RSpecResultHandler@) 
+so that it can know which tests succeeded/failed, this handler is capable of using RSpec formatter classes, so that
+you can obtain an html report or use a custom rspec formatter with @JtestR@. See the @format@ option.
 
 Supports the following options:
 
 |_. Option        |_. Value |
 | @:config@       | The JtestR config file to be loaded after being configured by Buildr. Defaults to @src/spec/ruby/jtestr_config.rb@. |
-| @:output@       | A file path where to store JtestR output. @false@ to suppress output, @true@ to use standard output. |
-| @:properties@   | Hash of system properties available to the test case. |
-| @:java_args@    | Arguments passed as is to the JVM. |
-
+| @:gems@         | Hash of gems needed before running the tests. 
+                    Keys are gem names, values are the required gem version.
+                    An example use of this option would be to require the ci_reporter gem to generate xml reports |
+| @:requires@     | Array of ruby files to require before running the specs |
+| @:format@       | Array of valid RSpec @--format@ option values. 
+                    Defaults to html report on the @reports@ directory and text progress |
+| @:output@       | File path to output dump. @false@ to supress output |
+| @:fork@         | Run the tests on a new java vm. (enabled unless running on JRuby) |
+| @:properties@   | Hash of system properties available to the test case. (only when fork is enabled) |
+| @:java_args@    | Arguments passed as is to the JVM. (only when fork is enabled) |
