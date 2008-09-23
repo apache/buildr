@@ -132,24 +132,6 @@ module Buildr
       tests
     end
 
-  private
-  
-    def jruby_home
-      @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : ENV['JRUBY_HOME']
-    end
-
-    def jruby(*args)
-      java_args = ['org.jruby.Main', *args]
-      java_args << {} unless Hash === args.last
-      cmd_options = java_args.last
-      project = cmd_options.delete(:project)
-      cmd_options[:java_args] ||= []
-      cmd_options[:java_args] << '-Xmx512m' unless cmd_options[:java_args].detect {|a| a =~ /^-Xmx/}
-      cmd_options[:properties] ||= {}
-      cmd_options[:properties]['jruby.home'] = jruby_home
-      Java::Commands.java(*java_args)
-    end
-
   end
 
   # <a href="http://jtestr.codehaus.org/">JtestR</a> is a framework for BDD and TDD using JRuby and ruby tools.
