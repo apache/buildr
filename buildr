@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-# Run buildr from source, specifically for testing stuff without doing a rake install.
-ruby -Ilib -Iaddon bin/buildr $*
