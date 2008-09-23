@@ -60,13 +60,14 @@ module Buildr
     end
 
     def new_runtime(cfg = {})
-      config = org.jruby.RubyInstanceConfig.new
+      config = Java.org.jruby.RubyInstanceConfig.new
       cfg.each_pair do |name, value|
         config.send("#{name}=", value)
       end
       yield config if block_given?
-      org.jruby.Ruby.newInstance config
+      Java.org.jruby.Ruby.newInstance config
     end
+
   end
   
   class RSpec < TestFramework::JavaBDD
@@ -129,7 +130,8 @@ module Buildr
   #
   #
   # Support the following options:
-  # * :output -- JtestR utput file. @false@ to supress output
+  # * :config -- path to JtestR config file. defaults to @spec/ruby/jtestr_config.rb@
+  # * :output -- path to JtestR output dump. @false@ to supress output
   class JtestR < TestFramework::JavaBDD
     @lang = :ruby
     @bdd_dir = :spec    
@@ -140,6 +142,7 @@ module Buildr
     JTESTR_ARTIFACT = "org.jtestr:jtestr:jar:#{VERSION}"
     
     REQUIRES = [JTESTR_ARTIFACT] + JUnit::REQUIRES + TestNG::REQUIRES
+    REQUIRES.unshift 'org.jruby:jruby-complete:jar:1.1.4' unless RUBY_PLATFORM =~ /java/
 
     # pattern for rspec stories
     STORY_PATTERN    = /_(steps|story)\.rb$/
@@ -195,13 +198,11 @@ module Buildr
 
       runner_file = task.project.path_to(:target, :spec, 'jtestr_runner.rb')
       runner_erb = File.join(File.dirname(__FILE__), 'jtestr_runner.rb.erb')
-      runner = ERB.new(File.read(runner_erb)).result(binding)
+      runner = Filter::Mapper.new(:erb, binding).result(File.read(runner_erb))
       Buildr.write runner_file, runner
       
-      mkpath task.report_to.to_s
-      
       runtime = new_runtime :current_directory => runner_file.pathmap('%d')
-      runtime.load_service.require runner_file
+      runtime.getLoadService.require runner_file
 
       report = YAML::load(File.read(yaml_report))
       raise (Array(report[:error][:message]) + report[:error][:backtrace]).join("\n") if report[:error]
