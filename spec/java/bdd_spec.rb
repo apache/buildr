@@ -19,7 +19,7 @@ describe Buildr::RSpec do
 
   def foo(*args, &prc)
     define('foo', *args) do 
-      test.using :rspec
+      test.using :rspec, :output => false
       if prc
         instance_eval(&prc)
       else
@@ -133,8 +133,9 @@ describe Buildr::JtestR do
     foo do 
       hello = _('hello')
       write('src/spec/ruby/jtestr_config.rb', "File.open('#{hello}', 'w') { |f| f.write 'HELLO' }")
+      write('src/spec/ruby/some_spec.rb')
       test.invoke
-      File.exist?(hello).should == true
+      File.should be_exist(hello)
       File.read(hello).should == 'HELLO'
     end
   end
@@ -165,14 +166,14 @@ describe Buildr::JtestR do
         package example;
         public class Success {
           @org.testng.annotations.Test
-          public void annotated() { org.testng.Assert.assertTrue(true); }
+          public void annotatedSuccess() { org.testng.Assert.assertTrue(true); }
         }
     JAVA
     write('src/test/java/example/Failure.java', <<-JAVA)
         package example;
         public class Failure {
           @org.testng.annotations.Test
-          public void annotated() { org.testng.Assert.fail("FAIL"); }
+          public void annotatedFail() { org.testng.Assert.fail("FAIL"); }
         }
     JAVA
     foo do
