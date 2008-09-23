@@ -55,5 +55,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'xml-simple',           '1.0.11'
   spec.add_dependency 'archive-tar-minitar',  '0.5.2'
   spec.add_dependency 'jruby-openssl',        '0.2'   if spec.platform.to_s == 'java'
-  spec.add_dependency 'ci_reporter',          '1.5.1' if spec.platform.to_s == 'java'
 end
