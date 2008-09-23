@@ -16,7 +16,6 @@
 
 require 'buildr/java/tests'
 
-
 module Buildr
 
   # Mixin for test frameworks using src/spec/{lang}
@@ -42,7 +41,33 @@ module Buildr
       super
     end
   end
-  
+
+  module TestFramework::JRubyBased
+    def jruby_home
+      @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : ENV['JRUBY_HOME']
+    end
+
+    def jruby(*args)
+      java_args = ["org.jruby.Main", *args]
+      java_args << {} unless Hash === args.last
+      cmd_options = java_args.last
+      project = cmd_options.delete(:project)
+      cmd_options[:java_args] ||= []
+      cmd_options[:java_args] << "-Xmx512m" unless cmd_options[:java_args].detect {|a| a =~ /^-Xmx/}
+      cmd_options[:properties] ||= {}
+      cmd_options[:properties]['jruby.home'] = jruby_home
+      Java::Commands.java(*java_args)
+    end
+
+    def new_runtime(cfg = {})
+      config = org.jruby.RubyInstanceConfig.new
+      cfg.each_pair do |name, value|
+        config.send("#{name}=", value)
+      end
+      yield config if block_given?
+      org.jruby.Ruby.newInstance config
+    end
+  end
   
   class RSpec < TestFramework::JavaBDD
     @lang = :ruby
@@ -98,9 +123,91 @@ module Buildr
 
   end
 
+  # <a href="http://jtestr.codehaus.org/">JtestR</a> is a framework for BDD and TDD using JRuby and ruby tools.
+  # To test your project with JtestR use:
+  #   test.using :jtestr
+  #
+  #
+  # Support the following options:
+  # * :output -- JtestR utput file. @false@ to supress output
   class JtestR < TestFramework::JavaBDD
     @lang = :ruby
     @bdd_dir = :spec    
+
+    include TestFramework::JRubyBased
+
+    VERSION = '0.3.1' unless const_defined?('VERSION')
+    JTESTR_ARTIFACT = "org.jtestr:jtestr:jar:#{VERSION}"
+    
+    REQUIRES = [JTESTR_ARTIFACT] + JUnit::REQUIRES + TestNG::REQUIRES
+
+    # pattern for rspec stories
+    STORY_PATTERN    = /_(steps|story)\.rb$/
+    # pattern for test_unit files
+    TESTUNIT_PATTERN = /(_test|Test)\.rb$|(tc|ts)[^\\\/]+\.rb$/
+    # pattern for test files using http://expectations.rubyforge.org/
+    EXPECT_PATTERN   = /_expect\.rb$/
+
+    TESTS_PATTERN = [STORY_PATTERN, TESTUNIT_PATTERN, EXPECT_PATTERN] + RSpec::TESTS_PATTERN
+    
+    def self.applies_to?(project) #:nodoc:
+      File.exist?(project.path_to(:source, bdd_dir, lang, 'jtestr_config.rb')) ||
+        Dir[project.path_to(:source, bdd_dir, lang, '**/*.rb')].any? { |f| TESTS_PATTERN.any? { |r| r === f } } ||
+        JUnit.applies_to?(project) || TestNG.applies_to?(project)
+    end
+
+    def initialize(task, options) #:nodoc:
+      super
+      [:test, :spec].each do |usage|
+        java_tests = task.project.path_to(:source, usage, :java)
+        task.compile.from java_tests if File.directory?(java_tests)
+        resources = task.project.path_to(:source, usage, :resources)
+        task.resources.from resources if File.directory?(resources)
+      end
+    end
+
+    def user_config
+      options[:config] || task.project.path_to(:source, bdd_dir, lang, 'jtestr_config.rb')
+    end
+
+    def tests(dependencies) #:nodoc:
+      dependencies += [task.compile.target]
+      types = { :story => STORY_PATTERN, :rspec => RSpec::TESTS_PATTERN,
+                :testunit => TESTUNIT_PATTERN, :expect => EXPECT_PATTERN }
+      tests = types.keys.inject({}) { |h, k| h[k] = []; h }
+      tests[:junit] = JUnit.new(task, {}).tests(dependencies)
+      tests[:testng] = TestNG.new(task, {}).tests(dependencies)
+      Dir[task.project.path_to(:source, bdd_dir, lang, '**/*.rb')].each do |rb|
+        type = types.find { |k, v| Array(v).any? { |r| r === rb } }
+        tests[type.first] << rb if type
+      end
+      @jtestr_tests = tests
+      tests = tests.values.flatten
+      tests << nil if File.exist?(user_config)
+      tests
+    end
+
+    def run(tests, dependencies) #:nodoc:
+      dependencies += [task.compile.target.to_s]
+      
+      yaml_report = File.join(task.report_to.to_s, 'result.yaml')
+      spec_dir = task.project.path_to(:source, :spec, :ruby)
+
+      runner_file = task.project.path_to(:target, :spec, 'jtestr_runner.rb')
+      runner_erb = File.join(File.dirname(__FILE__), 'jtestr_runner.rb.erb')
+      runner = ERB.new(File.read(runner_erb)).result(binding)
+      Buildr.write runner_file, runner
+      
+      mkpath task.report_to.to_s
+      
+      runtime = new_runtime :current_directory => runner_file.pathmap('%d')
+      runtime.load_service.require runner_file
+
+      report = YAML::load(File.read(yaml_report))
+      raise (Array(report[:error][:message]) + report[:error][:backtrace]).join("\n") if report[:error]
+      report[:success]
+    end
+    
   end
 
   
