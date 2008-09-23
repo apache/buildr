@@ -338,15 +338,15 @@ That means you have access to all your Java classes and any Java or Ruby tool ou
 Because of the use of JRuby, you will notice that running ruby tests is faster when running Buildr on JRuby, as in this case
 there's no need to run another JVM.
 
-When not running on JRuby, Buildr will download and install it unless you specify a valid @JRUBY_HOME@ environment
-variable. Default installation directory is @~/.jruby@, you can change this by setting @JRUBY_HOME@ to an empty directory.
+p(tip). When not running on JRuby, Buildr will use the @JRUBY_HOME@ environment variable to find the JRuby installation directory. 
+If no @JRUBY_HOME@ is set or it points to an empty directory, Buildr will prompt you to either install JRuby manually or let it 
+extract it for you.
 
 You can use the @build.yaml@ settings file to specify a particular version of JRuby (defaults to @1.1.4@).  For example:
 
 {{{!yaml
 jruby: 1.1.3
 }}}
-
 
 h4.  RSpec
 
