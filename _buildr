@@ -44,7 +44,7 @@ cmd.push '-e', %q{
   end
 }
 
+cmd.push '--' # The following args are for Buildr
 cmd.push *ARGV
-
 exec *cmd
 
