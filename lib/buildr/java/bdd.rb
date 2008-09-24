@@ -124,15 +124,14 @@ module Buildr
       unless jruby_installed?
         jruby_artifact = Buildr.artifact(TestFramework::JRubyBased.jruby_artifact)
         msg = "JRUBY_HOME is not correctly set or points to an invalid JRuby installation: #{jruby_home}"
-        puts msg
-        puts
-        puts "You need to install JRuby version #{jruby_artifact.version} using your system package manager."
-        puts 'Or you can just execute the following command: '
-        puts
-        puts "   java -jar #{jruby_artifact} -S extract '#{jruby_home}'"
-        puts 
-        print 'Do you want me to execute it for you? [y/N]'
-        if gets.chomp.strip =~ /y(es)?/i
+        say msg
+        say ''
+        say "You need to install JRuby version #{jruby_artifact.version} using your system package manager."
+        say 'Or you can just execute the following command: '
+        say ''
+        say "   java -jar #{jruby_artifact} -S extract '#{jruby_home}'"
+        say ''
+        if agree('Do you want me to execute it for you? [y/N]', false)
           jruby_artifact.invoke
           Java::Commands.java('-jar', jruby_artifact.to_s, '-S', 'extract', jruby_home)
         end
