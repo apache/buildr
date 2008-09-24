@@ -263,8 +263,8 @@ class MySuite extends PropSuite {
 }
 }}}
 
-h2. Groovy
 
+h2. Groovy
 
 h3. Compiling Groovy
 
@@ -332,15 +332,11 @@ h3.  Testing with Ruby
 
 Buildr provides integration with some ruby testing frameworks, allowing you to test your Java code with state of the art tools.
 
-Testing code is written in "Ruby":http://www.ruby-lang.org/en/ language, and is run by using "JRuby":http://jruby.codehaus.org/.
-That means you have access to all your Java classes and any Java or Ruby tool out there.
+Testing code is written in "Ruby":http://www.ruby-lang.org/en/ language, and is run by using "JRuby":http://jruby.codehaus.org/.That means you have access to all your Java classes and any Java or Ruby tool out there.
 
-Because of the use of JRuby, you will notice that running ruby tests is faster when running Buildr on JRuby, as in this case
-there's no need to run another JVM.
+Because of the use of JRuby, you will notice that running ruby tests is faster when running Buildr on JRuby, as in this case there's no need to run another JVM.
 
-p(tip). When not running on JRuby, Buildr will use the @JRUBY_HOME@ environment variable to find the JRuby installation directory. 
-If no @JRUBY_HOME@ is set or it points to an empty directory, Buildr will prompt you to either install JRuby manually or let it 
-extract it for you.
+p(tip). When not running on JRuby, Buildr will use the @JRUBY_HOME@ environment variable to find the JRuby installation directory.  If no @JRUBY_HOME@ is set or it points to an empty directory, Buildr will prompt you to either install JRuby manually or let it  extract it for you.
 
 You can use the @build.yaml@ settings file to specify a particular version of JRuby (defaults to @1.1.4@).  For example:
 
@@ -363,12 +359,9 @@ src/spec/ruby/**/*_spec.rb
 Supports the following options:
 
 |_. Option        |_. Value |
-| @:gems@         | Hash of gems needed before running the tests. 
-                    Keys are gem names, values are the required gem version.
-                    An example use of this option would be to require the ci_reporter gem to generate xml reports |
+| @:gems@         | Hash of gems needed before running the tests. Keys are gem names, values are the required gem version. An example use of this option would be to require the ci_reporter gem to generate xml reports |
 | @:requires@     | Array of ruby files to require before running the specs |
-| @:format@       | Array of valid RSpec @--format@ option values. 
-                    Defaults to html report on the @reports@ directory and text progress |
+| @:format@       | Array of valid RSpec @--format@ option values. Defaults to html report on the @reports@ directory and text progress |
 | @:output@       | File path to output dump. @false@ to supress output |
 | @:fork@         | Run the tests on a new java vm. (enabled unless running on JRuby) |
 | @:properties@   | Hash of system properties available to the test case. |
@@ -376,9 +369,7 @@ Supports the following options:
 
 h4.  JtestR
 
-"JtestR":http://jtestr.codehaus.org is a tool that makes it easier to test Java code with 
-state of the art Ruby tools. Using JtestR you can describe your application behaviour using many
-testing frameworks at the same time.
+"JtestR":http://jtestr.codehaus.org is a tool that makes it easier to test Java code with state of the art Ruby tools. Using JtestR you can describe your application behaviour using many testing frameworks at the same time.
 
 To use this framework in your project you can select it with @test.using :jtestr@.
 
@@ -390,8 +381,7 @@ jtestr: 0.3.1
 
 To customize TestNG/JUnit versions refer to their respective section.
 
-When selected, Buildr will configure JtestR to use your project/testing classpath and will search for
-the following test patterns for each framework supported by JtestR:
+When selected, Buildr will configure JtestR to use your project/testing classpath and will search for the following test patterns for each framework supported by JtestR:
 
 |_. Framework                    |_. Patterns |
 | "RSpec":http://rspec.info      | Files in @src/spec/ruby@ ending with @*_spec.rb@ or @*_story.rb@ |
@@ -400,23 +390,17 @@ the following test patterns for each framework supported by JtestR:
 | "JUnit":http://www.junit.org   | Classes from @src/test/java@ that either subclass @junit.framework.TestCase@, include methods annotated with @org.junit.Test@, or test suites annotated with @org.org.junit.runner.RunWith@. |
 | "TestNG":http://testng.org     | Classes from @src/test/java@ annotated with  @org.testng.annotations.Test@ |
 
-If you create a @src/spec/ruby/jtestr_config.rb@ file, it will be loaded by JtestR, just after being configured
-by Buildr, this way you can configure as described on "JtestR guide":http://jtestr.codehaus.org/Configuration.
+If you create a @src/spec/ruby/jtestr_config.rb@ file, it will be loaded by JtestR, just after being configured by Buildr, this way you can configure as described on "JtestR guide":http://jtestr.codehaus.org/Configuration.
 
-p(tip). If you have a @jtestr_config.rb@ file, don't set @JtestR::result_handler@. Buildr uses its (@RSpecResultHandler@) 
-so that it can know which tests succeeded/failed, this handler is capable of using RSpec formatter classes, so that
-you can obtain an html report or use a custom rspec formatter with @JtestR@. See the @format@ option.
+p(tip). If you have a @jtestr_config.rb@ file, don't set @JtestR::result_handler@. Buildr uses its (@RSpecResultHandler@)  so that it can know which tests succeeded/failed, this handler is capable of using RSpec formatter classes, so that you can obtain an html report or use a custom rspec formatter with @JtestR@. See the @format@ option.
 
 Supports the following options:
 
 |_. Option        |_. Value |
 | @:config@       | The JtestR config file to be loaded after being configured by Buildr. Defaults to @src/spec/ruby/jtestr_config.rb@. |
-| @:gems@         | Hash of gems needed before running the tests. 
-                    Keys are gem names, values are the required gem version.
-                    An example use of this option would be to require the ci_reporter gem to generate xml reports |
+| @:gems@         | Hash of gems needed before running the tests. Keys are gem names, values are the required gem version. An example use of this option would be to require the ci_reporter gem to generate xml reports |
 | @:requires@     | Array of ruby files to require before running the specs |
-| @:format@       | Array of valid RSpec @--format@ option values. 
-                    Defaults to html report on the @reports@ directory and text progress |
+| @:format@       | Array of valid RSpec @--format@ option values. Defaults to html report on the @reports@ directory and text progress |
 | @:output@       | File path to output dump. @false@ to supress output |
 | @:fork@         | Run the tests on a new java vm. (enabled unless running on JRuby) |
 | @:properties@   | Hash of system properties available to the test case. (only when fork is enabled) |
