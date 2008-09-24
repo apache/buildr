@@ -34,12 +34,8 @@ describe Buildr::Application do
       last = nil
       order = [:load_requires, :find_buildfile, :load_gems, :load_artifacts, 
                :load_tasks, :load_buildfile, :load_imports, :top_level]
-      order.each_with_index do |method, idx|
-        Buildr.application.should_receive(method) do
-          last.should == (idx == 0 ? nil : order[idx-1])
-          last = method
-        end
-      end
+      order.each { |method| Buildr.application.should_receive(method).ordered }
+      Buildr.application.stub!(:exit) # With this, shows the correct error instead of SystemExit.
       Buildr.application.run
     end
   end
