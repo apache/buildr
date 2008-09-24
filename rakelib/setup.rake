@@ -16,7 +16,7 @@
 
 require 'rubygems/source_info_cache'
 require 'stringio' # for Gem::RemoteFetcher
-
+require 'jruby' if RUBY_PLATFORM[/java/]
 
 # True if running on the Windows operating sytem.  Different from Gem.win_platform?
 # which returns true if running on the Windows platform of MRI, false when using JRuby.
@@ -24,11 +24,20 @@ def windows?
   Config::CONFIG['host_os'] =~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i
 end
 
-
-def sudo_needed?
-  !windows? && (ENV['GEM_HOME'].nil?)
+def set_java_home
+  if !ENV['JAVA_HOME'] && RUBY_PLATFORM[/java/]
+    ENV['JAVA_HOME'] = java.lang.System.getProperty('java.home')
+  end
+  fail "Please set JAVA_HOME first #{'(no need to run as sudo)' if ENV['USER'] == 'root'}" unless ENV['JAVA_HOME']
 end
 
+def set_gem_home
+  ENV['GEM_HOME'] ||= Gem.path.find { |f| File.writable?(f) }
+end
+
+def sudo_needed?
+  !( windows? || set_gem_home )
+end
 
 # Finds and returns path to executable.  Consults PATH environment variable.
 # Returns nil if executable not found.
@@ -41,18 +50,26 @@ def which(name)
   FileList[path].existing.first
 end
 
+# Execute a GemRunner command
+def gem_run(*args)
+  rb_bin = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
+  args.unshift rb_bin, '-S', 'gem'
+  args.unshift 'sudo', 'env', 'JAVA_HOME=' + ENV['JAVA_HOME'] if sudo_needed?
+  sh *args.map{ |a| a.inspect }.join(' ')
+end
 
 def install_gem(name, ver_requirement = ['> 0'])
   dep = Gem::Dependency.new(name, ver_requirement)
-  rb_bin = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
+  @load_cache = true
   if Gem::SourceIndex.from_installed_gems.search(dep).empty?
-    spec = Gem::SourceInfoCache.search(dep, true, true).last
+    spec = Gem::SourceInfoCache.search(dep, true, @load_cache).last
     fail "#{dep} not found in local or remote repository!" unless spec
     puts "Installing #{spec.full_name} ..."
-    args = [rb_bin, '-S', 'gem', 'install', spec.name, '-v', spec.version.to_s]
-    fail "Please set JAVA_HOME first #{'(no need to run as sudo)' if ENV['USER'] == 'root'}" unless ENV['JAVA_HOME']
-    args.unshift('sudo', 'env', 'JAVA_HOME=' + ENV['JAVA_HOME']) if sudo_needed?
-    sh *args.map{ |a| a.inspect }.join(' ')
+    args = ['install']
+    args.push '--install-dir', ENV['GEM_HOME'] if ENV['GEM_HOME']
+    args.push spec.name, '-v', spec.version.to_s
+    gem_run *args
+    @load_cache = false # Just update the Gem cache once
   end
 end
 
@@ -60,6 +77,8 @@ end
 desc "If you're building from sources, run this task first to setup the necessary dependencies."
 missing = spec.dependencies.select { |dep| Gem::SourceIndex.from_installed_gems.search(dep).empty? }
 task 'setup' do
+  set_java_home
+  set_gem_home
   missing.each do |dep|
     install_gem dep.name, dep.version_requirements
   end
