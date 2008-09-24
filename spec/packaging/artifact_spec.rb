@@ -430,7 +430,7 @@ describe Buildr, '#artifact' do
       artifacts: 
         j2ee: geronimo-spec:geronimo-spec-j2ee:jar:1.4-rc4
     YAML
-    Buildr.application.load_artifacts
+    Buildr.application.send :load_artifacts
     artifact(:j2ee).to_s.pathmap('%f').should == 'geronimo-spec-j2ee-1.4-rc4.jar'
   end
 end

@@ -29,6 +29,21 @@ describe Buildr::Application do
     end
   end
 
+  describe '#run' do
+    it 'should execute *_load methods in order' do
+      last = nil
+      order = [:load_requires, :find_buildfile, :load_gems, :load_artifacts, 
+               :load_tasks, :load_buildfile, :load_imports, :top_level]
+      order.each_with_index do |method, idx|
+        Buildr.application.should_receive(method) do
+          last.should == (idx == 0 ? nil : order[idx-1])
+          last = method
+        end
+      end
+      Buildr.application.run
+    end
+  end
+
   describe 'environment' do
     it 'should return value of BUILDR_ENV' do
       ENV['BUILDR_ENV'] = 'qa'
@@ -47,7 +62,7 @@ describe Buildr::Application do
     
     it 'should be echoed to user' do
       write 'buildfile'
-      lambda { Buildr.application.load_buildfile }.should show_info(%r{(in .*, development)})
+      lambda { Buildr.application.send :load_buildfile }.should show_info(%r{(in .*, development)})
     end
     
     after do
@@ -56,6 +71,13 @@ describe Buildr::Application do
   end
 
   describe 'gems' do
+    before do
+      Buildr.application.private_methods(true).should include('load_gems')
+      class << Buildr.application
+        public :load_gems
+      end
+    end
+
     def load_with_yaml
       write 'build.yaml', <<-YAML
         gems:
@@ -94,6 +116,10 @@ describe Buildr::Application do
 
   describe 'load_gems' do
     before do
+      Buildr.application.private_methods(true).should include('load_gems')
+      class << Buildr.application
+        public :load_gems
+      end
       @spec = Gem::Specification.new do |spec|
         spec.name = 'foo'
         spec.version = '1.2'
