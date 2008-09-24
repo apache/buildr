@@ -108,7 +108,47 @@ module Buildr
       FileList[dirs.map { |dir| File.join(dir, '/**/{*,.*}') }].reject { |file| File.basename(file) =~ /^[.]{1,2}$/ }
     end
 
-  end
+    # Utility methods for running gem commands
+    module Gems
+      extend self
+
+      # Install gems specified by each Gem::Dependency if they are missing. This method prompts the user
+      # for permission before installing anything.
+      # 
+      # Returns the installed Gem::Dependency objects or fails if permission not granted or when buildr
+      # is not running interactively (on a tty)
+      def install(*dependencies)
+        raise ArgumentError, "Expected at least one argument" if dependencies.empty?
+        remote = dependencies.map { |dep| Gem::SourceInfoCache.search(dep).last || dep }
+        not_found_deps, to_install = remote.partition { |gem| gem.is_a?(Gem::Dependency) }
+        fail Gem::LoadError, "Build requires the gems #{not_found_deps.join(', ')}, which cannot be found in local or remote repository." unless not_found_deps.empty?
+        uses = "This build requires the gems #{to_install.map(&:full_name).join(', ')}:"
+        fail Gem::LoadError, "#{uses} to install, run Buildr interactively." unless $stdout.isatty
+        unless agree("#{uses} do you want me to install them? [Y/n]", true)
+          fail Gem::LoadError, 'Cannot build without these gems.'
+        end
+        to_install.each do |spec|
+          say "Installing #{spec.full_name} ... " if verbose
+          command 'install', spec.name, '-v', spec.version.to_s, :verbose => false
+          Gem.source_index.load_gems_in Gem::SourceIndex.installed_spec_directories
+        end
+        to_install
+      end
+
+      # Execute a GemRunner command
+      def command(cmd, *args)
+        options = Hash === args.last ? args.pop : {}
+        gem_home = ENV['GEM_HOME'] || Gem.path.find { |f| File.writable?(f) }
+        options[:sudo] = :root unless Util.win_os? || gem_home
+        options[:command] = 'gem'
+        args << options
+        args.unshift '-i', gem_home if cmd == 'install' && gem_home && !args.any?{ |a| a[/-i|--install-dir/] }
+        Util.ruby cmd, *args
+      end
+
+    end # Gems
+
+  end # Util
 end
 
 

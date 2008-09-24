@@ -40,11 +40,11 @@ module Buildr
     end
 
     def install
-      Util.ruby 'install', name, :command => 'gem', :sudo => true
+      Util::Gems.command 'install', name
     end
 
     def uninstall
-      Util.ruby 'uninstall', spec.name, '-v', spec.version.to_s, :command => 'gem', :sudo => true
+      Util::Gems.command 'uninstall', spec.name, '-v', spec.version.to_s
     end
 
     def upload

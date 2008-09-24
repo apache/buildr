@@ -157,26 +157,15 @@ module Buildr
       buildfile.prerequisites
     end
 
-    # Returns Gem::Specification for every listed and installed Gem, Gem::Dependency
-    # for listed and uninstalled Gem, which is the installed before loading the buildfile.
-    def listed_gems #:nodoc:
-      Array(settings.build['gems']).map do |dep|
-        name, trail = dep.scan(/^\s*(\S*)\s*(.*)\s*$/).first
-        versions = trail.scan(/[=><~!]{0,2}\s*[\d\.]+/)
-        versions = ['>= 0'] if versions.empty?
-        dep = Gem::Dependency.new(name, versions)
-        Gem::SourceIndex.from_installed_gems.search(dep).last || dep
-      end
-    end
-    private :listed_gems
-
     def run
       standard_exception_handling do
+        load_requires
         find_buildfile
         load_gems
         load_artifacts
         load_tasks
         load_buildfile
+        load_imports
         task('buildr:initialize').invoke
         top_level
       end
@@ -184,100 +173,23 @@ module Buildr
       @on_completion.each { |block| block.call(title, message) rescue nil }
     end
 
-    # Load artifact specs from the build.yaml file, making them available 
-    # by name ( ruby symbols ).
-    def load_artifacts #:nodoc:
-      hash = settings.build['artifacts']
-      return unless hash
-      raise "Expected 'artifacts' element to be a hash" unless Hash === hash
-      # Currently we only use one artifact namespace to rule them all. (the root NS)
-      Buildr::ArtifactNamespace.load(:root => hash)
-    end
-      
-    # Load/install all Gems specified in build.yaml file.
-    def load_gems #:nodoc:
-      missing_deps, installed = listed_gems.partition { |gem| gem.is_a?(Gem::Dependency) }
-      unless missing_deps.empty?
-        remote = missing_deps.map { |dep| Gem::SourceInfoCache.search(dep).last || dep }
-        not_found_deps, install = remote.partition { |gem| gem.is_a?(Gem::Dependency) }
-        fail Gem::LoadError, "Build requires the gems #{not_found_deps.join(', ')}, which cannot be found in local or remote repository." unless not_found_deps.empty?
-        uses = "This build requires the gems #{install.map(&:full_name).join(', ')}:"
-        fail Gem::LoadError, "#{uses} to install, run Buildr interactively." unless $stdout.isatty
-        unless agree("#{uses} do you want me to install them? [Y/n]", true)
-          fail Gem::LoadError, 'Cannot build without these gems.'
-        end
-        install.each do |spec|
-          say "Installing #{spec.full_name} ... " if verbose
-          Util.ruby 'install', spec.name, '-v', spec.version.to_s, :command => 'gem', :sudo => true, :verbose => false
-          Gem.source_index.load_gems_in Gem::SourceIndex.installed_spec_directories
-        end
-        installed += install
-      end
-
-      installed.each do |spec|
-        if gem(spec.name, spec.version.to_s)
-        #  FileList[spec.require_paths.map { |path| File.expand_path("#{path}/*.rb", spec.full_gem_path) }].
-        #    map { |path| File.basename(path) }.each { |file| require file }
-        #  FileList[File.expand_path('tasks/*.rake', spec.full_gem_path)].each do |file|
-        #    Buildr.application.add_import file
-        #  end
-        end
-      end
-      @gems = installed
+    # Yields to block on successful completion. Primarily used for notifications.
+    def on_completion(&block)
+      @on_completion << block
     end
 
-    def find_buildfile
-      here = original_dir
-      Dir.chdir(here) unless Dir.pwd == here
-      while ! have_rakefile
-        Dir.chdir('..')
-        if Dir.pwd == here || options.nosearch
-          error = "No Buildfile found (looking for: #{@rakefiles.join(', ')})"
-          if STDIN.isatty
-            chdir(original_dir) { task('generate').invoke }
-            exit 1
-          else
-            raise error
-          end
-        end
-        here = Dir.pwd
-      end
+    # Yields to block on failure with exception. Primarily used for notifications.
+    def on_failure(&block)
+      @on_failure << block
     end
 
-    def load_buildfile
-      @requires.each { |name| require name }
-      info "(in #{Dir.pwd}, #{environment})"
-      load File.expand_path(@rakefile) if @rakefile != ''
-      load_imports
-      buildfile.enhance @requires.select { |f| File.file?(f) }.map{ |f| File.expand_path(f) }
-    end
-
-    # Loads buildr.rb files from users home directory and project directory.
-    # Loads custom tasks from .rake files in tasks directory.
-    def load_tasks #:nodoc:
-      files = [ File.expand_path('buildr.rb', ENV['HOME']), 'buildr.rb' ].select { |file| File.exist?(file) }
-      files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
-        select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
-      #Load local tasks that can be used in the Buildfile.
-      files += Dir[File.expand_path('tasks/*.rake', original_dir)]
-      files.each do |file|
-        unless $LOADED_FEATURES.include?(file)
-          load file
-          $LOADED_FEATURES << file
-        end
-      end
-      buildfile.enhance files
-      true
-    end
-    private :load_tasks
-
-    def display_prerequisites
-      invoke_task('buildr:initialize')
-      tasks.each do |task|
-        if task.name =~ options.show_task_pattern
-          puts "buildr #{task.name}"
-          task.prerequisites.each { |prereq| puts "    #{prereq}" }
-        end
+    # Not for external consumption.
+    def switch_to_namespace(names) #:nodoc:
+      current, @scope = @scope, names
+      begin
+        yield
+      ensure
+        @scope = current
       end
     end
 
@@ -301,28 +213,108 @@ module Buildr
       end
     end
 
-    # Not for external consumption.
-    def switch_to_namespace(names) #:nodoc:
-      current, @scope = @scope, names
-      begin
-        yield
-      ensure
-        @scope = current
+  private
+
+    # Returns Gem::Specification for every listed and installed Gem, Gem::Dependency
+    # for listed and uninstalled Gem, which is the installed before loading the buildfile.
+    def listed_gems #:nodoc:
+      Array(settings.build['gems']).map do |dep|
+        name, trail = dep.scan(/^\s*(\S*)\s*(.*)\s*$/).first
+        versions = trail.scan(/[=><~!]{0,2}\s*[\d\.]+/)
+        versions = ['>= 0'] if versions.empty?
+        dep = Gem::Dependency.new(name, versions)
+        Gem::SourceIndex.from_installed_gems.search(dep).last || dep
+      end
+    end
+
+    # Load artifact specs from the build.yaml file, making them available 
+    # by name ( ruby symbols ).
+    def load_artifacts #:nodoc:
+      hash = settings.build['artifacts']
+      return unless hash
+      raise "Expected 'artifacts' element to be a hash" unless Hash === hash
+      # Currently we only use one artifact namespace to rule them all. (the root NS)
+      Buildr::ArtifactNamespace.load(:root => hash)
+    end
+      
+    # Load/install all Gems specified in build.yaml file.
+    def load_gems #:nodoc:
+      missing_deps, installed = listed_gems.partition { |gem| gem.is_a?(Gem::Dependency) }
+      unless missing_deps.empty?
+        newly_installed = Util::Gems.install(*missing_deps)
+        installed += newly_installed
+      end
+      installed.each do |spec|
+        if gem(spec.name, spec.version.to_s)
+          # TODO: is this intended to load rake tasks from the installed gems?
+          # We should use a convention like .. if the gem has a _buildr.rb file, load it.
+
+          #FileList[spec.require_paths.map { |path| File.expand_path("#{path}/*.rb", spec.full_gem_path) }].
+          #  map { |path| File.basename(path) }.each { |file| require file }
+          #FileList[File.expand_path('tasks/*.rake', spec.full_gem_path)].each do |file|
+          #  Buildr.application.add_import file
+          #end
+        end
+      end
+      @gems = installed
+    end
+
+    def find_buildfile #:nodoc:
+      here = original_dir
+      Dir.chdir(here) unless Dir.pwd == here
+      while ! have_rakefile
+        Dir.chdir('..')
+        if Dir.pwd == here || options.nosearch
+          error = "No Buildfile found (looking for: #{@rakefiles.join(', ')})"
+          if STDIN.isatty
+            chdir(original_dir) { task('generate').invoke }
+            exit 1
+          else
+            raise error
+          end
+        end
+        here = Dir.pwd
+      end
+    end
+
+    def load_buildfile #:nodoc:
+      info "(in #{Dir.pwd}, #{environment})"
+      load File.expand_path(@rakefile) if @rakefile != ''
+      buildfile.enhance @requires.select { |f| File.file?(f) }.map{ |f| File.expand_path(f) }
+    end
+
+    def load_requires #:nodoc:
+      @requires.each { |name| require name }
+    end
+
+    # Loads buildr.rb files from users home directory and project directory.
+    # Loads custom tasks from .rake files in tasks directory.
+    def load_tasks #:nodoc:
+      files = [ File.expand_path('buildr.rb', ENV['HOME']), 'buildr.rb' ].select { |file| File.exist?(file) }
+      files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
+        select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
+      #Load local tasks that can be used in the Buildfile.
+      files += Dir[File.expand_path('tasks/*.rake', original_dir)]
+      files.each do |file|
+        unless $LOADED_FEATURES.include?(file)
+          load file
+          $LOADED_FEATURES << file
+        end
+      end
+      buildfile.enhance files
+      true
+    end
+
+    def display_prerequisites
+      invoke_task('buildr:initialize')
+      tasks.each do |task|
+        if task.name =~ options.show_task_pattern
+          puts "buildr #{task.name}"
+          task.prerequisites.each { |prereq| puts "    #{prereq}" }
+        end
       end
     end
     
-    # Yields to block on successful completion. Primarily used for notifications.
-    def on_completion(&block)
-      @on_completion << block
-    end
-
-    # Yields to block on failure with exception. Primarily used for notifications.
-    def on_failure(&block)
-      @on_failure << block
-    end
-
-  private
-
     # Provide standard execption handling for the given block.
     def standard_exception_handling
       begin
