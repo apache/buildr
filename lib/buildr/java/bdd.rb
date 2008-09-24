@@ -129,12 +129,12 @@ module Buildr
         puts "You need to install JRuby version #{jruby_artifact.version} using your system package manager."
         puts 'Or you can just execute the following command: '
         puts
-        puts "   java -Djruby.home='#{jruby_home}' -jar #{jruby_artifact} -S extract"
+        puts "   java -jar #{jruby_artifact} -S extract '#{jruby_home}'"
         puts 
         print 'Do you want me to execute it for you? [y/N]'
         if gets.chomp.strip =~ /y(es)?/i
           jruby_artifact.invoke
-          Java::Commands.java('-jar', jruby_artifact.to_s, '-S', 'extract', :properties => {'jruby.home' => jruby_home})
+          Java::Commands.java('-jar', jruby_artifact.to_s, '-S', 'extract', jruby_home)
         end
         
         fail msg unless jruby_installed?
