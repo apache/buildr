@@ -36,7 +36,7 @@ def set_gem_home
 end
 
 def sudo_needed?
-  !( windows? || set_gem_home )
+  !( windows? || ENV['GEM_HOME'] )
 end
 
 # Finds and returns path to executable.  Consults PATH environment variable.
