@@ -112,11 +112,11 @@ module Buildr
 
     def jruby_home
       @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : 
-        ( ENV['JRUBY_HOME'] || File.expand_path("~/.jruby") )
+        ( ENV['JRUBY_HOME'] || File.expand_path('~/.jruby') )
     end
 
     def jruby_installed?
-      RUBY_PLATFORM[/java/] || !Dir.glob(File.join(jruby_home, 'lib', 'jruby*.jar')).empty?
+      !Dir.glob(File.join(jruby_home, 'lib', 'jruby*.jar')).empty?
     end
     
   protected
@@ -127,11 +127,11 @@ module Buildr
         puts msg
         puts
         puts "You need to install JRuby version #{jruby_artifact.version} using your system package manager."
-        puts "Or you can just execute the following command: "
+        puts 'Or you can just execute the following command: '
         puts
         puts "   java -Djruby.home='#{jruby_home}' -jar #{jruby_artifact} -S extract"
         puts 
-        print "Do you want me to execute it for you? [y/N]"
+        print 'Do you want me to execute it for you? [y/N]'
         if gets.chomp.strip =~ /y(es)?/i
           jruby_artifact.invoke
           Java::Commands.java('-jar', jruby_artifact.to_s, '-S', 'extract', :properties => {'jruby.home' => jruby_home})
@@ -142,14 +142,14 @@ module Buildr
     end
     
     def jruby(*args)
-      java_args = ["org.jruby.Main", *args]
+      java_args = ['org.jruby.Main', *args]
       java_args << {} unless Hash === args.last
       cmd_options = java_args.last
       project = cmd_options.delete(:project)
       cmd_options[:classpath] ||= []
       Dir.glob(File.join(jruby_home, 'lib', '*.jar')) { |jar| cmd_options[:classpath] << jar }
       cmd_options[:java_args] ||= []
-      cmd_options[:java_args] << "-Xmx512m" unless cmd_options[:java_args].detect {|a| a =~ /^-Xmx/}
+      cmd_options[:java_args] << '-Xmx512m' unless cmd_options[:java_args].detect {|a| a =~ /^-Xmx/}
       cmd_options[:properties] ||= {}
       cmd_options[:properties]['jruby.home'] = jruby_home
       Java::Commands.java(*java_args)
@@ -282,7 +282,6 @@ module Buildr
   #
   #
   # Support the following options:
-  # Support the following options:
   # * :config     -- path to JtestR config file. defaults to @spec/ruby/jtestr_config.rb@
   # * :gems       -- A hash of gems to install before running the tests.
   #                  The keys of this hash are the gem name, the value must be the required version.
@@ -330,7 +329,7 @@ module Buildr
     private
       def const_missing(const)
         return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated "Please use JtestR.dependencies/.version instead of JtestR::REQUIRES/VERSION"
+        Buildr.application.deprecated 'Please use JtestR.dependencies/.version instead of JtestR::REQUIRES/VERSION'
         dependencies
       end
 
@@ -395,7 +394,7 @@ module Buildr
     @lang = :java
     @bdd_dir = :spec
 
-    VERSION = "1.0.1" unless const_defined?('VERSION')
+    VERSION = '1.0.1' unless const_defined?('VERSION')
     TESTS_PATTERN = [ /Behaviou?r$/ ] #:nodoc:
     
     class << self
@@ -404,7 +403,7 @@ module Buildr
       end
 
       def dependencies
-        @dependencies ||= ["org.jbehave:jbehave:jar:#{version}", "cglib:cglib-full:jar:2.0.2"] +
+        @dependencies ||= ["org.jbehave:jbehave:jar:#{version}", 'cglib:cglib-full:jar:2.0.2'] +
           JMock.dependencies + JUnit.dependencies
       end
 
@@ -417,7 +416,7 @@ module Buildr
     private
       def const_missing(const)
         return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated "Please use JBehave.dependencies/.version instead of JBehave::REQUIRES/VERSION"
+        Buildr.application.deprecated 'Please use JBehave.dependencies/.version instead of JBehave::REQUIRES/VERSION'
         dependencies
       end
     end
