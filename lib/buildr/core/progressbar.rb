@@ -143,7 +143,7 @@ protected
   end
 
   def changed?
-    return false unless @output
+    return false unless @output && Time.now - @last_time > 0.1 
     return human(@count) != human(@previous) if @total == 0
     return true if (@count - @previous) >= @total / 100
     return Time.now - @last_time > 1

@@ -56,6 +56,9 @@ module URI
   class NotFoundError < RuntimeError
   end
 
+  # How many bytes to read/write at once.
+  RW_CHUNK_SIZE = 2 ** 20 #:nodoc:
+
   class << self
 
     # :call-seq:
@@ -340,7 +343,7 @@ module URI
       connect do |http|
         trace "Uploading to #{path}"
         content = StringIO.new
-        while chunk = yield(32 * 4096)
+        while chunk = yield(RW_CHUNK_SIZE)
           content << chunk
         end
         headers = { 'Content-MD5'=>Digest::MD5.hexdigest(content.string) }
@@ -418,13 +421,13 @@ module URI
             trace "Downloading to #{path}"
             sftp.file.open(path, 'r') do |file|
               if block
-                while chunk = file.read(32 * 4096)
+                while chunk = file.read(RW_CHUNK_SIZE)
                   block.call chunk
                   progress << chunk
                 end
               else
                 result = ''
-                while chunk = file.read(32 * 4096)
+                while chunk = file.read(RW_CHUNK_SIZE)
                   result << chunk
                   progress << chunk
                 end
@@ -468,7 +471,7 @@ module URI
           with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
             trace "Uploading to #{path}"
             sftp.file.open(path, 'w') do |file|
-              while chunk = yield(32 * 4096)
+              while chunk = yield(RW_CHUNK_SIZE)
                 file.write chunk
                 progress << chunk
               end
@@ -555,7 +558,7 @@ module URI
       Tempfile.open File.basename(path) do |temp|
         temp.binmode
         with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
-          while chunk = yield(32 * 4096)
+          while chunk = yield(RW_CHUNK_SIZE)
             temp.write chunk
             progress << chunk
           end
