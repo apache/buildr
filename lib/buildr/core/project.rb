@@ -515,8 +515,8 @@ module Buildr
     def task(*args, &block)
       task_name, arg_names, deps = Buildr.application.resolve_args(args)
       if task_name =~ /^:/
-        Buildr.application.switch_to_namespace [] do
-          task = Rake::Task.define_task(task_name[1..-1])
+        task = Buildr.application.switch_to_namespace [] do
+          Rake::Task.define_task(task_name[1..-1])
         end
       elsif Buildr.application.current_scope == name.split(':')
         task = Rake::Task.define_task(task_name)

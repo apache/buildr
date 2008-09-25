@@ -644,6 +644,13 @@ describe Project, '#task' do
     define('foo') { task('bar') }
     project('foo').task('bar').name.should eql('foo:bar')
   end
+  
+  it 'should ignore namespace if starting with color' do
+    define 'foo' do
+      task(':bar').name.should == 'bar'
+    end
+    Rake::Task.task_defined?('bar').should be_true
+  end
 
   it 'should accept single dependency' do
     define('foo') { task('bar'=>'baz') }
