@@ -159,11 +159,11 @@ module Buildr
 
     def run
       standard_exception_handling do
-        load_requires
         find_buildfile
         load_gems
         load_artifacts
         load_tasks
+        load_requires
         load_buildfile
         load_imports
         task('buildr:initialize').invoke
