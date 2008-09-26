@@ -46,6 +46,7 @@ end
 
 desc 'Look for new dependencies, check transitive dependencies'
 task 'dependency' do
+  puts "Checking that all dependencies are up to date ..."
   # Find if anything has a more recent dependency.  These are not errors, just reports.
   for dep in spec.dependencies
     current = Gem::SourceInfoCache.search(dep, true, true).last

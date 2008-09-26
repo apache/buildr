@@ -46,12 +46,19 @@ ENV['staging'] = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
 task('apache:license').enhance FileList[spec.files].exclude('.class', '.png', '.jar', '.tif', '.textile', '.icns',
    'README', 'LICENSE', 'CHANGELOG', 'DISCLAIMER', 'NOTICE', 'etc/KEYS', 'etc/git-svn-authors')
 
-task 'spec:check' do
+task 'stage:check' do
   print 'Checking that we have JRuby, Scala and Groovy available ... '
   fail 'Full testing requires JRuby!' unless which('jruby')
   fail 'Full testing requires Scala!' unless which('scala')
   fail 'Full testing requires Groovy!' unless which('groovy')
   puts 'OK'
+end
+
+task 'stage:check' do
+  # Dependency check for the other platform, i.e. if making a release with Ruby,
+  # run dependency checks with JRuby. (Also, good opportunity to upgrade other
+  # platform's dependencies)
+  sh RUBY_PLATFORM =~ /java/ ? 'ruby' : 'jruby', '-S', 'rake', 'setup dependency'
 end
 
 
