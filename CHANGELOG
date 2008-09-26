@@ -6,8 +6,8 @@
 * Added:  Release task support for alternative SVN repository layout
           (e.g., http://my.repo.org/trunk/foo).
 * Added:  BUILDR-148 It is now possible to set the version of various 3rd
-          party libraries from the build.yml file.  Supported libraries include
-          Ant and the various test and BDD frameworks.
+          party libraries from the build.yml file.  Supported libraries
+          include Ant and the various test and BDD frameworks.
 * Change: Error reporting now shows 'buildr aborted!' (used to say rake),
           more of the stack trace without running --trace, and when running
           with supported terminal, error message is red.
@@ -20,6 +20,9 @@
 * Change: BUILDR-141 Removed NEXT_VERSION from release task.
 * Change: BUILDR-148 ant-junit no longer included in root classpath, but
           specified during taskdef.
+* Change: BUILDR-153 To customize the SVN tag used by the release task, set
+          Release.tag_name to either the tag value or a proc that takes the
+          version number and return the desired tag.
 * Fixed:  BUILDR-135. Extracted reusable replacement logic into Filter::Mapper
 * Fixed:  BUILDR-129. Modifying a project manifest should not alter it's
           parent project manifest.

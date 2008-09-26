@@ -112,11 +112,11 @@ module Buildr
   class Svn
 
     class << self
-      def commit file, message
+      def commit(file, message)
         svn 'commit', '-m', message, file
       end
       
-      def copy dir, url, message
+      def copy(dir, url, message)
         svn 'copy', dir, url, '-m', message
       end
       
@@ -125,7 +125,7 @@ module Buildr
         svn('info').scan(/URL: (.*)/)[0][0]
       end
       
-      def remove url, message
+      def remove(url, message)
         svn 'remove', url, '-m', message
       end
       
@@ -152,12 +152,18 @@ module Buildr
     THIS_VERSION_PATTERN  = /(THIS_VERSION|VERSION_NUMBER)\s*=\s*(["'])(.*)\2/
 
     class << self
+      
+      # Use this to specify a different tag name for tagging the release in source control.
+      # You can set the tag name or a proc that will be called with the version number,
+      # for example:
+      #   Release.tag_name = lambda { |ver| "foo-#{ver}" }
+      attr_accessor :tag_name
 
       # :call-seq:
       #   make()
       #
       # Make a release.
-      def make()
+      def make
         check
         with_release_candidate_version do |release_candidate_buildfile| 
           options = ['--buildfile', release_candidate_buildfile, 'DEBUG=no']
@@ -188,12 +194,14 @@ module Buildr
       # Can handle the two standard repository layouts.
       #   - http://my.repo/foo/trunk => http://my.repo/foo/tags/1.0.0
       #   - http://my.repo/trunk/foo => http://my.repo/tags/foo/1.0.0
-      def tag_url svn_url, version
+      def tag_url(svn_url, version)
         trunk_or_branches = Regexp.union(%r{^(.*)/trunk(.*)$}, %r{^(.*)/branches(.*)/([^/]*)$})
         match = trunk_or_branches.match(svn_url)
         prefix = match[1] || match[3]
         suffix = match[2] || match[4]
-        prefix + '/tags' + suffix + '/' + version
+        tag = tag_name || version
+        tag = tag.call(version) if Proc === tag
+        prefix + '/tags' + suffix + '/' + tag
       end
       
       # :call-seq:
@@ -201,7 +209,7 @@ module Buildr
       #
       # Check that we don't have any local changes in the working copy. Fails if it finds anything
       # in the working copy that is not checked into source control.
-      def check()
+      def check
         fail "SVN URL must contain 'trunk' or 'branches/...'" unless Svn.repo_url =~ /(trunk)|(branches.*)$/
         fail "Uncommitted SVN files violate the First Principle Of Release!\n#{Svn.uncommitted_files}" unless Svn.uncommitted_files.empty?
       end
@@ -212,11 +220,11 @@ module Buildr
       #   buildr(tasks, options)
       #
       # Calls another instance of buildr.
-      def buildr tasks, options
+      def buildr(tasks, options)
           sh "#{command} _#{Buildr::VERSION}_ #{tasks.join(' ')} #{options.join(' ')}"
       end
       
-      def command() #:nodoc:
+      def command #:nodoc:
         Config::CONFIG['arch'] =~ /dos|win32/i ? $PROGRAM_NAME.ext('cmd') : $PROGRAM_NAME
       end
 
@@ -255,7 +263,7 @@ module Buildr
       #
       # This method yields to the block with the current (this) version number as an array and expects
       # the block to update it.
-      def change_version()
+      def change_version
         this_version = extract_version
         new_version = this_version.split('.')
         yield(new_version)
