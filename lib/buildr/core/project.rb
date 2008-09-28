@@ -868,7 +868,7 @@ module Buildr
       projects
     end
 
-    desc "Freezes the Buildfile so it always uses Buildr version #{Buildr::VERSION}"
+    desc "Freeze the Buildfile so it always uses Buildr version #{Buildr::VERSION}"
     task 'freeze' do
       puts "Freezing the Buildfile so it always uses Buildr version #{Buildr::VERSION}"
       original = File.read(Buildr.application.buildfile)
@@ -880,7 +880,7 @@ module Buildr
       File.open(Buildr.application.buildfile, "w") { |file| file.write modified }
     end
 
-    desc 'Unfreezes the Buildfile to use the latest version of Buildr'
+    desc 'Unfreeze the Buildfile to use the latest version of Buildr'
     task 'unfreeze' do
       puts 'Unfreezing the Buildfile to use the latest version of Buildr from your Gems repository.'
       modified = File.read(Buildr.application.buildfile).sub(/^\s*gem\s*(["'])buildr\1.*\n/, "")
