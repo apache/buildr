@@ -151,6 +151,11 @@ module Buildr
             end
             
             task 'instrument' => instrumented
+            
+            # We now have two target directories with bytecode.
+            project.test.dependencies.unshift emma.instrumented_dir
+            project.test.with Emma.requires
+            project.test.options[:properties]["emma.coverage.out.file"] = emma.coverage_file
           end
           
           [:xml, :html].each do |format|
@@ -179,11 +184,6 @@ module Buildr
             
         end
 
-        # We now have two target directories with bytecode.
-        project.test.dependencies.unshift emma.instrumented_dir
-        project.test.with Emma.requires
-        project.test.options[:properties]["emma.coverage.out.file"] = emma.coverage_file
-        
         project.clean do
           rm_rf [emma.report_dir, emma.coverage_file, emma.metadata_file, emma.instrumented_dir], :verbose=>false
         end

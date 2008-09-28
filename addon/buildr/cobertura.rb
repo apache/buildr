@@ -158,6 +158,13 @@ module Buildr
             end
             
             task 'instrument' => instrumented
+            
+            # We now have two target directories with bytecode. It would make sense to remove compile.target
+            # and add instrumented instead, but apparently Cobertura only creates some of the classes, so
+            # we need both directories and instrumented must come first.
+            project.test.dependencies.unshift cobertura.instrumented_dir
+            project.test.with Cobertura.requires
+            project.test.options[:properties]["net.sourceforge.cobertura.datafile"] = cobertura.data_file
           end
           
           [:xml, :html].each do |format|
@@ -177,13 +184,6 @@ module Buildr
           
         end
 
-        # We now have two target directories with bytecode. It would make sense to remove compile.target
-        # and add instrumented instead, but apparently Cobertura only creates some of the classes, so
-        # we need both directories and instrumented must come first.
-        project.test.dependencies.unshift cobertura.instrumented_dir
-        project.test.with Cobertura.requires
-        project.test.options[:properties]["net.sourceforge.cobertura.datafile"] = cobertura.data_file
-        
         project.clean do
           rm_rf [cobertura.report_to, cobertura.data_file, cobertura.instrumented_dir], :verbose=>false
         end

@@ -60,15 +60,15 @@ describe 'test coverage tool', :shared=>true do
     @tool_module.name.split('::').last.downcase
   end
 
+  def test_coverage_config
+    project('foo').send(toolname)
+  end
+  
   describe 'project-specific' do
 
     before do
       write 'src/main/java/Foo.java', 'public class Foo {}'
       write_test :for=>'Foo', :in=>'src/test/java'
-    end
-
-    def test_coverage_config
-      project('foo').send(toolname)
     end
 
     describe 'clean' do
@@ -138,12 +138,6 @@ describe 'test coverage tool', :shared=>true do
         [project('foo').compile.target, instrumented_dir].map(&:to_s).each { |dir| File.utime(a_long_time_ago, a_long_time_ago, dir) }
         task("foo:#{toolname}:instrument").invoke
         instrumented_dir.timestamp.should be_close(a_long_time_ago, 2)
-      end
-      
-      it 'should not raise an error if project has no source files' do
-        rm 'src/main/java/Foo.java'
-        define('foo')
-        lambda { task("foo:#{toolname}:instrument").invoke }.should_not raise_error(RuntimeError)
       end
     end
 
@@ -227,6 +221,24 @@ describe 'test coverage tool', :shared=>true do
         define('foo')
         lambda { task('clean').invoke }.should run_task("#{toolname}:clean")
       end
+    end
+  end
+  
+  describe 'project with no source' do
+    it 'should not raise an error when instrumenting' do
+      define('foo')
+      lambda { task("foo:#{toolname}:instrument").invoke }.should_not raise_error
+    end
+    
+    it 'should not add the instrumented directory to the testing classpath' do
+      define 'foo'
+      depends = project('foo').test.dependencies
+      depends.should_not include(test_coverage_config.instrumented_dir)
+    end
+    
+    it 'should not add the test coverage tools artifacts to the testing classpath' do
+      define('foo')
+      @tool_module.requires.each { |artifact| project('foo').test.dependencies.should_not include(artifact) }
     end
   end
 end
