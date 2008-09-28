@@ -471,7 +471,12 @@ module Rake #:nodoc
         end
         return if @already_invoked
         @already_invoked = true
-        invoke_prerequisites(task_args, new_chain)
+        begin
+          invoke_prerequisites(task_args, new_chain)
+        rescue
+          trace "Exception while invoking prerequisites of task #{self.inspect}"
+          raise
+        end
         begin
           old_chain, Thread.current[:rake_chain] = Thread.current[:rake_chain], new_chain
           execute(task_args) if needed?
