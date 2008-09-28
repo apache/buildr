@@ -127,36 +127,39 @@ module Buildr
         namespace 'cobertura' do
           # Instrumented bytecode goes in a different directory. This task creates before running the test
           # cases and monitors for changes in the generate bytecode.
-          instrumented = project.file(cobertura.instrumented_dir => project.compile.target) do |task|
-            mkdir_p task.to_s, :verbose => false
-            unless project.compile.sources.empty?
-              info "Instrumenting classes with cobertura data file #{cobertura.data_file}"
-              Buildr.ant "cobertura" do |ant|
-                ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
-                ant.send "cobertura-instrument", :todir=>task.to_s, :datafile=>cobertura.data_file do
-                  includes, excludes = cobertura.includes, cobertura.excludes
-                  
-                  classes_dir = project.compile.target.to_s
-                  if includes.empty? && excludes.empty? 
-                    ant.fileset :dir => classes_dir do 
-                      ant.include :name => "**/*.class"
-                    end
-                  else
-                    includes = [//] if includes.empty?
-                    Dir.glob(File.join(classes_dir, "**/*.class")) do |cls|
-                      cls_name = cls.gsub(/#{classes_dir}\/?|\.class$/, '').gsub('/', '.')
-                      if includes.any? { |p| p === cls_name } && !excludes.any? { |p| p === cls_name }
-                        ant.fileset :file => cls
+          unless project.compile.target.nil?
+            instrumented = project.file(cobertura.instrumented_dir => project.compile.target) do |task|
+              mkdir_p task.to_s, :verbose => false
+              unless project.compile.sources.empty?
+                info "Instrumenting classes with cobertura data file #{cobertura.data_file}"
+                Buildr.ant "cobertura" do |ant|
+                  ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+                  ant.send "cobertura-instrument", :todir=>task.to_s, :datafile=>cobertura.data_file do
+                    includes, excludes = cobertura.includes, cobertura.excludes
+                    
+                    classes_dir = project.compile.target.to_s
+                    if includes.empty? && excludes.empty? 
+                      ant.fileset :dir => classes_dir do 
+                        ant.include :name => "**/*.class"
+                      end
+                    else
+                      includes = [//] if includes.empty?
+                      Dir.glob(File.join(classes_dir, "**/*.class")) do |cls|
+                        cls_name = cls.gsub(/#{classes_dir}\/?|\.class$/, '').gsub('/', '.')
+                        if includes.any? { |p| p === cls_name } && !excludes.any? { |p| p === cls_name }
+                          ant.fileset :file => cls
+                        end
                       end
                     end
                   end
                 end
               end
+              touch task.to_s, :verbose=>false
             end
-            touch task.to_s, :verbose=>false
+            
+            task 'instrument' => instrumented
           end
-
-          task 'instrument' => instrumented
+          
           [:xml, :html].each do |format|
             task format => ['instrument', 'test'] do 
               info "Creating test coverage reports in #{cobertura.report_to(format)}"

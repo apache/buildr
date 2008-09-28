@@ -136,20 +136,22 @@ module Buildr
         namespace 'emma' do
           # Instrumented bytecode goes in a different directory. This task creates before running the test
           # cases and monitors for changes in the generate bytecode.
-          instrumented = project.file(emma.instrumented_dir => project.compile.target) do |task|
-            unless project.compile.sources.empty?
-              info "Instrumenting classes with emma metadata file #{emma.metadata_file}"
-              Emma.ant do |ant|
-                ant.instr :instrpath=>project.compile.target.to_s, :destdir=>task.to_s, :metadatafile=>emma.metadata_file do
-                  ant.filter :includes=>emma.includes.join(', ') unless emma.includes.empty?
-                  ant.filter :excludes=>emma.excludes.join(', ') unless emma.excludes.empty?
+          unless project.compile.target.nil?
+            instrumented = project.file(emma.instrumented_dir => project.compile.target) do |task|
+              unless project.compile.sources.empty?
+                info "Instrumenting classes with emma metadata file #{emma.metadata_file}"
+                Emma.ant do |ant|
+                  ant.instr :instrpath=>project.compile.target.to_s, :destdir=>task.to_s, :metadatafile=>emma.metadata_file do
+                    ant.filter :includes=>emma.includes.join(', ') unless emma.includes.empty?
+                    ant.filter :excludes=>emma.excludes.join(', ') unless emma.excludes.empty?
+                  end
                 end
+                touch task.to_s, :verbose=>false
               end
-              touch task.to_s, :verbose=>false
             end
+            
+            task 'instrument' => instrumented
           end
-
-          task 'instrument' => instrumented
           
           [:xml, :html].each do |format|
             task format => ['instrument', 'test'] do

@@ -139,6 +139,12 @@ describe 'test coverage tool', :shared=>true do
         task("foo:#{toolname}:instrument").invoke
         instrumented_dir.timestamp.should be_close(a_long_time_ago, 2)
       end
+      
+      it 'should not raise an error if project has no source files' do
+        rm 'src/main/java/Foo.java'
+        define('foo')
+        lambda { task("foo:#{toolname}:instrument").invoke }.should_not raise_error(RuntimeError)
+      end
     end
 
     describe 'testing classpath' do
