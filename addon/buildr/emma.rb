@@ -156,32 +156,31 @@ module Buildr
             project.test.dependencies.unshift emma.instrumented_dir
             project.test.with Emma.requires
             project.test.options[:properties]["emma.coverage.out.file"] = emma.coverage_file
-          end
-          
-          [:xml, :html].each do |format|
-            task format => ['instrument', 'test'] do
-              missing_required_files = [emma.metadata_file, emma.coverage_file].reject { |f| File.exist?(f) }
-              if missing_required_files.empty?
-                info "Creating test coverage reports in #{emma.report_dir}"
-                mkdir_p emma.report_dir, :verbose=>false
-                Emma.ant do |ant|
-                  ant.report do
-                    ant.infileset :file=>emma.metadata_file
-                    ant.infileset :file=>emma.coverage_file
-                    ant.send format, :outfile=>File.join(emma.report_to(format),"coverage.#{format}")
-                    ant.sourcepath do
-                      emma.sources.flatten.each do |src|
-                        ant.dirset(:dir=>src.to_s) if File.exist?(src.to_s)
+            
+            [:xml, :html].each do |format|
+              task format => ['instrument', 'test'] do
+                missing_required_files = [emma.metadata_file, emma.coverage_file].reject { |f| File.exist?(f) }
+                if missing_required_files.empty?
+                  info "Creating test coverage reports in #{emma.report_dir}"
+                  mkdir_p emma.report_dir, :verbose=>false
+                  Emma.ant do |ant|
+                    ant.report do
+                      ant.infileset :file=>emma.metadata_file
+                      ant.infileset :file=>emma.coverage_file
+                      ant.send format, :outfile=>File.join(emma.report_to(format),"coverage.#{format}")
+                      ant.sourcepath do
+                        emma.sources.flatten.each do |src|
+                          ant.dirset(:dir=>src.to_s) if File.exist?(src.to_s)
+                        end
                       end
                     end
                   end
+                else
+                  info "No test coverage report for #{project}. Missing: #{missing_required_files.join(', ')}"
                 end
-              else
-                info "No test coverage report for #{project}. Missing: #{missing_required_files.join(', ')}"
               end
             end
           end
-            
         end
 
         project.clean do

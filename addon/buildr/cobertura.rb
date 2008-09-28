@@ -165,17 +165,17 @@ module Buildr
             project.test.dependencies.unshift cobertura.instrumented_dir
             project.test.with Cobertura.requires
             project.test.options[:properties]["net.sourceforge.cobertura.datafile"] = cobertura.data_file
-          end
-          
-          [:xml, :html].each do |format|
-            task format => ['instrument', 'test'] do 
-              info "Creating test coverage reports in #{cobertura.report_to(format)}"
-              Buildr.ant "cobertura" do |ant|
-                ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
-                ant.send "cobertura-report", :format=>format, 
-                         :destdir=>cobertura.report_to(format), :datafile=>cobertura.data_file do
-                  cobertura.sources.flatten.each do |src|
-                    ant.fileset(:dir=>src.to_s) if File.exist?(src.to_s)
+            
+            [:xml, :html].each do |format|
+              task format => ['instrument', 'test'] do 
+                info "Creating test coverage reports in #{cobertura.report_to(format)}"
+                Buildr.ant "cobertura" do |ant|
+                  ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+                  ant.send "cobertura-report", :format=>format, 
+                    :destdir=>cobertura.report_to(format), :datafile=>cobertura.data_file do
+                    cobertura.sources.flatten.each do |src|
+                      ant.fileset(:dir=>src.to_s) if File.exist?(src.to_s)
+                    end
                   end
                 end
               end

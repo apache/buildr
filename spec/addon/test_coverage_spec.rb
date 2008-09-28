@@ -225,6 +225,11 @@ describe 'test coverage tool', :shared=>true do
   end
   
   describe 'project with no source' do
+    it 'should not define an html report task' do
+      define 'foo'
+      Rake::Task.task_defined?("foo:#{toolname}:html").should be(false)
+    end
+    
     it 'should not raise an error when instrumenting' do
       define('foo')
       lambda { task("foo:#{toolname}:instrument").invoke }.should_not raise_error
