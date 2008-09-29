@@ -181,7 +181,7 @@ module Buildr
           else
             mkpath File.dirname(dest)
             if @mapper.mapper_type
-              mapped = @mapper.result(File.open(source, 'rb') { |file| file.read }, path)
+              mapped = @mapper.transform(File.open(source, 'rb') { |file| file.read }, path)
               File.open(dest, 'wb') { |file| file.write mapped }
             else # no mapping
               cp source, dest
@@ -203,7 +203,7 @@ module Buildr
     #
     # To register a new template engine @:foo@, extend this class with a method like: 
     # 
-    #   def foo_result(content, path = nil)
+    #   def foo_transform(content, path = nil)
     #      # if this method yields a key, the value comes from the mapping hash
     #      content.gsub(/world/) { |str| yield :bar }
     #   end
@@ -214,7 +214,7 @@ module Buildr
     #
     # Or all by your own, simply
     #
-    #   Mapper.new(:foo, :bar => :baz).result("Hello world") # => "Hello baz"
+    #   Mapper.new(:foo, :bar => :baz).transform("Hello world") # => "Hello baz"
     # 
     # You can handle configuration arguments by providing a @*_config@ method like:
     # 
@@ -224,7 +224,7 @@ module Buildr
     #      { :moos => args, :callback => block }
     #   end
     #
-    #   def moo_result(content, path = nil)
+    #   def moo_transform(content, path = nil)
     #      content.gsub(/moo+/i) do |str|
     #        moos = yield :moos # same than config[:moos]
     #        moo = moos[str.size - 3] || str
@@ -237,7 +237,7 @@ module Buildr
     #   mapper = Mapper.new(:moo, 'ooone', 'twoo') do |str|
     #     i = nil; str.capitalize.gsub(/\w/) { |s| s.send( (i = !i) ? 'upcase' : 'downcase' ) }
     #   end
-    #   mapper.result('Moo cow, mooo cows singing mooooo') # => 'OoOnE cow, TwOo cows singing MoOoOo'
+    #   mapper.transform('Moo cow, mooo cows singing mooooo') # => 'OoOnE cow, TwOo cows singing MoOoOo'
     class Mapper
 
       attr_reader :mapper_type, :config
@@ -253,7 +253,7 @@ module Buildr
         when Binding # Erb binding
           using :erb, *args
         when Symbol # Mapping from a method
-          raise ArgumentError, "Unknown mapping type: #{args.first}" unless respond_to?("#{args.first}_result", true)
+          raise ArgumentError, "Unknown mapping type: #{args.first}" unless respond_to?("#{args.first}_transform", true)
           configure(*args, &block)
         when Regexp # Mapping using a regular expression
           raise ArgumentError, 'Expected regular expression followed by mapping hash' unless args.size == 2 && Hash === args[1]
@@ -270,10 +270,10 @@ module Buildr
         self
       end
 
-      def result(content, path = nil)
+      def transform(content, path = nil)
         type = Regexp === mapper_type ? :regexp : mapper_type
-        raise ArgumentError, "Invalid mapper type: #{type.inspect}" unless respond_to?("#{type}_result", true)
-        self.__send__("#{type}_result", content, path) { |key| config[key] || config[key.to_s.to_sym] }
+        raise ArgumentError, "Invalid mapper type: #{type.inspect}" unless respond_to?("#{type}_transform", true)
+        self.__send__("#{type}_transform", content, path) { |key| config[key] || config[key.to_s.to_sym] }
       end
 
      private
@@ -288,27 +288,27 @@ module Buildr
         @mapper_type = mapper_type
       end
 
-      def maven_result(content, path = nil)
+      def maven_transform(content, path = nil)
         content.gsub(/\$\{.*?\}/) { |str| yield(str[2..-2]) || str }
       end
       
-      def ant_result(content, path = nil)
+      def ant_transform(content, path = nil)
         content.gsub(/@.*?@/) { |str| yield(str[1..-2]) || str }
       end
       
-      def ruby_result(content, path = nil)
+      def ruby_transform(content, path = nil)
         content.gsub(/#\{.*?\}/) { |str| yield(str[2..-2]) || str }
       end
       
-      def regexp_result(content, path = nil)
+      def regexp_transform(content, path = nil)
         content.gsub(mapper_type) { |str| yield(str.scan(mapper_type).join) || str }
       end
 
-      def callback_result(content, path = nil)
+      def callback_transform(content, path = nil)
         config.call(path, content)
       end
       
-      def erb_result(content, path = nil)
+      def erb_transform(content, path = nil)
         case config
         when Binding, Proc
           bnd = config

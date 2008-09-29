@@ -497,7 +497,7 @@ describe Filter::Mapper do
       { :moos => args, :callback => block }
     end
     
-    def moo_result(content, path = nil)
+    def moo_transform(content, path = nil)
       content.gsub(/moo+/i) do |str|
         moos = yield :moos # same than config[:moos]
         moo = moos[str.size - 3] || str
@@ -511,7 +511,7 @@ describe Filter::Mapper do
     mapper.using(:moo, 'ooone', 'twoo') do |str|
       i = nil; str.capitalize.gsub(/\w/) { |s| s.send( (i = !i) ? 'upcase' : 'downcase' ) }
     end
-    mapper.result('Moo cow, mooo cows singing mooooo').should == 'OoOnE cow, TwOo cows singing MoOoOo'
+    mapper.transform('Moo cow, mooo cows singing mooooo').should == 'OoOnE cow, TwOo cows singing MoOoOo'
   end
 
 end
