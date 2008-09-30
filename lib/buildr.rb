@@ -33,4 +33,3 @@ end
 
 # Prevent RSpec runner from running at_exit.
 require 'spec'
-Spec.run = true

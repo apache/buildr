@@ -373,16 +373,12 @@ describe URI::HTTP, '#write' do
   end
 
   it 'should fail on 4xx response' do
-    @http.should_receive(:request) do |request|
-      Net::HTTPBadRequest.new(nil, nil, nil)
-    end
+    @http.should_receive(:request).and_return(Net::HTTPBadRequest.new(nil, nil, nil))
     lambda { @uri.write @content }.should raise_error(RuntimeError, /failed to upload/i)
   end
 
   it 'should fail on 5xx response' do
-    @http.should_receive(:request) do |request|
-      Net::HTTPServiceUnavailable.new(nil, nil, nil)
-    end
+    @http.should_receive(:request).and_return(Net::HTTPServiceUnavailable.new(nil, nil, nil))
     lambda { @uri.write @content }.should raise_error(RuntimeError, /failed to upload/i)
   end
 
@@ -397,7 +393,7 @@ describe URI::SFTP, '#read' do
     @ssh_session = mock('Net::SSH::Session')
     @sftp_session = mock('Net::SFTP::Session')
     @file_factory = mock('Net::SFTP::Operations::FileFactory')
-    Net::SSH.stub!(:start).with('localhost', 'john', :password=>'secret', :port=>22) do
+    Net::SSH.stub!(:start).with('localhost', 'john', :password=>'secret', :port=>22).and_return(@ssh_session) do
       Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
       @sftp_session.should_receive(:connect!).and_return(@sftp_session)
       @sftp_session.should_receive(:loop)
@@ -445,7 +441,7 @@ describe URI::SFTP, '#write' do
     @ssh_session = mock('Net::SSH::Session')
     @sftp_session = mock('Net::SFTP::Session')
     @file_factory = mock('Net::SFTP::Operations::FileFactory')
-    Net::SSH.stub!(:start).with('localhost', 'john', :password=>'secret', :port=>22) do
+    Net::SSH.stub!(:start).with('localhost', 'john', :password=>'secret', :port=>22).and_return(@ssh_session) do
       Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
       @sftp_session.should_receive(:connect!).and_return(@sftp_session)
       @sftp_session.should_receive(:loop)
