@@ -60,5 +60,3 @@ task 'stage:check' do
   # platform's dependencies)
   sh RUBY_PLATFORM =~ /java/ ? 'ruby' : 'jruby', '-S', 'rake', 'setup dependency'
 end
-
-

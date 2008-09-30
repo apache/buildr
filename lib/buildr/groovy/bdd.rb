@@ -32,7 +32,7 @@ module Buildr::Groovy
     @lang = :groovy
     @bdd_dir = :spec
 
-    VERSION = "0.7" unless const_defined?(:VERSION)
+    VERSION = "0.7"
     TESTS_PATTERN = [ /(Story|Behavior).groovy$/ ]
     OPTIONS = [:format, :properties, :java_args]
 

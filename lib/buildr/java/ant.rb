@@ -23,7 +23,7 @@ module Buildr
   module Ant
 
     # Which version of Ant we're using by default.
-    VERSION = '1.7.1' unless const_defined?('VERSION')
+    VERSION = '1.7.1'
     
     class << self
       # Current version of Ant being used.

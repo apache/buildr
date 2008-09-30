@@ -83,7 +83,7 @@ module Buildr
   # JMock is available when using JUnit and TestNG, JBehave.
   module JMock
     
-    VERSION = '1.2.0' unless const_defined?('VERSION')
+    VERSION = '1.2.0'
     
     class << self
       def version
@@ -164,7 +164,7 @@ module Buildr
     end
 
     # JUnit version number.
-    VERSION = '4.4' unless const_defined?('VERSION')
+    VERSION = '4.4'
 
     class << self
       # :call-seq:
@@ -275,7 +275,7 @@ module Buildr
   # * :java_args -- Arguments passed to the JVM.
   class TestNG < TestFramework::Java
 
-    VERSION = '5.7' unless const_defined?('VERSION')
+    VERSION = '5.7'
 
     class << self
       def version

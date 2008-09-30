@@ -24,7 +24,7 @@ module Buildr::Scala
 
   # Scala::Specs is available when using Scala::Test
   module ScalaSpecs
-    VERSION = '1.2.9' unless const_defined?('VERSION')
+    VERSION = '1.2.9'
     
     class << self
       def version
@@ -47,7 +47,7 @@ module Buildr::Scala
 
   # Scala::Check is available when using Scala::Test
   module ScalaCheck
-    VERSION = '1.3' unless const_defined?('VERSION')
+    VERSION = '1.3'
     
     class << self
       def version
@@ -76,7 +76,7 @@ module Buildr::Scala
   # * :java_args   -- Arguments passed as is to the JVM.
   class ScalaTest < TestFramework::Java
 
-    VERSION = '0.9.3' unless const_defined?('VERSION')
+    VERSION = '0.9.3'
 
     class << self
       def version

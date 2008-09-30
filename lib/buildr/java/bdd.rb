@@ -46,7 +46,7 @@ module Buildr
   module TestFramework::JRubyBased
     extend self
 
-    VERSION = '1.1.4' unless const_defined?('VERSION')
+    VERSION = '1.1.4'
 
     class << self
       def version
@@ -297,7 +297,7 @@ module Buildr
 
     include TestFramework::JRubyBased
 
-    VERSION = '0.3.1' unless const_defined?('VERSION')
+    VERSION = '0.3.1'
     
     # pattern for rspec stories
     STORY_PATTERN    = /_(steps|story)\.rb$/
@@ -393,7 +393,7 @@ module Buildr
     @lang = :java
     @bdd_dir = :spec
 
-    VERSION = '1.0.1' unless const_defined?('VERSION')
+    VERSION = '1.0.1'
     TESTS_PATTERN = [ /Behaviou?r$/ ] #:nodoc:
     
     class << self

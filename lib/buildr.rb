@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 module Buildr
   VERSION = '1.3.3'.freeze
 end
