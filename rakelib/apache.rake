@@ -47,10 +47,9 @@ namespace 'apache' do
     fail "#{missing.join(', ')} missing Apache License, please add it before making a release!" unless missing.empty?
     puts 'OK'
   end
-
-  task 'check' do
-    ENV['GPG_USER'] or fail 'Please set GPG_USER (--local-user) environment variable so we know which key to use.'
-  end
+  
+  # Staging checks specific for Apache.
+  task 'check'=>'license'
 
 
   file 'staged/distro'=>'package' do
@@ -61,8 +60,9 @@ namespace 'apache' do
     end
   end
 
-  task 'sign'=>['etc/KEYS', 'staged/distro'] do
-    gpg_user = ENV['GPG_USER'] or fail 'Please set GPG_USER (--local-user) environment variable so we know which key to use.'
+  task 'sign'=>['etc/KEYS', 'staged/distro'] do |task, args|
+    gpg_user = args.gpg_user or fail "Please run with gpg_user=<argument for gpg --local-user>"
+    puts "Signing packages in staged/distro as user #{gpg_user}"
     FileList['staged/distro/*.{gem,zip,tgz}'].each do |pkg|
       bytes = File.open(pkg, 'rb') { |file| file.read }
       File.open(pkg + '.md5', 'w') { |file| file.write MD5.hexdigest(bytes) << ' ' << File.basename(pkg) }
@@ -125,7 +125,7 @@ p>. ("Release signing keys":#{url}/KEYS)
 end
 
 
-task 'stage:check'=>['apache:license', 'apache:check']
+task 'stage:check'=>['apache:check']
 task 'stage:prepare'=>['staged/distro', 'staged/site'] do |task|
   # Since this requires input (passphrase), do it at the very end.
   task.enhance do
