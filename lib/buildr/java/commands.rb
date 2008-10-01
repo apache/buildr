@@ -83,7 +83,8 @@ module Java
         end
         cmd_args << '-source' << options[:source] if options[:source]
         classpath = classpath_from(options)
-        Java.tools_jar { |tools| classpath << tools }
+        tools = Java.tools_jar
+        classpath << tools if tools
         cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         cmd_args += files
         unless Buildr.application.options.dryrun
