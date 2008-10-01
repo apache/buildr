@@ -50,8 +50,6 @@ module Buildr
           header = <<-EOF
 # Version number for this release
 VERSION_NUMBER = "1.0.0"
-# Version number for the next release
-NEXT_VERSION = "1.0.1"
 # Group identifier for your projects
 GROUP = "#{name}"
 COPYRIGHT = ""
