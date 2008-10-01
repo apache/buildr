@@ -20,6 +20,11 @@ require File.join(File.dirname(__FILE__), '../spec_helpers')
 describe Buildr::Generate do
   
   describe 'Generated buildfile' do
+    it 'should be a legal buildfile' do
+      File.open('buildfile', 'w') { |file| file.write Generate.from_directory(true).join("\n") }
+      lambda { Buildr.application.run }.should_not raise_error
+    end
+    
     it 'should not contain NEXT_VERSION because it was removed in buildr 1.3.3' do
       buildfile = Generate.from_directory(true)
       buildfile.each { |line| line.should_not include('NEXT_VERSION')}
