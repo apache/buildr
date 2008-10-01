@@ -513,7 +513,7 @@ describe Buildr, '#group' do
   
 end
 
-describe Builder, '#install' do
+describe Buildr, '#install' do
   before do
     @spec = 'group:id:jar:1.0'
     write @file = 'test.jar'
@@ -542,7 +542,7 @@ describe Builder, '#install' do
 end
 
 
-describe Builder, '#upload' do
+describe Buildr, '#upload' do
   before do
     @spec = 'group:id:jar:1.0'
     write @file = 'test.jar'
