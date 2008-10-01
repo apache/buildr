@@ -202,7 +202,8 @@ module Buildr
         Buildr.projects.each do |project|
           project.cobertura.data_file = data_file
           project.test.options[:properties]["net.sourceforge.cobertura.datafile"] = data_file
-          project.task('cobertura:instrument').invoke
+          instrument_task ="#{project.name}:cobertura:instrument"
+          task(instrument_task).invoke if Rake::Task.task_defined?(instrument_task)
         end
       end
       

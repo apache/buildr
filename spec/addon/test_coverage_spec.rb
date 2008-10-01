@@ -178,7 +178,7 @@ describe 'test coverage tool', :shared=>true do
         write 'src/main/java/Foo.java', 'public class Foo {}'
         write 'bar/src/main/java/Bar.java', 'public class Bar {}'
         write_test :for=>'Bar', :in=>'bar/src/test/java'
-        define('foo') { define('bar')}
+        define('foo') { define('bar') }
       end
 
       it 'should have a default target' do
@@ -205,6 +205,12 @@ describe 'test coverage tool', :shared=>true do
           task("#{toolname}:html").invoke
           htlm_report_contents = Dir[File.join(@tool_module.report_to(:html), '**/*.html')].map{|path|File.open(path).read}.join
           htlm_report_contents.should =~ /TOKEN/
+        end
+        
+        it 'should handle gracefully a project with no source' do
+          define 'baz', :base_dir=>'baz'
+          task("#{toolname}:html").invoke
+          lambda { task("#{toolname}:html").invoke }.should_not raise_error
         end
       end
     end

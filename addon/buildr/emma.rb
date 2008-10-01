@@ -207,8 +207,9 @@ module Buildr
           Emma.ant do |ant|
             ant.merge :outfile=>data_file do
               Buildr.projects.each do |project|
-                ant.fileset :file=>project.emma.metadata_file
-                ant.fileset :file=>project.emma.coverage_file
+                [project.emma.metadata_file, project.emma.coverage_file].each do |data_file|
+                  ant.fileset :file=>data_file if File.exist?(data_file)
+                end
               end
             end
             ant.report do
