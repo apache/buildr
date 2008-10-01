@@ -46,7 +46,7 @@ begin
     task.spec_opts << '--colour' if $stdout.isatty
     task.rcov = true
     task.rcov_dir = 'reports/coverage'
-    task.rcov_opts << '--exclude / --include-file ^lib --text-summary'
+    task.rcov_opts << '--exclude / --include-file ^lib --include-file ^addon --text-summary'
   end
   file 'reports/coverage'=>'coverage'
 
