@@ -55,6 +55,7 @@
 * Fixed:  BUILDR-138 ScalaTest premature use of Buildr::Repositories
           inconsistent with customizing locations.
 * Fixed:  BUILDR-152 Project.task fails when task name starts with a colon.
+* Fixed:  BUILDR-157 Tasks library not loaded from a submodule. 
 * Docs:   BUILDR-111 Troubleshoot tip when Buildr's bin directory shows up in
           RUBYLIB (Geoffrey Ruscoe).
 
