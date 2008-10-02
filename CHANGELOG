@@ -23,6 +23,8 @@
 * Change: BUILDR-153 To customize the SVN tag used by the release task, set
           Release.tag_name to either the tag value or a proc that takes the
           version number and return the desired tag.
+* Fixed:  BUILDR-137 JRuby 1.1.3 and Buildr 1.3.2 don't appear to work
+          (on Windows).
 * Fixed:  BUILDR-135. Extracted reusable replacement logic into Filter::Mapper
 * Fixed:  BUILDR-129. Modifying a project manifest should not alter it's
           parent project manifest.

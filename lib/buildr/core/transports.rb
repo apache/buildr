@@ -18,8 +18,7 @@ require 'cgi'
 require 'net/http'
 require 'net/https'
 # PATCH:  On Windows, Net::SSH 2.0.2 attempts to load the Pageant DLLs which break on JRuby.
-$LOADED_FEATURES.unshift 'net/ssh/authentication/pageant' if RUBY_PLATFORM =~ /java/
-require 'net/ssh'
+$LOADED_FEATURES << 'net/ssh/authentication/pageant.rb' if RUBY_PLATFORM =~ /java/
 require 'net/sftp'
 require 'uri'
 require 'digest/md5'

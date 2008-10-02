@@ -68,7 +68,7 @@ begin
   end
 
   task 'setup' do
-    install_gem 'win32console' if Gem.win_platform? # Colors for RSpec, only on Windows platform.
+    install_gem 'win32console' if windows? && !RUBY_PLATFORM[/java/] # Colors for RSpec, only on Windows platform.
   end
 
 rescue LoadError
