@@ -470,6 +470,22 @@ describe Buildr::Project, '#test' do
     end
   end
   
+  it 'should accept to set a test property in the top project' do
+    define 'foo' do
+        test.options[:properties][:foo] = 'bar'
+    end
+    project('foo').test.options[:properties][:foo].should == 'bar'
+  end
+  
+  it 'should accept to set a test property in a subproject' do
+    define 'foo' do
+      define 'bar' do
+        test.options[:properties][:bar] = 'baz'
+      end
+    end
+    project('foo:bar').test.options[:properties][:bar].should == 'baz'
+  end
+  
   it 'should not change options of unrelated projects when using #options' do
     define 'foo' do
       test.options[:properties][:foo] = 'bar'

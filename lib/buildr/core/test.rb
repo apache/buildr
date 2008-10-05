@@ -191,7 +191,7 @@ module Buildr
       @forced_need = false
       parent_task = Project.parent_task(name)
       if parent_task.respond_to?(:options)
-        @options = OpenObject.new { |hash, key| parent_task.options[key].clone rescue parent_task.options[key] }
+        @options = OpenObject.new { |hash, key| hash[key] = parent_task.options[key].clone rescue hash[key] = parent_task.options[key] }
       else
         @options = OpenObject.new(default_options)
       end
