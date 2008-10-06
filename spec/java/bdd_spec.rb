@@ -38,7 +38,7 @@ describe Buildr::RSpec do
     failure = File.expand_path('src/spec/ruby/failure_spec.rb')
     write(failure, 'describe("failure") { it("is false") { true.should == false } }')
     error = File.expand_path('src/spec/ruby/error_spec.rb')
-    write(error, 'describe("error") { it("raises") { eval("lambda") } }')
+    write(error, 'describe("error") { it("raises") { lambda; } }')
     foo do
       lambda { test.invoke }.should raise_error(/Tests failed/)
       test.tests.should include(success, failure, error)
@@ -208,7 +208,7 @@ describe Buildr::JtestR do
       require 'test/unit'
       class TC_Error < Test::Unit::TestCase
         def test_error
-          eval('lambda')
+          lambda;
         end
       end
     TESTUNIT
@@ -226,7 +226,7 @@ describe Buildr::JtestR do
     failure = File.expand_path('src/spec/ruby/failure_expect.rb')
     write(failure, 'Expectations { expect(true) { false } }')
     error = File.expand_path('src/spec/ruby/error_expect.rb')
-    write(error, 'Expectations { expect(nil) { eval("lambda") } }')
+    write(error, 'Expectations { expect(nil) { lambda; } }')
     foo do
       lambda { test.invoke }.should raise_error(/Tests failed/)
       test.tests.should include(success, failure, error)
@@ -241,7 +241,7 @@ describe Buildr::JtestR do
     failure = File.expand_path('src/spec/ruby/failure_spec.rb')
     write(failure, 'describe("failure") { it("is false") { true.should == false } }')
     error = File.expand_path('src/spec/ruby/error_spec.rb')
-    write(error, 'describe("error") { it("raises") { eval("lambda") } }')
+    write(error, 'describe("error") { it("raises") { lambda; } }')
     pending =  File.expand_path('src/spec/ruby/pending_spec.rb')
     write(pending, 'describe("peding") { it "is not implemented" }')
     foo do

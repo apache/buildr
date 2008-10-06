@@ -269,6 +269,7 @@ module Buildr
         Buildr::TestFramework::TestResult::Error.guard('<%= runner.file %>') do
           ::Spec::Runner::CommandLine.run($rspec_options)
         end
+        exit 0 # let buildr figure the result from the yaml file
       }
       Filter::Mapper.new(:erb, binding).transform(runner_erb)
     end
@@ -365,7 +366,7 @@ module Buildr
 
     def runner_config
       runner = super
-      runner.gems.update 'rspec' => '>0'
+      runner.gems.update 'rspec' => '>= 1.1.5'
       runner.requires.unshift 'spec', 'jtestr'
       runner
     end

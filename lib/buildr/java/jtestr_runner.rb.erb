@@ -100,6 +100,16 @@ begin
   argv = <%= runner.rspec.inspect %> || []
   argv.push *<%= tests.inspect %>
   Buildr::TestFramework::TestResult::RSpecResultHandler.init(argv, output, output)
+
+  # JtestR uses this method, no longer on rspec
+  module ::Spec; def self.run=(flag); end; end
+  # JtestR uses a deprecated arity, so to complain with latest version we override it
+  class ::JtestR::RSpecResultHandler 
+    alias_method :deprecated_example_pending, :example_pending
+    def example_pending(example, message, pending_caller)
+      deprecated_example_pendng(example, message)
+    end
+  end
   
   jtestr.run *args
 
@@ -107,6 +117,8 @@ rescue => e
   Buildr::TestFramework::TestResult::Error.dump_yaml('<%= runner.result %>', e) rescue \
   puts "-[--- ERROR ---]-", e.class, e.message, *e.backtrace
 end
+
+exit 0 # let buildr find the erros from the result yaml
   
 # Local Variables:
 # mode: ruby

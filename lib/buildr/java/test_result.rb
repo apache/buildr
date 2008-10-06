@@ -27,6 +27,7 @@ module Buildr #:nodoc:
         def initialize(message, backtrace)
           @message = message
           @backtrace = backtrace
+          set_backtrace backtrace
         end
 
         def self.dump_yaml(file, e)
@@ -59,9 +60,12 @@ module Buildr #:nodoc:
         def initialize(options, where)
           @options = options
           @where = where
+          @result = Hash.new
+          @result[:succeeded] = []
+          @result[:failed] = []
         end
         
-        %w[ example_started example_passed example_failed example_pending
+        %w[ example_started
             start_dump dump_failure dump_summary dump_pending ].each do |meth|
           module_eval "def #{meth}(*args); end"
         end
@@ -70,24 +74,38 @@ module Buildr #:nodoc:
           @example_group = example_group
         end
 
+        def example_passed(example)
+        end
+
+        def example_pending(example, counter, failure)
+        end
+
+        def example_failed(example, counter, failure)
+          if example_group.respond_to?(:spec_path)
+            result.failed << example_group.spec_path.gsub(/:\d+$/, '')
+          else
+            path = path_from_bt(failure.exception.backtrace)
+            result.failed << path if path
+          end
+        end
+
         def start(example_count)
           @result = TestResult.new
         end
 
+        def path_from_bt(ary)
+          files = options.files
+          test = nil
+          ary.find do |bt|
+            bt = bt.split(':').first.strip
+            test = bt if files.include?(bt)
+          end
+          test
+        end
+
         def close
           files = options.files
-          failure_from_bt = lambda do |ary|
-            test = nil
-            ary.find do |bt|
-              bt = bt.split(':').first.strip
-              test = bt if files.include?(bt)
-            end
-            test
-          end
-          options.reporter.instance_variable_get(:@failures).each do |failure|
-            result.failed << files.delete(failure_from_bt[failure.exception.backtrace])
-          end
-          result.succeeded |= files
+          result.succeeded = files - result.failed
           
           FileUtils.mkdir_p(File.dirname(where))
           File.open(where, 'w') { |f| f.puts YAML.dump(result) }
@@ -238,8 +256,21 @@ module Buildr #:nodoc:
             nil
           when Test::Unit::Failure
             Error.new(fault.message, fault.location)
-          when Test::Unit::Error, Expectations::Results::Error, Spec::Runner::Reporter::Failure
+          when Test::Unit::Error
+            if fault.exception.is_a?(NativeException)
+              exception = fault.exception.cause
+              bt = exception.stack_trace.to_a
+            else
+              exception = fault.exception
+              bt = exception.backtrace
+            end
+            Error.new(exception.message, bt)
+          when Expectations::Results::Error
             fault.exception
+          when Spec::Runner::Reporter::Failure
+            ex = fault.exception
+            fault.example.instance_variable_get(:@_implementation).to_s =~ /@(.+:\d+)/
+            Error.new(ex.message, [$1.to_s] + ex.backtrace)
           when Expectations::Results
             file = fault.file
             line = fault.line
