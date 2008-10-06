@@ -332,7 +332,7 @@ module Buildr #:nodoc:
             parameters.push(value)
           else
             parameters.push obj
-            classes.push obj.java_class
+            classes.push obj.class.java_class
           end
         end
         on_class = [on_class.java_class].to_java(java.lang.Class)[0]
