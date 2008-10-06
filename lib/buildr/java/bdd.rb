@@ -366,8 +366,9 @@ module Buildr
 
     def runner_config
       runner = super
-      runner.gems.update 'rspec' => '>= 1.1.5'
-      runner.requires.unshift 'spec', 'jtestr'
+      # JtestR 0.3.1 comes with rspec 1.1.4 (and any other jtestr dependency) included, 
+      # so the rspec version used depends on the jtestr jar.
+      runner.requires.unshift 'jtestr'
       runner
     end
 
