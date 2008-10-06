@@ -116,7 +116,7 @@ h3. Using development build
 Occasionally we'll make development builds from the current code in trunk/head. We appreciate if you can take the time to test those out and report any bugs. To install development builds, use the Gem repository at @people.apache.org/~assaf/buildr/snapshot@:
 
 {{{!sh
-gem source --add http://people.apache.org/~assaf/buildr/snapshot
+gem source --add http://people.apache.org/~assaf/buildr/snapshot/
 }}}
 
 Since Ruby Gems uses version numbers to detect new releases, if you installed Buildr from a snapshot and want to upgrade to a newer snapshot or the latest official release, you need to use @gem install buildr@ rather than @gem upgrade@.
@@ -124,7 +124,7 @@ Since Ruby Gems uses version numbers to detect new releases, if you installed Bu
 If you want to go back to using the RubyForge releases:
 
 {{{!sh
-gem source --remove http://people.apache.org/~assaf/buildr/snapshot
+gem source --remove http://people.apache.org/~assaf/buildr/snapshot/
 gem install buildr
 }}}
 
