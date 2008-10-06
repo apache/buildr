@@ -101,13 +101,15 @@ begin
   argv.push *<%= tests.inspect %>
   Buildr::TestFramework::TestResult::RSpecResultHandler.init(argv, output, output)
 
-  # JtestR uses this method, no longer on rspec
+  # JtestR uses this method, no longer available on rspec 1.1.5
   module ::Spec; def self.run=(flag); end; end
-  # JtestR uses a deprecated arity, so to complain with latest version we override it
-  class ::JtestR::RSpecResultHandler 
+  # JtestR uses a deprecated arity for the example_pending method
+  # rspec 1.1.5 needs it to take three arguments or it will complain
+  # so we override it here
+  class ::JtestR::RSpecResultHandler
     alias_method :deprecated_example_pending, :example_pending
     def example_pending(example, message, pending_caller)
-      deprecated_example_pendng(example, message)
+      deprecated_example_pending(example, message)
     end
   end
   
