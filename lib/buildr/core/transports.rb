@@ -28,24 +28,6 @@ require 'tempfile'
 require 'buildr/core/progressbar'
 
 
-# Monkeypatching: SFTP never defines the mkdir method on its session or the underlying
-# driver, it just redirect calls through method_missing. Rake, on the other hand, decides
-# to define mkdir on Object, and so routes our calls to FileUtils.
-module Net #:nodoc:all
-  class Session
-    def mkdir(path, attrs = {})
-      method_missing :mkdir, path, attrs
-    end
-  end
-
-  class SFTP::Protocol::Driver
-    def mkdir(first, path, attrs = {})
-      method_missing :mkdir, first, path, attrs
-    end
-  end
-end
-
-
 # Not quite open-uri, but similar. Provides read and write methods for the resource represented by the URI.
 # Currently supports reads for URI::HTTP and writes for URI::SFTP. Also provides convenience methods for
 # downloads and uploads.
