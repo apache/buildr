@@ -270,7 +270,7 @@ module Buildr
           ::Spec::Runner::CommandLine.run($rspec_options)
         end
       }
-      Filter::Mapper.new(:erb, binding).result(runner_erb)
+      Filter::Mapper.new(:erb, binding).transform(runner_erb)
     end
 
   end
@@ -372,7 +372,7 @@ module Buildr
 
     def runner_content(binding)
       runner_erb = File.join(File.dirname(__FILE__), 'jtestr_runner.rb.erb')
-      Filter::Mapper.new(:erb, binding).result(File.read(runner_erb), runner_erb)
+      Filter::Mapper.new(:erb, binding).transform(File.read(runner_erb), runner_erb)
     end
     
   end
