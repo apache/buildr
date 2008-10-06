@@ -195,6 +195,8 @@ Here is the list of people who are actively working and committing on Buildr:
 
 *Alex Boisvert*
 
+Came to Buildr as a refuge from the Maven Uncertainly Principle.  Alex has been working mostly on the Scala integration and believes Ruby scripting is a great complement to statically typed languages. 
+
 *"Matthieu Riou":http://offthelip.org*
 
 *Victor Hugo Borja* (vborja at apache.org)
