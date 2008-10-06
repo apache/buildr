@@ -570,6 +570,10 @@ module Buildr #:nodoc:
           if rt.nil? || new_stamp > old_stamp
             rt = nail.buildr
             app = rt.Buildr.application
+            app.instance_variable_set(:@rakefile, bf)
+            nail.out.println "Currently nailgun has issues reloading buildfiles, will get fixed in next release."
+            nail.out.println "Restart your nailgun server."
+            return nail.exit(1)
           else
             app = rt.Buildr.application.extend AppMixin
             app.lookup('buildr:initialize').instance_eval do 
