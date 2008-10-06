@@ -86,7 +86,7 @@ If you want to learn more about Git, you can start by watching Scott Chacon’s 
 
 And keep this "Git cheat sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet-medium.png close at hand. Very useful.
 
-*Note:* The GitHub repository is maintained by contributors to this project, but is *not* an official Apache repository.  To obtain Buildr from the official Apache repository, consider using @giv-svn@ instead.
+*Note:* The GitHub repository is maintained by contributors to this project, but is *not* an official Apache repository.  To obtain Buildr from the official Apache repository, consider using @git-svn@ instead.
 
 h3. Working with Source Code
 
@@ -173,7 +173,7 @@ Yes, we do make typos, spelling errors and sometimes we write things that don't 
 
 For simple typos and quick fixes, just send a message to the mailing list or log an issue in JIRA.
 
-If you end up rewriting a significant piece of text, or add new documentation (your rock!), send a patch.  Making documentation patches is fairly easy.  All the documentation is generated from text files in the @doc/pages@ directory, so all you need to do is check it out from SVN, edit, and @svn diff@ to create a patch.
+If you end up rewriting a significant piece of text, or add new documentation (you rock!), send a patch.  Making documentation patches is fairly easy.  All the documentation is generated from text files in the @doc/pages@ directory, so all you need to do is check it out from SVN, edit, and @svn diff@ to create a patch.
 
 We use "Textile":http://www.textism.com/tools/textile/ as the markup language, it takes all of a few minutes to learn, it's intuitive to use, and produces clean HTML.  You can learn it all in a few minutes from the "Textile Reference Manual":http://redcloth.org/textile.  Also check out the "Textile Quick Reference":http://hobix.com/textile/quick.html.
 
