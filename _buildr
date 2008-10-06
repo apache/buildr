@@ -19,32 +19,20 @@
 # For example to use jruby:
 #   export _BUILDR_RB=/path/to/jruby
 
-buildr_root = File.dirname(__FILE__)
-buildr_ruby = ENV['_BUILDR_RB'] || 'ruby'
-
-cmd = [
-    buildr_ruby,
-    "-I"+File.join(buildr_root, 'lib'),
-    "-I"+File.join(buildr_root, 'addon'),
-]
-
-cmd.push '-e', %q{
-  start = Time.now
-  require 'rubygems'
-  gem 'rake', '0.8.1' # Required since Buildr won't run with 0.8.2 for now.
-  require 'buildr'
-  Buildr.application.run
-  if verbose
-    elapsed = Time.now - start
-    real = []
-    real << ("%ih" % (elapsed / 3600)) if elapsed >= 3600
-    real << ("%im" % ((elapsed / 60) % 60)) if elapsed >= 60
-    real << ("%.3fs" % (elapsed % 60))
-    puts $terminal.color("Completed in #{real.join}", :green)
-  end
-}
-
-cmd.push '--' # The following args are for Buildr
-cmd.push *ARGV
-exec *cmd
-
+start = Time.now
+require 'rubygems'
+$LOAD_PATH << File.join(File.dirname(__FILE__), 'lib') << File.join(File.dirname(__FILE__), 'addon')
+spec = Gem::Specification.load(File.join(File.dirname(__FILE__), 'buildr.gemspec'))
+spec.dependencies.each do |dep|
+  gem dep.name, dep.version_requirements.to_s
+end
+require 'buildr'
+Buildr.application.run
+if verbose
+  elapsed = Time.now - start
+  real = []
+  real << ("%ih" % (elapsed / 3600)) if elapsed >= 3600
+  real << ("%im" % ((elapsed / 60) % 60)) if elapsed >= 60
+  real << ("%.3fs" % (elapsed % 60))
+  puts $terminal.color("Completed in #{real.join}", :green)
+end
