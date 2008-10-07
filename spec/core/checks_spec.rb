@@ -221,7 +221,7 @@ describe Buildr::Checks::Expectation, " exist" do
 end
 
 
-describe Buildr::Checks::Expectation, " exist" do
+describe Buildr::Checks::Expectation, " be_empty" do
 
   it "should pass if file has no content" do
     define "foo" do
