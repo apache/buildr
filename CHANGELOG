@@ -5,6 +5,7 @@
 * Added:  Release task support for alternative SVN repository layout
           (e.g., http://my.repo.org/trunk/foo).
 * Added:  BUILDR-128 Emma support
+* Added:  BUILDR-135. Extracted reusable replacement logic into Filter::Mapper
 * Added:  BUILDR-148 It is now possible to set the version of various 3rd
           party libraries from the build.yml file.  Supported libraries
           include Ant and the various test and BDD frameworks.
@@ -49,7 +50,6 @@
           using #options instead of #using (Lacton).
 * Fixed:  BUILDR-129. Modifying a project manifest should not alter it's
           parent project manifest.
-* Fixed:  BUILDR-135. Extracted reusable replacement logic into Filter::Mapper
 * Fixed:  BUILDR-137 JRuby 1.1.3 and Buildr 1.3.2 don't appear to work
           (on Windows).
 * Fixed:  BUILDR-138 ScalaTest premature use of Buildr::Repositories
