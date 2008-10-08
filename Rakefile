@@ -58,5 +58,5 @@ task 'stage:check' do
   # Dependency check for the other platform, i.e. if making a release with Ruby,
   # run dependency checks with JRuby. (Also, good opportunity to upgrade other
   # platform's dependencies)
-  sh RUBY_PLATFORM =~ /java/ ? 'ruby' : 'jruby', '-S', 'rake', 'setup dependency'
+  sh RUBY_PLATFORM =~ /java/ ? 'ruby' : 'jruby -S rake setup dependency'
 end
