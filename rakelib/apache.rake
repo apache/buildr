@@ -88,7 +88,7 @@ namespace 'apache' do
     url = args.incubating ? "http://www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
       "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
     rows = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
-      name, md5 = File.basename(pkg), MD5.file(pkg).to_s
+      name, md5 = File.basename(pkg), Digest::MD5.file(pkg).to_s
       %{| "#{name}":#{url}/#{name} | "#{md5}":#{url}/#{name}.md5 | "Sig":#{url}/#{name}.asc |}
     }
     textile = <<-TEXTILE
