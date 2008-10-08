@@ -49,7 +49,10 @@ namespace 'apache' do
   end
   
   # Staging checks specific for Apache.
-  task 'check'=>'license'
+  task 'check'=>'license' do |task, args|
+    args.gpg_user or fail "Please run with gpg_user=<argument for gpg --local-user>"
+    fail "No GPG user #{args.gpg_user}" if `gpg --list-keys #{args.gpg_user}`.empty?
+  end
 
 
   file 'staged/distro'=>'package' do
