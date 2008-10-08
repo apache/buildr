@@ -121,7 +121,55 @@ p>. ("Release signing keys":#{url}/KEYS)
     sh 'rsync', '--progress', '--recursive', '--delete', 'published/site/', target
     puts 'Done'
   end
+  
+  
+  file 'release-vote-email.txt'=>'CHANGELOG' do |task|
+    # Need to know who you are on Apache, local user may be different (see .ssh/config).
+    whoami = `ssh people.apache.org whoami`.strip
+    base_url = "http://people.apache.org/~#{whoami}/buildr/#{spec.version}"
+    # Need changes for this release only.
+    changelog = File.read('CHANGELOG').scan(/(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/)
+    changes = changelog[0][2]
+    previous_version = changelog[1][1]
 
+    email = <<-EMAIL
+To: buildr-dev@incubator.apache.org
+Subject: [VOTE] Buildr #{spec.version} release
+
+We're voting on the source distributions available here:
+#{base_url}/distro/
+
+Specifically:
+#{base_url}/distro/buildr-#{spec.version}-incubating.tgz
+#{base_url}/distro/buildr-#{spec.version}-incubating.zip
+
+The documentation generated for this release is available here:
+#{base_url}/site/
+#{base_url}/site/buildr.pdf
+
+The official specification against which this release was tested:
+#{base_url}/site/specs.html
+
+Test coverage report:
+#{base_url}/site/coverage/index.html
+
+
+The following changes were made since #{previous_version}:
+
+#{changes}
+    EMAIL
+    File.open task.name, 'w' do |file|
+      file.write email
+    end
+    puts "Created release vote email template in '#{task.name}':"
+    puts email
+  end
+
+end
+
+task 'clobber' do
+  rm_rf 'snapshot'
+  rm_f 'release-vote-email.txt'
 end
 
 
@@ -135,7 +183,6 @@ end
 task 'stage' do
   task('apache:snapshot').invoke
 end
+task 'stage:wrapup'=>'release-vote-email.txt'
+
 task 'release:publish'=>['apache:publish:distro', 'apache:publish:site']
-task 'clobber' do
-  rm_rf 'snapshot'
-end

@@ -39,7 +39,10 @@ namespace 'stage' do
     sh 'rsync', '--progress', '--recursive', 'staged/', args.staging
     puts 'Done'
   end
+  
+  # Put anything that happens post staging here, e.g. release vote email template.
+  task 'wrapup'
 end
 
 desc 'Stage files for the release, upload them to staging server'
-task 'stage'=>['stage:check', 'stage:prepare', 'stage:upload']
+task 'stage'=>['stage:check', 'stage:prepare', 'stage:upload', 'stage:wrapup']
