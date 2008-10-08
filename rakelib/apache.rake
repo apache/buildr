@@ -65,8 +65,8 @@ namespace 'apache' do
     puts "Signing packages in staged/distro as user #{gpg_user}"
     FileList['staged/distro/*.{gem,zip,tgz}'].each do |pkg|
       bytes = File.open(pkg, 'rb') { |file| file.read }
-      File.open(pkg + '.md5', 'w') { |file| file.write MD5.hexdigest(bytes) << ' ' << File.basename(pkg) }
-      File.open(pkg + '.sha1', 'w') { |file| file.write SHA1.hexdigest(bytes) << ' ' << File.basename(pkg) }
+      File.open(pkg + '.md5', 'w') { |file| file.write Digest::MD5.hexdigest(bytes) << ' ' << File.basename(pkg) }
+      File.open(pkg + '.sha1', 'w') { |file| file.write Digest::SHA1.hexdigest(bytes) << ' ' << File.basename(pkg) }
       sh 'gpg', '--local-user', gpg_user, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
     end
     cp 'etc/KEYS', 'staged/distro'
