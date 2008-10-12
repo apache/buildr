@@ -169,6 +169,10 @@ describe Project, '#target' do
     @project.layout[:target] = 'baz'
     @project.target.should eql('baz')
   end
+  
+  it 'should be removed in version 1.5 since it was deprecated in version 1.3' do
+    Gem::Version.new(Buildr::VERSION).should < Gem::Version.new('1.5')
+  end
 end
 
 
