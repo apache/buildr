@@ -74,7 +74,7 @@ unless defined?(SpecHelpers)
       MessageWithSeverityMatcher.new :info, message
     end
 
-    # Tests if a warning was issued. You can use a string or regular expression.
+    # Test if a warning was shown. You can use a string or regular expression.
     #
     # For example:
     #   lambda { warn 'ze test' }.should show_warning(/ze test/)
