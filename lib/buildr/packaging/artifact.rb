@@ -312,7 +312,7 @@ module Buildr
     # Use this when you want to install or upload an artifact from a given file, for example:
     #   test = artifact('group:id:jar:1.0').from('test.jar')
     #   install test
-    # See also Buildr#install and Buildr#deploy.
+    # See also Buildr#install and Buildr#upload.
     def from(path)
       path = File.expand_path(path.to_s)
       enhance [path] do

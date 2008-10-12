@@ -629,9 +629,9 @@ module Buildr
     # Use this method to return the integration tests task, or enhance it with a block to execute.
     #
     # There is one integration tests task you can execute directly, or as a result of running the package
-    # task (or tasks that depend on it, like install and deploy). It contains all the tests marked with
+    # task (or tasks that depend on it, like install and upload). It contains all the tests marked with
     # :integration=>true, all other tests are considered unit tests and run by the test task before packaging.
-    # So essentially: build=>test=>packaging=>integration=>install/deploy.
+    # So essentially: build=>test=>packaging=>integration=>install/upload.
     #
     # You add new tests from projects that define integration tests using the regular test task,
     # but with the following addition:
@@ -658,7 +658,7 @@ module Buildr
   class Options
 
     # Runs tests after the build when true (default). This forces tests to execute
-    # after the build, including when running build related tasks like install, deploy and release.
+    # after the build, including when running build related tasks like install, upload and release.
     #
     # Set to false to not run any tests. Set to :all to run all tests, ignoring failures.
     #

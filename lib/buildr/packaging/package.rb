@@ -35,7 +35,7 @@ module Buildr
       Project.local_task('uninstall') { |name| "Uninstalling packages from #{name}" }
       desc 'Upload packages created by the project'
       Project.local_task('upload'=>'package') { |name| "Deploying packages from #{name}" }
-      # Anything that comes after local packaging (install, deploy) executes the integration tests,
+      # Anything that comes after local packaging (install, upload) executes the integration tests,
       # which do not conflict with integration invoking the project's own packaging (package=>
       # integration=>foo:package is not circular, just confusing to debug.)
       task 'package' do

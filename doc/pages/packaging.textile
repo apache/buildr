@@ -384,7 +384,7 @@ If you need to upload other files, you can always extend the @upload@ task and u
 
 {{{!ruby
 # We'll let some other task decide how to create 'docs'
-task 'deploy'=>'docs' do
+task 'upload'=>'docs' do
   uri = URI("sftp://#{username}:#{password}@var/www/docs")
   uri.upload file('docs')
 end
