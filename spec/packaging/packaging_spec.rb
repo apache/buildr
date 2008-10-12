@@ -75,7 +75,7 @@ describe Project, '#package' do
     end
   end
 
-  it 'should default to composed it for nested projects' do
+  it 'should default to composed id for nested projects' do
     define('foo', :version=>'1.0') do
       define 'bar' do
         package(:jar).id.should eql('foo-bar')
