@@ -368,13 +368,17 @@ describe Project, '#on_define' do
     define('foo') { define 'bar' }
     scopes.should eql([['foo'], ['foo', 'bar']])
   end
+  
+  it 'should be removed in version 1.5 since it was deprecated in version 1.3' do
+    Buildr::VERSION.should < '1.5'
+  end
 end
 
 
 describe Rake::Task, ' recursive' do
   before do
     @order = []
-    Project.on_define do |project|
+    Project.on_define do |project| # TODO on_define is deprecated
       project.recursive_task('doda') { @order << project.name }
     end
     define('foo') { define('bar') { define('baz') } }

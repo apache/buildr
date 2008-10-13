@@ -197,7 +197,8 @@ describe Buildr::CompileTask, '#dependencies' do
     compile_task.dependencies.should == project('bar').packages
   end
 
-  it 'should be accessible as classpath' do
+  it 'should be accessible as classpath up to version 1.5 since it was deprecated in version 1.3' do
+    Buildr::VERSION.should < '1.5'
     lambda { compile_task.classpath = jars }.should change(compile_task, :dependencies).to(jars)
     lambda { compile_task.dependencies = [] }.should change(compile_task, :classpath).to([])
   end
