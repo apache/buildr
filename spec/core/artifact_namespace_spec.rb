@@ -464,7 +464,7 @@ describe Buildr do
         artifact_ns.use 'some:other:jar:1.0'
         artifact_ns.use 'bat:man:jar:1.0'
         compile.with :cool, :other, :'bat:man:jar'
-        compile.classpath.map(&:to_spec).should include('cool:aid:jar:1.0', 'some:other:jar:1.0', 'bat:man:jar:1.0')
+        compile.dependencies.map(&:to_spec).should include('cool:aid:jar:1.0', 'some:other:jar:1.0', 'bat:man:jar:1.0')
       end
     end
     
@@ -472,7 +472,7 @@ describe Buildr do
       artifact_ns(:moo).muu = 'moo:muu:jar:1.0'
       define 'foo' do
         compile.with artifact_ns(:moo)
-        compile.classpath.map(&:to_spec).should include('moo:muu:jar:1.0')
+        compile.dependencies.map(&:to_spec).should include('moo:muu:jar:1.0')
       end
     end
   end
