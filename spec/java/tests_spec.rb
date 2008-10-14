@@ -40,6 +40,11 @@ describe Buildr::JUnit do
     project('foo').test.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
   end
   
+  it 'should have REQUIRES up to version 1.5 since it was deprecated in 1.3.3' do
+    Buildr::VERSION.should < '1.5'
+    lambda { JUnit::REQUIRES }.should_not raise_error
+  end
+  
   it 'should pick JUnit version from junit build settings' do
     Buildr::JUnit.instance_eval { @dependencies = nil }
     write 'build.yaml', 'junit: 1.2.3'
