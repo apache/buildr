@@ -46,7 +46,7 @@ To upgrade to a new version or install a specific version:
 
 {{{!sh
 $ sudo env JAVA_HOME=$JAVA_HOME gem update buildr
-$ sudo env JAVA_HOME=$JAVA_HOME gem install buildr -v 1.3.3
+$ sudo env JAVA_HOME=$JAVA_HOME gem install buildr -v 1.3.4
 }}}
 
 You can also use this script "to install Buildr on Linux":scripts/install-linux.sh.  This script will install Buildr or if already installed, upgrade to a more recent version.  It will also install Ruby 1.8.6 if not already installed (using @yum@ or @apt-get@) and upgrage RubyGems to 1.0.1.
@@ -78,7 +78,7 @@ To upgrade to a new version or install a specific version:
 
 {{{!sh
 $ sudo env JAVA_HOME=$JAVA_HOME gem update buildr
-$ sudo env JAVA_HOME=$JAVA_HOME gem install buildr -v 1.3.3
+$ sudo env JAVA_HOME=$JAVA_HOME gem install buildr -v 1.3.4
 }}}
 
 You can also use this script "to install Buildr on OS X":scripts/install-osx.sh.  This script will install Buildr or if already installed, upgrade to a more recent version.  It will also install Ruby 1.8.6 if not already installed (using MacPorts) and upgrage RubyGems to 1.0.1.
@@ -106,7 +106,7 @@ To upgrade to a new version or install a specific version:
 
 {{{!sh
 > gem update buildr
-> gem install buildr -v 1.3.3
+> gem install buildr -v 1.3.4
 }}}
 
 
@@ -134,7 +134,7 @@ To upgrade to a new version or install a specific version:
 
 {{{!sh
 $ jruby -S gem update buildr
-$ jruby -S gem install buildr -v 1.3.3
+$ jruby -S gem install buildr -v 1.3.4
 }}}
 
 You can also use this script "to install Buildr on JRuby":scripts/install-jruby.sh.  This script will install Buildr or if already installed, upgrade to a more recent version.  If necessary, it will also install JRuby 1.1 in @/opt/jruby@ and update the @PATH@ variable in @~/.bash_profile@ or @~/.profile@.
