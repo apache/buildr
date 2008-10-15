@@ -22,7 +22,6 @@ repositories.remote << 'http://repo1.maven.org/maven2'
 repositories.remote << 'http://scala-tools.org/repo-releases'
 
 require 'buildr/groovy'
-require 'buildr/scala'
 
 Java.load # Anything added to the classpath.
 task('buildr:scala:download').invoke

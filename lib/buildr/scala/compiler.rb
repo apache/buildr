@@ -106,4 +106,4 @@ end
 
 # Scala compiler comes first, ahead of Javac, this allows it to pick
 # projects that mix Scala and Java code by spotting Scala code first.
-Buildr::Compiler.compilers.unshift Buildr::Scala::Scalac
+Buildr::Compiler.compilers << Buildr::Scala::Scalac
