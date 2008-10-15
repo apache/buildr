@@ -262,7 +262,7 @@ module Buildr
     def find_buildfile #:nodoc:
       here = original_dir
       Dir.chdir(here) unless Dir.pwd == here
-      while ! have_rakefile
+      while !(@rakefile = have_rakefile)
         Dir.chdir('..')
         if Dir.pwd == here || options.nosearch
           error = "No Buildfile found (looking for: #{@rakefiles.join(', ')})"

@@ -41,7 +41,7 @@ Gem::Specification.new do |spec|
                            '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
 
   # Tested against these dependencies.
-  spec.add_dependency 'rake',                 '0.8.1'
+  spec.add_dependency 'rake',                 '0.8.3'
   spec.add_dependency 'builder',              '2.1.2'
   spec.add_dependency 'net-ssh',              '2.0.4'
   spec.add_dependency 'net-sftp',             '2.0.1'
