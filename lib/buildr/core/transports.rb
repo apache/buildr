@@ -16,7 +16,7 @@
 
 require 'uri'
 require 'net/http'
-require 'net/https'
+Net.autoload :HTTPS, 'net/https'
 # PATCH:  On Windows, Net::SSH 2.0.2 attempts to load the Pageant DLLs which break on JRuby.
 $LOADED_FEATURES << 'net/ssh/authentication/pageant.rb' if RUBY_PLATFORM =~ /java/
 gem 'net-ssh' ; Net.autoload :SSH, 'net/ssh'
