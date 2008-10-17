@@ -16,8 +16,8 @@
 
 require 'buildr/packaging/package'
 require 'buildr/packaging/zip'
-require 'rubyforge'
-require 'rubygems/package'
+gem 'rubyforge' ; autoload :RubyForge, 'rubyforge'
+Gem.autoload :Package, 'rubygems/package'
 
 
 module Buildr

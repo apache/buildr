@@ -14,9 +14,6 @@
 # the License.
 
 
-require 'yaml'
-
-
 module Buildr
 
   # Collection of options for controlling Buildr.

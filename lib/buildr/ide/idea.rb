@@ -17,7 +17,6 @@
 require 'buildr/core/project'
 require 'buildr/packaging'
 require 'stringio'
-require 'rexml/document'
 
 
 module Buildr

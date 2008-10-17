@@ -14,18 +14,16 @@
 # the License.
 
 
-require 'cgi'
+require 'uri'
 require 'net/http'
 require 'net/https'
 # PATCH:  On Windows, Net::SSH 2.0.2 attempts to load the Pageant DLLs which break on JRuby.
 $LOADED_FEATURES << 'net/ssh/authentication/pageant.rb' if RUBY_PLATFORM =~ /java/
 require 'net/sftp'
-require 'uri'
-require 'digest/md5'
-require 'digest/sha1'
+autoload :CGI, 'cgi'
+autoload :Digest, 'digest'
 require 'stringio'
-require 'tempfile'
-require 'buildr/core/progressbar'
+autoload :ProgressBar, 'buildr/core/progressbar'
 
 
 # Not quite open-uri, but similar. Provides read and write methods for the resource represented by the URI.

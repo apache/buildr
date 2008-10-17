@@ -14,7 +14,6 @@
 # the License.
 
 
-require 'xmlsimple'
 require 'buildr/packaging'
 
 

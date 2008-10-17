@@ -13,8 +13,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+
 require 'buildr/java/tests'
 require 'buildr/java/test_result'
+
 
 module Buildr
 

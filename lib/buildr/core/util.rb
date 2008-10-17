@@ -15,8 +15,11 @@
 
 
 require 'rbconfig'
-require 'pathname'
-require 'builder' # A different kind of buildr, one we use to create XML.
+autoload :Pathname, 'pathname'
+autoload :YAML, 'yaml'
+autoload :REXML, 'rexml/document'
+gem 'xml-simple' ; autoload :XmlSimple, 'xmlsimple'
+gem 'builder' ; autoload :Builder, 'builder' # A different kind of buildr, one we use to create XML.
 
 
 module Buildr

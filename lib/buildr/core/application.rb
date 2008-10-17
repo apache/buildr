@@ -40,6 +40,7 @@ require 'rake'
 require 'highline/import'
 require 'rubygems/source_info_cache'
 require 'buildr/core/util'
+Gem.autoload :SourceInfoCache, 'rubygems/source_info_cache'
 
 
 # Gem::user_home is nice, but ENV['HOME'] lets you override from the environment.

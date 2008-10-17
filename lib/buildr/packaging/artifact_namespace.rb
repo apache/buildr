@@ -14,7 +14,7 @@
 # the License.
 
 
-require 'buildr/java/version_requirement'
+require 'buildr/packaging/version_requirement'
 
 
 module Buildr

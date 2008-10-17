@@ -17,8 +17,8 @@
 require 'buildr/core/project'
 require 'buildr/packaging/zip'
 #require 'test/unit'
-require 'spec/matchers'
-require 'spec/expectations'
+#require 'spec/matchers'
+#require 'spec/expectations'
 
 
 module Buildr

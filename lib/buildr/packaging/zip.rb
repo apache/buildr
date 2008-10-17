@@ -14,7 +14,7 @@
 # the License.
 
 
-$LOADED_FEATURES.unshift 'ftools' if RUBY_VERSION >= '1.9.0'
+$LOADED_FEATURES.unshift 'ftools' if RUBY_VERSION >= '1.9.0' # Required to properly load RubyZip under Ruby 1.9
 require 'zip/zip'
 require 'zip/zipfilesystem'
 
