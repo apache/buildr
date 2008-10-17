@@ -24,9 +24,10 @@ gem 'net-sftp' ; Net.autoload :SFTP, 'net/sftp'
 autoload :CGI, 'cgi'
 autoload :StringIO, 'stringio'
 autoload :ProgressBar, 'buildr/core/progressbar'
-require 'digest/md5'
-require 'digest/sha1'
-
+module Digest
+  autoload :MD5, 'digest/md5'
+  autoload :SHA1, 'digest/sha1'
+end
 
 # Not quite open-uri, but similar. Provides read and write methods for the resource represented by the URI.
 # Currently supports reads for URI::HTTP and writes for URI::SFTP. Also provides convenience methods for

@@ -14,9 +14,6 @@
 # the License.
 
 
-require 'buildr/packaging'
-
-
 module Buildr
   class POM
 
