@@ -31,10 +31,6 @@ def set_java_home
   fail "Please set JAVA_HOME first #{'(no need to run as sudo)' if ENV['USER'] == 'root'}" unless ENV['JAVA_HOME']
 end
 
-def set_gem_home
-  ENV['GEM_HOME'] ||= Gem.path.find { |f| File.writable?(f) }
-end
-
 def sudo_needed?
   !( windows? || ENV['GEM_HOME'] )
 end
@@ -78,7 +74,6 @@ desc "If you're building from sources, run this task first to setup the necessar
 missing = spec.dependencies.select { |dep| Gem::SourceIndex.from_installed_gems.search(dep).empty? }
 task 'setup' do
   set_java_home
-  set_gem_home
   missing.each do |dep|
     install_gem dep.name, dep.version_requirements
   end
