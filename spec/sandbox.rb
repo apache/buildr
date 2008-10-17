@@ -25,8 +25,9 @@ repositories.remote << 'http://scala-tools.org/repo-releases'
 require 'buildr/groovy'
 
 Java.load # Anything added to the classpath.
-task('buildr:scala:download').invoke
-artifacts(TestFramework.frameworks.map(&:dependencies).flatten, JUnit.ant_taskdef).each { |a| file(a).invoke }
+artifacts(TestFramework.frameworks.map(&:dependencies).flatten, JUnit.ant_taskdef).each do |path|
+  file(path).invoke
+end
 
 ENV['HOME'] = File.expand_path('tmp/home')
 
@@ -43,7 +44,7 @@ module Sandbox
     end
     
     # Require an addon without letting its callbacks pollute the Project class.
-    def require_addon addon_require_path
+    def require_addon(addon_require_path)
       project_callbacks_without_addon = Project.class_eval { @callbacks }.dup
       begin
         require addon_require_path
@@ -83,7 +84,7 @@ module Sandbox
     Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
 
     @_sandbox[:load_path] = $LOAD_PATH.clone
-    @_sandbox[:loaded_features] = $LOADED_FEATURES.clone
+    #@_sandbox[:loaded_features] = $LOADED_FEATURES.clone
     
     # Later on we'll want to lose all the on_define created during the test.
     @_sandbox[:on_define] = Project.class_eval { (@on_define || []).dup }
@@ -123,8 +124,13 @@ module Sandbox
     Layout.default = @_sandbox[:layout].clone
 
     $LOAD_PATH.replace @_sandbox[:load_path]
+<<<<<<< HEAD:spec/sandbox.rb
     $LOADED_FEATURES.replace @_sandbox[:loaded_features]
     FileUtils.rm_rf @temp
+=======
+    #$LOADED_FEATURES.replace @_sandbox[:loaded_features]
+    FileUtils.rm_rf Dir.pwd
+>>>>>>> This change necessary to run the full test suite, since autoload doesn't play nicely with our sandbox.:spec/sandbox.rb
 
     # Get rid of all artifacts.
     @_sandbox[:artifacts].tap { |artifacts| Artifact.class_eval { @artifacts = artifacts } }

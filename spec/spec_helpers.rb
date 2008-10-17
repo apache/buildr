@@ -19,7 +19,17 @@
 unless defined?(SpecHelpers)
 
   require 'rubygems'
-  $LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__)), File.expand_path('../addon', File.dirname(__FILE__))
+  # Make sure to load from these paths first, we don't want to load any
+  # code from Gem library.
+  $LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__)),
+                     File.expand_path('../addon', File.dirname(__FILE__))
+  # Buildr uses autoload extensively, but autoload when running specs creates
+  # a problem -- we sandbox $LOADED_FEATURES, so we endup autoloading the same
+  # module twice. This turns autoload into a require, which is not the right
+  # thing, but will do for now.
+  def autoload(symbol, path)
+    require path
+  end
   require 'buildr'
 
   require File.expand_path('sandbox', File.dirname(__FILE__))
