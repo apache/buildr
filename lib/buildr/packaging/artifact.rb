@@ -16,7 +16,7 @@
 
 require 'builder'
 require 'buildr/core/project'
-require 'buildr/core/transports'
+#require 'buildr/core/transports'
 require 'buildr/packaging/artifact_namespace'
 
 
