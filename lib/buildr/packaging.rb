@@ -14,8 +14,10 @@
 # the License.
 
 
-require 'buildr/packaging/zip'
-require 'buildr/packaging/tar'
 require 'buildr/packaging/artifact'
 require 'buildr/packaging/package'
+require 'buildr/packaging/archive'
+require 'buildr/packaging/ziptask'
+require 'buildr/packaging/tar'
 require 'buildr/packaging/gems'
+autoload :Zip, 'buildr/packaging/zip'

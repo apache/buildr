@@ -14,7 +14,7 @@
 # the License.
 
 
-require 'buildr/packaging/zip'
+require 'buildr/packaging/archive'
 gem 'archive-tar-minitar' ; autoload :Archive, 'archive/tar/minitar'
 
 

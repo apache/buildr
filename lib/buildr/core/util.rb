@@ -16,6 +16,7 @@
 
 require 'rbconfig'
 autoload :Pathname, 'pathname'
+autoload :Tempfile, 'tempfile'
 autoload :YAML, 'yaml'
 autoload :REXML, 'rexml/document'
 gem 'xml-simple' ; autoload :XmlSimple, 'xmlsimple'
