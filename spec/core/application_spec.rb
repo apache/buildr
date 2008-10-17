@@ -31,10 +31,26 @@ describe Buildr::Application do
 
   describe '#run' do
     it 'should execute *_load methods in order' do
-      last = nil
-      order = [:find_buildfile, :load_gems, :load_artifacts, :load_tasks, 
-               :load_requires, :load_buildfile, :load_imports, :top_level]
+      order = [:load_gems, :load_artifact_ns, :load_tasks, :raw_load_buildfile]
       order.each { |method| Buildr.application.should_receive(method).ordered }
+      Buildr.application.stub!(:exit) # With this, shows the correct error instead of SystemExit.
+      Buildr.application.run
+    end
+
+    it 'should load imports after loading buildfile' do
+      method = Buildr.application.method(:raw_load_buildfile)
+      Buildr.application.should_receive(:raw_load_buildfile) do
+        Buildr.application.should_receive(:load_imports)
+        method.call
+      end
+      Buildr.application.stub!(:exit) # With this, shows the correct error instead of SystemExit.
+      Buildr.application.run
+    end
+
+    it 'should evaluate all projects after loading buildfile' do
+      Buildr.application.should_receive(:load_imports) do
+        Buildr.should_receive(:projects)
+      end
       Buildr.application.stub!(:exit) # With this, shows the correct error instead of SystemExit.
       Buildr.application.run
     end
@@ -43,32 +59,30 @@ describe Buildr::Application do
   describe 'environment' do
     it 'should return value of BUILDR_ENV' do
       ENV['BUILDR_ENV'] = 'qa'
-      Buildr::Application.new.environment.should eql('qa')
+      Buildr.application.environment.should eql('qa')
     end
 
     it 'should default to development' do
-      Buildr::Application.new.environment.should eql('development')
+      Buildr.application.environment.should eql('development')
     end
 
     it 'should set environment name from -e argument' do
       ARGV.push('-e', 'test')
-      Buildr::Application.new.environment.should eql('test')
+      Buildr.application.send(:handle_options)
+      Buildr.application.environment.should eql('test')
       ENV['BUILDR_ENV'].should eql('test')
     end
     
     it 'should be echoed to user' do
       write 'buildfile'
-      lambda { Buildr.application.send :load_buildfile }.should show_info(%r{(in .*, development)})
-    end
-    
-    after do
-      ENV['BUILDR_ENV'] = nil
+      ENV['BUILDR_ENV'] = 'spec'
+      Buildr.application.send(:handle_options)
+      lambda { Buildr.application.send :load_buildfile }.should show(%r{(in .*, spec)})
     end
   end
 
   describe 'gems' do
     before do
-      Buildr.application.private_methods(true).should include('load_gems')
       class << Buildr.application
         public :load_gems
       end
@@ -112,7 +126,6 @@ describe Buildr::Application do
 
   describe 'load_gems' do
     before do
-      Buildr.application.private_methods(true).should include('load_gems')
       class << Buildr.application
         public :load_gems
       end
@@ -312,6 +325,9 @@ describe Buildr, 'settings' do
   end
 
   describe 'profile' do
+    before do
+    end
+
     it 'should be empty hash if no profiles.yaml' do
       Buildr.settings.profile.should == {}
     end
@@ -375,15 +391,6 @@ describe Buildr, 'settings' do
       write 'home/buildr.rb'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'home/buildr.rb')
       Buildr.application.send :load_tasks
       Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
-    end
-
-    it 'should include explicitly required files as dependencies' do
-      write 'some/file.rb'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'some/file.rb')
-      Buildr.application.instance_variable_set(:@requires, ['rbconfig', 'some/file.rb'])
-      Buildr.application.send :load_buildfile
-      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
-      Buildr.application.buildfile.prerequisites.should include(File.expand_path('some/file.rb'))
-      Buildr.application.buildfile.prerequisites.should_not include('rbconfig')
     end
   end
 end

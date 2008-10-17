@@ -72,10 +72,11 @@ module Sandbox
     # for projects, compilation. We need a place that does not depend
     # on the current directory.
     @_sandbox[:original_dir] = Dir.pwd
-    temp = File.join(File.dirname(__FILE__), '../tmp')
-    FileUtils.mkpath temp
-    Dir.chdir temp
+    @temp = File.join(File.dirname(__FILE__), '../tmp')
+    FileUtils.mkpath @temp
+    Dir.chdir @temp
 
+    ARGV.clear
     Buildr.application = Buildr::Application.new
     Sandbox.tasks.each { |block| block.call }
     Buildr.application.instance_variable_set :@rules, Sandbox.rules.clone
@@ -95,6 +96,7 @@ module Sandbox
     @_sandbox[:artifacts] = Artifact.class_eval { @artifacts }.clone
     Buildr.repositories.local = File.expand_path('repository')
     ENV['HOME'] = File.expand_path('home')
+    ENV['BUILDR_ENV'] = 'development'
 
     @_sandbox[:env_keys] = ENV.keys
     ['DEBUG', 'TEST', 'HTTP_PROXY', 'USER'].each { |k| ENV.delete(k) ; ENV.delete(k.downcase) }
@@ -122,7 +124,7 @@ module Sandbox
 
     $LOAD_PATH.replace @_sandbox[:load_path]
     $LOADED_FEATURES.replace @_sandbox[:loaded_features]
-    FileUtils.rm_rf Dir.pwd
+    FileUtils.rm_rf @temp
 
     # Get rid of all artifacts.
     @_sandbox[:artifacts].tap { |artifacts| Artifact.class_eval { @artifacts = artifacts } }

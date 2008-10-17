@@ -747,12 +747,3 @@ describe Buildr::Generate do
   end
 end
 =end
-
-
-describe Rake::Task, 'buildr:initialize' do
-  it 'should evaluate all project definitions' do
-    defined = false
-    Buildr.define('foo') { defined = true }
-    lambda { task('buildr:initialize').invoke }.should change { defined }.to(true)
-  end
-end

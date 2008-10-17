@@ -151,7 +151,9 @@ module Buildr
     attr_reader :home_dir
 
     # Copied from BUILD_ENV.
-    attr_reader :environment
+    def environment
+      ENV['BUILDR_ENV']
+    end
 
     # Returns the Settings associated with this build.
     def settings
@@ -256,7 +258,6 @@ module Buildr
       
       standard_buildr_options.each { |args| opts.on(*args) }
       parsed_argv = opts.parse(ARGV)
-      @environment = ENV['BUILDR_ENV'] ||= 'development'
       parsed_argv
     end
 

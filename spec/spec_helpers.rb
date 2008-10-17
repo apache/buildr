@@ -28,7 +28,7 @@ unless defined?(SpecHelpers)
 
     include Checks::Matchers
 
-    [:info, :warn, :error].each do |severity|
+    [:info, :warn, :error, :puts].each do |severity|
       ::Object.class_eval do
         define_method severity do |message|
           $messages ||= {}
@@ -90,6 +90,13 @@ unless defined?(SpecHelpers)
       MessageWithSeverityMatcher.new :error, message
     end
 
+    # Test if any message was shown (puts).  You can use a string or regular expression.
+    #
+    # For example:
+    #   lambda { puts 'ze test' }.should show(/ze test/)
+    def show(message)
+      MessageWithSeverityMatcher.new :puts, message
+    end
 
     class ::Rake::Task
       alias :execute_without_a_record :execute
