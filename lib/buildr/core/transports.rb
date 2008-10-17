@@ -22,9 +22,10 @@ $LOADED_FEATURES << 'net/ssh/authentication/pageant.rb' if RUBY_PLATFORM =~ /jav
 gem 'net-ssh' ; Net.autoload :SSH, 'net/ssh'
 gem 'net-sftp' ; Net.autoload :SFTP, 'net/sftp'
 autoload :CGI, 'cgi'
-autoload :Digest, 'digest'
 autoload :StringIO, 'stringio'
 autoload :ProgressBar, 'buildr/core/progressbar'
+require 'digest/md5'
+require 'digest/sha1'
 
 
 # Not quite open-uri, but similar. Provides read and write methods for the resource represented by the URI.
@@ -153,7 +154,7 @@ module URI
           read({:progress=>verbose}.merge(options || {}).merge(:modified=>modified)) { |chunk| temp.write chunk }
         end
         mkpath File.dirname(target)
-        File.move temp.path, target
+        FileUtils.mv temp.path, target
       when File
         read({:progress=>verbose}.merge(options || {}).merge(:modified=>target.mtime)) { |chunk| target.write chunk }
         target.flush
@@ -546,7 +547,7 @@ module URI
       end
       real_path.tap do |path|
         mkpath File.dirname(path)
-        File.move temp.path, path
+        FileUtils.mv temp.path, path
       end
     end
 
