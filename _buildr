@@ -19,7 +19,6 @@
 # For example to use jruby:
 #   export _BUILDR_RB=/path/to/jruby
 
-start = Time.now
 require 'rubygems'
 $LOAD_PATH << File.join(File.dirname(__FILE__), 'lib') << File.join(File.dirname(__FILE__), 'addon')
 spec = Gem::Specification.load(File.join(File.dirname(__FILE__), 'buildr.gemspec'))
@@ -28,11 +27,3 @@ spec.dependencies.each do |dep|
 end
 require 'buildr'
 Buildr.application.run
-if verbose
-  elapsed = Time.now - start
-  real = []
-  real << ("%ih" % (elapsed / 3600)) if elapsed >= 3600
-  real << ("%im" % ((elapsed / 60) % 60)) if elapsed >= 60
-  real << ("%.3fs" % (elapsed % 60))
-  puts $terminal.color("Completed in #{real.join}", :green)
-end

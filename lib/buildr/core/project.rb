@@ -864,9 +864,6 @@ module Buildr
   # Forces all the projects to be evaluated before executing any other task.
   # If we don't do that, we don't get to have tasks available when running Rake.
   namespace 'buildr' do
-    task 'initialize' do
-      projects
-    end
 
     desc "Freeze the Buildfile so it always uses Buildr version #{Buildr::VERSION}"
     task 'freeze' do
