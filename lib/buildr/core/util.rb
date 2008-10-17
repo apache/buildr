@@ -15,12 +15,13 @@
 
 
 require 'rbconfig'
-autoload :Pathname, 'pathname'
+require 'pathname'
 autoload :Tempfile, 'tempfile'
 autoload :YAML, 'yaml'
 autoload :REXML, 'rexml/document'
 gem 'xml-simple' ; autoload :XmlSimple, 'xmlsimple'
 gem 'builder' ; autoload :Builder, 'builder' # A different kind of buildr, one we use to create XML.
+require 'highline/import'
 
 
 module Buildr
@@ -35,7 +36,7 @@ module Buildr
     # In order to determine if we are running on a windows OS,
     # prefer this function instead of using Gem.win_platform?.
     #
-    # Gem.win_platform? only checks the RUBY_PLATFORM global,
+    # Gem.win_platform? only checks these RUBY_PLATFORM global,
     # that in some cases like when running on JRuby is not 
     # succifient for our purpose:
     #

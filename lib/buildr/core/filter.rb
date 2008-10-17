@@ -14,6 +14,9 @@
 # the License.
 
 
+require 'erb'
+
+
 module Buildr
 
   # A filter knows how to copy files from one directory to another, applying mappings to the

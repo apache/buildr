@@ -124,13 +124,7 @@ module Sandbox
     Layout.default = @_sandbox[:layout].clone
 
     $LOAD_PATH.replace @_sandbox[:load_path]
-<<<<<<< HEAD:spec/sandbox.rb
-    $LOADED_FEATURES.replace @_sandbox[:loaded_features]
     FileUtils.rm_rf @temp
-=======
-    #$LOADED_FEATURES.replace @_sandbox[:loaded_features]
-    FileUtils.rm_rf Dir.pwd
->>>>>>> This change necessary to run the full test suite, since autoload doesn't play nicely with our sandbox.:spec/sandbox.rb
 
     # Get rid of all artifacts.
     @_sandbox[:artifacts].tap { |artifacts| Artifact.class_eval { @artifacts = artifacts } }

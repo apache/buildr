@@ -31,6 +31,3 @@ class << self ; include Buildr ; end
 class Object #:nodoc:
   Buildr.constants.each { |c| const_set c, Buildr.const_get(c) unless const_defined?(c) }
 end
-
-# Prevent RSpec runner from running at_exit.
-require 'spec'

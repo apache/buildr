@@ -22,12 +22,13 @@ $LOADED_FEATURES << 'net/ssh/authentication/pageant.rb' if RUBY_PLATFORM =~ /jav
 gem 'net-ssh' ; Net.autoload :SSH, 'net/ssh'
 gem 'net-sftp' ; Net.autoload :SFTP, 'net/sftp'
 autoload :CGI, 'cgi'
-autoload :StringIO, 'stringio'
-autoload :ProgressBar, 'buildr/core/progressbar'
 module Digest
   autoload :MD5, 'digest/md5'
   autoload :SHA1, 'digest/sha1'
 end
+require 'stringio'
+autoload :ProgressBar, 'buildr/core/progressbar'
+
 
 # Not quite open-uri, but similar. Provides read and write methods for the resource represented by the URI.
 # Currently supports reads for URI::HTTP and writes for URI::SFTP. Also provides convenience methods for

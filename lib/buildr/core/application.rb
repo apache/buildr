@@ -228,10 +228,6 @@ module Buildr
         else
           @start = Time.now
           top_level_tasks.each { |task_name| invoke_task(task_name) }
-          title, message = "Your build has completed", "#{Dir.pwd}\nbuildr #{@top_level_tasks.join(' ')}"
-          @on_completion.each do |block|
-            block.call(title, message) rescue nil
-          end
           if verbose
             elapsed = Time.now - @start
             real = []
@@ -239,6 +235,12 @@ module Buildr
             real << ('%im' % ((elapsed / 60) % 60)) if elapsed >= 60
             real << ('%.3fs' % (elapsed % 60))
             puts $terminal.color("Completed in #{real.join}", :green)
+          end
+          # On OS X this will load Cocoa and Growl which takes half a second we
+          # don't want to measure, so put this after the console message.
+          title, message = "Your build has completed", "#{Dir.pwd}\nbuildr #{@top_level_tasks.join(' ')}"
+          @on_completion.each do |block|
+            block.call(title, message) rescue nil
           end
         end
       end
@@ -539,34 +541,6 @@ if $stdout.isatty
   end
 else
   HighLine.use_color = false
-end
-
-
-# Let's see if we can use Growl.  We do this at the very end, loading Ruby Cocoa
-# could slow the build down, so later is better.  We only do this when running 
-# from the console in verbose mode.
-if $stdout.isatty && RUBY_PLATFORM =~ /darwin/
-  begin
-    require 'osx/cocoa'
-    icon = OSX::NSApplication.sharedApplication.applicationIconImage
-    icon = OSX::NSImage.alloc.initWithContentsOfFile(File.join(File.dirname(__FILE__), '../resources/buildr.icns'))
-
-    # Register with Growl, that way you can turn notifications on/off from system preferences.
-    OSX::NSDistributedNotificationCenter.defaultCenter.
-      postNotificationName_object_userInfo_deliverImmediately(:GrowlApplicationRegistrationNotification, nil,
-        { :ApplicationName=>'Buildr', :AllNotifications=>['Completed', 'Failed'], 
-          :ApplicationIcon=>icon.TIFFRepresentation }, true)
-    
-    notify = lambda do |type, title, message|
-      OSX::NSDistributedNotificationCenter.defaultCenter.
-        postNotificationName_object_userInfo_deliverImmediately(:GrowlNotification, nil,
-          { :ApplicationName=>'Buildr', :NotificationName=>type,
-            :NotificationTitle=>title, :NotificationDescription=>message }, true)
-    end
-    Buildr.application.on_completion { |title, message| notify['Completed', title, message] if verbose }
-    Buildr.application.on_failure { |title, message, ex| notify['Failed', title, message] if verbose }
-  rescue Exception # No growl
-  end
 end
 
 

@@ -20,6 +20,7 @@ require 'ostruct'
 require 'rbconfig'
 require 'thread'
 require 'buildr/core/application_cli'
+require 'tempfile'
 
 module Buildr #:nodoc:
 

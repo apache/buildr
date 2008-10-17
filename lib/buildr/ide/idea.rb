@@ -16,7 +16,7 @@
 
 require 'buildr/core/project'
 require 'buildr/packaging'
-autoload :StringIO, 'stringio'
+require 'stringio'
 
 
 module Buildr
