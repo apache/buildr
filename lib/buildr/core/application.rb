@@ -544,7 +544,7 @@ end
 # Let's see if we can use Growl.  We do this at the very end, loading Ruby Cocoa
 # could slow the build down, so later is better.  We only do this when running 
 # from the console in verbose mode.
-if $stdout.isatty && verbose && RUBY_PLATFORM =~ /darwin/
+if $stdout.isatty && RUBY_PLATFORM =~ /darwin/
   begin
     require 'osx/cocoa'
     icon = OSX::NSApplication.sharedApplication.applicationIconImage
@@ -562,8 +562,8 @@ if $stdout.isatty && verbose && RUBY_PLATFORM =~ /darwin/
           { :ApplicationName=>'Buildr', :NotificationName=>type,
             :NotificationTitle=>title, :NotificationDescription=>message }, true)
     end
-    Buildr.application.on_completion { |title, message| notify['Completed', title, message] }
-    Buildr.application.on_failure { |title, message, ex| notify['Failed', title, message] }
+    Buildr.application.on_completion { |title, message| notify['Completed', title, message] if verbose }
+    Buildr.application.on_failure { |title, message, ex| notify['Failed', title, message] if verbose }
   rescue Exception # No growl
   end
 end
