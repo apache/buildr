@@ -45,6 +45,35 @@ module Buildr
       self.mode = '0755'
     end
 
+    # :call-seq:
+    #   entry(name) => Entry
+    #
+    # Returns a Tar file entry. You can use this to check if the entry exists and its contents,
+    # for example:
+    #   package(:tar).entry("src/LICENSE").should contain(/Apache Software License/)
+    def entry(entry_name)
+      Buildr::TarEntry.new(self, entry_name)
+    end
+    
+    def entries() #:nodoc:
+      tar_entries = nil
+      with_uncompressed_tar { |tar| tar_entries = tar.entries }
+      tar_entries
+    end
+    
+    # :call-seq:
+    #   with_uncompressed_tar { |tar_entries| ... }
+    #
+    # Yields an Archive::Tar::Minitar::Input object to the provided block.
+    # Opening, closing and Gzip-decompressing is automatically taken care of.
+    def with_uncompressed_tar &block
+      if gzip
+        Zlib::GzipReader.open(name) { |tar| Archive::Tar::Minitar.open(tar, &block) }
+      else
+        Archive::Tar::Minitar.open(name, &block)
+      end
+    end
+    
   private
 
     def create_from(file_map)
@@ -81,7 +110,60 @@ module Buildr
     end
 
   end
-
+  
+  
+  class TarEntry #:nodoc:
+    
+    def initialize(tar_task, entry_name)
+      @tar_task = tar_task
+      @entry_name = entry_name
+    end
+    
+    # :call-seq:
+    #   contain?(*patterns) => boolean
+    #
+    # Returns true if this Tar file entry matches against all the arguments. An argument may be
+    # a string or regular expression.
+    def contain?(*patterns)
+      content = read_content_from_tar
+      patterns.map { |pattern| Regexp === pattern ? pattern : Regexp.new(Regexp.escape(pattern.to_s)) }.
+        all? { |pattern| content =~ pattern }
+    end
+    
+    # :call-seq:
+    #   empty?() => boolean
+    #
+    # Returns true if this entry is empty.
+    def empty?()
+      read_content_from_tar.nil?
+    end
+    
+    # :call-seq:
+    #   exist() => boolean
+    #
+    # Returns true if this entry exists.
+    def exist?()
+      exist = false
+      @tar_task.with_uncompressed_tar { |tar| tar.any? { |entry| exist = entry.name == @entry_name } }
+      exist
+    end
+    
+    def to_s #:nodoc:
+      @entry_name
+    end
+    
+    private
+    
+    def read_content_from_tar
+      content = Errno::ENOENT.new("No such file or directory - #{@entry_name}")
+      @tar_task.with_uncompressed_tar do |tar|
+        content = tar.inject(content) { |content, entry| entry.name == @entry_name ? entry.read : content }
+      end
+      raise content if Exception === content
+      content
+    end
+  end
+  
 end
 
 

@@ -1,4 +1,5 @@
 1.3.4 (Pending)
+* Added:  BUILDR-159 Improved 'check' to accept both tar and tgz archives.
 * Change: Upgraded to use Rake 0.8.3, RSpec 1.1.8.
 * Change: Introduced new options from Rake 0.8.3: -I (libdir), -R (rakelib),
           --rules, --no-search, --silent.
