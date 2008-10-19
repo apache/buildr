@@ -41,6 +41,13 @@ module EclipseHelper
     default_output[0]
   end
   
+  # <classpathentry path="PATH" sourcepath="RETURNED_VALUE" kind="var"/>
+  def sourcepath_for_path path
+    classpath_xml_elements.collect("classpathentry[@kind='var',@path='#{path}']") do |n|
+      n.attributes['sourcepath'] || 'no source artifact'
+    end
+  end
+  
   def project_xml_elements
     task('eclipse').invoke
     REXML::Document.new(File.open('.project')).root.elements
@@ -261,22 +268,40 @@ describe Buildr::Eclipse do
           classpath_specific_output('src/test/resources').should == 'target/test/resources'
         end
       end
+    end
       
-      describe 'project depending on another project' do
-        
-        it 'should have the underlying project in its classpath' do
-          mkdir 'foo'
-          mkdir 'bar'
-          define('myproject') {
-            project.version = '1.0'
-            define('foo') { package :jar }
-            define('bar') { compile.using(:javac).with project('foo'); }
-          }
-          task('eclipse').invoke
-          REXML::Document.new(File.open(File.join('bar', '.classpath'))).root.
-            elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.should include('/myproject-foo')
-        end
+    describe 'project depending on another project' do
+      it 'should have the underlying project in its classpath' do
+        mkdir 'foo'
+        mkdir 'bar'
+        define('myproject') {
+          project.version = '1.0'
+          define('foo') { package :jar }
+          define('bar') { compile.using(:javac).with project('foo'); }
+        }
+        task('eclipse').invoke
+        REXML::Document.new(File.open(File.join('bar', '.classpath'))).root.
+          elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.should include('/myproject-foo')
       end
     end
   end
+  
+  describe 'maven2 artifact dependency' do
+    before do
+      repositories.remote = 'http://example.com'
+      define('foo') { compile.using(:javac).with('com.example:library:jar:2.0') }
+      artifact('com.example:library:jar:2.0') { |task| write task.name }
+      task('eclipse').invoke
+    end
+    
+    it 'should have a reference in the .classpath file relative to the local M2 repo' do
+      classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }.
+        should include('M2_REPO/com/example/library/2.0/library-2.0.jar')
+    end
+    
+    it 'should be downloaded' do
+      file(artifact('com.example:library:jar:2.0').name).should exist
+    end
+  end
+  
 end
