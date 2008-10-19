@@ -144,7 +144,7 @@ module Buildr
     # Returns true if this entry exists.
     def exist?()
       exist = false
-      @tar_task.with_uncompressed_tar { |tar| tar.any? { |entry| exist = entry.name == @entry_name } }
+      @tar_task.with_uncompressed_tar { |tar| exist = tar.any? { |entry| entry.name == @entry_name } }
       exist
     end
     
