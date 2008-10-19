@@ -42,7 +42,8 @@ module Buildr
       # Only for projects that we support
       supported_languages = [:java, :scala]
       supported_packaging = %w(jar war rar mar aar)
-      if (supported_languages.include? project.compile.language || 
+      if (supported_languages.include?(project.compile.language) ||
+          supported_languages.include?(project.test.compile.language) ||
           project.packages.detect { |pkg| supported_packaging.include?(pkg.type.to_s) })
         eclipse.enhance [ file(project.path_to(".classpath")), file(project.path_to(".project")) ]
 
@@ -82,7 +83,7 @@ module Buildr
               # Classpath elements from other projects
               classpathentry.src_projects project_libs
 
-              classpathentry.output project.compile.target
+              classpathentry.output project.compile.target if project.compile.target
               classpathentry.lib libs
               classpathentry.var m2_libs, 'M2_REPO', m2repo
 

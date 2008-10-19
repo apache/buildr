@@ -206,6 +206,12 @@ describe Buildr::Eclipse do
           define('foo')
           classpath_specific_output('src/test/java').should == 'target/test/classes'
         end
+        
+        it 'should accept to be the only code in the project' do
+          rm 'src/main/java/Main.java'
+          define('foo')
+          classpath_sources.should include('src/test/java')
+        end
       end
       
       describe 'main resources' do
@@ -259,6 +265,7 @@ describe Buildr::Eclipse do
       describe 'project depending on another project' do
         
         it 'should have the underlying project in its classpath' do
+          mkdir 'foo'
           mkdir 'bar'
           define('myproject') {
             project.version = '1.0'
