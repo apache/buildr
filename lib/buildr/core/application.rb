@@ -111,8 +111,6 @@ module Buildr
     # Deprecated: rakefile/Rakefile, removed in 1.5
     DEFAULT_BUILDFILES = ['buildfile', 'Buildfile'] + DEFAULT_RAKEFILES
     
-    #include CommandLineInterface
-
     attr_reader :rakefiles, :requires
     private :rakefiles, :requires
 
