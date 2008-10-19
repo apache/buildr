@@ -15,7 +15,7 @@
 
 
 require File.join(File.dirname(__FILE__), 'test_coverage_spec')
-Sandbox.require_addon 'buildr/cobertura'
+Sandbox.require_optional_extension 'buildr/java/cobertura'
 
 Buildr::Cobertura::requires
 
@@ -23,7 +23,7 @@ Buildr::Cobertura::requires
 describe Buildr::Cobertura do
   before do
     # Reloading the addon because the sandbox removes all its actions
-    load File.expand_path('../addon/buildr/cobertura.rb')
+    load File.expand_path('../lib/buildr/java/cobertura.rb')
     @tool_module = Buildr::Cobertura 
   end
   

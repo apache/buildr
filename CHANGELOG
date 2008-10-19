@@ -5,6 +5,7 @@
           --rules, --no-search, --silent.
 * Change: BUILDR-171 Eclipse task generates meta-data files for projects with
           test source code but no main source code. 
+* Change: BUILDR-177 Moved cobertura and emma extensions to lib directory.
 * Fixed:  BUILDR-172 Scala compiler not loaded by default.
 * Fixed:  Removed double complete/fail messages showing up on console.
 

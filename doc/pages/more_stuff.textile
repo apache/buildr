@@ -213,8 +213,8 @@ The other two tasks are @jdepend:text@ and @jdepend:xml@.
 We want Buildr to load fast, and not everyone cares for these tasks, so we don't include them by default.  If you want to use one of them, you need to require it explicitly.  The proper way to do it in Ruby:
 
 {{{!ruby
-require 'buildr/cobertura'
-require 'buildr/emma'
+require 'buildr/java/cobertura'
+require 'buildr/java/emma'
 require 'buildr/jdepend'
 }}}
 
@@ -224,7 +224,7 @@ Another option is to require it from the command line (@--require@ or @-r@), for
 
 {{{!sh
 $ buildr --require buildr/jdepend jdepend:swing
-$ buildr -rbuildr/cobertura cobertura:html
+$ buildr -rbuildr/java/cobertura cobertura:html
 }}}
 
 

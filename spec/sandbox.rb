@@ -43,13 +43,13 @@ module Sandbox
       spec.after(:each) { reset }
     end
     
-    # Require an addon without letting its callbacks pollute the Project class.
-    def require_addon(addon_require_path)
-      project_callbacks_without_addon = Project.class_eval { @callbacks }.dup
+    # Require an optional extension without letting its callbacks pollute the Project class.
+    def require_optional_extension(extension_require_path)
+      project_callbacks_without_extension = Project.class_eval { @callbacks }.dup
       begin
-        require addon_require_path
+        require extension_require_path
       ensure
-        Project.class_eval { @callbacks = project_callbacks_without_addon }
+        Project.class_eval { @callbacks = project_callbacks_without_extension }
       end
     end
   end
