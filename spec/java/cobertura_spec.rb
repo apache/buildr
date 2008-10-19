@@ -22,7 +22,7 @@ Buildr::Cobertura::requires
 
 describe Buildr::Cobertura do
   before do
-    # Reloading the addon because the sandbox removes all its actions
+    # Reloading the extension because the sandbox removes all its actions
     load File.expand_path('../lib/buildr/java/cobertura.rb')
     @tool_module = Buildr::Cobertura 
   end

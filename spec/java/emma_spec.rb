@@ -23,7 +23,7 @@ Buildr::Emma::requires
 
 describe Buildr::Emma do
   before do
-    # Reloading the addon because the sandbox removes all its actions
+    # Reloading the extension because the sandbox removes all its actions
     load File.expand_path('../lib/buildr/java/emma.rb')
     @tool_module = Buildr::Emma
   end
