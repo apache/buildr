@@ -338,7 +338,6 @@ describe Buildr::Checks::Expectation do
       define "foo", :version=>"1.0" do
         package(archive).include("resources")
       end
-      puts project('foo').packages
     end
     
     def check *args, &block
