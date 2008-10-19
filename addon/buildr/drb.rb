@@ -88,13 +88,10 @@ module Buildr
 
       def run_client
         buildr = DRbObject.new(nil, server_uri)
-        buildr.remote_ping # test if the server is running
-        DRb.start_service(client_uri)
-        buildr.remote_run :dir => Dir.pwd, 
-                          :in  => $stdin, 
-                          :out => $stdout, 
-                          :err => $stderr,
-                          :argv => ARGV
+        uri = buildr.client_uri # obtain our uri from the server
+        DRb.start_service(uri)
+        buildr.remote_run :dir => Dir.pwd, :argv => ARGV,
+                          :in  => $stdin, :out => $stdout, :err => $stderr
       end
 
       def run_server
