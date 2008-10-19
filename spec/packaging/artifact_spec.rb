@@ -74,6 +74,10 @@ describe Artifact do
   it 'should have one artifact for all classifiers' do
     @classified.pom.to_hash.should == @classified.to_hash.merge(:type=>:pom).except(:classifier)
   end
+  
+  it 'should have associated sources artifact' do
+    @artifact.sources_artifact.to_hash.should == @artifact.to_hash.merge(:type=>:sources)
+  end
 
   it 'should download file if file does not exist' do
     lambda { @artifact.invoke }.should raise_error(Exception, /No remote repositories/)
@@ -635,6 +639,11 @@ describe Rake::Task, ' artifacts' do
       lambda { task('artifacts').invoke }.should_not raise_error
     end
   end
+end
+
+
+describe Rake::Task, ' sources' do
+  it 'should download all sources'
 end
 
 

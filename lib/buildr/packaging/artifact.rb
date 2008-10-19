@@ -109,6 +109,15 @@ module Buildr
         xml.classifier    classifier if classifier
       end
     end
+    
+    # :call-seq:
+    #   sources_artifact => Artifact
+    # 
+    # Convenience method that returns the sources artifact corresponding to this artifact.
+    def sources_artifact
+      return self if type == :sources
+      Buildr.artifact(:group=>group, :id=>id, :version=>version, :type=>:sources)
+    end
 
     def install
       pom.install if pom && pom != self
