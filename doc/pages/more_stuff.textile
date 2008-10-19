@@ -82,37 +82,60 @@ When building an extension, make sure to follow these rules:
 # Check on a clean build with empty local repository.
 
 
-h2. Nailgun
+h2. BuildrServer
 
-"Nailgun":http://www.martiansoftware.com/nailgun/index.html is a client, protocol, and server for running Java programs from the command line without  incurring the JVM startup overhead.  Nailgun integration is available only when running Buildr within JRuby.
+Buildr provides an addon that allows you start a "dRuby":http://www.ruby-doc.org/stdlib/libdoc/drb/rdoc/index.html server hosting a buildfile, so that you can later invoke tasks on it without having to load the complete buildr runtime again.
 
-Buildr provides a custom nailgun server, allowing you to start a single JVM and let buildr create a queue of runtimes. These JRuby runtimes can be cached (indexed by buildfile path) and are  automatically reloaded when the buildfile has been modified. Runtime caching allows you to execute tasks without spending time creating  the buildr environment. 
+Usage:
+
+{{{!sh
+buildr -r buildr/drb drb:start
+}}}
+
+To stop the BuildrServer simply use Ctrl+C or kill the process.
+
+Once the server has been started you can invoke tasks using a simple script:
+
+{{{!ruby
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'buildr'
+require 'buildr/drb'
+Buildr::DRbApplication.run
+}}}
+
+Save this script as @dbuildr@, make it executable and use it to invoke tasks.
+  
+{{{!sh
+$ dbuildr clean compile
+}}}
+
+@dbuildr@ will start the BuildrServer if there isn't one already running.
+Subsequent calls to dbuildr will act as the client and invoke the tasks you
+provide to the server.
+If the buildfile has been modified it will be reloaded on the server app.
+
+h3. Nailgun
+
+"Nailgun":http://www.martiansoftware.com/nailgun/index.html is a client, protocol, and server for running Java programs from the command line without incurring the JVM startup overhead.  Nailgun integration is available only when running Buildr within JRuby.
+
+JRuby users need not to create the @dbuildr@ script listed on the previous section, as they can benefit from
+using a nailgun client to invoke tasks without having to wait for JVM+JRuby to load.
 
 Start the BuildrServer by executing
 
-{{{!ruby
+{{{!sh
 $ jruby -S buildr -rbuildr/nailgun nailgun:start
 }}}
 
-Server output will display a message when it becomes ready, you will also see messages when the JRuby runtimes are being created, or when a new buildr environment is being loaded on them. After the runtime queues have been populated, you can start calling buildr as you normally do, by invoking the $NAILGUN_HOME/ng binary:
+To stop the BuildrServer simply use Ctrl+C or kill the process.
+
+Once the server has been started you can invoke tasks using the nailgun client
+installed on @$JRUBY_HOME/tool/nailgun/ng@
 
 {{{!sh
-# on another terminal, change directory to a project.
-# if this project is the same nailgun:start was invoked on, it's 
-# runtime has been cached, so no loading is performed unless 
-# the buildfile has been modified. otherwise the buildfile 
-# will be loaded on a previously loaded fresh-buildr runtime
-# and it will be cached.
-cd /some/buildr/project
-ng nailgun:help                      # display nailgun help
-ng nailgun:tasks                     # display overview of ng tasks
-ng clean compile                # just invoke those two tasks
+$ ng clean compile
 }}}
-
-Some nailgun tasks have been provided to manage the cached runtimes,  to get an overview of them execute the @nailgun:tasks@ task.
-
-Be sure to read the nailgun help by executing the @nailgun:help@ task.
-
 
 h2. Growl, Qube
 
