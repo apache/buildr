@@ -288,7 +288,6 @@ describe Buildr::Eclipse do
   
   describe 'maven2 artifact dependency' do
     before do
-      repositories.remote = 'http://example.com'
       define('foo') { compile.using(:javac).with('com.example:library:jar:2.0') }
       artifact('com.example:library:jar:2.0') { |task| write task.name }
       task('eclipse').invoke
