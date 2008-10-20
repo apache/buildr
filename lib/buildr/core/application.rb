@@ -481,7 +481,7 @@ module Buildr
         if options.trace
           $stderr.puts ex.backtrace.join("\n")
         else
-          $stderr.puts ex.backtrace.select { |str| str =~ /#{rakefile}/ }.map { |line| $terminal.color(line, :red) }.join("\n")
+          $stderr.puts ex.backtrace.select { |str| str =~ /#{rakefile}/ }.map { |line| $terminal.color(line, :red) }.join("\n") if rakefile
           $stderr.puts "(See full trace by running task with --trace)"
         end
         exit(1)
