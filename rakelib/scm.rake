@@ -38,7 +38,7 @@ namespace 'scm' do
         puts 'Done'
       else
         puts 'Could not create tag, please do it yourself!'
-        puts %{  svn copy #{url} #{new_url} -m "#{spec.version}"}
+        puts %{  svn copy #{url} #{new_url} -m "Release #{spec.version}"}
       end
     end
   end
