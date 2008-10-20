@@ -69,19 +69,22 @@ module Buildr
 
     def initialize(application) #:nodoc:
       @application = application
-      @user = load_from('settings', @application.home_dir)
-      @build = load_from('build')
-      @profiles = load_from('profiles')
     end
 
     # User settings loaded from setting.yaml file in user's home directory.
-    attr_reader :user
+    def user
+      @user ||= load_from('settings', @application.home_dir)
+    end
 
     # Build settings loaded from build.yaml file in build directory.
-    attr_reader :build
+    def build
+      @build ||= load_from('build')
+    end
 
     # Profiles loaded from profiles.yaml file in build directory.
-    attr_reader :profiles
+    def profiles
+      @profiles ||= load_from('profiles')
+    end
 
     # :call-seq:
     #    profile => hash
@@ -93,9 +96,12 @@ module Buildr
 
   private
 
-    def load_from(base_name, dir = nil)
-      base_name = File.expand_path(base_name, dir) if dir
-      file_name = ['yaml', 'yml'].map { |ext| "#{base_name}.#{ext}" }.find { |fn| File.exist?(fn) }
+    def load_from(name, path = nil)
+      unless path
+        fail "Internal error: attempting to access local setting before buildfile located" unless @application.rakefile
+        path = File.dirname(@application.rakefile)
+      end
+      file_name = ['yaml', 'yml'].map { |ext| File.join(path, "#{name}.#{ext}") }.find { |fn| File.exist?(fn) }
       return {} unless file_name
       yaml = YAML.load(File.read(file_name)) || {}
       fail "Expecting #{file_name} to be a map (name: value)!" unless Hash === yaml
@@ -120,6 +126,7 @@ module Buildr
       @top_level_tasks = []
       @home_dir = File.expand_path('.buildr', ENV['HOME'])
       mkpath @home_dir, :verbose=>false unless File.exist?(@home_dir)
+      @settings = Settings.new(self)
       @on_completion = []
       @on_failure = []
     end
@@ -155,10 +162,7 @@ module Buildr
     end
 
     # Returns the Settings associated with this build.
-    def settings
-      fail "Internal error: Called Buildr.settings before buildfile located" unless rakefile
-      @settings ||= Settings.new(self)
-    end
+    attr_reader :settings
 
     # :call-seq:
     #   buildfile
