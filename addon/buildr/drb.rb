@@ -195,14 +195,12 @@ module Buildr
       init 'Distributed Buildr'
       if @rakefile
         if buildfile_needs_reload?
-          reload_buildfile(server.original)
-          server.save_snapshot(self)
+          reload_buildfile(server, server.original)
         else
           clear_invoked_tasks(server.snapshot || server.original)
         end
       else
-        reload_buildfile(server.original)
-        server.save_snapshot(self)
+        reload_buildfile(server, server.original)
       end
       top_level
     end
@@ -217,16 +215,16 @@ module Buildr
       !@last_loaded || @last_loaded < buildfile.timestamp
     end
 
-    def reload_buildfile(snapshot)
+    def reload_buildfile(server, snapshot)
       clear_for_reload(snapshot)
       load_buildfile
       buildfile_reloaded!
+      server.save_snapshot(self)
     end
 
     def clear_for_reload(snapshot)
       Project.clear
-      @tasks = {}
-      snapshot.tasks.each_pair { |name, saved| saved.define! }
+      clear_invoked_tasks(snapshot)
       @rules = snapshot.rules.clone
       Layout.default = snapshot.layout.clone
     end
