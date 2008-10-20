@@ -52,50 +52,104 @@ module Buildr
     port = ENV['DRB_PORT'] || 2111
     PORT = port.to_i
 
-    # save the tasks,rules,layout defined by buildr
-    # based on the code from the sandbox
-    @tasks = Buildr.application.tasks.collect do |original|
-      prerequisites = original.send(:prerequisites).map(&:to_s)
-      actions = original.instance_eval { @actions }.clone
-      lambda do
-        original.class.send(:define_task, original.name=>prerequisites).tap do |task|
+    class SavedTask #:nodoc:
+      attr_reader :original, :prerequisites, :actions
+      
+      def initialize(original)
+        @original = original.dup
+        @prerequisites = original.send(:prerequisites).map(&:to_s)
+        @actions = original.instance_eval { @actions }.clone
+      end
+      
+      def name
+        original.name
+      end
+      
+      def define!
+        original.class.send(:define_task, original.name => prerequisites).tap do |task|
           task.comment = original.comment
           actions.each { |action| task.enhance &action }
         end
       end
-    end
-    @rules = Buildr.application.instance_variable_get(:@rules)
-    @layout = Layout.default.clone
-    
+    end # SavedTask
+
+    class Snapshot #:nodoc:
+      
+      attr_accessor :projects, :tasks, :rules, :layout
+      
+      # save the tasks,rules,layout defined by buildr
+      def initialize
+        @projects = Project.instance_variable_get(:@projects) || {}
+        @tasks = Buildr.application.tasks.inject({}) do |hash, original|
+          unless projects.key? original.name # don't save project definitions
+            hash.update original.name => SavedTask.new(original)
+          end
+          hash
+        end
+        @rules = Buildr.application.instance_variable_get(:@rules)
+        @layout = Layout.default.clone
+      end
+      
+    end # Snapshot
+
+    # The tasks,rules,layout defined by buildr
+    # before loading any project
+    @original = Snapshot.new
+
     class << self
-      attr_accessor :tasks, :rules, :layout
+      
+      attr_accessor :original, :snapshot
+
+      def run
+        begin
+          client = connect
+        rescue DRb::DRbConnError => e
+          run_server!
+        else
+          run_client(client)
+        end
+      end
+
+      def client_uri
+        "druby://:#{PORT + 1}"
+      end
+
+      def remote_run(cfg)
+        with_config(cfg) { Buildr.application.remote_run(self) }
+      rescue => e
+        cfg[:err].puts e.message
+        e.backtrace.each { |b| cfg[:err].puts "\tfrom #{b}" }
+        raise e
+      end
+
+      def save_snapshot(app)
+        app.extend self
+        if app.instance_eval { @rakefile }
+          @snapshot = self::Snapshot.new
+          app.buildfile_reloaded!
+        end
+      end
+
+    private
 
       def server_uri
         "druby://:#{PORT}"
       end
       
-      def client_uri
-        "druby://:#{PORT + 1}"
-      end
-
-      def run
-        begin
-          run_client
-        rescue DRb::DRbConnError
-          run_server!
-        end
-      end
-
-      def run_client
+      def connect
         buildr = DRbObject.new(nil, server_uri)
         uri = buildr.client_uri # obtain our uri from the server
         DRb.start_service(uri)
-        buildr.remote_run :dir => Dir.pwd, :argv => ARGV,
+        buildr
+      end
+
+      def run_client(client)
+        client.remote_run :dir => Dir.pwd, :argv => ARGV,
                           :in  => $stdin, :out => $stdout, :err => $stderr
       end
 
       def run_server
-        Application.module_eval { include DRbApplication }
+        save_snapshot(Buildr.application)
         DRb.start_service(server_uri, self)
         puts "#{self} waiting on #{server_uri}"
       end
@@ -117,6 +171,7 @@ module Buildr
       end
       
       def with_config(remote)
+        @invoked = true
         set = lambda do |env|
           ARGV.replace env[:argv]
           $stdin, $stdout, $stderr = env.values_at(:in, :out, :err)
@@ -124,10 +179,7 @@ module Buildr
         end
         original = { 
           :dir => Buildr.application.instance_variable_get(:@original_dir), 
-          :in => $stdin, 
-          :out => $stdout, 
-          :err => $stderr, 
-          :argv => ARGV 
+          :argv => ARGV, :in => $stdin, :out => $stdout, :err => $stderr
         }
         begin
           set[remote]
@@ -137,58 +189,54 @@ module Buildr
         end
       end
 
-      def remote_run(cfg)
-        with_config(cfg) { Buildr.application.remote_run }
-      rescue => e
-        puts e
-      end
-
     end # class << DRbApplication
 
-    def remote_run
+    def remote_run(server)
       init 'Distributed Buildr'
       if @rakefile
-        if !@last_loaded || buildfile.timestamp > @last_loaded
-          # buildfile updated, need to reload
-          Project.clear
-          @tasks = {}
-          DRbApplication.tasks.each { |block| block.call }
-          @rules = DRbApplication.rules.clone
-          Layout.default = DRbApplication.layout.clone
-          @last_loaded = buildfile.timestamp
-          load_buildfile
+        if buildfile_needs_reload?
+          reload_buildfile(server.original)
+          server.save_snapshot(self)
         else
-          clear_invoked_tasks
+          clear_invoked_tasks(server.snapshot || server.original)
         end
       else
-        load_buildfile
-        @last_loaded = buildfile.timestamp
-      end      
+        reload_buildfile(server.original)
+        server.save_snapshot(self)
+      end
       top_level
     end
 
-    def clear_invoked_tasks
-      lookup('buildr:initialize').instance_eval do
-        @already_invoked = true
-        @actions = []
-      end
-      projects = Project.instance_variable_get(:@projects) || {}
-      @tasks.each_pair do |name, task|
-        is_project = projects.key?(task.name)
-        task.instance_variable_set(:@already_invoked, false) unless is_project
-      end
+    def buildfile_reloaded!
+      @last_loaded = buildfile.timestamp if @rakefile
     end
 
-    drb_tasks = lambda do
-      task('start') { run_server! }
-    end
+  private
     
-    if Buildr.respond_to?(:application)
-      Buildr.application.instance_eval do
-        @rakefile = "" unless @rakefile
-        in_namespace(:drb, &drb_tasks)
-      end
+    def buildfile_needs_reload?
+      !@last_loaded || @last_loaded < buildfile.timestamp
     end
+
+    def reload_buildfile(snapshot)
+      clear_for_reload(snapshot)
+      load_buildfile
+      buildfile_reloaded!
+    end
+
+    def clear_for_reload(snapshot)
+      Project.clear
+      @tasks = {}
+      snapshot.tasks.each_pair { |name, saved| saved.define! }
+      @rules = snapshot.rules.clone
+      Layout.default = snapshot.layout.clone
+    end
+
+    def clear_invoked_tasks(snapshot)
+      @tasks = {}
+      snapshot.tasks.each_pair { |name, saved| saved.define! }
+    end
+
+    namespace(:drb) { task('start') { run_server! } }
     
   end # DRbApplication
 
