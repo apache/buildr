@@ -115,8 +115,8 @@ module Buildr
         # - All matchers defined by Buildr and RSpec.
         klass = Class.new
         klass.instance_eval do
-          context.class.instance_methods(false).each do |method|
-            define_method(method) { |*args| context.send(method, *args) }
+          context.class.instance_methods.each do |method|
+            define_method(method) { |*args| context.send(method, *args) } unless instance_methods.include?(method)
           end
           define_method(:it) { subject }
           define_method(:description) { description }
