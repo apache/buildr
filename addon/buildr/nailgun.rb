@@ -170,7 +170,7 @@ module Buildr
       end      
     end
 
-    ng_tasks = lambda do
+    namespace(:nailgun) do
 
       dist_zip = Buildr.download(tmp_path(NAME + '.zip') => URL)
       dist_dir = Buildr.unzip(tmp_path(NAME) => dist_zip)
@@ -206,13 +206,6 @@ module Buildr
       end
 
     end # ng_tasks
-
-    if Buildr.respond_to?(:application)
-      Buildr.application.instance_eval do
-        @rakefile = "" unless @rakefile
-        in_namespace(:nailgun, &ng_tasks)
-      end
-    end
       
   end # module Nailgun
 end
