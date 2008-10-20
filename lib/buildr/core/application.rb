@@ -279,6 +279,14 @@ module Buildr
           "Environment name (e.g. development, test, production).",
           lambda { |value| ENV['BUILDR_ENV'] = value }            
         ],
+        ['--generate [PATH]',
+         "Generate buildfile from either pom.xml file or directory path.",
+          lambda { |value|
+            value ||= File.exist?('pom.xml') ? 'pom.xml' : Dir.pwd
+            raw_generate_buildfile value
+            exit
+          }
+        ],
         ['--libdir', '-I LIBDIR', "Include LIBDIR in the search path for required modules.",
           lambda { |value| $:.push(value) }
         ],
@@ -352,10 +360,34 @@ module Buildr
     end
 
     def find_buildfile
-      buildfile, location = find_rakefile_location
+      buildfile, location = find_rakefile_location || (tty_output? && ask_generate_buildfile)
       fail "No Buildfile found (looking for: #{@rakefiles.join(', ')})" if buildfile.nil?
       @rakefile = buildfile
       Dir.chdir(location)
+    end
+
+    def ask_generate_buildfile
+      source = choose do |menu|
+        menu.header = "To use Buildr you need a buildfile. Do you want me to create one?"
+        menu.choice("From Maven2 POM file") { 'pom.xml' } if File.exist?('pom.xml')
+        menu.choice("From directory structure") { Dir.pwd }
+        menu.choice("Cancel") { }
+      end
+      if source
+        buildfile = raw_generate_buildfile(source)
+        [buildfile, File.dirname(buildfile)]
+      end
+    end
+
+    def raw_generate_buildfile(source)
+      buildfile = File.expand_path(DEFAULT_BUILDFILES.first)
+      fail "Buildfile already exists" if File.exist?(buildfile) && !(tty_output? && agree('Buildfile exists, overwrite?'))
+      script = File.directory?(source) ? Generate.from_directory(source) : Generate.from_maven2_pom(source)
+      File.open buildfile, 'w' do |file|
+        file.puts script
+      end
+      puts "Created #{buildfile}" if verbose
+      buildfile
     end
 
     def raw_load_buildfile # replaces raw_load_rakefile
