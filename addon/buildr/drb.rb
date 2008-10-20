@@ -79,14 +79,14 @@ module Buildr
       
       # save the tasks,rules,layout defined by buildr
       def initialize
-        @projects = Project.instance_variable_get(:@projects) || {}
+        @projects = (Project.instance_variable_get(:@projects) || {}).clone
         @tasks = Buildr.application.tasks.inject({}) do |hash, original|
           unless projects.key? original.name # don't save project definitions
             hash.update original.name => SavedTask.new(original)
           end
           hash
         end
-        @rules = Buildr.application.instance_variable_get(:@rules)
+        @rules = Buildr.application.instance_variable_get(:@rules).clone
         @layout = Layout.default.clone
       end
       
@@ -224,14 +224,14 @@ module Buildr
 
     def clear_for_reload(snapshot)
       Project.clear
-      clear_invoked_tasks(snapshot)
-      @rules = snapshot.rules.clone
+      clear_invoked_tasks(snapshot)      
       Layout.default = snapshot.layout.clone
     end
 
     def clear_invoked_tasks(snapshot)
-      @tasks = {}
+      clear
       snapshot.tasks.each_pair { |name, saved| saved.define! }
+      @rules = snapshot.rules.clone
     end
 
     namespace(:drb) { task('start') { run_server! } }
