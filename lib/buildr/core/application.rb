@@ -384,14 +384,15 @@ module Buildr
     end
 
     def raw_generate_buildfile(source)
-      buildfile = File.expand_path(DEFAULT_BUILDFILES.first)
-      fail "Buildfile already exists" if File.exist?(buildfile) && !(tty_output? && agree('Buildfile exists, overwrite?'))
+      # We need rakefile to be known, for settings.build to be accessible.
+      @rakefile = File.expand_path(DEFAULT_BUILDFILES.first)
+      fail "Buildfile already exists" if File.exist?(@rakefile) && !(tty_output? && agree('Buildfile exists, overwrite?'))
       script = File.directory?(source) ? Generate.from_directory(source) : Generate.from_maven2_pom(source)
-      File.open buildfile, 'w' do |file|
+      File.open @rakefile, 'w' do |file|
         file.puts script
       end
-      puts "Created #{buildfile}" if verbose
-      buildfile
+      puts "Created #{@rakefile}" if verbose
+      @rakefile
     end
 
     def raw_load_buildfile # replaces raw_load_rakefile
