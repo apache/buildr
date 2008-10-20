@@ -24,10 +24,6 @@ describe Buildr::DRbApplication do
   module DRbHelper 
     attr_accessor :app, :drb, :cfg
 
-    def use_argv(*args)
-      cfg.update :argv => args
-    end
-
     def use_stdio(stdin = nil, stdout = nil, stderr = nil)
       stdin ||= StringIO.new
       stdout ||= StringIO.new
@@ -35,7 +31,8 @@ describe Buildr::DRbApplication do
       cfg.update :in => stdin, :out => stdout, :err => stderr
     end
     
-    def remote_run
+    def remote_run(*argv)
+      cfg.update :argv => argv
       drb.remote_run(cfg)
     end
 
@@ -54,8 +51,8 @@ describe Buildr::DRbApplication do
             task('empty')
 
             task('no') do
-              task('empty' => 'delete_me')
-              task('empty') { $stout.puts 'no' }
+              task('empty').enhance ['delete_me']
+              task('empty') { $stdout.puts 'no' }
             end
 
             task('delete_me') do
@@ -131,11 +128,10 @@ describe Buildr::DRbApplication do
 
     describe 'server ARGV' do
       it 'is replaced with client argv' do
-        use_argv 'hello'
         Buildr.application.should_receive(:remote_run) do 
           ARGV.should eql(['hello'])
         end
-        remote_run
+        remote_run 'hello'
       end
     end
 
@@ -157,7 +153,7 @@ describe Buildr::DRbApplication do
         write_buildfile
         app.options.rakelib = []
         app.send :load_buildfile
-        app.send :buildfile_reloaded!
+        drb.save_snapshot(app)
       end
       
       it 'should not reload the buildfile' do
@@ -166,19 +162,32 @@ describe Buildr::DRbApplication do
         remote_run
       end
 
-      it 'should invoke tasks specified by client' do
-        times = 0
-        task(:hello) { times += 1 }
-        use_argv 'hello'
-        2.times { remote_run }
-        times.should eql(2)
-      end
-
       it 'should not define projects again' do
         use_stdio
-        use_argv 'foo:hello'
-        lambda { 2.times { remote_run } }.should_not run_task('foo')
+        lambda { 2.times { remote_run 'foo:hello' } }.should_not run_task('foo')
         output.should eql("hi\nhi\n")
+      end
+
+      it 'should restore task actions' do
+        use_stdio
+        remote_run 'foo:empty'
+        output.should eql("")
+        2.times { remote_run 'foo:no' }
+        remote_run 'foo:empty'
+        actions = app.lookup('foo:empty').instance_eval { @actions }
+        actions.should be_empty # as originally defined
+        output.should be_empty
+      end
+
+      it 'should restore task prerequisites' do
+        use_stdio
+        remote_run 'foo:empty'
+        output.should eql("")
+        2.times { remote_run 'foo:no' }
+        remote_run 'foo:empty'
+        pres = app.lookup('foo:empty').send(:prerequisites).map(&:to_s)
+        pres.should be_empty # as originally defined
+        output.should be_empty
       end
       
     end
@@ -189,7 +198,7 @@ describe Buildr::DRbApplication do
         write_buildfile
         app.options.rakelib = []
         app.send :load_buildfile
-        app.send :buildfile_reloaded!
+        drb.save_snapshot(app)
         app.instance_eval { @last_loaded = Time.now - 10 }
         write_buildfile <<-BF
           define('foo') do
@@ -220,7 +229,7 @@ describe Buildr::DRbApplication do
         app.lookup('foo:delete_me').should be_nil
       end
       
-      it 'should restore tasks actions' do
+      it 'should redefine tasks actions' do
         actions = app.lookup('foo:empty').instance_eval { @actions }
         actions.should be_empty # no action
         app.lookup('foo:no').invoke # enhance the empty task
@@ -231,7 +240,7 @@ describe Buildr::DRbApplication do
         actions.should be_empty # as defined on the new buildfile
       end
 
-      it 'should restore task prerequisites' do
+      it 'should redefine task prerequisites' do
         pres = app.lookup('foo:empty').send(:prerequisites).map(&:to_s)
         pres.should be_empty # no action
         app.lookup('foo:no').invoke # enhance the empty task
