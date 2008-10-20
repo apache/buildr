@@ -568,6 +568,13 @@ end
 
 
 module Rake #:nodoc
+  # Rake's circular dependency checks (InvocationChain) only applies to task prerequisites,
+  # all other cases result in the non too-descriptive thread sleeping error. This change can
+  # deal with circular dependencies that occur from direct task invocation, e.g:
+  #   task 'foo'=>'bar'
+  #   task 'bar' do
+  #     task('foo').invoke
+  #   end
   class Task #:nodoc:
     def invoke(*args)
       task_args = TaskArguments.new(arg_names, args)
