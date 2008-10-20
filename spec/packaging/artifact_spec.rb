@@ -76,7 +76,7 @@ describe Artifact do
   end
   
   it 'should have associated sources artifact' do
-    @artifact.sources.to_hash.should == @artifact.to_hash.merge(:type=>:sources)
+    @artifact.sources_artifact.to_hash.should == @artifact.to_hash.merge(:type=>:sources)
   end
 
   it 'should download file if file does not exist' do
