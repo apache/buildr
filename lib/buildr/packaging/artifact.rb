@@ -111,10 +111,10 @@ module Buildr
     end
     
     # :call-seq:
-    #   sources_artifact => Artifact
+    #   sources => Artifact
     # 
     # Convenience method that returns the sources artifact corresponding to this artifact.
-    def sources_artifact
+    def sources
       return self if type == :sources
       Buildr.artifact(:group=>group, :id=>id, :version=>version, :type=>:sources)
     end
