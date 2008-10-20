@@ -14,11 +14,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Run buildr from source, specifically for testing stuff without doing a rake install.
-# The _BUILDR_RB environment variable can be used to set the path to the ruby/jruby executable.
-# For example to use jruby:
-#   export _BUILDR_RB=/path/to/jruby
-
 require 'rubygems'
 $LOAD_PATH << File.join(File.dirname(__FILE__), 'lib') << File.join(File.dirname(__FILE__), 'addon')
 spec = Gem::Specification.load(File.join(File.dirname(__FILE__), 'buildr.gemspec'))
