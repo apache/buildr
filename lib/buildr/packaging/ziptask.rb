@@ -15,7 +15,6 @@
 
 
 require 'buildr/packaging/archive'
-require 'zip/zip'
 
 
 module Buildr
