@@ -53,21 +53,28 @@ module Buildr
     PORT = port.to_i
 
     class SavedTask #:nodoc:
-      attr_reader :original, :prerequisites, :actions
       
       def initialize(original)
         @original = original.clone
-        @prerequisites = original.prerequisites.clone
-        @actions = original.actions.clone
+        @prerequisites = original.prerequisites.clone if original.respond_to?(:prerequisites)
+        @actions = original.actions.clone if original.respond_to?(:actions)
       end
       
       def name
-        original.name
+        @original.name
+      end
+
+      def actions
+        @actions ||= []
+      end
+
+      def prerequisites
+        @prerequisites ||= []
       end
       
       def define!
-        original.class.send(:define_task, original.name => prerequisites).tap do |task|
-          task.comment = original.comment
+        @original.class.send(:define_task, @original.name => prerequisites).tap do |task|
+          task.comment = @original.comment
           actions.each { |action| task.enhance &action }
         end
       end
