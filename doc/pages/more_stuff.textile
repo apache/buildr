@@ -99,7 +99,6 @@ Once the server has been started you can invoke tasks using a simple script:
 {{{!ruby
 #!/usr/bin/env ruby
 require 'rubygems'
-require 'buildr'
 require 'buildr/drb'
 Buildr::DRbApplication.run
 }}}
@@ -113,7 +112,7 @@ $ dbuildr clean compile
 @dbuildr@ will start the BuildrServer if there isn't one already running.
 Subsequent calls to dbuildr will act as the client and invoke the tasks you
 provide to the server.
-If the buildfile has been modified it will be reloaded on the server app.
+If the buildfile has been modified it will be reloaded on the BuildrServer.
 
 h3. Nailgun
 

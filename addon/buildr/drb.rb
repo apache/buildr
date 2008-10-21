@@ -31,7 +31,6 @@ module Buildr
   # 
   #   #!/usr/bin/env ruby
   #   require 'rubygems'
-  #   require 'buildr'
   #   require 'buildr/drb'
   #   Buildr::DRbApplication.run
   #
@@ -39,10 +38,10 @@ module Buildr
   #
   #   dbuildr clean compile
   #
-  # The 'dbuildr' will start the server if there isn't one already running.
+  # The dbuildr script will run as the server if there isn't one already running.
   # Subsequent calls to dbuildr will act as the client and invoke the tasks you
-  # provide to the server.
-  # If the buildfile has been modified it will be reloaded on the server app.
+  # provide in the server.
+  # If the buildfile has been modified it will be reloaded on the BuildrServer.
   #
   # JRuby users can use a nailgun client to invoke tasks as fast as possible
   # without having to incur JVM startup time.
