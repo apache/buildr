@@ -19,10 +19,16 @@
 unless defined?(SpecHelpers)
 
   require 'rubygems'
+
+  # For testing we use the gem requirements specified on the buildr.gemspec
+  spec = Gem::Specification.load(File.expand_path('../buildr.gemspec', File.dirname(__FILE__)))
+  spec.dependencies.each { |dep| gem dep.name, dep.version_requirements.to_s }
+
   # Make sure to load from these paths first, we don't want to load any
   # code from Gem library.
   $LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__)),
                      File.expand_path('../addon', File.dirname(__FILE__))
+
   # Buildr uses autoload extensively, but autoload when running specs creates
   # a problem -- we sandbox $LOADED_FEATURES, so we endup autoloading the same
   # module twice. This turns autoload into a require, which is not the right
