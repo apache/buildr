@@ -14,6 +14,7 @@
 # the License.
 
 
+require 'delegate'
 require 'drb/drb'
 
 
@@ -146,6 +147,9 @@ module Buildr
 
       def setup
         unless original
+          # Create the stdio delegator that can be cached (eg by fileutils)
+          delegate_stdio
+
           # Lazily load buildr the first time it's needed
           require 'buildr'
           
@@ -174,17 +178,28 @@ module Buildr
           DRb.thread.join
         end
       end
+
+      def delegate_stdio
+        $stdin  = SimpleDelegator.new($stdin)
+        $stdout = SimpleDelegator.new($stdout)
+        $stderr = SimpleDelegator.new($stderr)
+      end
       
       def with_config(remote)
         @invoked = true
         set = lambda do |env|
           ARGV.replace env[:argv]
-          $stdin, $stdout, $stderr = env.values_at(:in, :out, :err)
+          $stdin.__setobj__(env[:in])
+          $stdout.__setobj__(env[:out])
+          $stderr.__setobj__(env[:err])
           Buildr.application.instance_variable_set :@original_dir, env[:dir]
         end
         original = { 
           :dir => Buildr.application.instance_variable_get(:@original_dir), 
-          :argv => ARGV, :in => $stdin, :out => $stdout, :err => $stderr
+          :argv => ARGV,
+          :in => $stdin.__getobj__,
+          :out => $stdout.__getobj__,
+          :err => $stderr.__getobj__
         }
         begin
           set[remote]
