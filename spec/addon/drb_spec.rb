@@ -83,13 +83,18 @@ describe Buildr::DRbApplication do
   include DRbHelper
   
   before(:each) do
+    @in, @out, @err = $stdin, $stdout, $stderr
     @cfg = {
       :dir => Dir.pwd, :argv => [],
-      :in => $stdin, :out => $stdout, :err => $stderr
+      :in => @in, :out => @out, :err => @err
     }
     @drb = Buildr::DRbApplication.clone
     @drb.send :setup
     @app = Buildr.application
+  end
+
+  after(:each) do
+    $stdin, $stdout, $stderr = @in, @out, @err
   end
   
   describe '.run' do
