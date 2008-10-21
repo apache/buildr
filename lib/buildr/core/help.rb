@@ -55,7 +55,8 @@ end
 
 task 'help' do
   # Greeater.
-  Buildr.application.usage
+  puts 'Usage:'
+  puts '  buildr [-f rakefile] {options} targets...'
   puts
 
   # Show only the top-level projects.
