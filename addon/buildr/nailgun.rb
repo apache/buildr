@@ -153,24 +153,6 @@ module Buildr
       end
     end # Server
 
-    server_setup = lambda do 
-      module Util
-        include Buildr::Util
-      end
-
-      Util.add_to_sysloader artifact.to_s
-      Util.add_to_sysloader ADDON_BIN
-      
-      class NGClient
-        include org.apache.buildr.BuildrNail
-        include Client
-      end
-
-      class NGServer < com.martiansoftware.nailgun.NGServer
-        include Server
-      end      
-    end
-
     namespace(:nailgun) do
 
       dist_zip = Buildr.download(tmp_path(NAME + '.zip') => URL)
@@ -210,12 +192,29 @@ module Buildr
       task('drb' => ['drb-notice', 'start'])
 
       desc 'Start the nailgun server'
-      task('start' => [installed_bin, artifact]) do |task|
-        server_setup.call
+      task('start' => [installed_bin, 'setup']) do |task|
         server = NGServer.new(nil, PORT)
         server.start
       end
 
+      task('setup' => artifact) do 
+        module Util
+          include Buildr::Util
+        end
+        
+        Util.add_to_sysloader artifact.to_s
+        Util.add_to_sysloader ADDON_BIN
+        
+        class NGClient
+          include org.apache.buildr.BuildrNail
+          include Client
+        end
+        
+        class NGServer < com.martiansoftware.nailgun.NGServer
+          include Server
+        end      
+      end
+      
     end # ng_tasks
       
   end # module Nailgun
