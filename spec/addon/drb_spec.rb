@@ -41,24 +41,42 @@ describe Buildr::DRbApplication do
     end
 
     def write_buildfile(content = nil)
-      write 'buildfile', content || <<-BF
-          define('foo') do
+      write 'buildfile', content || %q{
+        define('foo') do
 
-            task('hello') do 
-              $stdout.puts 'hi'
-            end
+          rule '.rbc' => '.rb' do |t|
+            $stdout.puts "#{t.name} from #{t.source}"
+          end
 
-            task('empty')
+          task('hello') do 
+            $stdout.puts 'hi'
+          end
 
-            task('no') do
-              task('empty').enhance ['delete_me']
-              task('empty') { $stdout.puts 'no' }
-            end
+          task('empty')
 
-            task('delete_me') do
+          task('no') do
+            task('empty').enhance ['delete_me']
+            task('empty') { $stdout.puts 'no' }
+          end
+
+          task('delete_me')
+
+          task('create') do
+            Rake::Task.define_task('created')
+            rule '.rbc' => '.rb' do |t|
+               $stdout.puts "#{t.name} from #{t.source}"
             end
           end
-      BF
+
+          task('exists') do
+            $stdout.puts !!Buildr.application.lookup('created')
+          end
+
+          task('setopt', :name, :value) do |task, args|
+            Buildr.application.options.send("#{args[:name]}=", args[:value])
+          end
+        end
+      }
     end
   end
 
@@ -70,7 +88,8 @@ describe Buildr::DRbApplication do
       :in => $stdin, :out => $stdout, :err => $stderr
     }
     @drb = Buildr::DRbApplication.clone
-    @app = Buildr.application.extend @drb
+    @drb.send :setup
+    @app = Buildr.application
   end
   
   describe '.run' do
@@ -171,7 +190,7 @@ describe Buildr::DRbApplication do
       it 'should restore task actions' do
         use_stdio
         remote_run 'foo:empty'
-        output.should eql("")
+        output.should be_empty
         2.times { remote_run 'foo:no' }
         remote_run 'foo:empty'
         actions = app.lookup('foo:empty').instance_eval { @actions }
@@ -182,14 +201,36 @@ describe Buildr::DRbApplication do
       it 'should restore task prerequisites' do
         use_stdio
         remote_run 'foo:empty'
-        output.should eql("")
+        output.should be_empty
         2.times { remote_run 'foo:no' }
         remote_run 'foo:empty'
         pres = app.lookup('foo:empty').send(:prerequisites).map(&:to_s)
         pres.should be_empty # as originally defined
         output.should be_empty
       end
-      
+
+      it 'should drop runtime created tasks' do
+        remote_run 'foo:create'
+        app.lookup('created').should_not be_nil
+        remote_run 'foo:empty'
+        app.lookup('created').should be_nil
+      end
+
+      it 'should restore options' do
+        remote_run 'foo:setopt[bar,baz]'
+        app.options.bar.should eql("baz")
+        remote_run 'foo:empty'
+        app.options.bar.should be_nil
+      end
+
+      it 'should restore rules' do
+        orig = app.instance_eval { @rules.size }
+        remote_run 'foo:create'
+        app.instance_eval { @rules.size }.should eql(orig + 1)
+        remote_run 'foo:empty'
+        app.instance_eval { @rules.size }.should eql(orig)
+      end
+            
     end
 
     describe 'with modified buildfile' do
@@ -200,7 +241,10 @@ describe Buildr::DRbApplication do
         app.send :load_buildfile
         drb.save_snapshot(app)
         app.instance_eval { @last_loaded = Time.now - 10 }
-        write_buildfile <<-BF
+        write_buildfile %q{
+          rule '.rbc' => '.rb' do |t|
+            $stdout.puts "#{t.name} from #{t.source}"
+          end
           define('foo') do
             task('hello') do 
               $stdout.puts 'bye'
@@ -210,7 +254,7 @@ describe Buildr::DRbApplication do
               
             end
           end
-        BF
+        }
       end
 
       it 'should reload the buildfile' do
@@ -250,6 +294,28 @@ describe Buildr::DRbApplication do
         pres = app.lookup('foo:empty').send(:prerequisites).map(&:to_s)
         pres.should be_empty # as defined on the new buildfile
       end
+
+      it 'should drop runtime created tasks' do
+        app.lookup('foo:create').invoke
+        app.lookup('created').should_not be_nil
+        remote_run 'foo:empty'
+        app.lookup('created').should be_nil
+      end
+
+      it 'should restore options' do
+        app.options.bar = 'baz'
+        remote_run 'foo:empty'
+        app.options.bar.should be_nil
+      end
+
+      it 'should redefine rules' do
+        orig = app.instance_eval { @rules.size }
+        app.lookup('foo:create').invoke
+        app.instance_eval { @rules.size }.should eql(orig + 1)
+        remote_run 'foo:empty'
+        app.instance_eval { @rules.size }.should eql(orig)
+      end
+
     end
 
   end
