@@ -16,6 +16,7 @@
 
 require 'jruby'
 require 'rbconfig'
+require 'tmpdir'
 require 'buildr/drb'
 
 
@@ -197,12 +198,22 @@ module Buildr
         cp compiled_bin.to_s, task.to_s, :verbose => false
       end
 
+      task('drb-notice') do
+        info ''
+        info 'Running in JRuby, a nailgun server will be started so that'
+        info 'you can use your nailgun client to invoke buildr tasks: '
+        info ''
+        info '  '+Nailgun.installed_bin.to_s
+        info ''
+      end
+
+      task('drb' => ['drb-notice', 'start'])
+
       desc 'Start the nailgun server'
       task('start' => [installed_bin, artifact]) do |task|
         server_setup.call
         server = NGServer.new(nil, PORT)
         server.start
-        DRbApplication.run_server
       end
 
     end # ng_tasks

@@ -168,17 +168,11 @@ module Buildr
         setup
         if RUBY_PLATFORM[/java/]
           require 'buildr/nailgun'
-          info ''
-          info 'Running in JRuby, a nailgun server will be started so that'
-          info 'you can use your nailgun client to invoke buildr tasks: '
-          info ''
-          info '  '+Nailgun.installed_bin.to_s
-          info ''
-          Buildr.application['nailgun:start'].invoke
+          Buildr.application['nailgun:drb'].invoke
         else
           run_server
+          DRb.thread.join
         end
-        DRb.thread.join
       end
       
       def with_config(remote)
