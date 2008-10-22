@@ -57,7 +57,7 @@ task 'dependency' do
   # Returns orderd list of transitive dependencies for the given dependency.
   transitive = lambda { |depend|
     dep_spec = Gem::SourceIndex.from_installed_gems.search(depend).last
-    dep_spec.dependencies.map { |trans| transitive[trans].push(trans) }.flatten.uniq }
+    dep_spec.runtime_dependencies.map { |trans| transitive[trans].push(trans) }.flatten.uniq }
   # For each dependency, make sure *all* its transitive dependencies are listed
   # as a Buildr dependency, and order is preserved.
   spec.dependencies.each_with_index do |dep, index|
