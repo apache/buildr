@@ -47,16 +47,19 @@ end
 desc 'Look for new dependencies, check transitive dependencies'
 task 'dependency' do
   puts "Checking that all dependencies are up to date ..."
+=begin
   # Find if anything has a more recent dependency.  These are not errors, just reports.
   for dep in spec.dependencies
     current = Gem::SourceInfoCache.search(dep, true, true).last
     latest = Gem::SourceInfoCache.search(Gem::Dependency.new(dep.name, '>0'), true, true).last
     puts "A new version of #{dep.name} is available, #{latest.version} replaces #{current.version}" if latest.version > current.version
   end
+=end
 
   # Returns orderd list of transitive dependencies for the given dependency.
   transitive = lambda { |depend|
     dep_spec = Gem::SourceIndex.from_installed_gems.search(depend).last
+    fail "No specification for dependency #{depend}" unless dep_spec
     dep_spec.runtime_dependencies.map { |trans| transitive[trans].push(trans) }.flatten.uniq }
   # For each dependency, make sure *all* its transitive dependencies are listed
   # as a Buildr dependency, and order is preserved.
