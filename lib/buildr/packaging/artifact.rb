@@ -348,11 +348,10 @@ module Buildr
     #   download
     # 
     # Downloads an artifact from one of the remote repositories, and stores it in the local
-    # repository. Accepts a String or Hash artifact specification, and returns a path to the
-    # artifact in the local repository. Raises an exception if the artifact is not found.
+    # repository. Raises an exception if the artifact is not found.
     #
     # This method attempts to download the artifact from each repository in the order in
-    # which they are returned from #remote, until successful. It always downloads the POM first.
+    # which they are returned from #remote, until successful.
     def download
       trace "Downloading #{to_spec}"
       remote = Buildr.repositories.remote.map { |repo_url| URI === repo_url ? repo_url : URI.parse(repo_url) }
