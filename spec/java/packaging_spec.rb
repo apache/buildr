@@ -709,7 +709,7 @@ describe Packaging, 'ear' do
     inspect_ear { |files| files.should include('ejb/foo-1.0.jar') }
   end
 
-  it 'should accept component and its type as type=>artiract' do
+  it 'should accept component and its type as type=>artifact' do
     define 'foo', :version=>'1.0' do
       package(:ear).add :ejb=>package(:jar)
     end
