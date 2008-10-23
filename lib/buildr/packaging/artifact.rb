@@ -24,6 +24,9 @@ module Buildr
   desc 'Download all artifacts'
   task 'artifacts'
 
+  desc "Download all artifacts' sources"
+  task 'sources'
+
   # Mixin with a task to make it behave like an artifact. Implemented by the packaging tasks.
   #
   # An artifact has an identifier, group identifier, type, version number and
@@ -110,15 +113,6 @@ module Buildr
       end
     end
     
-    # :call-seq:
-    #   sources_artifact => Artifact
-    # 
-    # Convenience method that returns the sources artifact corresponding to this artifact.
-    def sources_artifact
-      return self if type == :sources
-      Buildr.artifact(:group=>group, :id=>id, :version=>version, :type=>:sources)
-    end
-
     def install
       pom.install if pom && pom != self
       invoke
@@ -414,6 +408,38 @@ module Buildr
       fail "Failed to download #{to_spec}, tried the following repositories:\n#{remote_uris.join("\n")}"
     end
   end
+  
+  
+  # An artifact that is optional.
+  # If downloading fails, the user will be informed but it will not raise an exception.
+  class OptionalArtifact < Artifact
+    
+    class << self
+      
+      # :call-seq:
+      #   register_source_artifact_for(spec)
+      #
+      # Register the source artifact corresponding to the provided artifact spec
+      # so that the 'sources' task will try to download it.
+      def register_source_artifact_for(spec)
+        sources_spec = spec.merge(:classifier=>'sources')
+        sources_task = OptionalArtifact.define_task(Buildr.repositories.locate(sources_spec))
+        sources_task.send :apply_spec, sources_spec
+        Rake::Task['sources'].enhance [sources_task]
+      end
+      
+    end
+    
+    protected
+    
+    # If downloading fails, the user will be informed but it will not raise an exception.
+    def download
+      super
+    rescue 
+      info "Failed to download #{to_spec}. Skipping it."
+    end
+    
+  end
 
 
   # Holds the path to the local repository, URLs for remote repositories, and settings for release server.
@@ -601,6 +627,7 @@ module Buildr
       task.send :apply_spec, spec
       Rake::Task['rake:artifacts'].enhance [task]
       Artifact.register(task)
+      OptionalArtifact.register_source_artifact_for(spec)
     end
     task.enhance &block
   end

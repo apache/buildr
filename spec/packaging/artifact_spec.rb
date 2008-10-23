@@ -75,10 +75,6 @@ describe Artifact do
     @classified.pom.to_hash.should == @classified.to_hash.merge(:type=>:pom).except(:classifier)
   end
   
-  it 'should have associated sources artifact' do
-    @artifact.sources_artifact.to_hash.should == @artifact.to_hash.merge(:type=>:sources)
-  end
-
   it 'should download file if file does not exist' do
     lambda { @artifact.invoke }.should raise_error(Exception, /No remote repositories/)
     lambda { @classified.invoke }.should raise_error(Exception, /No remote repositories/)
@@ -643,7 +639,32 @@ end
 
 
 describe Rake::Task, ' sources' do
-  it 'should download all sources'
+
+  before do
+    task('sources').clear
+    repositories.remote = 'http://example.com'
+    artifact 'group:id:jar:1.0'
+  end
+  
+  it 'should download sources for all specified artifacts' do
+    URI.should_receive(:download).any_number_of_times.and_return { |uri, target| write target }
+    lambda { task('sources').invoke }.should change { File.exist?('home/.m2/repository/group/id/1.0/id-1.0-sources.jar') }.to(true)
+  end
+  
+  describe 'when the source artifact does not exist' do
+    
+    before do
+      URI.should_receive(:download).any_number_of_times.and_raise(URI::NotFoundError)
+    end
+    
+    it 'should not fail' do
+      lambda { task('sources').invoke }.should_not raise_error
+    end
+    
+    it 'should inform the user' do
+      lambda { task('sources').invoke }.should show_info('Failed to download group:id:jar:sources:1.0. Skipping it.')
+    end
+  end
 end
 
 
