@@ -80,7 +80,7 @@ module Buildr
     # Returns the artifact specification, in the structure:
     #   <group>:<artifact>:<type>:<version>
     # or
-    #   <group>:<artifact>:<type>:<classifier><:version>
+    #   <group>:<artifact>:<type>:<classifier>:<version>
     def to_spec
       classifier ? "#{group}:#{id}:#{type}:#{classifier}:#{version}" : "#{group}:#{id}:#{type}:#{version}"
     end
