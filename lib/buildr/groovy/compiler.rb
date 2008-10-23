@@ -19,7 +19,7 @@ module Buildr::Groovy
   # Groovyc compiler:
   #  compile.using(:groovyc)
   #
-  # You need to require 'buildr/java/groovyc' if you need to use this compiler.
+  # You need to require 'buildr/groovy/compiler' if you need to use this compiler.
   #
   # Used by default if .groovy files are found in the src/main/groovy directory (or src/test/groovy)
   # and sets the target directory to target/classes (or target/test/classes).
