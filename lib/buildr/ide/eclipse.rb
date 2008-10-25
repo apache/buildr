@@ -25,16 +25,16 @@ module Buildr
 
     first_time do
       # Global task "eclipse" generates artifacts for all projects.
-      desc "Generate Eclipse artifacts for all projects"
-      Project.local_task "eclipse"=>"artifacts"
+      desc 'Generate Eclipse artifacts for all projects'
+      Project.local_task 'eclipse'=>'artifacts'
     end
 
     before_define do |project|
-      project.recursive_task("eclipse")
+      project.recursive_task('eclipse')
     end
 
     after_define do |project|
-      eclipse = project.task("eclipse")
+      eclipse = project.task('eclipse')
 
       # Check if project has scala facet
       scala = project.compile.language == :scala
@@ -45,15 +45,15 @@ module Buildr
       if (supported_languages.include?(project.compile.language) ||
           supported_languages.include?(project.test.compile.language) ||
           project.packages.detect { |pkg| supported_packaging.include?(pkg.type.to_s) })
-        eclipse.enhance [ file(project.path_to(".classpath")), file(project.path_to(".project")) ]
+        eclipse.enhance [ file(project.path_to('.classpath')), file(project.path_to('.project')) ]
 
         # The only thing we need to look for is a change in the Buildfile.
-        file(project.path_to(".classpath")=>Buildr.application.buildfile) do |task|
+        file(project.path_to('.classpath')=>Buildr.application.buildfile) do |task|
           info "Writing #{task.name}"
 
           m2repo = Buildr::Repositories.instance.local
 
-          File.open(task.name, "w") do |file|
+          File.open(task.name, 'w') do |file|
             classpathentry = ClasspathEntryWriter.new project, file
             classpathentry.write do
               # Note: Use the test classpath since Eclipse compiles both "main" and "test" classes using the same classpath
@@ -94,9 +94,9 @@ module Buildr
         end
 
         # The only thing we need to look for is a change in the Buildfile.
-        file(project.path_to(".project")=>Buildr.application.buildfile) do |task|
+        file(project.path_to('.project')=>Buildr.application.buildfile) do |task|
           info "Writing #{task.name}"
-          File.open(task.name, "w") do |file|
+          File.open(task.name, 'w') do |file|
             xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
             xml.projectDescription do
               xml.name project.id
@@ -104,17 +104,17 @@ module Buildr
               xml.buildSpec do
                 if scala
                   xml.buildCommand do
-                    xml.name "ch.epfl.lamp.sdt.core.scalabuilder"
+                    xml.name 'ch.epfl.lamp.sdt.core.scalabuilder'
                   end
                 else
                   xml.buildCommand do
-                    xml.name "org.eclipse.jdt.core.javabuilder"
+                    xml.name 'org.eclipse.jdt.core.javabuilder'
                   end
                 end
               end
               xml.natures do
-                xml.nature "ch.epfl.lamp.sdt.core.scalanature" if scala
-                xml.nature "org.eclipse.jdt.core.javanature"
+                xml.nature 'ch.epfl.lamp.sdt.core.scalanature' if scala
+                xml.nature 'org.eclipse.jdt.core.javanature'
               end
             end
           end
@@ -163,7 +163,7 @@ module Buildr
       # Accepts an array of projects.
       def src_projects project_libs
         project_libs.map(&:id).sort.uniq.each do |project_id|
-          @xml.classpathentry :kind=>'src', :combineaccessrules=>"false", :path=>"/#{project_id}"
+          @xml.classpathentry :kind=>'src', :combineaccessrules=>'false', :path=>"/#{project_id}"
         end
       end
       
