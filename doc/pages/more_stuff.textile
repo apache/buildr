@@ -180,6 +180,12 @@ The @eclipse@ task will generate a @.classpath@ and @.project@ file for each of 
 
 If you add a new project, change the dependencies, or make any other change to your Buildfile, just run the @eclipse@ task again to re-generate the Eclipse project files.
 
+To have your libraries' source code available in Eclipse, run:
+ 
+{{{!sh
+$ buildr artifacts:sources
+}}}
+
 If you prefer IntelliJ IDEA, you can always:
 
 {{{!sh
