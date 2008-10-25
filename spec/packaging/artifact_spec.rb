@@ -71,7 +71,7 @@ describe Artifact do
     @artifact.pom.to_hash.should == @artifact.to_hash.merge(:type=>:pom)
   end
 
-  it 'should have one artifact for all classifiers' do
+  it 'should have one POM artifact for all classifiers' do
     @classified.pom.to_hash.should == @classified.to_hash.merge(:type=>:pom).except(:classifier)
   end
   
