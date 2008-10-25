@@ -627,7 +627,7 @@ module Buildr
       task.send :apply_spec, spec
       Rake::Task['rake:artifacts'].enhance [task]
       Artifact.register(task)
-      OptionalArtifact.register_source_artifact_for(spec)
+      OptionalArtifact.register_source_artifact_for(spec) unless spec[:type] == :pom
     end
     task.enhance &block
   end

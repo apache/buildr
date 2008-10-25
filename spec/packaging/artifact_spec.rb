@@ -643,17 +643,24 @@ describe Rake::Task, ' artifacts:sources' do
   before do
     task('artifacts:sources').clear
     repositories.remote = 'http://example.com'
-    artifact 'group:id:jar:1.0'
   end
   
   it 'should download sources for all specified artifacts' do
+    artifact 'group:id:jar:1.0'
     URI.should_receive(:download).any_number_of_times.and_return { |uri, target| write target }
     lambda { task('artifacts:sources').invoke }.should change { File.exist?('home/.m2/repository/group/id/1.0/id-1.0-sources.jar') }.to(true)
+  end
+  
+  it "should not try to download sources for the project's artifacts" do
+    define('foo', :version=>'1.0') { package(:jar) }
+    URI.should_not_receive(:download)
+    task('artifacts:sources').invoke
   end
   
   describe 'when the source artifact does not exist' do
     
     before do
+      artifact 'group:id:jar:1.0'
       URI.should_receive(:download).any_number_of_times.and_raise(URI::NotFoundError)
     end
     
