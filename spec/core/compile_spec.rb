@@ -379,7 +379,7 @@ describe Buildr::CompileTask, '#invoke' do
   it 'should complain if source directories and no compiler selected' do
     mkpath 'sources'
     define 'bar' do
-      lambda { compile.from(_('sources')).invoke }.should raise_error(RuntimeError, /no compiler selected/i)
+      lambda { compile.from('sources').invoke }.should raise_error(RuntimeError, /no compiler selected/i)
     end
   end
 end

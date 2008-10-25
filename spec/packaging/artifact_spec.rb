@@ -638,17 +638,17 @@ describe Rake::Task, ' artifacts' do
 end
 
 
-describe Rake::Task, ' sources' do
+describe Rake::Task, ' artifacts:sources' do
 
   before do
-    task('sources').clear
+    task('artifacts:sources').clear
     repositories.remote = 'http://example.com'
     artifact 'group:id:jar:1.0'
   end
   
   it 'should download sources for all specified artifacts' do
     URI.should_receive(:download).any_number_of_times.and_return { |uri, target| write target }
-    lambda { task('sources').invoke }.should change { File.exist?('home/.m2/repository/group/id/1.0/id-1.0-sources.jar') }.to(true)
+    lambda { task('artifacts:sources').invoke }.should change { File.exist?('home/.m2/repository/group/id/1.0/id-1.0-sources.jar') }.to(true)
   end
   
   describe 'when the source artifact does not exist' do
@@ -658,11 +658,11 @@ describe Rake::Task, ' sources' do
     end
     
     it 'should not fail' do
-      lambda { task('sources').invoke }.should_not raise_error
+      lambda { task('artifacts:sources').invoke }.should_not raise_error
     end
     
     it 'should inform the user' do
-      lambda { task('sources').invoke }.should show_info('Failed to download group:id:jar:sources:1.0. Skipping it.')
+      lambda { task('artifacts:sources').invoke }.should show_info('Failed to download group:id:jar:sources:1.0. Skipping it.')
     end
   end
 end

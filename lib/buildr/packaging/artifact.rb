@@ -25,7 +25,7 @@ module Buildr
   task 'artifacts'
 
   desc "Download all artifacts' sources"
-  task 'sources'
+  task 'artifacts:sources'
 
   # Mixin with a task to make it behave like an artifact. Implemented by the packaging tasks.
   #
@@ -425,7 +425,7 @@ module Buildr
         sources_spec = spec.merge(:classifier=>'sources')
         sources_task = OptionalArtifact.define_task(Buildr.repositories.locate(sources_spec))
         sources_task.send :apply_spec, sources_spec
-        Rake::Task['sources'].enhance [sources_task]
+        Rake::Task['artifacts:sources'].enhance [sources_task]
       end
       
     end
