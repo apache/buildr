@@ -301,6 +301,11 @@ describe Buildr::Eclipse do
     it 'should be downloaded' do
       file(artifact('com.example:library:jar:2.0').name).should exist
     end
+    
+    it 'should have a source artifact reference in the .classpath file' do
+      sourcepath_for_path('M2_REPO/com/example/library/2.0/library-2.0.jar').
+        should == ['M2_REPO/com/example/library/2.0/library-2.0-sources.jar']
+    end
   end
   
 end

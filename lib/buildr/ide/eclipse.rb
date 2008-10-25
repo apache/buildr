@@ -150,7 +150,7 @@ module Buildr
       end
 
       # Write a classpathentry of kind 'src'.
-      # Accepts an array of absolute paths or a task.
+      # Accept an array of absolute paths or a task.
       def src arg
         if [:sources, :target].all? { |message| arg.respond_to?(message) }
           src_from_task arg
@@ -160,7 +160,7 @@ module Buildr
       end
 
       # Write a classpathentry of kind 'src' for dependent projects.
-      # Accepts an array of projects.
+      # Accept an array of projects.
       def src_projects project_libs
         project_libs.map(&:id).sort.uniq.each do |project_id|
           @xml.classpathentry :kind=>'src', :combineaccessrules=>'false', :path=>"/#{project_id}"
@@ -171,9 +171,15 @@ module Buildr
         @xml.classpathentry :kind=>'output', :path=>relative(target)
       end
 
+      # Write a classpathentry of kind 'var' (variable) for Maven2 dependencies.
+      # E.g., var([lib1, lib2], 'M2_REPO', '/home/me/.m2/repo')
       def var libs, var_name, var_value
-        libs.map { |lib| lib.to_s.sub(var_value, var_name) }.sort.uniq.each do |path|
-          @xml.classpathentry :kind=>'var', :path=>path
+        libs.each do |lib_path|
+          lib_artifact = file(lib_path)
+          source_path = lib_artifact.sources_artifact.to_s
+          relative_lib_path = lib_path.sub(var_value, var_name)
+          relative_source_path = source_path.sub(var_value, var_name)
+          @xml.classpathentry :kind=>'var', :path=>relative_lib_path, :sourcepath=>relative_source_path
         end
       end
               

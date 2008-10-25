@@ -10,6 +10,7 @@
 * Change: BUILDR-171 Eclipse task generates meta-data files for projects with
           test source code but no main source code. 
 * Change: BUILDR-177 Moved cobertura and emma extensions to lib directory.
+* Change: BUILDR-187 Source code attachment for Eclipse .classpath.
 * Fixed:  Removed double complete/fail messages showing up on console.
 * Fixed:  BUILDR-158 Nailgun is now a delegate for buildr/drb (a pure-ruby dRuby server)
 * Fixed:  BUILDR-172 Scala compiler not loaded by default.
