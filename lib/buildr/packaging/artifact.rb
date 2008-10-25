@@ -98,6 +98,17 @@ module Buildr
     end
 
     # :call-seq:
+    #   sources_artifact => Artifact
+    # 
+    # Convenience method that returns a sources artifact.
+    def sources_artifact
+      sources_spec = to_spec_hash.merge(:classifier=>'sources')
+      sources_task = OptionalArtifact.define_task(Buildr.repositories.locate(sources_spec))
+      sources_task.send :apply_spec, sources_spec
+      sources_task
+    end
+
+    # :call-seq:
     #   pom_xml => string
     #
     # Creates POM XML for this artifact.
@@ -414,22 +425,6 @@ module Buildr
   # If downloading fails, the user will be informed but it will not raise an exception.
   class OptionalArtifact < Artifact
     
-    class << self
-      
-      # :call-seq:
-      #   register_source_artifact_for(spec)
-      #
-      # Register the source artifact corresponding to the provided artifact spec
-      # so that the 'sources' task will try to download it.
-      def register_source_artifact_for(spec)
-        sources_spec = spec.merge(:classifier=>'sources')
-        sources_task = OptionalArtifact.define_task(Buildr.repositories.locate(sources_spec))
-        sources_task.send :apply_spec, sources_spec
-        Rake::Task['artifacts:sources'].enhance [sources_task]
-      end
-      
-    end
-    
     protected
     
     # If downloading fails, the user will be informed but it will not raise an exception.
@@ -627,7 +622,7 @@ module Buildr
       task.send :apply_spec, spec
       Rake::Task['rake:artifacts'].enhance [task]
       Artifact.register(task)
-      OptionalArtifact.register_source_artifact_for(spec) unless spec[:type] == :pom
+      Rake::Task['artifacts:sources'].enhance [task.sources_artifact] unless spec[:type] == :pom
     end
     task.enhance &block
   end

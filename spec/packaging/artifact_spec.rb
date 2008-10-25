@@ -75,6 +75,10 @@ describe Artifact do
     @classified.pom.to_hash.should == @classified.to_hash.merge(:type=>:pom).except(:classifier)
   end
   
+  it 'should have associated sources artifact' do
+    @artifact.sources_artifact.to_hash.should == @artifact.to_hash.merge(:classifier=>'sources')
+  end
+  
   it 'should download file if file does not exist' do
     lambda { @artifact.invoke }.should raise_error(Exception, /No remote repositories/)
     lambda { @classified.invoke }.should raise_error(Exception, /No remote repositories/)
