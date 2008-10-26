@@ -129,7 +129,9 @@ module Buildr
                         xml.root :url=>"jar://#{path}!/"
                       end
                       xml.JAVADOC
-                      xml.SOURCES
+                      xml.SOURCES do
+                        xml.root :url=>"jar://#{path.sub(/\.jar$/, "-sources.jar")}!/"
+                      end
                     end
                   end
                 end
