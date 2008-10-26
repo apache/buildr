@@ -171,8 +171,11 @@ module Buildr
         @xml.classpathentry :kind=>'output', :path=>relative(target)
       end
 
-      # Write a classpathentry of kind 'var' (variable) for Maven2 dependencies.
-      # E.g., var([lib1, lib2], 'M2_REPO', '/home/me/.m2/repo')
+      # Write a classpathentry of kind 'var' (variable) for a library in a local repo.
+      # * +libs+ is an array of library paths.
+      # * +var_name+ is a variable name as defined in Eclipse (e.g., 'M2_REPO').
+      # * +var_value+ is the value of this variable (e.g., '/home/me/.m2').
+      # E.g., <tt>var([lib1, lib2], 'M2_REPO', '/home/me/.m2/repo')</tt>
       def var libs, var_name, var_value
         libs.each do |lib_path|
           lib_artifact = file(lib_path)
