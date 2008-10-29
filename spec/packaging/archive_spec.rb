@@ -80,7 +80,7 @@ describe 'ArchiveTask', :shared=>true do
   it 'should invoke and archive file tasks' do
     file = file('included') { write 'included' }
     lambda { archive(@archive).include(file).invoke }.should change { File.exist?(file.to_s) }.to(true)
-    inspect_archive.should include('included')
+    inspect_archive.keys.should include('included')
   end
 
   it 'should include entry for directory' do
