@@ -301,7 +301,7 @@ module Buildr
     end
 
     def run(tests, dependencies) #:nodoc:
-      cmd_args = [ 'org.testng.TestNG', '-sourcedir', task.compile.sources.join(';'), '-suitename', task.send(:project).name ]
+      cmd_args = [ 'org.testng.TestNG', '-sourcedir', task.compile.sources.join(';'), '-suitename', task.project.id ]
       cmd_args << '-d' << task.report_to.to_s
       # run all tests in the same suite
       cmd_args << '-testclass' << tests
