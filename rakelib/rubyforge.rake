@@ -40,12 +40,15 @@ namespace 'rubyforge' do
     changes = FileList['published/CHANGES'].first
     files = FileList['published/rubyforge/*.{gem,tgz,zip}'].exclude(changes).existing
     print "Uploading #{spec.version} to RubyForge ... "
-    rubyforge = RubyForge.new
-    rubyforge.configure
+    rubyforge = RubyForge.new.configure
     rubyforge.login 
     rubyforge.userconfig.merge!('release_changes'=>changes,  'preformatted' => true) if changes
     rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version.to_s, *files
-    puts 'Done'
+    puts "Done"
+    print "Posting news to RubyForge ... "
+    rubyforge.post_news spec.rubyforge_project.downcase, "Buildr #{spec.versions} released",
+      "New in Buildr #{spec.version}:\n\n#{changes}"
+    puts "Done"
   end
 
 end
