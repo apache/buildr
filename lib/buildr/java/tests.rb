@@ -314,7 +314,7 @@ module Buildr
       rescue
         # testng-failed.xml contains the list of failed tests *only*
         report = File.read(File.join(task.report_to.to_s, 'testng-failed.xml'))
-        failed = report.scan(/(<class name=")([^"]*)(">)/im).map { |s, testname, e| testname }
+        failed = report.scan(/<class name="(.*)">/im).flatten
         # return the list of passed tests
         return tests - failed
       end
