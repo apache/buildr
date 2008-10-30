@@ -303,15 +303,20 @@ module Buildr
     def run(tests, dependencies) #:nodoc:
       cmd_args = [ 'org.testng.TestNG', '-sourcedir', task.compile.sources.join(';'), '-suitename', task.send(:project).name ]
       cmd_args << '-d' << task.report_to.to_s
+      # run all tests in the same suite
+      cmd_args << '-testclass' << tests
       cmd_options = { :properties=>options[:properties], :java_args=>options[:java_args],
-                      :classpath=>dependencies }
-      tests.inject([]) do |passed, test|
-        begin
-          Java::Commands.java cmd_args, '-testclass', test, cmd_options.merge(:name=>test)
-          passed << test
-        rescue
-          passed
-        end
+        :classpath=>dependencies, :name => "TestNG in #{task.send(:project).name}" }
+
+      begin
+        Java::Commands.java cmd_args, cmd_options
+        return tests
+      rescue
+        # testng-failed.xml contains the list of failed tests *only*
+        report = File.read(File.join(task.report_to.to_s, 'testng-failed.xml'))
+        failed = report.scan(/(<class name=")([^"]*)(">)/im).map { |s, testname, e| testname }
+        # return the list of passed tests
+        return tests - failed
       end
     end
 
