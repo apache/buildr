@@ -15,6 +15,7 @@
 * Fixed:  Removed double complete/fail messages showing up on console.
 * Fixed:  BUILDR-158 Nailgun is now a delegate for buildr/drb (a pure-ruby dRuby server)
 * Fixed:  BUILDR-172 Scala compiler not loaded by default.
+* Fixed:  BUILDR-175 Fail to find child project when calling project method inside project definition.
 * Fixed:  BUILDR-192 TestNG report results are overwritten (Alexis Midon).
 * Fixed:  BUILDR-193 TestNG uses project name for suite name (not valid file
           name on Windows).

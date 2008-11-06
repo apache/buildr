@@ -432,6 +432,19 @@ describe 'Sub-project' do
     project('foo').projects.map(&:name).should include('foo:bar')
   end
 
+  it 'should be findable during project definition' do
+    define 'foo' do
+      bar = define 'bar' do
+        baz = define 'baz'
+        project('baz').should eql(baz)
+      end
+      # Note: evaluating bar:baz first unearthed a bug that doesn't happen
+      # if we evaluate bar, then bar:baz.
+      project('bar:baz').should be(bar.project('baz'))
+      project('bar').should be(bar)
+    end
+  end
+
   it 'should be findable only if exists' do
     define('foo') { define 'bar' }
     lambda { project('foo').project('baz') }.should raise_error(RuntimeError, /No such project/)

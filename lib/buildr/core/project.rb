@@ -241,17 +241,18 @@ module Buildr
         raise ArgumentError, 'Only one project name at a time' unless args.size == 1
         @projects ||= {}
         name = args.first
+        # Make sure parent project is evaluated (e.g. if looking for foo:bar, find foo first)
+        unless @projects[name]
+          parts = name.split(':')
+          project(parts.first, options || {}) if parts.size > 1
+        end
         if options && options[:scope]
           # We assume parent project is evaluated.
           project = options[:scope].split(':').inject([[]]) { |scopes, scope| scopes << (scopes.last + [scope]) }.
             map { |scope| @projects[(scope + [name]).join(':')] }.
             select { |project| project }.last
         end
-        unless project
-          # Parent project not evaluated.
-          name.split(':').tap { |parts| @projects[parts.first].invoke if parts.size > 1 }
-          project = @projects[name]
-        end
+        project ||= @projects[name] # Not found in scope.
         raise "No such project #{name}" unless project
         project.invoke
         project
