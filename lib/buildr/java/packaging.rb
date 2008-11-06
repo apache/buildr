@@ -25,7 +25,7 @@ module Buildr
 
       class Manifest
 
-        STANDARD_HEADER = "Manifest-Version: 1.0\nCreated-By: Buildr\n"
+        STANDARD_HEADER = { 'Manifest-Version'=>'1.0', 'Created-By'=>'Buildr' }
         LINE_SEPARATOR = /\r\n|\n|\r[^\n]/ #:nodoc:
         SECTION_SEPARATOR = /(#{LINE_SEPARATOR}){2}/ #:nodoc:
 
@@ -96,6 +96,10 @@ module Buildr
           when Proc, Method then @sections = Manifest.new(arg.call).sections
           else
             fail 'Invalid manifest, expecting Hash, Array, file name/task or proc/method.'
+          end
+          # Add Manifest-Version and Created-By, if not specified.
+          STANDARD_HEADER.each do |name, value|
+            sections.first[name] ||= value
           end
         end
 
@@ -171,7 +175,7 @@ module Buildr
               @manifest_tmp = Tempfile.new('MANIFEST.MF')
               self.manifest = File.read(manifest.to_s) if String === manifest || Rake::Task === manifest
               self.manifest = Manifest.new(manifest) unless Manifest === manifest
-              @manifest_tmp.write Manifest::STANDARD_HEADER
+              #@manifest_tmp.write Manifest::STANDARD_HEADER
               @manifest_tmp.write manifest.to_s
               @manifest_tmp.write "\n"
               @manifest_tmp.rewind

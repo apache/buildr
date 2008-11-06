@@ -19,6 +19,7 @@
 * Fixed:  BUILDR-192 TestNG report results are overwritten (Alexis Midon).
 * Fixed:  BUILDR-193 TestNG uses project name for suite name (not valid file
           name on Windows).
+* Fixed: BUILDR-194 Buildr always adds 'Manifest-Version' to generated manifest file.
 * Fixed: BUILDR-198 Filter#run always calls mkpath with :verbose.
 * Fixed: BUILDR-199 ArchiveTask#needed uses 'each' with no effect (Ittay
 Dror).

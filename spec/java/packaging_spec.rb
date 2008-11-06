@@ -170,8 +170,17 @@ shared_examples_for 'package with manifest' do
     package_with_manifest 'MANIFEST.MF'
     inspect_manifest do |manifest|
       manifest.sections.size.should be(1)
-      manifest.main['Manifest-Version'].should eql('1.0')
       manifest.main['Meta'].should eql('data')
+    end
+  end
+
+  it 'should not add manifest version twice' do
+    write 'MANIFEST.MF', 'Manifest-Version: 1.9'
+    package_with_manifest 'MANIFEST.MF'
+    package ||= project('foo').package(@packaging)
+    package.invoke
+    Zip::ZipFile.open(package.to_s) do |zip|
+      zip.read('META-INF/MANIFEST.MF').scan(/(Manifest-Version)/m).size.should == 1
     end
   end
 
