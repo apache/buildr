@@ -14,6 +14,7 @@
 * Change: BUILDR-188 Source code attachment for IDEA .iml file (Marko Sibakov).
 * Fixed:  Removed double complete/fail messages showing up on console.
 * Fixed:  BUILDR-158 Nailgun is now a delegate for buildr/drb (a pure-ruby dRuby server)
+* Fixed:  BUILDR-170 ArtifactNamespace#method_missing has a condition that is never true.
 * Fixed:  BUILDR-172 Scala compiler not loaded by default.
 * Fixed:  BUILDR-175 Fail to find child project when calling project method inside project definition.
 * Fixed:  BUILDR-192 TestNG report results are overwritten (Alexis Midon).

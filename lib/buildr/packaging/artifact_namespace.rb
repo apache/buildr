@@ -883,7 +883,7 @@ module Buildr
       case name.to_s
       when /!$/ then
         name = $`.intern
-        if args.size < 1 && args.size > 2
+        if args.size < 1 || args.size > 2
           raise ArgumentError.new("wrong number of arguments for #{name}!(spec, version_requirement?)")
         end
         need name => args.first
