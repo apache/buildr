@@ -17,7 +17,7 @@ AXIS2 = 'org.apache.axis2:axis2:jar:1.2'
 AXIOM  = group('axiom-api', 'axiom-impl', 'axiom-dom',
   :under=>'org.apache.ws.commons.axiom', :version=>'1.2.4')
 AXIS_OF_WS = [AXIOM, AXIS2]
-OPENJPA = ['org.apache.openjpa:openjpa-all:jar:0.9.7',
+OPENJPA = ['org.apache.openjpa:openjpa:jar:1.2.0',
   'net.sourceforge.serp:serp:jar:1.12.0']
  
 repositories.remote << 'http://www.ibiblio.org/maven2/'
@@ -44,7 +44,7 @@ define 'killer-app' do
 
   desc 'What our users see'
   define 'la-web' do
-    test.using AXIS_OF_WS
+    test.with AXIS_OF_WS
     package(:war).with :libs=>projects('teh-api', 'teh-impl')
   end
 
