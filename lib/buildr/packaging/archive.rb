@@ -447,7 +447,6 @@ module Buildr
       # coming from, since some tasks touch the directory, e.g. when the
       # content of target/classes is included into a WAR.
       most_recent = @paths.collect { |name, path| path.sources }.flatten.
-        each { |src| File.directory?(src) ? Util.recursive_with_dot_files(src) | [src] : src }.flatten.
         select { |file| File.exist?(file) }.collect { |file| File.stat(file).mtime }.max
       File.stat(name).mtime < (most_recent || Rake::EARLY) || super
     end
