@@ -240,7 +240,7 @@ module Buildr
         rake_check_options options, :scope if options
         raise ArgumentError, 'Only one project name at a time' unless args.size == 1
         @projects ||= {}
-        name = args.first
+        name = args.first.to_s
         # Make sure parent project is evaluated (e.g. if looking for foo:bar, find foo first)
         unless @projects[name]
           parts = name.split(':')
