@@ -112,6 +112,15 @@ describe Buildr::CompileTask, '#compiler' do
       compile.from('sources').compiler
     end
   end
+
+  it 'should allow supressing compilation' do
+    write 'src/main/java/package/Test.java', 'class Test {}'
+    define 'foo' do
+      compile.sources.clear
+    end
+    project('foo').compile.invoke
+    Dir['target/classes/*'].should be_empty
+  end
 end
 
 
