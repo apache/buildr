@@ -491,11 +491,9 @@ module Buildr
 
     after_define do |project|
       # TODO: Is this necessary?
-      #if project.resources.target
-      #  file project.resources.target.to_s=>project.resources do |task|
-      #    mkpath task.name, :verbose=>false
-      #  end
-      #end
+      if project.resources.target
+        file project.resources.target.to_s=>project.resources
+      end
       if project.compile.target
         # This comes last because the target path is set inside the project definition.
         project.build project.compile.target

@@ -242,7 +242,9 @@ end
 describe Buildr::Filter do
   before do
     @filter = Filter.new
-    1.upto(4) { |i| write "src/file#{i}", "file#{i} raw" } # with ${key1} and ${key2}" }
+    1.upto(4) do |i|
+      write "src/file#{i}", "file#{i} raw"
+    end
     @early = Time.now - 1000
   end
 
@@ -456,7 +458,9 @@ describe Buildr::Filter do
     File.mtime('target').should be_close(@early, 10)
   end
 
-  it 'should run only one new files' do
+  it 'should run only on new files' do
+    # Make source files older so they're not copied twice.
+    Dir['src/**/*'].each { |file| File.utime(@early, @early, file) }
     @filter.from('src').into('target').run
     @filter.from('src').into('target').using { |file, content| file.should eql('file2') }.run
   end
@@ -466,6 +470,8 @@ describe Buildr::Filter do
   end
 
   it 'should return false when run does not copy any files' do
+    # Make source files older so they're not copied twice.
+    Dir['src/**/*'].each { |file| File.utime(@early, @early, file) }
     @filter.from('src').into('target').run
     @filter.from('src').into('target').run.should be(false)
   end

@@ -169,7 +169,7 @@ module Buildr
           reject { |file| @exclude.any? { |pattern| File.fnmatch(pattern, file, File::FNM_PATHNAME) } }
         files.each do |file|
           src, dest = File.expand_path(file, source), File.expand_path(file, target.to_s)
-          map[file] = src if !File.exist?(dest) || File.stat(src).mtime > File.stat(dest).mtime
+          map[file] = src if !File.exist?(dest) || File.stat(src).mtime >= File.stat(dest).mtime
         end
         map
       end
@@ -183,7 +183,7 @@ module Buildr
           if File.directory?(source)
             mkpath dest
           else
-            mkpath File.dirname(dest)
+            mkpath File.dirname(dest), :verbose=>false
             if @mapper.mapper_type
               mapped = @mapper.transform(File.open(source, 'rb') { |file| file.read }, path)
               File.open(dest, 'wb') { |file| file.write mapped }
