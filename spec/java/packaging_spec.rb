@@ -184,6 +184,14 @@ shared_examples_for 'package with manifest' do
     end
   end
 
+  it 'should give precedence to version specified in manifest file' do
+    write 'MANIFEST.MF', 'Manifest-Version: 1.9'
+    package_with_manifest 'MANIFEST.MF'
+    inspect_manifest do |manifest|
+      manifest.main['Manifest-Version'].should == '1.9'
+    end
+  end
+
   it 'should create manifest from task' do
     file 'MANIFEST.MF' do |task|
       write task.to_s, 'Meta: data'
