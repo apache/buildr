@@ -174,7 +174,7 @@ module Buildr
         map
       end
         
-      mkpath target.to_s
+      mkpath target.to_s, :verbose=>Buildr.application.options.trace
       return false if copy_map.empty?
 
       verbose(Buildr.application.options.trace || false) do
