@@ -561,13 +561,6 @@ describe Project, '#resources' do
     lambda { project('foo').resources.target.invoke }.should change { File.exist?('target/resources/test') }.to(true)
   end
 
-  it 'should run from target/resources when older than sources' do
-    write 'target/resources/test', 'old'
-    write 'src/main/resources/test', 'modified'
-    define('foo')
-    lambda { project('foo').resources.target.invoke }.should change { File.read('target/resources/test') }.to('modified')
-  end
-
   it 'should not be recursive' do
     define('foo') { define 'bar' }
     lambda { project('foo').resources.invoke }.should_not run_task('foo:bar:resources')

@@ -407,7 +407,7 @@ module Buildr
       @filter = Buildr::Filter.new
       @filter.using Buildr.settings.profile['filter'] if Hash === Buildr.settings.profile['filter']
       enhance do
-        filter.run if target
+        target.invoke if target
       end
     end
 
@@ -490,10 +490,6 @@ module Buildr
     end
 
     after_define do |project|
-      # TODO: Is this necessary?
-      if project.resources.target
-        file project.resources.target.to_s=>project.resources
-      end
       if project.compile.target
         # This comes last because the target path is set inside the project definition.
         project.build project.compile.target

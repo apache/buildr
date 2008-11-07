@@ -181,9 +181,9 @@ module Buildr
         copy_map.each do |path, source|
           dest = File.expand_path(path, target.to_s)
           if File.directory?(source)
-            mkpath dest
+            mkpath dest, :verbose=>false
           else
-            mkpath File.dirname(dest), :verbose=>false
+            mkpath File.dirname(dest)
             if @mapper.mapper_type
               mapped = @mapper.transform(File.open(source, 'rb') { |file| file.read }, path)
               File.open(dest, 'wb') { |file| file.write mapped }
