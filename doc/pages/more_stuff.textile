@@ -278,7 +278,7 @@ You can use functions to keep your code simple.  For example, in the ODE project
 def distro(project, id)
   project.package(:zip, :id=>id).path("#{id}-#{version}").tap do |zip|
     zip.include meta_inf + ['RELEASE_NOTES', 'README'].map { |f| path_to(f) }
-    zip.path('examples').include project.path_to(:source, :examples), :as=>'.'
+    zip.path('examples').include project.path_to('src/examples'), :as=>'.'
     zip.merge project('ode:tools-bin').package(:zip)
     zip.path('lib').include artifacts(COMMONS.logging, COMMONS.codec,
       COMMONS.httpclient, COMMONS.pool, COMMONS.collections, JAXEN, SAXON,

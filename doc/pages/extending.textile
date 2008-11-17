@@ -21,7 +21,7 @@ file('derby.sql') do
       :classpath=>REQUIRES.join(File::PATH_SEPARATOR)
     ant.mapping :schemaAction=>'build', :sqlFile=>task.name,
       :ignoreErrors=>true do
-        ant.config :propertiesFile=>_(:source, :main, :sql, 'derby.xml')
+        ant.config :propertiesFile=>_('src/main/sql/derby.xml')
         ant.classpath :path=>projects('store', 'utils' ).
           flatten.map(&:to_s).join(File::PATH_SEPARATOR)
     end
@@ -34,7 +34,7 @@ To this:
 {{{!ruby
 file('derby.sql') do
   mapping_tool :action=>'build', :sql=>task.name,
-    :properties=>_(:source, :main, :sql, 'derby.xml'),
+    :properties=>_('src/main/sql/derby.xml'),
     :classpath=>projects('store', 'utils')
 end
 }}}
