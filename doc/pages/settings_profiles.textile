@@ -201,7 +201,7 @@ Here's a simple example for handling different environments within the Buildfile
 {{{!ruby
 project 'db-module' do
   db = (environment == 'production' ? 'oracle' : 'hsql')
-  resources.from(_(:source, :main, db))
+  resources.from(_("src/main/#{db}"))
 end
 }}}
 
@@ -244,7 +244,7 @@ Here's a simple example for a buildfile that uses the profile information:
 project 'db-module' do
   # Copy SQL files specific for the database we're using,
   # for example, everything under src/main/hsql.
-  resources.from(_(:source, :main, profile['db']))
+  resources.from(_("src/main/#{Buildr.settings.profile['db']}"))
   # Set the JDBC URL in copied resource files (config.xml needs this).
   resources.filter :jdbc=>profile['jdbc']
 end
