@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.author         = 'Apache Buildr'
   spec.email          = "buildr-user@incubator.apache.org"
   spec.homepage       = "http://incubator.apache.org/buildr"
-  spec.summary        = 'A build system that doesn\'t suck'
+  spec.summary        = "A build system that doesn't suck"
   spec.rubyforge_project  = 'buildr'
 
   # Rakefile needs to create spec for both platforms (ruby and java), using the
