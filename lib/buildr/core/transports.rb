@@ -40,7 +40,7 @@ module URI
   end
 
   # How many bytes to read/write at once.
-  RW_CHUNK_SIZE = 2 ** 20 #:nodoc:
+  RW_CHUNK_SIZE = 128 * 1024 #:nodoc:
 
   class << self
 
