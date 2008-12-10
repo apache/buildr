@@ -24,6 +24,7 @@
 * Fixed: BUILDR-198 Filter#run always calls mkpath with :verbose.
 * Fixed: BUILDR-199 ArchiveTask#needed uses 'each' with no effect (Ittay Dror).
 * Fixed: BUILDR-201 Sample project is not valid (Alexis Midon).
+* Fixed: BUILDR-214 Buildr is stuck uploading to sftp repository (Heikki Hulkko).
 * Fixed: BUILDR-216 Profiles documentation is wrong (Shane Witbeck).
 
 1.3.3 (2008-10-08)
