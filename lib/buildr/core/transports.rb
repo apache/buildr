@@ -39,7 +39,7 @@ module URI
   class NotFoundError < RuntimeError
   end
 
-  # How many bytes to read/write at once.
+  # How many bytes to read/write at once. Do not change without checking BUILDR-214 first.
   RW_CHUNK_SIZE = 128 * 1024 #:nodoc:
 
   class << self
