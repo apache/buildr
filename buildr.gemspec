@@ -46,7 +46,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'net-ssh',              '2.0.4'
   spec.add_dependency 'net-sftp',             '2.0.1'
   spec.add_dependency 'rubyzip',              '0.9.1'
-  spec.add_dependency 'highline',             '1.4.0'
+  spec.add_dependency 'highline',             '1.5.0'
   spec.add_dependency 'rubyforge',            '1.0.1'
   spec.add_dependency 'hoe',                  '1.8.1'
   spec.add_dependency 'rjb',                  '1.1.6' if spec.platform.to_s == 'ruby' 
