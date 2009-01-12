@@ -29,7 +29,7 @@ Gem::Specification.new do |spec|
   
   spec.files          = Dir['lib/**/*', 'bin/**/*', 'addon/**/*', 'doc/**/*', 'spec/**/*',
                             'README.rdoc', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'CHANGELOG',
-                            'buildr.*', 'Rakefile', 'rakelib/**/*', '_buildr', 'etc/**/*']
+                            'buildr.*', 'Rakefile', 'rakelib/**/*', '_buildr', '_jbuildr', 'etc/**/*']
   spec.require_paths  = ['lib', 'addon']
   spec.bindir         = 'bin'                               # Use these for applications.
   spec.executable     = 'buildr'
@@ -48,11 +48,11 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rubyzip',              '0.9.1'
   spec.add_dependency 'highline',             '1.5.0'
   spec.add_dependency 'rubyforge',            '1.0.1'
-  spec.add_dependency 'hoe',                  '1.8.1'
+  spec.add_dependency 'hoe',                  '1.7.0'
   spec.add_dependency 'rjb',                  '1.1.6' if spec.platform.to_s == 'ruby' 
   spec.add_dependency 'Antwrap',              '0.7.0'
-  spec.add_dependency 'rspec',                '1.1.11'
+  spec.add_dependency 'rspec',                '1.1.4'
   spec.add_dependency 'xml-simple',           '1.0.11'
   spec.add_dependency 'archive-tar-minitar',  '0.5.2'
-  spec.add_dependency 'jruby-openssl',        '0.2'   if spec.platform.to_s == 'java'
+  spec.add_dependency 'jruby-openssl',        '0.3'   if spec.platform.to_s == 'java'
 end
