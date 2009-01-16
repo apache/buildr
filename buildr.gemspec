@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.name           = 'buildr'
   spec.version        = '1.3.4'
   spec.author         = 'Apache Buildr'
-  spec.email          = "buildr-user@incubator.apache.org"
+  spec.email          = "users@buildr.apache.org"
   spec.homepage       = "http://buildr.apache.org/"
   spec.summary        = "A build system that doesn't suck"
   spec.rubyforge_project  = 'buildr'

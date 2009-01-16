@@ -136,7 +136,7 @@ p>. ("Release signing keys":#{url}/KEYS)
     previous_version = changelog[1][1]
 
     email = <<-EMAIL
-To: buildr-dev@incubator.apache.org
+To: dev@buildr.apache.org
 Subject: [VOTE] Buildr #{spec.version} release
 
 We're voting on the source distributions available here:

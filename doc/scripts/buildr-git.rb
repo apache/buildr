@@ -175,7 +175,7 @@ RECOMMENDED WORKFLOW:
       license to include your code:
 
         https://issues.apache.org/jira/browse/BUILDR
-        buildr-dev@incubator.apache.org
+        dev@buildr.apache.org
 
    7.b) Now you have everyhing on staging area and merged important changes 
       from apache/trunk, it's time to commit them to Apache's SVN.

@@ -35,7 +35,7 @@ define 'buildr' do
     package(:gem).include(legal).path('lib').include('addon/buildr')
     package(:gem).spec do |spec|
       spec.author             = 'Apache Buildr'
-      spec.email              = 'buildr-user@incubator.apache.org'
+      spec.email              = 'users@buildr.apache.org'
       spec.homepage           = "http://buildr.apache.org"
       spec.rubyforge_project  = 'buildr'
       spec.extra_rdoc_files   = legal
