@@ -32,7 +32,7 @@ namespace 'rubyforge' do
   file 'published/rubyforge'=>'published' do
     mkdir 'published/rubyforge'
     FileList['published/distro/*.{gem,tgz,zip}'].each do |pkg|
-      cp pkg, 'published/rubyforge/' + File.basename(pkg).sub(/-incubating/, '')
+      cp pkg, 'published/rubyforge/' + File.basename(pkg)
     end
   end
 
