@@ -31,7 +31,7 @@ define 'buildr' do
   define 'extra', :version=>'1.0' do
     compile.using(:javac).from(FileList['addon/buildr/**/*.java']).into('addon/buildr').with(Buildr::Jetty::REQUIRES, Buildr::Nailgun::ARTIFACT_SPEC)
     # Legals included in source code and show in RDoc.
-    legal = 'LICENSE', 'DISCLAIMER', 'NOTICE'
+    legal = 'LICENSE', 'NOTICE'
     package(:gem).include(legal).path('lib').include('addon/buildr')
     package(:gem).spec do |spec|
       spec.author             = 'Apache Buildr'

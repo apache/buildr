@@ -28,14 +28,14 @@ Gem::Specification.new do |spec|
   spec.platform       = $platform || RUBY_PLATFORM[/java/] || 'ruby'
   
   spec.files          = Dir['lib/**/*', 'bin/**/*', 'addon/**/*', 'doc/**/*', 'spec/**/*',
-                            'README.rdoc', 'LICENSE', 'NOTICE', 'DISCLAIMER', 'CHANGELOG',
+                            'README.rdoc', 'LICENSE', 'NOTICE', 'CHANGELOG',
                             'buildr.*', 'Rakefile', 'rakelib/**/*', '_buildr', '_jbuildr', 'etc/**/*']
   spec.require_paths  = ['lib', 'addon']
   spec.bindir         = 'bin'                               # Use these for applications.
   spec.executable     = 'buildr'
 
   spec.has_rdoc         = true
-  spec.extra_rdoc_files = ['README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE', 'DISCLAIMER']
+  spec.extra_rdoc_files = ['README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE']
   spec.rdoc_options     << '--title' << "Buildr" << '--main' << 'README.rdoc' <<
                            '--line-numbers' << '--inline-source' << '-p' <<
                            '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
