@@ -36,7 +36,7 @@ define 'buildr' do
     package(:gem).spec do |spec|
       spec.author             = 'Apache Buildr'
       spec.email              = 'buildr-user@incubator.apache.org'
-      spec.homepage           = "http://incubator.apache.org/buildr"
+      spec.homepage           = "http://buildr.apache.org"
       spec.rubyforge_project  = 'buildr'
       spec.extra_rdoc_files   = legal
       spec.rdoc_options << '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'

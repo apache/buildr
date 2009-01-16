@@ -2,7 +2,7 @@
 
 This is Buildr, the build system that doesn't suck.
 
-http://incubator.apache.org/buildr/
+http://buildr.apache.org/
 
 
 == Get Started
@@ -23,12 +23,12 @@ Make sure to set JAVA_HOME environment variable first, then:
 (Use sudo for Linux and OS X)
 
 More installation and setup instructions available online
-http://incubator.apache.org/buildr/
+http://buildr.apache.org/
 
 
 === RTFM
 
-* Buildr documentation: http://incubator.apache.org/buildr/
+* Buildr documentation: http://buildr.apache.org/
 * More about Rake: http://docs.rubyrake.org
 * Antwrap documentation: http://antwrap.rubyforge.org
 
