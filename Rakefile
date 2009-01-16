@@ -42,7 +42,6 @@ Rake::GemPackageTask.new spec(RUBY_PLATFORM =~ /java/ ? 'ruby' : 'java') do |tas
 end
 
 
-ENV['incubating'] = 'true'
 ENV['staging'] = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
 
 task('apache:license').enhance FileList[spec.files].exclude('.class', '.png', '.jar', '.tif', '.textile', '.icns',

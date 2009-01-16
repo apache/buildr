@@ -59,7 +59,7 @@ namespace 'apache' do
     puts 'Copying and signing release files ...'
     mkpath 'staged/distro'
     FileList['pkg/*.{gem,zip,tgz}'].each do |pkg|
-      cp pkg, pkg.pathmap('staged/distro/%n-incubating%x') 
+      cp pkg, pkg.pathmap('staged/distro/%n%x') 
     end
   end
 
@@ -76,9 +76,8 @@ namespace 'apache' do
   end
 
   # Publish prerequisites to distro server.
-  task 'publish:distro' do |task, args|
-    target = args.incubating ? "people.apache.org:/www/www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
-      "people.apache.org:/www/www.apache.org/dist/#{spec.name}/#{spec.version}"
+  task 'publish:distro' do
+    target = "people.apache.org:/www/www.apache.org/dist/#{spec.name}/#{spec.version}"
     puts 'Uploading packages to Apache distro ...'
     host, remote_dir = target.split(':')
     sh 'ssh', host, 'rm', '-rf', remote_dir rescue nil
@@ -87,15 +86,14 @@ namespace 'apache' do
     puts 'Done'
   end
 
-  task 'distro-links'=>'staged/distro' do |task, args|
-    url = args.incubating ? "http://www.apache.org/dist/incubator/#{spec.name}/#{spec.version}-incubating" :
-      "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
+  task 'distro-links'=>'staged/distro' do
+    url = "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
     rows = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
       name, md5 = File.basename(pkg), Digest::MD5.file(pkg).to_s
       %{| "#{name}":#{url}/#{name} | "#{md5}":#{url}/#{name}.md5 | "Sig":#{url}/#{name}.asc |}
     }
     textile = <<-TEXTILE
-h3. #{spec.name} #{spec.version}#{args.incubating && "-incubating"} (#{Time.now.strftime('%Y-%m-%d')})
+h3. #{spec.name} #{spec.version} (#{Time.now.strftime('%Y-%m-%d')})
 
 |_. Package |_. MD5 Checksum |_. PGP |
 #{rows.join("\n")}
@@ -117,9 +115,8 @@ p>. ("Release signing keys":#{url}/KEYS)
   end
 
   # Publish prerequisites to Web site.
-  task 'publish:site' do |task, args|
-    target = args.incubating ? "people.apache.org:/www/incubator.apache.org/#{spec.name}" :
-      "people.apache.org:/www/#{spec.name}.apache.org"
+  task 'publish:site' do
+    target = "people.apache.org:/www/#{spec.name}.apache.org"
     puts 'Uploading Apache Web site ...'
     sh 'rsync', '--progress', '--recursive', '--delete', 'published/site/', target
     puts 'Done'
@@ -143,8 +140,8 @@ We're voting on the source distributions available here:
 #{base_url}/distro/
 
 Specifically:
-#{base_url}/distro/buildr-#{spec.version}-incubating.tgz
-#{base_url}/distro/buildr-#{spec.version}-incubating.zip
+#{base_url}/distro/buildr-#{spec.version}.tgz
+#{base_url}/distro/buildr-#{spec.version}.zip
 
 The documentation generated for this release is available here:
 #{base_url}/site/
