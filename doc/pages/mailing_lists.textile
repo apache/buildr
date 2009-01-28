@@ -3,15 +3,15 @@ h1. Mailing Lists
 
 |_. users       |_. For developers working with Buildr |
 | Post          | "users@buildr.apache.org":mailto:users@buildr.apache.org |
-| Browse        | "users archives":http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/ |
+| Browse        | "users archives":http://mail-archives.apache.org/mod_mbox/buildr-users/ |
 | Subscribe     | "users-subscribe@buildr.apache.org":mailto:users-subscribe@buildr.apache.org |
 | Unsubscribe   | "users-unsubscribe@buildr.apache.org":mailto:users-unsubscribe@buildr.apache.org |
 |_. dev         |_. For development of Buildr itself |
 | Post          | "dev@buildr.apache.org":mailto:dev@buildr.apache.org |
-| Browse        | "dev archives":http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/ |
+| Browse        | "dev archives":http://mail-archives.apache.org/mod_mbox/buildr-dev/ |
 | Subscribe     | "dev-subscribe@buildr.apache.org":mailto:dev-subscribe@buildr.apache.org |
 | Unsubscribe   | "dev-unsubscribe@buildr.apache.org":mailto:dev-unsubscribe@buildr.apache.org |
 |_. commits     |_. Commit messages and JIRA status |
 | Subscribe     | "commits-subscribe@buildr.apache.org":mailto:commits-subscribe@buildr.apache.org |
 | Unsubscribe   | "commits-unsubscribe@buildr.apache.org":mailto:commits-unsubscribe@buildr.apache.org |
-| Browse        | "commits archives":http://mail-archives.apache.org/mod_mbox/incubator-buildr-commits/ |
+| Browse        | "commits archives":http://mail-archives.apache.org/mod_mbox/buildr-commits/ |

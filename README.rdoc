@@ -35,9 +35,9 @@ http://buildr.apache.org/
 
 === Mailing list
 
-Users: http://mail-archives.apache.org/mod_mbox/incubator-buildr-user/
+Users: http://mail-archives.apache.org/mod_mbox/buildr-users/
 
-Developers: http://mail-archives.apache.org/mod_mbox/incubator-buildr-dev/
+Developers: http://mail-archives.apache.org/mod_mbox/buildr-dev/
 
 Create your own Buildfile and start living the life!
 
