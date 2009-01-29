@@ -96,10 +96,10 @@ When prompted for a platform, select ruby.
 
 You can check the latest sources from SVN:
 
-  svn co http://svn.apache.org/repos/asf/incubator/buildr/trunk
+  svn co http://svn.apache.org/repos/asf/buildr/trunk
 
 Or browse the SVN repository online:
-http://svn.apache.org/repos/asf/incubator/buildr
+http://svn.apache.org/repos/asf/buildr
 
 If you prefer Git, a Git fork is available from http://github.com/vic/buildr/tree/master:
 

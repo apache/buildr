@@ -38,7 +38,7 @@ Gem::Specification.new do |spec|
   spec.extra_rdoc_files = ['README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE']
   spec.rdoc_options     << '--title' << "Buildr" << '--main' << 'README.rdoc' <<
                            '--line-numbers' << '--inline-source' << '-p' <<
-                           '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
+                           '--webcvs' << 'http://svn.apache.org/repos/asf/buildr/trunk/'
 
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.8.3'

@@ -39,7 +39,7 @@ define 'buildr' do
       spec.homepage           = "http://buildr.apache.org"
       spec.rubyforge_project  = 'buildr'
       spec.extra_rdoc_files   = legal
-      spec.rdoc_options << '--webcvs' << 'http://svn.apache.org/repos/asf/incubator/buildr/trunk/'
+      spec.rdoc_options << '--webcvs' << 'http://svn.apache.org/repos/asf/buildr/trunk/'
       spec.add_dependency 'buildr', '~> 1.3'
     end
 

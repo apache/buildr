@@ -209,7 +209,7 @@ package(:zip).include db
 
 Much better.  We're using the same task twice, but since we're using Rake here, it will only execute once.  In fact, it will only execute if we don't already have a Derby database, or if it detects a change to the SQL file and needs to recreate the database.
 
-p(tip). @Derby.create@ is not part of Buildr, you can get "derby.rake":http://svn.apache.org/repos/asf/incubator/ode/trunk/tasks/derby.rake here.
+p(tip). @Derby.create@ is not part of Buildr, you can get "derby.rake":http://svn.apache.org/repos/asf/ode/trunk/tasks/derby.rake here.
 
 Here's another example.  We want to copy some files over as part of the build, and apply a filter to them.  This time, we're going to extend the @build@ task:
 

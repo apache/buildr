@@ -9,7 +9,7 @@ The *official Apache distribution* consists of the digitally signed binaries (ge
 
 In addition, contributors to this project maintain a separate distribution over on "RubyForge":http://rubyforge.org/projects/buildr.  Using this distribution, you're able to install Buildr directly from the remote gem repository and to automatically upgrade when a new release comes out.  The RubyForge distribution is *not* an official Apache distribution.
 
-The source code is included in both source and binary distribution, the Gem distribution expands the source code into your local Gem repository. That's in addition to getting the source code directly from "SVN":http://svn.apache.org/repos/asf/incubator/buildr or "GitHub":http://github.com/vic/buildr/tree/master. Learn more about working with source code and "living on the edge":contributing.html#living_on_the_edge.
+The source code is included in both source and binary distribution, the Gem distribution expands the source code into your local Gem repository. That's in addition to getting the source code directly from "SVN":http://svn.apache.org/repos/asf/buildr or "GitHub":http://github.com/vic/buildr/tree/master. Learn more about working with source code and "living on the edge":contributing.html#living_on_the_edge.
 
 
 h2.  Binaries and Source Code
