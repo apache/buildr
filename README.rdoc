@@ -4,7 +4,6 @@ This is Buildr, the build system that doesn't suck.
 
 http://buildr.apache.org/
 
-
 == Get Started
 
 === Install Buildr
