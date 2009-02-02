@@ -12,6 +12,7 @@
 * Change: BUILDR-177 Moved cobertura and emma extensions to lib directory.
 * Change: BUILDR-187 Source code attachment for Eclipse .classpath.
 * Change: BUILDR-188 Source code attachment for IDEA .iml file (Marko Sibakov).
+* Change: Buildr, no longer in incubation (hurray!): new site, mailing list, SVN, Git.
 * Fixed:  Removed double complete/fail messages showing up on console.
 * Fixed:  BUILDR-158 Nailgun is now a delegate for buildr/drb (a pure-ruby dRuby server)
 * Fixed:  BUILDR-170 ArtifactNamespace#method_missing has a condition that is never true.
