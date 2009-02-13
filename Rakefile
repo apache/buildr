@@ -16,6 +16,10 @@
 
 require 'rake/gempackagetask'
 
+
+RakeFileUtils.verbose_flag = Rake.application.options.trace
+
+
 def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
   @specs ||= ['ruby', 'java'].inject({}) { |hash, platform|
     $platform = platform
