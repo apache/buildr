@@ -263,6 +263,7 @@ module Buildr
       
       standard_buildr_options.each { |args| opts.on(*args) }
       parsed_argv = opts.parse(ARGV)
+      RakeFileUtils.verbose_flag = options.trace
       parsed_argv
     end
 

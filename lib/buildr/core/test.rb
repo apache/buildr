@@ -442,7 +442,13 @@ module Buildr
         @passed_tests, @failed_tests = [], []
       else
         info "Running tests in #{@project.name}"
-        @passed_tests = @framework.run(@tests, dependencies)
+        begin
+          @passed_tests = @framework.run(@tests, dependencies)
+        rescue Exception=>ex
+          error "Test framework error: #{ex.message}"
+          error ex.backtrace if Buildr.application.options.trace
+          @passed_tests = []
+        end
         @failed_tests = @tests - @passed_tests
         unless @failed_tests.empty?
           error "The following tests failed:\n#{@failed_tests.join("\n")}"
