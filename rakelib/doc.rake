@@ -50,46 +50,53 @@ begin
 
   collection = Docter.collection(spec.name).using('doc/site.toc.yaml').include('doc/pages', 'LICENSE', 'CHANGELOG')
   # TODO:  Add coverage reports when we get them to run.
-  template   = Docter.template('doc/site.haml').
-    include('doc/css', 'doc/images', 'doc/scripts', 'reports/coverage', 'reports/specs.html', 'rdoc', 'print/buildr.pdf')
+  template   = Docter.template('doc/site.haml').include('doc/css', 'doc/images', 'doc/scripts', 'rdoc')
 
   desc 'Run Docter server on port 3000'
   Docter::Rake.serve 'docter', collection, template, :port=>3000
 
-  desc 'Generate Web site in directory site'
-  Docter::Rake.generate 'site', collection, template
-
-  Docter::Rake.generate 'print',
+  Docter::Rake.generate '_print',
     Docter.collection(spec.name).using('doc/print.toc.yaml').include('doc/pages'),
     Docter.template('doc/print.haml').include('doc/css', 'doc/images'), :one_page
 
-  file('print/buildr.pdf'=>'print') do |task|
-    mkpath 'site'
-    sh 'prince', 'print/index.html', '-o', task.name, '--media=print' do |ok, res|
+  file('buildr.pdf'=>'_print') do |task|
+    sh 'prince', '_print/index.html', '-o', task.name, '--media=print' do |ok, res|
       fail 'Failed to create PDF, see errors above' unless ok
     end
   end
-  task 'site'=>'print/buildr.pdf' do
-    cp 'print/buildr.pdf', 'site'
+
+  desc 'Generate Web site in directory site'
+  Docter::Rake.generate '_site', collection, template
+
+  task '_site/buildr.pdf'=>'buildr.pdf' do
+    cp 'buildr.pdf', '_site'
+  end
+  task '_site/specs.html'=>'_reports/specs.html' do
+    cp '_reports/specs.html', '_site'
+  end
+  task '_site/coverage'=>'_reports/coverage' do
+    cp '_reports/coverage', '_site'
   end
 
-  task 'site' do
+  task 'site'=>['_site', '_site/buildr.pdf', '_site/specs.html', '_site/coverage'] do
     print 'Checking that we have site documentation, RDoc and PDF ... '
-    fail 'No PDF generated, you need to install PrinceXML!' unless File.exist?('site/buildr.pdf')
-    fail 'No RDocs in site directory' unless File.exist?('site/rdoc/files/lib/buildr_rb.html')
-    fail 'No site documentation in site directory' unless File.exist?('site/index.html')
-    fail 'No specifications site directory' unless File.exist?('site/specs.html')
+    fail 'No PDF generated, you need to install PrinceXML!' unless File.exist?('_site/buildr.pdf')
+    fail 'No RDocs in site directory' unless File.exist?('_site/rdoc/files/lib/buildr_rb.html')
+    fail 'No site documentation in site directory' unless File.exist?('_site/index.html')
+    fail 'No specifications in site directory' unless File.exist?('_site/specs.html')
+    fail 'No coverage report in site directory' unless File.exist?('_site/coverage')
     puts 'OK'
   end
 
   desc 'Produce PDF'
-  task 'pdf'=>'print/buildr.pdf' do |task|
-    sh 'open', 'print/buildr.pdf'
+  task 'pdf'=>'_print/buildr.pdf' do |task|
+    sh 'open', '_print/buildr.pdf'
   end
 
   task 'clobber' do
-    rm_rf 'print'
-    rm_rf 'site'
+    rm_rf '_site'
+    rm_rf '_print'
+    rm_rf 'buildr.pdf'
   end
 
 rescue LoadError

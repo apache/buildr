@@ -1,10 +1,11 @@
 pkg
 failed
-reports
+buildr.pdf
 rdoc
-site
-print
-snapshot
-stage
-release
+_reports
+_site
+_print
+_snapshot
+_stage
+_release
 tmp
