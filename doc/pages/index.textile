@@ -1,8 +1,8 @@
 h1. Welcome
 
-h2.  What is Buildr?
+h2.  What is Apache Buildr?
 
-Buildr is a build system for Java applications.  We wanted something that's simple and intuitive to use, so we only need to tell it what to do, and it takes care of the rest.  But also something we can easily extend for those one-off tasks, with a language that's a joy to use.  And of course, we wanted it to be fast, reliable and have outstanding dependency management.
+Apache Buildr is a build system for Java-based applications, including support for Scala, Groovy and a growing number of JVM languages and tools.  We wanted something that's simple and intuitive to use, so we only need to tell it what to do, and it takes care of the rest.  But also something we can easily extend for those one-off tasks, with a language that's a joy to use.  And of course, we wanted it to be fast, reliable and have outstanding dependency management.
 
 Here's what we got:
 
@@ -20,7 +20,7 @@ Here's what we got:
 So let's get started.  You can "read the documentation online":getting_started.html, or "download the PDF":buildr.pdf.
 
 
-h2.  News
+h2.  Project News
 
 Check out "all that's new in Buildr 1.3.3":whats_new.html.
 
@@ -33,7 +33,7 @@ Check out "all that's new in Buildr 1.3.3":whats_new.html.
 * Other features and bug fixes.
 
 
-h2.  Notices
+h2.  Legal Notices
 
 The Apache Software Foundation is a non-profit organization, consider "sponsoring":http://www.apache.org/foundation/sponsorship.html and check the "thanks":http://www.apache.org/foundation/thanks.html page.
 
