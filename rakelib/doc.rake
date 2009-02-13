@@ -71,11 +71,11 @@ begin
   task '_site/buildr.pdf'=>'buildr.pdf' do
     cp 'buildr.pdf', '_site'
   end
-  task '_site/specs.html'=>'_reports/specs.html' do
+  task '_site/specs.html'=>'spec' do
     cp '_reports/specs.html', '_site'
   end
-  task '_site/coverage'=>'_reports/coverage' do
-    cp '_reports/coverage', '_site'
+  task '_site/coverage'=>'coverage' do
+    cp_r '_reports/coverage', '_site'
   end
 
   task 'site'=>['_site', '_site/buildr.pdf', '_site/specs.html', '_site/coverage'] do
@@ -87,6 +87,16 @@ begin
     fail 'No coverage report in site directory' unless File.exist?('_site/coverage')
     puts 'OK'
   end
+
+
+  # Publish prerequisites to Web site.
+  task 'site_publish'=>'site' do
+    target = "people.apache.org:/www/#{spec.name}.apache.org"
+    puts "Uploading new site to #{target} ..."
+    sh "rsync --progress --recursive --delete _site/ #{target.inspect}/"
+    puts "Done"
+  end
+
 
   desc 'Produce PDF'
   task 'pdf'=>'_print/buildr.pdf' do |task|

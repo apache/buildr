@@ -15,10 +15,10 @@
 
 
 # Staged files are copied to this directory first, and from there uploaded to the staging server.
-directory 'staged'
+directory '_staged'
 
 task 'clobber' do
-  rm_rf 'staged'
+  rm_rf '_staged'
 end
 
 namespace 'stage' do
@@ -30,13 +30,13 @@ namespace 'stage' do
   # stage:prepare prepares all the files necessary for making a successful release:
   # binary and source packages, documentation, Web site, change file, checksums, etc.
   # This task depends on stage:check, and also performs its own verification of the
-  # produced artifacts.  Staged files are placed in the staged directory.
-  task 'prepare'=>'staged'
+  # produced artifacts.  Staged files are placed in the _staged directory.
+  task 'prepare'=>'_staged'
 
   # stage:upload moves the stage directory to the staging server.
   task 'upload' do |task, args|
-    puts "Uploading staged directory to #{args.staging} ..."
-    sh 'rsync', '--progress', '--recursive', 'staged/', args.staging
+    puts "Uploading _staged directory to #{args.staging} ..."
+    sh 'rsync', '--progress', '--recursive', '_staged/', args.staging + '/dist'
     puts 'Done'
   end
   

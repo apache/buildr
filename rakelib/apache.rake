@@ -55,40 +55,40 @@ namespace 'apache' do
   end
 
 
-  file 'staged/distro'=>'package' do
+  file '_staged'=>'package' do
     puts 'Copying and signing release files ...'
-    mkpath 'staged/distro'
+    mkpath '_staged'
     FileList['pkg/*.{gem,zip,tgz}'].each do |pkg|
-      cp pkg, pkg.pathmap('staged/distro/%n%x') 
+      cp pkg, pkg.pathmap('_staged/%n%x') 
     end
   end
 
-  task 'sign'=>['etc/KEYS', 'staged/distro'] do |task, args|
+  task 'sign'=>['etc/KEYS', '_staged'] do |task, args|
     gpg_user = args.gpg_user or fail "Please run with gpg_user=<argument for gpg --local-user>"
-    puts "Signing packages in staged/distro as user #{gpg_user}"
-    FileList['staged/distro/*.{gem,zip,tgz}'].each do |pkg|
+    puts "Signing packages in _staged as user #{gpg_user}"
+    FileList['_staged/*.{gem,zip,tgz}'].each do |pkg|
       bytes = File.open(pkg, 'rb') { |file| file.read }
       File.open(pkg + '.md5', 'w') { |file| file.write Digest::MD5.hexdigest(bytes) << ' ' << File.basename(pkg) }
       File.open(pkg + '.sha1', 'w') { |file| file.write Digest::SHA1.hexdigest(bytes) << ' ' << File.basename(pkg) }
       sh 'gpg', '--local-user', gpg_user, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
     end
-    cp 'etc/KEYS', 'staged/distro'
+    cp 'etc/KEYS', '_staged'
   end
 
-  # Publish prerequisites to distro server.
-  task 'publish:distro' do
+  # Publish prerequisites to dist server.
+  task 'dist:publish' do
     target = "people.apache.org:/www/www.apache.org/dist/#{spec.name}/#{spec.version}"
-    puts 'Uploading packages to Apache distro ...'
+    puts 'Uploading packages to Apache dist ...'
     host, remote_dir = target.split(':')
     sh 'ssh', host, 'rm', '-rf', remote_dir rescue nil
     sh 'ssh', host, 'mkdir', remote_dir
-    sh 'rsync', '--progress', '--recursive', 'published/distro/', target
+    sh 'rsync', '--progress', '--recursive', '_release/', target
     puts 'Done'
   end
 
-  task 'distro-links'=>'staged/distro' do
+  task 'dist-links'=>'_staged' do
     url = "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
-    rows = FileList['staged/distro/*.{gem,tgz,zip}'].map { |pkg|
+    rows = FileList['_staged/*.{gem,tgz,zip}'].map { |pkg|
       name, md5 = File.basename(pkg), Digest::MD5.file(pkg).to_s
       %{| "#{name}":#{url}/#{name} | "#{md5}":#{url}/#{name}.md5 | "Sig":#{url}/#{name}.asc |}
     }
@@ -109,16 +109,12 @@ p>. ("Release signing keys":#{url}/KEYS)
     puts 'Done'
   end
 
-  file 'staged/site'=>['distro-links', 'staged', 'site'] do
-    rm_rf 'staged/site'
-    cp_r 'site', 'staged'
-  end
 
   # Publish prerequisites to Web site.
-  task 'publish:site' do
+  task 'site:publish' do
     target = "people.apache.org:/www/#{spec.name}.apache.org"
     puts 'Uploading Apache Web site ...'
-    sh 'rsync', '--progress', '--recursive', '--delete', 'published/site/', target
+    sh 'rsync', '--progress', '--recursive', '--delete', '_site/', target
     puts 'Done'
   end
   
@@ -137,11 +133,11 @@ To: dev@buildr.apache.org
 Subject: [VOTE] Buildr #{spec.version} release
 
 We're voting on the source distributions available here:
-#{base_url}/distro/
+#{base_url}/dist/
 
 Specifically:
-#{base_url}/distro/buildr-#{spec.version}.tgz
-#{base_url}/distro/buildr-#{spec.version}.zip
+#{base_url}/dist/buildr-#{spec.version}.tgz
+#{base_url}/dist/buildr-#{spec.version}.zip
 
 The documentation generated for this release is available here:
 #{base_url}/site/
@@ -174,7 +170,7 @@ end
 
 
 task 'stage:check'=>['apache:check']
-task 'stage:prepare'=>['staged/distro', 'staged/site'] do |task|
+task 'stage:prepare'=>['_staged', '_site'] do |task|
   # Since this requires input (passphrase), do it at the very end.
   task.enhance do
     task('apache:sign').invoke
@@ -185,4 +181,4 @@ task 'stage' do
 end
 task 'stage:wrapup'=>'release-vote-email.txt'
 
-task 'release:publish'=>['apache:publish:distro', 'apache:publish:site']
+task 'release:publish'=>['apache:dist:publish', 'apache:site:publish']

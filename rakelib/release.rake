@@ -16,8 +16,10 @@
 # Released files are placed in this directory first, and from there published to various servers.
 file 'published' do |task, args|
   mkpath task.name
-  puts "Populating published directory from #{args.staging} ..."
-  sh 'rsync', '--progress', '--recursive', "#{args.staging}/", 'published'
+  puts "Populating _release directory from #{args.staging}/dist ..."
+  sh 'rsync', '--progress', '--recursive', "#{args.staging}/dist", '_release'
+  puts "Populating _site directory from #{args.staging}/site ..."
+  sh 'rsync', '--progress', '--recursive', "#{args.staging}/site", '_site'
   puts 'Done'
 end
 
