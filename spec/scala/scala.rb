@@ -14,9 +14,13 @@
 # the License.
 
 
-require 'buildr/scala/compiler'
-require 'buildr/scala/tests'
+require File.join(File.dirname(__FILE__), '../spec_helpers')
 
-Buildr.repositories.remote << 'http://scala-tools.org/repo-releases'
-
-Object::Scala = Buildr::Scala
+describe 'scala' do
+  it 'should automatically add the remote scala-tools.org repository' do
+    # NOTE: the sandbox environment clears "repositories.remote" so we can't
+    #       test for this spec right now.
+    #
+    # repositories.remote.should include('http://scala-tools.org/repo-releases')
+  end
+end
