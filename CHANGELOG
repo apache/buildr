@@ -2,6 +2,8 @@
 * Added:  BUILDR-159 Improved 'check' to accept both tar and tgz archives.
 * Added:  BUILDR-164 New 'artifacts:sources' task to download source code
           for artifact jars.
+* Added:  BUILDR-242: Include Scala-Tools Repository by Default.  
+* Change: require 'buildr/scala' is now official required to use Scala features
 * Change: Introduced new options from Rake 0.8.3: -I (libdir), -R (rakelib),
           --rules, --no-search, --silent.
 * Changed: Upgraded to Rubyforge 1.0.1.
