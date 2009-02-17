@@ -36,7 +36,8 @@ module Buildr
     # * :source      -- Source code compatibility.
     # * :target      -- Bytecode compatibility.
     # * :lint        -- Lint option is one of true, false (default), name (e.g. 'cast') or array.
-    # * :other       -- Array of options passed to the compiler (e.g. '-implicit:none')
+    # * :other       -- Array of options passed to the compiler 
+    #                   (e.g. ['-implicit:none', '-encoding', 'iso-8859-1'])
     class Javac < Base
 
       OPTIONS = [:warnings, :debug, :deprecation, :source, :target, :lint, :other]
