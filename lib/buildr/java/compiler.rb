@@ -31,13 +31,13 @@ module Buildr
     # Accepts the following options:
     # * :warnings    -- Issue warnings when compiling.  True when running in verbose mode.
     # * :debug       -- Generates bytecode with debugging information.  Set from the debug
-    #                   environment variable/global option.
+    # environment variable/global option.
     # * :deprecation -- If true, shows deprecation messages.  False by default.
     # * :source      -- Source code compatibility.
     # * :target      -- Bytecode compatibility.
     # * :lint        -- Lint option is one of true, false (default), name (e.g. 'cast') or array.
     # * :other       -- Array of options passed to the compiler 
-    #                   (e.g. ['-implicit:none', '-encoding', 'iso-8859-1'])
+    # (e.g. ['-implicit:none', '-encoding', 'iso-8859-1'])
     class Javac < Base
 
       OPTIONS = [:warnings, :debug, :deprecation, :source, :target, :lint, :other]
