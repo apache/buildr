@@ -191,6 +191,42 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.invoke
   end
 
+  it 'should compile and run specifications with "Specs" suffix' do
+    write 'src/test/scala/HelloWorldSpecs.scala', <<-SCALA
+      import org.specs._
+  
+      object HelloWorldSpecs extends Specification {
+        "'hello world' has 11 characters" in {
+          "hello world".size must beEqualTo(11)
+        }
+        "'hello world' matches 'h.* w.*'" in {
+          "hello world" must beMatching("h.* w.*")
+        }
+      }
+    SCALA
+    define('foo').test.using :scalatest
+    project('foo').test.invoke
+    project('foo').test.passed_tests.should include('HelloWorldSpecs')
+  end
+
+  it 'should fail if specifications fail' do
+    write 'src/test/scala/StringSpecs.scala', <<-SCALA
+      import org.specs._
+      import org.specs.runner._
+      
+      object StringSpecs extends Specification {
+        "empty string" should {
+          "have a zero length" in {
+            ("".length) mustEqual(1)
+          }
+        }
+      }
+    SCALA
+    define('foo')
+    project('foo').test.invoke rescue
+    project('foo').test.failed_tests.should include('StringSpecs')
+  end
+      
   it 'should set current directory' do
     mkpath 'baz'
     expected = File.expand_path('baz')
