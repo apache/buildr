@@ -71,6 +71,26 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.dependencies.should include(*artifacts(Scala::ScalaCheck.dependencies))
   end
 
+  it 'should set current directory' do
+    mkpath 'baz'
+    expected = File.expand_path('baz')
+    expected.gsub!('/', '\\') if expected =~ /^[A-Z]:/ # Java returns back slashed paths for windows
+    write 'baz/src/test/scala/CurrentDirectoryTestSuite.scala', <<-SCALA
+      class CurrentDirectoryTestSuite extends org.scalatest.FunSuite {
+        test("testCurrentDirectory") {
+          assert("value" === System.getenv("NAME"))
+          assert(#{expected.inspect} === new java.io.File(".").getCanonicalPath())
+        }
+      }
+    SCALA
+    define 'bar' do
+      define 'baz' do
+        test.include 'CurrentDirectoryTest'
+      end
+    end
+    project('bar:baz').test.invoke
+  end
+
   it 'should include public classes extending org.scalatest.FunSuite' do
     write 'src/test/scala/com/example/MySuite.scala', <<-SCALA
       package com.example
@@ -224,26 +244,6 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.failed_tests.should include('StringSpecs')
   end
       
-  it 'should set current directory' do
-    mkpath 'baz'
-    expected = File.expand_path('baz')
-    expected.gsub!('/', '\\') if expected =~ /^[A-Z]:/ # Java returns back slashed paths for windows
-    write 'baz/src/test/scala/CurrentDirectoryTestSuite.scala', <<-SCALA
-      class CurrentDirectoryTestSuite extends org.scalatest.FunSuite {
-        test("testCurrentDirectory") {
-          assert("value" === System.getenv("NAME"))
-          assert(#{expected.inspect} === new java.io.File(".").getCanonicalPath())
-        }
-      }
-    SCALA
-    define 'bar' do
-      define 'baz' do
-        test.include 'CurrentDirectoryTest'
-      end
-    end
-    project('bar:baz').test.invoke
-  end
-
   it 'should run with ScalaCheck automatic test case generation' do
     write 'src/test/scala/MySuite.scala', <<-SCALA
       import org.scalatest.prop.PropSuite
