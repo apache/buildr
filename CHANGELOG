@@ -6,7 +6,8 @@
 * Change: require 'buildr/scala' is now official required to use Scala features
 * Change: Introduced new options from Rake 0.8.3: -I (libdir), -R (rakelib),
           --rules, --no-search, --silent.
-* Changed: Upgraded to Rubyforge 1.0.1.
+* Change: Upgraded to Rubyforge 1.0.1.
+* Change: Buildr, no longer in incubation (hurray!): new site, mailing list, SVN, Git.
 * Change: BUILDR-147 Upgraded to use Rake 0.8.3.
 * Change: BUILDR-166 Upgraded to use RSpec 1.1.11.
 * Change: BUILDR-171 Eclipse task generates meta-data files for projects with
@@ -14,7 +15,8 @@
 * Change: BUILDR-177 Moved cobertura and emma extensions to lib directory.
 * Change: BUILDR-187 Source code attachment for Eclipse .classpath.
 * Change: BUILDR-188 Source code attachment for IDEA .iml file (Marko Sibakov).
-* Change: Buildr, no longer in incubation (hurray!): new site, mailing list, SVN, Git.
+* Change: BUILDR-260: Upgrade to Scala 2.7.3 compatible dependencies:  
+          ScalaSpecs 1.4.3, ScalaCheck 1.5 and ScalaTest 0.9.4
 * Fixed:  Removed double complete/fail messages showing up on console.
 * Fixed:  BUILDR-158 Nailgun is now a delegate for buildr/drb (a pure-ruby dRuby server)
 * Fixed:  BUILDR-170 ArtifactNamespace#method_missing has a condition that is never true.
