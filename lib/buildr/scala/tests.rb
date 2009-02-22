@@ -129,7 +129,8 @@ module Buildr::Scala
       nostacktrace = (options[:nostacktrace]) ? "-ns" : ""
       cmd_options = { :properties => options[:properties],
                       :java_args => options[:java_args],
-                      :classpath => dependencies}
+                      :classpath => dependencies + Scalac.dependencies}
+                      
       specs.each do |spec|
         Java.load
         begin
