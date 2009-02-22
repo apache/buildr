@@ -17,9 +17,6 @@
 require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 # TODO's
-#  -test w/ Specs
-#  -test w/ ScalaCheck
-#  -failing test
 #  -test passing System props
 #  -test passing ENV variables
 #  -test exclude group
@@ -247,5 +244,65 @@ describe Buildr::Scala::ScalaTest do
     project('bar:baz').test.invoke
   end
 
+  it 'should run with ScalaCheck automatic test case generation' do
+    write 'src/test/scala/MySuite.scala', <<-SCALA
+      import org.scalatest.prop.PropSuite
+      import org.scalacheck.Arbitrary._
+      import org.scalacheck.Prop._
+      
+      class MySuite extends PropSuite {
+      
+        test("list concatenation") {
+          val x = List(1, 2, 3)
+          val y = List(4, 5, 6)
+          assert(x ::: y === List(1, 2, 3, 4, 5, 6))
+          check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
+        }
+      
+        test(
+          "list concatenation using a test method",
+          (a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size
+        )
+      }
+    SCALA
+    define('foo')
+    project('foo').test.invoke
+    project('foo').test.passed_tests.should include('MySuite')
+  end
+
+  it 'should fail if ScalaCheck test case fails' do
+    write 'src/test/scala/StringSuite.scala', <<-SCALA
+      import org.scalatest.prop.PropSuite
+      import org.scalacheck.Arbitrary._
+      import org.scalacheck.Prop._
+
+      class StringSuite extends PropSuite {
+        test("startsWith") {
+          check( (a: String, b: String) => (a+b).startsWith(a) )
+        }
+      
+        test("endsWith") {
+          check( (a: String, b: String) => (a+b).endsWith(b) )
+        }
+      
+        // Is this really always true?
+        test("concat") {
+          check( (a: String, b: String) => (a+b).length > a.length && (a+b).length > b.length )
+        }
+      
+        test("substring2") {
+          check( (a: String, b: String) => (a+b).substring(a.length) == b )
+        }
+      
+        test("substring3") {
+          check( (a: String, b: String, c: String) =>
+                   (a+b+c).substring(a.length, a.length+b.length) == b )
+        }
+      }
+    SCALA
+    define('foo')
+    project('foo').test.invoke rescue
+    project('foo').test.failed_tests.should include('StringSuite')
+  end
 end
 
