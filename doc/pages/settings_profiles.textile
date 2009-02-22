@@ -246,7 +246,7 @@ project 'db-module' do
   # for example, everything under src/main/hsql.
   resources.from(_("src/main/#{Buildr.settings.profile['db']}"))
   # Set the JDBC URL in copied resource files (config.xml needs this).
-  resources.filter :jdbc=>profile['jdbc']
+  resources.filter.using :jdbc=>Buildr.settings.profile['jdbc']
 end
 }}}
 
