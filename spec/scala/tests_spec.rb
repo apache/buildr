@@ -244,6 +244,7 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.failed_tests.should include('StringSpecs')
   end
       
+<<<<<<< HEAD:spec/scala/tests_spec.rb
   it 'should set current directory' do
     mkpath 'baz'
     expected = File.expand_path('baz')
@@ -305,6 +306,8 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.passed_tests.should include('MySuite')
   end
 
+=======
+>>>>>>> Move test around:spec/scala/tests_spec.rb
   it 'should run with ScalaCheck automatic test case generation' do
     write 'src/test/scala/MySuite.scala', <<-SCALA
       import org.scalatest.prop.PropSuite
