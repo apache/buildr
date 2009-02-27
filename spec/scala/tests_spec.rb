@@ -305,6 +305,32 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.passed_tests.should include('MySuite')
   end
 
+  it 'should run with ScalaCheck automatic test case generation' do
+    write 'src/test/scala/MySuite.scala', <<-SCALA
+      import org.scalatest.prop.PropSuite
+      import org.scalacheck.Arbitrary._
+      import org.scalacheck.Prop._
+      
+      class MySuite extends PropSuite {
+      
+        test("list concatenation") {
+          val x = List(1, 2, 3)
+          val y = List(4, 5, 6)
+          assert(x ::: y === List(1, 2, 3, 4, 5, 6))
+          check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
+        }
+      
+        test(
+          "list concatenation using a test method",
+          (a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size
+        )
+      }
+    SCALA
+    define('foo')
+    project('foo').test.invoke
+    project('foo').test.passed_tests.should include('MySuite')
+  end
+
   it 'should fail if ScalaCheck test case fails' do
     write 'src/test/scala/StringSuite.scala', <<-SCALA
       import org.scalatest.prop.PropSuite
