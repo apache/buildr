@@ -14,6 +14,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+
 # Run buildr from source, specifically for testing stuff without doing a rake install.
 
 require 'rubygems'
@@ -22,6 +23,7 @@ spec = Gem::Specification.load(File.join(File.dirname(__FILE__), 'buildr.gemspec
 spec.dependencies.each do |dep|
   gem dep.name, dep.version_requirements.to_s
 end
+Gem.loaded_specs['buildr'] = spec # Prevents RubyGem from loading files from installed Buildr gems
 
 require 'buildr'
 Buildr.application.run

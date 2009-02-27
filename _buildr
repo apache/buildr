@@ -23,6 +23,7 @@ spec = Gem::Specification.load(File.join(File.dirname(__FILE__), 'buildr.gemspec
 spec.dependencies.each do |dep|
   gem dep.name, dep.version_requirements.to_s
 end
+Gem.loaded_specs['buildr'] = spec # Prevents RubyGem from loading files from installed Buildr gems
 
 require 'buildr'
 Buildr.application.run
