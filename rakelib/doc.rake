@@ -14,29 +14,22 @@
 # the License.
 
 
-require 'rake/rdoctask'
+begin # For the Web site, we use the mislav-hanna RDoc theme (http://github.com/mislav/hanna/)
+  require 'hanna/rdoctask'
+rescue LoadError
+  puts "Buildr uses the mislav-hanna RDoc theme. You can install it by running rake setup"
+  task('setup') { install_gem 'mislav-hanna', :source=>'http://gems.github.com' }
+  require 'rake/rdoctask'
+end
+
 
 desc 'Generate RDoc documentation'
 rdoc = Rake::RDocTask.new('rdoc') do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = spec.name
-  rdoc.options  = spec.rdoc_options + ['--promiscuous']
+  rdoc.options  = spec.rdoc_options
   rdoc.rdoc_files.include('lib/**/*.rb')
   rdoc.rdoc_files.include spec.extra_rdoc_files
-end
-
-
-begin
-  gem 'allison'
-  rdoc.template = File.expand_path('lib/allison.rb', Gem.loaded_specs['allison'].full_gem_path)
-rescue LoadError
-  puts 'Please run rake setup to install the Allison RDoc template'
-  task 'setup' do
-    install_gem 'allison'
-  end
-  task 'stage:check' do
-    fail 'Please run rake setup to install the Allison RDoc template'
-  end
 end
 
 
