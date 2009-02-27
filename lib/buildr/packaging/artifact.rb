@@ -129,20 +129,16 @@ module Buildr
       invoke
       installed = Buildr.repositories.locate(self)
       unless installed == name # If not already in local repository.
-        verbose(Buildr.application.options.trace || false) do
-          mkpath File.dirname(installed)
-          cp name, installed
-        end
+        mkpath File.dirname(installed)
+        cp name, installed
         info "Installed #{installed}"
       end
     end
 
     def uninstall
-      verbose(Buildr.application.options.trace || false) do
-        installed = Buildr.repositories.locate(self)
-        rm installed if File.exist?(installed) 
-        pom.uninstall if pom && pom != self
-      end
+      installed = Buildr.repositories.locate(self)
+      rm installed if File.exist?(installed) 
+      pom.uninstall if pom && pom != self
     end
 
     # :call-seq:
@@ -329,19 +325,15 @@ module Buildr
     def from(path)
       path = File.expand_path(path.to_s)
       enhance [path] do
-        verbose false do
-          mkpath File.dirname(name)
-          pom.invoke unless type == :pom
-          cp path, name
-          info "Installed #{path} as #{to_spec}"
-        end
+        mkpath File.dirname(name)
+        pom.invoke unless type == :pom
+        cp path, name
+        info "Installed #{path} as #{to_spec}"
       end
       unless type == :pom
         pom.enhance do
-          verbose false do
-            mkpath File.dirname(pom.name)
-            File.open(pom.name, 'w') { |file| file.write pom.pom_xml }
-          end
+          mkpath File.dirname(pom.name)
+          File.open(pom.name, 'w') { |file| file.write pom.pom_xml }
         end
       end
       self
@@ -730,9 +722,7 @@ module Buildr
     task('install').tap do |task|
       task.enhance all, &block
       task 'uninstall' do
-        verbose false do
-          all.map(&:to_s ).each { |file| rm file if File.exist?(file) }
-        end
+        all.map(&:to_s ).each { |file| rm file if File.exist?(file) }
       end
     end
   end

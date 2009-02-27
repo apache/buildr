@@ -145,7 +145,7 @@ module Buildr
       end
 
       # Otherwise, empty unzip creates target as a file when touching.
-      mkpath target.to_s, :verbose=>false
+      mkpath target.to_s
       Zip::ZipFile.open(zip_file.to_s) do |zip|
         entries = zip.collect
         @paths.each do |path, patterns|
@@ -153,13 +153,13 @@ module Buildr
             next if entry.directory?
             dest = File.expand_path(dest, target.to_s)
             trace "Extracting #{dest}"
-            mkpath File.dirname(dest), :verbose=>false rescue nil
+            mkpath File.dirname(dest) rescue nil
             entry.extract(dest) { true }
           end
         end
       end
       # Let other tasks know we updated the target directory.
-      touch target.to_s, :verbose=>false
+      touch target.to_s
     end
 
     # :call-seq:

@@ -146,7 +146,7 @@ module Buildr
                     ant.filter :excludes=>emma.excludes.join(', ') unless emma.excludes.empty?
                   end
                 end
-                touch task.to_s, :verbose=>false
+                touch task.to_s
               end
             end
             
@@ -162,7 +162,7 @@ module Buildr
                 missing_required_files = [emma.metadata_file, emma.coverage_file].reject { |f| File.exist?(f) }
                 if missing_required_files.empty?
                   info "Creating test coverage reports in #{emma.report_dir}"
-                  mkdir_p emma.report_dir, :verbose=>false
+                  mkdir_p emma.report_dir
                   Emma.ant do |ant|
                     ant.report do
                       ant.infileset :file=>emma.metadata_file
@@ -184,7 +184,7 @@ module Buildr
         end
 
         project.clean do
-          rm_rf [emma.report_dir, emma.coverage_file, emma.metadata_file, emma.instrumented_dir], :verbose=>false
+          rm_rf [emma.report_dir, emma.coverage_file, emma.metadata_file, emma.instrumented_dir]
         end
         
       end
@@ -203,7 +203,7 @@ module Buildr
         desc "Run the test cases and produce code coverage reports in #{format}"
         task format => ['instrument', 'test'] do
           info "Creating test coverage reports in #{format}"
-          mkdir_p report_to(format), :verbose=>false
+          mkdir_p report_to(format)
           Emma.ant do |ant|
             ant.merge :outfile=>data_file do
               Buildr.projects.each do |project|
@@ -226,7 +226,7 @@ module Buildr
       end
       
       task :clean do
-        rm_rf [report_to, data_file], :verbose=>false
+        rm_rf [report_to, data_file]
       end
       end
 

@@ -281,8 +281,8 @@ module Buildr
           # We're here because the archive file does not exist, or one of the files is newer than the archive contents;
           # we need to make sure the archive doesn't exist (e.g. opening an existing Zip will add instead of create).
           # We also want to protect against partial updates.
-          rm name, :verbose=>false rescue nil
-          mkpath File.dirname(name), :verbose=>false
+          rm name rescue nil
+          mkpath File.dirname(name)
           begin
             @paths.each do |name, object|
               @file_map[name] = nil unless name.empty?
@@ -290,7 +290,7 @@ module Buildr
             end
             create_from @file_map
           rescue
-            rm name, :verbose=>false rescue nil
+            rm name rescue nil
             raise
           end
         end

@@ -224,12 +224,12 @@ module Buildr
         unless sources.empty?
           raise 'No compiler selected and can\'t determine which compiler to use' unless compiler
           raise 'No target directory specified' unless target
-          mkpath target.to_s, :verbose=>false
+          mkpath target.to_s
           info "Compiling #{task.name.gsub(/:[^:]*$/, '')} into #{target.to_s}"
           @compiler.compile(sources.map(&:to_s), target.to_s, dependencies.map(&:to_s))
           # By touching the target we let other tasks know we did something,
           # and also prevent recompiling again for dependencies.
-          touch target.to_s, :verbose=>false
+          touch target.to_s
         end
       end
     end

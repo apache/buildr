@@ -51,7 +51,7 @@ module Buildr
   # For example:
   #   write('README') { read('README').sub("${build}", Time.now) }
   def write(name, content = nil)
-    mkpath File.dirname(name), :verbose=>false
+    mkpath File.dirname(name)
     content = yield if block_given?
     File.open(name.to_s, 'wb') { |file| file.write content.to_s }
     content.to_s

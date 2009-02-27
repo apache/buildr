@@ -85,15 +85,15 @@ module Buildr
       
       spec_dir = task.project.path_to(:source, :spec, :ruby)
       report_dir = task.report_to.to_s
-      FileUtils.rm_rf report_dir
-      FileUtils.mkdir_p report_dir
+      rm_rf report_dir
+      mkdir_p report_dir
       ENV['CI_REPORTS'] = report_dir
 
       runner = runner_config
       runner.content = runner_content(binding)
       
       Buildr.write(runner.file, runner.content)
-      FileUtils.rm_f runner.result
+      rm_f runner.result
       
       if RUBY_PLATFORM[/java/] && !options.fork
         runtime = new_runtime

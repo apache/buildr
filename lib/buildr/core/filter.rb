@@ -174,27 +174,25 @@ module Buildr
         map
       end
         
-      mkpath target.to_s, :verbose=>Buildr.application.options.trace
+      mkpath target.to_s
       return false if copy_map.empty?
 
-      verbose(Buildr.application.options.trace || false) do
-        copy_map.each do |path, source|
-          dest = File.expand_path(path, target.to_s)
-          if File.directory?(source)
-            mkpath dest, :verbose=>false
-          else
-            mkpath File.dirname(dest)
-            if @mapper.mapper_type
-              mapped = @mapper.transform(File.open(source, 'rb') { |file| file.read }, path)
-              File.open(dest, 'wb') { |file| file.write mapped }
-            else # no mapping
-              cp source, dest
-              File.chmod(0664, dest)
-            end
+      copy_map.each do |path, source|
+        dest = File.expand_path(path, target.to_s)
+        if File.directory?(source)
+          mkpath dest
+        else
+          mkpath File.dirname(dest)
+          if @mapper.mapper_type
+            mapped = @mapper.transform(File.open(source, 'rb') { |file| file.read }, path)
+            File.open(dest, 'wb') { |file| file.write mapped }
+          else # no mapping
+            cp source, dest
+            File.chmod(0664, dest)
           end
         end
-        touch target.to_s
       end
+      touch target.to_s
       true
     end
 

@@ -117,9 +117,9 @@ module Buildr
         @sourcepath = []
         @files = FileList[]
         enhance do |task|
-          rm_rf target.to_s, :verbose=>false
+          rm_rf target.to_s
           generate source_files, File.expand_path(target.to_s), options.merge(:classpath=>classpath, :sourcepath=>sourcepath)
-          touch target.to_s, :verbose=>false
+          touch target.to_s
         end
       end
 

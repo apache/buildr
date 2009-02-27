@@ -30,8 +30,7 @@ module Buildr #:nodoc:
         end
 
         def self.dump_yaml(file, e)
-          require 'fileutils'
-          FileUtils.mkdir_p(File.dirname(file))
+          mkdir_p File.dirname(file)
           File.open(file, 'w') { |f| f.puts(YAML.dump(Error.new(e.message, e.backtrace))) }
         end
 
@@ -106,7 +105,7 @@ module Buildr #:nodoc:
           files = options.files
           result.succeeded = files - result.failed
           
-          FileUtils.mkdir_p(File.dirname(where))
+          mkdir_p File.dirname(where)
           File.open(where, 'w') { |f| f.puts YAML.dump(result) }
         end
       end # YamlFormatter

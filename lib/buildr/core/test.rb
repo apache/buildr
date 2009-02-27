@@ -598,8 +598,8 @@ module Buildr
       project.build test unless test.options[:integration]
 
       project.clean do
-        rm_rf test.compile.target.to_s, :verbose=>false if test.compile.target
-        rm_rf test.report_to.to_s, :verbose=>false
+        rm_rf test.compile.target.to_s if test.compile.target
+        rm_rf test.report_to.to_s
       end
     end
 

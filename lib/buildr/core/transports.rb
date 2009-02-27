@@ -156,7 +156,7 @@ module URI
           read({:progress=>verbose}.merge(options || {}).merge(:modified=>modified)) { |chunk| temp.write chunk }
         end
         mkpath File.dirname(target)
-        FileUtils.mv temp.path, target
+        mv temp.path, target
       when File
         read({:progress=>verbose}.merge(options || {}).merge(:modified=>target.mtime)) { |chunk| target.write chunk }
         target.flush
@@ -549,7 +549,7 @@ module URI
       end
       real_path.tap do |path|
         mkpath File.dirname(path)
-        FileUtils.mv temp.path, path
+        mv temp.path, path
       end
     end
 

@@ -170,7 +170,7 @@ module Buildr
           # Another task to create the POM file.
           pom = package.pom
           pom.enhance do
-            mkpath File.dirname(pom.name), :verbose=>false
+            mkpath File.dirname(pom.name)
             File.open(pom.name, 'w') { |file| file.write pom.pom_xml }
           end
           file(Buildr.repositories.locate(package)=>package) { package.install }

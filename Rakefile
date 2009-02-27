@@ -14,9 +14,6 @@
 # the License.
 
 
-RakeFileUtils.verbose_flag = Rake.application.options.trace # Rake 0.8.3 is too chatty!
-
-
 # We need JAVA_HOME for most things (setup, spec, etc).
 unless ENV['JAVA_HOME']
   if RUBY_PLATFORM[/java/]

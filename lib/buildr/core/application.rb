@@ -125,7 +125,7 @@ module Buildr
       @rakefiles = DEFAULT_BUILDFILES.dup
       @top_level_tasks = []
       @home_dir = File.expand_path('.buildr', ENV['HOME'])
-      mkpath @home_dir, :verbose=>false unless File.exist?(@home_dir)
+      mkpath @home_dir unless File.exist?(@home_dir)
       @settings = Settings.new(self)
       @on_completion = []
       @on_failure = []
@@ -260,10 +260,9 @@ module Buildr
         puts opts
         exit
       end
-      
+    
       standard_buildr_options.each { |args| opts.on(*args) }
       parsed_argv = opts.parse(ARGV)
-      RakeFileUtils.verbose_flag = options.trace
       parsed_argv
     end
 
@@ -641,5 +640,24 @@ module Rake #:nodoc
         end
       end
     end
+  end
+end
+
+
+module RakeFileUtils
+  FileUtils::OPT_TABLE.each do |name, opts|
+    default_options = []
+    if opts.include?(:verbose) || opts.include?("verbose")
+      default_options << ':verbose => RakeFileUtils.verbose_flag == true'
+    end
+    next if default_options.empty?
+    module_eval(<<-EOS, __FILE__, __LINE__ + 1)
+    def #{name}( *args, &block )
+      super(
+        *rake_merge_option(args,
+          #{default_options.join(', ')}
+          ), &block)
+    end
+    EOS
   end
 end

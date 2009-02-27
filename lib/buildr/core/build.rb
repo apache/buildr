@@ -56,10 +56,8 @@ module Buildr
       project.recursive_task 'build'
       project.recursive_task 'clean'
       project.clean do
-        verbose(true) do
-          rm_rf project.path_to(:target)
-          rm_rf project.path_to(:reports)
-        end
+        rm_rf project.path_to(:target)
+        rm_rf project.path_to(:reports)
       end
     end
 

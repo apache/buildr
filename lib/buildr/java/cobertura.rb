@@ -129,7 +129,7 @@ module Buildr
             # Instrumented bytecode goes in a different directory. This task creates before running the test
             # cases and monitors for changes in the generate bytecode.
             instrumented = project.file(cobertura.instrumented_dir => project.compile.target) do |task|
-              mkdir_p task.to_s, :verbose => false
+              mkdir_p task.to_s
               unless project.compile.sources.empty?
                 info "Instrumenting classes with cobertura data file #{cobertura.data_file}"
                 Buildr.ant "cobertura" do |ant|
@@ -154,7 +154,7 @@ module Buildr
                   end
                 end
               end
-              touch task.to_s, :verbose=>false
+              touch task.to_s
             end
             
             task 'instrument' => instrumented
@@ -185,7 +185,7 @@ module Buildr
         end
 
         project.clean do
-          rm_rf [cobertura.report_to, cobertura.data_file, cobertura.instrumented_dir], :verbose=>false
+          rm_rf [cobertura.report_to, cobertura.data_file, cobertura.instrumented_dir]
         end
         
       end
@@ -224,7 +224,7 @@ module Buildr
       end
       
       task "clean" do
-        rm_rf [report_to, data_file], :verbose=>false
+        rm_rf [report_to, data_file]
       end
     end
 

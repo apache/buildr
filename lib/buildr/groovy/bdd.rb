@@ -86,7 +86,7 @@ module Buildr::Groovy
       tests.inject([]) do |passed, test|
         name = test.sub(/.*?groovy[\/\\]/, '').pathmap('%X')
         report = File.join(task.report_to.to_s, name + ext)
-        mkpath report.pathmap('%d'), :verbose => false
+        mkpath report.pathmap('%d')
         begin
           Java::Commands.java cmd_args,
              "-#{easyb_format}", report,

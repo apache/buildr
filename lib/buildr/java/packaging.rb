@@ -457,8 +457,8 @@ module Buildr
 
         def component_clone(component)
           file(path_to(component[:path], component[:artifact].to_s.pathmap('%f')) => component[:artifact]) do |task|
-            mkpath task.to_s.pathmap('%d'), :verbose => false
-            cp component[:artifact].to_s, task.to_s, :verbose => false
+            mkpath task.to_s.pathmap('%d')
+            cp component[:artifact].to_s, task.to_s
             Manifest.update_manifest(task) do |manifest|
               class_path = manifest.main['Class-Path'].to_s.split
               included_libs = class_path.map { |fn| fn.pathmap('%f') }
@@ -551,7 +551,7 @@ module Buildr
           descriptor_path = path_to('META-INF/application.xml')
           @descriptor = file(descriptor_path) do |task|
             trace "Creating EAR Descriptor: #{task.to_s}"
-            mkpath File.dirname(task.name), :verbose=>false
+            mkpath File.dirname(task.name)
             File.open(task.name, 'w') { |file| file.print task.xml }
           end
           class << @descriptor
