@@ -98,15 +98,15 @@ begin
   end
 
   task 'clobber' do
-    rm_rf '_site'
-    rm_rf '_print'
-    rm_rf 'buildr.pdf'
+    rm_rf '_site' if File.exist?('_site')
+    rm_rf '_print' if File.exist?('_print')
+    rm_rf 'buildr.pdf' if File.exist?('buildr.pdf')
   end
 
 rescue LoadError
   puts 'Please run rake setup to install the Docter document generation library'
   task 'setup' do
-    install_gem 'docter', '~>1.1.3'
+    install_gem 'docter'#, '~>1.1.3'
   end
   task 'stage:check' do
     fail 'Please run rake setup to install the Docter document generation library'

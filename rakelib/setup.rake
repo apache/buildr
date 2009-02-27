@@ -52,8 +52,9 @@ def install_gem(name, options = {}) # ver_requirement = ['> 0'])
   if Gem::SourceIndex.from_installed_gems.search(dep).empty?
     puts "Installing #{name} ..."
     args = 'install', name
-    args << '--version' << options[:version] if options[:version]
-    args << '--source' << options[:source] << '--source' << 'http://gems.rubyforge.org' if options[:source]
+    args << '--version' << dep.version_requirements.to_s if options[:version]
+    args << '--source' << options[:source] if options[:source]
+    args << '--source' << 'http://gems.rubyforge.org'
     args << '--install-dir' << ENV['GEM_HOME'] if ENV['GEM_HOME']
     gem_run *args
   end
@@ -64,7 +65,7 @@ desc "If you're building from sources, run this task first to setup the necessar
 missing = spec.dependencies.select { |dep| Gem::SourceIndex.from_installed_gems.search(dep).empty? }
 task 'setup' do
   missing.each do |dep|
-    install_gem dep.name, dep.version_requirements
+    install_gem dep.name, :version=>dep.version_requirements
   end
 end
 puts "Missing Gems #{missing.join(', ')}, please run rake setup first!" unless missing.empty?
