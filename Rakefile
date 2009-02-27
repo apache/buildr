@@ -14,10 +14,19 @@
 # the License.
 
 
-require 'rake/gempackagetask'
+RakeFileUtils.verbose_flag = Rake.application.options.trace # Rake 0.8.3 is too chatty!
 
 
-RakeFileUtils.verbose_flag = Rake.application.options.trace
+# We need JAVA_HOME for most things (setup, spec, etc).
+unless ENV['JAVA_HOME']
+  if RUBY_PLATFORM[/java/]
+    ENV['JAVA_HOME'] = java.lang.System.getProperty('java.home')
+  elsif RUBY_PLATFORM[/darwin/]
+    ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Home'
+  else
+    fail "Please set JAVA_HOME first (set JAVA_HOME=... or env JAVA_HOME=... rake ...)"
+  end
+end
 
 
 def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
@@ -27,6 +36,13 @@ def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
   }
   @specs[platform]
 end
+
+
+require 'rake/gempackagetask'
+
+
+
+
 
 
 desc 'Compile Java libraries used by Buildr'

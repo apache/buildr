@@ -24,13 +24,6 @@ def windows?
   Config::CONFIG['host_os'] =~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i
 end
 
-def set_java_home
-  if !ENV['JAVA_HOME'] && RUBY_PLATFORM[/java/]
-    ENV['JAVA_HOME'] = java.lang.System.getProperty('java.home')
-  end
-  fail "Please set JAVA_HOME first #{'(no need to run as sudo)' if ENV['USER'] == 'root'}" unless ENV['JAVA_HOME']
-end
-
 def sudo_needed?
   !( windows? || ENV['GEM_HOME'] )
 end
@@ -54,18 +47,15 @@ def gem_run(*args)
   sh *args.map{ |a| a.inspect }.join(' ')
 end
 
-def install_gem(name, ver_requirement = ['> 0'])
-  dep = Gem::Dependency.new(name, ver_requirement)
-  @load_cache = true
+def install_gem(name, options = {}) # ver_requirement = ['> 0'])
+  dep = Gem::Dependency.new(name, options[:version] || '>0')
   if Gem::SourceIndex.from_installed_gems.search(dep).empty?
-    spec = Gem::SourceInfoCache.search(dep, true, @load_cache).last
-    fail "#{dep} not found in local or remote repository!" unless spec
-    puts "Installing #{spec.full_name} ..."
-    args = ['install']
-    args.push '--install-dir', ENV['GEM_HOME'] if ENV['GEM_HOME']
-    args.push spec.name, '-v', spec.version.to_s
+    puts "Installing #{name} ..."
+    args = 'install', name
+    args << '--version' << options[:version] if options[:version]
+    args << '--source' << options[:source] if options[:source]
+    args << '--install-dir' << ENV['GEM_HOME'] if ENV['GEM_HOME']
     gem_run *args
-    @load_cache = false # Just update the Gem cache once
   end
 end
 
@@ -73,7 +63,6 @@ end
 desc "If you're building from sources, run this task first to setup the necessary dependencies."
 missing = spec.dependencies.select { |dep| Gem::SourceIndex.from_installed_gems.search(dep).empty? }
 task 'setup' do
-  set_java_home
   missing.each do |dep|
     install_gem dep.name, dep.version_requirements
   end
