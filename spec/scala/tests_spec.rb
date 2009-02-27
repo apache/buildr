@@ -244,6 +244,41 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.failed_tests.should include('StringSpecs')
   end
       
+  it 'should set current directory' do
+    mkpath 'baz'
+    expected = File.expand_path('baz')
+    expected.gsub!('/', '\\') if expected =~ /^[A-Z]:/ # Java returns back slashed paths for windows
+    write 'baz/src/test/scala/CurrentDirectoryTestSuite.scala', <<-SCALA
+      class CurrentDirectoryTestSuite extends org.scalatest.FunSuite {
+        test("testCurrentDirectory") {
+          assert("value" === System.getenv("NAME"))
+          assert(#{expected.inspect} === new java.io.File(".").getCanonicalPath())
+        }
+      }
+    SCALA
+    define('foo').test.using :scalatest
+    project('foo').test.invoke
+    project('foo').test.passed_tests.should include('HelloWorldSpecs')
+  end
+
+  it 'should fail if specifications fail' do
+    write 'src/test/scala/StringSpecs.scala', <<-SCALA
+      import org.specs._
+      import org.specs.runner._
+      
+      object StringSpecs extends Specification {
+        "empty string" should {
+          "have a zero length" in {
+            ("".length) mustEqual(1)
+          }
+        }
+      }
+    SCALA
+    define('foo')
+    project('foo').test.invoke rescue
+    project('foo').test.failed_tests.should include('StringSpecs')
+  end
+      
   it 'should run with ScalaCheck automatic test case generation' do
     write 'src/test/scala/MySuite.scala', <<-SCALA
       import org.scalatest.prop.PropSuite
