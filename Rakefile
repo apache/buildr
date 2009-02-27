@@ -35,28 +35,6 @@ def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
 end
 
 
-require 'rake/gempackagetask'
-
-
-
-
-
-
-desc 'Compile Java libraries used by Buildr'
-task 'compile' do
-  puts 'Compiling Java libraries ...'
-  args = File.expand_path('_buildr'), '--buildfile=buildr.buildfile', 'compile'
-  args << '--trace' if Rake.application.options.trace
-  sh *args
-  puts 'OK'
-end
-file Rake::GemPackageTask.new(spec).package_dir=>'compile'
-file Rake::GemPackageTask.new(spec).package_dir_path=>'compile'
-
-# We also need the other package (JRuby if building on Ruby, and vice versa)
-Rake::GemPackageTask.new spec(RUBY_PLATFORM =~ /java/ ? 'ruby' : 'java') do |task|
-  # Block necessary otherwise doesn't do full job.
-end
 
 
 ENV['staging'] = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"

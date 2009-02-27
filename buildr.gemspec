@@ -30,14 +30,15 @@ Gem::Specification.new do |spec|
   spec.files          = Dir['lib/**/*', 'bin/**/*', 'addon/**/*', 'doc/**/*', 'spec/**/*',
                             'README.rdoc', 'LICENSE', 'NOTICE', 'CHANGELOG',
                             'buildr.*', 'Rakefile', 'rakelib/**/*', '_buildr', '_jbuildr', 'etc/**/*']
-  spec.require_paths  = ['lib', 'addon']
+  spec.require_paths  = 'lib', 'addon'
   spec.bindir         = 'bin'                               # Use these for applications.
   spec.executable     = 'buildr'
 
   spec.has_rdoc         = true
-  spec.extra_rdoc_files = ['README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE']
-  spec.rdoc_options     << '--title' << "Buildr" << '--main' << 'README.rdoc' <<
-                           '--webcvs' << 'http://svn.apache.org/repos/asf/buildr/trunk/'
+  spec.extra_rdoc_files = 'README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE'
+  spec.rdoc_options     = '--title', 'Buildr', '--main', 'README.rdoc',
+                          '--webcvs', 'http://svn.apache.org/repos/asf/buildr/trunk/'
+  spec.post_install_message = "To get started run buildr --help"
 
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.8.3'

@@ -27,7 +27,7 @@ desc 'Generate RDoc documentation'
 rdoc = Rake::RDocTask.new('rdoc') do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = spec.name
-  rdoc.options  = spec.rdoc_options
+  rdoc.options  = spec.rdoc_options.clone
   rdoc.rdoc_files.include('lib/**/*.rb')
   rdoc.rdoc_files.include spec.extra_rdoc_files
 end
