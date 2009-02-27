@@ -53,7 +53,7 @@ def install_gem(name, options = {}) # ver_requirement = ['> 0'])
     puts "Installing #{name} ..."
     args = 'install', name
     args << '--version' << options[:version] if options[:version]
-    args << '--source' << options[:source] if options[:source]
+    args << '--source' << options[:source] << '--source' << 'http://gems.rubyforge.org' if options[:source]
     args << '--install-dir' << ENV['GEM_HOME'] if ENV['GEM_HOME']
     gem_run *args
   end
