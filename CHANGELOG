@@ -5,6 +5,7 @@
 * Added:  BUILDR-164 New 'artifacts:sources' task to download source code
           for artifact jars.
 * Added:  BUILDR-242: Include Scala-Tools Repository by Default.  
+* Added:  BUILDR-94: Add specs for Scala Specs integration
 * Change: require 'buildr/scala' is now official required to use Scala features
 * Change: Introduced new options from Rake 0.8.3: -I (libdir), -R (rakelib),
           --rules, --no-search, --silent.
