@@ -160,6 +160,7 @@ module Buildr
         # used as a dependency, before we get to run the package task.
         task 'package'=>package
         package.enhance [task('build')]
+        package.enhance { info "Packaging #{File.basename(file_name)}" }
 
         if spec[:file]
           class << package ; self ; end.send(:define_method, :type) { spec[:type] }
