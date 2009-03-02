@@ -110,24 +110,30 @@ ALIASES:
 
 THE GITHUB MIRROR:
 
-   Buildr has an unofficial git mirror on github, maintained by Victor: 
+   Buildr has an unofficial git mirror on github, maintained by Apache committers:
 
      http://github.com/buildr/buildr
 
-   Actually it's not Victor who manually updates it, he has a cron-job on his
-   server, that only runs
+   This mirror DOES NOT replace Apache's SVN repository. We really care about 
+   using Apache infrastructure and following Apache project guidelines for 
+   contributions. This git mirror is provided only for developers convenience,
+   allowing them to easily create experimental branches or review code from
+   other committers. 
 
-     git synchronize 
+   All code that wants to make it to the official Apache Buildr repository needs
+   to be committed to the Apache SVN repository by using the command:
 
-   A command you also have configured on your .git/config file.
+      git synchronize
 
-   However there are some limitations due to the fact that git-svn cannot 
-   commit as multiple authors (unless all of them provided their passwords
-   to Victor, yet he doesn't want to take over the world.)
-   This means that if a commit is pushed to buildr/master and has not
-   already been pushed by YOU to Apache's SVN by using `git apache-push` 
-   your change will be commited to apache/trunk having Victor as the author
-   (that's how he gains meritocratic points at Apache :P). 
+   This command will synchronize both ways svn<->git to keep trunk upto date.
+   You need to be an Apache committer an have permissions on the SVN repo.
+   
+   It's VERY IMPORTANT for Buildr committers to remember that contributions from
+   external entities wanting to be accepted will require them to sign the Apache ICLA.
+   We provide the git mirror to make it easier for people to experiment and 
+   contribute back to Buildr, before merging their code in, please remember they
+   have to create create a JIRA issue granting ASF permission to include their code, 
+   just like any other contribution following Apache's guidelines.
 
    So, it's very important - if you care about meritocracy - to follow or at 
    least that you get an idea of the recommended workflow.
