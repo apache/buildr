@@ -20,11 +20,13 @@
 #
 # You dont need to have a buildr copy to use it, just execute the buildr-git balloon:
 #
-#   ruby -ropen-uri -e 'eval(open("http://balloon.hobix.com/buildr-git").read)'
+#   ruby -ropen-uri -e 'eval(open("http://svn.apache.org/viewvc/buildr/trunk/doc/scripts/buildr-git.rb?view=co").read)'
 
 require 'yaml'
 require 'optparse'
 require 'ostruct'
+require 'open-uri'
+require 'fileutils'
 
 # Pager from http://nex-3.com/posts/73-git-style-automatic-paging-in-ruby
 def run_pager
@@ -110,7 +112,7 @@ THE GITHUB MIRROR:
 
    Buildr has an unofficial git mirror on github, maintained by Victor: 
 
-     http://github.com/vic/buildr
+     http://github.com/buildr/buildr
 
    Actually it's not Victor who manually updates it, he has a cron-job on his
    server, that only runs
@@ -122,7 +124,7 @@ THE GITHUB MIRROR:
    However there are some limitations due to the fact that git-svn cannot 
    commit as multiple authors (unless all of them provided their passwords
    to Victor, yet he doesn't want to take over the world.)
-   This means that if a commit is pushed to vic/buildr/master and has not
+   This means that if a commit is pushed to buildr/master and has not
    already been pushed by YOU to Apache's SVN by using `git apache-push` 
    your change will be commited to apache/trunk having Victor as the author
    (that's how he gains meritocratic points at Apache :P). 
@@ -182,8 +184,8 @@ RECOMMENDED WORKFLOW:
 
         git apache-push 
 
-   8) Optional. If you can push to vic/buildr/master mirror, you can just 
-     synchronize the mirror helping others to get changes without having to 
+   8) Optional. If you are a buildr committer you may want to synchronize
+     the github mirror for helping others to get changes without having to 
      wait on Victor's cronjob to run every hour (useful for urgent changes).
 
         git synchronize
@@ -198,7 +200,7 @@ RECOMMENDED WORKFLOW:
 
 RESOURCES:
 
-   http://github.com/vic/buildr/tree/master
+   http://github.com/buildr/buildr/tree/master
    http://git.or.cz/gitwiki/GitCheatSheet
    http://groups.google.com/group/git-users/web/git-references
 
@@ -215,19 +217,19 @@ def optparse(options = OpenStruct.new, argv = ARGV)
       options.local = Dir.pwd 
     end
 
-    options.svn_branch = "apache/trunk"
-    options.origin = "git://github.com/vic/buildr.git"
+    options.svn_prefix = "apache"
+    options.origin = "git://github.com/buildr/buildr.git"
     options.member = false
 
     opt.banner = "Usage: buildr-git.rb [options]"
     opt.separator ""
     opt.separator "OPTIONS:"
 
-    opt.on('-a', "--anon", "Use git://github.com/vic/buildr.git as origin") do 
-      options.origin = "git://github.com/vic/buildr.git"
+    opt.on('-a', "--anon", "Use git://github.com/buildr/buildr.git as origin") do 
+      options.origin = "git://github.com/buildr/buildr.git"
     end
-    opt.on('-A', "--auth", "Use git@github.com:vic/buildr.git as origin") do
-      options.origin = "git@github.com:vic/buildr.git"
+    opt.on('-A', "--auth", "Use git@github.com:buildr/buildr.git as origin") do
+      options.origin = "git@github.com:buildr/buildr.git"
     end
     opt.on("-o", "--origin GIT_URL", "Clone from GIT_URL origin") do |value|
       options.origin = value
@@ -235,9 +237,9 @@ def optparse(options = OpenStruct.new, argv = ARGV)
     opt.on('-l', "--local DIRECTORY", "Create local git clone on DIRECTORY") do |value|
       options.local = value
     end
-    opt.on('-b', "--branch GIT_SVN_BRANCH", 
-           "Set the name for svn branch instead of apache/trunk") do |value|
-      options.svn_branch = value
+    opt.on('-p', "--prefix GIT_SVN_PREFIX", 
+           "Set the name for svn branch instead of apache") do |value|
+      options.svn_prefix = value
     end
     opt.on('-e', "--email EMAIL", 
            "Configure git to use EMAIL for commits") do |value|
@@ -246,6 +248,11 @@ def optparse(options = OpenStruct.new, argv = ARGV)
     opt.on('-n', "--name USER_NAME", 
            "Configure your USER_NAME for git commits") do |value|
       options.user_name = value
+    end
+    opt.on('-u', "--update-users", 
+           "Just update svn-authors from jukka's list") do
+      get_authors(File.expand_path('.git/authors.txt', Dir.pwd))
+      throw :exit
     end
     opt.on('-h', "--help", "Show buildr-git help") do 
       puts opt
@@ -279,13 +286,18 @@ def main
   end  
 end
 
+def get_authors(svn_authors_file, svn_authors_uri = "http://people.apache.org/~jukka/authors.txt")
+  File.open(svn_authors_file, "w") { |f| f.print open(svn_authors_uri).read }
+end
+
 def perform(options)
   origin = options.origin
   member = origin =~ /@/
   local = options.local
-  svn_branch = options.svn_branch
+  svn_prefix = options.svn_prefix
   user_email = options.email
   user_name = options.user_name
+  project = 'buildr'
   
   `git clone #{origin} #{local} 1>&2` unless File.directory?(File.join('.git', origin))
   
@@ -295,7 +307,12 @@ def perform(options)
   Dir.chdir(local) do
     
     # Load the list of git-svn committers
-    svn_authors_file = File.expand_path('etc/git-svn-authors', Dir.pwd)
+    # Use Jukka's auto-updated list of apache commiters.
+    # It is VERY important for git-svn to use the correct author name/email
+    # else you will end with duplicate commit history on git.
+    svn_authors_file = File.expand_path('.git/authors.txt', Dir.pwd)
+    get_authors(svn_authors_file)
+
     svn_authors = File.read(svn_authors_file)
     svn_authors.gsub!(/\s+=\s+/, ': ')
     svn_authors = YAML.load(svn_authors)
@@ -372,17 +389,31 @@ def perform(options)
     last_svn_log = `git log -n 10 | grep git-svn-id | head -n 1`
     fail "No svn metadata on last 10 commits" unless last_svn_log =~ /git-svn-id/
     svn_repo, svn_prev = last_svn_log.split[1].split("@")
+    fail "No #{project} directory on #{svn_repo}" unless svn_repo =~ /\/#{project}/
+    svn_repo = $`
+
     
     # Tell git where the svn repository is.
-    `git config svn-remote.#{svn_branch}.url #{svn_repo}`
-    `git config svn-remote.#{svn_branch}.fetch :refs/remotes/#{svn_branch}`
+    `git config svn-remote.#{svn_prefix}.url #{svn_repo}`
+    `git config svn-remote.#{svn_prefix}.fetch #{project}/trunk:refs/remotes/#{svn_prefix}/trunk`
+    `git config svn-remote.#{svn_prefix}.branches #{project}/branches/*:refs/remotes/#{svn_prefix}/*`
+    `git config svn-remote.#{svn_prefix}.tags #{project}/tags/*:refs/remotes/#{svn_prefix}/tags/*`
     
     # Create the svn branch, do this instead of pulling the full svn history
-    `git push --force . refs/remotes/origin/master:refs/remotes/#{svn_branch}`
+    `git update-ref refs/remotes/#{svn_prefix}/trunk refs/remotes/origin/master`
+    `git tag`.split.each do |tag| 
+      `git update-ref refs/remotes/#{svn_prefix}/tags/#{tag} refs/tags/#{tag}`
+    end
+
+    puts "Updating svn metatada"
+    svn_meta = File.expand_path('.git/svn/.metadata', Dir.pwd)
+    FileUtils.mkdir_p(File.dirname(svn_meta))
+    `git config --file "#{svn_meta}" svn-remote.#{svn_prefix}.branches-maxRev #{svn_prev}`
+    `git config --file "#{svn_meta}" svn-remote.#{svn_prefix}.tags-maxRev #{svn_prev}`
     
     # Create apache aliases for developers git-workflow.
-    `git config alias.apache-fetch "!git-svn fetch #{svn_branch}"`
-    `git config alias.apache-merge "!git merge #{svn_branch}"`
+    `git config alias.apache-fetch "!git-svn fetch #{svn_prefix}"`
+    `git config alias.apache-merge "!git merge #{svn_prefix}"`
     `git config alias.apache-pull  "!git apache-fetch && git apache-merge"`
     if svn_user
       `git config alias.apache-push  "!git-svn dcommit --username #{svn_user}"`
@@ -393,7 +424,7 @@ def perform(options)
     # Create github origin aliases
     `git config alias.get "!git apache-fetch && git fetch origin"`
     `git config alias.mrg "!git apache-merge && git merge origin"`
-    `git config alias.rbs "!git rebase --onto #{svn_branch} origin/master master"`
+    `git config alias.rbs "!git rebase --onto #{svn_prefix} origin/master master"`
     `git config alias.put "!git apache-push && git push origin"`
     
     # This is Victor's cronjob
