@@ -200,213 +200,116 @@ describe Project, '#reports' do
   end
 end
 
+describe Buildr::Git do
+  describe '#uncommitted_files' do
+    it 'shoud return an empty array on a clean repository' do
+      cmd_output = <<EOF
+# On branch master
+nothing to commit (working directory clean)
+EOF
+      Git.stub!(:status).and_return(cmd_output)
+      Git.uncommitted_files.should be_empty
+    end
 
-describe Buildr::Release do
-  
-  describe '#make' do
-    before do
-      write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
-      # Prevent a real call to a spawned buildr process.
-      Release.stub!(:buildr)
+    it 'should reject a dirty repository' do
+      cmd_output = <<EOF
+# On branch master
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#       foo.temp
+EOF
+      Git.stub!(:status).and_return(cmd_output)
+      Git.uncommitted_files.should == cmd_output.split("\n")
+    end
+  end
+
+  describe '#remotes_defined?' do
+    it 'should return false if no remote repositories defined' do
+      Git.stub!(:git).with('remote').and_return('')
+      Git.send(:remotes_defined?).should be_false
+    end
+
+    it 'should return true if at least one remote repository is defined' do
+      Git.stub!(:git).with('remote').and_return("origin\n")
+      Git.send(:remotes_defined?).should be_true
+    end
+  end
+
+  describe '#remote' do
+    it 'shoud return the name of the corresponding remote' do
+      Git.stub!(:git).with('config', '-l').and_return(<<EOF)
+alias.oneline=log --pretty=oneline
+core.repositoryformatversion=0
+core.filemode=true
+core.bare=false
+core.logallrefupdates=true
+remote.origin.url=git://github.com/vic/buildr.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+branch.master.remote=origin
+branch.master.merge=refs/heads/master
+EOF
+      Git.send(:remote, 'master').should == 'origin'
+    end
+
+    it 'should return nil if no remote for the given branch' do
+      Git.stub!(:git).with('config', '-l').and_return(<<EOF)
+remote.origin.url=git://github.com/vic/buildr.git
+remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
+EOF
+      Git.send(:remote, 'master').should == nil
+    end
+  end
+
+  describe '#current_branch' do
+    it 'should return the current branch' do
+      Git.stub!(:git).with('branch').and_return("  master\n* a-clever-idea\n  ze-great-idea")
+      Git.send(:current_branch).should == 'a-clever-idea'
+    end
+  end
+
+end # of Git
+
+describe Buildr::Svn do
+  describe '#tag' do
+    it 'should remove any existing tag with the same name' do
       Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-      Svn.stub!(:uncommitted_files).and_return('')
-      Svn.stub!(:remove)
       Svn.stub!(:copy)
-      Svn.stub!(:commit)
-    end
-    
-    it 'should tag a release with the release version' do
-      Svn.should_receive(:copy).with(Dir.pwd, 'http://my.repo.org/foo/tags/1.0.0', 'Release 1.0.0').and_return {
-        file('buildfile').should contain('VERSION_NUMBER = "1.0.0"')
-      }
-      Release.make
+      Svn.should_receive(:remove).with('http://my.repo.org/foo/tags/1.0.0', 'Removing old copy')
+
+      Svn.tag '1.0.0'
     end
 
-    it 'should update the buildfile with the next version number' do
-      Release.make
-      file('buildfile').should contain('VERSION_NUMBER = "1.0.1-SNAPSHOT"')
-    end
-
-    it 'should commit the updated buildfile' do
-      Svn.should_receive(:commit).with(File.expand_path('buildfile'), 'Changed version number to 1.0.1-SNAPSHOT').and_return {
-        file('buildfile').should contain('VERSION_NUMBER = "1.0.1-SNAPSHOT"')
-      }
-      Release.make
-    end    
-  end
-
-
-  describe '#check' do
-    before do
-      Svn.stub!(:uncommitted_files).and_return('')
-    end
-
-    it 'should accept to release from the trunk' do
+    it 'should do an svn copy with the release version' do
       Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-      lambda { Release.check }.should_not raise_error
-    end
+      Svn.stub!(:remove)
+      Svn.should_receive(:copy).with(Dir.pwd, 'http://my.repo.org/foo/tags/1.0.0', 'Release 1.0.0')
 
-    it 'should accept to release from a branch' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/branches/1.0')
-      lambda { Release.check }.should_not raise_error
-    end
-
-    it 'should reject releasing from a tag' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/tags/1.0.0')
-      lambda { Release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
-    end
-
-    it 'should reject a non standard repository layout' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/bar')
-      lambda { Release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
-    end
-
-    it 'should reject an uncommitted file' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-      Svn.stub!(:uncommitted_files).and_return('M      foo.rb')
-      lambda { Release.check }.should raise_error(RuntimeError,
-        "Uncommitted SVN files violate the First Principle Of Release!\n" +
-        "M      foo.rb")
+      Svn.tag '1.0.0'
     end
   end
-  
-  
-  describe '#extract_version' do
-    it 'should extract VERSION_NUMBER with single quotes' do
-      write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
-      Release.extract_version.should == '1.0.0-SNAPSHOT'
-    end
-
-    it 'should extract VERSION_NUMBER with double quotes' do
-      write 'buildfile', %{VERSION_NUMBER = "1.0.1-SNAPSHOT"}
-      Release.extract_version.should == '1.0.1-SNAPSHOT'
-    end
-
-    it 'should extract VERSION_NUMBER without any spaces' do
-      write 'buildfile', "VERSION_NUMBER='1.0.2-SNAPSHOT'"
-      Release.extract_version.should == '1.0.2-SNAPSHOT'
-    end
-
-    it 'should extract THIS_VERSION as an alternative to VERSION_NUMBER' do
-      write 'buildfile', "THIS_VERSION = '1.0.3-SNAPSHOT'"
-      Release.extract_version.should == '1.0.3-SNAPSHOT'
-    end
-
-    it 'should complain if no current version number' do
-      write 'buildfile', 'define foo'
-      lambda { Release.extract_version }.should raise_error('Looking for THIS_VERSION = "..." in your Buildfile, none found')
-    end
-  end
-
 
   # Reference: http://svnbook.red-bean.com/en/1.4/svn.reposadmin.planning.html#svn.reposadmin.projects.chooselayout
-  describe '#tag url' do
+  describe '#tag_url' do
     it 'should accept to tag foo/trunk' do
-      Release.tag_url('http://my.repo.org/foo/trunk', '1.0.0').should == 'http://my.repo.org/foo/tags/1.0.0'
+      Svn.send(:tag_url, 'http://my.repo.org/foo/trunk', '1.0.0').should == 'http://my.repo.org/foo/tags/1.0.0'
     end
 
     it 'should accept to tag foo/branches/1.0' do
-      Release.tag_url('http://my.repo.org/foo/branches/1.0', '1.0.1').should == 'http://my.repo.org/foo/tags/1.0.1'
+      Svn.send(:tag_url,'http://my.repo.org/foo/branches/1.0', '1.0.1').should == 'http://my.repo.org/foo/tags/1.0.1'
     end
 
     it 'should accept to tag trunk/foo' do
-      Release.tag_url('http://my.repo.org/trunk/foo', '1.0.0').should == 'http://my.repo.org/tags/foo/1.0.0'
+      Svn.send(:tag_url,'http://my.repo.org/trunk/foo', '1.0.0').should == 'http://my.repo.org/tags/foo/1.0.0'
     end
 
     it 'should accept to tag branches/foo/1.0' do
-      Release.tag_url('http://my.repo.org/branches/foo/1.0', '1.0.0').should == 'http://my.repo.org/tags/foo/1.0.0'
-    end
-    
-    it 'should use tag specified by tag_name' do
-      Release.tag_name  = 'first'
-      Release.tag_url('http://my.repo.org/foo/trunk', '1.0.0').should == 'http://my.repo.org/foo/tags/first'
-    end
-    
-    it 'should use tag returned by tag_name if tag_name is a proc' do
-      Release.tag_name  = lambda { |version| "buildr-#{version}" }
-      Release.tag_url('http://my.repo.org/foo/trunk', '1.0.0').should == 'http://my.repo.org/foo/tags/buildr-1.0.0'
-    end
-    
-    after { Release.tag_name = nil }
-  end
-
-
-  describe '#with_release_candidate_version' do
-    before do
-      Buildr.application.stub!(:buildfile).and_return(file('buildfile'))
-      write 'buildfile', "THIS_VERSION = '1.1.0-SNAPSHOT'"
+      Svn.send(:tag_url,'http://my.repo.org/branches/foo/1.0', '1.0.0').should == 'http://my.repo.org/tags/foo/1.0.0'
     end
 
-    it 'should yield the name of the release candidate buildfile' do
-      Release.send :with_release_candidate_version do |new_filename|
-        File.read(new_filename).should == %{THIS_VERSION = "1.1.0"}
-      end
-    end
-
-    it 'should yield a name different from the original buildfile' do
-      Release.send :with_release_candidate_version do |new_filename|
-        new_filename.should_not point_to_path('buildfile')
-      end
-    end
-  end
-
-
-  describe '#tag_release' do
-    before do
-      write 'buildfile', "THIS_VERSION = '1.0.1'"
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-      Svn.stub!(:copy)
-      Svn.stub!(:remove)
-    end
-
-    it 'should tag the working copy' do
-      Svn.should_receive(:copy).with(Dir.pwd, 'http://my.repo.org/foo/tags/1.0.1', 'Release 1.0.1')
-      Release.send :tag_release
-    end
-
-    it 'should remove the tag if it already exists' do
-      Svn.should_receive(:remove).with('http://my.repo.org/foo/tags/1.0.1', 'Removing old copy')
-      Release.send :tag_release
-    end
-
-    it 'should accept that the tag does not exist' do
-      Svn.stub!(:remove).and_raise(RuntimeError)
-      Release.send :tag_release
-    end
-
-    it 'should inform the user' do
-      lambda { Release.send :tag_release }.should show_info('Tagging release 1.0.1')
-    end
-  end
-
-
-  describe '#commit_new_snapshot' do
-    before do
-      write 'buildfile', 'THIS_VERSION = "1.0.0"'
-      Svn.stub!(:commit)
-    end
-
-    it 'should update the buildfile with a new version number' do
-      Release.send :commit_new_snapshot
-      file('buildfile').should contain('THIS_VERSION = "1.0.1-SNAPSHOT"')
-    end
-
-    it 'should commit the new buildfile on the trunk' do
-      Svn.should_receive(:commit).with(File.expand_path('buildfile'), 'Changed version number to 1.0.1-SNAPSHOT')
-      Release.send :commit_new_snapshot
-    end
-
-    it 'should inform the user of the new version' do
-      lambda { Release.send :commit_new_snapshot }.should show_info('Current version is now 1.0.1-SNAPSHOT')
-    end
-  end
-  
-end
-
-
-describe Buildr::Svn, '#repo_url' do
-  it 'should extract the SVN URL from svn info' do
-    Svn.stub!(:svn, 'info').and_return(<<EOF)
+    describe '#repo_url' do
+      it 'should extract the SVN URL from svn info' do
+        Svn.stub!(:svn).and_return(<<EOF)
 Path: .
 URL: http://my.repo.org/foo/trunk
 Repository Root: http://my.repo.org
@@ -418,6 +321,330 @@ Last Changed Author: Lacton
 Last Changed Rev: 110
 Last Changed Date: 2008-08-19 12:00:00 +0200 (Tue, 19 Aug 2008)
 EOF
-    Svn.repo_url.should == 'http://my.repo.org/foo/trunk'
+        Svn.send(:repo_url).should == 'http://my.repo.org/foo/trunk'
+      end
+    end
+
+
   end
+
+end # of Buildr::Svn
+
+describe 'a release process', :shared=>true do 
+  describe '#make' do
+    before do
+      write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
+      # Prevent a real call to a spawned buildr process.
+      @release.stub!(:buildr)
+      @release.stub!(:check)
+    end
+    
+    it 'should tag a release with the release version' do
+      @release.stub!(:update_version_to_next)
+      @release.should_receive(:tag_release).with('1.0.0')
+      @release.make
+    end
+
+    it 'should not alter the buildfile before tagging' do
+      @release.stub!(:update_version_to_next)
+      @release.should_receive(:tag_release).with('1.0.0').and_return {
+         file('buildfile').should contain('VERSION_NUMBER = "1.0.0"')
+      }
+      @release.make
+    end
+
+    it 'should update the buildfile with the next version number' do
+      @release.stub!(:tag_release)
+      @release.make
+      file('buildfile').should contain('VERSION_NUMBER = "1.0.1-SNAPSHOT"')
+    end
+
+    it 'should commit the updated buildfile' do
+      @release.stub!(:tag_release)
+      @release.make
+      file('buildfile').should contain('VERSION_NUMBER = "1.0.1-SNAPSHOT"')
+    end    
+  end
+
+  describe '#resolve_tag' do
+    before do
+      @release.stub!(:extract_version).and_return('1.0.0')
+    end
+
+    it 'should return tag specified by tag_name' do
+      @release.tag_name  = 'first'
+      @release.send(:resolve_tag).should == 'first'
+    end
+    
+    it 'should use tag returned by tag_name if tag_name is a proc' do
+      @release.tag_name  = lambda { |version| "buildr-#{version}" }
+      @release.send(:resolve_tag).should == 'buildr-1.0.0'
+    end
+    after { @release.tag_name = nil }
+  end
+
+  describe '#tag_release' do
+    it 'should inform the user' do
+      @release.stub!(:extract_version).and_return('1.0.0')
+      lambda { @release.tag_release('1.0.0') }.should show_info('Tagging release 1.0.0')
+    end
+  end
+
+  describe '#extract_version' do
+    it 'should extract VERSION_NUMBER with single quotes' do
+      write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
+      @release.extract_version.should == '1.0.0-SNAPSHOT'
+    end
+
+    it 'should extract VERSION_NUMBER with double quotes' do
+      write 'buildfile', %{VERSION_NUMBER = "1.0.1-SNAPSHOT"}
+      @release.extract_version.should == '1.0.1-SNAPSHOT'
+    end
+
+    it 'should extract VERSION_NUMBER without any spaces' do
+      write 'buildfile', "VERSION_NUMBER='1.0.2-SNAPSHOT'"
+      @release.extract_version.should == '1.0.2-SNAPSHOT'
+    end
+
+    it 'should extract THIS_VERSION as an alternative to VERSION_NUMBER' do
+      write 'buildfile', "THIS_VERSION = '1.0.3-SNAPSHOT'"
+      @release.extract_version.should == '1.0.3-SNAPSHOT'
+    end
+
+    it 'should complain if no current version number' do
+      write 'buildfile', 'define foo'
+      lambda { @release.extract_version }.should raise_error('Looking for THIS_VERSION = "..." in your Buildfile, none found')
+    end
+  end
+
+
+  describe '#with_release_candidate_version' do
+    before do
+      Buildr.application.stub!(:buildfile).and_return(file('buildfile'))
+      write 'buildfile', "THIS_VERSION = '1.1.0-SNAPSHOT'"
+    end
+
+    it 'should yield the name of the release candidate buildfile' do
+      @release.send :with_release_candidate_version do |new_filename|
+        File.read(new_filename).should == %{THIS_VERSION = "1.1.0"}
+      end
+    end
+
+    it 'should yield a name different from the original buildfile' do
+      @release.send :with_release_candidate_version do |new_filename|
+        new_filename.should_not point_to_path('buildfile')
+      end
+    end
+  end
+
+
+  describe '#update_version_to_next' do
+    before do
+      write 'buildfile', 'THIS_VERSION = "1.0.0"'
+    end
+
+    it 'should update the buildfile with a new version number' do
+      @release.send :update_version_to_next
+      file('buildfile').should contain('THIS_VERSION = "1.0.1-SNAPSHOT"')
+    end
+
+    it 'should commit the new buildfile on the trunk' do
+      @release.should_receive(:message).and_return('Changed version number to 1.0.1-SNAPSHOT')
+      @release.update_version_to_next
+    end
+
+    it 'should use the commit message specified by commit_message' do
+      @release.commit_message  = 'Here is my custom message'
+      @release.should_receive(:message).and_return('Here is my custom message')
+      @release.update_version_to_next
+    end
+    
+    it 'should use the commit message returned by commit_message if commit_message is a proc' do
+      @release.commit_message  = lambda { |new_version| 
+        new_version.should == '1.0.1-SNAPSHOT'
+        "increment version number to #{new_version}"
+      }
+      @release.should_receive(:message).and_return('increment version number to 1.0.1-SNAPSHOT')
+      @release.update_version_to_next
+    end
+
+
+    it 'should inform the user of the new version' do
+      lambda { @release.update_version_to_next }.should show_info('Current version is now 1.0.1-SNAPSHOT')
+    end
+  end
+  
+end # of Release
+
+
+
+describe Buildr::GitRelease do
+  before do
+    @release = nil
+  end
+  describe '#applies_to?' do
+    it 'should reject a non-git repo' do
+      GitRelease.applies_to?.should be_false
+    end
+
+    it 'should accept a git repo' do
+      FileUtils.mkdir '.git'
+      FileUtils.touch File.join('.git', 'config')
+      GitRelease.applies_to?.should be_true 
+    end
+  end
+
+  describe '#release_check' do
+    it 'shoud accept a clean repository' do
+      cmd_output = <<EOF
+# On branch master
+nothing to commit (working directory clean)
+EOF
+        Git.stub!(:status).and_return(cmd_output)
+        Git.stub!(:remotes_defined?).and_return(false)
+        lambda{ GitRelease.check }.should_not raise_error
+    end
+
+    it 'should reject a dirty repository' do
+      cmd_output = <<EOF
+# On branch master
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#       foo.temp
+EOF
+      Git.stub!(:uncommitted_files).and_return(cmd_output.split("\n"))
+      lambda { GitRelease.check }.should raise_error(RuntimeError)
+    end
+
+
+    it 'should pass if no remote repositories are defined' do
+      Git.stub!(:uncommitted_files).and_return([])
+      Git.stub!(:remotes_defined?).and_return(false)
+
+      lambda{ GitRelease.check }.should_not raise_error
+    end
+
+    it 'should fail if the current branch does not track a remote repo but at least one remote repo is defined' do
+      Git.stub!(:uncommitted_files).and_return([])
+      Git.stub!(:remotes_defined?).and_return(true)
+      Git.stub!(:has_no_remote?).and_return(true)
+
+      lambda{ GitRelease.check }.should raise_error(RuntimeError,
+        "You are releasing from a local branch that does not track a remote!")
+    end
+  end
+
+  describe '#tag_release' do
+    before do
+      GitRelease.stub!(:extract_version).and_return('1.0.1')
+      Git.stub!(:git).with('tag', '-a', 'TEST_TAG', '-m', '[buildr] Cutting release TEST_TAG')
+      Git.stub!(:git).with('push', 'origin', 'tag', 'TEST_TAG')
+      Git.stub!(:commit)
+      Git.stub!(:push)
+      Git.stub!(:remote).and_return('origin')
+      Git.stub!(:git).with('branch').and_return("* master\n")
+      GitRelease.stub!(:resolve_tag).and_return('TEST_TAG')
+    end
+
+    it 'should delete any existing tag with the same name' do
+      Git.should_receive(:git).with('tag', '-d', 'TEST_TAG')
+      Git.should_receive(:git).with('push', 'origin', ':refs/tags/TEST_TAG')
+
+      GitRelease.tag_release 'TEST_TAG'
+    end
+
+    it 'should commit the buildfile before tagging' do
+      Git.should_receive(:commit).with(File.basename(Buildr.application.buildfile.to_s), "Changed version number to 1.0.1")
+
+      GitRelease.tag_release 'TEST_TAG'
+    end
+
+    it 'should push the tag if a remote is tracked' do
+      Git.should_receive(:git).with('tag', '-d', 'TEST_TAG')
+      Git.should_receive(:git).with('push', 'origin', ':refs/tags/TEST_TAG')
+      Git.should_receive(:git).with('tag', '-a', 'TEST_TAG', '-m', '[buildr] Cutting release TEST_TAG')
+      Git.should_receive(:git).with('push', 'origin', 'tag',  'TEST_TAG')
+
+      GitRelease.tag_release 'TEST_TAG'
+    end
+
+    it 'should NOT push the tag if no remote is tracked' do
+      Git.stub!(:remote)
+      Git.should_not_receive(:git).with('push', 'origin', 'tag',  'TEST_TAG')
+
+      GitRelease.tag_release 'TEST_TAG'
+    end
+  end
+end
+
+
+describe Buildr::SvnRelease do
+  describe '#applies_to?' do
+    it 'should reject a non-git repo' do
+      SvnRelease.applies_to?.should be_false
+    end
+
+    it 'should accept a git repo' do
+      FileUtils.touch '.svn'
+      SvnRelease.applies_to?.should be_true 
+    end
+  end
+
+  describe '#check' do
+    before do
+      Svn.stub!(:uncommitted_files).and_return('')
+    end
+
+    it 'should accept to release from the trunk' do
+      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
+      lambda { SvnRelease.check }.should_not raise_error
+    end
+
+    it 'should accept to release from a branch' do
+      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/branches/1.0')
+      lambda { SvnRelease.check }.should_not raise_error
+    end
+
+    it 'should reject releasing from a tag' do
+      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/tags/1.0.0')
+      lambda { SvnRelease.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
+    end
+
+    it 'should reject a non standard repository layout' do
+      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/bar')
+      lambda { SvnRelease.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
+    end
+
+    it 'should reject an uncommitted file' do
+      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
+      Svn.stub!(:uncommitted_files).and_return(['M      foo.rb'])
+      lambda { SvnRelease.check }.should raise_error(RuntimeError,
+        "Uncommitted files violate the First Principle Of Release!\n" +
+        "M      foo.rb")
+    end
+  end
+
+end
+
+describe Buildr::SvnRelease do
+  before do
+    @release = SvnRelease
+    Svn.stub!(:execute)
+    Svn.stub!(:tag)
+    Svn.stub!(:commit)
+    Svn.stub!(:uncommitted_files)
+  end
+  it_should_behave_like 'a release process'
+end
+
+describe Buildr::GitRelease do
+  before do
+    @release = GitRelease
+    Git.stub!(:git)
+    Git.stub!(:commit)
+    Git.stub!(:remote)
+    Git.stub!(:has_remote?)
+  end
+  it_should_behave_like 'a release process'
 end

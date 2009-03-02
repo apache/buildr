@@ -7,6 +7,8 @@
 * Added:  BUILDR-242: Include Scala-Tools Repository by Default.  
 * Added:  BUILDR-93: Add specs for ScalaCheck integration
 * Added:  BUILDR-94: Add specs for Scala Specs integration
+* Added:  BUILDR-222: Support Git as a version control system
+* Added   BUILDR-223 Release Task: customizable commit message
 * Added:  Info message "Packaging filename.ext" now displayed for packaging tasks
 * Change: require 'buildr/scala' is now official required to use Scala features
 * Change: Introduced new options from Rake 0.8.3: -I (libdir), -R (rakelib),
