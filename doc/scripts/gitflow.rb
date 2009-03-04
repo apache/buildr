@@ -286,7 +286,7 @@ HELP
         opt.separator 'You can also obtain help for any command giving it --help.'
         page { puts opt }
       else
-        run(argv.join(' '), '--help')
+        run(*(argv + ['--help']))
       end
     end
   end
