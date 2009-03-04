@@ -21,7 +21,7 @@
 #
 # If you already have a buildr clone, just do the following:
 #
-#    git config alias.apache '!ruby '"$PWD/doc/scripts/buildr-git.rb"
+#    git config alias.apache '!'"ruby $PWD/doc/scripts/buildr-git.rb"
 #
 # After this, you have a 'git apache' command and you can try (be sure to read the help)
 #

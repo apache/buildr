@@ -46,7 +46,7 @@ For convenience you can create an alias to be execute using git.
 The following example registers buildr-git.rb, which provides apache
 svn and git synchronization commands:
 
-    git config alias.apache "!ruby $PWD/doc/scripts/buildr-git.rb"
+    git config alias.apache '!'"ruby $PWD/doc/scripts/buildr-git.rb"
 
 After that you can use
     git apache command --help
@@ -59,8 +59,8 @@ workflow.
 Simply create a ruby script somewhere say ~/.buildr/gitflow.rb
 And alias it in your local repo:
 
-    git config alias.flow "!ruby ~/.buildr/gitflow.rb"
-    git config alias.work "!ruby ~/.buildr/gitflow.rb my-flow sub-work"
+    git config alias.flow '!'"ruby ~/.buildr/gitflow.rb"
+    git config alias.work '!'"ruby ~/.buildr/gitflow.rb my-flow sub-work"
 
 A sample command would look like this.. (you may want to look at buildr-git.rb)
 
