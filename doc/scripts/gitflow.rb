@@ -258,13 +258,13 @@ HELP
   end
 
   class NoSuchCommand < GitFlow/nil
+    @documentation = HELP
+    
     def execute(opts, argv)
       page do
         puts "Command not found: #{argv.join(' ').inspect}"
         puts "Try `#{GitFlow.program} help` to obtain a list of commands."
-        puts HELP 
       end
-      exit 1
     end
   end
 
