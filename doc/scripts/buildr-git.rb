@@ -21,13 +21,20 @@
 #
 # If you already have a buildr clone, just do the following:
 #
-#    git config alias.apache "!ruby $PWD/doc/scripts/buildr-git.rb"
+#    git config alias.apache '!ruby '"$PWD/doc/scripts/buildr-git.rb"
 #
 # After this, you have a 'git apache' command and you can try (be sure to read the help)
 #
 #    git apache help
 #    git apache setup svn --help
 #    git apache sync --help
+#
+# To configure your local repo for svn synchronization, 
+#
+#    git apache update-authors
+#    git remote add upstream git@github.com:buildr/buildr.git
+#    git apache setup svn --username apacheLogin --apache-git upstream
+#    git apache sync
 #
 # This script can also be run without having a local buildr clone:
 #
@@ -139,7 +146,7 @@ module BuildrGit
       opt.svn_prefix = 'apache'
       opt.svn_path = 'buildr'
       opt.townhall = 'origin'
-      [['--apache-login USER', 'Use Apache login to identify yourself', 
+      [['--username SVN_USER', 'Use Apache svn username for this svn remote', 
         lambda { |e| opt.apache_login = e  }],
        ['--svn-prefix PREFIX', 'The name of svn remote to use for project.',
         "Defaults to #{opt.svn_prefix}", 
@@ -148,7 +155,7 @@ module BuildrGit
        ['--svn-rev REVISION', lambda {|p| opt.svn_rev = p  }],
        ['--svn-path PATH', 'The path to append to svn-uri.',
         "Defaults to #{opt.svn_path}", lambda {|p| opt.svn_path = p  }],
-       ['--townhall REMOTE', 'The name of remote you are using as town-hall git repo.',
+       ['--apache-git REMOTE', 'The name of remote you are using as town-hall git repo.',
         "Defaults to #{opt.townhall}",
         lambda {|p| opt.townhall = p }]
       ]
@@ -255,10 +262,16 @@ This command will perform the following actions:
 
 GIT CONFIG VALUES:
 
-apache.svn  - The svn remote using to get changes from Apache SVN.
-              Set by setup-svn --svn-prefix.
-apache.git  - The git remote used as townhall repository.
-              Set by setup-svn --townhall.
+apache.svn  
+  The svn remote using to get changes from Apache SVN.
+  Set by setup-svn --svn-prefix.
+
+apache.git 
+  The git remote used as townhall repository.
+  Set by setup-svn --townhall.
+
+svn-remote.APACHE_GIT.username
+  If configured, sync will use this svn username while dcommiting.
 DOC
 
     def options(opt)
@@ -304,8 +317,13 @@ DOC
 
       # obtain latest changes from svn
       git('svn', 'fetch', '--svn-remote', opt.apache_svn)
+      # obtain latest changes from git
+      git('fetch', opt.apache_git)
+
       # rebase svn changes in the desired branch
-      git('rebase', "#{opt.apache_svn}/#{opt.svn_branch}", opt.branch)
+      git('rebase', '--onto', "#{opt.apache_svn}/#{opt.svn_branch}", 
+          "#{opt.apache_git}/#{opt.git_branch}", opt.branch)
+      
       # dcommit to the specific svn branch
       ['svn', 'dcommit', 
        '--svn-remote', opt.apache_svn, '--commit-url', commit_url].tap do |cmd|
@@ -314,9 +332,11 @@ DOC
         end
         git(*cmd)
       end
+
       # forward the remote townhall/master to apache/trunk
       git('push', opt.apache_git,
-          "#{opt.apache_svn}/#{opt.svn_branch}:#{opt.git_branch}")
+          "#{opt.git_branch}:#{opt.git_branch}")
+      
       # get back to the original branch
       git('checkout', opt.current)
     end
