@@ -268,7 +268,7 @@ DOC
       git('fetch', opt.apache_git, opt.onto)
       git('rebase', '--onto', opt.onto, "#{opt.apache_svn}/#{opt.svn_branch}")
       git('rebase', '--onto', opt.onto, "#{opt.apache_git}/#{opt.onto}")
-      git('dcommit', opt.apache_svn)
+      git('svn', 'dcommit', "#{opt.apache_svn}/#{opt.svn_branch}")
     end
   end
 
