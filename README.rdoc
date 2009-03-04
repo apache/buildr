@@ -101,9 +101,9 @@ You can check the latest sources from SVN:
 Or browse the SVN repository online:
 http://svn.apache.org/repos/asf/buildr
 
-If you prefer Git, a Git fork is available from http://github.com/vic/buildr/tree/master:
+If you prefer Git, a Git fork is available from http://github.com/buildr/buildr/tree/master:
 
-  git clone git://github.com/vic/buildr.git
+  git clone git://github.com/buildr/buildr.git
 
 To install Buildr locally from source:
 
