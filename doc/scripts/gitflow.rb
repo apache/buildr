@@ -28,6 +28,9 @@ module GitFlow
 
   HELP = <<-HELP
 
+GitFlow is a tool to create custom git commands implemented in ruby.
+It is generic enougth to be used on any git based project besides Apache Buildr.
+
 OVERVIEW:
 
 gitflow is intended to help developers with their daily git workflow,
@@ -198,10 +201,24 @@ HELP
   module Mixin
     include FileUtils
 
+    # Override this method in your command class if it
+    # needs to parse command line options.
+    # 
+    # This method takes an openstruct object as argument
+    # allowing you to store default values on it, and 
+    # set option values.
+    #
+    # The return value must be an array of arguments 
+    # given to optparse.on
     def options(opt)
       []
     end
     
+    # Override this method in your command class to implement
+    # the command.
+    # First argument is the openstruct object after
+    # it has been populated by the option parser. 
+    # Second argument is the array of non-option arguments.
     def execute(opt, argv)
       fail "#{self.class.command} not implemented"
     end
