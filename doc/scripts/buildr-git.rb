@@ -306,18 +306,16 @@ DOC
       git('svn', 'fetch', '--svn-remote', opt.apache_svn)
       # rebase svn changes in the desired branch
       git('rebase', "#{opt.apache_svn}/#{opt.svn_branch}", opt.branch)
-      # dcommit but don't rebase
-      ['svn', 'dcommit', '--no-rebase', '--svn-remote', opt.apache_svn,
-       '--commit-url', commit_url].tap do |cmd|
+      # dcommit to the specific svn branch
+      ['svn', 'dcommit', 
+       '--svn-remote', opt.apache_svn, '--commit-url', commit_url].tap do |cmd|
         if opt.svn_username
           cmd << '--username' << opt.svn_username
         end
         git(*cmd)
       end
-      # rebase from svn branch
-      git('rebase', "#{opt.apache_svn}/#{opt.svn_branch}", opt.branch)
       # forward the remote townhall/master to apache/trunk
-      git('push', opt.apache_git, 
+      git('push', opt.apache_git,
           "#{opt.apache_svn}/#{opt.svn_branch}:#{opt.git_branch}")
       # get back to the original branch
       git('checkout', opt.current)
