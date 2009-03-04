@@ -289,7 +289,7 @@ DOC
       commit_url = "#{url}/#{path}/#{opt.svn_branch}"
 
       # obtain latest changes from svn
-      run('fetch', '--apache-svn', opt.apache_svn)
+      git('svn', 'fetch', '--svn-remote', opt.apache_svn)
       # rebase svn changes in the desired branch
       git('rebase', "#{opt.apache_svn}/#{opt.svn_branch}", opt.branch)
       # dcommit but don't rebase
@@ -470,36 +470,5 @@ RESOURCES:
 
 NOTICE
   #' for emacs
-
-
-
-  def old
-      # Create apache aliases for developers git-workflow.
-      `git config alias.apache-fetch "!git-svn fetch #{svn_prefix}"`
-      `git config alias.apache-merge "!git merge #{svn_prefix}"`
-      `git config alias.apache-pull  "!git apache-fetch && git apache-merge"`
-      if svn_user
-        `git config alias.apache-push  "!git-svn dcommit --username #{svn_user}"`
-      else
-        `git config alias.apache-push  "!git-svn dcommit"`
-      end
-      
-      # Create github origin aliases
-      `git config alias.get "!git apache-fetch && git fetch origin"`
-      `git config alias.mrg "!git apache-merge && git merge origin"`
-      `git config alias.rbs "!git rebase --onto #{svn_prefix} origin/master master"`
-      `git config alias.put "!git apache-push && git push origin"`
-      
-      # This is Victor's cronjob
-      `git config alias.synchronize "!git get && git rbs && git put"`
-      
-      # Final notices.
-      puts <<-NOTICE + NOTICE
-
-    Your git repo #{local} has been configured, please review the 
-       #{File.join(local, '.git/config')} file.
-
-    NOTICE
-  end # perform method
   
 end
