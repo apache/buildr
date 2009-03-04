@@ -123,7 +123,7 @@ module BuildrGit
 
     def options(opt)
       opt.svn_prefix = 'apache'
-      opt.svn_project = 'buildr'
+      opt.svn_path = 'buildr'
       opt.townhall = 'origin'
       [['--apache-login USER', 'Use Apache login to identify yourself', 
         lambda { |e| opt.apache_login = e  }],
@@ -132,9 +132,9 @@ module BuildrGit
         lambda{|p| opt.svn_prefix = p }],
        ['--svn-uri URI', lambda {|p| opt.svn_uri = p  }],
        ['--svn-rev REVISION', lambda {|p| opt.svn_rev = p  }],
-       ['--svn-project PATH', 'The path to append to svn-uri.',
-        "Defaults to #{opt.svn_project}", lambda {|p| opt.svn_project = p  }],
-       ['--townhall REMOTE', 'The name of remote you are using as town-hall repo.', 
+       ['--svn-path PATH', 'The path to append to svn-uri.',
+        "Defaults to #{opt.svn_path}", lambda {|p| opt.svn_path = p  }],
+       ['--townhall REMOTE', 'The name of remote you are using as town-hall git repo.',
         "Defaults to #{opt.townhall}",
         lambda {|p| opt.townhall = p }]
       ]
@@ -163,19 +163,24 @@ module BuildrGit
       if opt.svn_uri
         repo = opt.svn_uri
       else
-        fail "No #{opt.svn_project} directory on #{location}" unless
-          location =~ /\/#{opt.svn_project}/
+        fail "No #{opt.svn_path} directory on #{location}" unless
+          location =~ /\/#{opt.svn_path}/
         repo = $`
       end
 
       # Tell git where the svn repository is 
       git('config', "svn-remote.#{opt.svn_prefix}.url", repo)
       git('config', "svn-remote.#{opt.svn_prefix}.fetch",
-          "#{opt.svn_project}/trunk:refs/remotes/#{opt.svn_prefix}/trunk")
+          "#{opt.svn_path}/trunk:refs/remotes/#{opt.svn_prefix}/trunk")
       git('config', "svn-remote.#{opt.svn_prefix}.branches", 
-          "#{opt.svn_project}/branches/*:refs/remotes/#{opt.svn_prefix}/*")
+          "#{opt.svn_path}/branches/*:refs/remotes/#{opt.svn_prefix}/*")
       git('config', "svn-remote.#{opt.svn_prefix}.tags", 
-          "#{opt.svn_project}/tags/*:refs/remotes/#{opt.svn_prefix}/tags/*")
+          "#{opt.svn_path}/tags/*:refs/remotes/#{opt.svn_prefix}/tags/*")
+
+      # Store the user for svn dcommit
+      if opt.apache_login
+        git('config', "svn-remote.#{opt.svn_prefix}.username", opt.apache_login)
+      end
 
       # Create the svn branch, do this instead of pulling the full svn history
       git('update-ref', "refs/remotes/#{opt.svn_prefix}/trunk",
@@ -249,29 +254,58 @@ DOC
       opt.git_branch = 'master'
       opt.apache_git = git('config', '--get', 'apache.git').chomp rescue nil
       opt.apache_svn = git('config', '--get', 'apache.svn').chomp rescue nil
+      opt.svn_username = git('config', '--get', 
+                             "svn-remote.#{opt.apache_svn}.username").chomp rescue nil
       [['--apache-svn SVN_REMOTE', 'The SVN remote used to get changes from Apache',
         "Current value: #{opt.apache_svn}",
         lambda { |r| opt.apache_svn = r }],
        ['--apache-git REMOTE', 'The git remote used as town-hall repository.',
         "Current value: #{opt.apache_git}",
         lambda { |r| opt.apache_git = r }],
-       ['--from SVN_BRANCH', 'Specify the SVN branch to rebase changes from', 
-        "Defaults to: #{opt.svn_branch}", 
+       ['--username SVN_USER', 
+        'Specify the SVN username for dcommit',
+        "Defaults to: #{opt.svn_username}",
+        lambda { |b| opt.svn_username = b }],
+       ['--svn-branch SVN_BRANCH',
+        'Specify the SVN branch to rebase changes from, and where to dcommit', 
+        "Defaults to: #{opt.svn_branch}",
         lambda { |b| opt.svn_branch = b }],
-       ['--to REMOTE_BRANCH', 'Specify the remote branch (on apache.git) to update',
+       ['--git-branch REMOTE_BRANCH', 
+        'Specify the remote town-hall branch (on apache.git) to update',
         "Defaults to: #{opt.git_branch}",
         lambda { |b| opt.git_branch = b }],
-       ['--branch BRANCH', 'Specify the local branch where to rebase apache changes',
+       ['--branch BRANCH', 'Specify the local branch to take changes from',
         "Current branch: #{opt.branch}",
         lambda { |b| opt.branch = b }]
       ]
     end
 
     def execute(opt, argv)
+      # obtain the svn url
+      url = git('config', '--get', "svn-remote.#{opt.apache_svn}.url").chomp
+      # obtain the path for project
+      path = git('config', '--get', "svn-remote.#{opt.apache_svn}.branches").
+        chomp.split('/branches').first
+      commit_url = "#{url}/#{path}/#{opt.svn_branch}"
+
+      # obtain latest changes from svn
       run('fetch', '--apache-svn', opt.apache_svn)
+      # rebase svn changes in the desired branch
       git('rebase', "#{opt.apache_svn}/#{opt.svn_branch}", opt.branch)
-      git('svn', 'dcommit', opt.apache_svn)
-      git('push', opt.apache_git, "#{opt.apache_svn}/#{opt.svn_branch}:#{opt.git_branch}")
+      # dcommit but don't rebase
+      ['svn', 'dcommit', '--no-rebase', '--svn-remote', opt.apache_svn,
+       '--commit-url', commit_url].tap do |cmd|
+        if opt.svn_username
+          cmd << '--username' << opt.svn_username
+        end
+        git(*cmd)
+      end
+      # rebase from svn branch
+      git('rebase', "#{opt.apache_svn}/#{opt.svn_branch}", opt.branch)
+      # forward the remote townhall/master to apache/trunk
+      git('push', opt.apache_git, 
+          "#{opt.apache_svn}/#{opt.svn_branch}:#{opt.git_branch}")
+      # get back to the original branch
       git('checkout', opt.current)
     end
   end
