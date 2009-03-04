@@ -16,14 +16,28 @@
 
 
 # This script helps buildr developers to obtain their own git clone from
-# github, having a set of pre-defined aliases to work with Apache's SVN.
+# github, and also provides GitFlow commands to keep the git mirror in sync
+# with Apache SVN.
 #
-# You dont need to have a buildr copy to use it, just execute:
+# If you already have a buildr clone, just do the following:
+#
+#    git config alias.apache "!ruby $PWD/doc/scripts/buildr-git.rb"
+#
+# After this, you have a 'git apache' command and you can try (be sure to read the help)
+#
+#    git apache help
+#    git apache setup svn --help
+#    git apache sync --help
+#
+# This script can also be run without having a local buildr clone:
 #
 #   ruby -ropen-uri -e 'eval(open("http://svn.apache.org/viewvc/buildr/trunk/doc/scripts/buildr-git.rb?view=co").read)' help
 
+
+
 require 'yaml'
 require 'open-uri'
+
 if $0 == '-e' # invoked from open-uri
   gitflow = "http://svn.apache.org/viewvc/buildr/trunk/doc/scripts/gitflow.rb?view=co"
   eval(open(gitflow).read)
