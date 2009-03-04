@@ -76,10 +76,10 @@ You can also browse the "Buildr repository":http://svn.apache.org/repos/asf/buil
 
 h3.  Git
 
-Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from GitHub":http://github.com/vic/buildr/tree/master:
+Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from GitHub":http://github.com/buildr/buildr/tree/master:
 
 {{{!sh
-$ git clone git://github.com/vic/buildr.git
+$ git clone git://github.com/buildr/buildr.git
 }}}
 
 If you want to learn more about Git, you can start by watching Scott Chacon’s "Git presentation":http://en.oreilly.com/rails2008/public/asset/attachment/2816 (PDF), or any of the "Git screencasts":http://www.gitcasts.com/.  For more, there's also the "Git Internals book":http://peepcode.com/products/git-internals-pdf.
