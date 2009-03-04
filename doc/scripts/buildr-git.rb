@@ -324,20 +324,15 @@ DOC
       # rebase svn changes in the desired branch
       git('rebase', "#{opt.apache_svn}/#{opt.svn_branch}", opt.branch)
       git('rebase', "#{opt.apache_git}/#{opt.git_branch}", opt.branch)
-
-      # create a temporary svn remote just to push to the svn branch
-      git('config', 'svn-remote.apache-dcommit.url', commit_url)
-
+      
       # dcommit to the specific svn branch
-      ['svn', 'dcommit', '--svn-remote', "apache-dcommit"].tap do |cmd|
+      ['svn', 'dcommit', 
+       '--svn-remote', opt.apache_svn, '--commit-url', commit_url].tap do |cmd|
         if opt.svn_username
           cmd << '--username' << opt.svn_username
         end
         git(*cmd)
       end
-
-      #remove the temporary svn dcommit remote
-      git('config', '--delete-section', 'svn-remote.apache-dcommit')
       
       # update townhall remote ref
       git('update-ref', 
