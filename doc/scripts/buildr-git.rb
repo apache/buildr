@@ -318,11 +318,12 @@ DOC
       # obtain latest changes from svn
       git('svn', 'fetch', '--svn-remote', opt.apache_svn)
       # obtain latest changes from git
-      git('fetch', opt.apache_git)
+      git('fetch', opt.apache_git, 
+          "#{opt.git_branch}:refs/remotes/#{opt.apache_git}/#{opt.git_branch}")
 
       # rebase svn changes in the desired branch
-      git('rebase', '--onto', "refs/remotes/#{opt.apache_svn}/#{opt.svn_branch}", 
-          "refs/remotes/#{opt.apache_git}/#{opt.git_branch}", opt.branch)
+      git('rebase', "#{opt.apache_svn}/#{opt.svn_branch}", opt.branch)
+      git('rebase', "#{opt.apache_git}/#{opt.git_branch}", opt.branch)
       
       # dcommit to the specific svn branch
       ['svn', 'dcommit', 
@@ -342,7 +343,6 @@ DOC
       git('push', opt.apache_git, 
           "refs/remotes/#{opt.apache_git}/#{opt.git_branch}:#{opt.git_branch}")
 
-    ensure
       # get back to the original branch
       git('checkout', opt.current)
     end
