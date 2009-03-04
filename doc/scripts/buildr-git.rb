@@ -332,11 +332,17 @@ DOC
         end
         git(*cmd)
       end
+      
+      # update townhall remote ref
+      git('update-ref', 
+          "refs/remotes/#{opt.apache_git}/#{opt.git_branch}",
+          "refs/remotes/#{opt.apache_svn}/#{opt.svn_branch}")
 
       # forward the remote townhall/master to apache/trunk
-      git('push', opt.apache_git,
-          "#{opt.git_branch}:#{opt.git_branch}")
-      
+      git('push', opt.apache_git, 
+          "refs/remotes/#{opt.apache_git}/#{opt.git_branch}:#{opt.git_branch}")
+
+    ensure
       # get back to the original branch
       git('checkout', opt.current)
     end
