@@ -243,9 +243,10 @@ apache.git  - The git remote used as townhall repository.
 DOC
 
     def options(opt)
-      git('branch').split.tap { |n| opt.branch = n[n.index('*')+1] }
-      opt.onto = opt.branch
+      git('branch').split.tap { |n| opt.current = n[n.index('*')+1] }
+      opt.branch = opt.current
       opt.svn_branch = 'trunk'
+      opt.git_branch = 'master'
       opt.apache_git = git('config', '--get', 'apache.git').chomp rescue nil
       opt.apache_svn = git('config', '--get', 'apache.svn').chomp rescue nil
       [['--apache-svn SVN_REMOTE', 'The SVN remote used to get changes from Apache',
@@ -257,18 +258,21 @@ DOC
        ['--from SVN_BRANCH', 'Specify the SVN branch to rebase changes from', 
         "Defaults to: #{opt.svn_branch}", 
         lambda { |b| opt.svn_branch = b }],
-       ['--onto BRANCH', 'Specify the local branch where to rebase apache changes',
+       ['--to REMOTE_BRANCH', 'Specify the remote branch (on apache.git) to update',
+        "Defaults to: #{opt.git_branch}",
+        lambda { |b| opt.git_branch = b }],
+       ['--branch BRANCH', 'Specify the local branch where to rebase apache changes',
         "Current branch: #{opt.branch}",
-        lambda { |b| opt.onto = b }]
+        lambda { |b| opt.branch = b }]
       ]
     end
 
     def execute(opt, argv)
       run('fetch', '--apache-svn', opt.apache_svn)
-      git('fetch', opt.apache_git, opt.onto)
-      git('rebase', '--onto', opt.onto, "#{opt.apache_svn}/#{opt.svn_branch}")
-      git('rebase', '--onto', opt.onto, "#{opt.apache_git}/#{opt.onto}")
-      git('svn', 'dcommit', "#{opt.apache_svn}/#{opt.svn_branch}")
+      git('rebase', "#{opt.apache_svn}/#{opt.svn_branch}", opt.branch)
+      git('svn', 'dcommit', opt.apache_svn)
+      git('push', opt.apache_git, "#{opt.apache_svn}/#{opt.svn_branch}:#{opt.git_branch}")
+      git('checkout', opt.current)
     end
   end
 
