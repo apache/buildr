@@ -153,7 +153,7 @@ module Buildr
       # Returns true if this ZIP file path contains all the specified files. You can use relative
       # file names and glob patterns (using *, **, etc).
       def contain?(*files)
-        files.all? { |file| entries.detect { |entry| File.fnmatch(file, entry.to_s, File::FNM_PATHNAME) } }
+        files.all? { |file| entries.detect { |entry| File.fnmatch(file, entry.to_s) } }
       end
 
       # :call-seq:
@@ -200,7 +200,7 @@ module Buildr
       end
 
       def excluded?(file)
-        @excludes.any? { |exclude| File.fnmatch(exclude, file, File::FNM_PATHNAME) }
+        @excludes.any? { |exclude| File.fnmatch(exclude, file) }
       end
 
       def entries #:nodoc:
@@ -253,11 +253,11 @@ module Buildr
       end
 
       def expand(file_map, path)
-        @includes = ['**/*'] if @includes.empty?
+        @includes = ['*'] if @includes.empty?
         Zip::ZipFile.open(@zip_file) do |source|
           source.entries.reject { |entry| entry.directory? }.each do |entry|
-            if @includes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) } &&
-               !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name, File::FNM_PATHNAME) }
+            if @includes.any? { |pattern| File.fnmatch(pattern, entry.name) } &&
+               !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name) }
               dest = path =~ /^\/?$/ ? entry.name : Util.relative_path(path + "/" + entry.name)
               trace "Adding #{dest}"
               file_map[dest] = lambda { |output| output.write source.read(entry) }

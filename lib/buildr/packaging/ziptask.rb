@@ -256,13 +256,13 @@ module Buildr
       end
 
       def map(entries)
-        includes = @include || ['**/*']
+        includes = @include || ['*']
         excludes = @exclude || []
         entries.inject({}) do |map, entry|
           if entry.name =~ /^#{@path}/
             short = entry.name.sub(@path, '')
-            if includes.any? { |pat| File.fnmatch(pat, short, File::FNM_PATHNAME) } &&
-               !excludes.any? { |pat| File.fnmatch(pat, short, File::FNM_PATHNAME) }
+            if includes.any? { |pat| File.fnmatch(pat, short) } &&
+               !excludes.any? { |pat| File.fnmatch(pat, short) }
               map[short] = entry
             end
           end

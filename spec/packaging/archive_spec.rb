@@ -237,6 +237,16 @@ describe 'ArchiveTask', :shared=>true do
     end
   end
 
+  it 'should expand another archive file with nested exclude pattern' do
+    @files = %w{Test1.txt Text2.html}.map { |file| File.join(@dir, "foo", file) }.
+      each { |file| write file, content_for(file) }
+    zip(@archive + '.src').include(@dir).tap do |task|
+      archive(@archive).merge(task).exclude('test/*')
+      archive(@archive).invoke
+      inspect_archive.should be_empty
+    end
+  end
+
   it 'should expand another archive file into path' do
     create_for_merge do |src|
       archive(@archive).path('test').merge(src)

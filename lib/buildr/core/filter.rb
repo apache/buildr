@@ -165,8 +165,8 @@ module Buildr
       copy_map = sources.flatten.map(&:to_s).inject({}) do |map, source|
         files = Util.recursive_with_dot_files(source).
           map { |file| Util.relative_path(file, source) }.
-          select { |file| @include.empty? || @include.any? { |pattern| File.fnmatch(pattern, file, File::FNM_PATHNAME) } }.
-          reject { |file| @exclude.any? { |pattern| File.fnmatch(pattern, file, File::FNM_PATHNAME) } }
+          select { |file| @include.empty? || @include.any? { |pattern| File.fnmatch(pattern, file) } }.
+          reject { |file| @exclude.any? { |pattern| File.fnmatch(pattern, file) } }
         files.each do |file|
           src, dest = File.expand_path(file, source), File.expand_path(file, target.to_s)
           map[file] = src if !File.exist?(dest) || File.stat(src).mtime >= File.stat(dest).mtime
