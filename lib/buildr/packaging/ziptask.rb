@@ -35,7 +35,7 @@ module Buildr
     attr_accessor :compression_level
 
     def initialize(*args) #:nodoc:
-      self.compression_level = Zlib::NO_COMPRESSION
+      self.compression_level = Zlib::DEFAULT_COMPRESSION
       super
     end
 
