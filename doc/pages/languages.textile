@@ -139,7 +139,13 @@ On Linux and other Unix variants,
 > export SCALA_HOME=/path/to/scala-2.7.1
 }}}
 
-The @SCALA_HOME@ base directory should be such that Scala core libraries are  located directly under the "lib" subdirectory, and Scala scripts are under the  "bin" directory.
+The @SCALA_HOME@ base directory should be such that Scala core libraries are located directly under the "lib" subdirectory, and Scala scripts are under the "bin" directory.
+
+You must also require the Scala compiler in your buildfile:
+
+{{{!ruby
+require 'buildr/scala'
+}}}
 
 h3. Compiling Scala
 
