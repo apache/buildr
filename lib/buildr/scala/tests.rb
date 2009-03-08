@@ -76,7 +76,7 @@ module Buildr::Scala
   # * :java_args   -- Arguments passed as is to the JVM.
   class ScalaTest < Buildr::TestFramework::Java
 
-    VERSION = '0.9.4'
+    VERSION = '0.9.5'
 
     class << self
       def version
@@ -84,7 +84,7 @@ module Buildr::Scala
       end
       
       def dependencies
-        ["org.scalatest:scalatest:jar:#{version}"] + ScalaSpecs.dependencies +
+        ["org.scala-tools.testing:scalatest:jar:#{version}"] + ScalaSpecs.dependencies +
           ScalaCheck.dependencies + JMock.dependencies
       end  
 
