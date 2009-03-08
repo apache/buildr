@@ -17,10 +17,16 @@
 require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 describe 'scala' do
+  # Specific version of Scala required for specs
+  required_version = '2.7.3'
+  
   it 'should automatically add the remote scala-tools.org repository' do
     # NOTE: the sandbox environment clears "repositories.remote" so we can't
     #       test for this spec right now.
     #
     # repositories.remote.should include('http://scala-tools.org/repo-releases')
+  end
+  it "specifications require Scala #{required_version}" do
+    Scala.version.should eql(required_version)
   end
 end

@@ -10,6 +10,7 @@
 * Added:  BUILDR-222: Support Git as a version control system
 * Added   BUILDR-223 Release Task: customizable commit message
 * Added:  Info message "Packaging filename.ext" now displayed for packaging tasks
+* Added:  Added Scala.version and Scala.version_str
 * Change: require 'buildr/scala' is now officially required to use Scala features
 * Change: Introduced new options from Rake 0.8.3: -I (libdir), -R (rakelib),
           --rules, --no-search, --silent.

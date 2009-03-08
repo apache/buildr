@@ -20,7 +20,21 @@ require 'buildr/packaging'
 
 
 module Buildr::Scala
+
+  class << self
+    def version_str
+      # Scala version string normally looks like "version 2.7.3.final"
+      Java.scala.util.Properties.versionString.sub 'version ', ''
+    end
     
+    def version
+      # any consecutive sequence of numbers followed by dots
+      match = version_str.match(/\d+\.\d[\d\.]*/) or
+        fail "Unable to parse Scala version: #{version_str} "
+      match[0].sub(/.$/, "") # remove trailing dot, if any
+    end
+  end
+
   # Scalac compiler:
   #   compile.using(:scalac)
   # Used by default if .scala files are found in the src/main/scala directory (or src/test/scala)
