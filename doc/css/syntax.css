@@ -14,42 +14,10 @@
  * under the License.
  */
 
-.nv { }
-.nb { }
-.o {}
-
-.ruby .normal   {}
-.ruby .comment  { color: gray; }
-.ruby .method   { color: lightblue; }
-.ruby .punct    {  color: darkblue; }
-.ruby .keyword, .ruby .symbol   { color: blue; }
-.ruby .string, .ruby .regex { color: green; }
-.ruby .char     { }
-.ruby .ident    { color: black; }
-.ruby .constant, ruby .class, ruby .module { color: darkblue; }
-.ruby .number   { color: blue; }
-.ruby .attribute { }
-.ruby .global   { }
-.ruby .expr     { }
-.ruby .escape   { }
-
-.xml .normal    {}
-.xml .namespace { color: darkblue; }
-.xml .tag       { color: blue; }
-.xml .comment   { color: gray; }
-.xml .punct     { color: darkblue; }
-.xml .string    { }
-.xml .number    { }
-.xml .attribute { color: blue; }
-
-.yaml .document { }
-.yaml .type     { }
-.yaml .key      { color: blue; }
-.yaml .comment  { color: gray; }
-.yaml .punct    { color: darkblue; }
-.yaml .string   { }
-.yaml .number   { }
-.yaml .time     { }
-.yaml .date     { }
-.yaml .ref      { color: green; }
-.yaml .anchor   { color: green; }
+.highlight .k, .highlight .kp { color: blue } /* keyword */
+.highlight .no { color: darkblue } /* constant */
+.highlight .s1 { color: green } /* string */
+.highlight .n { color: black } /* identifier */
+.highlight .o, .highlight .p { color: darkblue } /* = + */
+.highlight .ss { color: darkblue } /* symbol */
+.highlight .c1 { color: gray } /* comment */
