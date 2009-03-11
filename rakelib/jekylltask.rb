@@ -23,14 +23,12 @@ class JekyllTask < Rake::TaskLib
     @target = name
     yield self if block_given?
     task name, :auto, :needs=>[@source] do |task, args|
-      if args.auto
-        auto_generate
-      else
-        generate
-      end
+      generate args.auto
     end
     if @source != @target
-      file @target=>name
+      file @target=>FileList["#{@source}/**/*"] do
+        generate
+      end
       task 'clobber' do
         rm_rf @target
       end
@@ -41,32 +39,36 @@ class JekyllTask < Rake::TaskLib
   attr_accessor :target
   attr_accessor :pygments
 
-  def generate
-    puts "Generating documentation in #{target}"
-    Jekyll.pygments = @pygments
-    Jekyll.process source, target
-  end
-
-  def auto_generate
-    require 'directory_watcher'
-    puts "Auto generating: just edit a page and save, watch the console to see when its done"
-    dw = DirectoryWatcher.new(source)
-    dw.interval = 1
-    dw.glob = Dir.chdir(source) do
-      dirs = Dir['*'].select { |x| File.directory?(x) }
-      dirs -= [target]
-      dirs = dirs.map { |x| "#{x}/**/*" }
-      dirs += ['*']
-    end
-    dw.start
-    dw.add_observer do |*args|
-      t = Time.now.strftime("%Y-%m-%d %H:%M:%S")
-      puts "[#{t}] regeneration: #{args.size} files changed"
+  def generate(auto = false)
+    process = lambda do
       Jekyll.pygments = @pygments
       Jekyll.process source, target
-      puts "Done"
+      touch target
     end
-    loop { sleep 1 }
+
+    if auto
+      require 'directory_watcher'
+      puts "Auto generating: just edit a page and save, watch the console to see when we're done regenerating pages"
+      dw = DirectoryWatcher.new(source)
+      dw.interval = 1
+      dw.glob = Dir.chdir(source) do
+        dirs = Dir['*'].select { |x| File.directory?(x) }
+        dirs -= [target]
+        dirs = dirs.map { |x| "#{x}/**/*" }
+        dirs += ['*']
+      end
+      dw.start
+      dw.add_observer do |*args|
+        t = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+        puts "[#{t}] regeneration: #{args.size} files changed"
+        process.call
+        puts "Done"
+      end
+      loop { sleep 1 }
+    else
+      puts "Generating documentation in #{target}"
+      process.call
+    end
   end
 end
 
@@ -86,6 +88,14 @@ begin
         [stdout, stderr].each { |io| io.close }
       end
       output
+    end
+  end
+
+  class Jekyll::Page
+    def render(layouts, site_payload)
+      puts "... #{@name}"
+      payload = {"page" => self.data}.deep_merge(site_payload)
+      do_layout(payload, layouts)
     end
   end
 

@@ -9,3 +9,4 @@ _snapshot
 _stage
 _release
 tmp
+*.log

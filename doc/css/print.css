@@ -73,24 +73,14 @@
     border: 0;
   }
 
-  #header {
-    margin-bottom: 5%;
-    font-size: 120%;
-  }
-  #header img { width: 4in; }
-  #header .tagline {
-    float: none !important;
-    position: static !important;
-    font-size: 1.2em;
-    text-align: center;
-  }
+  #header { display: none }
 
   #pages, .noprint { display: none; }
 
   ol.toc a:link, ol.toc a:visited { text-decoration: none; }
   ol.toc a:after { content: leader('.') target-counter(attr(href), page); }
 
-  #footer { margin-top: 5%; }
+  #footer { display: none }
 
   #license {
     page-break-before: always;

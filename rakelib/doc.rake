@@ -25,7 +25,7 @@ rescue LoadError
 end
 
 
-desc 'Generate RDoc documentation'
+desc "Generate RDoc documentation in rdoc/"
 Rake::RDocTask.new('rdoc') do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = spec.name
@@ -34,24 +34,31 @@ Rake::RDocTask.new('rdoc') do |rdoc|
   rdoc.rdoc_files.include spec.extra_rdoc_files
 end
 
-
+desc "Generate Buildr documentation in _site/"
 JekyllTask.new 'jekyll' do |task|
   task.source = 'doc'
   task.target = '_site'
   task.pygments = true
 end
 
+desc "Generate Buildr documentation as buildr.pdf"
+file 'buildr.pdf'=>'_site' do |task|
+  pages = File.read('doc/preface.textile').scan(/^#.*":(\S*)$/).flatten.map { |f| "_site/#{f}" }
+  sh 'prince', '--input=html', '--no-network', '--log=prince_errors.log', "--output=#{task.name}", '_site/preface.html', *pages
+end
+
 desc "Build a copy of the Web site in the ./_site"
-task 'site'=>['_site', 'rdoc', 'spec', 'coverage'] do
+task 'site'=>['_site', 'rdoc', 'spec', 'coverage', 'buildr.pdf'] do
   cp_r 'rdoc', '_site'
   fail 'No RDocs in site directory' unless File.exist?('_site/rdoc/files/lib/buildr_rb.html')
   cp '_reports/specs.html', '_site'
   cp_r '_reports/coverage', '_site'
   fail 'No coverage report in site directory' unless File.exist?('_site/coverage/index.html')
   cp 'CHANGELOG', '_site'
+  cp 'buildr.pdf', '_site'
+  fail 'No PDF in site directory' unless File.exist?('_site/buildr.pdf')
   puts 'OK'
 end
-
 
 # Publish prerequisites to Web site.
 task 'site_publish'=>'site' do
@@ -63,5 +70,7 @@ task 'site_publish'=>'site' do
 end
 
 task 'clobber' do
-  rm_rf '_site' if File.exist?('_site')
+  rm_rf '_site'
+  rm 'buildr.pdf'
+  rm 'prince_errors.log'
 end

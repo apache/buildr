@@ -164,9 +164,11 @@ The @SCALA_HOME@ base directory should be such that Scala core libraries are loc
 
 You must also require the Scala compiler in your buildfile:
 
-{{{!ruby
+<notextile>
+{% highlight ruby %}
 require 'buildr/scala'
-}}}
+{% endhighlight %}
+</notextile>
 
 h3. Compiling Scala
 
