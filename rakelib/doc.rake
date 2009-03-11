@@ -36,6 +36,19 @@ end
 begin
   require 'jekyll'
 
+  class Albino
+    def execute(command)
+      output = ''
+      Open4.popen4(command) do |pid, stdin, stdout, stderr|
+        stdin.puts @target
+        stdin.close
+        output = stdout.read.strip
+        [stdout, stderr].each { |io| io.close }
+      end
+      output
+    end
+  end
+
   task '_site'=>['doc'] do
     Jekyll.pygments = true
     Jekyll.process 'doc', '_site'
@@ -44,7 +57,7 @@ begin
 rescue LoadError
   puts "Buildr uses the mojombo-jekyll to generate the Web site. You can install it by running rake setup"
   task 'setup' do
-    install_gem 'mojombo-jekyll', :source=>'http://gems.github.com'
+    install_gem 'mojombo-jekyll', :source=>'http://gems.github.com', :version=>'0.4.1'
     sh "#{sudo_needed? ? 'sudo ' : nil}easy_install Pygments"
   end
 end
