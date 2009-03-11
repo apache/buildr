@@ -14,6 +14,9 @@
  * under the License.
  */
 
+.nv { }
+.nb { }
+.o {}
 
 .ruby .normal   {}
 .ruby .comment  { color: gray; }

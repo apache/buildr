@@ -1,6 +1,9 @@
-h1. Extending Buildr
+---
+layout: default
+title: Extending Buildr
+---
 
-h2. Organizing Tasks
+h2(#tasks). Organizing Tasks
 
 A couple of things we learned while working on Buildr.  Being able to write your own Rake tasks is a very powerful feature.  But if you find yourself doing the same thing over and over, you might also want to consider functions. They give you a lot more power and easy abstractions.
 
@@ -8,7 +11,7 @@ For example, we use OpenJPA in several projects.  It's a very short task, but ea
 
 Compare this:
 
-{{{!ruby
+{% highlight ruby %}
 file('derby.sql') do
   REQUIRES = [
     'org.apache.openjpa:openjpa-all:jar:0.9.7-incubating',
@@ -27,17 +30,17 @@ file('derby.sql') do
     end
   end
 end
-}}}
+{% endhighlight %}
 
 To this:
 
-{{{!ruby
+{% highlight ruby %}
 file('derby.sql') do
   mapping_tool :action=>'build', :sql=>task.name,
     :properties=>_('src/main/sql/derby.xml'),
     :classpath=>projects('store', 'utils')
 end
-}}}
+{% endhighlight %}
 
 I prefer the second.  It's easier to look at the Buildfile and understand what it does.  It's easier to maintain when you only have to look at the important information.
 
@@ -48,25 +51,25 @@ If you want to share these pre-canned definitions between projects, you have a f
 For individual task files, you can also use "Sake":http://errtheblog.com/post/6069 for system-wide Rake tasks deployment.
 
 
-h2.  Creating Extensions
+h2(#extensions).  Creating Extensions
 
 The basic mechanism for extending projects in Buildr are Ruby modules.  In fact, base features like compiling and testing are all developed in the form of modules, and then added to the core Project class.
   
 A module defines instance methods that are then mixed into the project and become instance methods of the project.  There are two general ways for extending projects.  You can extend all projects by including the module in Project:
 
-{{{!ruby
+{% highlight ruby %}
 class Project
   include MyExtension
 end
-}}}
+{% endhighlight %}
 
 You can also extend a given project instance and only that instance by extending it with the module:
 
-{{{!ruby
+{% highlight ruby %}
 define 'foo' do
   extend MyExtension
 end
-}}}
+{% endhighlight %}
 
 Some extensions require tighter integration with the project, specifically for setting up tasks and properties, or for configuring tasks based on the project definition.  You can do that by adding callbacks to the process.
 
@@ -79,7 +82,7 @@ The easiest way to add callbacks is by incorporating the Extension module in you
 
 This example illustrates how to write a simple extension:
 
-{{{!ruby
+{% highlight ruby %}
 module LinesOfCode
   include Extension
 
@@ -114,35 +117,36 @@ end
 class Buildr::Project
   include LinesOfCode
 end
-}}}
+{% endhighlight %}
+<!-- -->
 
 
-h2.  Using Alternative Layouts
+h2(#layouts).  Using Alternative Layouts
 
 Buildr follows a common convention for project layouts: Java source files appear in @src/main/java@ and compile to @target/classes@, resources are copied over from @src/main/resources@ and so forth.  Not all projects follow this convention, so it's now possible to specify an alternative project layout.
 
 The default layout is available in @Layout.default@, and all projects inherit it.  You can set @Layout.default@ to your own layout, or define a project with a given layout (recommended) by setting the @:layout@ property.  Projects inherit the layout from their parent projects.  For example:
 
-{{{!ruby
+{% highlight ruby %}
 define 'foo', :layout=>my_layout do
   ...
 end
-}}}
+{% endhighlight %}
 
 A layout is an object that implements the @expand@ method.  The easiest way to define a custom layout is to create a new @Layout@ object and specify mapping between names used by Buildr and actual paths within the project.  For example:
 
-{{{!ruby
+{% highlight ruby %}
 my_layout = Layout.new
 my_layout[:source, :main, :java] = 'java'
 my_layout[:source, :main, :resources] = 'resources'
-}}}
+{% endhighlight %}
 
 Partial expansion also works, so you can specify the above layout using:
 
-{{{!ruby
+{% highlight ruby %}
 my_layout = Layout.new
 my_layout[:source, :main] = ''
-}}}
+{% endhighlight %}
 
 If you need anything more complex, you can always subclass @Layout@ and add special handling in the @expand@ method, you'll find one such example in the API documentation.
 
@@ -158,7 +162,7 @@ The built-in tasks expand lists of symbols into relative paths, using the follow
 
 All tasks are encouraged to use the same convention, and whenever possible, we recommend using the project's @path_to@ method to expand a list of symbols into a path, or use the appropriate path when available.  For example:
 
-{{{!ruby
+{% highlight ruby %}
 define 'bad' do
   # This may not be the real target.
   puts 'Compiling to ' + path_to('target/classes')
@@ -172,4 +176,5 @@ define 'good' do
   # This will work with different layouts.
   package(:jar).include path_to(:source, :main, :etc, '*')
 end
-}}}
+{% endhighlight %}
+<!-- -->

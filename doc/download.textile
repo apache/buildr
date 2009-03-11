@@ -1,7 +1,10 @@
-h1. Download
+---
+layout: default
+title: Download
+---
 
 
-h2.  Installing Buildr
+h2(#install).  Installing Buildr
 
 The easiest way to install Buildr is using the fabulous RubyGems package manager.  Of course, you will need either Ruby or JRuby, and we recommend upgrading to the most recent version of RubyGems.  If this sounds foreign to you, don't worry.  We'll show you how to install Buildr on Linux, OS X, Windows and JRuby in the "Getting Started guide":getting_started.html, we even provide automated installation scripts.
 
@@ -12,7 +15,7 @@ In addition, contributors to this project maintain a separate distribution over 
 The source code is included in both source and binary distribution, the Gem distribution expands the source code into your local Gem repository. That's in addition to getting the source code directly from "SVN":http://svn.apache.org/repos/asf/buildr or "GitHub":http://github.com/vic/buildr/tree/master. Learn more about working with source code and "living on the edge":contributing.html#living_on_the_edge.
 
 
-h2.  Binaries and Source Code
+h2(#dist).  Binaries and Source Code
 
 h3. buildr 1.3.3-incubating (2008-10-08)
 

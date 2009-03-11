@@ -1,4 +1,7 @@
-h1. Mailing Lists
+---
+layout: default
+title: Mailing Lists
+---
 
 
 |_. users       |_. For developers working with Buildr |

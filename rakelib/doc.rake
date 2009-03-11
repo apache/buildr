@@ -34,81 +34,42 @@ end
 
 
 begin
-  require 'docter'
-  require 'docter/server'
+  require 'jekyll'
 
-  #Docter.filter_for(:footnote) do |html|
-  #  html.gsub(/<p id="fn(\d+)">(.*?)<\/p>/, %{<p id="fn\\1" class="footnote">\\2</p>})
-  #end
-
-  collection = Docter.collection(spec.name).using('doc/site.toc.yaml').include('doc/pages', 'LICENSE', 'CHANGELOG')
-  # TODO:  Add coverage reports when we get them to run.
-  template   = Docter.template('doc/site.haml').include('doc/css', 'doc/images', 'doc/scripts', 'rdoc')
-
-  desc 'Run Docter server on port 3000'
-  Docter::Rake.serve 'docter', collection, template, :port=>3000
-
-  Docter::Rake.generate '_print',
-    Docter.collection(spec.name).using('doc/print.toc.yaml').include('doc/pages'),
-    Docter.template('doc/print.haml').include('doc/css', 'doc/images'), :one_page
-
-  file('buildr.pdf'=>'_print') do |task|
-    sh 'prince', '_print/index.html', '-o', task.name, '--media=print' do |ok, res|
-      fail 'Failed to create PDF, see errors above' unless ok
-    end
-  end
-
-  desc 'Generate Web site in directory site'
-  Docter::Rake.generate '_site', collection, template
-
-  task '_site/buildr.pdf'=>'buildr.pdf' do
-    cp 'buildr.pdf', '_site'
-  end
-  task '_site/specs.html'=>'spec' do
-    cp '_reports/specs.html', '_site'
-  end
-  task '_site/coverage'=>'coverage' do
-    cp_r '_reports/coverage', '_site'
-  end
-
-  task 'site'=>['_site', '_site/buildr.pdf', '_site/specs.html', '_site/coverage'] do
-    print 'Checking that we have site documentation, RDoc and PDF ... '
-    fail 'No PDF generated, you need to install PrinceXML!' unless File.exist?('_site/buildr.pdf')
-    fail 'No RDocs in site directory' unless File.exist?('_site/rdoc/files/lib/buildr_rb.html')
-    fail 'No site documentation in site directory' unless File.exist?('_site/index.html')
-    fail 'No specifications in site directory' unless File.exist?('_site/specs.html')
-    fail 'No coverage report in site directory' unless File.exist?('_site/coverage')
-    puts 'OK'
-  end
-
-
-  # Publish prerequisites to Web site.
-  task 'site_publish'=>'site' do
-    target = "people.apache.org:/www/#{spec.name}.apache.org"
-    puts "Uploading new site to #{target} ..."
-    sh "rsync --progress --recursive --delete _site/ #{target.inspect}/"
-    sh "ssh people.apache.org chmod -R g+w /www/#{spec.name}.apache.org/*"
-    puts "Done"
-  end
-
-
-  desc 'Produce PDF'
-  task 'pdf'=>'_print/buildr.pdf' do |task|
-    sh 'open', '_print/buildr.pdf'
-  end
-
-  task 'clobber' do
-    rm_rf '_site' if File.exist?('_site')
-    rm_rf '_print' if File.exist?('_print')
-    rm_rf 'buildr.pdf' if File.exist?('buildr.pdf')
+  task '_site'=>['doc'] do
+    Jekyll.pygments = true
+    Jekyll.process 'doc', '_site'
   end
 
 rescue LoadError
-  puts 'Please run rake setup to install the Docter document generation library'
+  puts "Buildr uses the mojombo-jekyll to generate the Web site. You can install it by running rake setup"
   task 'setup' do
-    install_gem 'docter'#, '~>1.1.3'
+    install_gem 'mojombo-jekyll', :source=>'http://gems.github.com'
+    sh "#{sudo_needed? ? 'sudo ' : nil}easy_install Pygments"
   end
-  task 'stage:check' do
-    fail 'Please run rake setup to install the Docter document generation library'
-  end
+end
+
+
+desc "Build a copy of the Web site in the ./_site"
+task 'site'=>['_site', 'rdoc', 'spec', 'coverage'] do
+  cp_r 'rdoc', '_site'
+  fail 'No RDocs in site directory' unless File.exist?('_site/rdoc/files/lib/buildr_rb.html')
+  cp '_reports/specs.html', '_site'
+  cp_r '_reports/coverage', '_site'
+  fail 'No coverage report in site directory' unless File.exist?('_site/coverage/index.html')
+  puts 'OK'
+end
+
+
+# Publish prerequisites to Web site.
+task 'site_publish'=>'site' do
+  target = "people.apache.org:/www/#{spec.name}.apache.org"
+  puts "Uploading new site to #{target} ..."
+  sh "rsync --progress --recursive --delete _site/ #{target.inspect}/"
+  sh "ssh people.apache.org chmod -R g+w /www/#{spec.name}.apache.org/*"
+  puts "Done"
+end
+
+task 'clobber' do
+  rm_rf '_site' if File.exist?('_site')
 end

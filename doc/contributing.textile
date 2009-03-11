@@ -1,20 +1,23 @@
-h1. Contributing
+---
+layout: default
+title: Contributing
+---
 
 Buildr is a community effort, and we welcome all contributors.  Here's your chance to get involved and help your fellow developers.
 
-h2.  Getting involved
+h2(#involved).  Getting involved
 
 All our discussions are done in the open, over "email":mailing_lists.html, and that would be the first place to look for answers, raise ideas, etc.  For bug reports, issues and patches, "see below":#bugs_aka_issues.
 
 
-h3.  Mailing Lists
+h3(#mailing_lists).  Mailing Lists
 
 We run two mailing lists, the "users":http://mail-archives.apache.org/mod_mbox/buildr-users/ mailing list for developers working with Buildr, that would be you if you're using Buildr or interested in using it.  There's the "dev":http://mail-archives.apache.org/mod_mbox/buildr-dev/ mailing list for talking about development of Buildr itself, and "commits":http://mail-archives.apache.org/mod_mbox/buildr-commits/ mailing list for following SVN commits and JIRA issues.
 
 Check the "mailing lists":mailing_lists.html page for more information on subscribing, searching and posting to the mailing list.
 
 
-h3.  Bugs (aka Issues)
+h3(#bugs).  Bugs (aka Issues)
 
 We really do try to keep bugs to a minimum, and anticipate everything you'll ever want to do with Buildr.  We're also, not perfect.  So you may have found a bug, or have an enhancement in mind, or better yet, a patch to contribute. Here's what you can do.
 
@@ -24,19 +27,21 @@ If it needs more attention, start a discussion over on the mailing list.  We wil
 
 When reporting a bug, please tell us which version of Ruby, Buildr and Java you are using, and also which operating system you are on:
 
-{{{!sh
+<notextile>
+{% highlight sh %}
 $ ruby --version
 $ buildr --version
 $ java --version
-}}}
+{% endhighlight %}
+</notextile>
 
 
-h3.  Community Wiki
+h3(#wiki).  Community Wiki
 
 Our community Wiki is available at "http://cwiki.apache.org/confluence/display/BUILDR/Index":http://cwiki.apache.org/confluence/display/BUILDR/Index.
 
 
-h3.  Contributing Code
+h3(#code).  Contributing Code
 
 Yes, please.
 
@@ -60,7 +65,7 @@ If you want to work on a cool new feature, but not quite ready to submit a patch
 That way you can get other people involved, checking out the code, and eventually merge it back with the main branch.  Check out the "Git section":#Git below and the post "Git forking for fun and profit":http://blog.labnotes.org/2008/04/30/git-forking-for-fun-and-profit/.
 
 
-h2.  Living on the edge
+h2(#edge).  Living on the edge
 
 Did we mention Buildr is an open source project?  In fact, when you install Buildr you get all the source code, documentation, test case and everything you need to use it, extend it and patch it.  Have a look in your Gem directory.
 
@@ -68,19 +73,19 @@ h3.  SVN
 
 But if you want to work with the latest and greatest, you'll want to check out "Buildr from SVN":http://svn.apache.org/repos/asf/buildr:
 
-{{{!sh
+{% highlight sh %}
 $ svn co http://svn.apache.org/repos/asf/buildr/trunk buildr
-}}}
+{% endhighlight %}
 
 You can also browse the "Buildr repository":http://svn.apache.org/repos/asf/buildr.
 
 h3.  Git
 
-Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from GitHub":http://github.com/buildr/buildr/tree/master:
+Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from GitHub":http://github.com/vic/buildr/tree/master:
 
-{{{!sh
-$ git clone git://github.com/buildr/buildr.git
-}}}
+{% highlight sh %}
+$ git clone git://github.com/vic/buildr.git
+{% endhighlight %}
 
 If you want to learn more about Git, you can start by watching Scott Chacon’s "Git presentation":http://en.oreilly.com/rails2008/public/asset/attachment/2816 (PDF), or any of the "Git screencasts":http://www.gitcasts.com/.  For more, there's also the "Git Internals book":http://peepcode.com/products/git-internals-pdf.
 
@@ -92,17 +97,17 @@ h3. Working with Source Code
 
 To install Buildr from the source directory:
 
-{{{!sh
+{% highlight sh %}
 $ cd buildr
 $ rake setup install
-}}}
+{% endhighlight %}
 
 When using Buildr for JRuby:
 
-{{{!sh
+{% highlight sh %}
 $ cd buildr
 $ jruby -S rake setup install
-}}}
+{% endhighlight %}
 
 The _setup_ task takes care of installing all the necessary dependencies used for building, testing and running Buildr. Once in a while we upgrade or add new dependencies, if you're experiencing a missing dependency, simply run @rake setup@ again.
 
@@ -115,21 +120,24 @@ h3. Using development build
 
 Occasionally we'll make development builds from the current code in trunk/head. We appreciate if you can take the time to test those out and report any bugs. To install development builds, use the Gem repository at @people.apache.org/~assaf/buildr/snapshot@:
 
-{{{!sh
+{% highlight sh %}
 gem source --add http://people.apache.org/~assaf/buildr/snapshot/
-}}}
+{% endhighlight %}
 
 Since Ruby Gems uses version numbers to detect new releases, if you installed Buildr from a snapshot and want to upgrade to a newer snapshot or the latest official release, you need to use @gem install buildr@ rather than @gem upgrade@.
 
 If you want to go back to using the RubyForge releases:
 
-{{{!sh
+<notextile>
+{% highlight sh %}
 gem source --remove http://people.apache.org/~assaf/buildr/snapshot/
 gem install buildr
-}}}
+{% endhighlight %}
+</notextile><!-- -->
 
 
-h2.  Tested and Documented
+
+h2(#testing).  Tested and Documented
 
 Two things we definitely encourage!
 
@@ -141,18 +149,18 @@ We test using "RSpec":http://rspec.info/, a Behavior-Driven Development test fra
 
 You can run an individual specifications using the @spec@ command, for example:
 
-{{{!sh
+{% highlight sh %}
 $ spec spec/compiler_spec.rb
 $ spec spec/compiler_spec.rb -l 409
-}}}
+{% endhighlight %}
 
 The first command will run all the specifications in @compiler_spec@, the second command will run only the specification identified by line 409 of that file. You can use line numbers to point at a particular specification (lines starting with @it@), or set of specifications (lines starting with @describe@). You can also use the @-e@ command line option to name a particular specification.
 
 To make sure your change did not break anything else, you can run all the specifications (be patient, we have a lot of these):
 
-{{{!sh
+{% highlight sh %}
 $ rake spec
-}}}
+{% endhighlight %}
 
 If you get any failures, you can use @rake failed@ to run only the failed specs, and repeat until there are no more failed specs to run. The list of failed specs is stored in the file _failed_.
 
@@ -160,9 +168,9 @@ We always @rake spec@ before making a release.
 
 For full test coverage:
 
-{{{!sh
+{% highlight sh %}
 $ rake coverage
-}}}
+{% endhighlight %}
 
 Specification and coverage reports are HTML files you can view with a Web browser, look for them in the _reports_ directory. You can also check out the "RSpec report":specs.html and "test coverage":coverage/index.html we publish with each release.
 
@@ -187,7 +195,7 @@ Generating the PDF is a bit more tricky, we use the HTML in combination with pri
 first before you can @rake pdf@.
 
 
-h2.  Contributors
+h2(#contributors).  Contributors
 
 Here is the list of people who are actively working and committing on Buildr:
 

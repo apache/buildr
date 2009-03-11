@@ -44,10 +44,11 @@ pre, code {
 pre {
   margin: 0.3em 0 0.3em 0.9em;
   padding: 0;
-  line-height: 135%;
+  line-height: 1.8em;
   white-space: pre-wrap;       /* css-3 */
   white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
 }
+pre br { display: none; }
 
 h1, h2, h3 {
   padding: 0;

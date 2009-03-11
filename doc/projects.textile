@@ -1,6 +1,10 @@
-h1. Projects
+---
+layout: default
+title: Projects
+---
 
-h2. Starting Out
+
+h2(#starting). Starting Out
 
 In Java, most projects are built the same way: compile source code, run test cases, package the code, release it.  Rinse, repeat.
 
@@ -8,7 +12,7 @@ Feed it a project definition, and Buildr will set up all these tasks for you. Th
 
 The remainder of this guide deals with what it takes to build a project.  But first, let's pick up a sample project to work with.  We'll call it _killer-app_:
 
-{{{!ruby
+{% highlight ruby %}
 require 'buildr'
  
 VERSION_NUMBER = '1.0'
@@ -52,14 +56,14 @@ define 'killer-app' do
   package :javadoc
 
 end
-}}}
+{% endhighlight %}
 
 A project definition requires four pieces of information: the project name, group identifier, version number and base directory.  The project name ... do we need to explain why its necessary?  The group identifier and version number are used for packaging and deployment, we'll talk more about that in the "Packaging":packaging.html section.  The base directory lets you find files inside the project.
 
 Everything else depends on what that particular project is building.  And it all goes inside the project definition block, the piece of code that comes between @define <name> ..  do@ and @end@.
 
 
-h2. The Directory Structure
+h2(#dir_structure). The Directory Structure
 
 Buildr follows a convention we picked from years of working with Apache projects.
 
@@ -84,7 +88,7 @@ And yes, you can have two top projects in the same Buildfile.  For example, you 
 When you start with a new project you won't see the @target@ or @reports@ directories.  Buildr creates these when it needs to.  Just know that they're there.
 
 
-h2. Naming And Finding Projects
+h2(#naming). Naming And Finding Projects
 
 Each project has a given name, the first argument you pass when calling @define@.  The project name is just a string, but we advise to stay clear of colon (@:@) and slashes (@/@ and @\@), which could conflict with other task and file names.  Also, avoid using common Buildr task names, don't pick @compile@ or @build@ for your project name.
 
@@ -96,7 +100,7 @@ The @projects@ method takes a list of names and returns a list of projects.  If 
 
 Let's illustrate this with a few examples:
 
-{{{!ruby
+{% highlight ruby %}
 puts projects.inspect
 => [project("killer-app"), project("killer-app:teh-api") ... ]
 
@@ -111,20 +115,16 @@ puts project('killer-app:teh-api').inspect
 
 puts project('killer-app').project('teh-api').inspect
 => project("killer-app:teh-api")
-}}}
+{% endhighlight %}
 
-To see a list of all projects defined in your Buildfile:
-
-{{{!sh
-$ buildr help:projects
-}}}
+To see a list of all projects defined in your Buildfile run @buildr help:projects@.
 
 
-h2. Running Project Tasks
+h2(#tasks). Running Project Tasks
 
 Most times, you run tasks like @build@ or @package@ that operate on the current project and recursively on its sub-projects.  The "current project" is the one that uses the current working directory.  So if you're in the @la-web/src@ directory looking at source files, _la-web_ is the current project.  For example: 
 
-{{{!sh
+{% highlight sh %}
 # build killer-app and all its sub-projects
 $ buildr build
 
@@ -135,11 +135,11 @@ $ buildr test
 # switch to and package only la-web
 $ cd ../la-web
 $ buildr package
-}}}
+{% endhighlight %}
 
 You can use the project's full name to invoke one of its tasks directly, and it doesn't matter which directory you're in.  For example:
 
-{{{!sh
+{% highlight sh %}
 # build killer-app and all its sub-projects
 $ buildr killer-app:build
 
@@ -148,11 +148,11 @@ $ buildr killer-app:teh-impl:test
 
 # package only la-web
 $ buildr killer-app:la-web:package
-}}}
+{% endhighlight %}
 
 Buildr provides the following tasks that you can run on the current project, or on a specific project by prefixing them with the project's full name:
 
-{{{
+{% highlight text %}
 clean     # Clean files generated during a build
 compile   # Compile all projects
 build     # Build the project
@@ -162,21 +162,18 @@ javadoc   # Create the Javadocs for this project
 package   # Create packages
 test      # Run all test cases
 uninstall # Remove previously installed packages
-}}}
+{% endhighlight %}
 
-To see a list of all the tasks provided by Buildr:
+To see a list of all the tasks provided by Buildr run @buildr help:tasks@.
 
-{{{!sh
-$ buildr help:tasks
-}}}
 
-h2. Setting Project Properties
+h2(#properties). Setting Project Properties
 
 We mentioned the group identifier, version number and base directory.  These are project properties.  There are a few more properties we'll cover later on.
 
 There are two ways to set project properties.  You can pass them as a hash when you call @define@, or use accessors to set them on the project directly.  For example:
 
-{{{!ruby
+{% highlight ruby %}
 define 'silly', :version=>'1.0' do
   project.group = 'acme'
 end
@@ -185,12 +182,12 @@ puts project('silly').version
 => 1.0
 puts project('silly').group
 => acme
-}}}
+{% endhighlight %}
 
 Project properties are inherited.  You can specify them once in the parent project, and they'll have the same value in all its sub-projects.  In the example, we only specify the version number once, for use in all sub-projects.
 
 
-h2. Resolving Paths
+h2(#paths). Resolving Paths
 
 You can run @buildr@ from any directory in your project.  To keep tasks consistent and happy, it switches over to the Buildfile directory and executes all the tasks from there, before returning back to your working directory. Your tasks can all rely on relative paths that start from the same directory as the Buildfile.
 
@@ -200,7 +197,7 @@ The @path_to@ method takes an array of strings and concatenates them into a path
 
 For example:
 
-{{{!ruby
+{% highlight ruby %}
 # Relative to the current project
 path_to('src', 'main', 'java')
 
@@ -209,16 +206,16 @@ _('src/main/java')
 
 # Relative to the teh-impl project
 project('teh-impl')._('src/main/java')
-}}}
+{% endhighlight %}
+<!-- -->
 
-
-h2. Defining The Project
+h2(#defining). Defining The Project
 
 The project definition itself gives you a lot of pre-canned tasks to start with, but that's not enough to build a project.  You need to specify what gets built and how, which dependencies to use, the packages you want to create and so forth.  You can configure existing tasks, extend them to do additional work, and create new tasks.  All that magic happens inside the project definition block.
 
 Since the project definition executes each time you run Buildr, you don't want to perform any work directly inside the project definition block.  Rather, you want to use it to specify how different build task work when you invoke them. Here's an example to illustrate the point:
 
-{{{!ruby
+{% highlight ruby %}
 define 'silly' do
   puts 'Running buildr'
 
@@ -226,7 +223,7 @@ define 'silly' do
     puts 'Building silly'
   end
 end
-}}}
+{% endhighlight %}
 
 Each time you run Buildr, it will execute the project definition and print out "Running buildr".  We also extend the @build@ task, and whenever we run it, it will print "Building silly".  Incidentally, @build@ is the default task, so if you run Buildr with no arguments, it will print both messages while executing the build.  If you run Buildr with a different task, say @clean@, it will only print the first message.
 
@@ -240,7 +237,7 @@ One project can reference another ahead of its definition.  If Buildr detects a 
 
 In this example we define one project in terms of another, using the same dependencies, so we only need to specify them once:
 
-{{{!ruby
+{% highlight ruby %}
 define 'bar' do
   compile.with project('foo').compile.dependencies
 end
@@ -248,7 +245,7 @@ end
 define 'foo' do
   compile.with ..lots of stuff..
 end
-}}}
+{% endhighlight %}
 
 One last thing to remember.  Actually three, but they all go hand in hand.
 
@@ -261,7 +258,7 @@ One last thing to remember.  Actually three, but they all go hand in hand.
 From outside the project you can reference a task by its full name, either @task('foo:do')@ or @project('foo').task('do')@.  If you need to reference a task defined outside the project from within the project, prefix it with "rake:", for example, @task('rake:globally-defined')@.
 
 
-h2. Writing Your Own Tasks
+h2(#your_own_tasks). Writing Your Own Tasks
 
 Of all the features Buildr provide, it doesn't have a task for making coffee. Yet.  If you need to write your own tasks, you get all the power of Rake: you can use regular tasks, file tasks, task rules and even write your own custom task classes.  Check out the "Rake documentation":http://docs.rubyrake.org/ for more information.
 

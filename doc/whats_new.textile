@@ -1,6 +1,9 @@
-h1.  What's New
+---
+layout: default
+title: What's new
+---
 
-h2.  Buildr 1.3.3
+h2(#1.3.3).  Buildr 1.3.3
 
 * Support for "JtestR":http://jtestr.codehaus.org/ test framework.
 * Support for "Emma":http://emma.sourceforge.net/ code coverage tool.
@@ -11,7 +14,7 @@ h2.  Buildr 1.3.3
 * 27 other bug fixes and minor changes, see the "CHANGELOG":changelog.html for full details.
 
 
-h2.  Buildr 1.3.2
+h2(#1.3.2).  Buildr 1.3.2
 
 * New @--prereqs@ command line argument lists all the tasks and their dependencies. You can also filter specific tasks by following with a regular expression, for example, @--prereqs foo@.
 * Upgraded to latest release of Net::SSH, Net::SFTP, RubyForge and RubyGems.
@@ -25,7 +28,7 @@ h2.  Buildr 1.3.2
 * Fixed: Installation instructions updated for RubyGems 1.2.0.
 
 
-h2.  Buildr 1.3.1
+h2(#1.3.1).  Buildr 1.3.1
 
 * Fixed to specific Gem dependencies, so should install cleanly on Windows.
 * Buildr now supports publishing files to HTTP server for remote repositories that support HTTP uploads (PUT).
@@ -37,7 +40,7 @@ h2.  Buildr 1.3.1
 * Added the jibx_bind method to use JiBX for Java<=>XML binding (by David Peterson).
 
 
-h2.  Buildr 1.3
+h2(#1.3).  Buildr 1.3
 
 h3.  Multiple Languages
 
@@ -78,9 +81,9 @@ h3.  Packaging Files
 
 The @package@ method is convenient enough that you can now use it to generate artifacts, an in addition to generate regular file tasks, specifying the file name using the @:file@ attribute.  For example:
 
-{{{!ruby
+{% highlight ruby %}
 package :zip, :file=>_('target/interesting.zip')
-}}}
+{% endhighlight %}
 
 Since this package is not an artifact and does not have a specification, it will not automatically install itself in the local repository or upload to a remote repository.  For these, use the @package@ method as before.
 
@@ -99,10 +102,10 @@ EAR packages support four component types:
 
 This example shows two ways for adding components built by other projects:
 
-{{{!ruby
+{% highlight ruby %}
 package(:ear) << project('coolWebService').package(:war)
 package(:ear).add project('commonLib') # By default, the JAR package
-}}}
+{% endhighlight %}
 
 EAR packages include an @application.xml@ file in the @META-INF@ directory that describes the application and its component.  This file is created for you during packaging, by referencing all the components added to the EAR.  There are a couple of things you will typically want to change.
 
@@ -144,7 +147,7 @@ The profiles file is a YAML file called @profiles.yaml@ that you place in the sa
 
 For example, to support three different database configurations, we could write:
 
-{{{!yaml
+{% highlight yaml %}
 # HSQL, don't bother storing to disk.
 development:
   db: hsql
@@ -153,13 +156,13 @@ development:
 # Make sure we're not messing with bigstrong.
 test:
   db: oracle
-  jdbc: oracle:thin:@localhost:1521:test
+  jdbc: oracle:thin:localhost:1521:test
 
 # The real deal.
 production:
   db: oracle
-  jdbc: oracle:thin:@bigstrong:1521:mighty
-}}}
+  jdbc: oracle:thin:bigstrong:1521:mighty
+{% endhighlight %}
 
 You can also use profiles to specify default filters for the "@resources@ task":building.html#resources.
 
@@ -174,7 +177,7 @@ Personal settings are placed in the @.buildr/settings.yaml@ file under your home
 
 For example:
 
-{{{!yaml
+{% highlight yaml %}
 # The repositories hash is read automatically by buildr.
 repositories:
 
@@ -192,7 +195,7 @@ im:
   server: jabber.company.com
   usr: notifier@company-jabber.com
   pwd: secret
-}}}
+{% endhighlight %}
 
 "Read more ...":settings_profiles.html#personal_settings
 
@@ -200,7 +203,7 @@ Build settings are placed in the @build.yaml@ file located in the same directory
 
 For example:
 
-{{{!yaml
+{% highlight yaml %}
 # This project requires the following ruby gems, buildr addons
 gems: 
   # Suppose we want to notify developers when testcases fail.
@@ -219,7 +222,7 @@ artifacts:
 # Of course project settings can be defined here
 jira: 
   uri: https://jira.corp.org
-}}}
+{% endhighlight %}
 
 "Read more ...":settings_profiles.html#build_settings
 
@@ -232,7 +235,7 @@ If your build depends on other gems, you will want to specify these dependencies
 
 Use the @build.yaml@ file to specify these dependencies (see "Build Settings":settings_profiles.html#build_settings for more information), for example:
 
-{{{!yaml
+{% highlight yaml %}
 # This project requires the following gems
 gems: 
   # Suppose we want to notify developers when testcases fail.
@@ -240,7 +243,7 @@ gems:
   # we test with ruby mock objects
   - mocha
   - ci_reporter
-}}}
+{% endhighlight %}
 
 "Read more ...":more_stuff.html#using_gems
 
@@ -249,22 +252,22 @@ h3.  New API for accessing Java libraries
 
 Java classes are accessed as static methods on the @Java@ module, for example:
 
-{{{!ruby
+{% highlight ruby %}
 str = Java.java.lang.String.new('hai!')
 str.toUpperCase
 => 'HAI!'
 Java.java.lang.String.isInstance(str)
 => true
 Java.com.sun.tools.javac.Main.compile(args)
-}}}
+{% endhighlight %}
 
 The @classpath@ attribute allows Buildr to add JARs and directories to the classpath, for example, we use it to load Ant and various Ant tasks, code generators, test frameworks, and so forth.
 
 For example, Ant is loaded as follows:
 
-{{{!ruby
+{% highlight ruby %}
 Java.classpath << 'org.apache.ant:ant:jar:1.7.0'
-}}}
+{% endhighlight %}
 
 Artifacts can only be downloaded after the Buildfile has loaded, giving it a chance to specify which remote repositories to use, so adding to classpath does not by itself load any libraries.  You must call @Java.load@ before accessing any Java classes to give Buildr a chance to load the libraries specified in the classpath.
 
@@ -275,19 +278,19 @@ h3.  Creating Extensions
 
 A module defines instance methods that are then mixed into the project and become instance methods of the project.  There are two general ways for extending projects.  You can extend all projects by including the module in Project:
 
-{{{!ruby
+{% highlight ruby %}
 class Project
   include MyExtension
 end
-}}}
+{% endhighlight %}
 
 You can also extend a given project instance and only that instance by extending it with the module:
 
-{{{!ruby
+{% highlight ruby %}
 define 'foo' do
   extend MyExtension
 end
-}}}
+{% endhighlight %}
 
 Some extensions require tighter integration with the project, specifically for setting up tasks and properties, or for configuring tasks based on the project definition.  You can do that by adding callbacks to the process.
 

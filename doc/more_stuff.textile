@@ -1,7 +1,10 @@
-h1. More Stuff
+---
+layout: default
+title: More Stuff
+---
 
 
-h2.  Using Gems
+h2(#gems).  Using Gems
 
 The purpose of the buildfile is to define your projects, and the various tasks and functions used for building them.  Some of these are specific to your projects, others are more general in nature, and you may want to share them across projects.
 
@@ -17,7 +20,7 @@ If your build depends on other gems, you will want to specify these dependencies
 
 Use the @build.yaml@ file to specify these dependencies (see "Build Settings":settings_profiles.html#build_settings for more information), for example:
 
-{{{!yaml
+{% highlight yaml %}
 # This project requires the following gems
 gems: 
   # Suppose we want to notify developers when testcases fail.
@@ -25,7 +28,7 @@ gems:
   # we test with ruby mock objects
   - mocha
   - ci_reporter
-}}}
+{% endhighlight %}
 
 Gems contain executable code, and for that reason Buildr will not install gems without your permission.  When you run a build that includes any dependencies that are not already installed on your machine, Buildr will ask for permission before installing them.  On Unix-based operating systems, you will also need sudo privileges and will be asked for your password before proceeding.
 
@@ -39,28 +42,28 @@ Buildr will install the latest version that matches the version requirement. To 
 
 Most gems include documentation that you can access in several forms.  You can use the @ri@ command line tool to find out more about a class, module or specific method.  For example:
 
-{{{!sh
+{% highlight sh %}
 $ ri Buildr::Jetty
 $ ri Buildr::Jetty.start
-}}}
+{% endhighlight %}
 
 You can also access documentation from a Web browser by running @gem server@ and pointing your browser to "http://localhost:8808":http://localhost:8808. Note that after installing a new gem, you will need to restart the gem server to see its documentation.
 
 
-h2.  Using Java Libraries
+h2(#java).  Using Java Libraries
 
 Buildr runs along side a JVM, using either RJB or JRuby.  The Java module allows you to access Java classes and create Java objects.
 
 Java classes are accessed as static methods on the @Java@ module, for example:
 
-{{{!ruby
+{% highlight ruby %}
 str = Java.java.lang.String.new('hai!')
 str.toUpperCase
 => 'HAI!'
 Java.java.lang.String.isInstance(str)
 => true
 Java.com.sun.tools.javac.Main.compile(args)
-}}}
+{% endhighlight %}
 
 The @classpath@ attribute allows Buildr to add JARs and directories to the classpath, for example, we use it to load Ant and various Ant tasks, code generators, test frameworks, and so forth.
 
@@ -68,9 +71,9 @@ When using an artifact specification, Buildr will automatically download and ins
 
 For example, Ant is loaded as follows:
 
-{{{!ruby
+{% highlight ruby %}
 Java.classpath << 'org.apache.ant:ant:jar:1.7.0'
-}}}
+{% endhighlight %}
 
 Artifacts can only be downloaded after the Buildfile has loaded, giving it a chance to specify which remote repositories to use, so adding to classpath does not by itself load any libraries.  You must call @Java.load@ before accessing any Java classes to give Buildr a chance to load the libraries specified in the classpath.
 
@@ -82,39 +85,39 @@ When building an extension, make sure to follow these rules:
 # Check on a clean build with empty local repository.
 
 
-h2. BuildrServer
+h2(#buildr-server). BuildrServer
 
 Buildr provides an addon that allows you start a "dRuby":http://www.ruby-doc.org/stdlib/libdoc/drb/rdoc/index.html server hosting a buildfile, so that you can later invoke tasks on it without having to load the complete buildr runtime again.
 
 Usage:
 
-{{{!sh
+{% highlight sh %}
 buildr -r buildr/drb drb:start
-}}}
+{% endhighlight %}
 
 To stop the BuildrServer simply use Ctrl+C or kill the process.
 
 Once the server has been started you can invoke tasks using a simple script:
 
-{{{!ruby
+{% highlight ruby %}
 #!/usr/bin/env ruby
 require 'rubygems'
 require 'buildr/drb'
 Buildr::DRbApplication.run
-}}}
+{% endhighlight %}
 
 Save this script as @dbuildr@, make it executable and use it to invoke tasks.
   
-{{{!sh
+{% highlight sh %}
 $ dbuildr clean compile
-}}}
+{% endhighlight %}
 
 @dbuildr@ will start the BuildrServer if there isn't one already running.
 Subsequent calls to dbuildr will act as the client and invoke the tasks you
 provide to the server.
 If the buildfile has been modified it will be reloaded on the BuildrServer.
 
-h3. Nailgun
+h3(#nailgun). Nailgun
 
 "Nailgun":http://www.martiansoftware.com/nailgun/index.html is a client, protocol, and server for running Java programs from the command line without incurring the JVM startup overhead.  Nailgun integration is available only when running Buildr within JRuby.
 
@@ -123,20 +126,22 @@ using a nailgun client to invoke tasks without having to wait for JVM+JRuby to l
 
 Start the BuildrServer by executing
 
-{{{!sh
+{% highlight sh %}
 $ jruby -S buildr -rbuildr/nailgun nailgun:start
-}}}
+{% endhighlight %}
 
 To stop the BuildrServer simply use Ctrl+C or kill the process.
 
 Once the server has been started you can invoke tasks using the nailgun client
 installed on @$JRUBY_HOME/tool/nailgun/ng@
 
-{{{!sh
+{% highlight sh %}
 $ ng clean compile
-}}}
+{% endhighlight %}
+<!-- -->
 
-h2. Growl, Qube
+
+h2(#growl). Growl, Qube
 
 For OS X users, Buildr supports "Growl":http://growl.info/ out of the box to send "completed and "failed" notifications to the user.
 
@@ -147,7 +152,7 @@ For other platforms or if you want to notify the user differently, Buildr offers
 
 Here is an example using these extension points to send notifications using "Qube":http://launchpad.net/qube:
 
-{{{!ruby
+{% highlight ruby %}
 # Send notifications using Qube 
 notify = lambda do |type, title, message|
   param = case type
@@ -164,17 +169,17 @@ end
 Buildr.application.on_failure do |title, message, ex| 
   notify['failed', title, message] 
 end
-}}}
+{% endhighlight %}
 
 You can place this code inside @buildr.rb@ in your home directory.
 
-h2. Eclipse, IDEA
+h2(#eclipse_idea). Eclipse, IDEA
 
 If you're using Eclipse, you can generate @.classpath@ and @.project@ from your Buildfile and use them to create a project in your workspace:
 
-{{{!sh
+{% highlight sh %}
 $ buildr eclipse
-}}}
+{% endhighlight %}
 
 The @eclipse@ task will generate a @.classpath@ and @.project@ file for each of projects (and sub-project) that compiles source code.  It will not generate files for other projects, for examples, projects you use strictly for packaging a distribution, or creating command line scripts, etc.
 
@@ -182,15 +187,15 @@ If you add a new project, change the dependencies, or make any other change to y
 
 To have your libraries' source code available in Eclipse, run:
  
-{{{!sh
+{% highlight sh %}
 $ buildr artifacts:sources
-}}}
+{% endhighlight %}
 
 If you prefer IntelliJ IDEA, you can always:
 
-{{{!sh
+{% highlight sh %}
 $ buildr idea
-}}}
+{% endhighlight %}
 
 It will generate a @.iml@ file for every project (or subproject) and a @.ipr@ that you can directly open for the root project.  To allow IntelliJ Idea to resolve external dependencies properly, you will need to add a @M2_REPO@ variable pointing to your Maven2 repository directory (@Settings / Path Variables@).
 
@@ -199,64 +204,67 @@ If you're using IDEA 7 or later, use the @buildr idea7x@ task instead.  This tas
 Also, check out the "Buildr plugin for IDEA":http://www.digitalsanctum.com/buildr-plug-in/ (IDEA 7 and later).  Once installed, open your project with IDEA.  If IDEA finds that you have Buildr installed and finds a buildfile in the project's directory, it will show all the tasks available for that project.  To run a task, double-click it.  When the task completes, IDEA will show the results in the Buildr Output window.
 
 
-h2. Cobertura, Emma, JDepend
+h2(#cobertura_emma_jdepend). Cobertura, Emma, JDepend
 
 You can use "Cobertura":http://cobertura.sourceforge.net/ or "Emma":http://emma.sourceforge.net/ to instrument your code, run the tests and create a test coverage report in either HTML or XML format.
 
 There are two tasks for each tool, both of which generate a test coverage report in the @reports/cobertura@ (respectively @reports/emma@) directory.  For example:
 
-{{{!sh
+{% highlight sh %}
 $ buildr test cobertura:html
-}}}
+{% endhighlight %}
 
 As you can guess, the other tasks are @cobertura:xml@, @emma:html@ and @emma:xml@.
 
 If you want to generate a test coverage report only for a specific project, you can do so by using the project name as prefix to the tasks. 
 
-{{{!sh
+{% highlight sh %}
 $ buildr subModule:cobertura:html
-}}}
+{% endhighlight %}
 
 Each project can specify which classes to include or exclude from cobertura instrumentation by giving a class-name regexp to the @cobertura.include@ or @cobertura.exclude@ methods:
 
-{{{!ruby
+{% highlight ruby %}
 define 'someModule' do 
-  cobertura.include 'some.package.*'
-  cobertura.include /some.(foo|bar).*/
+  cobertura.include 'some.package.==*=='
+  cobertura.include /some.(foo|bar).==*==/
   cobertura.exclude 'some.foo.util.SimpleUtil'
-  cobertura.exclude /*.Const(ants)?/i
+  cobertura.exclude /==*==.Const(ants)?/i
 end
-}}}
+{% endhighlight %}
 
 Emma has @include@ and @exclude@ methods too, but they take glob patterns instead of regexps.
 
 You can use "JDepend":http://clarkware.com/software/JDepend.html on to generate design quality metrics.  There are three tasks this time, the eye candy one:
 
-{{{!sh
+{% highlight sh %}
 $ buildr jdepend:swing
-}}}
+{% endhighlight %}
 
 The other two tasks are @jdepend:text@ and @jdepend:xml@.
 
 We want Buildr to load fast, and not everyone cares for these tasks, so we don't include them by default.  If you want to use one of them, you need to require it explicitly.  The proper way to do it in Ruby:
 
-{{{!ruby
+{% highlight ruby %}
 require 'buildr/java/cobertura'
 require 'buildr/java/emma'
 require 'buildr/jdepend'
-}}}
+{% endhighlight %}
 
 You may want to add those to the Buildfile.  Alternatively, you can use these tasks for all your projects without modifying the Buildfile.  One convenient method is to add these lines to the @buildr.rb@ file in your home directory.
 
 Another option is to require it from the command line (@--require@ or @-r@), for example:
 
-{{{!sh
+<notextile>
+{% highlight sh %}
 $ buildr --require buildr/jdepend jdepend:swing
 $ buildr -rbuildr/java/cobertura cobertura:html
-}}}
+{% endhighlight %}
+</notextile>
+<!-- -->
 
 
-h2. Anything Ruby Can Do
+h2(#anything_ruby). Anything Ruby Can Do
 
 Buildr is Ruby code.  That's an implementation detail for some, but a useful features for others.  You can use Ruby to keep your build scripts simple and DRY, tackle ad hoc tasks and write reusable features without the complexity of "plugins".
 
@@ -264,17 +272,17 @@ We already showed you one example where Ruby could help.  You can use Ruby to ma
 
 You can use Ruby to perform ad hoc tasks.  For example, Buildr doesn't have any pre-canned task for setting file permissions.  But Ruby has a method for that, so it's just a matter of writing a task:
 
-{{{!ruby
-bins = file('target/bin'=>FileList[_('src/main/dist/bin/*')]) do |task|
+{% highlight ruby %}
+bins = file('target/bin'=>FileList[_('src/main/dist/bin/==*==')]) do |task|
   mkpath task.name
   cp task.prerequisites, task.name
-  chmod 0755, FileList[task.name + '/*.sh'], :verbose=>false
+  chmod 0755, FileList[task.name + '/==*==.sh'], :verbose=>false
 end
-}}}
+{% endhighlight %}
 
 You can use functions to keep your code simple.  For example, in the ODE project we create two binary distributions, both of which contain a common set of files, and one additional file unique to each distribution.  We use a method to define the common distribution:
 
-{{{!ruby
+{% highlight ruby %}
 def distro(project, id)
   project.package(:zip, :id=>id).path("#{id}-#{version}").tap do |zip|
     zip.include meta_inf + ['RELEASE_NOTES', 'README'].map { |f| path_to(f) }
@@ -290,25 +298,25 @@ def distro(project, id)
     yield zip
   end
 end
-}}}
+{% endhighlight %}
 
 And then use it in the project definition:
 
-{{{!ruby
+{% highlight ruby %}
 define 'distro-axis2' do
   parent.distro(self, "#{parent.id}-war") { |zip|
     zip.include project('ode:axis2-war').package(:war), :as=>'ode.war' }
 end
-}}}
+{% endhighlight %}
 
 Ruby's functional style and blocks make some task extremely easy.  For example, let's say we wanted to count how many source files we have, and total number of lines:
 
-{{{!ruby
+{% highlight ruby %}
 sources = projects.map { |prj| prj.compile.sources.
   map { |src| FileList["#{src}/**/*.java"] } }.flatten
 puts "There are #{source.size} source files"
 lines = sources.inject(0) { |lines, src| lines += File.readlines(src).size }
 puts "That contain #{lines} lines"
-}}}
-
+{% endhighlight %}
+<!-- -->
 

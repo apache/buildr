@@ -1,7 +1,10 @@
-h1. Languages
+---
+layout: default
+title: Languages
+---
 
 
-h2. Java
+h2(#java). Java
 
 
 h3. Compiling Java
@@ -43,9 +46,9 @@ The JUnit test framework supports the following options:
 
 For example, to pass properties to the test case:
 
-{{{!ruby
+{% highlight ruby %}
 test.using :properties=>{ :currency=>'USD' }
-}}}
+{% endhighlight %}
 
 There are benefits to running test cases in separate VMs.  The default forking mode is @:once@, and you can change it by setting the @:fork@ option.
 
@@ -58,28 +61,29 @@ You can see your tests running in the console, and if any tests fail, Buildr wil
 
 In addition, you can get a consolidated XML or HTML report by running the @junit:report@ task.  For example:
 
-{{{!sh
+{% highlight sh %}
 $ buildr test junit:report test=all
 $ firefox report/junit/html/index.html
-}}}
+{% endhighlight %}
 
 The @junit:report@ task generates a report from all tests run so far.  If you run tests in a couple of projects, it will generate a report only for these two projects.  The example above runs tests in all the projects before generating the reports.
 
 You can use the @build.yaml@ settings file to specify a particular version of JUnit or JMock.  For example, to force your build to use JUnit version 4.4 and JMock 2.0:
 
-{{{!yaml
+{% highlight yaml %}
 junit: 4.4
 jmock: 2.0
-}}}
+{% endhighlight %}
+<!-- -->
 
 
 h4. TestNG
 
 You can use "TestNG":http://testng.org instead of JUnit.  To select TestNG as the test framework, add this to your project:
 
-{{{!ruby
+{% highlight ruby %}
 test.using :testng
-}}}
+{% endhighlight %}
 
 Like all other options you can set with @test.using@, it affects the projects and all its sub-projects, so you only need to do this once at the top-most project to use TestNG throughout.  You can also mix TestNG and JUnit by setting different projects to use different frameworks, but you can't mix both frameworks in the same project.  (And yes, @test.using :junit@ will switch a project back to using JUnit)
 
@@ -93,9 +97,10 @@ The TestNG test framework supports the following options:
 
 You can use the @build.yaml@ settings file to specify a particular version of TestNG, for example, to force your build to use TestNG 5.7:
 
-{{{!yaml
+{% highlight yaml %}
 testng: 5.7
-}}}
+{% endhighlight %}
+<!-- -->
 
 
 h4. JBehave 
@@ -106,9 +111,9 @@ To use JBehave in your project you can select it with @test.using :jbehave@.
 
 This framework will search for the following patterns under your project:
 
-{{{
+{% highlight text %}
 src/spec/java/**/*Behaviour.java
-}}}
+{% endhighlight %}
 
 Supports the following options:
 
@@ -118,26 +123,27 @@ Supports the following options:
 
 You can use the @build.yaml@ settings file to specify a particular version of JBehave, for example, to force your build to use JBehave 1.0.1:
 
-{{{!yaml
+{% highlight yaml %}
 jbehave: 1.0.1
-}}}
+{% endhighlight %}
+<!-- -->
 
 
-h2. Scala
+h2(#scala). Scala
 
 Before using Scala features, you must first set the @SCALA_HOME@ environment variable to point to the root of your Scala distribution.
 
 On Windows:
 
-{{{!sh
+{% highlight sh %}
 > set SCALA_HOME=C:\Path\To\Scala-2.7.1
-}}}
+{% endhighlight %}
 
 On Linux and other Unix variants,
 
-{{{!sh
+{% highlight sh %}
 > export SCALA_HOME=/path/to/scala-2.7.1
-}}}
+{% endhighlight %}
 
 The @SCALA_HOME@ base directory should be such that Scala core libraries are located directly under the "lib" subdirectory, and Scala scripts are under the "bin" directory.
 
@@ -181,9 +187,9 @@ Buildr supports three Scala testing frameworks:   "ScalaTest":http://www.artima.
 
 Scala testing is automatically enabled if you have any @.scala@ source files under @src/test/scala@.  If you are not using this convention, you can explicit set the test framework by doing,
 
-{{{!ruby
+{% highlight ruby %}
 test.using(:scalatest)
-}}}
+{% endhighlight %}
 
 The @:scalatest@ test framework handles ScalaTest, Specs and ScalaCheck therefore all 3 frameworks may be used within the same project.
 
@@ -193,18 +199,18 @@ Buildr automatically detects and runs tests that extend the @org.scalatest.Suite
 
 A very simplistic test class might look like,
 
-{{{!scala
+{% highlight scala %}
 class MySuite extends org.scalatest.FunSuite {
   test("addition") {
     val sum = 1 + 1
     assert(sum === 2)
   }
 }
-}}}
+{% endhighlight %}
 
 You can also pass properties to your tests by doing @test.using :properties => { 'name'=>'value' }@, and by overriding the @Suite.runTests@ method in a manner similar to:
 
-{{{!scala
+{% highlight scala %}
 import org.scalatest._
 
 class PropertyTestSuite extends FunSuite {
@@ -223,7 +229,8 @@ class PropertyTestSuite extends FunSuite {
                    includes, excludes, properties)
   }
 }
-}}}
+{% endhighlight %}
+<!-- -->
 
 h4. Specs
 
@@ -231,7 +238,7 @@ The @:scalatest@ framework currently recognizes specifications with class names 
 
 A simple specification might look like this:
 
-{{{!scala
+{% highlight scala %}
 import org.specs._
 import org.specs.runner._
 
@@ -242,13 +249,14 @@ object StringSpecs extends Specification {
     }
   }
 }
-}}}
+{% endhighlight %}
+<!-- -->
 
 h4. ScalaCheck
 
 You may use ScalaCheck inside ScalaTest- and Specs-inherited classes.  Here is an example illustrating checks inside a ScalaTest suite,
 
-{{{!scala
+{% highlight scala %}
 import org.scalatest.prop.PropSuite
 import org.scalacheck.Arbitrary._
 import org.scalacheck.Prop._
@@ -267,18 +275,19 @@ class MySuite extends PropSuite {
     (a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size
   )
 }
-}}}
+{% endhighlight %}
+<!-- -->
 
 
-h2. Groovy
+h2(#groovy). Groovy
 
 h3. Compiling Groovy
 
 Before using the Groovy compiler, you must first require it on your buildfile:
 
-{{{!ruby
+{% highlight ruby %}
 require 'buildr/java/groovyc'
-}}}
+{% endhighlight %}
 
 Once loaded, the groovyc compiler will be automatically selected if any .groovy source files are found under @src/main/groovy@ directory, compiling them by default into the @target/classes@ directory.
 
@@ -319,10 +328,10 @@ To use this framework in your project you can select it with @test.using :easyb@
 
 This framework will search for the following patterns under your project:
 
-{{{
+{% highlight text %}
 src/spec/groovy/**/*Behavior.groovy
 src/spec/groovy/**/*Story.groovy
-}}}
+{% endhighlight %}
 
 Supports the following options:
 
@@ -332,7 +341,7 @@ Supports the following options:
 | @:format@       | Report format, either @:txt@ or @:xml@ |
 
 
-h2.  Ruby
+h2(#ruby).  Ruby
 
 h3.  Testing with Ruby
 
@@ -346,9 +355,10 @@ p(tip). When not running on JRuby, Buildr will use the @JRUBY_HOME@ environment 
 
 You can use the @build.yaml@ settings file to specify a particular version of JRuby (defaults to @1.1.4@).  For example:
 
-{{{!yaml
+{% highlight yaml %}
 jruby: 1.1.3
-}}}
+{% endhighlight %}
+<!-- -->
 
 h4.  RSpec
 
@@ -358,9 +368,9 @@ To use this framework in your project you can select it with @test.using :rspec@
 
 This framework will search for the following patterns under your project:
 
-{{{
+{% highlight text %}
 src/spec/ruby/**/*_spec.rb
-}}}
+{% endhighlight %}
 
 Supports the following options:
 
@@ -381,9 +391,9 @@ To use this framework in your project you can select it with @test.using :jtestr
 
 You can use the @build.yaml@ settings file to specify a particular version of JtestR (defaults to @0.3.1@).  For example:
 
-{{{!yaml
+{% highlight yaml %}
 jtestr: 0.3.1
-}}}
+{% endhighlight %}
 
 To customize TestNG/JUnit versions refer to their respective section.
 
