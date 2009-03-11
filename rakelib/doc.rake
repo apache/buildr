@@ -14,6 +14,8 @@
 # the License.
 
 
+require 'rakelib/jekylltask'
+
 begin # For the Web site, we use the mislav-hanna RDoc theme (http://github.com/mislav/hanna/)
   require 'hanna/rdoctask'
 rescue LoadError
@@ -24,7 +26,7 @@ end
 
 
 desc 'Generate RDoc documentation'
-rdoc = Rake::RDocTask.new('rdoc') do |rdoc|
+Rake::RDocTask.new('rdoc') do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = spec.name
   rdoc.options  = spec.rdoc_options.clone
@@ -33,35 +35,11 @@ rdoc = Rake::RDocTask.new('rdoc') do |rdoc|
 end
 
 
-begin
-  require 'jekyll'
-
-  class Albino
-    def execute(command)
-      output = ''
-      Open4.popen4(command) do |pid, stdin, stdout, stderr|
-        stdin.puts @target
-        stdin.close
-        output = stdout.read.strip
-        [stdout, stderr].each { |io| io.close }
-      end
-      output
-    end
-  end
-
-  task '_site'=>['doc'] do
-    Jekyll.pygments = true
-    Jekyll.process 'doc', '_site'
-  end
-
-rescue LoadError
-  puts "Buildr uses the mojombo-jekyll to generate the Web site. You can install it by running rake setup"
-  task 'setup' do
-    install_gem 'mojombo-jekyll', :source=>'http://gems.github.com', :version=>'0.4.1'
-    sh "#{sudo_needed? ? 'sudo ' : nil}easy_install Pygments"
-  end
+JekyllTask.new 'jekyll' do |task|
+  task.source = 'doc'
+  task.target = '_site'
+  task.pygments = true
 end
-
 
 desc "Build a copy of the Web site in the ./_site"
 task 'site'=>['_site', 'rdoc', 'spec', 'coverage'] do
@@ -70,6 +48,7 @@ task 'site'=>['_site', 'rdoc', 'spec', 'coverage'] do
   cp '_reports/specs.html', '_site'
   cp_r '_reports/coverage', '_site'
   fail 'No coverage report in site directory' unless File.exist?('_site/coverage/index.html')
+  cp 'CHANGELOG', '_site'
   puts 'OK'
 end
 
