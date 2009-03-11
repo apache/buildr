@@ -18,7 +18,7 @@
 @page { 
   margin: 1in 0.75in 1in 0.75in;
   @top-left, @top-right {
-    font-family: "Gill Sans", "DejaVu Sans", Verdana, Helvetica;
+    font-family: "DejaVu Sans", Verdana, Helvetica;
     font-weight: normal;
   }
 }
