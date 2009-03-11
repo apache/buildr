@@ -11,6 +11,7 @@ For example, we use OpenJPA in several projects.  It's a very short task, but ea
 
 Compare this:
 
+<notextile>
 {% highlight ruby %}
 file('derby.sql') do
   REQUIRES = [
@@ -31,9 +32,11 @@ file('derby.sql') do
   end
 end
 {% endhighlight %}
+</notextile>
 
 To this:
 
+<notextile>
 {% highlight ruby %}
 file('derby.sql') do
   mapping_tool :action=>'build', :sql=>task.name,
@@ -41,6 +44,7 @@ file('derby.sql') do
     :classpath=>projects('store', 'utils')
 end
 {% endhighlight %}
+</notextile>
 
 I prefer the second.  It's easier to look at the Buildfile and understand what it does.  It's easier to maintain when you only have to look at the important information.
 
@@ -57,19 +61,23 @@ The basic mechanism for extending projects in Buildr are Ruby modules.  In fact,
   
 A module defines instance methods that are then mixed into the project and become instance methods of the project.  There are two general ways for extending projects.  You can extend all projects by including the module in Project:
 
+<notextile>
 {% highlight ruby %}
 class Project
   include MyExtension
 end
 {% endhighlight %}
+</notextile>
 
 You can also extend a given project instance and only that instance by extending it with the module:
 
+<notextile>
 {% highlight ruby %}
 define 'foo' do
   extend MyExtension
 end
 {% endhighlight %}
+</notextile>
 
 Some extensions require tighter integration with the project, specifically for setting up tasks and properties, or for configuring tasks based on the project definition.  You can do that by adding callbacks to the process.
 
@@ -82,6 +90,7 @@ The easiest way to add callbacks is by incorporating the Extension module in you
 
 This example illustrates how to write a simple extension:
 
+<notextile>
 {% highlight ruby %}
 module LinesOfCode
   include Extension
@@ -118,7 +127,7 @@ class Buildr::Project
   include LinesOfCode
 end
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 
 h2(#layouts).  Using Alternative Layouts
@@ -127,26 +136,32 @@ Buildr follows a common convention for project layouts: Java source files appear
 
 The default layout is available in @Layout.default@, and all projects inherit it.  You can set @Layout.default@ to your own layout, or define a project with a given layout (recommended) by setting the @:layout@ property.  Projects inherit the layout from their parent projects.  For example:
 
+<notextile>
 {% highlight ruby %}
 define 'foo', :layout=>my_layout do
   ...
 end
 {% endhighlight %}
+</notextile>
 
 A layout is an object that implements the @expand@ method.  The easiest way to define a custom layout is to create a new @Layout@ object and specify mapping between names used by Buildr and actual paths within the project.  For example:
 
+<notextile>
 {% highlight ruby %}
 my_layout = Layout.new
 my_layout[:source, :main, :java] = 'java'
 my_layout[:source, :main, :resources] = 'resources'
 {% endhighlight %}
+</notextile>
 
 Partial expansion also works, so you can specify the above layout using:
 
+<notextile>
 {% highlight ruby %}
 my_layout = Layout.new
 my_layout[:source, :main] = ''
 {% endhighlight %}
+</notextile>
 
 If you need anything more complex, you can always subclass @Layout@ and add special handling in the @expand@ method, you'll find one such example in the API documentation.
 
@@ -162,6 +177,7 @@ The built-in tasks expand lists of symbols into relative paths, using the follow
 
 All tasks are encouraged to use the same convention, and whenever possible, we recommend using the project's @path_to@ method to expand a list of symbols into a path, or use the appropriate path when available.  For example:
 
+<notextile>
 {% highlight ruby %}
 define 'bad' do
   # This may not be the real target.
@@ -177,4 +193,4 @@ define 'good' do
   package(:jar).include path_to(:source, :main, :etc, '*')
 end
 {% endhighlight %}
-<!-- -->
+</notextile>

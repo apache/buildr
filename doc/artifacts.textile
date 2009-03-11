@@ -10,10 +10,12 @@ Artifacts. We designed Buildr to work as a drop-in replacement for Maven 2.0, an
 
 We'll get into all of that in a second, but first, let's introduce the artifact specification. It's a simple string that takes one of two forms:
 
+<notextile>
 {% highlight text %}
 group:id:type:version
 group:id:type:classifier:version
 {% endhighlight %}
+</notextile>
 
 For example, @'org.apache.axis2:axis2:jar:1.2'@ refers to an artifact with group identifier org.apache.axis2, artifact identifier axis2, a JAR file with version 1.2.  Classifiers are typically used to distinguish between similar file types, for example, a source distribution and a binary distribution that otherwise have the same identifier and are both ZIP files.
 
@@ -24,34 +26,40 @@ If your Buildfile spells out @'org.apache.axis2:axis2:jar:1.2'@ more than once, 
 
 You can use Ruby's syntax to do simple string substitution, for example:
 
+<notextile>
 {% highlight ruby %}
 AXIS_VERSION = '1.2'
 
 compile.with "org.apache.axis2:axis2:jar:#{AXIS_VERSION}"
 {% endhighlight %}
+</notextile>
 
 Better yet, you can define all your artifacts at the top of the Buildfile and use constants to reference them in your project definition.  For example:
 
+<notextile>
 {% highlight ruby %}
 AXIS2 = 'org.apache.axis2:axis2:jar:1.2'
 
 compile.with AXIS2
 {% endhighlight %}
+</notextile>
 
 Note that we're not using a separate constant for the version number.  In our experience, it's unnecessary.  The version number intentionally appears at the end of the string, where it stands out easily.
 
 If you have a set of artifacts that belong to the same group and version, and that's quite common, you can use the @group@ shortcut:
 
+<notextile>
 {% highlight ruby %}
 AXIOM  = group('axiom-api', 'axiom-impl', 'axiom-dom',
   :under=>'org.apache.ws.commons.axiom', :version=>'1.2.4')
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 p(note). Buildr projects also define a @group@ attribute which can lead to some confusion.  If you want to define an artifact group within a project definition, you should use the explicit qualifier @Buildr::group@.
 
 If you have several artifacts you always use together, consider placing them in an array.  Methods that accept lists of artifacts also accept arrays.  For example:
 
+<notextile>
 {% highlight ruby %}
 OPENJPA = ['org.apache.openjpa:openjpa-all:jar:0.9.7',
   'net.sourceforge.serp:serp:jar:1.12.0']
@@ -59,9 +67,11 @@ AXIS_OF_WS = [AXIS2, AXIOM]
 
 compile.with OPENJPA, AXIS_OF_WS
 {% endhighlight %}
+</notextile>
 
 Another way to group related artifacts together and access them individually is using the @struct@ shortcut.  For example:
 
+<notextile>
 {% highlight ruby %}
 JAVAX = struct(
   :activation  =>'javax.activation:activation:jar:1.1',
@@ -71,19 +81,23 @@ JAVAX = struct(
 
 compile.with JAVAX.persistence, OPENJPA
 {% endhighlight %}
+</notextile>
 
 In our experience, using constants in this manner makes your Buildfile much easier to write and maintain.
 
 And, of course, you can always place your artifact specifications in a separate file and require it into your Buildfile.  For example, if you're working on several different projects that all share the same artifacts:
 
+<notextile>
 {% highlight ruby %}
 require '../shared/artifacts'
 {% endhighlight %}
+</notextile>
 
 When you use @require@, Ruby always looks for a filename with the @.rb@ extension, so in this case it expects to find @artifacts.rb@ in the @shared@ directory.
 
 One last thing.  You can also treat artifact specifications as hashes.  For example:
 
+<notextile>
 {% highlight ruby %}
 AXIS = { :group=>'org.apache.axis2', :id=>'axis2', :version=>'1.2' }
 compile.with AXIS
@@ -91,7 +105,7 @@ puts compile.dependencies.first.to_hash
 => { :group=>'org.apache.axis2', :id=>'axis2',
      :version=>'1.2', :type=>:jar }
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 
 h2(#repositories). Specifying Repositories
@@ -100,51 +114,62 @@ Buildr can download artifacts for you, but only if you tell it where to find the
 
 When you call @repositories.remote@, you get an array of URLs for the various remote repositories.  Initially, it's an empty array, to which you can add new repositories.  For example:
 
+<notextile>
 {% highlight ruby %}
 repositories.remote << 'http://www.ibiblio.org/maven2/'
 {% endhighlight %}
+</notextile>
 
 If you need to use a proxy server to access remote repositories, you can set the environment variable @HTTP_PROXY@ to the proxy server URL.  You can also work without a proxy for certain hosts by specifying the @NO_PROXY@ environment variable.  For example:
 
+<notextile>
 {% highlight sh %}
 $ export HTTP_PROXY = 'http://myproxy:8080'
 $ export NO_PROXY = '*.mycompany.com,localhost,special:800'
 {% endhighlight %}
+</notextile>
 
 Alternatively you can use the Buildr options @proxy.http@ and @proxy.exclude@:
 
+<notextile>
 {% highlight ruby %}
 options.proxy.http = 'http://myproxy:8080'
 options.proxy.exclude << '*.mycompany.com'
 options.proxy.exclude << 'localhost'
 {% endhighlight %}
+</notextile>
 
 All the artifacts download into the local repository.  Since all your projects share the same local repository, you only need to download each artifact once. Buildr was designed to be used alongside Maven 2.0, for example, when migrating projects from Maven 2.0 over to Buildr.  By default it will share the same local repository, expecting the repository to be the @.m2/repository@ directory inside your home directory.
 
 You can choose to relocate the local repository by giving it a different path, for example:
 
+<notextile>
 {% highlight ruby %}
 repositories.local = '/usr/local/maven/repository'
 {% endhighlight %}
+</notextile>
 
 That's one change you don't want to commit into the Buildfile, so the best place to do it is in your home directory's @buildr.rb@ file.
 
 Buildr downloads artifacts when it needs to use them, for example, to compile a project.  You don't need to download artifacts directly.  Except when you do, for example, if you want to download all the latest artifacts and then go off-line.  It's as simple as:
 
+<notextile>
 {% highlight sh %}
 $ buildr artifacts
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 
 h2(#downloading). Downloading Artifacts
 
 Within your buildfile you can download artifacts directly by invoking them, for example:
 
+<notextile>
 {% highlight ruby %}
 artifact('org.apache.openjpa:openjpa-all:jar:0.9.7').invoke
 artifacts(OPENJPA).each(&:invoke)
 {% endhighlight %}
+</notextile>
 
 When you let Buildr download artifacts for you, or by invoking the artifact task yourself, it scans through the remote repositories assuming each repository follows the Maven 2 structure.  Starting from the root repository URL, it will look for each artifact using the path @group/id/version/id-version.type@ (or ...@/id-version-classifier.type@).  The group identifier becomes a path by turning periods (@.@) into slashes (@/@). So to find @org.apache.axis2:axis2:jar:1.2@, we're going to look for @org/apache/axis2/axis2/1.2/axis2-1.2.jar@.
 
@@ -154,12 +179,14 @@ But there are exceptions to the rule.  Say we want to download the Dojo widget l
 
 We can still treat Dojo as an artifact, by telling Buildr where to download it from:
 
+<notextile>
 {% highlight ruby %}
 DOJO = '0.2.2'
 
 url = "http://download.dojotoolkit.org/release-#{DOJO}/dojo-#{DOJO}-widget.zip"
 download(artifact("dojo:dojo:zip:widget:#{DOJO}")=>url)
 {% endhighlight %}
+</notextile>
 
 Explaining how it works is tricky, skip if you don't care for the details.  On the other hand, it will give you a better understanding of Buildr/Rake, so if not now, come back and read it later.
 
@@ -184,18 +211,22 @@ Some artifacts do not fall into either category.  In this example we're going to
 
 So let's start by creating a task that downloads the ZIP, and another one to extract it and create the JAR file:
 
+<notextile>
 {% highlight ruby %}
 app_zip = download('target/app.zip'=>url)
 bean_jar = file('target/app/bean.jar'=>unzip('target/app'=>app_zip))
 {% endhighlight %}
+</notextile>
 
 When you call @artifact@, it returns an @Artifact@ task that points to the artifact file in the local repository, downloading the file if it doesn't already exist.  You can override this behavior by enhancing the task and creating the file yourself (you may also want to create a POM file).  Or much simpler, call the @from@ method on the artifact and tell it where to find the source file.
 
 So the next step is to specify the artifact and tell it to use the extracted JAR file:
 
+<notextile>
 {% highlight ruby %}
 bean = artifact('example.com:beans:jar:1.0').from(bean_jar)
 {% endhighlight %}
+</notextile>
 
 The artifact still points to the local repository, but when we invoke the task it copies the source file over to the local repository, instead of attempting a download.
 
@@ -203,11 +234,12 @@ Use the @install@ method if you want the artifact and its POM installed in the l
 
 Our example ends by including the artifact in the @install@ and @upload@ tasks:
 
+<notextile>
 {% highlight ruby %}
 install bean
 upload bean
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 p(tip).  Calling the @install@ (and likewise @upload@) method on an artifact run @buildr install@.  If you need to download and install an artifact, invoke the task directly with @install(<artifact>).invoke@.
 

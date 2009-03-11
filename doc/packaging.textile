@@ -5,23 +5,29 @@ title: Packaging
 
 For our next trick, we're going to try and create an artifact ourselves.  We're going to start with:
 
+<notextile>
 {% highlight ruby %}
 package :jar
 {% endhighlight %}
+</notextile>
 
 We just told the project to create a JAR file in the @target@ directory, including all the classes (and resources) that we previously compiled into @target/classes@.  Or we can create a WAR file:
 
+<notextile>
 {% highlight ruby %}
 package :war
 {% endhighlight %}
+</notextile>
 
 The easy case is always easy, but sometimes we have more complicated use cases which we'll address through the rest of this section.
 
 Now let's run the build, test cases and create these packages:
 
+<notextile>
 {% highlight sh %}
 $ buildr package
 {% endhighlight %}
+</notextile>
 
 The @package@ task runs the @build@ task (remember: @compile@ and @test@) and then runs each of the packaging tasks, creating packages in the projects' target directories.
 
@@ -32,10 +38,12 @@ h2(#referencing). Specifying And Referencing Packages
 
 Buildr supports several packaging types, and so when dealing with packages, you have to indicate the desired package type.  The packaging type can be the first argument, or the value of the @:type@ argument.  The following two are equivalent:
 
+<notextile>
 {% highlight ruby %}
 package :jar
 package :type=>:jar
 {% endhighlight %}
+</notextile>
 
 If you do not specify a package type, Buildr will attempt to infer one.
 
@@ -43,18 +51,21 @@ In the documentation you will find a number of tasks dealing with specific packa
 
 To package a particular file, use the @:file@ argument, for example:
 
+<notextile>
 {% highlight ruby %}
 package :zip, :file=>_('target/interesting.zip')
 {% endhighlight %}
+</notextile>
 
 This returns a file task that will run as part of the project's @package@ task (generating all packages).  It will invoke the @build@ task to generate any necessary prerequisites, before creating the specified file.
 
 The package type does not have to be the same as the file name extension, but if you don't specify the package type, it will be inferred from the extension.
 
-Most often you will want to use the second form to generate packages that are also artifacts.  These packages have an artifact specification, which you can use to reference them from other projects (and buildfiles).  They are also easier to share across projects: artifacts install themselves in the local repository when running the @install@ task, and upload to the remote repository when running the @upload@ task (see "Installing and Uploading":#installing_and_uploading).
+Most often you will want to use the second form to generate packages that are also artifacts.  These packages have an artifact specification, which you can use to reference them from other projects (and buildfiles).  They are also easier to share across projects: artifacts install themselves in the local repository when running the @install@ task, and upload to the remote repository when running the @upload@ task (see "Installing and Uploading":#install_upload).
 
 The artifact specification is based on the project name (using dashes instead of colons), group identifier and version number, all three obtained from the project definition.  You can specify different values using the @:id@, @:group@, @:version@ and @:classifier@ arguments.  For example:
 
+<notextile>
 {% highlight ruby %}
 define 'killer-app', :version=>'1.0' do
   # Generates silly-1.0.jar
@@ -71,6 +82,7 @@ define 'killer-app', :version=>'1.0' do
   end
 end
 {% endhighlight %}
+</notextile>
 
 The file name is determined from the identifier, version number, classifier and extension associated with that packaging type.
 
@@ -80,11 +92,12 @@ A single project can create multiple packages.  For example, a Java project may 
 
 You can use the @packages@ method to obtain a list of all packages defined in the project, for example:
 
+<notextile>
 {% highlight ruby %}
 project('killer-app:teh-impl').packages.first
 project('killer-app:teh-impl').packages.select { |pkg| pkg.type == :zip }
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 
 h2(#zip). Packaging ZIPs
@@ -93,34 +106,41 @@ ZIP is the most common form of packaging, used by default when no other packagin
 
 Let's start by including additional files in the ZIP package.  We're going to include the @target/docs@ directory and @README@ file:
 
+<notextile>
 {% highlight ruby %}
 package(:zip).include _('target/docs'), 'README'
 {% endhighlight %}
+</notextile>
 
 The @include@ method accepts files, directories and file tasks.  You can also use file pattern to match multiple files and directories.  File patterns include asterisk (@*@) to match any file name or part of a file name, double asterisk (@**@) to match directories recursively, question mark (@?@) to match any character, square braces (@[]@) to match a set of characters, and curly braces (@{}@) to match one of several names.
 
 And the same way you @include@, you can also @exclude@ specific files you don't want showing up in the ZIP.  For example, to exclude @.draft@ and @.raw@ files:
 
+<notextile>
 {% highlight ruby %}
 package(:zip).include('target/docs').
   exclude('target/docs/**/*.{draft,raw}')
 {% endhighlight %}
+</notextile>
 
 So far we've included files under the root of the ZIP.  Let's include some files under a given path using the @:path@ option:
 
+<notextile>
 {% highlight ruby %}
 package(:zip).include 'target/docs', :path=>"#{id}-#{version}"
 {% endhighlight %}
+</notextile>
 
 If you need to use the @:path@ option repeatedly, consider using the @tap@ method instead.  For example:
 
+<notextile>
 {% highlight ruby %}
 package(:zip).path("#{id}-#{version}").tap do |path|
   path.include 'target/docs'
   path.include 'README'
 end
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 p(tip). The @tap@ method is not part of the core library, but a very useful extension.  It takes an object, yields to the block with that object, and then returns that object.
 
@@ -128,16 +148,20 @@ p(note). To allow you to spread files across different paths, the include/exclud
 
 If you need to include a file or directory under a different name, use the @:as@ option.  For example:
 
+<notextile>
 {% highlight ruby %}
 package(:zip).include('corporate-logo-350x240.png', :as=>'logo.png')
 {% endhighlight %}
+</notextile>
 
 You can also use @:as=>'.'@ to include all files from the given directory.  For example:
 
+<notextile>
 {% highlight ruby %}
 package(:zip).include 'target/docs/*'
 package(:zip).include 'target/docs', :as=>'.'
 {% endhighlight %}
+</notextile>
 
 These two are almost identical.  They both include all the files from the @target/docs@ directory, but not the directory itself.  But they operate differently.  The first line expands to include all the files in @target/docs@. If you don't already have files in @target/docs@, well, then it won't do anything interesting.  Your ZIP will come up empty.  The second file includes the directory itself, but strips the path during inclusion.  You can define it now, create these files later, and then ZIP them all up.
 
@@ -147,17 +171,20 @@ If you need to get rid of all the included files, call the @clean@ method. Some 
 
 You can also merge two ZIP files together, expanding the content of one ZIP into the other.  For example:
 
+<notextile>
 {% highlight ruby %}
 package(:zip).merge 'part1.zip', 'part2.zip'
 {% endhighlight %}
+</notextile>
 
 If you need to be more selective, you can apply the include/exclude pattern to the expanded ZIP.  For example:
 
+<notextile>
 {% highlight ruby %}
 # Everything but the libs
 package(:zip).merge('bigbad.war').exclude('libs/**/*')
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 
 h2(#jar). Packaging JARs
@@ -166,15 +193,19 @@ JAR packages extend ZIP packages with support for Manifest files and the META-IN
 
 You can tell the JAR package to include a particular Manifest file:
 
+<notextile>
 {% highlight ruby %}
 package(:jar).with :manifest=>_('src/main/MANIFEST.MF')
 {% endhighlight %}
+</notextile>
 
 Or generate a manifest from a hash:
 
+<notextile>
 {% highlight ruby %}
 package(:jar).with :manifest=>{ 'Copyright'=>'Acme Inc (C) 2007' }
 {% endhighlight %}
+</notextile>
 
 You can also generate a JAR with no manifest with the value @false@, create a manifest with several sections using an array of hashes, or create it from a proc.
 
@@ -182,30 +213,37 @@ In large projects, where all the packages use the same manifest, it's easier to 
 
 For example, we can get the same result by specifying this at the top project:
 
+<notextile>
 {% highlight ruby %}
 manifest['Copyright'] = 'Acme Inc (C) 2007'
 {% endhighlight %}
+</notextile>
 
 If you need to mix-in the project's manifest with values that only one package uses, you can do so easily:
 
+<notextile>
 {% highlight ruby %}
 package(:jar).with :manifest=>manifest.merge('Main-Class'=>'com.acme.Main')
 {% endhighlight %}
+</notextile>
 
 If you need to include more files in the @META-INF@ directory, you can use the @:meta_inf@ option.  You can give it a file, or array of files.  And yes, there is a @meta_inf@ project property you can set once to include the same set of file in all the JARs.  It works like this:
 
+<notextile>
 {% highlight ruby %}
 meta_inf << file('DISCLAIMER') << file('NOTICE')
 {% endhighlight %}
+</notextile>
 
 If you have a @LICENSE@ file, it's already included in the @meta_inf@ list of files.
 
 Other than that, @package :jar@ includes the contents of the compiler's target directory and resources, which most often is exactly what you intend it to do. If you want to include other files in the JAR, instead or in addition, you can do so using the @include@ and @exclude@ methods.  If you do not want the target directory included in your JAR, simply call the @clean@ method on it:
 
+<notextile>
 {% highlight ruby %}
 package(:jar).clean.include( only_these_files )
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 
 h2(#war). Packaging WARs
@@ -216,20 +254,25 @@ Without much prompting, @package :war@ picks the contents of the @src/main/webap
 
 Again, you can use the @include@ and @exclude@ methods to change the contents of the WAR.  There are two convenience options you can use to make the more common changes.  If you need to include a classes directory other than the default:
 
+<notextile>
 {% highlight ruby %}
 package(:war).with :classes=>_('target/additional')
 {% endhighlight %}
+</notextile>
 
 If you want to include a different set of libraries other than the default:
 
+<notextile>
 {% highlight ruby %}
 package(:war).with :libs=>MYSQL_JDBC
 {% endhighlight %}
+</notextile>
 
 Both options accept a single value or an array.  The @:classes@ option accepts the name of a directory containing class files, initially set to @compile.target@ and @resources.target@.  The @:libs@ option accepts artifact specifications, file names and tasks, initially set to include everything in @compile.dependencies@.
 
 As you can guess, the package task has two attributes called @classes@ and @libs@; the @with@ method merely sets their value.  If you need more precise control over these arrays, you can always work with them directly, for example:
 
+<notextile>
 {% highlight ruby %}
 # Add an artifact to the existing set:
 package(:war).libs += artifacts(MYSQL_JDBC)
@@ -239,17 +282,19 @@ package(:war).libs -= artifacts(LOG4J)
 puts 'Artifacts included in WAR package:'
 puts package(:war).libs.map(&:to_spec)
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 
 h2(#aar). Packaging AARs
 
 Axis2 service archives are similar to JAR's (compiled classes go into the root of the archive) but they can embed additional libraries under /lib and include @services.xml@ and WSDL files.
 
+<notextile>
 {% highlight ruby %}
 package(:aar).with(:libs=>'log4j:log4j:jar:1.1')
 package(:aar).with(:services_xml=>_('target/services.xml'), :wsdls=>_('target/*.wsdl'))
 {% endhighlight %}
+</notextile>
 
 The @libs@ attribute is a list of .jar artifacts to be included in the archive under /lib.  The default is no artifacts; compile dependencies are not included by default.
 
@@ -259,6 +304,7 @@ The @wsdls@ attribute is a collection of file names or glob patterns for WSDL fi
 
 If you already have WSDL files in the @src/main/axis2@ directory but would like to perform some filtering, for example, to set the HTTP port number, consider ignoring the originals and including only the filtered files, for example:
 
+<notextile>
 {% highlight ruby %}
 # Host name depends on environment.
 host = ENV['ENV'] == 'test' ? 'test.host' : 'ws.example.com'
@@ -267,7 +313,7 @@ filter.from('src/main/axis2').into('target').
 package(:aar).wsdls.clear
 package(:aar).with(:services_xml=>_('target/services.xml'), :wsdls=>_('target/==*==.wsdl'))
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 
 h2(#ear).  Packaging EARs
@@ -284,15 +330,18 @@ EAR packages support four component types:
 
 This example shows two ways for adding components built by other projects:
 
+<notextile>
 {% highlight ruby %}
 package(:ear) << project('coolWebService').package(:war)
 package(:ear).add project('commonLib') # By default, the JAR package
 {% endhighlight %}
+</notextile>
 
 Adding a WAR package assumes it's a WAR component and treats it as such, but JAR packages can be any of three component types, so by default they are all treated as shared libraries.  If you want to add an EJB or Application Client component, you need to say so explicitly, either passing @:type=>package@, or by passing the component type in the @:type@ option.
 
 Here are three examples:
 
+<notextile>
 {% highlight ruby %}
 # Assumed to be a shared library.
 package(:ear).add 'org.springframework:spring:jar:2.6'
@@ -301,11 +350,13 @@ package(:ear).add :ejb=>project('beanery')
 # Adding component with specific package type.
 package(:ear).add project('client'), :type=>:jar
 {% endhighlight %}
+</notextile>
 
 By default, WAR components are all added under the @/war@ path, and likewise, EJB components are added under the @/ejb@ path, shared libraries under @/lib@ and Application Client components under @/jar@.
 
 If you want to place components in different locations you can do so using the @:path@ option, or by specifying a different mapping between component types and their destination directory.  The following two examples are equivalent:
 
+<notextile>
 {% highlight ruby %}
 # Specify once per component.
 package(:ear).add project('coolWebService').package(:war), :path=>'coolServices'
@@ -313,6 +364,7 @@ package(:ear).add project('coolWebService').package(:war), :path=>'coolServices'
 package(:ear).dirs[:war] = 'coolServices'
 package(:ear) << project('coolWebService').package(:war)
 {% endhighlight %}
+</notextile>
 
 EAR packages include an @application.xml@ file in the @META-INF@ directory that describes the application and its components.  This file is created for you during packaging, by referencing all the components added to the EAR.  There are a couple of things you will typically want to change.
 
@@ -322,10 +374,12 @@ EAR packages include an @application.xml@ file in the @META-INF@ directory that 
 
 Again, by example:
 
+<notextile>
 {% highlight ruby %}
 package(:ear).display_name = 'MyCoolWebService'
 package(:ear).add project('coolWebService').package(:war), :context-root=>'coolness'
 {% endhighlight %}
+</notextile>
 
 If you need to disable the context root (e.g. for Portlets), set @context_root@ to @false@.
 
@@ -334,10 +388,12 @@ h2(#tar).  Packaging Tars and GZipped Tars
 
 Everything you know about working with ZIP files translates to Tar files, the two tasks are identical in more respect, so here we'll just go over the differences.
 
+<notextile>
 {% highlight ruby %}
 package(:tar).include _('target/docs'), 'README'
 package(:tgz).include _('target/docs'), 'README'
 {% endhighlight %}
+</notextile>
 
 The first line creates a Tar archive with the extension @.tar@, the second creates a GZipped Tar archive with the extension @.tgz@.
 
@@ -350,27 +406,35 @@ You can bring in the artifacts you need from remote repositories and install the
 
 So let's create these packages and install them in the local repository where other projects can access them:
 
+<notextile>
 {% highlight sh %}
 $ buildr install
 {% endhighlight %}
+</notextile>
 
 If you changes your mind you can always:
 
+<notextile>
 {% highlight sh %}
 $ buildr uninstall
 {% endhighlight %}
+</notextile>
 
 That works between projects you build on the same machine.  Now let's share these artifacts with other developers through a remote repository:
 
+<notextile>
 {% highlight sh %}
 $ buildr upload
 {% endhighlight %}
+</notextile>
 
 Of course, you'll need to tell Buildr about the release server:
 
+<notextile>
 {% highlight ruby %}
 repositories.release_to = 'sftp://john:secret@release/usr/share/repo'
 {% endhighlight %}
+</notextile>
 
 This example uses the SFTP protocol.  In addition, you can use the HTTP protocol -- Buildr supports HTTP and HTTPS, Basic Authentication and uploads using PUT -- or point to a directory on your file system.
 
@@ -378,6 +442,7 @@ The URL in this example contains the release server ("release"), path to reposit
 
 Of course, you'll want to specify the release server URL in the Buildfile, but leave the username/password settings private in your local @buildr.rb@ file. Let's break up the release server settings:
 
+<notextile>
 {% highlight ruby %}
 # build.rb, loaded first
 repositories.release_to[:username] = 'john'
@@ -386,11 +451,13 @@ repositories.release_to[:password] = 'secret'
 # Buildfile, loaded next
 repositories.release_to[:url] = 'sftp://release/usr/share/repo'
 {% endhighlight %}
+</notextile>
 
 The @upload@ task takes care of uploading all the packages created by your project, along with their associated POM files and MD5/SHA1 signatures (Buildr creates these for you).
 
 If you need to upload other files, you can always extend the @upload@ task and use @repositories.release_to@ in combination with @URI.upload@.  You can also extend it to upload to different servers, for example, to publish the documentation and test coverage reports to your site:
 
+<notextile>
 {% highlight ruby %}
 # We'll let some other task decide how to create 'docs'
 task 'upload'=>'docs' do
@@ -398,40 +465,48 @@ task 'upload'=>'docs' do
   uri.upload file('docs')
 end
 {% endhighlight %}
-<!-- -->
+</notextile>
 
 
 h2(#source_javadoc). Packaging Sources and JavaDocs
 
 IDEs can take advantage of source packages to help you debug and trace through compiled code.  We'll start with a simple example:
 
+<notextile>
 {% highlight ruby %}
 package :sources
 {% endhighlight %}
+</notextile>
 
 This one creates a ZIP package with the classifier "sources" that will contain all the source directories in that project, typically @src/main/java@, but also other sources generated from Apt, JavaCC, XMLBeans and friends.
 
 You can also generate a ZIP package with the classifier "javadoc" that contains the JavaDoc documentation for the project.  It uses the same set of documentation files generated by the project's @javadoc@ task, so you can use it in combination with the @javadoc@ method.  For example:
 
+<notextile>
 {% highlight ruby %}
 package :javadoc
 javadoc :windowtitle=>'Buggy but Works'
 {% endhighlight %}
+</notextile>
 
 By default Buildr picks the project's description for the window title.
 
 You can also tell Buildr to automatically create sources and JavaDoc packages in all the sub-projects that have any source files to package or document. Just add either or both of these methods in the top-level project:
 
+<notextile>
 {% highlight ruby %}
 package_with_sources
 package_with_javadoc
 {% endhighlight %}
+</notextile>
 
 You can also tell it to be selective using the @:only@ and @:except@ options.
 For example:
 
+<notextile>
 {% highlight ruby %}
 package_with_javadoc :except=>'la-web'
 {% endhighlight %}
+</notextile>
 
 We packaged the code, but will it actually work? Let's see "what the tests say":testing.html.

@@ -10,10 +10,12 @@ h2(#heap).  Running out of heap space
 
 You can give the JVM more heap space by setting the @JAVA_OPTS@ environment variables.  This environment variable provides arguments for staring the JVM. For example, to set the heap space to 1GB:
 
+<notextile>
 {% highlight sh %}
 $ export "JAVA_OPTS=-Xms1g -Xmx1g"
 $ buildr compile
 {% endhighlight %}
+</notextile>
 
 If you're sharing the build with other developers, you'll want to specify these options in the Buildfile itself.  You can set the environment variable within the Buildfile, but make sure to do so at the very top of the Buildfile.
 
@@ -61,10 +63,12 @@ h2(#danglings).  Bugs resulting from a dangling comma or period
 
 Ruby statements don't need a delimiter and can span multiple lines, which can lead to bugs resulting from dangling commas and periods left at the end of the line.  For example:
 
+<notextile>
 {% highlight ruby %}
 compile.with 'org.apache.axis2:axis2:jar:1.2',
 test.with 'log4j:log4j:jar:1.1'
 {% endhighlight %}
+</notextile>
 
 This is actually a single method call with two arguments, separated by a comma. The second argument is the result of calling @test.with@, and makes the test task a pre-requisite of the compile task, leading to a circular dependency.
 
@@ -105,9 +109,11 @@ A particular quirk of an existing Ruby setup can cause problems when running Bui
 
 The culprit is having the Gem's binary directory show up in @RUBYLIB@.  For example, Buildr's @bin/buildr@ includes this line:
 
+<notextile>
 {% highlight sh %}
 require 'buildr'
 {% endhighlight %}
+</notextile>
 
 Under normal circumstances, this tells RubyGems to load @buildr.rb@ from the Gem's library directory.  When @RUBYLIB@ points to the Gem's @bin@ directory, it ends up loading itself repeatedly. 
 

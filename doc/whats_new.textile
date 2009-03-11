@@ -11,7 +11,7 @@ h2(#1.3.3).  Buildr 1.3.3
 * Starting with this release you can use the @build.yml@ file to control versions of various 3rd party libraries, e.g. Ant, JUnit, ScalaCheck.
 * The _release_ task now supports alternative SVN repository layouts. Releases are tagged in SVN using the version number, but you can customize the tag name (see @Releases.tag_name@). The @NEXT_VERSION@ constant is no longer used during the release process.
 * This release is tested against JRuby 1.1.3 and JRuby 1.1.4. There are also some improvements towards Ruby 1.9 support.
-* 27 other bug fixes and minor changes, see the "CHANGELOG":changelog.html for full details.
+* 27 other bug fixes and minor changes, see the "CHANGELOG":CHANGELOG for full details.
 
 
 h2(#1.3.2).  Buildr 1.3.2
@@ -87,7 +87,7 @@ package :zip, :file=>_('target/interesting.zip')
 
 Since this package is not an artifact and does not have a specification, it will not automatically install itself in the local repository or upload to a remote repository.  For these, use the @package@ method as before.
 
-Read more about "the package method":packaging.html#specifying_and_referencing_packages.
+Read more about "the package method":packaging.html#referencing.
 
 
 h3.  Packaging EARs
@@ -113,14 +113,12 @@ EAR packages include an @application.xml@ file in the @META-INF@ directory that 
 
 * *context-root* -- WAR components specify a context root, based on the package identifier, for example, "cool-web-1.0.war" will have the context root "cool-web".  To specify a different context root, add the WAR package with the @context_root@ option.
 
-"Read more ...":packaging.html#packaging_ears
+"Read more ...":packaging.html#ear
 
 
 h3.  JRuby Support
 
 We now offer two versions of Buildr, one for Ruby and one for JRuby.  They're exactly the same, except the Ruby version will also install RJB (Ruby Java Bridge), the JRuby version obviously can do well without it.
-
-"Read more ...":download.html#jruby
 
 Buildr provides a "Nailgun":http://www.martiansoftware.com/nailgun/index.html server when running on JRuby. Using the integrated BuildrServer allows for  faster task execution and avoid frequent JVM startup overhead. 
 
@@ -197,7 +195,7 @@ im:
   pwd: secret
 {% endhighlight %}
 
-"Read more ...":settings_profiles.html#personal_settings
+"Read more ...":settings_profiles.html#personal
 
 Build settings are placed in the @build.yaml@ file located in the same directory that the @buildfile@. Normally this file would be managed by the project revision control system, so settings here are shared between developers.
 
@@ -224,7 +222,7 @@ jira:
   uri: https://jira.corp.org
 {% endhighlight %}
 
-"Read more ...":settings_profiles.html#build_settings
+"Read more ...":settings_profiles.html#build
 
 
 h3.  Using Gems for extensions and 3rd party libraries
@@ -233,7 +231,7 @@ h3.  Using Gems for extensions and 3rd party libraries
 
 If your build depends on other gems, you will want to specify these dependencies as part of your build and check that configuration into source control.  That way you can have a specific environment that will guarantee repeatable builds, whether you're building a particular version, moving between branches, or joining an existing project.  Buildr will take care of installing all the necessary dependencies, which you can then manage with the @gem@ command.
 
-Use the @build.yaml@ file to specify these dependencies (see "Build Settings":settings_profiles.html#build_settings for more information), for example:
+Use the @build.yaml@ file to specify these dependencies (see "Build Settings":settings_profiles.html#build for more information), for example:
 
 {% highlight yaml %}
 # This project requires the following gems
@@ -245,7 +243,7 @@ gems:
   - ci_reporter
 {% endhighlight %}
 
-"Read more ...":more_stuff.html#using_gems
+"Read more ...":more_stuff.html#gems
 
 
 h3.  New API for accessing Java libraries
@@ -271,7 +269,7 @@ Java.classpath << 'org.apache.ant:ant:jar:1.7.0'
 
 Artifacts can only be downloaded after the Buildfile has loaded, giving it a chance to specify which remote repositories to use, so adding to classpath does not by itself load any libraries.  You must call @Java.load@ before accessing any Java classes to give Buildr a chance to load the libraries specified in the classpath.
 
-"Read more ...":more_stuff.html#using_java_libraries
+"Read more ...":more_stuff.html#java
 
 
 h3.  Creating Extensions
@@ -294,7 +292,7 @@ end
 
 Some extensions require tighter integration with the project, specifically for setting up tasks and properties, or for configuring tasks based on the project definition.  You can do that by adding callbacks to the process.
 
-"Read more ...":extending.html#creating_extensions
+"Read more ...":extending.html#extensions
 
 
 h3.  Using Alternative Layouts
@@ -303,7 +301,7 @@ Buildr follows a common convention for project layouts: Java source files appear
 
 A layout is an object that implements the @expand@ method.  The easiest way to define a custom layout is to create a new @Layout@ object and specify mapping between names used by Buildr and actual paths within the project.
 
-"Read more ...":extending.html#using_alternative_layouts
+"Read more ...":extending.html#layouts
 
 
 h3.  Other
