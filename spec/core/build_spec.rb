@@ -244,7 +244,7 @@ core.repositoryformatversion=0
 core.filemode=true
 core.bare=false
 core.logallrefupdates=true
-remote.origin.url=git://github.com/vic/buildr.git
+remote.origin.url=git://github.com/buildr/buildr.git
 remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
 branch.master.remote=origin
 branch.master.merge=refs/heads/master
@@ -254,7 +254,7 @@ EOF
 
     it 'should return nil if no remote for the given branch' do
       Git.stub!(:git).with('config', '-l').and_return(<<EOF)
-remote.origin.url=git://github.com/vic/buildr.git
+remote.origin.url=git://github.com/buildr/buildr.git
 remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
 EOF
       Git.send(:remote, 'master').should == nil

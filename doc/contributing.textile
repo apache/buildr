@@ -81,11 +81,11 @@ You can also browse the "Buildr repository":http://svn.apache.org/repos/asf/buil
 
 h3(#git).  Git
 
-Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from GitHub":http://github.com/vic/buildr/tree/master:
+Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from GitHub":http://github.com/buildr/buildr/tree/master:
 
 <notextile>
 {% highlight sh %}
-$ git clone git://github.com/vic/buildr.git
+$ git clone git://github.com/buildr/buildr.git
 {% endhighlight %}
 </notextile>
 

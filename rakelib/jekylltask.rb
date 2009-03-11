@@ -13,6 +13,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+
+require 'rake/tasklib'
+
 class JekyllTask < Rake::TaskLib
   def initialize(name=:jekyll)  # :yield: self
     @name = name
