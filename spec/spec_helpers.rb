@@ -46,9 +46,10 @@ unless defined?(SpecHelpers)
 
     [:info, :warn, :error, :puts].each do |severity|
       ::Object.class_eval do
-        define_method severity do |message|
+        define_method severity do |*args|
           $messages ||= {}
-          ($messages[severity] ||= []) << message
+          $messages[severity] ||= []
+          $messages[severity].push(*args)
         end
       end
     end
