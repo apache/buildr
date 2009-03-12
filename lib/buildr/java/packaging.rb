@@ -57,8 +57,7 @@ module Buildr
           # Parse the MANIFEST.MF entry of a ZIP (or JAR) file and return a new Manifest.
           def from_zip(file)
             Zip::ZipFile.open(file.to_s) do |zip|
-              return Manifest.new unless zip.get_entry('META-INF/MANIFEST.MF')
-              Manifest.parse zip.read('META-INF/MANIFEST.MF')
+              Manifest.parse zip.read('META-INF/MANIFEST.MF') rescue Manifest.new
             end
           end
 

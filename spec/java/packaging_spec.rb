@@ -96,6 +96,18 @@ shared_examples_for 'package with manifest' do
     end
   end
 
+  it 'should generate a new manifest for a file that does not have one' do
+    Zip::ZipFile.open("tmp.zip", Zip::ZipFile::CREATE).close 
+    begin
+      manifest = Buildr::Packaging::Java::Manifest.from_zip('tmp.zip')
+      manifest.each do |key, val|
+        Buildr::Packaging::Java::Manifest::STANDARD_HEADER.should include(key)
+      end
+    ensure
+      rm 'tmp.zip'
+    end
+  end
+
   it 'should map manifest from hash' do
     package_with_manifest 'Foo'=>1, :bar=>'Bar'
     inspect_manifest do |manifest|
