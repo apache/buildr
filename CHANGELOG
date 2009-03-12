@@ -21,6 +21,7 @@
 * Change: BUILDR-177 Moved cobertura and emma extensions to lib directory.
 * Change: BUILDR-187 Source code attachment for Eclipse .classpath.
 * Change: BUILDR-188 Source code attachment for IDEA .iml file (Marko Sibakov).
+* Change: BUILDR-237 Use MacPorts Scala on OS X.
 * Change: BUILDR-260: Upgrade to Scala 2.7.3 compatible dependencies:  
           ScalaSpecs 1.4.3, ScalaCheck 1.5 and ScalaTest 0.9.5
 * Change: Buildr now uses Jekyll to generate Web site/documentation:

@@ -14,9 +14,10 @@
 # the License.
 
 
+ENV['SCALA_HOME'] ||= '/opt/local/share/scala/' if File.exist?('/opt/local/share/scala/lib/scala-compiler.jar')
+Buildr.repositories.remote << 'http://scala-tools.org/repo-releases'
+
 require 'buildr/scala/compiler'
 require 'buildr/scala/tests'
-
-Buildr.repositories.remote << 'http://scala-tools.org/repo-releases'
 
 Object::Scala = Buildr::Scala
