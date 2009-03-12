@@ -49,6 +49,7 @@ of human-readable output (Alexis Midon).
 * Fixed:  BUILDR-235 JRuby download link is broke (Alexis Midon).
 * Fixed:  BUILDR-239 HTTP redirects lose authentication information (Joel
 Muzzerall).
+* Fixed:  BUILDR-240 Make TestNG print traces in the console (Alex Midon).
 * Fixed:  BUILDR-241 IDEA7X IPR generation does not pay attention to base_dir
 for submodules (Rhett Sutphin).
 * Fixed:  BUILDR-247 OpenObject does not work with Hash#only (Rhett Sutphin).
