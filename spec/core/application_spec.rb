@@ -91,8 +91,8 @@ describe Buildr::Application do
     def load_with_yaml
       write 'build.yaml', <<-YAML
         gems:
-        - rspec
-        - rake >= 0.8
+        - haml
+        - rdoc >= 2.3.0
       YAML
       Buildr.application.load_gems
     end
@@ -114,7 +114,7 @@ describe Buildr::Application do
 
     it 'should parse Gem name correctly' do
       load_with_yaml
-      Buildr.application.gems.map(&:name).should include('rake', 'rspec')
+      Buildr.application.gems.map(&:name).should include('haml', 'rdoc')
     end
 
     it 'should find installed version of Gem' do
