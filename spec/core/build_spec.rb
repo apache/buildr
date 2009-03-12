@@ -200,77 +200,62 @@ describe Project, '#reports' do
   end
 end
 
-describe Buildr::Git do
+
+describe Git do
   describe '#uncommitted_files' do
-    it 'shoud return an empty array on a clean repository' do
-      cmd_output = <<EOF
+    it 'should return an empty array on a clean repository' do
+      Git.should_receive(:`).with('git status').and_return <<-EOF
 # On branch master
 nothing to commit (working directory clean)
-EOF
-      Git.stub!(:status).and_return(cmd_output)
+      EOF
       Git.uncommitted_files.should be_empty
     end
 
     it 'should reject a dirty repository' do
-      cmd_output = <<EOF
+      Git.should_receive(:`).with('git status').and_return <<-EOF
 # On branch master
+#
+# Changed but not updated:
+#   (use "git add <file>..." to update what will be committed)
+#   (use "git checkout -- <file>..." to discard changes in working directory)
+#
+#       modified:   lib/buildr.rb
+#       modified:   spec/buildr_spec.rb
+# 
 # Untracked files:
 #   (use "git add <file>..." to include in what will be committed)
 #
-#       foo.temp
-EOF
-      Git.stub!(:status).and_return(cmd_output)
-      Git.uncommitted_files.should == cmd_output.split("\n")
-    end
-  end
-
-  describe '#remotes_defined?' do
-    it 'should return false if no remote repositories defined' do
-      Git.stub!(:git).with('remote').and_return('')
-      Git.send(:remotes_defined?).should be_false
-    end
-
-    it 'should return true if at least one remote repository is defined' do
-      Git.stub!(:git).with('remote').and_return("origin\n")
-      Git.send(:remotes_defined?).should be_true
+#       error.log
+      EOF
+      Git.uncommitted_files.should include('lib/buildr.rb', 'error.log')
     end
   end
 
   describe '#remote' do
-    it 'shoud return the name of the corresponding remote' do
-      Git.stub!(:git).with('config', '-l').and_return(<<EOF)
-alias.oneline=log --pretty=oneline
-core.repositoryformatversion=0
-core.filemode=true
-core.bare=false
-core.logallrefupdates=true
-remote.origin.url=git://github.com/buildr/buildr.git
-remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
-branch.master.remote=origin
-branch.master.merge=refs/heads/master
-EOF
+    it 'should return the name of the corresponding remote' do
+      Git.should_receive(:git).with('config', '--get', 'branch.master.remote').and_return "origin\n"
+      Git.should_receive(:git).with('remote').and_return "upstream\norigin\n"
       Git.send(:remote, 'master').should == 'origin'
     end
 
     it 'should return nil if no remote for the given branch' do
-      Git.stub!(:git).with('config', '-l').and_return(<<EOF)
-remote.origin.url=git://github.com/buildr/buildr.git
-remote.origin.fetch=+refs/heads/*:refs/remotes/origin/*
-EOF
-      Git.send(:remote, 'master').should == nil
+      Git.should_receive(:git).with('config', '--get', 'branch.master.remote').and_return "\n"
+      Git.should_not_receive(:git).with('remote')
+      Git.send(:remote, 'master').should be_nil
     end
   end
 
   describe '#current_branch' do
     it 'should return the current branch' do
-      Git.stub!(:git).with('branch').and_return("  master\n* a-clever-idea\n  ze-great-idea")
+      Git.should_receive(:git).with('branch').and_return("  master\n* a-clever-idea\n  ze-great-idea")
       Git.send(:current_branch).should == 'a-clever-idea'
     end
   end
 
 end # of Git
 
-describe Buildr::Svn do
+
+describe Svn do
   describe '#tag' do
     it 'should remove any existing tag with the same name' do
       Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
@@ -292,24 +277,24 @@ describe Buildr::Svn do
   # Reference: http://svnbook.red-bean.com/en/1.4/svn.reposadmin.planning.html#svn.reposadmin.projects.chooselayout
   describe '#tag_url' do
     it 'should accept to tag foo/trunk' do
-      Svn.send(:tag_url, 'http://my.repo.org/foo/trunk', '1.0.0').should == 'http://my.repo.org/foo/tags/1.0.0'
+      Svn.tag_url('http://my.repo.org/foo/trunk', '1.0.0').should == 'http://my.repo.org/foo/tags/1.0.0'
     end
 
     it 'should accept to tag foo/branches/1.0' do
-      Svn.send(:tag_url,'http://my.repo.org/foo/branches/1.0', '1.0.1').should == 'http://my.repo.org/foo/tags/1.0.1'
+      Svn.tag_url('http://my.repo.org/foo/branches/1.0', '1.0.1').should == 'http://my.repo.org/foo/tags/1.0.1'
     end
 
     it 'should accept to tag trunk/foo' do
-      Svn.send(:tag_url,'http://my.repo.org/trunk/foo', '1.0.0').should == 'http://my.repo.org/tags/foo/1.0.0'
+      Svn.tag_url('http://my.repo.org/trunk/foo', '1.0.0').should == 'http://my.repo.org/tags/foo/1.0.0'
     end
 
     it 'should accept to tag branches/foo/1.0' do
-      Svn.send(:tag_url,'http://my.repo.org/branches/foo/1.0', '1.0.0').should == 'http://my.repo.org/tags/foo/1.0.0'
+      Svn.tag_url('http://my.repo.org/branches/foo/1.0', '1.0.0').should == 'http://my.repo.org/tags/foo/1.0.0'
     end
 
     describe '#repo_url' do
       it 'should extract the SVN URL from svn info' do
-        Svn.stub!(:svn).and_return(<<EOF)
+        Svn.should_receive(:svn).and_return <<-EOF
 Path: .
 URL: http://my.repo.org/foo/trunk
 Repository Root: http://my.repo.org
@@ -320,17 +305,18 @@ Schedule: normal
 Last Changed Author: Lacton
 Last Changed Rev: 110
 Last Changed Date: 2008-08-19 12:00:00 +0200 (Tue, 19 Aug 2008)
-EOF
-        Svn.send(:repo_url).should == 'http://my.repo.org/foo/trunk'
+        EOF
+        Svn.repo_url.should == 'http://my.repo.org/foo/trunk'
       end
     end
-
 
   end
 
 end # of Buildr::Svn
 
+
 describe 'a release process', :shared=>true do 
+
   describe '#make' do
     before do
       write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
@@ -347,10 +333,9 @@ describe 'a release process', :shared=>true do
 
     it 'should not alter the buildfile before tagging' do
       @release.stub!(:update_version_to_next)
-      @release.should_receive(:tag_release).with('1.0.0').and_return {
-         file('buildfile').should contain('VERSION_NUMBER = "1.0.0"')
-      }
+      @release.should_receive(:tag_release).with('1.0.0')
       @release.make
+      file('buildfile').should contain('VERSION_NUMBER = "1.0.0"')
     end
 
     it 'should update the buildfile with the next version number' do
@@ -417,7 +402,6 @@ describe 'a release process', :shared=>true do
     end
   end
 
-
   describe '#with_release_candidate_version' do
     before do
       Buildr.application.stub!(:buildfile).and_return(file('buildfile'))
@@ -436,7 +420,6 @@ describe 'a release process', :shared=>true do
       end
     end
   end
-
 
   describe '#update_version_to_next' do
     before do
@@ -468,20 +451,23 @@ describe 'a release process', :shared=>true do
       @release.update_version_to_next
     end
 
-
     it 'should inform the user of the new version' do
       lambda { @release.update_version_to_next }.should show_info('Current version is now 1.0.1-SNAPSHOT')
     end
   end
-  
-end # of Release
+
+end
 
 
+describe GitRelease do
+  it_should_behave_like 'a release process'
 
-describe Buildr::GitRelease do
   before do
-    @release = nil
+    @release = GitRelease.new
+    Git.stub!(:git)
+    Git.stub!(:current_branch).and_return('master')
   end
+
   describe '#applies_to?' do
     it 'should reject a non-git repo' do
       GitRelease.applies_to?.should be_false
@@ -495,69 +481,59 @@ describe Buildr::GitRelease do
   end
 
   describe '#release_check' do
-    it 'shoud accept a clean repository' do
-      cmd_output = <<EOF
+    before do
+      @release = GitRelease.new
+    end
+
+    it 'should accept a clean repository' do
+      Git.should_receive(:`).with('git status').and_return <<-EOF
 # On branch master
 nothing to commit (working directory clean)
-EOF
-        Git.stub!(:status).and_return(cmd_output)
-        Git.stub!(:remotes_defined?).and_return(false)
-        lambda{ GitRelease.check }.should_not raise_error
+      EOF
+      Git.should_receive(:remote).and_return('master')
+      lambda { @release.check }.should_not raise_error
     end
 
     it 'should reject a dirty repository' do
-      cmd_output = <<EOF
+      Git.should_receive(:`).with('git status').and_return <<-EOF
 # On branch master
 # Untracked files:
 #   (use "git add <file>..." to include in what will be committed)
 #
 #       foo.temp
 EOF
-      Git.stub!(:uncommitted_files).and_return(cmd_output.split("\n"))
-      lambda { GitRelease.check }.should raise_error(RuntimeError)
+      lambda { @release.check }.should raise_error(RuntimeError, /uncommitted files/i)
     end
 
-
-    it 'should pass if no remote repositories are defined' do
-      Git.stub!(:uncommitted_files).and_return([])
-      Git.stub!(:remotes_defined?).and_return(false)
-
-      lambda{ GitRelease.check }.should_not raise_error
-    end
-
-    it 'should fail if the current branch does not track a remote repo but at least one remote repo is defined' do
-      Git.stub!(:uncommitted_files).and_return([])
-      Git.stub!(:remotes_defined?).and_return(true)
-      Git.stub!(:has_no_remote?).and_return(true)
-
-      lambda{ GitRelease.check }.should raise_error(RuntimeError,
+    it 'should reject a repository not tracking remote branch' do
+      Git.should_receive(:uncommitted_files).and_return([])
+      Git.should_receive(:remote).and_return(nil)
+      lambda{ @release.check }.should raise_error(RuntimeError,
         "You are releasing from a local branch that does not track a remote!")
     end
   end
 
   describe '#tag_release' do
     before do
-      GitRelease.stub!(:extract_version).and_return('1.0.1')
+      @release = GitRelease.new
+      @release.stub!(:extract_version).and_return('1.0.1')
+      @release.stub!(:resolve_tag).and_return('TEST_TAG')
       Git.stub!(:git).with('tag', '-a', 'TEST_TAG', '-m', '[buildr] Cutting release TEST_TAG')
       Git.stub!(:git).with('push', 'origin', 'tag', 'TEST_TAG')
       Git.stub!(:commit)
       Git.stub!(:push)
       Git.stub!(:remote).and_return('origin')
-      Git.stub!(:git).with('branch').and_return("* master\n")
-      GitRelease.stub!(:resolve_tag).and_return('TEST_TAG')
     end
 
     it 'should delete any existing tag with the same name' do
       Git.should_receive(:git).with('tag', '-d', 'TEST_TAG')
       Git.should_receive(:git).with('push', 'origin', ':refs/tags/TEST_TAG')
-
-      GitRelease.tag_release 'TEST_TAG'
+      @release.tag_release 'TEST_TAG'
     end
 
     it 'should commit the buildfile before tagging' do
       Git.should_receive(:commit).with(File.basename(Buildr.application.buildfile.to_s), "Changed version number to 1.0.1")
-
-      GitRelease.tag_release 'TEST_TAG'
+      @release.tag_release 'TEST_TAG'
     end
 
     it 'should push the tag if a remote is tracked' do
@@ -565,21 +541,28 @@ EOF
       Git.should_receive(:git).with('push', 'origin', ':refs/tags/TEST_TAG')
       Git.should_receive(:git).with('tag', '-a', 'TEST_TAG', '-m', '[buildr] Cutting release TEST_TAG')
       Git.should_receive(:git).with('push', 'origin', 'tag',  'TEST_TAG')
-
-      GitRelease.tag_release 'TEST_TAG'
+      @release.tag_release 'TEST_TAG'
     end
 
     it 'should NOT push the tag if no remote is tracked' do
-      Git.stub!(:remote)
+      Git.stub!(:remote).and_return(nil)
       Git.should_not_receive(:git).with('push', 'origin', 'tag',  'TEST_TAG')
-
-      GitRelease.tag_release 'TEST_TAG'
+      @release.tag_release 'TEST_TAG'
     end
   end
 end
 
 
-describe Buildr::SvnRelease do
+describe SvnRelease do
+  it_should_behave_like 'a release process'
+
+  before do
+    @release = SvnRelease.new
+    Svn.stub!(:svn)
+    Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
+    Svn.stub!(:tag)
+  end
+
   describe '#applies_to?' do
     it 'should reject a non-git repo' do
       SvnRelease.applies_to?.should be_false
@@ -593,58 +576,36 @@ describe Buildr::SvnRelease do
 
   describe '#check' do
     before do
-      Svn.stub!(:uncommitted_files).and_return('')
+      Svn.stub!(:uncommitted_files).and_return([])
+      @release = SvnRelease.new
     end
 
     it 'should accept to release from the trunk' do
       Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-      lambda { SvnRelease.check }.should_not raise_error
+      lambda { @release.check }.should_not raise_error
     end
 
     it 'should accept to release from a branch' do
       Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/branches/1.0')
-      lambda { SvnRelease.check }.should_not raise_error
+      lambda { @release.check }.should_not raise_error
     end
 
     it 'should reject releasing from a tag' do
       Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/tags/1.0.0')
-      lambda { SvnRelease.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
+      lambda { @release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
     end
 
     it 'should reject a non standard repository layout' do
       Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/bar')
-      lambda { SvnRelease.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
+      lambda { @release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
     end
 
     it 'should reject an uncommitted file' do
       Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-      Svn.stub!(:uncommitted_files).and_return(['M      foo.rb'])
-      lambda { SvnRelease.check }.should raise_error(RuntimeError,
+      Svn.stub!(:uncommitted_files).and_return(['foo.rb'])
+      lambda { @release.check }.should raise_error(RuntimeError,
         "Uncommitted files violate the First Principle Of Release!\n" +
-        "M      foo.rb")
+        "foo.rb")
     end
   end
-
-end
-
-describe Buildr::SvnRelease do
-  before do
-    @release = SvnRelease
-    Svn.stub!(:execute)
-    Svn.stub!(:tag)
-    Svn.stub!(:commit)
-    Svn.stub!(:uncommitted_files)
-  end
-  it_should_behave_like 'a release process'
-end
-
-describe Buildr::GitRelease do
-  before do
-    @release = GitRelease
-    Git.stub!(:git)
-    Git.stub!(:commit)
-    Git.stub!(:remote)
-    Git.stub!(:has_remote?)
-  end
-  it_should_behave_like 'a release process'
 end

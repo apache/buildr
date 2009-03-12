@@ -106,172 +106,132 @@ module Buildr
 
   end
 
-  module Git 
-    class << self
-      # :call-seq:
-      #   execute(*args)
-      #   execute('tag', 'FOO', :nofail)
-      #
-      # Executes the VCS command and returns the output. A :RuntimeError is thrown if the exit statu
-      # non-zero.
-      # This behavior might be changed by providing the symbol :nofail has the last argument.
-      def execute(*args)
-        cmd = 'git ' + args.map { |arg| arg[' '] ? %Q{"#{arg}"} : arg }.join(' ')
-        trace cmd
-        `#{cmd}`.tap {
-            fail "GIT command failed with status #{$?.exitstatus}" unless $?.exitstatus == 0
-      }
-      end
-      alias :git :execute
 
-      # Execute 'git status' and return the output lines in an array.
-      def uncommitted_files
-        s = status
-        if s =~ /^nothing to commit \(working directory clean\)$/
-          []
-        else
-          s.split "\n"
-        end
-      end
+  module Git  #:nodoc:
 
-      # Commit the given file with a message.
-      # The file has to be known to Git meaning that it has either to have been already committed in the past
-      # or freshly added to the index. Otherwise it will fail.
-      def commit(file, message)
-        git 'commit', '-m', message, file
-      end
+  module_function
 
-      # Update the remote refs using local refs
-      #
-      # By default, the "remote" destination of the push is the the remote repo linked to the current branch.
-      # The default remote branch is the current local branch.
-      def push(remote_repo = remote, remote_branch = current_branch)
-        git 'push', remote, current_branch
-      end
-
-      # Execute git status and return the output.
-      # This method won't fail if the exit status is non-zero.
-      def status
-        cmd = "git status"
-        trace cmd
-        `#{cmd}`
-      end
-
-      protected 
-
-      # Return true if at least one remote repository is defined. False otherwise.
-      def remotes_defined?
-          !git('remote').empty?
-      end
-
-      # Return the name of the remote repository whose branch the current local branch tracks,
-      # or nil if none.
-      def remote(branch = current_branch)
-        match = git('config', '-l').split("\n").find {|l| l.match "^branch\.#{branch}\.remote=.*$"}
-        match.split('=').last if match
-      end
-
-      # Return true if the given local branch tracks a remote branch.
-      def has_remote?(branch = current_branch)
-        remote(branch) != nil
-      end
-
-      def has_no_remote?(branch = current_branch)
-        !has_remote? branch
-      end
-
-      # Return the name of the current branch
-      def current_branch
-        git('branch').split("\n").find {|l| l =~ /^\* .*$/}[2..-1]
-      end
+    # :call-seq:
+    #   git(*args)
+    #
+    # Executes a Git command and returns the output. Throws exception if the exit status
+    # is not zero. For example:
+    #   git 'commit'
+    #   git 'remote', 'show', 'origin'
+    def git(*args)
+      output = `git #{args.shift} #{args.map { |arg| arg.inspect }.join(' ')}`
+      fail "GIT command failed with status #{$?.exitstatus}" unless $?.exitstatus == 0
+      return output
     end
-  end #of Git
 
-  module Svn
-    class << self
-      # :call-seq:
-      #   execute(*args)
-      #   execute('tag', 'FOO', :nofail)
-      #
-      # Executes the VCS command and returns the output. A :RuntimeError is thrown if the exit statu
-      # non-zero.
-      # This behavior might be changed by providing the symbol :nofail has the last argument.
-      def execute(*args)
-        cmd = 'svn ' + args.map { |arg| arg[' '] ? %Q{"#{arg}"} : arg }.join(' ')
-        trace cmd
-        `#{cmd}`.tap {
-            fail "SVN command failed with status #{$?.exitstatus}" unless $?.exitstatus == 0
-      }
-      end
-      alias :svn :execute
-
-      def tag(tag_name)
-        url = tag_url repo_url, tag_name
-        remove url, 'Removing old copy' rescue nil
-        copy Dir.pwd, url, "Release #{tag_name}"
-      end
-
-      # Status check reveals modified files, but also SVN externals which we can safely ignore.
-      def uncommitted_files
-        svn('status', '--ignore-externals').reject { |line| line =~ /^X\s/ }
-      end
-
-      def commit(file, message)
-        svn 'commit', '-m', message, file
-      end
-      
-
-      protected
-
-      def copy(dir, url, message)
-        svn 'copy', dir, url, '-m', message
-      end
-      
-      # Return the current SVN URL
-      def repo_url
-        svn('info').scan(/URL: (.*)/)[0][0]
-      end
-      
-      def remove(url, message)
-        svn 'remove', url, '-m', message
-      end
-
-      # :call-seq:
-      #   tag_url(svn_url, version) => tag_url
-      #
-      # Returns the SVN url for the tag.
-      # Can tag from the trunk or from branches.
-      # Can handle the two standard repository layouts.
-      #   - http://my.repo/foo/trunk => http://my.repo/foo/tags/1.0.0
-      #   - http://my.repo/trunk/foo => http://my.repo/tags/foo/1.0.0
-      def tag_url(svn_url, tag)
-        trunk_or_branches = Regexp.union(%r{^(.*)/trunk(.*)$}, %r{^(.*)/branches(.*)/([^/]*)$})
-        match = trunk_or_branches.match(svn_url)
-        prefix = match[1] || match[3]
-        suffix = match[2] || match[4]
-        prefix + '/tags' + suffix + '/' + tag
-      end
+    # Returns list of uncommited/untracked files as reported by git status.
+    def uncommitted_files
+      `git status`.scan(/^#\s{7}(\S.*)$/).map { |match| match.first.split.last }
     end
-  end # of Svn class
+
+    # Commit the given file with a message.
+    # The file has to be known to Git meaning that it has either to have been already committed in the past
+    # or freshly added to the index. Otherwise it will fail.
+    def commit(file, message)
+      git 'commit', '-m', message, file
+    end
+
+    # Update the remote refs using local refs
+    #
+    # By default, the "remote" destination of the push is the the remote repo linked to the current branch.
+    # The default remote branch is the current local branch.
+    def push(remote_repo = remote, remote_branch = current_branch)
+      git 'push', remote, current_branch
+    end
+
+    # Return the name of the remote repository whose branch the current local branch tracks,
+    # or nil if none.
+    def remote(branch = current_branch)
+      remote = git('config', '--get', "branch.#{branch}.remote").strip
+      remote if git('remote').include?(remote)
+    rescue
+      nil
+    end
+
+    # Return the name of the current branch
+    def current_branch
+      git('branch')[/^\* (.*)$/, 1]
+    end
+
+  end
+
+
+  module Svn #:nodoc:
+
+  module_function
+
+    # :call-seq:
+    #   svn(*args)
+    #
+    # Executes a SVN command and returns the output. Throws exception if the exit status
+    # is not zero. For example:
+    #   svn 'commit'
+    def svn(*args)
+      output = `svn #{args.shift} #{args.map { |arg| arg.inspect }.join(' ')}`
+      fail "SVN command failed with status #{$?.exitstatus}" unless $?.exitstatus == 0
+      return output
+    end
+
+    def tag(tag_name)
+      url = tag_url repo_url, tag_name
+      remove url, 'Removing old copy' rescue nil
+      copy Dir.pwd, url, "Release #{tag_name}"
+    end
+
+    # Status check reveals modified files, but also SVN externals which we can safely ignore.
+    def uncommitted_files
+      svn('status', '--ignore-externals').split("\n").reject { |line| line =~ /^X\s/ }
+    end
+
+    def commit(file, message)
+      svn 'commit', '-m', message, file
+    end
+    
+    # :call-seq:
+    #   tag_url(svn_url, version) => tag_url
+    #
+    # Returns the SVN url for the tag.
+    # Can tag from the trunk or from branches.
+    # Can handle the two standard repository layouts.
+    #   - http://my.repo/foo/trunk => http://my.repo/foo/tags/1.0.0
+    #   - http://my.repo/trunk/foo => http://my.repo/tags/foo/1.0.0
+    def tag_url(svn_url, tag)
+      trunk_or_branches = Regexp.union(%r{^(.*)/trunk(.*)$}, %r{^(.*)/branches(.*)/([^/]*)$})
+      match = trunk_or_branches.match(svn_url)
+      prefix = match[1] || match[3]
+      suffix = match[2] || match[4]
+      prefix + '/tags' + suffix + '/' + tag
+    end
+
+    # Return the current SVN URL
+    def repo_url
+      svn('info').scan(/URL: (.*)/)[0][0]
+    end
+    
+  protected
+
+    def copy(dir, url, message)
+      svn 'copy', dir, url, '-m', message
+    end
+    
+    def remove(url, message)
+      svn 'remove', url, '-m', message
+    end
+
+  end
   
-  class Release
+
+  class Release #:nodoc:
 
     THIS_VERSION_PATTERN  = /(THIS_VERSION|VERSION_NUMBER)\s*=\s*(["'])(.*)\2/
 
     class << self
       
-      # Use this to specify a different tag name for tagging the release in source control.
-      # You can set the tag name or a proc that will be called with the version number,
-      # for example:
-      #   Release.tag_name = lambda { |ver| "foo-#{ver}" }
-      attr_accessor :tag_name
-
-      # Use this to specify a different commit message to commit the buildfile with the next version in source control.
-      # You can set the commit message or a proc that will be called with the next version number,
-      # for example:
-      #   Release.commit_message = lambda { |ver| "Changed version number to #{ver}" }
-      attr_accessor :commit_message
-
       # :call-seq:
       #     add(MyReleaseClass)
       #
@@ -287,188 +247,202 @@ module Buildr
         @list ||= []
       end
 
-      # :call-seq:
-      #   make()
-      #
-      # Make a release.
-      def make
-        check
-        with_release_candidate_version do |release_candidate_buildfile| 
-          options = ['--buildfile', release_candidate_buildfile, 'DEBUG=no']
-          options << '--environment' << Buildr.environment unless Buildr.environment.to_s.empty?
-          buildr %w{clean upload}, options
-        end
-        tag_release resolve_tag
-        update_version_to_next
-      end
-      
-      # :call-seq:
-      #   extract_version() => this_versin
-      #
-      # Extract the current version number from the buildfile.
-      # Raise an error if not found.
-      def extract_version
-        buildfile = File.read(Buildr.application.buildfile.to_s)
-        buildfile.scan(THIS_VERSION_PATTERN)[0][2]
-      rescue
-        fail 'Looking for THIS_VERSION = "..." in your Buildfile, none found'
-      end
-      
-    protected
-      # :call-seq:
-      #   buildr(tasks, options)
-      #
-      # Calls another instance of buildr.
-      def buildr(tasks, options)
-          sh "#{command} _#{Buildr::VERSION}_ #{tasks.join(' ')} #{options.join(' ')}"
-      end
-      
-      def command #:nodoc:
-        Config::CONFIG['arch'] =~ /dos|win32/i ? $PROGRAM_NAME.ext('cmd') : $PROGRAM_NAME
-      end
+    end
+ 
+    # Use this to specify a different tag name for tagging the release in source control.
+    # You can set the tag name or a proc that will be called with the version number,
+    # for example:
+    #   Release.tag_name = lambda { |ver| "foo-#{ver}" }
+    attr_accessor :tag_name
 
-      # :call-seq:
-      #   with_release_candidate_version() { |filename| ... }
-      #
-      # Yields to block with release candidate buildfile, before committing to use it.
-      #
-      # We need a Buildfile with upgraded version numbers to run the build, but we don't want the
-      # Buildfile modified unless the build succeeds. So this method updates the version number in
-      # a separate (Buildfile.next) file, yields to the block with that filename, and if successful
-      # copies the new file over the existing one.
-      #
-      # The release version is the current version without '-SNAPSHOT'.  So:
-      #   THIS_VERSION = 1.1.0-SNAPSHOT
-      # becomes:
-      #   THIS_VERSION = 1.1.0
-      # for the release buildfile.
-      def with_release_candidate_version
-        release_candidate_buildfile = Buildr.application.buildfile.to_s + '.next'
-        release_candidate_buildfile_contents = change_version { |version| version[-1] = version[-1].to_i }
-        File.open(release_candidate_buildfile, 'w') { |file| file.write release_candidate_buildfile_contents }
-        begin
-          yield release_candidate_buildfile
-          mv release_candidate_buildfile, Buildr.application.buildfile.to_s
-        ensure
-          rm release_candidate_buildfile rescue nil
-        end
-      end
+    # Use this to specify a different commit message to commit the buildfile with the next version in source control.
+    # You can set the commit message or a proc that will be called with the next version number,
+    # for example:
+    #   Release.commit_message = lambda { |ver| "Changed version number to #{ver}" }
+    attr_accessor :commit_message
 
-      # :call-seq:
-      #   change_version() { |this_version| ... } => buildfile
-      #
-      # Change version number in the current Buildfile, but without writing a new file (yet).
-      # Returns the contents of the Buildfile with the modified version number.
-      #
-      # This method yields to the block with the current (this) version number as an array and expects
-      # the block to update it.
-      def change_version
-        this_version = extract_version
-        new_version = this_version.split('.')
-        yield(new_version)
-        new_version = new_version.join('.')
-        buildfile = File.read(Buildr.application.buildfile.to_s)
-        buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{new_version}"}) }
+    # :call-seq:
+    #   make()
+    #
+    # Make a release.
+    def make
+      check
+      with_release_candidate_version do |release_candidate_buildfile| 
+        options = ['--buildfile', release_candidate_buildfile, 'DEBUG=no']
+        options << '--environment' << Buildr.environment unless Buildr.environment.to_s.empty?
+        buildr %w{clean upload}, options
       end
+      tag_release resolve_tag
+      update_version_to_next
+    end
+    
+    # :call-seq:
+    #   extract_version() => this_versin
+    #
+    # Extract the current version number from the buildfile.
+    # Raise an error if not found.
+    def extract_version
+      buildfile = File.read(Buildr.application.buildfile.to_s)
+      buildfile.scan(THIS_VERSION_PATTERN)[0][2]
+    rescue
+      fail 'Looking for THIS_VERSION = "..." in your Buildfile, none found'
+    end
+    
+  protected
+    # :call-seq:
+    #   buildr(tasks, options)
+    #
+    # Calls another instance of buildr.
+    def buildr(tasks, options)
+        sh "#{command} _#{Buildr::VERSION}_ #{tasks.join(' ')} #{options.join(' ')}"
+    end
+    
+    def command #:nodoc:
+      Config::CONFIG['arch'] =~ /dos|win32/i ? $PROGRAM_NAME.ext('cmd') : $PROGRAM_NAME
+    end
 
-      # Return the name of the tag to tag the release with.
-      def resolve_tag
-        version = extract_version
-        tag = tag_name || version
-        tag = tag.call(version) if Proc === tag
-        tag
-      end
-
-      # Move the version to next and save the updated buildfile
-      def update_buildfile
-        buildfile = change_version { |version| version[-1] = (version[-1].to_i + 1).to_s + '-SNAPSHOT' }
-        File.open(Buildr.application.buildfile.to_s, 'w') { |file| file.write buildfile }
-      end
-
-      # Return the message to use to cimmit the buildfile with the next version
-      def message
-        version = extract_version
-        msg = commit_message || "Changed version number to #{version}"
-        msg = msg.call(version) if Proc === msg
-        msg
-      end
-
-      def update_version_to_next
-        update_buildfile
+    # :call-seq:
+    #   with_release_candidate_version() { |filename| ... }
+    #
+    # Yields to block with release candidate buildfile, before committing to use it.
+    #
+    # We need a Buildfile with upgraded version numbers to run the build, but we don't want the
+    # Buildfile modified unless the build succeeds. So this method updates the version number in
+    # a separate (Buildfile.next) file, yields to the block with that filename, and if successful
+    # copies the new file over the existing one.
+    #
+    # The release version is the current version without '-SNAPSHOT'.  So:
+    #   THIS_VERSION = 1.1.0-SNAPSHOT
+    # becomes:
+    #   THIS_VERSION = 1.1.0
+    # for the release buildfile.
+    def with_release_candidate_version
+      release_candidate_buildfile = Buildr.application.buildfile.to_s + '.next'
+      release_candidate_buildfile_contents = change_version { |version| version[-1] = version[-1].to_i }
+      File.open(release_candidate_buildfile, 'w') { |file| file.write release_candidate_buildfile_contents }
+      begin
+        yield release_candidate_buildfile
+        mv release_candidate_buildfile, Buildr.application.buildfile.to_s
+      ensure
+        rm release_candidate_buildfile rescue nil
       end
     end
+
+    # :call-seq:
+    #   change_version() { |this_version| ... } => buildfile
+    #
+    # Change version number in the current Buildfile, but without writing a new file (yet).
+    # Returns the contents of the Buildfile with the modified version number.
+    #
+    # This method yields to the block with the current (this) version number as an array and expects
+    # the block to update it.
+    def change_version
+      this_version = extract_version
+      new_version = this_version.split('.')
+      yield(new_version)
+      new_version = new_version.join('.')
+      buildfile = File.read(Buildr.application.buildfile.to_s)
+      buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{new_version}"}) }
+    end
+
+    # Return the name of the tag to tag the release with.
+    def resolve_tag
+      version = extract_version
+      tag = tag_name || version
+      tag = tag.call(version) if Proc === tag
+      tag
+    end
+
+    # Move the version to next and save the updated buildfile
+    def update_buildfile
+      buildfile = change_version { |version| version[-1] = (version[-1].to_i + 1).to_s + '-SNAPSHOT' }
+      File.open(Buildr.application.buildfile.to_s, 'w') { |file| file.write buildfile }
+    end
+
+    # Return the message to use to cimmit the buildfile with the next version
+    def message
+      version = extract_version
+      msg = commit_message || "Changed version number to #{version}"
+      msg = msg.call(version) if Proc === msg
+      msg
+    end
+
+    def update_version_to_next
+      update_buildfile
+    end
   end
+
 
   class GitRelease < Release
     class << self
       def applies_to?(directory = '.')
         File.exist? File.join(directory, '.git/config')
       end
+    end
 
-      # Fails if one of theses 2 conditions are not met:
-      #    1. the repository is clean: no content staged or unstaged
-      #    2. some remote repositories are defined but the current branch does not track any
-      def check
-        fail "Uncommitted files violate the First Principle Of Release!\n"+Git.uncommitted_files.join("\n") unless Git.uncommitted_files.empty?
-        fail "You are releasing from a local branch that does not track a remote!" if Git.remotes_defined? && Git.has_no_remote?
-      end
+    # Fails if one of theses 2 conditions are not met:
+    #    1. the repository is clean: no content staged or unstaged
+    #    2. some remote repositories are defined but the current branch does not track any
+    def check
+      uncommitted = Git.uncommitted_files
+      fail "Uncommitted files violate the First Principle Of Release!\n#{uncommitted.join("\n")}" unless uncommitted.empty?
+      fail "You are releasing from a local branch that does not track a remote!" unless Git.remote
+    end
 
-      # Add a tag reference in .git/refs/tags and push it to the remote if any.
-      # If a tag with the same name already exists it will get deleted (in both local and remote repositories).
-      def tag_release(tag)
-        info "Committing buildfile with version number #{extract_version}"
-        Git.commit File.basename(Buildr.application.buildfile.to_s), message
-        Git.push if Git.has_remote?
-        info "Tagging release #{tag}"
-        Git.git 'tag', '-d', tag rescue nil
-        Git.git 'push', Git.remote, ":refs/tags/#{tag}" rescue nil if Git.has_remote? 
-        Git.git 'tag', '-a', tag, '-m', "[buildr] Cutting release #{tag}"
-        Git.git 'push', Git.remote, 'tag', tag if Git.has_remote?
-      end
+    # Add a tag reference in .git/refs/tags and push it to the remote if any.
+    # If a tag with the same name already exists it will get deleted (in both local and remote repositories).
+    def tag_release(tag)
+      info "Committing buildfile with version number #{extract_version}"
+      Git.commit File.basename(Buildr.application.buildfile.to_s), message
+      Git.push if Git.remote
+      info "Tagging release #{tag}"
+      Git.git 'tag', '-d', tag rescue nil
+      Git.git 'push', Git.remote, ":refs/tags/#{tag}" rescue nil if Git.remote
+      Git.git 'tag', '-a', tag, '-m', "[buildr] Cutting release #{tag}"
+      Git.git 'push', Git.remote, 'tag', tag if Git.remote
+    end
 
-      def update_version_to_next
-        super
-        info "Current version is now #{extract_version}"
-        Git.commit File.basename(Buildr.application.buildfile.to_s), message
-        Git.push if Git.has_remote?
-      end
+    def update_version_to_next
+      super
+      info "Current version is now #{extract_version}"
+      Git.commit File.basename(Buildr.application.buildfile.to_s), message
+      Git.push if Git.remote
     end
   end
-  # add GitRelease to the list of Release implementations
-  Release.add GitRelease
   
+
   class SvnRelease < Release
     class << self
       def applies_to?(directory = '.')
         File.exist? File.join(directory, '.svn')
       end
+    end
     
-      def check
-        fail "Uncommitted files violate the First Principle Of Release!\n"+Svn.uncommitted_files.join("\n") unless Svn.uncommitted_files.empty?
-        fail "SVN URL must contain 'trunk' or 'branches/...'" unless Svn.repo_url =~ /(trunk)|(branches.*)$/
-      end
+    def check
+      fail "Uncommitted files violate the First Principle Of Release!\n"+Svn.uncommitted_files.join("\n") unless Svn.uncommitted_files.empty?
+      fail "SVN URL must contain 'trunk' or 'branches/...'" unless Svn.repo_url =~ /(trunk)|(branches.*)$/
+    end
 
-      def tag_release(tag)
-        info "Tagging release #{tag}"
-        Svn.tag tag
-      end
+    def tag_release(tag)
+      info "Tagging release #{tag}"
+      Svn.tag tag
+    end
 
-      def update_version_to_next
-        super
-        info "Current version is now #{extract_version}"
-        Svn.commit Buildr.application.buildfile.to_s, message
-      end
+    def update_version_to_next
+      super
+      info "Current version is now #{extract_version}"
+      Svn.commit Buildr.application.buildfile.to_s, message
     end
   end
   
-  # add SvnRelease to the list of Release implementations
   Release.add SvnRelease
+  Release.add GitRelease
 
   desc 'Make a release'
   task 'release' do |task|
-    release = Release.list.detect { |impl| impl.applies_to? }
-    fail 'Unable to detect the Version Control System.' unless release
-    release.make
+    klass = Release.list.detect { |impl| impl.applies_to? }
+    fail 'Unable to detect the Version Control System.' unless klass
+    klass.new.make
   end
 
 end
