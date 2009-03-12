@@ -181,8 +181,8 @@ module Buildr
             xml.modules do
               project.projects.each do |subp|
                 module_name = subp.name.gsub(":", "-")
-                module_path = subp.name.split(":"); module_path.shift
-                module_path = module_path.join(File::SEPARATOR)
+                module_path = subp.base_dir ? subp.base_dir.gsub(/^#{project.base_dir}\//, '') :
+                                              subp.name.split(":")[1 .. -1].join(FILE::SEPARATOR)
                 path = "#{module_path}/#{module_name}#{IML_SUFFIX}"
                 xml.module :fileurl=>"#{PROJECT_DIR_URL}/#{path}", :filepath=>"#{PROJECT_DIR}/#{path}"
               end
