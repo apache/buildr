@@ -31,6 +31,8 @@ maintain and the same Textile/Liquid mechanism as when using Github pages.
 * Fixed:  BUILDR-170 ArtifactNamespace#method_missing has a condition that is never true.
 * Fixed:  BUILDR-172 Scala compiler not loaded by default.
 * Fixed:  BUILDR-175 Fail to find child project when calling project method inside project definition.
+* Fixed:  BUILDR-185 Exception if using artifact names with hyphen (Joel
+Muzzerall).
 * Fixed:  BUILDR-192 TestNG report results are overwritten (Alexis Midon).
 * Fixed:  BUILDR-193 TestNG uses project name for suite name (not valid file
           name on Windows).

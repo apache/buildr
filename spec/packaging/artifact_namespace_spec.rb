@@ -281,6 +281,14 @@ describe Buildr::ArtifactNamespace do
       artifact_ns(:moo).foo_bar.should == artifact_ns(:foo).bar
     end
 
+    it 'should handle symbols with dashes and periods' do
+      [:'a-b', :'a.b'].each do |symbol|
+        artifact_ns.use symbol => 'a:b:c:1'
+        artifact_ns[symbol].version.should == '1'
+        artifact_ns[symbol].id.should == 'b'
+      end
+    end
+
   end
 
   describe '#values' do 

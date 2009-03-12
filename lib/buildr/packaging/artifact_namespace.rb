@@ -737,7 +737,7 @@ module Buildr
     # Like Hash#fetch
     def fetch(name, default = nil, &block)
       block ||= lambda { raise IndexError.new("No artifact found by name #{name.inspect} in namespace #{self}") }
-      real_name = name.to_s[/^\w+$/] ? name : ArtifactRequirement.unversioned_spec(name)
+      real_name = name.to_s[/^[\w\-\.]+$/] ? name : ArtifactRequirement.unversioned_spec(name)
       get(real_name.to_sym) || default || block.call(name)
     end
 
@@ -794,7 +794,7 @@ module Buildr
     def values_at(*names)
       names.map do |name| 
         catch :artifact do
-          unless name.to_s[/^\w+$/] 
+          unless name.to_s[/^[\w\-\.]+$/]
             unvers = ArtifactRequirement.unversioned_spec(name)
             unless unvers.to_s == name.to_s
               req = ArtifactRequirement.new(name)
@@ -812,7 +812,7 @@ module Buildr
     end
 
     def key?(name, include_parents = false)
-      name = ArtifactRequirement.unversioned_spec(name) unless name.to_s[/^\w+$/]
+      name = ArtifactRequirement.unversioned_spec(name) unless name.to_s[/^[\w\-\.]+$/]
       registry.key?(name, include_parents)
     end
 
