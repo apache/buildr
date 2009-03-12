@@ -291,7 +291,9 @@ module URI
           when Net::HTTPRedirection
             # Try to download from the new URI, handle relative redirects.
             trace "Redirected to #{response['Location']}"
-            return (self + URI.parse(response['location'])).read(options, &block)
+            rself = self + URI.parse(response['Location'])
+            rself.user, rself.password = self.user, self.password
+            return rself.read(options, &block)
           when Net::HTTPOK
             info "Downloading #{self}"
             result = nil

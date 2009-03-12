@@ -299,6 +299,30 @@ describe URI::HTTP, '#read' do
     request.should_receive(:basic_auth).with('john', 'secret')
     URI("http://john:secret@#{@host_domain}").read
   end
+ 
+  it 'should preseve authentication information during a redirect' do
+    Net::HTTP.should_receive(:new).twice.and_return(@http)
+
+    # The first request will produce a redirect
+    redirect = Net::HTTPRedirection.new(nil, nil, nil)
+    redirect['Location'] = "http://#{@host_domain}/asdf"
+
+    request1 = mock('request1')
+    Net::HTTP::Get.should_receive(:new).once.with('/', nil).and_return(request1)
+    request1.should_receive(:basic_auth).with('john', 'secret')
+    @http.should_receive(:request).with(request1).and_yield(redirect)
+ 
+    # The second request will be ok
+    ok = Net::HTTPOK.new(nil, nil, nil)
+    ok.stub!(:read_body)
+
+    request2 = mock('request2')
+    Net::HTTP::Get.should_receive(:new).once.with("/asdf", nil).and_return(request2)
+    request2.should_receive(:basic_auth).with('john', 'secret')
+    @http.should_receive(:request).with(request2).and_yield(ok)
+
+    URI("http://john:secret@#{@host_domain}").read
+  end
 
   it 'should include the query part when performing HTTP GET' do
     # should this test be generalized or shared with any other URI subtypes?
