@@ -210,7 +210,7 @@ module Buildr
 
     # Return the current SVN URL
     def repo_url
-      svn('info').scan(/URL: (.*)/)[0][0]
+      svn('info', '--xml')[/<url>(.*?)<\/url>/, 1].strip
     end
     
   protected

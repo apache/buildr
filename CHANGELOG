@@ -42,6 +42,8 @@ Muzzerall).
 * Fixed:  BUILDR-201 Sample project is not valid (Alexis Midon).
 * Fixed:  BUILDR-214 Buildr is stuck uploading to sftp repository (Heikki Hulkko).
 * Fixed:  BUILDR-216 Profiles documentation is wrong (Shane Witbeck).
+* Fixed:  BUILDR-226 Release task should use XML output of "svn info" instead
+of human-readable output (Alexis Midon).
 * Fixed:  BUILDR-235 JRuby download link is broke (Alexis Midon).
 * Fixed:  BUILDR-253 ZipTask now uses Zlib::DEFAULT_COMPRESSION instead of NO_COMPRESSION
 * Fixed:  BUILDR-261 ScalaSpecs should be run with Scala dependencies

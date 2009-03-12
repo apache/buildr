@@ -294,18 +294,30 @@ describe Svn do
 
     describe '#repo_url' do
       it 'should extract the SVN URL from svn info' do
-        Svn.should_receive(:svn).and_return <<-EOF
-Path: .
-URL: http://my.repo.org/foo/trunk
-Repository Root: http://my.repo.org
-Repository UUID: 12345678-9abc-def0-1234-56789abcdef0
-Revision: 112
-Node Kind: directory
-Schedule: normal
-Last Changed Author: Lacton
-Last Changed Rev: 110
-Last Changed Date: 2008-08-19 12:00:00 +0200 (Tue, 19 Aug 2008)
-        EOF
+        Svn.should_receive(:svn).and_return <<-XML
+<?xml version="1.0"?>
+<info>
+<entry
+   kind="dir"
+   path="."
+   revision="724987">
+<url>http://my.repo.org/foo/trunk</url>
+<repository>
+<root>http://my.repo.org</root>
+<uuid>13f79535-47bb-0310-9956-ffa450edef68</uuid>
+</repository>
+<wc-info>
+<schedule>normal</schedule>
+<depth>infinity</depth>
+</wc-info>
+<commit
+   revision="724955">
+<author>boisvert</author>
+<date>2008-12-10T01:53:51.240936Z</date>
+</commit>
+</entry>
+</info>
+        XML
         Svn.repo_url.should == 'http://my.repo.org/foo/trunk'
       end
     end
