@@ -47,6 +47,8 @@ Muzzerall).
 META-INF/MANIFEST.MF (Joel Muzzerall).
 * Fixed:  BUILDR-226 Release task should use XML output of "svn info" instead
 of human-readable output (Alexis Midon).
+* Fixed:  BUILDR-230 release task fails if there's a space in the path to the
+Buildfile.
 * Fixed:  BUILDR-235 JRuby download link is broke (Alexis Midon).
 * Fixed:  BUILDR-239 HTTP redirects lose authentication information (Joel
 Muzzerall).

@@ -267,10 +267,11 @@ module Buildr
     # Make a release.
     def make
       check
-      with_release_candidate_version do |release_candidate_buildfile| 
-        options = ['--buildfile', release_candidate_buildfile, 'DEBUG=no']
-        options << '--environment' << Buildr.environment unless Buildr.environment.to_s.empty?
-        buildr %w{clean upload}, options
+      with_release_candidate_version do |release_candidate_buildfile|
+        args = '-S', 'buildr', "_#{Buildr::VERSION}_", '--buildfile', release_candidate_buildfile
+        args << '--environment' << Buildr.environment unless Buildr.environment.to_s.empty?
+        args << 'clean' << 'upload' << 'DEBUG=no'
+        ruby *args 
       end
       tag_release resolve_tag
       update_version_to_next
@@ -289,18 +290,7 @@ module Buildr
     end
     
   protected
-    # :call-seq:
-    #   buildr(tasks, options)
-    #
-    # Calls another instance of buildr.
-    def buildr(tasks, options)
-        sh "#{command} _#{Buildr::VERSION}_ #{tasks.join(' ')} #{options.join(' ')}"
-    end
     
-    def command #:nodoc:
-      Config::CONFIG['arch'] =~ /dos|win32/i ? $PROGRAM_NAME.ext('cmd') : $PROGRAM_NAME
-    end
-
     # :call-seq:
     #   with_release_candidate_version() { |filename| ... }
     #

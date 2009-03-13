@@ -327,7 +327,7 @@ describe Svn do
 end # of Buildr::Svn
 
 
-describe 'a release process', :shared=>true do 
+describe 'a release process', :shared=>true do
 
   describe '#make' do
     before do
@@ -335,6 +335,8 @@ describe 'a release process', :shared=>true do
       # Prevent a real call to a spawned buildr process.
       @release.stub!(:buildr)
       @release.stub!(:check)
+      @release.should_receive(:ruby).with('-S', 'buildr', "_#{Buildr::VERSION}_", '--buildfile', File.expand_path('buildfile.next'),
+                                          '--environment', 'development', 'clean', 'upload', 'DEBUG=no')
     end
     
     it 'should tag a release with the release version' do

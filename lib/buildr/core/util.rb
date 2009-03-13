@@ -60,8 +60,10 @@ module Buildr
       end
       cmd << ruby_bin
       cmd << '-S' << options.delete(:command) if options[:command]
-      sh *cmd.push(*args.flatten).push(options) do |ok, status|
-        ok or fail "Command failed with status (#{status ? status.exitstatus : 'unknown'}): [#{cmd.join(" ")}]"
+      cmd.concat args.flatten
+      cmd.push options
+      sh *cmd do |ok, status|
+        ok or fail "Command ruby failed with status (#{status ? status.exitstatus : 'unknown'}): [#{cmd.join(" ")}]"
       end
     end
 
