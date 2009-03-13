@@ -862,29 +862,4 @@ module Buildr
     Project.projects *args
   end
 
-  # Forces all the projects to be evaluated before executing any other task.
-  # If we don't do that, we don't get to have tasks available when running Rake.
-  namespace 'buildr' do
-
-    desc "Freeze the Buildfile so it always uses Buildr version #{Buildr::VERSION}"
-    task 'freeze' do
-      puts "Freezing the Buildfile so it always uses Buildr version #{Buildr::VERSION}"
-      original = File.read(Buildr.application.buildfile)
-      if original =~ /gem\s*(["'])buildr\1/
-        modified = original.sub(/gem\s*(["'])buildr\1\s*,\s*(["']).*\2/, %{gem "buildr", "#{Buildr::VERSION}"})
-      else
-        modified = %{gem "buildr", "#{Buildr::VERSION}"\n} + original
-      end
-      File.open(Buildr.application.buildfile, "w") { |file| file.write modified }
-    end
-
-    desc 'Unfreeze the Buildfile to use the latest version of Buildr'
-    task 'unfreeze' do
-      puts 'Unfreezing the Buildfile to use the latest version of Buildr from your Gems repository.'
-      modified = File.read(Buildr.application.buildfile).sub(/^\s*gem\s*(["'])buildr\1.*\n/, "")
-      File.open(Buildr.application.buildfile, "w") { |file| file.write modified }
-    end
-  end
-
-
 end
