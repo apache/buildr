@@ -220,7 +220,7 @@ module Buildr
       # Forget all namespaces, create a new ROOT
       def clear
         @instances = nil
-        remove_const(:ROOT) if const_defined?(:ROOT)
+        remove_const(:ROOT) rescue nil
         const_set(:ROOT, new('root'))
       end
 

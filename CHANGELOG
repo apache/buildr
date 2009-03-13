@@ -30,6 +30,7 @@
 http://github.com/mojombo/jekyll/ This replaces Docter so less code to
 maintain and the same Textile/Liquid mechanism as when using Github pages.
 * Fixed:  Removed double complete/fail messages showing up on console.
+* Fixed:  BUILDR-140 Get rid of const_defined? all across the board.
 * Fixed:  BUILDR-158 Nailgun is now a delegate for buildr/drb (a pure-ruby dRuby server)
 * Fixed:  BUILDR-170 ArtifactNamespace#method_missing has a condition that is never true.
 * Fixed:  BUILDR-172 Scala compiler not loaded by default.

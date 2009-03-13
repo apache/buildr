@@ -28,5 +28,8 @@ module Buildr ; extend self ; end
 # The Buildfile object (self) has access to all the Buildr methods and constants.
 class << self ; include Buildr ; end
 class Object #:nodoc:
-  Buildr.constants.each { |c| const_set c, Buildr.const_get(c) unless const_defined?(c) }
+  Buildr.constants.each do |name|
+    const = Buildr.const_get(name)
+    const_set name, const if const.is_a?(Module)
+  end
 end

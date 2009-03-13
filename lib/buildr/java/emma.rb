@@ -39,7 +39,7 @@ module Buildr
 
     class << self
 
-      REQUIRES = ['emma:emma_ant:jar:2.0.5312', 'emma:emma:jar:2.0.5312'] unless const_defined?('REQUIRES')
+      REQUIRES = ['emma:emma_ant:jar:2.0.5312', 'emma:emma:jar:2.0.5312']
 
       def requires()
         @requires ||= Buildr.artifacts(REQUIRES).each(&:invoke).map(&:to_s)
