@@ -14,32 +14,46 @@
 # the License.
 
 
-require 'rakelib/jekylltask'
-
 begin # For the Web site, we use the mislav-hanna RDoc theme (http://github.com/mislav/hanna/)
   require 'hanna/rdoctask'
+
+  desc "Generate RDoc documentation in rdoc/"
+  Rake::RDocTask.new :rdoc do |rdoc|
+    rdoc.rdoc_dir = 'rdoc'
+    rdoc.title    = spec.name
+    rdoc.options  = spec.rdoc_options.clone
+    rdoc.rdoc_files.include('lib/**/*.rb')
+    rdoc.rdoc_files.include spec.extra_rdoc_files
+  end
+
 rescue LoadError
   puts "Buildr uses the mislav-hanna RDoc theme. You can install it by running rake setup"
-  task('setup') { install_gem 'mislav-hanna', :source=>'http://gems.github.com' }
-  require 'rake/rdoctask'
+  task(:setup) { install_gem 'mislav-hanna', :source=>'http://gems.github.com' }
 end
 
 
-desc "Generate RDoc documentation in rdoc/"
-Rake::RDocTask.new('rdoc') do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = spec.name
-  rdoc.options  = spec.rdoc_options.clone
-  rdoc.rdoc_files.include('lib/**/*.rb')
-  rdoc.rdoc_files.include spec.extra_rdoc_files
+begin
+  require 'rakelib/jekylltask'
+
+  desc "Generate Buildr documentation in _site/"
+  JekyllTask.new :jekyll do |task|
+    task.source = 'doc'
+    task.target = '_site'
+    task.pygments = true
+  end
+
+rescue LoadError
+  puts "Buildr uses the mojombo-jekyll to generate the Web site. You can install it by running rake setup"
+  task :setup do
+    install_gem 'mojombo-jekyll', :source=>'http://gems.github.com', :version=>'0.4.1'
+    if `pygmentize -V`.empty?
+      args = %w{easy_install Pygments}
+      args.unshift 'sudo' unless Config::CONFIG['host_os'] =~ /windows/
+      sh *args
+    end
+  end
 end
 
-desc "Generate Buildr documentation in _site/"
-JekyllTask.new 'jekyll' do |task|
-  task.source = 'doc'
-  task.target = '_site'
-  task.pygments = true
-end
 
 desc "Generate Buildr documentation as buildr.pdf"
 file 'buildr.pdf'=>'_site' do |task|
@@ -48,7 +62,7 @@ file 'buildr.pdf'=>'_site' do |task|
 end
 
 desc "Build a copy of the Web site in the ./_site"
-task 'site'=>['_site', 'rdoc', 'spec', 'coverage', 'buildr.pdf'] do
+task :site=>['_site', :rdoc, :spec, :coverage, 'buildr.pdf'] do
   cp_r 'rdoc', '_site'
   fail 'No RDocs in site directory' unless File.exist?('_site/rdoc/files/lib/buildr_rb.html')
   cp '_reports/specs.html', '_site'
@@ -61,15 +75,15 @@ task 'site'=>['_site', 'rdoc', 'spec', 'coverage', 'buildr.pdf'] do
 end
 
 # Publish prerequisites to Web site.
-task 'site_publish'=>'site' do
-  target = "people.apache.org:/www/#{spec.name}.apache.org"
+task :upload_site=>:site do
+  target = "people.apache.org:/www/#{spec.name}.apache.org/"
   puts "Uploading new site to #{target} ..."
-  sh "rsync --progress --recursive --delete _site/ #{target.inspect}/"
-  sh "ssh people.apache.org chmod -R g+w /www/#{spec.name}.apache.org/*"
+  sh 'rsync', '--progress', '--recursive', '--delete', '_site/', target
+  sh 'ssh', 'people.apache.org', 'chmod', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
   puts "Done"
 end
 
-task 'clobber' do
+task :clobber do
   rm_rf '_site'
   rm 'buildr.pdf'
   rm 'prince_errors.log'

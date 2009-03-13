@@ -15,6 +15,8 @@
 
 
 require 'rake/tasklib'
+require 'jekyll'
+
 
 class JekyllTask < Rake::TaskLib
   def initialize(name=:jekyll)  # :yield: self
@@ -73,47 +75,36 @@ class JekyllTask < Rake::TaskLib
 end
 
 
-begin
-  require 'jekyll'
-
-  # TODO: Worked around bug in Jekyll 0.4.1. Removed when 0.4.2 is out.
-  # http://github.com/mojombo/jekyll/commit/c180bc47bf2f63db1bff9f6600cccbe5ad69077e#diff-0
-  class Albino
-    def execute(command)
-      output = ''
-      Open4.popen4(command) do |pid, stdin, stdout, stderr|
-        stdin.puts @target
-        stdin.close
-        output = stdout.read.strip
-        [stdout, stderr].each { |io| io.close }
-      end
-      output
+# TODO: Worked around bug in Jekyll 0.4.1. Removed when 0.4.2 is out.
+# http://github.com/mojombo/jekyll/commit/c180bc47bf2f63db1bff9f6600cccbe5ad69077e#diff-0
+class Albino
+  def execute(command)
+    output = ''
+    Open4.popen4(command) do |pid, stdin, stdout, stderr|
+      stdin.puts @target
+      stdin.close
+      output = stdout.read.strip
+      [stdout, stderr].each { |io| io.close }
     end
-  end
-
-  class Jekyll::Page
-    def render(layouts, site_payload)
-      puts "... #{@name}"
-      payload = {"page" => self.data}.deep_merge(site_payload)
-      do_layout(payload, layouts)
-    end
-  end
-
-  module TocFilter
-    def toc(input)
-      input.scan(/<(h2)(?:>|\s+(.*?)>)(.*?)<\/\1\s*>/mi).inject(%{<ol class="toc">}) { |toc, entry|
-        id = entry[1][/^id=(['"])(.*)\1$/, 2]
-        title = entry[2].gsub(/<(\w*).*?>(.*?)<\/\1\s*>/m, '\2').strip
-        toc << %{<li><a href="##{id}">#{title}</a></li>}
-      } << "</ol>"
-    end
-  end
-  Liquid::Template.register_filter(TocFilter)
-
-rescue LoadError
-  puts "Buildr uses the mojombo-jekyll to generate the Web site. You can install it by running rake setup"
-  task 'setup' do
-    install_gem 'mojombo-jekyll', :source=>'http://gems.github.com', :version=>'0.4.1'
-    sh "#{sudo_needed? ? 'sudo ' : nil}easy_install Pygments"
+    output
   end
 end
+
+class Jekyll::Page
+  def render(layouts, site_payload)
+    puts "... #{@name}"
+    payload = {"page" => self.data}.deep_merge(site_payload)
+    do_layout(payload, layouts)
+  end
+end
+
+module TocFilter
+  def toc(input)
+    input.scan(/<(h2)(?:>|\s+(.*?)>)(.*?)<\/\1\s*>/mi).inject(%{<ol class="toc">}) { |toc, entry|
+      id = entry[1][/^id=(['"])(.*)\1$/, 2]
+      title = entry[2].gsub(/<(\w*).*?>(.*?)<\/\1\s*>/m, '\2').strip
+      toc << %{<li><a href="##{id}">#{title}</a></li>}
+    } << "</ol>"
+  end
+end
+Liquid::Template.register_filter(TocFilter)

@@ -16,66 +16,54 @@
 
 begin
   require 'spec/rake/spectask'
-
   directory '_reports'
-  task 'clobber' do
-    rm_f 'failed'
-    rm_rf '_reports'
-  end
 
-  desc 'Run all specs'
-  Spec::Rake::SpecTask.new('spec'=>'_reports') do |task|
+  desc "Run all specs"
+  Spec::Rake::SpecTask.new :spec=>'_reports' do |task|
     task.spec_files = Dir['spec/**/*_spec.rb']
     task.spec_opts = %w{--format specdoc --format failing_examples:failed --format html:_reports/specs.html --loadby mtime --backtrace}    
     task.spec_opts << '--colour' if $stdout.isatty
   end
 
   desc 'Run all failed examples from previous run'
-  Spec::Rake::SpecTask.new('failed') do |task|
+  Spec::Rake::SpecTask.new :failed do |task|
     task.spec_files = Dir['spec/**/*_spec.rb']
     task.spec_opts = %w{--format specdoc --format failing_examples:failed --example failed --backtrace}    
     task.spec_opts << '--colour' if $stdout.isatty
   end
 
-  # TODO: Horribly broken!  Fix some other time.
   desc 'Run RSpec and generate Spec and coverage reports (slow)'
-  Spec::Rake::SpecTask.new('coverage'=>'_reports') do |task|
+  Spec::Rake::SpecTask.new :coverage=>'_reports' do |task|
     task.spec_files = Dir['spec/**/*_spec.rb']
     task.spec_opts = %W{--format progress --format failing_examples:failed --format html:_reports/specs.html --backtrace}    
     task.spec_opts << '--colour' if $stdout.isatty
     task.rcov = true
     task.rcov_dir = '_reports/coverage'
-    task.rcov_opts << '--exclude / --include-file ^lib --text-summary'
+    task.rcov_opts = '--exclude / --include-file ^lib --text-summary'
   end
 
   # Useful for testing with JRuby when using Ruby and vice versa.
-  namespace 'spec' do
-
-    desc 'Run all specs specifically with Ruby'
-    task 'ruby' do
-      puts 'Running test suite using Ruby ...'
+  namespace :spec do
+    desc "Run all specs specifically with Ruby"
+    task :ruby do
+      puts "Running test suite using Ruby ..."
       sh 'ruby -S rake spec'
     end
 
-    desc 'Run all specs specifically with JRuby'
-    task 'jruby' do
-      puts 'Running test suite using JRuby ...'
+    desc "Run all specs specifically with JRuby"
+    task :jruby do
+      puts "Running test suite using JRuby ..."
       sh 'jruby -S rake spec'
     end
-
   end
 
-  task 'setup' do
-    install_gem 'win32console' if windows? && !RUBY_PLATFORM[/java/] # Colors for RSpec, only on Windows platform.
+  task :clobber do
+    rm_f 'failed'
+    rm_rf '_reports'
   end
 
 rescue LoadError
-  puts 'Please run rake setup to install RSpec'
-  task 'stage:check' do
-    fail 'Please run rake setup to install RSpec'
-  end
+  puts "Buildr uses RSpec. You can install it by running rake setup"
+  task(:setup) { install_gem 'rcov', :version=>'~>0.8' }
+  task(:setup) { install_gem 'win32console' if RUBY_PLATFORM[/win32/] } # Colors for RSpec, only on Windows platform.
 end
-
-
-task 'stage:prepare'=>'spec'
-task 'stage:prepare'=>RUBY_PLATFORM =~ /java/ ? 'spec:ruby' : 'spec:jruby' # Test the *other* platform

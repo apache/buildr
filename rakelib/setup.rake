@@ -14,58 +14,35 @@
 # the License.
 
 
-require 'rubygems/source_info_cache'
-require 'stringio' # for Gem::RemoteFetcher
 require 'jruby' if RUBY_PLATFORM[/java/]
+require 'rubygems/source_info_cache'
 
-# True if running on the Windows operating sytem.  Different from Gem.win_platform?
-# which returns true if running on the Windows platform of MRI, false when using JRuby.
-def windows?
-  Config::CONFIG['host_os'] =~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i
-end
 
-def sudo_needed?
-  !( windows? || ENV['GEM_HOME'] )
-end
-
-# Finds and returns path to executable.  Consults PATH environment variable.
-# Returns nil if executable not found.
-def which(name)
-  if windows?
-    path = ENV['PATH'].split(File::PATH_SEPARATOR).map { |path| path.gsub('\\', '/') }.map { |path| "#{path}/#{name}.{exe,bat,com}" }
-  else
-    path = ENV['PATH'].split(File::PATH_SEPARATOR).map { |path| "#{path}/#{name}" }
-  end
-  FileList[path].existing.first
-end
-
-# Execute a GemRunner command
-def gem_run(*args)
-  rb_bin = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
-  args.unshift rb_bin, '-S', 'gem'
-  args.unshift 'sudo', 'env', 'JAVA_HOME=' + ENV['JAVA_HOME'] if sudo_needed?
-  sh *args.map{ |a| a.inspect }.join(' ')
-end
-
-def install_gem(name, options = {}) # ver_requirement = ['> 0'])
+# Install the specified gem. Options include:
+# - :version -- Version requirement, e.g. '1.2' or '~> 1.2'
+# - :source  -- Gem repository, e.g. 'http://gems.github.com'
+def install_gem(name, options = {})
   dep = Gem::Dependency.new(name, options[:version] || '>0')
   if Gem::SourceIndex.from_installed_gems.search(dep).empty?
     puts "Installing #{name} ..."
-    args = 'install', name
-    args << '--version' << dep.version_requirements.to_s if options[:version]
+    rb_bin = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
+    args = []
+    args << 'sudo' << 'env' << "JAVA_HOME=#{ENV['JAVA_HOME']}" if sudo_needed?
+    args << rb_bin << '-S' << 'gem' << 'install' << name
+    args << '--version' << dep.version_requirements.to_s
     args << '--source' << options[:source] if options[:source]
     args << '--source' << 'http://gems.rubyforge.org'
     args << '--install-dir' << ENV['GEM_HOME'] if ENV['GEM_HOME']
-    gem_run *args
+    sh *args
   end
 end
 
-# Setup environment for running this Rakefile (RSpec, Docter, etc).
+
+# Setup environment for running this Rakefile (RSpec, Jekyll, etc).
 desc "If you're building from sources, run this task first to setup the necessary dependencies."
-missing = spec.dependencies.select { |dep| Gem::SourceIndex.from_installed_gems.search(dep).empty? }
-task 'setup' do
+task :setup do
+  missing = spec.dependencies.select { |dep| Gem::SourceIndex.from_installed_gems.search(dep).empty? }
   missing.each do |dep|
     install_gem dep.name, :version=>dep.version_requirements
   end
 end
-puts "Missing Gems #{missing.join(', ')}, please run rake setup first!" unless missing.empty?

@@ -26,6 +26,7 @@ unless ENV['JAVA_HOME']
 end
 
 
+# Load the Gem specification for the current platform (Ruby or JRuby).
 def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
   @specs ||= ['ruby', 'java'].inject({}) { |hash, platform|
     $platform = platform
@@ -34,25 +35,11 @@ def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
   @specs[platform]
 end
 
-
-
-
-ENV['staging'] = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
-
-task('apache:license').enhance FileList[spec.files].exclude('.class', '.png', '.jar', '.tif', '.textile', '.icns',
-   'README', 'LICENSE', 'CHANGELOG', 'NOTICE', 'etc/KEYS', 'etc/git-svn-authors')
-
-task 'stage:check' do
-  print 'Checking that we have JRuby, Scala and Groovy available ... '
-  fail 'Full testing requires JRuby!' unless which('jruby')
-  fail 'Full testing requires Scala!' unless which('scala')
-  fail 'Full testing requires Groovy!' unless which('groovy')
-  puts 'OK'
+# Tell us if we need sudo for various commands.
+def sudo_needed?
+  Config::CONFIG['host_os'] !~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i && !ENV['GEM_HOME']
 end
 
-task 'stage:check' do
-  # Dependency check for the other platform, i.e. if making a release with Ruby,
-  # run dependency checks with JRuby. (Also, good opportunity to upgrade other
-  # platform's dependencies)
-  sh RUBY_PLATFORM =~ /java/ ? 'ruby' : 'jruby -S rake setup dependency'
-end
+
+desc 'Clean up all temporary directories used for running tests, creating documentation, packaging, etc.'
+task :clobber
