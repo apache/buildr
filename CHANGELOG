@@ -13,16 +13,18 @@
 * Change: Introduced new options from Rake 0.8.3: -I (libdir), -R (rakelib),
           --rules, --no-search, --silent.
 * Change: Upgraded to Rubyforge 1.0.1.
+* Change: Upgraded to use Rake 0.8.4.
+* Change: Upgraded to use Net-SSH 2.0.11.
+* Change: Upgraded to use RSpec 1.1.12.
+* Change: Upgraded to use JRuby 1.1.6 (when auto-installing).
 * Change: Buildr, no longer in incubation (hurray!): new site, mailing list, SVN, Git.
-* Change: BUILDR-147 Upgraded to use Rake 0.8.3.
-* Change: BUILDR-166 Upgraded to use RSpec 1.1.11.
 * Change: BUILDR-171 Eclipse task generates meta-data files for projects with
           test source code but no main source code. 
 * Change: BUILDR-177 Moved cobertura and emma extensions to lib directory.
 * Change: BUILDR-187 Source code attachment for Eclipse .classpath.
 * Change: BUILDR-188 Source code attachment for IDEA .iml file (Marko Sibakov).
 * Change: BUILDR-237 Use MacPorts Scala on OS X.
-* Change: BUILDR-260: Upgrade to Scala 2.7.3 compatible dependencies:  
+* Change: BUILDR-260 Upgrade to Scala 2.7.3 compatible dependencies:  
           ScalaSpecs 1.4.3, ScalaCheck 1.5 and ScalaTest 0.9.5
 * Change: Buildr now uses Jekyll to generate Web site/documentation:
 http://github.com/mojombo/jekyll/ This replaces Docter so less code to
