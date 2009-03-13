@@ -14,7 +14,9 @@
 # the License.
 
 
-gem 'Antwrap' ; autoload :Antwrap, 'antwrap'
+gem 'Antwrap'
+autoload :Antwrap, 'antwrap'
+autoload :Logger, 'logger'
 require 'buildr/core/project'
 require 'buildr/core/help'
 
