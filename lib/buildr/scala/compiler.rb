@@ -18,7 +18,6 @@ require 'buildr/core/common'
 require 'buildr/core/compile'
 require 'buildr/packaging'
 
-
 module Buildr::Scala
 
   class << self
@@ -60,12 +59,24 @@ module Buildr::Scala
       def use_fsc
         ENV["USE_FSC"] =~ /^(yes|on|true)$/i
       end
+      
+      def applies_to?(project, task) #:nodoc:
+        paths = task.sources + [sources].flatten.map { |src| Array(project.path_to(:source, task.usage, src.to_sym)) }
+        paths.flatten!
+        
+        # Just select if we find .scala files
+        paths.any? { |path| !Dir["#{path}/**/*.scala"].empty? }
+      end
     end
+    
+    Javac = Buildr::Compiler::Javac
 
-    OPTIONS = [:warnings, :deprecation, :optimise, :target, :debug, :other]
+    OPTIONS = [:warnings, :deprecation, :optimise, :target, :debug, :other, :javac]
+    
     Java.classpath << dependencies
 
-    specify :language=>:scala, :target=>'classes', :target_ext=>'class', :packaging=>:jar
+    specify :language=>:scala, :sources => [:scala, :java], :source_ext => [:scala, :java],
+            :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
     def initialize(project, options) #:nodoc:
       super
@@ -73,6 +84,9 @@ module Buildr::Scala
       options[:warnings] = verbose if options[:warnings].nil?
       options[:deprecation] ||= false
       options[:optimise] ||= false
+      options[:javac] ||= {}
+      
+      @java = Javac.new(project, options[:javac])
     end
 
     def compile(sources, target, dependencies) #:nodoc:
@@ -97,10 +111,23 @@ module Buildr::Scala
           Java.scala.tools.nsc.Main.process(cmd_args.to_java(Java.java.lang.String))
           fail 'Failed to compile, see errors above' if Java.scala.tools.nsc.Main.reporter.hasErrors
         end
+        
+        if java_applies? sources
+          trace 'Compiling mixed Java/Scala sources'
+          
+          deps = dependencies + [ File.expand_path('lib/scala-library.jar', Scalac.scala_home),
+                                  File.expand_path(target) ]
+          @java.compile(sources, target, deps)
+        end
       end
     end
 
   private
+  
+    def java_applies?(sources)
+      not sources.flatten.map { |source| File.directory?(source) ? FileList["#{source}/**/*.java"] : source }.
+        flatten.reject { |file| File.directory?(file) }.map { |file| File.expand_path(file) }.uniq.empty?
+    end
 
     # Returns Scalac command line arguments from the set of options.
     def scalac_args #:nodoc:
@@ -120,4 +147,4 @@ end
 
 # Scala compiler comes first, ahead of Javac, this allows it to pick
 # projects that mix Scala and Java code by spotting Scala code first.
-Buildr::Compiler.compilers << Buildr::Scala::Scalac
+Buildr::Compiler.compilers.unshift Buildr::Scala::Scalac

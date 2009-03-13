@@ -80,6 +80,33 @@ describe 'scalac compiler' do
     end
   end
 
+  it 'should compile scala class depending on java class in same project' do
+    write 'src/main/java/com/example/Foo.java', 'package com.example; public class Foo {}'
+    write 'src/main/scala/com/example/Bar.scala', 'package com.example; class Bar extends Foo'
+    define 'test1', :version=>'1.0' do
+      package(:jar)
+    end
+    task('test1:package').invoke
+    file('target/test1-1.0.jar').should exist
+    Zip::ZipFile.open(project('test1').package(:jar).to_s) do |zip|
+      zip.file.exist?('com/example/Foo.class').should be_true
+      zip.file.exist?('com/example/Bar.class').should be_true
+    end
+  end
+
+  it 'should compile java class depending on scala class in same project' do
+    write 'src/main/scala/com/example/Foo.scala', 'package com.example; class Foo'
+    write 'src/main/java/com/example/Bar.java',  'package com.example; public class Bar extends Foo {}'
+    define 'test1', :version=>'1.0' do
+      package(:jar)
+    end
+    task('test1:package').invoke
+    file('target/test1-1.0.jar').should exist
+    Zip::ZipFile.open(project('test1').package(:jar).to_s) do |zip|
+      zip.file.exist?('com/example/Foo.class').should be_true
+      zip.file.exist?('com/example/Bar.class').should be_true
+    end
+  end
 end
 
 

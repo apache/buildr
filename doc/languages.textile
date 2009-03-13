@@ -148,7 +148,7 @@ On Windows:
 
 <notextile>
 {% highlight sh %}
-> set SCALA_HOME=C:\Path\To\Scala-2.7.1
+> set SCALA_HOME=C:\Path\To\Scala-2.7.3
 {% endhighlight %}
 </notextile>
 
@@ -156,11 +156,11 @@ On Linux and other Unix variants,
 
 <notextile>
 {% highlight sh %}
-> export SCALA_HOME=/path/to/scala-2.7.1
+> export SCALA_HOME=/path/to/scala-2.7.3
 {% endhighlight %}
 </notextile>
 
-The @SCALA_HOME@ base directory should be such that Scala core libraries are located directly under the "lib" subdirectory, and Scala scripts are under the "bin" directory.
+The @SCALA_HOME@ base directory should be such that Scala core libraries are located directly under the "lib" subdirectory, and Scala scripts are under the "bin" directory. This step is not necessary if you installed Scala using MacPorts (OS X).
 
 You must also require the Scala compiler in your buildfile:
 
@@ -174,7 +174,11 @@ h3. Compiling Scala
 
 The Scala compiler looks for source files in the project's @src/main/scala@  directory, and defaults to compiling them into the @target/classes@ directory.  It looks for test cases in the project's @src/test/scala@ and defaults to  compile them into the @target/test/classes@ directory.
 
-If you point the @compile@ task at any other source directory, it will use the  Scala compiler if any of these directories contains files with the extension @.scala@.
+Any Java source files found in the @src/main/java@ directory will be compiled using the Scala/Java joint compiler into the @target/classes@ directory.  Both the Java and the Scala sources are compiled with an inclusive classpath, meaning that you may have a Java class which depends upon a Scala class which depends upon a Java class, all within the same project.  The Java sources will be compiled with the same dependencies as the Scala sources with the addition of the @scala-library.jar@ file as required for Scala interop.
+
+Note that you cannot use the Groovy *and* the Scala joint compilers in the same project.  If both are required, the Groovy joint compiler will take precedence.
++
+If you point the @compile@ task at any other source directory, it will use the  Scala compiler if any of these directories contains files with the extension @.scala@.  The joint compilation of Java sources may only be pointed at an alternative directory using the feature to redefine the @_(:src, :main, :java)@ path.
 
 When using the Scala compiler, if you don't specify the packaging type, it defaults to JAR.
 
@@ -187,6 +191,7 @@ The Scala compiler supports the following options:
 | @:other@        | Array of options passed to the compiler (e.g. @:other=>'-Xprint-types'@). |
 | @:target@       | Bytecode compatibility (e.g. '1.4'). |
 | @:warnings@     | Issue warnings when compiling.  True when running in verbose mode. |
+| @:javac@        | A hash of options passed to the @javac@ compiler verbatim. |
 
 h4. Fast Scala Compiler
 
