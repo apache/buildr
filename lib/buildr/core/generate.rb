@@ -124,7 +124,7 @@ module Buildr
             legacy = repository["layout"].to_s =~ /legacy/
             !legacy
           } rescue nil
-          repositories = [{"name" => "Standard maven2 repository", "url" => "http://www.ibiblio.org/maven2/"}] if repositories.nil? || repositories.empty?
+          repositories = [{"name" => "Standard maven2 repository", "url" => "http://www.ibiblio.org/maven2"}] if repositories.nil? || repositories.empty?
           repositories.each do |repository|
             name, url = repository["name"], repository["url"]
             script << "# #{name}"
