@@ -458,8 +458,6 @@ module Buildr
       files = [ File.expand_path('buildr.rb', ENV['HOME']), 'buildr.rb' ].select { |file| File.exist?(file) }
       files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
         select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
-      #Load local tasks that can be used in the Buildfile.
-      files += Dir[File.expand_path('tasks/*.rake')]
       files.each do |file|
         unless $LOADED_FEATURES.include?(file)
           load file

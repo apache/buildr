@@ -60,6 +60,7 @@ Muzzerall).
 for submodules (Rhett Sutphin).
 * Fixed:  BUILDR-247 OpenObject does not work with Hash#only (Rhett Sutphin).
 * Fixed:  BUILDR-253 ZipTask now uses Zlib::DEFAULT_COMPRESSION instead of NO_COMPRESSION
+* Fixed:  BUILDR-255 tasks/*.rake files are loaded more than once.
 * Fixed:  BUILDR-261 ScalaSpecs should be run with Scala dependencies
 * Fixed:  BUILDR-263 package(:war).merge not working correctly with exclude()
 * Remove: BUILDR-215 buildr:freeze and unfreeze tasks don't work since we're
