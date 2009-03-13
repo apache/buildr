@@ -13,13 +13,15 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+
 require File.join(File.dirname(__FILE__), '../spec_helpers')
+
 
 unless RUBY_PLATFORM =~ /java/
   describe ENV, 'JAVA_HOME on OS X' do
     before do
       @old_home, ENV['JAVA_HOME'] = ENV['JAVA_HOME'], nil
-      @old_env_java = ENV_JAVA
+      @old_env_java = Object.module_eval { remove_const :ENV_JAVA }
       Config::CONFIG.should_receive(:[]).with('host_os').and_return('darwin0.9')
     end
 

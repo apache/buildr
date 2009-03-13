@@ -39,13 +39,17 @@ module Buildr
   #   end
   module Cobertura
 
+    VERSION = '1.9'
+
     class << self
 
-      REQUIRES = ["net.sourceforge.cobertura:cobertura:jar:1.9", "log4j:log4j:jar:1.2.9",
-        "asm:asm:jar:2.2.1", "asm:asm-tree:jar:2.2.1", "oro:oro:jar:2.0.8"]
+      def version
+        Buildr.settings.build['cobertura'] || VERSION
+      end
 
-      def requires()
-        @requires ||= Buildr.artifacts(REQUIRES).each(&:invoke).map(&:to_s)
+      def dependencies
+        @dependencies ||= [ "net.sourceforge.cobertura:cobertura:jar:#{version}", "log4j:log4j:jar:1.2.9",
+                            "asm:asm:jar:2.2.1", "asm:asm-tree:jar:2.2.1", "oro:oro:jar:2.0.8"]
       end
 
       def report_to(file = nil)
@@ -133,7 +137,8 @@ module Buildr
               unless project.compile.sources.empty?
                 info "Instrumenting classes with cobertura data file #{cobertura.data_file}"
                 Buildr.ant "cobertura" do |ant|
-                  ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+                  ant.taskdef :resource=>"tasks.properties",
+                    :classpath=>Buildr.artifacts(Cobertura.dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
                   ant.send "cobertura-instrument", :todir=>task.to_s, :datafile=>cobertura.data_file do
                     includes, excludes = cobertura.includes, cobertura.excludes
                     
@@ -163,14 +168,15 @@ module Buildr
             # and add instrumented instead, but apparently Cobertura only creates some of the classes, so
             # we need both directories and instrumented must come first.
             project.test.dependencies.unshift cobertura.instrumented_dir
-            project.test.with Cobertura.requires
+            project.test.with Cobertura.dependencies
             project.test.options[:properties]["net.sourceforge.cobertura.datafile"] = cobertura.data_file
             
             [:xml, :html].each do |format|
               task format => ['instrument', 'test'] do 
                 info "Creating test coverage reports in #{cobertura.report_to(format)}"
                 Buildr.ant "cobertura" do |ant|
-                  ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+                  ant.taskdef :resource=>"tasks.properties",
+                    :classpath=>Buildr.artifacts(Cobertura.dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
                   ant.send "cobertura-report", :format=>format, 
                     :destdir=>cobertura.report_to(format), :datafile=>cobertura.data_file do
                     cobertura.sources.flatten.each do |src|
@@ -213,7 +219,8 @@ module Buildr
         task format => ["instrument", "test"] do
           info "Creating test coverage reports in #{report_target}"
           Buildr.ant "cobertura" do |ant|
-            ant.taskdef :classpath=>requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+            ant.taskdef :resource=>"tasks.properties",
+              :classpath=>Buildr.artifacts(Cobertura.dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
             ant.send "cobertura-report", :destdir=>report_target, :format=>format, :datafile=>data_file do
               Buildr.projects.map(&:cobertura).map(&:sources).flatten.each do |src|
                 ant.fileset :dir=>src.to_s if File.exist?(src.to_s)

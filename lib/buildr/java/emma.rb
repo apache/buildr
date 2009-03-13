@@ -37,12 +37,16 @@ module Buildr
   #   end
   module Emma
 
+    VERSION = '2.0.5312'
+
     class << self
 
-      REQUIRES = ['emma:emma_ant:jar:2.0.5312', 'emma:emma:jar:2.0.5312']
+      def version
+        Buildr.settings.build['emma'] || VERSION
+      end
 
-      def requires()
-        @requires ||= Buildr.artifacts(REQUIRES).each(&:invoke).map(&:to_s)
+      def dependencies
+        @dependencies ||= ["emma:emma_ant:jar:#{version}", "emma:emma:jar:#{version}"]
       end
 
       def report_to format=nil
@@ -54,12 +58,14 @@ module Buildr
       end
 
       def ant
-          Buildr.ant 'emma' do |ant|
-            ant.taskdef :classpath=>requires.join(File::PATH_SEPARATOR), :resource=>'emma_ant.properties'
-            ant.emma :verbosity=>(Buildr.application.options.trace ? 'verbose' : 'warning') do
-              yield ant
-            end
+        
+        Buildr.ant 'emma' do |ant|
+          ant.taskdef :resource=>'emma_ant.properties',
+            :classpath=>Buildr.artifacts(dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
+          ant.emma :verbosity=>(Buildr.application.options.trace ? 'verbose' : 'warning') do
+            yield ant
           end
+        end
       end
     end
     
@@ -154,7 +160,7 @@ module Buildr
             
             # We now have two target directories with bytecode.
             project.test.dependencies.unshift emma.instrumented_dir
-            project.test.with Emma.requires
+            project.test.with Emma.dependencies
             project.test.options[:properties]["emma.coverage.out.file"] = emma.coverage_file
             
             [:xml, :html].each do |format|

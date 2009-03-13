@@ -16,13 +16,13 @@
 
 require File.join(File.dirname(__FILE__), 'test_coverage_spec')
 Sandbox.require_optional_extension 'buildr/java/cobertura'
-
-Buildr::Cobertura::requires
+artifacts(Buildr::Cobertura::dependencies).map(&:invoke)
 
 
 describe Buildr::Cobertura do
   before do
     # Reloading the extension because the sandbox removes all its actions
+    Buildr.module_eval { remove_const :Cobertura }
     load File.expand_path('../lib/buildr/java/cobertura.rb')
     @tool_module = Buildr::Cobertura 
   end

@@ -150,7 +150,7 @@ describe 'test coverage tool', :shared=>true do
 
       it 'should have the test coverage tools artifacts' do
         define('foo')
-        @tool_module.requires.each { |artifact| project('foo').test.dependencies.should include(artifact) }
+        artifacts(@tool_module.dependencies).each { |artifact| project('foo').test.dependencies.should include(artifact) }
       end
     end
 
@@ -249,7 +249,7 @@ describe 'test coverage tool', :shared=>true do
     
     it 'should not add the test coverage tools artifacts to the testing classpath' do
       define('foo')
-      @tool_module.requires.each { |artifact| project('foo').test.dependencies.should_not include(artifact) }
+      @tool_module.dependencies.each { |artifact| project('foo').test.dependencies.should_not include(artifact) }
     end
   end
 end

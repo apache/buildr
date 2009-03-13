@@ -16,14 +16,13 @@
 
 require File.join(File.dirname(__FILE__), 'test_coverage_spec')
 Sandbox.require_optional_extension 'buildr/java/emma'
-
-
-Buildr::Emma::requires
+artifacts(Buildr::Emma::dependencies).map(&:invoke)
 
 
 describe Buildr::Emma do
   before do
     # Reloading the extension because the sandbox removes all its actions
+    Buildr.module_eval { remove_const :Emma }
     load File.expand_path('../lib/buildr/java/emma.rb')
     @tool_module = Buildr::Emma
   end
