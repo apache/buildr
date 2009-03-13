@@ -47,22 +47,22 @@ module Buildr
           if root
             script = HEADER.split("\n")
             header = <<-EOF
-  # Version number for this release
-  VERSION_NUMBER = "1.0.0"
-  # Group identifier for your projects
-  GROUP = "#{name}"
-  COPYRIGHT = ""
+# Version number for this release
+VERSION_NUMBER = "1.0.0"
+# Group identifier for your projects
+GROUP = "#{name}"
+COPYRIGHT = ""
 
-  # Specify Maven 2.0 remote repositories here, like this:
-  repositories.remote << "http://www.ibiblio.org/maven2/"
+# Specify Maven 2.0 remote repositories here, like this:
+repositories.remote << "http://www.ibiblio.org/maven2/"
 
-  desc "The #{name.capitalize} project"
-  define "#{name}" do
+desc "The #{name.capitalize} project"
+define "#{name}" do
 
-    project.version = VERSION_NUMBER
-    project.group = GROUP
-    manifest["Implementation-Vendor"] = COPYRIGHT
-  EOF
+  project.version = VERSION_NUMBER
+  project.group = GROUP
+  manifest["Implementation-Vendor"] = COPYRIGHT
+            EOF
             script += header.split("\n")
           else
             script = [ %{define "#{name}" do} ]
