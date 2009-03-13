@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   # $platform global variable.  In all other cases, we figure it out from RUBY_PLATFORM.
   spec.platform       = $platform || RUBY_PLATFORM[/java/] || 'ruby'
   
-  spec.files          = Dir['{addon,bin,doc,etc,lib,rakelib,spec}/**/*', 'buildr.*'] +
+  spec.files          = Dir['{addon,bin,doc,etc,lib,rakelib,spec}/**/*', '*.{gemspec,buildfile}'] +
                         ['LICENSE', 'NOTICE', 'CHANGELOG', 'README.rdoc', 'Rakefile', '_buildr', '_jbuildr']
   spec.require_paths  = 'lib', 'addon'
   spec.bindir         = 'bin'                               # Use these for applications.
