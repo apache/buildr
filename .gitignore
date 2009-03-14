@@ -4,9 +4,8 @@ buildr.pdf
 rdoc
 _reports
 _site
-_print
 _snapshot
-_stage
+_staged
 _release
 tmp
 *.log
