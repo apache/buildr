@@ -63,7 +63,9 @@
     background: transparent;
     text-decoration: none;
   }
-  #wrap, #content, #footer {
+
+  #header, #pages, #footer { display: none }
+  #wrap, #content {
     float: none !important;
     color: black;
     background: transparent;
@@ -73,16 +75,10 @@
     border: 0;
   }
 
-  #header { display: none }
-
-  #pages, .noprint { display: none; }
-
   ol.toc a:link, ol.toc a:visited { text-decoration: none; }
   ol.toc a:after { content: leader('.') target-counter(attr(href), page); }
 
-  #footer { display: none }
-
-  #license {
+  .break {
     page-break-before: always;
     padding-top: 1in;
   }
