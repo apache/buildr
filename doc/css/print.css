@@ -78,9 +78,17 @@
   ol.toc a:link, ol.toc a:visited { text-decoration: none; }
   ol.toc a:after { content: leader('.') target-counter(attr(href), page); }
 
-  .break {
+  .title {
     page-break-before: always;
-    padding-top: 1in;
+    border: none;
+  }
+  .title img {
+    width: 20em;
+    margin: 2em auto 2em auto;
+  }
+  p.preface {
+    page-break-before: always;
+    padding-top: 2.5in;
   }
 
 }
