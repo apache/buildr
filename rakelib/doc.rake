@@ -62,7 +62,7 @@ file 'buildr.pdf'=>'_site' do |task|
 end
 
 desc "Build a copy of the Web site in the ./_site"
-task :site=>['_site', :rdoc, :spec, :coverage, 'buildr.pdf'] do
+task :site=>['_site', :rdoc, '_reports/specs.html', '_reports/coverage', 'buildr.pdf'] do
   cp_r 'rdoc', '_site'
   fail 'No RDocs in site directory' unless File.exist?('_site/rdoc/files/lib/buildr_rb.html')
   cp '_reports/specs.html', '_site'
@@ -75,7 +75,7 @@ task :site=>['_site', :rdoc, :spec, :coverage, 'buildr.pdf'] do
 end
 
 # Publish prerequisites to Web site.
-task :upload_site=>:site do
+task 'publish'=>:site do
   target = "people.apache.org:/www/#{spec.name}.apache.org/"
   puts "Uploading new site to #{target} ..."
   sh 'rsync', '--progress', '--recursive', '--delete', '_site/', target

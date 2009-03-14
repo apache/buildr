@@ -24,6 +24,7 @@ begin
     task.spec_opts = %w{--format specdoc --format failing_examples:failed --format html:_reports/specs.html --loadby mtime --backtrace}    
     task.spec_opts << '--colour' if $stdout.isatty
   end
+  file('_reports/specs.html') { task(:spec).invoke }
 
   desc 'Run all failed examples from previous run'
   Spec::Rake::SpecTask.new :failed do |task|
@@ -39,8 +40,10 @@ begin
     task.spec_opts << '--colour' if $stdout.isatty
     task.rcov = true
     task.rcov_dir = '_reports/coverage'
-    task.rcov_opts = '--exclude / --include-file ^lib --text-summary'
+    task.rcov_opts = %w{--exclude / --include-file ^lib --text-summary}
   end
+  file('_reports/coverage') { task(:coverage).invoke }
+
 
   # Useful for testing with JRuby when using Ruby and vice versa.
   namespace :spec do
