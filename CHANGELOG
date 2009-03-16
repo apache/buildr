@@ -8,6 +8,7 @@
 * Added:  BUILDR-222 Support Git as a version control system
 * Added   BUILDR-223 Release Task: customizable commit message
 * Added:  BUILDR-242 Include Scala-Tools Repository by Default.  
+* Added:  BUILDR-268 Allow proxying for https connections (Joel Muzzerall).
 * Added:  Info message "Packaging filename.ext" now displayed for packaging tasks
 * Added:  Added Scala.version and Scala.version_str
 * Change: require 'buildr/scala' is now officially required to use Scala features

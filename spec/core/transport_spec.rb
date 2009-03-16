@@ -235,10 +235,23 @@ describe URI::HTTP, '#read' do
     @uri.read
   end
 
-  it 'should use proxy from environment variable HTTP_PROXY' do
+  it 'should use HTTPS if applicable' do
+    Net::HTTP.should_receive(:new).with(@host_domain, 443).and_return(@http)
+    @http.should_receive(:use_ssl=).with(true)
+    URI(@uri.to_s.sub(/http/, 'https')).read
+  end
+  
+  it 'should use proxy from environment variable HTTP_PROXY when using http' do
     ENV['HTTP_PROXY'] = @proxy
     Net::HTTP.should_receive(:new).with(*@proxy_args).and_return(@http)
     @uri.read
+  end
+
+  it 'should use proxy from environment variable HTTPS_PROXY when using https' do
+    ENV['HTTPS_PROXY'] = @proxy
+    Net::HTTP.should_receive(:new).with(@host_domain, 443, 'myproxy', 8080, 'john', 'smith').and_return(@http)
+    @http.should_receive(:use_ssl=).with(true)
+    URI(@uri.to_s.sub(/http/, 'https')).read
   end
 
   it 'should not use proxy for hosts from environment variable NO_PROXY' do

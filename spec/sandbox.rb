@@ -100,7 +100,7 @@ module Sandbox
     ENV['BUILDR_ENV'] = 'development'
 
     @_sandbox[:env_keys] = ENV.keys
-    ['DEBUG', 'TEST', 'HTTP_PROXY', 'USER'].each { |k| ENV.delete(k) ; ENV.delete(k.downcase) }
+    ['DEBUG', 'TEST', 'HTTP_PROXY', 'HTTPS_PROXY', 'USER'].each { |k| ENV.delete(k) ; ENV.delete(k.downcase) }
 
     # Remove testing local repository, and reset all repository settings.
     Buildr.repositories.instance_eval do

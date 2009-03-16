@@ -120,7 +120,7 @@ repositories.remote << 'http://www.ibiblio.org/maven2/'
 {% endhighlight %}
 </notextile>
 
-If you need to use a proxy server to access remote repositories, you can set the environment variable @HTTP_PROXY@ to the proxy server URL.  You can also work without a proxy for certain hosts by specifying the @NO_PROXY@ environment variable.  For example:
+If you need to use a proxy server to access remote repositories, you can set the environment variable @HTTP_PROXY@ to the proxy server URL (user @HTTPS_PROXY@ for proxying HTTPS connections).  You can also work without a proxy for certain hosts by specifying the @NO_PROXY@ environment variable.  For example:
 
 <notextile>
 {% highlight sh %}

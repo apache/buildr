@@ -43,6 +43,7 @@ module Buildr
 
     # Wraps around the proxy environment variables:
     # * :http -- HTTP_PROXY
+    # * :https -- HTTPS_PROXY
     # * :exclude -- NO_PROXY
     class Proxies
 
@@ -57,6 +58,17 @@ module Buildr
         ENV['HTTP_PROXY'] = url
       end
    
+      # Returns the HTTPS_PROXY URL.
+      def https
+        ENV['HTTPS_PROXY'] || ENV['https_proxy']
+      end
+
+      # Sets the HTTPS_PROXY URL.
+      def https=(url)
+        ENV['https_proxy'] = nil
+        ENV['HTTPS_PROXY'] = url
+      end
+
       # Returns list of hosts to exclude from proxying (NO_PROXY). 
       def exclude
         @exclude ||= EnvArray.new('NO_PROXY')
