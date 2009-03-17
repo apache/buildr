@@ -34,8 +34,8 @@ if [ -z $JAVA_HOME ] ; then
   export JAVA_HOME=/Library/Java/Home
 fi
 
-if [ $(gem --version) \< '1.0.1' ] ; then
-  echo "Upgrading to RubyGems 1.0.1"
+if [ $(gem --version) \< '1.3.1' ] ; then
+  echo "Upgrading to latest version of RubyGems"
   sudo gem update --system
   echo
 fi
