@@ -9,7 +9,9 @@ The installation instructions are slightly different for each operating system. 
 
 The @gem install@ and @gem update@ commands install Buildr from a binary distribution provided through "RubyForge":http://rubyforge.org/projects/buildr. This distribution is maintained by contributors to this project, but is *not* an official Apache distribution.  You can obtain the official Apache distribution files from the "download page":download.html.
 
-The current release of Buildr for Ruby may not work well with Java 6, only Java 1.5 or earlier.  If you need to use Java 6, consider "Buildr for JRuby":#jruby.
+p(note). The JVM you use must match the Ruby architecture. For example, OS X comes with 32-bit version of Ruby, Java 1.5 in both 32-bit and 64-bit flavors, but Java 6 only available as 64-bit. In this case, if you want to use Java 6, consider "Buildr for JRuby":#jruby.
+
+p(tip). If you are running behind a proxy server, make sure the environment variable @HTTP_PROXY@ is set, as many of these steps require HTTP access.
 
 
 h3(#linux).  Linux
