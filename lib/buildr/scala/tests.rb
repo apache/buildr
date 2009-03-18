@@ -21,32 +21,8 @@ require 'buildr/java/tests'
 
 
 module Buildr::Scala
-
-  # Scala::Specs is available when using Scala::Test
-  module ScalaSpecs
-    VERSION = '1.4.3'
-    
-    class << self
-      def version
-        Buildr.settings.build['scala.specs'] || VERSION
-      end
-      
-      def dependencies
-        ["org.specs:specs:jar:#{version}"]
-      end  
-
-    private
-      def const_missing(const)
-        return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated "Please use Scala::Specs.dependencies/.version instead of ScalaSpecs::REQUIRES/VERSION"
-        dependencies
-      end
-    end
-  end
-
-
-  # Scala::Check is available when using Scala::Test
-  module ScalaCheck
+  # Scala::Check is available when using Scala::Test or Scala::Specs
+  module Check
     VERSION = '1.5'
     
     class << self
@@ -84,12 +60,11 @@ module Buildr::Scala
       end
       
       def dependencies
-        ["org.scala-tools.testing:scalatest:jar:#{version}"] + ScalaSpecs.dependencies +
-          ScalaCheck.dependencies + JMock.dependencies
+        ["org.scala-tools.testing:scalatest:jar:#{version}"] + Check.dependencies + JMock.dependencies
       end  
 
       def applies_to?(project) #:nodoc:
-        project.test.compile.language == :scala
+        !Dir[project.path_to(:source, :test, :scala, '**/*.scala')].empty?
       end 
       
     private
@@ -113,36 +88,13 @@ module Buildr::Scala
     end
 
     def tests(dependencies) #:nodoc:
-      suites = filter_classes(dependencies, :interfaces => %w{org.scalatest.Suite})
-      # we should really filter using :class => %w{org.specs.Specification} instead of naming convention
-      specs = filter_classes(dependencies, :class_names => [/Specs?$/])
-      [suites, specs].flatten
+      filter_classes(dependencies, :interfaces => %w{org.scalatest.Suite})
     end
 
-    def run(tests, dependencies) #:nodoc:
+    def run(scalatest, dependencies) #:nodoc:
       mkpath task.report_to.to_s
       success = []
-      scalatest = tests.select { |t| t !~ /Specs?$/ }
-      specs = tests.select { |t| t =~ /Specs?$/ }
 
-      # Specs
-      nostacktrace = (options[:nostacktrace]) ? "-ns" : ""
-      cmd_options = { :properties => options[:properties],
-                      :java_args => options[:java_args],
-                      :classpath => dependencies + Scalac.dependencies}
-                      
-      specs.each do |spec|
-        Java.load
-        begin
-          Java::Commands.java(spec, cmd_options)
-        rescue => e
-          print e.message
-        else
-          success << spec
-        end
-      end
-
-      # ScalaTest
       reporter_options = 'TFGBSAR' # testSucceeded, testFailed, testIgnored, suiteAborted, runStopped, runAborted, runCompleted
       scalatest.each do |suite|
         info "ScalaTest #{suite.inspect}"
@@ -196,8 +148,7 @@ end
 
 # Backwards compatibility stuff.  Remove in 1.5.
 module Buildr
-  ScalaSpecs = Scala::ScalaSpecs
-  ScalaCheck = Scala::ScalaCheck
+  ScalaCheck = Scala::Check
   ScalaTest = Scala::ScalaTest
 end
 

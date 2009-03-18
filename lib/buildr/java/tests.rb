@@ -52,7 +52,7 @@ module Buildr
       target = task.compile.target.to_s
       candidates = Dir["#{target}/**/*.class"].
         map { |file| Util.relative_path(file, target).ext('').gsub(File::SEPARATOR, '.') }.
-        reject { |name| name =~ /\$/ }
+        reject { |name| name =~ /\$./ }
       result = []
       if criteria[:class_names]
         result.concat candidates.select { |name| criteria[:class_names].flatten.any? { |pat| pat === name } }
@@ -74,7 +74,8 @@ module Buildr
         info "#{ex.class}: #{ex.message}"
         raise
       end
-      result.uniq
+      # We strip Scala singleton objects whose .class ends with $
+      result.map { |c| (c =~ /\$$/) ? c[0..(c.size - 2)] : c  }.uniq
     end
     
   end

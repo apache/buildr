@@ -40,13 +40,6 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.framework.should eql(:scalatest)
   end
 
-  it 'should be picked if the test language is Scala' do
-    define 'foo' do
-      test.compile.using(:scalac)
-      test.framework.should eql(:scalatest)
-    end
-  end
-
   it 'should include Scalatest dependencies' do
     define('foo') { test.using(:scalatest) }
     project('foo').test.compile.dependencies.should include(*artifacts(Scala::ScalaTest.dependencies))
@@ -58,17 +51,11 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.compile.dependencies.should include(*artifacts(JMock.dependencies))
     project('foo').test.dependencies.should include(*artifacts(JMock.dependencies))
   end
-  
-  it 'should include Specs dependencies' do
-    define('foo') { test.using(:scalatest) }
-    project('foo').test.compile.dependencies.should include(*artifacts(Scala::ScalaSpecs.dependencies))
-    project('foo').test.dependencies.should include(*artifacts(Scala::ScalaSpecs.dependencies))
-  end
 
   it 'should include ScalaCheck dependencies' do
     define('foo') { test.using(:scalatest) }
-    project('foo').test.compile.dependencies.should include(*artifacts(Scala::ScalaCheck.dependencies))
-    project('foo').test.dependencies.should include(*artifacts(Scala::ScalaCheck.dependencies))
+    project('foo').test.compile.dependencies.should include(*artifacts(Scala::Check.dependencies))
+    project('foo').test.dependencies.should include(*artifacts(Scala::Check.dependencies))
   end
 
   it 'should set current directory' do
@@ -208,42 +195,6 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.invoke
   end
 
-  it 'should compile and run specifications with "Specs" suffix' do
-    write 'src/test/scala/HelloWorldSpecs.scala', <<-SCALA
-      import org.specs._
-  
-      object HelloWorldSpecs extends Specification {
-        "'hello world' has 11 characters" in {
-          "hello world".size must beEqualTo(11)
-        }
-        "'hello world' matches 'h.* w.*'" in {
-          "hello world" must beMatching("h.* w.*")
-        }
-      }
-    SCALA
-    define('foo').test.using :scalatest
-    project('foo').test.invoke
-    project('foo').test.passed_tests.should include('HelloWorldSpecs')
-  end
-
-  it 'should fail if specifications fail' do
-    write 'src/test/scala/StringSpecs.scala', <<-SCALA
-      import org.specs._
-      import org.specs.runner._
-      
-      object StringSpecs extends Specification {
-        "empty string" should {
-          "have a zero length" in {
-            ("".length) mustEqual(1)
-          }
-        }
-      }
-    SCALA
-    define('foo')
-    project('foo').test.invoke rescue
-    project('foo').test.failed_tests.should include('StringSpecs')
-  end
-      
   it 'should run with ScalaCheck automatic test case generation' do
     write 'src/test/scala/MySuite.scala', <<-SCALA
       import org.scalatest.prop.PropSuite
@@ -269,7 +220,7 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.invoke
     project('foo').test.passed_tests.should include('MySuite')
   end
-
+  
   it 'should fail if ScalaCheck test case fails' do
     write 'src/test/scala/StringSuite.scala', <<-SCALA
       import org.scalatest.prop.PropSuite
@@ -304,5 +255,6 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.invoke rescue
     project('foo').test.failed_tests.should include('StringSuite')
   end
+
 end
 

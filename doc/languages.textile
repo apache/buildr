@@ -205,9 +205,7 @@ For example, @src/main/scala/com/example/MyClass.scala@ should generate at least
 
 h3. Testing with Scala
 
-Buildr supports three Scala testing frameworks:   "ScalaTest":http://www.artima.com/scalatest,  "ScalaCheck":http://code.google.com/p/scalacheck/ and  "Specs":http://code.google.com/p/specs/.
-
-Scala testing is automatically enabled if you have any @.scala@ source files under @src/test/scala@.  If you are not using this convention, you can explicit set the test framework by doing,
+Buildr supports two main Scala testing frameworks:   "ScalaTest":http://www.artima.com/scalatest and  "Specs":http://code.google.com/p/specs/.  "ScalaCheck":http://code.google.com/p/scalacheck/ is also supported within the confines of either of these two frameworks.  Thus, your Specs may use ScalaCheck properties, as may your ScalaTest suites.
 
 <notextile>
 {% highlight ruby %}
@@ -215,9 +213,9 @@ test.using(:scalatest)
 {% endhighlight %}
 </notextile>
 
-The @:scalatest@ test framework handles ScalaTest, Specs and ScalaCheck therefore all 3 frameworks may be used within the same project.
-
 h4. ScalaTest
+
+ScalaTest support is activated automatically when there are any @.scala@ source files contained in the @src/test/scala@ directory.  If you are not using this directory convention, you may force the test framework by using the @test.using :scalatest@ directive.
 
 Buildr automatically detects and runs tests that extend the @org.scalatest.Suite@ interface.
 
@@ -261,7 +259,9 @@ class PropertyTestSuite extends FunSuite {
 
 h4. Specs
 
-The @:scalatest@ framework currently recognizes specifications with class names ending with "Specs", e.g., org.example.StringSpecs.
+Specs is automatically selected whenever there are @.scala@ source files under the @src/spec/scala@ directory.  It is also possible to force selection of the test framework by using the @test.using :specs@ directive.  This can sometimes be useful when Scala sources may be found in *both* @src/test/scala@ and @src/spec/scala@.  Normally in such cases, ScalaTest will have selection precedence, meaning that in case of a conflict between it and Specs, ScalaTest will be chosen.
+
+Any objects which extend the @org.specs.Specification@ superclass will be automatically detected and run.  Note that any *classes* which extend @Specification@ will also be invoked.  As such classes will not have a @main@ method, such an invocation will raise an error.
 
 A simple specification might look like this:
 
