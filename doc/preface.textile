@@ -14,7 +14,6 @@ div(title). !{width:20em}images/buildr-hires.png!
 # "Languages":languages.html
 # "More Stuff":more_stuff.html
 # "Extending Buildr":extending.html
-# "Troubleshooting":troubleshooting.html
 # "Contributing":contributing.html
 
 
