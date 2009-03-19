@@ -45,16 +45,17 @@ task :release do
 
   # Upload binary and source packages to RubyForge.
   lambda do
-    changes = FileList['_release/CHANGES'].first
     files = FileList['_release/dist/*.{gem,tgz,zip}']
     puts "Uploading #{spec.version} to RubyForge ... "
     rubyforge = RubyForge.new.configure
     rubyforge.login 
-    rubyforge.userconfig.merge!('release_changes'=>changes,  'preformatted' => true) if changes
+    rubyforge.userconfig.merge!('release_changes'=>'_release/CHANGES',  'preformatted' => true)
     rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version.to_s, *files
+
     puts "Posting news to RubyForge ... "
+    changes = File.read('_release/CHANGES')[/.*?\n(.*)/m, 1]
     rubyforge.post_news spec.rubyforge_project.downcase, "Buildr #{spec.versions} released",
-      "New in Buildr #{spec.version}:\n\n#{changes}"
+      "#{spec.description}\n\nNew in Buildr #{spec.version}:\n#{changes.gsub(/^/, '  ')}\n"
     puts "[X] Uploaded gems and source files to #{spec.name}.rubyforge.org"
   end.call
 
@@ -113,6 +114,34 @@ task :release do
       puts "[X] Updated #{spec_file} to next release"
     end
   end.call
+
+ 
+  # Prepare release announcement email.
+  lambda do
+    changes = File.read('_release/CHANGES')[/.*?\n(.*)/m, 1]
+    email = <<-EMAIL
+To: users@buildr.apache.org, announce@apache.org
+Subject: [ANNOUNCE] Apache Buildr #{spec.version} released
+
+#{spec.description}
+
+New in this release:
+
+#{changes.gsub(/^/, '  ')}
+
+To learn more about Buildr and get started:
+http://buildr.apache.org/
+
+Thanks!
+The Apache Buildr Team
+
+    EMAIL
+    File.open 'announce-email.txt', 'w' do |file|
+      file.write email
+    end
+    puts "[X] Created release announce email template in 'announce-email.txt'"
+    puts email
+  end
 
 end
 

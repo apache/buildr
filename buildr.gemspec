@@ -22,6 +22,13 @@ Gem::Specification.new do |spec|
   spec.homepage       = "http://buildr.apache.org/"
   spec.summary        = "A build system that doesn't suck"
   spec.rubyforge_project  = 'buildr'
+  spec.description    = <<-TEXT
+Apache Buildr is a build system for Java-based applications, including support
+for Scala, Groovy and a growing number of JVM languages and tools.  We wanted
+something that's simple and intuitive to use, so we only need to tell it what
+to do, and it takes care of the rest.  But also something we can easily extend
+for those one-off tasks, with a language that's a joy to use.
+  TEXT
 
   # Rakefile needs to create spec for both platforms (ruby and java), using the
   # $platform global variable.  In all other cases, we figure it out from RUBY_PLATFORM.

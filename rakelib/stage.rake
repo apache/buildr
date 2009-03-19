@@ -185,7 +185,7 @@ Test coverage report:
 
 The following changes were made since #{previous_version}:
 
-#{changes}
+#{changes.gsub(/^/, '  ')}
     EMAIL
     File.open 'vote-email.txt', 'w' do |file|
       file.write email
