@@ -12,7 +12,7 @@ All our discussions are done in the open, over "email":mailing_lists.html, and t
 
 h2(#mailing_lists).  Mailing Lists
 
-We run two mailing lists, the "users":http://mail-archives.apache.org/mod_mbox/buildr-users/ mailing list for developers working with Buildr, that would be you if you're using Buildr or interested in using it.  There's the "dev":http://mail-archives.apache.org/mod_mbox/buildr-dev/ mailing list for talking about development of Buildr itself, and "commits":http://mail-archives.apache.org/mod_mbox/buildr-commits/ mailing list for following SVN commits and JIRA issues.
+We run two mailing lists, the "users":http://buildr.markmail.org/search/list:users mailing list for developers working with Buildr, that would be you if you're using Buildr or interested in using it.  There's the "dev":http://buildr.markmail.org/search/list:dev mailing list for talking about development of Buildr itself. There's also "commits":http://buildr.markmail.org/search/list:commits mailing list for following SVN commits and JIRA issues.
 
 Check the "mailing lists":mailing_lists.html page for more information on subscribing, searching and posting to the mailing list.
 
