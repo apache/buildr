@@ -251,19 +251,17 @@ module Buildr
     def handle_options
       options.rakelib = ['tasks']
 
-      opts = OptionParser.new
-      opts.banner = "buildr [-f rakefile] {options} targets..."
-      opts.separator ""
-      opts.separator "Options are ..."
-      
-      opts.on_tail("-h", "--help", "-H", "Display this help message.") do
-        puts opts
-        exit
-      end
-    
-      standard_buildr_options.each { |args| opts.on(*args) }
-      parsed_argv = opts.parse(ARGV)
-      parsed_argv
+      OptionParser.new do |opts|
+        opts.banner = "buildr [-f rakefile] {options} targets..."
+        opts.separator ""
+        opts.separator "Options are ..."
+        
+        opts.on_tail("-h", "--help", "-H", "Display this help message.") do
+          puts opts
+          exit
+        end
+        standard_buildr_options.each { |args| opts.on(*args) }
+      end.parse!
     end
 
     def standard_buildr_options # replaces standard_rake_options
