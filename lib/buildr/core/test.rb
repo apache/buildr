@@ -446,7 +446,7 @@ module Buildr
           @passed_tests = @framework.run(@tests, dependencies)
         rescue Exception=>ex
           error "Test framework error: #{ex.message}"
-          error ex.backtrace if Buildr.application.options.trace
+          error ex.backtrace.join("\n") if Buildr.application.options.trace
           @passed_tests = []
         end
         @failed_tests = @tests - @passed_tests
