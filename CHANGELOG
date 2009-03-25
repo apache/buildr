@@ -66,8 +66,9 @@ for submodules (Rhett Sutphin).
 * Fixed:  BUILDR-255 tasks/*.rake files are loaded more than once.
 * Fixed:  BUILDR-261 ScalaSpecs should be run with Scala dependencies
 * Fixed:  BUILDR-263 package(:war).merge not working correctly with exclude()
-* Fixed:	BUILDR-271 Using buildr --environment leads to "Don't know how to
+* Fixed:  BUILDR-271 Using buildr --environment leads to "Don't know how to
 build task XXX".
+* Fixed:  BUILDR-269 rspec bdd is broken (Jeff Hodges)
 * Remove: BUILDR-215 buildr:freeze and unfreeze tasks don't work since we're
 no longer running with the rake command.
 
