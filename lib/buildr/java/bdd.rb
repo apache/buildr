@@ -141,7 +141,7 @@ module Buildr
         fail msg unless jruby_installed?
       end
     end
-    
+
     def jruby(*args)
       java_args = ['org.jruby.Main', *args]
       java_args << {} unless Hash === args.last
@@ -177,13 +177,13 @@ module Buildr
           end
           require 'rubygems'
           begin
-            Kernel.gem name, version
+            Kernel.send :gem, name, version
           rescue LoadError, Gem::LoadError => e
             require 'rubygems/gem_runner'
             Gem.manage_gems
             args = ['install', name, '--version', version] + args
             Gem::GemRunner.new.run(args)
-            Kernel.gem name, version
+            Kernel.send :gem, name, version
           end
        end
       }
