@@ -119,8 +119,9 @@ module Buildr
     #   git 'commit'
     #   git 'remote', 'show', 'origin'
     def git(*args)
-      output = `git #{args.shift} #{args.map { |arg| arg.inspect }.join(' ')}`
-      fail "GIT command failed with status #{$?.exitstatus}" unless $?.exitstatus == 0
+      cmd = "git #{args.shift} #{args.map { |arg| arg.inspect }.join(' ')}"
+      output = `#{cmd}`
+      fail "GIT command \"#{cmd}\" failed with status #{$?.exitstatus}\n#{output}" unless $?.exitstatus == 0
       return output
     end
 
