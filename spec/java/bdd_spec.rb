@@ -32,7 +32,16 @@ describe Buildr::RSpec do
     foo { test.framework.should eql(:rspec) }
   end
 
-  it 'should run rspecs' do
+  it 'should read passed specs from result yaml' do
+    success = File.expand_path('src/spec/ruby/success_spec.rb')
+    write(success, 'describe("success") { it("is true") { nil.should be_nil } }')
+    foo do
+      test.invoke
+      test.passed_tests.should eql([success])
+    end
+  end
+
+  it 'should read result yaml to obtain the list of failed specs' do
     success = File.expand_path('src/spec/ruby/success_spec.rb')
     write(success, 'describe("success") { it("is true") { nil.should be_nil } }')
     failure = File.expand_path('src/spec/ruby/failure_spec.rb')
@@ -42,8 +51,8 @@ describe Buildr::RSpec do
     foo do
       lambda { test.invoke }.should raise_error(/Tests failed/)
       test.tests.should include(success, failure, error)
-      test.failed_tests.should include(failure, error)
-      test.passed_tests.should include(success)
+      test.failed_tests.sort.should eql([failure, error].sort)
+      test.passed_tests.should eql([success])
     end
   end
 
