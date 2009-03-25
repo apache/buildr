@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
+require 'fileutils'
 module Buildr #:nodoc:
   module TestFramework
     
@@ -30,15 +30,15 @@ module Buildr #:nodoc:
         end
 
         def self.dump_yaml(file, e)
-          mkdir_p File.dirname(file)
+          FileUtils.mkdir_p File.dirname(file)
           File.open(file, 'w') { |f| f.puts(YAML.dump(Error.new(e.message, e.backtrace))) }
         end
 
         def self.guard(file)
           begin 
             yield
-          rescue
-            dump_yaml(file)
+          rescue => e
+            dump_yaml(file, e)
           end
         end
       end
@@ -105,7 +105,7 @@ module Buildr #:nodoc:
           files = options.files
           result.succeeded = files - result.failed
           
-          mkdir_p File.dirname(where)
+          FileUtils.mkdir_p File.dirname(where)
           File.open(where, 'w') { |f| f.puts YAML.dump(result) }
         end
       end # YamlFormatter
