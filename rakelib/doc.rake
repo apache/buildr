@@ -14,21 +14,23 @@
 # the License.
 
 
-begin # For the Web site, we use the mislav-hanna RDoc theme (http://github.com/mislav/hanna/)
-  require 'hanna/rdoctask'
-
-  desc "Generate RDoc documentation in rdoc/"
-  Rake::RDocTask.new :rdoc do |rdoc|
-    rdoc.rdoc_dir = 'rdoc'
-    rdoc.title    = spec.name
-    rdoc.options  = spec.rdoc_options.clone
-    rdoc.rdoc_files.include('lib/**/*.rb')
-    rdoc.rdoc_files.include spec.extra_rdoc_files
-  end
-
+begin # For the Web site, we use the SDoc RDoc generator/theme (http://github.com/voloko/sdoc/)
+  require 'sdoc'
 rescue LoadError
-  puts "Buildr uses the mislav-hanna RDoc theme. You can install it by running rake setup"
-  task(:setup) { install_gem 'mislav-hanna', :source=>'http://gems.github.com' }
+  puts "Buildr uses the SDoc RDoc generator/theme. You can install it by running rake setup"
+  task(:setup) { install_gem 'voloko-sdoc', :source=>'http://gems.github.com' }
+end
+
+
+require 'rake/rdoctask'
+
+desc "Generate RDoc documentation in rdoc/"
+Rake::RDocTask.new :rdoc do |rdoc|
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title    = spec.name
+  rdoc.options  = spec.rdoc_options.clone + ['--github_url', $github_url]
+  rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.rdoc_files.include spec.extra_rdoc_files
 end
 
 

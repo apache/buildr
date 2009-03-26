@@ -35,6 +35,9 @@ def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
   @specs[platform]
 end
 
+# Right now used for documentation.
+$github_url         = 'http://github.com/buildr/buildr'
+
 # Tell us if we need sudo for various commands.
 def sudo_needed?
   Config::CONFIG['host_os'] !~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i && !ENV['GEM_HOME']
