@@ -44,7 +44,7 @@ end
 desc "Compile Java libraries used by Buildr"
 task :compile do
   puts "Compiling Java libraries ..."
-  args = File.expand_path('_buildr'), '--buildfile=buildr.buildfile', 'compile'
+  args = File.expand_path(RUBY_PLATFORM[/java/] ? '_jbuildr' : '_buildr'), '--buildfile', 'buildr.buildfile', 'compile'
   args << '--trace' if Rake.application.options.trace
   sh *args
 end
@@ -53,7 +53,7 @@ file Rake::GemPackageTask.new(spec).package_dir_path=>:compile
 
 # We also need the other package (JRuby if building on Ruby, and vice versa)
 # Must call new with block, even if block does nothing, otherwise bad things happen.
-Rake::GemPackageTask.new(spec(RUBY_PLATFORM =~ /java/ ? 'ruby' : 'java')) { |task| }
+Rake::GemPackageTask.new(spec(RUBY_PLATFORM[/java/] ? 'ruby' : 'java')) { |task| }
 
 
 desc "Upload snapshot packages over to people.apache.org"

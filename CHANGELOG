@@ -69,6 +69,8 @@ for submodules (Rhett Sutphin).
 * Fixed:  BUILDR-271 Using buildr --environment leads to "Don't know how to
 build task XXX".
 * Fixed:  BUILDR-269 rspec bdd is broken (Jeff Hodges)
+* Fixed:  BUILDR-272 'rake gem' does not build gem under JRuby (Clinton R.
+Nixon).
 * Remove: BUILDR-215 buildr:freeze and unfreeze tasks don't work since we're
 no longer running with the rake command.
 
