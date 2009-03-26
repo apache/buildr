@@ -3,20 +3,42 @@ layout: default
 title: Getting Started
 ---
 
-h2(#installing).  Installing Buildr
 
-The installation instructions are slightly different for each operating system. Pick the one that best matches your operating system and target platform.
+*The easy way:*  We recommend you pick the platform you want to run Buildr on and then follow the _easy way_ instructions for that platform.  It could save you an hour or two struggling to install all the right dependencies.
 
-The @gem install@ and @gem update@ commands install Buildr from a binary distribution provided through "RubyForge":http://rubyforge.org/projects/buildr. This distribution is maintained by contributors to this project, but is *not* an official Apache distribution.  You can obtain the official Apache distribution files from the "download page":download.html.
+"Installing Buildr for JRuby":#jruby is the same on all operating systems.  Choose JRuby if you're working with Java 6 on OS X, developing with multiple JDKs, or just like JRuby better.
 
-p(note). The JVM you use must match the Ruby architecture. For example, OS X comes with 32-bit version of Ruby, Java 1.5 in both 32-bit and 64-bit flavors, but Java 6 only available as 64-bit. In this case, if you want to use Java 6, consider "Buildr for JRuby":#jruby.
+If you are running behind a proxy server, make sure the environment variable @HTTP_PROXY@ is set, as many of these steps require HTTP access.
 
-p(tip). If you are running behind a proxy server, make sure the environment variable @HTTP_PROXY@ is set, as many of these steps require HTTP access.
+<br>
+
+*In details:* The @gem install@ and @gem update@ commands install Buildr from a binary distribution provided through "RubyForge":http://rubyforge.org/projects/buildr. This distribution is maintained by contributors to this project, but is *not* an official Apache distribution.  You can obtain the official Apache distribution files from the "download page":download.html.
+
+Older versions of RubyGems are all kind of fail.  You want to avoid these unless you have the patience to install each Buildr dependency manually.  Get RubyGems 1.3.1 or later, and when using Debian packages (e.g. Ubuntu), make sure to get the unmolested RubyGems straight form the source.
+
+The Ruby interpreter and JVM must use compatible architectures.  For example, OS X comes with 32-bit version of Ruby, Java 1.5 in both 32-bit and 64-bit flavors, and 64-bit Java 6.  As a result you can run Ruby with Java 1.5 (32-bit), but to use Java 6 you either need to build Ruby from source for 64-bit, or use "Buildr for JRuby":#jruby.
 
 
-h3(#linux).  Linux
+h2(#linux).  Installing on Linux
 
-To get started you will need a recent version of Ruby, Ruby Gems and build tools for compiling native libraries (@make@, @gcc@ and standard headers).
+*The easy way:* Use this bash script to "install Buildr on Linux":scripts/install-linux.sh.  This script will install the most recent version of Buildr, or if already installed, upgrade to the most recent version.  It will also install Ruby 1.8.6 if not already installed (requires @apt-get@ or @yum@) and upgrade to RubyGems 1.3.1 or later.
+
+<br>
+
+*In details:* The @gem install@ and @gem update@ commands install Buildr from a binary distribution provided through "RubyForge":http://rubyforge.org/projects/buildr. This distribution is maintained by contributors to this project, but is *not* an official Apache distribution.  You can obtain the official Apache distribution files from the "download page":download.html.
+
+Older versions of RubyGems are all kind of fail.  You want to avoid these unless you have the patience to install each Buildr dependency manually.  Get RubyGems 1.3.1 or later, and when using Debian packages (e.g. Ubuntu), make sure to get the unmolested RubyGems straight form the source.
+
+The Ruby interpreter and JVM must use compatible architectures.  For example, OS X comes with 32-bit version of Ruby, Java 1.5 in both 32-bit and 64-bit flavors, and 64-bit Java 6.  As a result you can run Ruby with Java 1.5 (32-bit), but to use Java 6 you either need to build Ruby from source for 64-bit, or use "Buildr for JRuby":#jruby.
+
+
+h2(#linux).  Installing on Linux
+
+*The easy way:* Use this bash script to "install Buildr on Linux":scripts/install-linux.sh.  This script will install the most recent version of Buildr, or if already installed, upgrade to the most recent version.  It will also install Ruby 1.8.6 if not already installed (requires @apt-get@ or @yum@) and upgrade to RubyGems 1.3.1 or later.
+
+<br>
+
+*In details:* To get started you will need a recent version of Ruby, Ruby Gems and build tools for compiling native libraries (@make@, @gcc@ and standard headers).
 
 On *RedHat/Fedora* you can use yum to install Ruby and RubyGems, and then upgrade to the most recent version of RubyGems:
 
@@ -64,12 +86,17 @@ $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr -v 1.3.4
 {% endhighlight %}
 </notextile>
 
-You can also use this script "to install Buildr on Linux":scripts/install-linux.sh.  This script will install Buildr or if already installed, upgrade to a more recent version.  It will also install Ruby 1.8.6 if not already installed (using @yum@ or @apt-get@) and upgrage RubyGems to 1.0.1.
 
 
-h3(#osx).  OS X
+h2(#osx).  Installing on OS X
 
-OS X 10.5 (Leopard) comes with a recent version of Ruby 1.8.6.  OS X 10.4 (Tiger) includes an older version of Ruby, we recommend you first install Ruby 1.8.6 using MacPorts (@sudo port install ruby rb-rubygems@), Fink or the "Ruby One-Click Installer for OS X":http://rubyosx.rubyforge.org/.
+*The easy way:* Use this script to "install Buildr on OS X":scripts/install-osx.sh.  This script will install the most recent version of Buildr, or if already installed, upgrade to the most recent version.  It will also install Ruby 1.8.6 if not already installed (using MacPorts/Fink) and upgrage RubyGems to 1.3.1 or later.
+
+<br>
+
+*In details:* OS X 10.5 (Leopard) comes with a recent version of Ruby 1.8.6.  You do not need to install a different version of Ruby when running OS X 10.5.
+
+OS X 10.4 (Tiger) includes an older version of Ruby that is not compatible with Buildr.  You can install Ruby 1.8.6 using MacPorts (@sudo port install ruby rb-rubygems@), Fink or the "Ruby One-Click Installer for OS X":http://rubyosx.rubyforge.org/.
 
 We recommend you first upgrade to the latest version of Ruby gems:
 
@@ -104,14 +131,14 @@ $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr -v 1.3.4
 {% endhighlight %}
 </notextile>
 
-You can also use this script "to install Buildr on OS X":scripts/install-osx.sh.  This script will install Buildr or if already installed, upgrade to a more recent version.  It will also install Ruby 1.8.6 if not already installed (using MacPorts) and upgrage RubyGems to 1.0.1.
 
+h2(#windows).  Installing on Windows
 
-h3(#windows). Windows
+*The easy way:*  The easiest way to install Ruby is using the "one-click installer":http://rubyinstaller.rubyforge.org/.  Once installed, set the @JAVA_HOME@ environment variable and run @gem install buildr@.
 
-If you don't already have Ruby installed, now is the time to do it.  The easiest way to install Ruby is using the "one-click installer":http://rubyinstaller.rubyforge.org/.
+<br>
 
-We recommend you first upgrade to the latest version of Ruby gems:
+*In details:* We recommend you first upgrade to the latest version of Ruby gems:
 
 <notextile>
 {% highlight sh %}
@@ -127,8 +154,6 @@ Before installing Buildr, please set the @JAVA_HOME@ environment variable to poi
 {% endhighlight %}
 </notextile>
 
-Buildr uses several libraries that include native extensions.  During installation it will ask you to pick a platform for these libraries.  By selecting @mswin32@ it will download and install pre-compiled DLLs for these extensions.
-
 To upgrade to a new version or install a specific version:
 
 <notextile>
@@ -139,9 +164,13 @@ To upgrade to a new version or install a specific version:
 </notextile>
 
 
-h3(#jruby). JRuby
+h2(#jruby).  Installing for JRuby
 
-If you don't already have JRuby 1.1 or later installed, you can download it from the "JRuby site":http://dist.codehaus.org/jruby/.
+*The easy way:* Use this bash script to "install Buildr on JRuby":scripts/install-jruby.sh.  This script will install the most recent version of Buildr, or if already installed, upgrade to the most recent version.  If necessary, it will also install JRuby 1.1.6 in @/opt/jruby@ and update the @PATH@ variable in @~/.bash_profile@ or @~/.profile@.
+
+<br>
+
+*In details:* If you don't already have JRuby 1.1.6 or later installed, you can download it from the "JRuby site":http://dist.codehaus.org/jruby/.
 
 After uncompressing JRuby, update your @PATH@ to include both @java@ and @jruby@ executables.
 
@@ -172,7 +201,6 @@ $ jruby -S gem install buildr -v 1.3.4
 {% endhighlight %}
 </notextile>
 
-You can also use this script "to install Buildr on JRuby":scripts/install-jruby.sh.  This script will install Buildr or if already installed, upgrade to a more recent version.  If necessary, it will also install JRuby 1.1 in @/opt/jruby@ and update the @PATH@ variable in @~/.bash_profile@ or @~/.profile@.
 
 *Important: Running JRuby and Ruby side by side*
 
@@ -219,7 +247,6 @@ puts 'Hello world'
 </notextile>
 
 And as you guessed, everything else is Buildfile Ruby or Java code.  You can figure out which language is which.
-
 
 
 h2(#running). Running Buildr
