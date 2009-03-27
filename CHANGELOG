@@ -17,7 +17,7 @@
 * Change: Upgraded to Rubyforge 1.0.1.
 * Change: Upgraded to use Rake 0.8.4.
 * Change: Upgraded to use Net-SSH 2.0.11.
-* Change: Upgraded to use RSpec 1.2.
+* Change: Upgraded to use RSpec 1.2.2.
 * Change: Upgraded to use JRuby 1.1.6 (when auto-installing).
 * Change: Buildr, no longer in incubation (hurray!): new site, mailing list, SVN, Git.
 * Change: BUILDR-171 Eclipse task generates meta-data files for projects with
