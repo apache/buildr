@@ -214,8 +214,6 @@ module Buildr
       svn('info', '--xml')[/<url>(.*?)<\/url>/, 1].strip
     end
     
-  protected
-
     def copy(dir, url, message)
       svn 'copy', dir, url, '-m', message
     end
