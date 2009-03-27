@@ -17,8 +17,14 @@
 require 'digest/md5'
 require 'digest/sha1'
 
+begin # Releases upload Gems to RubyForge.
+  require 'rubyforge'
+rescue LoadError
+  task(:setup) { install_gem 'rubyforge' }
+end
 
-task :prepare=>[:license, :dependency] do |task, args|
+
+task :prepare do |task, args|
   # Make sure we're doing a release from checked code.
   lambda do
     puts "Checking there are no local changes ... "
@@ -38,6 +44,12 @@ task :prepare=>[:license, :dependency] do |task, args|
     puts "[x] CHANGELOG indicates most recent version and today's date"
   end.call
 
+  # Need GPG to sign the packages.
+  lambda do
+    args.gpg or fail "Please run with gpg=<argument for gpg --local-user>"
+    fail "No GPG user #{args.gpg}" if `gpg --list-keys #{args.gpg}`.empty?
+  end.call
+
   task(:license).invoke
   task(:dependency).invoke
 
@@ -48,12 +60,6 @@ task :prepare=>[:license, :dependency] do |task, args|
     sh 'scala -version'
     sh 'groovy -version'
     puts "[X] We have JRuby, Scala and Groovy"
-  end.call
-
-  # Need GPG to sign the packages.
-  lambda do
-    args.gpg or fail "Please run with gpg=<argument for gpg --local-user>"
-    fail "No GPG user #{args.gpg}" if `gpg --list-keys #{args.gpg}`.empty?
   end.call
 
   # Need RubyForge to upload new release files.
@@ -69,7 +75,7 @@ task :prepare=>[:license, :dependency] do |task, args|
 end
 
 
-task :stage=>[:setup, :clobber, :check, :prepare] do |task, args|
+task :stage=>[:setup, :clobber, :prepare] do |task, args|
   mkpath '_staged'
 
   # Start by figuring out what has changed.
