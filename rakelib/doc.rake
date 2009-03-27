@@ -87,6 +87,6 @@ end
 
 task :clobber do
   rm_rf '_site'
-  rm 'buildr.pdf'
-  rm 'prince_errors.log'
+  rm_f 'buildr.pdf'
+  rm_f 'prince_errors.log'
 end
