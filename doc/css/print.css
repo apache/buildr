@@ -18,7 +18,7 @@
 @page { 
   margin: 1in 0.75in 1in 0.75in;
   @top-left, @top-right {
-    font-family: "DejaVu Sans", Verdana, Helvetica;
+    font-family: "Gill Sans";
     font-weight: normal;
   }
 }
@@ -39,8 +39,7 @@
   title { string-set: doctitle content(); }
 
   body {
-    font-family: "Palatino", "DejaVu Serif", Helvetica;
-    font-size: 12pt;
+    font-family: "Helvetica Neue", "DejaVu Sans", "Verdana";
     margin: 0;
     color: black;
     background: white;
@@ -51,8 +50,8 @@
     page-break-before: always;
   }
   h1:first-child { page-break-before: avoid; }
-  h1, h2, h3, ol.toc {
-    font-family: "Gill Sans", "Courier", "DejaVu Sans", Verdana, Helvetica;
+  h1, h2, h3 {
+    font-family: "Gill Sans";
   }
   pre, p, blockquote { page-break-inside: avoid; }
   pre, code {

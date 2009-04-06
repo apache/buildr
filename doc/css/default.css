@@ -18,10 +18,9 @@
 body {
   background-color: #fff;
   color: #000;
-  font-family: "DejaVu Sans", Verdana, Helvetica;
+  font-family: "Helvetica Neue", "DejaVu Sans", "Verdana";
   text-align: center;
   line-height: 150%;
-  font-size: 12pt;
 }
 
 a:link, a:visited{
@@ -38,7 +37,7 @@ img {
 }
 
 pre, code {
-  font-family: "DejaVu Sans Mono", "Courier New", "Courier";
+  font-family: "Monaco", "DejaVu Sans Mono", "Courier New", "Courier";
   font-size: 11pt;
 }
 pre {
@@ -51,6 +50,7 @@ pre {
 pre br { display: none; }
 
 h1, h2, h3 {
+  font-family: "Gill Sans";
   padding: 0;
   margin: 1.6em 0 0.6em -0.9em;
   line-height: 1.25em;
@@ -138,7 +138,7 @@ th, thead td {
   float: left;
   text-align: left;
   margin-right: 2em;
-  font-family: "DejaVu Sans", Verdana, Helvetica;
+  font-family: "Gill Sans";
   font-size: 11pt;
   text-align: right;
   border-right: 1px solid #ccc;
