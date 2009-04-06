@@ -20,7 +20,8 @@ begin
 
   desc "Run all specs"
   Spec::Rake::SpecTask.new :spec=>'_reports' do |task|
-    task.spec_files = Dir['spec/**/*_spec.rb']
+    task.spec_files = FileList['spec/**/*_spec.rb']
+    task.spec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
     task.spec_opts = %w{--format specdoc --format failing_examples:failed --format html:_reports/specs.html --loadby mtime --backtrace}    
     task.spec_opts << '--colour' if $stdout.isatty
   end
@@ -28,14 +29,14 @@ begin
 
   desc 'Run all failed examples from previous run'
   Spec::Rake::SpecTask.new :failed do |task|
-    task.spec_files = Dir['spec/**/*_spec.rb']
+    task.spec_files = FileList['spec/**/*_spec.rb']
     task.spec_opts = %w{--format specdoc --format failing_examples:failed --example failed --backtrace}    
     task.spec_opts << '--colour' if $stdout.isatty
   end
 
   desc 'Run RSpec and generate Spec and coverage reports (slow)'
   Spec::Rake::SpecTask.new :coverage=>'_reports' do |task|
-    task.spec_files = Dir['spec/**/*_spec.rb']
+    task.spec_files = FileList['spec/**/*_spec.rb']
     task.spec_opts = %W{--format progress --format failing_examples:failed --format html:_reports/specs.html --backtrace}    
     task.spec_opts << '--colour' if $stdout.isatty
     task.rcov = true
