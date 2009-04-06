@@ -22,10 +22,8 @@ $LOADED_FEATURES << 'net/ssh/authentication/pageant.rb' if RUBY_PLATFORM =~ /jav
 gem 'net-ssh' ; Net.autoload :SSH, 'net/ssh'
 gem 'net-sftp' ; Net.autoload :SFTP, 'net/sftp'
 autoload :CGI, 'cgi'
-module Digest
-  autoload :MD5, 'digest/md5'
-  autoload :SHA1, 'digest/sha1'
-end
+require 'digest/md5'
+require 'digest/sha1'
 require 'stringio'
 autoload :ProgressBar, 'buildr/core/progressbar'
 

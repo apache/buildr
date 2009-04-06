@@ -18,7 +18,7 @@ require 'buildr/packaging'
 
 
 module Buildr
-  module Packaging
+  module Packaging #:nodoc:
 
     # Adds packaging for Java projects: JAR, WAR, AAR, EAR, Javadoc.
     module Java

@@ -127,7 +127,7 @@ module Buildr
     # It converts tasks to paths.
     # It converts absolute paths to relative paths.
     # It ignores duplicate directories.
-    class ClasspathEntryWriter
+    class ClasspathEntryWriter #:nodoc:
       def initialize project, target
         @project = project
         @xml = Builder::XmlMarkup.new(:target=>target, :indent=>2)

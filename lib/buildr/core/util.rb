@@ -116,7 +116,7 @@ module Buildr
     end
 
     # Utility methods for running gem commands
-    module Gems
+    module Gems #:nodoc:
       extend self
 
       # Install gems specified by each Gem::Dependency if they are missing. This method prompts the user

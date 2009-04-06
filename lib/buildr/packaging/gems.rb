@@ -75,7 +75,7 @@ module Buildr
   end
 
 
-  module PackageAsGem
+  module PackageAsGem #:nodoc:
 
     def package_as_gem(file_name) #:nodoc:
       PackageGemTask.define_task(file_name).tap do |gem|
