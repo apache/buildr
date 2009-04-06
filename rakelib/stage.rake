@@ -75,7 +75,7 @@ task :prepare do |task, args|
 end
 
 
-task :stage=>[:setup, :clobber, :prepare] do |task, args|
+task :stage=>['setup', 'doc:setup', :clobber, :prepare] do |task, args|
   mkpath '_staged'
 
   # Start by figuring out what has changed.
@@ -204,4 +204,3 @@ end
 
 
 task(:clobber) { rm_rf '_staged' }
-task(:setup) { install_gem 'rubyforge' }

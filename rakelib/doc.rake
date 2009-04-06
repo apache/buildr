@@ -14,11 +14,12 @@
 # the License.
 
 
+task 'doc:setup'
 begin # For the Web site, we use the SDoc RDoc generator/theme (http://github.com/voloko/sdoc/)
   require 'sdoc'
 rescue LoadError
-  puts "Buildr uses the SDoc RDoc generator/theme. You can install it by running rake setup"
-  task(:setup) { install_gem 'voloko-sdoc', :source=>'http://gems.github.com' }
+  puts "Buildr uses the SDoc RDoc generator/theme. You can install it by running rake doc:setup"
+  task('doc:setup') { install_gem 'voloko-sdoc', :source=>'http://gems.github.com' }
 end
 
 
@@ -45,8 +46,8 @@ begin
   end
 
 rescue LoadError
-  puts "Buildr uses the mojombo-jekyll to generate the Web site. You can install it by running rake setup"
-  task :setup do
+  puts "Buildr uses the mojombo-jekyll to generate the Web site. You can install it by running rake doc:setup"
+  task 'doc:setup' do
     install_gem 'mojombo-jekyll', :source=>'http://gems.github.com', :version=>'0.4.1'
     if `pygmentize -V`.empty?
       args = %w{easy_install Pygments}
