@@ -44,7 +44,7 @@ end
 desc "Compile Java libraries used by Buildr"
 task :compile do
   puts "Compiling Java libraries ..."
-  args = File.expand_path(RUBY_PLATFORM[/java/] ? '_jbuildr' : '_buildr'), '--buildfile', 'buildr.buildfile', 'compile'
+  args = Config::CONFIG['ruby_install_name'], File.expand_path(RUBY_PLATFORM[/java/] ? '_jbuildr' : '_buildr'), '--buildfile', 'buildr.buildfile', 'compile'
   args << '--trace' if Rake.application.options.trace
   sh *args
 end
