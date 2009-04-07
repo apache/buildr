@@ -47,7 +47,7 @@ task :prepare do |task, args|
   # Need GPG to sign the packages.
   lambda do
     args.gpg or fail "Please run with gpg=<argument for gpg --local-user>"
-    fail "No GPG user #{args.gpg}" if `gpg --list-keys #{args.gpg}`.empty?
+    fail "No GPG user #{args.gpg}" if `gpg2 --list-keys #{args.gpg}`.empty?
   end.call
 
   task(:license).invoke
@@ -104,7 +104,7 @@ task :stage=>['setup', 'doc:setup', :clobber, :prepare] do |task, args|
       bytes = File.open(pkg, 'rb') { |file| file.read }
       File.open(pkg + '.md5', 'w') { |file| file.write Digest::MD5.hexdigest(bytes) << ' ' << File.basename(pkg) }
       File.open(pkg + '.sha1', 'w') { |file| file.write Digest::SHA1.hexdigest(bytes) << ' ' << File.basename(pkg) }
-      sh 'gpg', '--local-user', args.gpg, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
+      sh 'gpg2', '--local-user', args.gpg, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
     end
     cp 'etc/KEYS', '_staged'
     puts "[X] Created and signed release packages in _staged/dist"
