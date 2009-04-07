@@ -115,7 +115,7 @@ task :stage=>['setup', 'doc:setup', :clobber, :prepare] do |task, args|
   lambda do
     puts "Updating download page with links to release packages ... "
     url = "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
-    rows = FileList['_staged/*.{gem,tgz,zip}'].map { |pkg|
+    rows = FileList['_staged/dist/*.{gem,tgz,zip}'].map { |pkg|
       name, md5 = File.basename(pkg), Digest::MD5.file(pkg).to_s
       %{| "#{name}":#{url}/#{name} | "#{md5}":#{url}/#{name}.md5 | "Sig":#{url}/#{name}.asc |}
     }
