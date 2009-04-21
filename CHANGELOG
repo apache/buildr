@@ -1,4 +1,4 @@
-1.3.4 (Pending)
+1.3.4
 * Added:  BUILDR-93 Add specs for ScalaCheck integration
 * Added:  BUILDR-94 Add specs for Scala Specs integration
 * Added:  BUILDR-136 Support Scala/Java Joint Compiler (Daniel Spiewak).
