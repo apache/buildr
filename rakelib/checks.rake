@@ -35,7 +35,7 @@ task :dependency do
   spec.dependencies.each do |dep|
     current = Gem::SourceInfoCache.search(dep).last
     latest = Gem::SourceInfoCache.search(Gem::Dependency.new(dep.name, '>0')).last
-    puts "A new version of #{dep.name} is available, #{latest.version} replaces #{current.version}" if latest.version > current.version
+    puts "A new version of #{dep.name} is available, #{latest.version} replaces #{current.version}" if (current && latest && latest.version > current.version)
   end
 
   # Returns orderd list of transitive dependencies for the given dependency.
