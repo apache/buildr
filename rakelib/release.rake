@@ -48,13 +48,13 @@ task :release do
     files = FileList["_release/#{spec.version}/dist/*.{gem,tgz,zip}"]
     puts "Uploading #{spec.version} to RubyForge ... "
     rubyforge = RubyForge.new.configure
-    rubyforge.login 
+    rubyforge.login
     rubyforge.userconfig.merge!('release_changes'=>"_release/#{spec.version}/CHANGES",  'preformatted' => true)
     rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version.to_s, *files
 
     puts "Posting news to RubyForge ... "
     changes = File.read("_release/#{spec.version}/CHANGES")[/.*?\n(.*)/m, 1]
-    rubyforge.post_news spec.rubyforge_project.downcase, "Buildr #{spec.versions} released",
+    rubyforge.post_news spec.rubyforge_project.downcase, "Buildr #{spec.version} released",
       "#{spec.description}\n\nNew in Buildr #{spec.version}:\n#{changes.gsub(/^/, '  ')}\n"
     puts "[X] Uploaded gems and source files to #{spec.name}.rubyforge.org"
   end.call
