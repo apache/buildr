@@ -32,12 +32,12 @@ task :release do
     host, remote_dir = target.split(':')
     sh 'ssh', host, 'rm', '-rf', remote_dir rescue nil
     sh 'ssh', host, 'mkdir', remote_dir
-    sh 'rsync', '--progress', '--recursive', '_release/dist/', target
+    sh 'rsync', '--progress', '--recursive', '_release/#{spec.version}/dist/', target
     puts "[X] Uploaded packages to www.apache.org/dist"
 
     target = "people.apache.org:/www/#{spec.name}.apache.org/"
     puts "Uploading new site to #{spec.name}.apache.org ..."
-    sh 'rsync', '--progress', '--recursive', '--delete', '_release/site/', target
+    sh 'rsync', '--progress', '--recursive', '--delete', '_release/#{spec.version}/site/', target
     sh 'ssh', 'people.apache.org', 'chmod', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
     puts "[X] Uploaded new site to #{spec.name}.apache.org"
   end.call
@@ -45,15 +45,15 @@ task :release do
 
   # Upload binary and source packages to RubyForge.
   lambda do
-    files = FileList['_release/dist/*.{gem,tgz,zip}']
+    files = FileList['_release/#{spec.version}/dist/*.{gem,tgz,zip}']
     puts "Uploading #{spec.version} to RubyForge ... "
     rubyforge = RubyForge.new.configure
     rubyforge.login 
-    rubyforge.userconfig.merge!('release_changes'=>'_release/CHANGES',  'preformatted' => true)
+    rubyforge.userconfig.merge!('release_changes'=>'_release/#{spec.version}/CHANGES',  'preformatted' => true)
     rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version.to_s, *files
 
     puts "Posting news to RubyForge ... "
-    changes = File.read('_release/CHANGES')[/.*?\n(.*)/m, 1]
+    changes = File.read('_release/#{spec.version}/CHANGES')[/.*?\n(.*)/m, 1]
     rubyforge.post_news spec.rubyforge_project.downcase, "Buildr #{spec.versions} released",
       "#{spec.description}\n\nNew in Buildr #{spec.version}:\n#{changes.gsub(/^/, '  ')}\n"
     puts "[X] Uploaded gems and source files to #{spec.name}.rubyforge.org"
@@ -118,7 +118,7 @@ task :release do
  
   # Prepare release announcement email.
   lambda do
-    changes = File.read('_release/CHANGES')[/.*?\n(.*)/m, 1]
+    changes = File.read('_release/#{spec.version}/CHANGES')[/.*?\n(.*)/m, 1]
     email = <<-EMAIL
 To: users@buildr.apache.org, announce@apache.org
 Subject: [ANNOUNCE] Apache Buildr #{spec.version} released
