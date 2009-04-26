@@ -28,9 +28,9 @@ end
 
 # Load the Gem specification for the current platform (Ruby or JRuby).
 def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
-  @specs ||= ['ruby', 'java'].inject({}) { |hash, platform|
-    $platform = platform
-    hash.update(platform=>Gem::Specification.load('buildr.gemspec'))
+  @specs ||= ['ruby', 'java'].inject({}) { |hash, spec_platform|
+    $platform = spec_platform
+    hash.update(spec_platform=>Gem::Specification.load('buildr.gemspec'))
   }
   @specs[platform]
 end
