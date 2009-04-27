@@ -27,7 +27,6 @@ h2(#news).  Project News
 
 New in Buildr 1.3.4:
 
-* We graduated from the Apache Incubator!  This is our first release as a top-level Apache project: http://buildr.apache.org.  New site, new mailing lists, SVN, Git, etc.
 * Support for Git version control system
 * Improved all-around Scala support, including joint Java-Scala compilation and upgraded to Scala 2.7.3 dependencies: ScalaSpecs 1.4.3, ScalaCheck 1.5 and ScalaTest 0.9.5
 * New 'artifacts:sources' task to download source code for artifact jars

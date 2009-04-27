@@ -15,11 +15,27 @@
  */
 
 
-@page { 
-  margin: 1in 0.75in 1in 0.75in;
-  @top-left, @top-right {
-    font-family: "Gill Sans";
-    font-weight: normal;
+@media print {
+  @page { size: letter }
+  @page { 
+    @top-left, @top-right {
+      font-family: "Palatino";
+      font-weight: normal;
+    }
+  }
+  @page:first {
+    @top-left  { content: normal }
+    @top-right { content: normal }
+  }
+  @page:right {
+    margin: 0.75in 0.5in 0.75in 0.65in;
+    @top-left  { content: string(pagetitle); }
+    @top-right { content: counter(page); }
+  }
+  @page:left {
+    margin: 0.75in 0.65in 0.75in 0.5in;
+    @top-left  { content: counter(page); }
+    @top-right { content: string(pagetitle); }
   }
 }
 @page:left {
@@ -39,7 +55,7 @@
   title { string-set: doctitle content(); }
 
   body {
-    font-family: "Helvetica Neue", "DejaVu Sans", "Verdana";
+    font-family: "Palatino";
     margin: 0;
     color: black;
     background: white;
@@ -57,6 +73,9 @@
   pre, code {
     font-family: "Monaco", "DejaVu Sans Mono", "Courier New", "Courier";
     font-size: 10pt;
+  }
+  pre br {
+    display: none;
   }
   a:link, a:visited {
     background: transparent;

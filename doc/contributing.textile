@@ -27,13 +27,11 @@ If it needs more attention, start a discussion over on the mailing list.  We wil
 
 When reporting a bug, please tell us which version of Ruby, Buildr and Java you are using, and also which operating system you are on:
 
-<notextile>
 {% highlight sh %}
 $ ruby --version
 $ buildr --version
 $ java --version
 {% endhighlight %}
-</notextile>
 
 
 h2(#wiki).  Community Wiki
@@ -83,11 +81,9 @@ h3(#git).  Git
 
 Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from GitHub":http://github.com/buildr/buildr/tree/master:
 
-<notextile>
 {% highlight sh %}
 $ git clone git://github.com/buildr/buildr.git
 {% endhighlight %}
-</notextile>
 
 If you want to learn more about Git, you can start by watching Scott Chacon’s "Git presentation":http://en.oreilly.com/rails2008/public/asset/attachment/2816 (PDF), or any of the "Git screencasts":http://www.gitcasts.com/.  For more, there's also the "Git Internals book":http://peepcode.com/products/git-internals-pdf.
 
@@ -130,12 +126,10 @@ Since Ruby Gems uses version numbers to detect new releases, if you installed Bu
 
 If you want to go back to using the RubyForge releases:
 
-<notextile>
 {% highlight sh %}
 gem source --remove http://people.apache.org/~assaf/buildr/snapshot/
 gem install buildr
 {% endhighlight %}
-</notextile>
 
 
 h2(#testing).  Tested and Documented

@@ -246,6 +246,15 @@ module Buildr
         @list ||= []
       end
 
+      # Finds and returns the Release instance for this project.
+      def find
+        unless @release
+          klass = list.detect { |impl| impl.applies_to? }
+          @release = klass.new if klass
+        end
+        @release
+      end
+
     end
  
     # Use this to specify a different tag name for tagging the release in source control.
@@ -364,8 +373,8 @@ module Buildr
 
   class GitRelease < Release
     class << self
-      def applies_to?(directory = '.')
-        File.exist? File.join(directory, '.git/config')
+      def applies_to?
+        File.exist?('.git/config')
       end
     end
 
@@ -402,8 +411,8 @@ module Buildr
 
   class SvnRelease < Release
     class << self
-      def applies_to?(directory = '.')
-        File.exist? File.join(directory, '.svn')
+      def applies_to?
+        File.exist?('.svn')
       end
     end
     
@@ -429,9 +438,9 @@ module Buildr
 
   desc 'Make a release'
   task 'release' do |task|
-    klass = Release.list.detect { |impl| impl.applies_to? }
-    fail 'Unable to detect the Version Control System.' unless klass
-    klass.new.make
+    release = Release.find
+    fail 'Unable to detect the Version Control System.' unless release
+    release.make
   end
 
 end
