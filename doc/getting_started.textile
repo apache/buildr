@@ -30,24 +30,19 @@ p(note). At this time, the native Ruby-Java Bridge (RJB) does not work very well
 
 On *RedHat/Fedora* you can use yum to install Ruby and RubyGems, and then upgrade to the most recent version of RubyGems:
 
-<notextile>
 {% highlight sh %}
 $ sudo yum install ruby rubygems ruby-devel gcc
 $ sudo gem update --system
 {% endhighlight %}
-</notextile>
 
 On *Ubuntu* you have to install several packages:
 
-<notextile>
 {% highlight sh %}
 $ sudo apt-get install ruby-full ruby1.8-dev libopenssl-ruby build-essential 
 {% endhighlight %}
-</notextile>
 
 The Debian package for @rubygems@ will not allow you to install Buildr, so you need to install RubyGems from source:
 
-<notextile>
 {% highlight sh %}
 $ wget http://rubyforge.org/frs/download.php/45905/rubygems-1.3.1.tgz
 $ tar xzf rubygems-1.3.1.tgz
@@ -55,24 +50,19 @@ $ cd rubygems-1.3.1
 $ sudo ruby setup.rb
 $ sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
 {% endhighlight %}
-</notextile>
 
 Before installing Buildr, please set the @JAVA_HOME@ environment variable to point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
 
-<notextile>
 {% highlight sh %}
 $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr
 {% endhighlight %}
-</notextile>
 
 To upgrade to a new version or install a specific version:
 
-<notextile>
 {% highlight sh %}
 $ sudo env JAVA_HOME=$JAVA_HOME gem update buildr
 $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr -v 1.3.4
 {% endhighlight %}
-</notextile>
 
 
 
@@ -88,36 +78,28 @@ OS X 10.4 (Tiger) includes an older version of Ruby that is not compatible with 
 
 We recommend you first upgrade to the latest version of Ruby gems:
 
-<notextile>
 {% highlight sh %}
 $ sudo gem update --system
 {% endhighlight %}
-</notextile>
 
 Before installing Buildr, please set the @JAVA_HOME@ environment variable to point to your JDK distribution:
 
-<notextile>
 {% highlight sh %}
 $ export JAVA_HOME=/Library/Java/Home
 {% endhighlight %}
-</notextile>
 
 To install Buildr:
 
-<notextile>
 {% highlight sh %}
 $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr
 {% endhighlight %}
-</notextile>
 
 To upgrade to a new version or install a specific version:
 
-<notextile>
 {% highlight sh %}
 $ sudo env JAVA_HOME=$JAVA_HOME gem update buildr
 $ sudo env JAVA_HOME=$JAVA_HOME gem install buildr -v 1.3.4
 {% endhighlight %}
-</notextile>
 
 
 h2(#windows).  Installing on Windows
@@ -128,28 +110,22 @@ h2(#windows).  Installing on Windows
 
 *In details:* We recommend you first upgrade to the latest version of Ruby gems:
 
-<notextile>
 {% highlight sh %}
 > gem update --system
 {% endhighlight %}
-</notextile>
 
 Before installing Buildr, please set the @JAVA_HOME@ environment variable to point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
 
-<notextile>
 {% highlight sh %}
 > gem install buildr
 {% endhighlight %}
-</notextile>
 
 To upgrade to a new version or install a specific version:
 
-<notextile>
 {% highlight sh %}
 > gem update buildr
 > gem install buildr -v 1.3.4
 {% endhighlight %}
-</notextile>
 
 
 h2(#jruby).  Installing for JRuby
@@ -164,30 +140,24 @@ After uncompressing JRuby, update your @PATH@ to include both @java@ and @jruby@
 
 For Linux and OS X:
 
-<notextile>
 {% highlight sh %}
 $ export PATH=$PATH:[path to JRuby]/bin:$JAVA_HOME/bin
 $ jruby -S gem install buildr
 {% endhighlight %}
-</notextile>
 
 For Windows:
 
-<notextile>
 {% highlight sh %}
 > set PATH=%PATH%;[path to JRuby]/bin;%JAVA_HOME%/bin
 > jruby -S gem install buildr
 {% endhighlight %}
-</notextile>
 
 To upgrade to a new version or install a specific version:
 
-<notextile>
 {% highlight sh %}
 $ jruby -S gem update buildr
 $ jruby -S gem install buildr -v 1.3.4
 {% endhighlight %}
-</notextile>
 
 
 *Important: Running JRuby and Ruby side by side*
@@ -200,7 +170,6 @@ To work exclusively with JRuby, make sure it shows first on the path, for exampl
 
 You can use JRuby and Ruby side by side, by running scripts with the @-S@ command line argument.  For example:
 
-<notextile>
 {% highlight sh %}
 $ # with Ruby
 $ ruby -S gem install buildr
@@ -209,7 +178,6 @@ $ # with JRuby
 $ jruby -S gem install buildr
 $ jruby -S buildr
 {% endhighlight %}
-</notextile>
 
 Run @buildr --version@ from the command line to find which version of Buildr you are using by default.  If you see @(JRuby ...)@, Buildr is running on that version of JRuby.
 
@@ -218,21 +186,17 @@ h2(#conventions). Document Conventions
 
 Lines that start with @$@ are command lines, for example:
 
-<notextile>
 {% highlight sh %}
 $ # Run Buildr
 $ buildr
 {% endhighlight %}
-</notextile>
 
 Lines that start with @=>@ show output from the console or the result of a method, for example:
 
-<notextile>
 {% highlight sh %}
 puts 'Hello world'
 => "Hello world"
 {% endhighlight %}
-</notextile>
 
 And as you guessed, everything else is Buildfile Ruby or Java code.  You can figure out which language is which.
 
@@ -245,11 +209,9 @@ p(tip). You'll notice that Buildr creates a file called @buildfile@.  It's case 
 
 You use Buildr by running the @buildr@ command:
 
-<notextile>
 {% highlight sh %}
 $ buildr [options] [tasks] [name=value]
 {% endhighlight %}
-</notextile>
 
 There are several options you can use, for a full list of options type @buildr --help@:
 
@@ -266,14 +228,12 @@ There are several options you can use, for a full list of options type @buildr -
 
 You can tell Buildr to run specific tasks and the order to run them.  For example:
 
-<notextile>
 {% highlight sh %}
 # Clean and rebuild
 buildr clean build
 # Package and install
 buildr install
 {% endhighlight %}
-</notextile>
 
 If you don't specify a task, Buildr will run the "@build@ task":building.html, compiling source code and running test cases.  Running a task may run other tasks as well, for example, running the @install@ task will also run @package@.
 
@@ -281,12 +241,10 @@ There are several "environment variables":settings_profiles.html#env_vars that l
 
 For example:
 
-<notextile>
 {% highlight sh %}
 $ export JAVA_OPTS='-Xms1g -Xmx1g'
 $ buildr TEST=no
 {% endhighlight %}
-</notextile>
 
 
 h2(#help). Help Tasks
@@ -295,15 +253,12 @@ Buildr includes a number of informative tasks.  Currently that number stands at 
 
 To start with, type:
 
-<notextile>
 {% highlight sh %}
 $ buildr help
 {% endhighlight %}
-</notextile>
 
 You can list the name and description of all your projects using the @help:projects@ task.  For example:
 
-<notextile>
 {% highlight sh %}
 $ buildr help:projects
 killer-app                 # Code. Build. ??? Profit!
@@ -311,7 +266,6 @@ killer-app:teh-api         # Abstract classes and interfaces
 killer-app:teh-impl        # All those implementation details
 killer-app:la-web          # What our users see
 {% endhighlight %}
-</notextile>
 
 You are, of course, describing your projects for the sake of those who will maintain your code, right?  To describe a project, or a task, call the @desc@ method before the project or task definition.
 

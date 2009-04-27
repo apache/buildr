@@ -10,30 +10,24 @@ Buildr uses several environment variables that help you control how it works. So
 
 For example:
 
-<notextile>
 {% highlight sh %}
 $ export HTTP_PROXY=http://myproxy:8080
 {% endhighlight %}
-</notextile>
 
 There are other environment variables you will want to set when running Buildr, for example, to do a full build without running the tests:
 
-<notextile>
 {% highlight sh %}
 $ buildr test=no
 {% endhighlight %}
-</notextile>
 
 For convenience, when you set environment variables on the command line, the variable name is case insensitive, you can use either @test=no@ or @TEST=no@. Any other way (@export@, @ENV@, etc) the variable names are case sensitive.
 
 You can also set environment variables from within your Buildfile.  For example, if you discover that building your project requires gobs of JVM heap space, and you want all other team members to run with the same settings:
 
-<notextile>
 {% highlight ruby %}
 # This project builds a lot of code.
 ENV['JAVA_OPTS'] ||= '-Xms1g -Xmx1g'
 {% endhighlight %}
-</notextile>
 
 Make sure to set any environment variables at the very top of the Buildfile, above any Ruby statement (even @require@).
 
@@ -58,12 +52,10 @@ p(note). Buildr does not check any of the arguments in @JAVA_OPTS@.  A common mi
 
 Some extensions may use additional environment variables, and of course, you can always add your own.  This example uses two environment variables for specifying the username and password:
 
-<notextile>
 {% highlight ruby %}
 repositories.upload_to[:username] = ENV['USERNAME']
 repositories.upload_to[:password] = ENV['PASSWORD']
 {% endhighlight %}
-</notextile>
 
 
 h2(#personal). Personal Settings
@@ -76,7 +68,6 @@ The prefered way to store personal settings is to create a @.buildr/settings.yam
 
 Here's an example @settings.yaml@:
 
-<notextile>
 {% highlight yaml %}
 # The repositories hash is read automatically by buildr.
 repositories:
@@ -101,11 +92,9 @@ im:
   usr: notifier@company-jabber.com
   pwd: secret
 {% endhighlight %}
-</notextile>
 
 Later your buildfile or addons can reference user preferences using the  hash returned by the @Buildr.settings.user@ accessor.
 
-<notextile>
 {% highlight ruby %}
 task 'relase-notification' do
  usr, pwd, server = settings.user['im'].values_at('usr', 'pwd', 'server')
@@ -113,7 +102,6 @@ task 'relase-notification' do
  jabber.msg("We are pleased to announce the last stable version #{VERSION}")
 end
 {% endhighlight %}
-</notextile>
 
 
 h2(#build). Build Settings
@@ -122,7 +110,6 @@ Build settings are local to the project being built, and are placed in the @buil
 
 They help keep the buildfile and build.yaml file simple and readable, working to the advantages of each one.  Example for build settings are gems, repositories and artifacts used by that build.
 
-<notextile>
 {% highlight yaml %}
 # This project requires the following ruby gems, buildr addons
 gems: 
@@ -151,24 +138,20 @@ twitter:
 jira: 
   uri: https://jira.corp.org
 {% endhighlight %}
-</notextile>
 
 When buildr is loaded, required ruby gems will be installed if needed, thus adding features like the imaginary twitter notifier addon.
 
 Artifacts defined on @build.yaml@ can be referenced on your buildfile by supplying the ruby symbol to the @Buildr.artifact@ and @Buildr.artifacts@ methods.  The @compile.with@, @test.with@ methods can also be given these names.
 
-<notextile>
 {% highlight ruby %}
 define 'my_project' do 
   compile.with artifacts(:log4j, :j2ee)
   test.with :spring, :j2ee
 end
 {% endhighlight %}
-</notextile>
 
 Build settings can be retreived using the @Buildr.settings.build@ accessor.
 
-<notextile>
 {% highlight ruby %}
  task 'create_patch' do 
    patch = Git.create_patch :interactive => true
@@ -178,7 +161,6 @@ Build settings can be retreived using the @Buildr.settings.build@ accessor.
    end
  end
 {% endhighlight %}
-</notextile>
 
 
 h2(#variable). Non constant settings
@@ -189,7 +171,6 @@ The loading order allows you to place global settings that affect all your build
 
 Here's an example @buildr.rb@:
 
-<notextile>
 {% highlight ruby %}
 # Only I should know that
 repositories.upload_to[:username] = 'assaf'
@@ -197,7 +178,6 @@ repositories.upload_to[:password] = 'supersecret'
 # Search here first, it's faster
 repositories.remote << 'http://inside-the-firewall'
 {% endhighlight %}
-</notextile> 
 
 
 h2(#environments). Environments
@@ -206,35 +186,29 @@ One common use case is adapting the build to different environments.  For exampl
 
 So let's start by talking about the build environment.  Buildr has a global attributes that indicates which environment it's running in, accessible from the @environment@ method.  You can set the current build environment in one of two ways.  Using the @-e/--environment@ command line option:
 
-<notextile>
 {% highlight sh %}
 $ buildr -e test
 (in /home/john/project, test)
 {% endhighlight %}
-</notextile>
 
 Or by setting the environment variable @BUILDR_ENV@:
 
-<notextile>
 {% highlight text %}
 $ export BUILDR_ENV=production
 $ buildr
 (in /home/john/project, production)
 {% endhighlight %}
-</notextile>
 
 Unless you tell it otherwise, Buildr assumes you're developing and sets the environment to @development@.
 
 Here's a simple example for handling different environments within the Buildfile:
 
-<notextile>
 {% highlight ruby %}
 project 'db-module' do
   db = (environment == 'production' ? 'oracle' : 'hsql')
   resources.from(_("src/main/#{db}"))
 end
 {% endhighlight %}
-</notextile>
 
 We recommend picking a convention for your different environments and following it across all your projects.  For example:
 
@@ -252,7 +226,6 @@ The profiles file is a YAML file called @profiles.yaml@ that you place in the sa
 
 For example, to support three different database configurations, we could write:
 
-<notextile>
 {% highlight yaml %}
 # HSQL, don't bother storing to disk.
 development:
@@ -269,11 +242,9 @@ production:
   db: oracle
   jdbc: oracle:thin:@bigstrong:1521:mighty
 {% endhighlight %}
-</notextile>
 
 Here's a simple example for a buildfile that uses the profile information:
 
-<notextile>
 {% highlight ruby %}
 project 'db-module' do
   # Copy SQL files specific for the database we're using,
@@ -283,7 +254,6 @@ project 'db-module' do
   resources.filter.using :jdbc=>Buildr.settings.profile['jdbc']
 end
 {% endhighlight %}
-</notextile>
 
 The @profile@ method returns the current profile, selected based on the current "environment":#environments.  You can get a list of all profiles by calling @profiles@.
 
@@ -293,7 +263,6 @@ We recommend following conventions and using the same environments in all your p
 
 YAML allows you to use anchors (@&@), similar to ID attributes in XML, reference the anchored element (@*@) elsewhere, and merge one element into another (@<<@).  For example:
 
-<notextile>
 {% highlight yaml %}
 # We'll reference this one as common.
 development: &common
@@ -306,7 +275,6 @@ test:
   <<: *common
   jdbc: hsqldb:file:testdb
 {% endhighlight %}
-</notextile>
 
 
 You can "learn more about YAML here":http://www.yaml.org, and use this handy "YAML quick reference":http://www.yaml.org/refcard.html.

@@ -327,6 +327,29 @@ describe Svn do
 end # of Buildr::Svn
 
 
+describe Release do
+  describe 'find' do
+    it 'should return GitRelease if project uses Git' do
+      write '.git/config'
+      Release.find.should be_instance_of(GitRelease)
+    end
+
+    it 'should return SvnRelease if project uses SVN' do
+      write '.svn/xml'
+      Release.find.should be_instance_of(SvnRelease)
+    end
+
+    it 'should return nil if no known release process' do
+      Release.find.should be_nil
+    end
+
+    after :each do
+      Release.instance_exec { @release = nil }
+    end
+  end
+end
+
+
 describe 'a release process', :shared=>true do
 
   describe '#make' do

@@ -14,6 +14,7 @@
 # the License.
 
 
+gem 'RedCloth', '4.1.1'
 require 'rake/tasklib'
 require 'jekyll'
 
@@ -42,11 +43,9 @@ class JekyllTask < Rake::TaskLib
   attr_accessor :pygments
 
   def generate(auto = false)
-    process = lambda do
-      Jekyll.pygments = @pygments
-      Jekyll.process source, target
-      touch target
-    end
+    options = { 'source'=>source, 'destination'=>target, 'pygments'=>pygments || false }
+    options = Jekyll.configuration(options)
+    site = Jekyll::Site.new(options)
 
     if auto
       require 'directory_watcher'
@@ -63,44 +62,34 @@ class JekyllTask < Rake::TaskLib
       dw.add_observer do |*args|
         t = Time.now.strftime("%Y-%m-%d %H:%M:%S")
         puts "[#{t}] regeneration: #{args.size} files changed"
-        process.call
+        site.process
         puts "Done"
       end
       loop { sleep 1 }
     else
       puts "Generating documentation in #{target}"
-      process.call
+      site.process
+      touch target
     end
   end
 end
 
-
-# TODO: Worked around bug in Jekyll 0.4.1. Removed when 0.4.2 is out.
-# http://github.com/mojombo/jekyll/commit/c180bc47bf2f63db1bff9f6600cccbe5ad69077e#diff-0
-class Albino
-  def execute(command)
-    output = ''
-    Open4.popen4(command) do |pid, stdin, stdout, stderr|
-      stdin.puts @target
-      stdin.close
-      output = stdout.read.strip
-      [stdout, stderr].each { |io| io.close }
+class Jekyll::HighlightBlock 
+  def render_pygments(context, code)
+    if context["content_type"] == 'markdown'
+      return "\n" + Albino.new(code, @lang).to_s(@options) + "\n"
+    elsif context["content_type"] == 'textile'
+      return "<notextile>" + Albino.new(code, @lang).to_s(@options) + "</notextile>"
+    else
+      return Albino.new(code, @lang).to_s(@options)
     end
-    output
   end
 end
 
-class Jekyll::Page
-  def render(layouts, site_payload)
-    puts "... #{@name}"
-    payload = {"page" => self.data}.deep_merge(site_payload)
-    do_layout(payload, layouts)
-  end
-end
 
 module TocFilter
   def toc(input)
-    input.scan(/<(h2)(?:>|\s+(.*?)>)(.*?)<\/\1\s*>/mi).inject(%{<ol class="toc">}) { |toc, entry|
+    input.scan(/<(h2)(?:>|\s+(.*?)>)([^<]*)<\/\1\s*>/mi).inject(%{<ol class="toc">}) { |toc, entry|
       id = entry[1][/^id=(['"])(.*)\1$/, 2]
       title = entry[2].gsub(/<(\w*).*?>(.*?)<\/\1\s*>/m, '\2').strip
       toc << %{<li><a href="##{id}">#{title}</a></li>}
