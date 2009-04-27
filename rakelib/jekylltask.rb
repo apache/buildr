@@ -40,10 +40,9 @@ class JekyllTask < Rake::TaskLib
 
   attr_accessor :source
   attr_accessor :target
-  attr_accessor :pygments
 
   def generate(auto = false)
-    options = { 'source'=>source, 'destination'=>target, 'pygments'=>pygments || false }
+    options = { 'source'=>source, 'destination'=>target }
     options = Jekyll.configuration(options)
     site = Jekyll::Site.new(options)
 

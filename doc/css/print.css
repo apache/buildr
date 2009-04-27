@@ -16,42 +16,24 @@
 
 
 @media print {
-  @page { size: letter }
-  @page { 
-    @top-left, @top-right {
-      font-family: "Palatino";
-      font-weight: normal;
-    }
-  }
+  @page { size: letter; }
   @page:first {
     @top-left  { content: normal }
     @top-right { content: normal }
   }
   @page:right {
-    margin: 0.75in 0.5in 0.75in 0.65in;
+    margin: 1in 0.75in 1.225in 1in;
+    font-family: "Gill Sans" !important;
     @top-left  { content: string(pagetitle); }
     @top-right { content: counter(page); }
   }
   @page:left {
-    margin: 0.75in 0.65in 0.75in 0.5in;
+    font-family: "Gill Sans" !important;
+    margin: 1in 1in 1.225in 0.75in;
     @top-left  { content: counter(page); }
     @top-right { content: string(pagetitle); }
   }
-}
-@page:left {
-  @top-left { content: counter(page); }
-  @top-right { content: string(pagetitle); }
-}
-@page:right {
-  @top-left { content: string(pagetitle); }
-  @top-right { content: counter(page); }
-}
-@page:first {
-  @top-left { content: normal }
-  @top-right { content: normal }
-}
 
-@media print {
   title { string-set: doctitle content(); }
 
   body {

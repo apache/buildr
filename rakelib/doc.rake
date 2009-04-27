@@ -42,7 +42,6 @@ begin
   JekyllTask.new :jekyll do |task|
     task.source = 'doc'
     task.target = '_site'
-    task.pygments = true
   end
 
 rescue LoadError
