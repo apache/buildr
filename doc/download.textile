@@ -23,6 +23,7 @@ h2(#dist).  Binaries and Source Code
 h3. buildr 1.3.4 (2009-04-21)
 
 |_. Package |_. MD5 Checksum |_. PGP |
+| "buildr-1.3.4.gem":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4.gem | "34247286f910be1724f63b9e795e75ed":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4.gem.asc |
 | "buildr-1.3.4-java.gem":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4-java.gem | "44ed67bf835cf2abdc2b6723b5eceadb":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4-java.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4-java.gem.asc |
 | "buildr-1.3.4.tgz":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4.tgz | "7d918b88a3bb8139f28f6ff0b39d003c":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4.tgz.md5 | "Sig":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4.tgz.asc |
 | "buildr-1.3.4.zip":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4.zip | "8f4cf84dc6e293aac5fba7e2a9cc0776":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4.zip.md5 | "Sig":http://www.apache.org/dist/buildr/1.3.4/buildr-1.3.4.zip.asc |
