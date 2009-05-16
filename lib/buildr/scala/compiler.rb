@@ -108,7 +108,11 @@ module Buildr::Scala
             fail 'Failed to compile, see errors above'
         else
           Java.load
-          Java.scala.tools.nsc.Main.process(cmd_args.to_java(Java.java.lang.String))
+          begin
+            Java.scala.tools.nsc.Main.process(cmd_args.to_java(Java.java.lang.String))
+          rescue => e
+            fail "Scala compiler crashed:\n#{e.inspect}" 
+          end
           fail 'Failed to compile, see errors above' if Java.scala.tools.nsc.Main.reporter.hasErrors
         end
         
