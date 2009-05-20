@@ -15,6 +15,7 @@
 
 
 require File.join(File.dirname(__FILE__), '../spec_helpers')
+require 'buildr/scala'
 
 # TODO's
 #  -test passing System props
