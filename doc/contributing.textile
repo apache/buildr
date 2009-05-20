@@ -208,3 +208,5 @@ Currently a Java Developer at "http://jwmsolutions.com":http://jwmsolutions.com,
 *Lacton* (lacton at apache.org)
 
 A test-infected developer since 2001, Lacton yearns for a development infrastructure that would shorten feedback loops so much that testing, building, refactoring and committing would feel as easy and natural as breathing air.
+
+*"Daniel Spiewak":http://www.codecommit.com/blog* (djspiewak at apache.org)
