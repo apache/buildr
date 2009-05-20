@@ -79,17 +79,17 @@ You can also browse the "Buildr repository":http://svn.apache.org/repos/asf/buil
 
 h3(#git).  Git
 
-Not a fan SVN?  We understand.  You can also grab a copy of "Buildr from GitHub":http://github.com/buildr/buildr/tree/master:
+Not a fan SVN?  We understand.  You can also use the "official Apache Git clone.":http://git.apache.org  This clone is maintained by the ASF and kept in sync with the SVN repository (though, in practice there may be some delay in cloning recent commits).  Apache's Git hosting supports both git:// and http:// protocols (you should use git:// if at all possible as it is faster than http://):
 
 {% highlight sh %}
-$ git clone git://github.com/buildr/buildr.git
+$ git clone git://git.apache.org/buildr.git
+# or...
+$ git clone http://git.apache.org/buildr.git
 {% endhighlight %}
 
 If you want to learn more about Git, you can start by watching Scott Chacon’s "Git presentation":http://en.oreilly.com/rails2008/public/asset/attachment/2816 (PDF), or any of the "Git screencasts":http://www.gitcasts.com/.  For more, there's also the "Git Internals book":http://peepcode.com/products/git-internals-pdf.
 
 And keep this "Git cheat sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet-medium.png close at hand. Very useful.
-
-*Note:* The GitHub repository is maintained by contributors to this project, but is *not* an official Apache repository.  To obtain Buildr from the official Apache repository, consider using @git-svn@ instead.
 
 h3. Working with Source Code
 
