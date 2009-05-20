@@ -32,7 +32,7 @@ module Buildr::Scala
     @lang = :scala
     @bdd_dir = :spec
 
-    VERSION = '1.4.4'
+    VERSION = '1.5.0'
     
     class << self
       def version
@@ -40,7 +40,7 @@ module Buildr::Scala
       end
       
       def dependencies
-        ["org.specs:specs:jar:#{version}"] + Check.dependencies + 
+        ["org.scala-tools.testing:specs:jar:#{version}"] + Check.dependencies + 
           JMock.dependencies + JUnit.dependencies
       end
       
