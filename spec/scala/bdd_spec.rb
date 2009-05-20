@@ -15,6 +15,7 @@
 
 
 require File.join(File.dirname(__FILE__), '../spec_helpers')
+require 'buildr/scala'
 
 describe Buildr::Scala::Specs do
   it 'should be the default when tests in src/spec/scala' do

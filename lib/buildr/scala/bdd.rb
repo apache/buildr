@@ -32,7 +32,7 @@ module Buildr::Scala
     @lang = :scala
     @bdd_dir = :spec
 
-    VERSION = '1.4.3'
+    VERSION = '1.4.4'
     
     class << self
       def version
@@ -77,11 +77,16 @@ module Buildr::Scala
       cmd_options = { :properties => options[:properties],
                       :java_args => options[:java_args],
                       :classpath => dependencies}
-      
+                      
       specs.inject [] do |passed, spec|
         begin
           Java.load
-          Java::Commands.java(spec, cmd_options)
+          
+          unless Util.win_os?
+            Java::Commands.java(spec, '-c', cmd_options)
+          else
+            Java::Commands.java(spec, cmd_options)
+          end
         rescue => e
           passed
         else
