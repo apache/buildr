@@ -31,7 +31,7 @@ module Buildr::Scala
       end
       
       def dependencies
-        ["org.scalacheck:scalacheck:jar:#{version}"]
+        ["org.scala-tools.testing:scalacheck:jar:#{version}"]
       end  
 
     private
