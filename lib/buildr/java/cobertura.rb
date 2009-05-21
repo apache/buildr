@@ -204,7 +204,7 @@ module Buildr
             project.test.with Cobertura.dependencies
             project.test.options[:properties]["net.sourceforge.cobertura.datafile"] = cobertura.data_file
             
-            [:xml, :html, :check].each do |format|
+            [:xml, :html].each do |format|
               task format => ['instrument', 'test'] do 
                 info "Creating test coverage reports in #{cobertura.report_to(format)}"
                 Buildr.ant "cobertura" do |ant|
@@ -223,8 +223,8 @@ module Buildr
             desc "Run the cobertura check"
             task :check => [:instrument, :test] do
               Buildr.ant "cobertura" do |ant|
-                ant.taskdef :classpath=>requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
-                ant.send "cobertura-check", :datafile=>data_file, \
+                ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+                ant.send "cobertura-check", :datafile=>Cobertura.data_file, \
                   :branchrate=>cobertura.check.branch_rate, \
                   :lineRate=>cobertura.check.line_rate, \
                   :totalBranchRate=>cobertura.check.total_branch_rate, \
