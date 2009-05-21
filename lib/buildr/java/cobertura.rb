@@ -19,7 +19,7 @@ require 'buildr/java'
 
 module Buildr
 
-  # Provides the <code>cobertura:html</code> and <code>cobertura:xml</code> tasks.
+  # Provides the <code>cobertura:html</code>, <code>cobertura:xml</code> and <code>cobertura:check</code> tasks.
   # Require explicitly using <code>require "buildr/cobertura"</code>.
   #
   # You can generate cobertura reports for a single project 
@@ -37,6 +37,16 @@ module Buildr
   #      cobertura.exclude 'some.foo.util.SimpleUtil'
   #      cobertura.exclude /*.Const(ants)?/i
   #   end
+  #
+  # When using <code>cobertura:check</code> you have to specify coverage limits in <code>buildfile<code>. 
+  #
+  # Buildr::COBERTURA_CHECK_BRANCHRATE = "100"
+  # Buildr::COBERTURA_CHECK_LINERATE = "0"
+  # Buildr::COBERTURA_CHECK_TOTALBRANCHRATE = "100"
+  # Buildr::COBERTURA_CHECK_TOTALLINERATE = "96"
+  # Buildr::COBERTURA_CHECK_PACKAGELINERATE = "75"
+  # Buildr::COBERTURA_CHECK_PACKAGEBRANCHRATE = "100"
+  #
   module Cobertura
 
     VERSION = '1.9'
@@ -171,7 +181,7 @@ module Buildr
             project.test.with Cobertura.dependencies
             project.test.options[:properties]["net.sourceforge.cobertura.datafile"] = cobertura.data_file
             
-            [:xml, :html].each do |format|
+            [:xml, :html, :check].each do |format|
               task format => ['instrument', 'test'] do 
                 info "Creating test coverage reports in #{cobertura.report_to(format)}"
                 Buildr.ant "cobertura" do |ant|
@@ -186,8 +196,22 @@ module Buildr
                 end
               end
             end
+            
+            [:check].each do |format|
+              task format => ['instrument', 'test'] do 
+                Buildr.ant "cobertura" do |ant|
+                  ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+                  ant.send "cobertura-report", :format=>format, 
+                    :destdir=>cobertura.report_to(format), :datafile=>cobertura.data_file do
+                    cobertura.sources.flatten.each do |src|
+                      ant.fileset(:dir=>src.to_s) if File.exist?(src.to_s)
+                    end
+                  end
+                end
+              end
+            end
+            
           end
-          
         end
 
         project.clean do
@@ -229,6 +253,18 @@ module Buildr
           end
         end
       end
+
+      [:check].each do |format|
+        report_target = report_to(format)
+        desc "Run the cobertura check "
+        task format => ["instrument", "test"] do
+          Buildr.ant "cobertura" do |ant|
+            ant.taskdef :classpath=>requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+            ant.send "cobertura-check", :datafile=>data_file, :branchrate=>COBERTURA_CHECK_BRANCHRATE, :lineRate=>COBERTURA_CHECK_LINERATE, :totalBranchRate=>COBERTURA_CHECK_TOTALBRANCHRATE, :totalLineRate=>COBERTURA_CHECK_TOTALLINERATE, :packageLineRate=>COBERTURA_CHECK_PACKAGELINERATE, :packageBranchRate=>COBERTURA_CHECK_PACKAGEBRANCHRATE do
+          end
+        end
+      end
+    end
       
       task "clean" do
         rm_rf [report_to, data_file]
