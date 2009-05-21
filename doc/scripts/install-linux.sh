@@ -16,6 +16,7 @@
 if [ -z `which ruby` ] ; then
   echo "You do not have Ruby 1.8.6 ..."
   # yum comes first since some people have apt-get installed in addition to yum.
+  # urpmi is added in case of mandriva : apt-get or yum are working for mandriva too
   if [ `which yum` ] ; then
     echo "Installing Ruby using yum"
     sudo yum install ruby rubygems ruby-devel gcc
@@ -34,8 +35,15 @@ if [ -z `which ruby` ] ; then
     rm -rf rubygems-1.3.1
     # ruby is same as ruby1.8, we need gem that is same as gem1.8
     sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
+  elif [ `which urpmi` ] ; then
+    echo "Installing Ruby using urpmi"
+    sudo urpmi ruby rubygems ruby-devel gcc
+    if [ $? -ne 0 ] ; then
+      echo "URPMI install error"
+      exit 1
+    fi
   else
-    echo "Can only install Ruby 1.8.6 using apt-get or yum, and can't find either one"
+    echo "Can only install Ruby 1.8.6 using apt-get, yum or urpmi, and can't find any of them"
     exit 1
   fi
   echo
