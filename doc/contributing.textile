@@ -79,7 +79,7 @@ You can also browse the "Buildr repository":http://svn.apache.org/repos/asf/buil
 
 h3(#git).  Git
 
-Not a fan SVN?  We understand.  You can also use the "official Apache Git clone.":http://git.apache.org  This clone is maintained by the ASF and kept in sync with the SVN repository (though, in practice there may be some delay in cloning recent commits).  Apache's Git hosting supports both git:// and http:// protocols (you should use git:// if at all possible as it is faster than http://):
+Not a fan of SVN?  We understand.  You can also use the "official Apache Git clone.":http://git.apache.org  This clone is maintained by the ASF and kept in sync with the SVN repository (though, in practice there may be some delay in cloning recent commits).  Apache's Git hosting supports both git:// and http:// protocols (you should use git:// if at all possible as it is faster than http://):
 
 {% highlight sh %}
 $ git clone git://git.apache.org/buildr.git
