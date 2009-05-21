@@ -38,15 +38,6 @@ module Buildr
   #      cobertura.exclude /*.Const(ants)?/i
   #   end
   #
-  # When using <code>cobertura:check</code> you have to specify coverage limits in <code>buildfile<code>. 
-  #
-  # Buildr::COBERTURA_CHECK_BRANCHRATE = "100"
-  # Buildr::COBERTURA_CHECK_LINERATE = "0"
-  # Buildr::COBERTURA_CHECK_TOTALBRANCHRATE = "100"
-  # Buildr::COBERTURA_CHECK_TOTALLINERATE = "96"
-  # Buildr::COBERTURA_CHECK_PACKAGELINERATE = "75"
-  # Buildr::COBERTURA_CHECK_PACKAGEBRANCHRATE = "100"
-  #
   module Cobertura
 
     VERSION = '1.9'
@@ -80,7 +71,7 @@ module Buildr
       
       attr_reader :project
       private :project
-
+      
       attr_writer :data_file, :instrumented_dir, :report_dir
       
       def data_file
@@ -125,6 +116,38 @@ module Buildr
 
       def sources
         project.compile.sources
+      end
+      
+      def check
+        @check ||= CoberturaCheck.new
+      end
+    end
+    
+    class CoberturaCheck
+      attr_writer :branch_rate, :line_rate, :total_branch_rate, :total_line_rate, :package_line_rate, :package_branch_rate
+      
+      def branch_rate
+        @branch_rate ||= 100
+      end
+      
+      def line_rate
+        @line_rate ||= 0
+      end
+      
+      def total_branch_rate
+        @total_branch_rate ||= 100
+      end
+      
+      def total_line_rate
+        @total_line_rate ||= 96
+      end
+      
+      def package_line_rate
+        @package_line_rate ||= 75
+      end
+      
+      def package_branch_rate
+        @package_branch_rate ||= 100
       end
     end
 
@@ -197,15 +220,13 @@ module Buildr
               end
             end
             
-            [:check].each do |format|
-              task format => ['instrument', 'test'] do 
-                Buildr.ant "cobertura" do |ant|
-                  ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
-                  ant.send "cobertura-report", :format=>format, 
-                    :destdir=>cobertura.report_to(format), :datafile=>cobertura.data_file do
-                    cobertura.sources.flatten.each do |src|
-                      ant.fileset(:dir=>src.to_s) if File.exist?(src.to_s)
-                    end
+            task :check => [:instrument, :test] do
+              Buildr.ant "cobertura" do |ant|
+                ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+                ant.send "cobertura-report", :format=>format, 
+                  :destdir=>cobertura.report_to(format), :datafile=>cobertura.data_file do
+                  cobertura.sources.flatten.each do |src|
+                    ant.fileset(:dir=>src.to_s) if File.exist?(src.to_s)
                   end
                 end
               end
@@ -254,17 +275,20 @@ module Buildr
         end
       end
 
-      [:check].each do |format|
-        report_target = report_to(format)
-        desc "Run the cobertura check "
-        task format => ["instrument", "test"] do
-          Buildr.ant "cobertura" do |ant|
-            ant.taskdef :classpath=>requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
-            ant.send "cobertura-check", :datafile=>data_file, :branchrate=>COBERTURA_CHECK_BRANCHRATE, :lineRate=>COBERTURA_CHECK_LINERATE, :totalBranchRate=>COBERTURA_CHECK_TOTALBRANCHRATE, :totalLineRate=>COBERTURA_CHECK_TOTALLINERATE, :packageLineRate=>COBERTURA_CHECK_PACKAGELINERATE, :packageBranchRate=>COBERTURA_CHECK_PACKAGEBRANCHRATE do
+      desc "Run the cobertura check "
+      task :check => [:instrument, :test] do
+        Buildr.ant "cobertura" do |ant|
+          ant.taskdef :classpath=>requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+          ant.send "cobertura-check", :datafile=>data_file, \
+            :branchrate=>cobertura.check.branch_rate, \
+            :lineRate=>cobertura.check.line_rate, \
+            :totalBranchRate=>cobertura.check.total_branch_rate, \
+            :totalLineRate=>cobertura.check.total_line_rate, \
+            :packageLineRate=>cobertura.check.package_line_rate, \
+            :packageBranchRate=>cobertura.check.package_branch_rate do
           end
         end
       end
-    end
       
       task "clean" do
         rm_rf [report_to, data_file]
