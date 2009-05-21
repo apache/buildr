@@ -36,6 +36,7 @@
 * Change: Buildr now uses Jekyll to generate Web site/documentation:
 http://github.com/mojombo/jekyll/ This replaces Docter so less code to
 maintain and the same Textile/Liquid mechanism as when using Github pages.
+* Change: To access Release object (e.g. to set tag_name) use Release.find.
 * Fixed:  Removed double complete/fail messages showing up on console.
 * Fixed:  BUILDR-140 Get rid of const_defined? all across the board.
 * Fixed:  BUILDR-158 Nailgun is now a delegate for buildr/drb (a pure-ruby dRuby server)
