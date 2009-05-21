@@ -25,7 +25,7 @@ if [ -z `which ruby` ] ; then
     # ruby package does not contain RDoc, IRB, etc; ruby-full is a meta-package.
     # build-essentials not installed by default in Ubuntu, required for C extensions.
     sudo apt-get install ruby-full ruby1.8-dev libopenssl-ruby build-essential 
-    # RubyGems broken on Ubunutu, installing directly from source.
+    # RubyGems broken on Ubuntu, installing directly from source.
     echo "Installing RubyGems from RubyForge"
     wget http://rubyforge.org/frs/download.php/45905/rubygems-1.3.1.tgz
     tar xzf rubygems-1.3.1.tgz
