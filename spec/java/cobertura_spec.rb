@@ -73,5 +73,7 @@ describe Buildr::Cobertura do
         Dir.chdir('target/instrumented/classes') { Dir.glob('*').sort.should == ['Baz.class'] }
       end
     end
+    
+    # TODO add specs for cobertura:check...somehow
   end
 end
