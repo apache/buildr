@@ -207,7 +207,7 @@ h2(#cobertura_emma_jdepend). Cobertura, Emma, JDepend
 
 You can use "Cobertura":http://cobertura.sourceforge.net/ or "Emma":http://emma.sourceforge.net/ to instrument your code, run the tests and create a test coverage report in either HTML or XML format.
 
-There are two tasks for each tool, both of which generate a test coverage report in the @reports/cobertura@ (respectively @reports/emma@) directory.  For example:
+There are two main tasks for each tool, both of which generate a test coverage report in the @reports/cobertura@ (respectively @reports/emma@) directory.  For example:
 
 {% highlight sh %}
 $ buildr test cobertura:html
@@ -233,6 +233,20 @@ end
 {% endhighlight %}
 
 Emma has @include@ and @exclude@ methods too, but they take glob patterns instead of regexps.
+
+Cobertura also provides a @cobertura:check@ task.  This task is intended to be used as a dependency for other tasks (such as @deploy@) which might wish to fail if coverage is unacceptable.  The respective thresholds for task failure may be defined using the @cobertura.check@ configuration namespace.  For example:
+
+{% highlight ruby %}
+define 'someModule' do
+  cobertura.check.branch_rate = 75
+  cobertura.check.line_rate = 100
+  cobertura.check.total_line_rate = 98
+  
+  task(:deploy).enhance 'cobertura:check'
+end
+{% endhighlight %}
+
+The @cobertura:check@ task supports all of the configuration parameters allowed by the @cobertura-check@ Ant task (as "documented here":http://cobertura.sourceforge.net/anttaskreference.html).  Configuration parameters are "Ruby-ized" (as demonstrated in the example above).
 
 You can use "JDepend":http://clarkware.com/software/JDepend.html on to generate design quality metrics.  There are three tasks this time, the eye candy one:
 
