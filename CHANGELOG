@@ -1,6 +1,4 @@
 1.3.5 (Pending)
-=======
-* Change: To access Release object (e.g. to set tag_name) use Release.find.
 
 1.3.4 (2009-04-21)
 * Added:  BUILDR-93 Add specs for ScalaCheck integration
