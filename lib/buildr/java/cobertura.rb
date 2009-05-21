@@ -219,15 +219,18 @@ module Buildr
                 end
               end
             end
-            
+
+            desc "Run the cobertura check"
             task :check => [:instrument, :test] do
               Buildr.ant "cobertura" do |ant|
-                ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
-                ant.send "cobertura-report", :format=>format, 
-                  :destdir=>cobertura.report_to(format), :datafile=>cobertura.data_file do
-                  cobertura.sources.flatten.each do |src|
-                    ant.fileset(:dir=>src.to_s) if File.exist?(src.to_s)
-                  end
+                ant.taskdef :classpath=>requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
+                ant.send "cobertura-check", :datafile=>data_file, \
+                  :branchrate=>cobertura.check.branch_rate, \
+                  :lineRate=>cobertura.check.line_rate, \
+                  :totalBranchRate=>cobertura.check.total_branch_rate, \
+                  :totalLineRate=>cobertura.check.total_line_rate, \
+                  :packageLineRate=>cobertura.check.package_line_rate, \
+                  :packageBranchRate=>cobertura.check.package_branch_rate do
                 end
               end
             end
@@ -271,21 +274,6 @@ module Buildr
                 ant.fileset :dir=>src.to_s if File.exist?(src.to_s)
               end
             end
-          end
-        end
-      end
-
-      desc "Run the cobertura check "
-      task :check => [:instrument, :test] do
-        Buildr.ant "cobertura" do |ant|
-          ant.taskdef :classpath=>requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
-          ant.send "cobertura-check", :datafile=>data_file, \
-            :branchrate=>cobertura.check.branch_rate, \
-            :lineRate=>cobertura.check.line_rate, \
-            :totalBranchRate=>cobertura.check.total_branch_rate, \
-            :totalLineRate=>cobertura.check.total_line_rate, \
-            :packageLineRate=>cobertura.check.package_line_rate, \
-            :packageBranchRate=>cobertura.check.package_branch_rate do
           end
         end
       end
