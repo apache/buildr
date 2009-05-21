@@ -125,30 +125,7 @@ module Buildr
     
     class CoberturaCheck
       attr_writer :branch_rate, :line_rate, :total_branch_rate, :total_line_rate, :package_line_rate, :package_branch_rate
-      
-      def branch_rate
-        @branch_rate ||= 100
-      end
-      
-      def line_rate
-        @line_rate ||= 0
-      end
-      
-      def total_branch_rate
-        @total_branch_rate ||= 100
-      end
-      
-      def total_line_rate
-        @total_line_rate ||= 96
-      end
-      
-      def package_line_rate
-        @package_line_rate ||= 75
-      end
-      
-      def package_branch_rate
-        @package_branch_rate ||= 100
-      end
+      attr_reader :branch_rate, :line_rate, :total_branch_rate, :total_line_rate, :package_line_rate, :package_branch_rate
     end
 
     module CoberturaExtension # :nodoc:
@@ -220,17 +197,21 @@ module Buildr
               end
             end
 
-            desc "Run the cobertura check"
             task :check => [:instrument, :test] do
               Buildr.ant "cobertura" do |ant|
                 ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
-                ant.send "cobertura-check", :datafile=>Cobertura.data_file, \
-                  :branchrate=>cobertura.check.branch_rate, \
-                  :lineRate=>cobertura.check.line_rate, \
-                  :totalBranchRate=>cobertura.check.total_branch_rate, \
-                  :totalLineRate=>cobertura.check.total_line_rate, \
-                  :packageLineRate=>cobertura.check.package_line_rate, \
-                  :packageBranchRate=>cobertura.check.package_branch_rate do
+                
+                params = { :datafile => Cobertura.data_file }
+                
+                # oh so ugly...
+                params[:branchrate] = cobertura.check.branch_rate if cobertura.check.branch_rate
+                params[:linerate] = cobertura.check.line_rate if cobertura.check.line_rate
+                params[:totalbranchrate] = cobertura.check.total_branch_rate if cobertura.check.total_branch_rate
+                params[:totallinerate] = cobertura.check.total_line_rate if cobertura.check.total_line_rate
+                params[:packagebranchrate] = cobertura.check.package_branch_rate if cobertura.check.package_branch_rate
+                params[:packagelinerate] = cobertura.check.package_line_rate if cobertura.check.package_line_rate
+                
+                ant.send("cobertura-check", params) do
                 end
               end
             end
