@@ -211,4 +211,4 @@ A test-infected developer since 2001, Lacton yearns for a development infrastruc
 
 *"Daniel Spiewak":http://www.codecommit.com/blog* (djspiewak at apache.org)
 
-Daniel originally came to Buildr in search of a Scala build tool which was better than Ant.  He got more than he bargained for.  Now, he works to continue advancing Buildr as the absolute best tool for supporting Scala development.
+Daniel originally came to Buildr in search of a Scala build tool which was better than Ant.  He got more than he bargained for.  Now, he works to advance Buildr as the absolute best tool for supporting Scala development.
