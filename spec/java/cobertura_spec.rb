@@ -47,6 +47,12 @@ describe Buildr::Cobertura do
         task('foo:cobertura:instrument').invoke
         file(project('foo').cobertura.data_file).should exist
       end
+      
+      it 'should not instrument projects which have no sources' do
+        write 'bar/src/main/java/Baz.java', 'public class Baz {}'
+        define('foo') { define('bar') }
+        task('foo:bar:cobertura:instrument').invoke
+      end
     end
       
     describe 'instrumentation' do
