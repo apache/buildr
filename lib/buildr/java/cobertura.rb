@@ -181,16 +181,18 @@ module Buildr
             project.test.with Cobertura.dependencies
             project.test.options[:properties]["net.sourceforge.cobertura.datafile"] = cobertura.data_file
             
-            [:xml, :html].each do |format|
-              task format => ['instrument', 'test'] do 
-                info "Creating test coverage reports in #{cobertura.report_to(format)}"
-                Buildr.ant "cobertura" do |ant|
-                  ant.taskdef :resource=>"tasks.properties",
-                    :classpath=>Buildr.artifacts(Cobertura.dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
-                  ant.send "cobertura-report", :format=>format, 
-                    :destdir=>cobertura.report_to(format), :datafile=>cobertura.data_file do
-                    cobertura.sources.flatten.each do |src|
-                      ant.fileset(:dir=>src.to_s) if File.exist?(src.to_s)
+            unless project.compile.sources.empty?
+              [:xml, :html].each do |format|
+                task format => ['instrument', 'test'] do 
+                  info "Creating test coverage reports in #{cobertura.report_to(format)}"
+                  Buildr.ant "cobertura" do |ant|
+                    ant.taskdef :resource=>"tasks.properties",
+                      :classpath=>Buildr.artifacts(Cobertura.dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
+                    ant.send "cobertura-report", :format=>format, 
+                      :destdir=>cobertura.report_to(format), :datafile=>cobertura.data_file do
+                      cobertura.sources.flatten.each do |src|
+                        ant.fileset(:dir=>src.to_s) if File.exist?(src.to_s)
+                      end
                     end
                   end
                 end
