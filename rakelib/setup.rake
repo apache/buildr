@@ -17,6 +17,12 @@
 require 'jruby' if RUBY_PLATFORM[/java/]
 require 'rubygems/source_info_cache'
 
+RAKE_SUDO = case (ENV['RAKE_SUDO'] or 'yes').strip.downcase
+  when 'yes', 'true'
+    true
+  else
+    false
+end
 
 # Install the specified gem. Options include:
 # - :version -- Version requirement, e.g. '1.2' or '~> 1.2'
@@ -27,7 +33,7 @@ def install_gem(name, options = {})
     puts "Installing #{name} ..."
     rb_bin = File.join(Config::CONFIG['bindir'], Config::CONFIG['ruby_install_name'])
     args = []
-    args << 'sudo' << 'env' << "JAVA_HOME=#{ENV['JAVA_HOME']}" if sudo_needed?
+    args << 'sudo' << 'env' << "JAVA_HOME=#{ENV['JAVA_HOME']}" if sudo_needed? and RAKE_SUDO
     args << rb_bin << '-S' << 'gem' << 'install' << name
     args << '--version' << dep.version_requirements.to_s
     args << '--source' << options[:source] if options[:source]
