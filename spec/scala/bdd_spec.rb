@@ -68,6 +68,23 @@ describe Buildr::Scala::Specs do
     project('foo').test.tests.should include('com.example.MySpecs')
   end
 
+  it 'should include public classes extending org.specs.Specification even with companion classes' do
+    write 'src/spec/scala/com/example/MySpecs.scala', <<-SCALA
+      package com.example
+      object MySpecs extends org.specs.Specification {
+        "it" should {
+          "add" in {
+            val sum = 1 + 1
+            sum mustEqual 2
+          }
+        }
+      }
+      class MySpecs extends org.specs.runner.JUnit4(MySpecs)
+    SCALA
+    define('foo').test.invoke
+    project('foo').test.tests.should include('com.example.MySpecs')
+  end
+
   it 'should pass when spec passes' do
     write 'src/spec/scala/PassingSpecs.scala', <<-SCALA
       object PassingSpecs extends org.specs.Specification {
