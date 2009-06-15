@@ -78,8 +78,6 @@ module Buildr
         info "#{ex.class}: #{ex.message}"
         raise
       end
-      # We strip Scala singleton objects whose .class ends with $
-      result.map { |c| (c =~ /\$$/) ? c[0..(c.size - 2)] : c  }.uniq
     end
     
   end
