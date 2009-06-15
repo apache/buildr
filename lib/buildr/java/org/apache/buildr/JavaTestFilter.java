@@ -18,6 +18,7 @@
 package org.apache.buildr;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +34,7 @@ public class JavaTestFilter {
   private Vector methodAnnotations = new Vector();
   private Vector classAnnotations = new Vector();
   private Vector interfaces = new Vector();
+  private Vector fieldNames = new Vector();
 
   public JavaTestFilter(String[] paths) throws IOException {
     URL[] urls = new URL[paths.length];
@@ -70,6 +72,14 @@ public class JavaTestFilter {
     return this;
   }
   
+  public JavaTestFilter addFields(String[] names) {
+    for (int i = names.length; i -- > 0;) {
+      String name = names[i];
+      fieldNames.add(name);
+    }
+    return this;
+  }
+  
   private boolean isTest(Class cls) {
     if (Modifier.isAbstract(cls.getModifiers()) || !Modifier.isPublic(cls.getModifiers()))
       return false;
@@ -91,6 +101,14 @@ public class JavaTestFilter {
         for (Iterator it = methodAnnotations.iterator(); it.hasNext(); ) {
           Class annotation = (Class) it.next();
           if (methods[j].isAnnotationPresent(annotation)) { return true; }
+        }
+      }
+    }
+    if (fieldNames != null) {
+      Field[] fields = cls.getFields();
+      for (int j = 0; j < fields.length; j++) {
+        for (Iterator it = fieldNames.iterator(); it.hasNext(); ) {
+          if (fields[j].getName().equals(it.next())) { return true; }
         }
       }
     }
