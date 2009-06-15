@@ -14,7 +14,7 @@
 # the License.
 
 
-gem 'RedCloth', '4.1.1'
+#gem 'RedCloth', '4.2.0'
 require 'rake/tasklib'
 require 'jekyll'
 
@@ -69,18 +69,6 @@ class JekyllTask < Rake::TaskLib
       puts "Generating documentation in #{target}"
       site.process
       touch target
-    end
-  end
-end
-
-class Jekyll::HighlightBlock 
-  def render_pygments(context, code)
-    if context["content_type"] == 'markdown'
-      return "\n" + Albino.new(code, @lang).to_s(@options) + "\n"
-    elsif context["content_type"] == 'textile'
-      return "<notextile>" + Albino.new(code, @lang).to_s(@options) + "</notextile>"
-    else
-      return Albino.new(code, @lang).to_s(@options)
     end
   end
 end
