@@ -46,6 +46,7 @@ module Buildr
     # * :interfaces -- List of java interfaces or java classes
     # * :class_annotations -- List of annotations on class level
     # * :method_annotations -- List of annotations on method level
+    # * :fields -- List of java field names
     #
     def filter_classes(dependencies, criteria = {})
       return [] unless task.compile.target
@@ -68,6 +69,9 @@ module Buildr
         end
         if criteria[:method_annotations]
           filter.add_method_annotations(criteria[:method_annotations].to_java(Java.java.lang.String))
+        end
+        if criteria[:fields]
+          filter.add_fields(criteria[:fields].to_java(Java.java.lang.String))
         end
         result.concat filter.filter(candidates.to_java(Java.java.lang.String)).map(&:to_s)
       rescue =>ex
