@@ -36,7 +36,7 @@ $ java --version
 
 h2(#wiki).  Community Wiki
 
-Our community Wiki is available at "http://cwiki.apache.org/confluence/display/BUILDR/Index":http://cwiki.apache.org/confluence/display/BUILDR/Index.
+"Our community Wiki":http://cwiki.apache.org/confluence/display/BUILDR/Index.
 
 
 h2(#code).  Contributing Code
@@ -194,6 +194,8 @@ h2(#contributors).  Contributors
 Here is the list of people who are actively working and committing on Buildr:
 
 *"Assaf Arkin":http://labnotes.org* (assaf at apache.org)
+
+Started working on Buildr because Maven was too much pain and Rake wasn't enough.  Assaf has been hanging around Apache since 1999, as founding contributor to XML Apache, Ode and Buildr.  Assaf is also co-author of "Ruby In Practice":http://manning.com/mcanally/.
 
 *Alex Boisvert*
 
