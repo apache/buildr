@@ -68,24 +68,29 @@ module Buildr::Scala
     
     def tests(dependencies)
       dependencies += [task.compile.target.to_s]
-      filter_classes(dependencies, :interfaces => ['org.specs.Specification'])
+      candidates = filter_classes(dependencies, :interfaces => ['org.specs.Specification'])
+      
+      Java.load   # Java is already loaded, but just in case
+      
+      filter = Java.org.apache.buildr.JavaTestFilter.new(dependencies.to_java(Java.java.lang.String))
+      filter.add_fields ['MODULE$'].to_java(Java.java.lang.String)
+      filter.filter(candidates.to_java(Java.java.lang.String))      # we only want singletons
     end
     
     def run(specs, dependencies)  #:nodoc:
-      dependencies += [task.compile.target.to_s] + Scalac.dependencies
+      dependencies += [task.compile.target.to_s, File.join(File.dirname(__FILE__))] + Scalac.dependencies
       
       cmd_options = { :properties => options[:properties],
                       :java_args => options[:java_args],
                       :classpath => dependencies}
-                      
+
+      runner = 'org.apache.buildr.SpecsSingletonRunner'
       specs.inject [] do |passed, spec|
         begin
-          Java.load
-          
           unless Util.win_os?
-            Java::Commands.java(spec, '-c', cmd_options)
+            Java::Commands.java(runner, task.compile.target.to_s, '-c', spec, cmd_options)
           else
-            Java::Commands.java(spec, cmd_options)
+            Java::Commands.java(runner, task.compile.target.to_s, spec, cmd_options)
           end
         rescue => e
           passed
