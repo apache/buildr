@@ -22,14 +22,14 @@
     @top-right { content: normal }
   }
   @page:right {
-    margin: 1in 0.75in 1.225in 1in;
-    font-family: "Gill Sans" !important;
+    margin: 1.25in 1in 1.5in 1.5in;
+    font: normal 10pt "Gill Sans" !important;
     @top-left  { content: string(pagetitle); }
     @top-right { content: counter(page); }
   }
   @page:left {
-    font-family: "Gill Sans" !important;
-    margin: 1in 1in 1.225in 0.75in;
+    margin: 1.25in 1.5in 1.5in 1in;
+    font: normal 10pt "Gill Sans" !important;
     @top-left  { content: counter(page); }
     @top-right { content: string(pagetitle); }
   }
@@ -41,6 +41,7 @@
     margin: 0;
     color: black;
     background: white;
+    font-size: 11pt;
   }
 
   h1 {
@@ -54,7 +55,7 @@
   pre, p, blockquote { page-break-inside: avoid; }
   pre, code {
     font-family: "Monaco", "DejaVu Sans Mono", "Courier New", "Courier";
-    font-size: 10pt;
+    font-size: 9pt;
   }
   pre br {
     display: none;
@@ -63,6 +64,7 @@
     background: transparent;
     text-decoration: none;
   }
+  
 
   #header, #pages, #footer { display: none }
   #wrap, #content {
@@ -83,12 +85,13 @@
     border: none;
   }
   .title img {
-    width: 20em;
-    margin: 2em auto 2em auto;
+    display: block;
+    width: 80%;
+    margin: 2em auto 4em auto;
   }
   p.preface {
     page-break-before: always;
-    padding-top: 2.5in;
+    padding-top: 1.5in;
   }
 
 }

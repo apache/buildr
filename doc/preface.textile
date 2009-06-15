@@ -2,7 +2,7 @@
 layout: preface
 ---
 
-p(title). !images/buildr-hires.png!
+p(title). !images/zbuildr.png!
 
 #(toc) "Getting Started":getting_started.html
 # "Projects":projects.html
