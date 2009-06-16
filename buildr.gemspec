@@ -47,18 +47,18 @@ for those one-off tasks, with a language that's a joy to use.
   spec.post_install_message = "To get started run buildr --help"
 
   # Tested against these dependencies.
-  spec.add_dependency 'rake',                 '0.8.4'
+  spec.add_dependency 'rake',                 '0.8.7'
   spec.add_dependency 'builder',              '2.1.2'
   spec.add_dependency 'net-ssh',              '2.0.11'
   spec.add_dependency 'net-sftp',             '2.0.2'
   spec.add_dependency 'rubyzip',              '0.9.1'
-  spec.add_dependency 'highline',             '1.5.0'
+  spec.add_dependency 'highline',             '1.5.1'
   spec.add_dependency 'rubyforge',            '1.0.3'
-  spec.add_dependency 'hoe',                  '1.12.2'
+  spec.add_dependency 'hoe',                  '2.1.0'
   spec.add_dependency 'rjb',                  '1.1.6' if spec.platform.to_s == 'ruby' 
   spec.add_dependency 'Antwrap',              '0.7.0'
-  spec.add_dependency 'rspec',                '1.2.4'
+  spec.add_dependency 'rspec',                '1.2.6'
   spec.add_dependency 'xml-simple',           '1.0.12'
   spec.add_dependency 'archive-tar-minitar',  '0.5.2'
-  spec.add_dependency 'jruby-openssl',        '0.3'   if spec.platform.to_s == 'java'
+  spec.add_dependency 'jruby-openssl',        '0.5.1' if spec.platform.to_s == 'java'
 end
