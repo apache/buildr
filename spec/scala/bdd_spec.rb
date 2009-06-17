@@ -98,23 +98,8 @@ describe Buildr::Scala::Specs do
     SCALA
     lambda { define('foo').test.invoke }.should_not raise_error
   end
-
-  it 'should report failed test names' do
-    write 'src/spec/scala/FailingSpecs.scala', <<-SCALA
-      object FailingSpecs extends org.specs.Specification {
-        "it" should {
-          "add" in {
-            val sum = 1 + 1
-            sum mustEqual 42
-          }
-        }
-      }
-    SCALA
-    define('foo').test.invoke rescue
-    project('foo').test.failed_tests.should include('FailingSpecs$')
-  end
   
-  it 'should fail if specifications fail' do
+  it 'should fail when spec fails' do
     write 'src/spec/scala/StringSpecs.scala', <<-SCALA
       import org.specs._
       import org.specs.runner._
@@ -131,5 +116,4 @@ describe Buildr::Scala::Specs do
     project('foo').test.invoke rescue
     project('foo').test.failed_tests.should include('StringSpecs$')
   end
-
 end
