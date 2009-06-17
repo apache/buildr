@@ -52,7 +52,7 @@ describe Buildr::Scala::Specs do
     project('foo').test.dependencies.should include(*artifacts(JMock.dependencies))
   end
 
-  it 'should include public classes extending org.specs.Specification' do
+  it 'should include public objects extending org.specs.Specification' do
     write 'src/spec/scala/com/example/MySpecs.scala', <<-SCALA
       package com.example
       object MySpecs extends org.specs.Specification {
@@ -68,7 +68,7 @@ describe Buildr::Scala::Specs do
     project('foo').test.tests.should include('com.example.MySpecs$')
   end
 
-  it 'should include public classes extending org.specs.Specification even with companion classes' do
+  it 'should include public objects extending org.specs.Specification even with companion classes' do
     write 'src/spec/scala/com/example/MySpecs.scala', <<-SCALA
       package com.example
       object MySpecs extends org.specs.Specification {
