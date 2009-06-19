@@ -116,7 +116,7 @@ module Buildr::Scala
       check_options options, OPTIONS
 
       cmd_args = []
-      cmd_args << '-classpath' << (dependencies + Scalac.dependencies).join(File::PATH_SEPARATOR)
+      cmd_args << '-classpath' << (dependencies + Scalac.dependencies).map(&:to_s).join(File::PATH_SEPARATOR)
       source_paths = sources.select { |source| File.directory?(source) }
       cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
       cmd_args << '-d' << File.expand_path(target)
@@ -124,8 +124,8 @@ module Buildr::Scala
       cmd_args += files_from_sources(sources)
 
       unless Buildr.application.options.dryrun
-        Scalac.scala_home or fail 'Are we forgetting something? SCALA_HOME not set.'
         trace((['scalac'] + cmd_args).join(' '))
+        
         if Scalac.use_fsc
           system(([File.expand_path('bin/fsc', Scalac.scala_home)] + cmd_args).join(' ')) or
             fail 'Failed to compile, see errors above'
@@ -142,8 +142,8 @@ module Buildr::Scala
         if java_applies? sources
           trace 'Compiling mixed Java/Scala sources'
           
-          deps = dependencies + [ File.expand_path('lib/scala-library.jar', Scalac.scala_home),
-                                  File.expand_path(target) ]
+          # TODO  includes scala-compiler.jar
+          deps = dependencies + Scalac.dependencies.map(&:to_s) + [ File.expand_path(target) ]
           @java.compile(sources, target, deps)
         end
       end
