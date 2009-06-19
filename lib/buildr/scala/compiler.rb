@@ -60,6 +60,19 @@ module Buildr::Scala
   # * :debug       -- Generate debugging info.
   # * :other       -- Array of options to pass to the Scalac compiler as is, e.g. -Xprint-types
   class Scalac < Buildr::Compiler::Base
+    
+    # The scalac compiler jars are added to classpath at load time,
+    # if you want to customize artifact versions, you must set them on the
+    #
+    #      artifact_ns['Buildr::Compiler::Scalac'].library = '2.7.5'
+    #
+    # namespace before this file is required.  This is of course, only
+    # if SCALA_HOME is not set or invalid.
+    REQUIRES = ArtifactNamespace.for(self) do |ns|
+      ns.library!      'org.scala-lang:scala-library:jar:>=' + DEFAULT_VERSION
+      ns.compiler!     'org.scala-lang:scala-compiler:jar:>=' + DEFAULT_VERSION
+    end
+    
     class << self
       def scala_home
         @home ||= ENV['SCALA_HOME']
@@ -70,12 +83,10 @@ module Buildr::Scala
       end
 
       def dependencies
-        deps = ['scala-library', 'scala-compiler']
-        
         if installed?
-          deps.map { |s| File.expand_path("lib/#{s}.jar", scala_home) }
+          ['scala-library', 'scala-compiler'].map { |s| File.expand_path("lib/#{s}.jar", scala_home) }
         else
-          deps.map { |s| 'org.scala-lang:' + s + ':jar:' + Scala.version }
+          REQUIRES.artifacts.map(&:to_s)
         end
       end
 
@@ -116,7 +127,7 @@ module Buildr::Scala
       check_options options, OPTIONS
 
       cmd_args = []
-      cmd_args << '-classpath' << (dependencies + Scalac.dependencies).map(&:to_s).join(File::PATH_SEPARATOR)
+      cmd_args << '-classpath' << (dependencies + Scalac.dependencies).join(File::PATH_SEPARATOR)
       source_paths = sources.select { |source| File.directory?(source) }
       cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
       cmd_args << '-d' << File.expand_path(target)
@@ -143,7 +154,7 @@ module Buildr::Scala
           trace 'Compiling mixed Java/Scala sources'
           
           # TODO  includes scala-compiler.jar
-          deps = dependencies + Scalac.dependencies.map(&:to_s) + [ File.expand_path(target) ]
+          deps = dependencies + Scalac.dependencies + [ File.expand_path(target) ]
           @java.compile(sources, target, deps)
         end
       end
