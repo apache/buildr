@@ -80,7 +80,7 @@ module Buildr::Scala
       end
 
       def use_fsc
-        ENV["USE_FSC"] =~ /^(yes|on|true)$/i
+        installed? && ENV["USE_FSC"] =~ /^(yes|on|true)$/i
       end
       
       def applies_to?(project, task) #:nodoc:
