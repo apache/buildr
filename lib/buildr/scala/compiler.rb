@@ -64,9 +64,19 @@ module Buildr::Scala
       def scala_home
         @home ||= ENV['SCALA_HOME']
       end
+      
+      def installed?
+        !scala_home.nil?
+      end
 
       def dependencies
-        [ 'scala-library.jar', 'scala-compiler.jar'].map { |jar| File.expand_path("lib/#{jar}", scala_home) }
+        deps = ['scala-library', 'scala-compiler']
+        
+        if installed?
+          deps.map { |s| File.expand_path("lib/#{s}.jar", scala_home) }
+        else
+          deps.map { |s| 'org.scala-lang:' + s + ':jar:' + Scala.version }
+        end
       end
 
       def use_fsc
