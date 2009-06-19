@@ -17,7 +17,8 @@
 require File.join(File.dirname(__FILE__), '../spec_helpers')
 require 'buildr/scala'
 
-describe 'scalac compiler' do
+# need to test both with and without SCALA_HOME
+share_as :ScalacCompiler do
   it 'should identify itself from source directories' do
     write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }' 
     define('foo').compile.compiler.should eql(:scalac)
@@ -106,6 +107,34 @@ describe 'scalac compiler' do
       zip.file.exist?('com/example/Foo.class').should be_true
       zip.file.exist?('com/example/Bar.class').should be_true
     end
+  end
+end
+
+
+describe 'scala compiler (installed in SCALA_HOME)' do
+  it 'requires present SCALA_HOME' do
+    ENV['SCALA_HOME'].should_not be_nil
+  end
+  
+  it_should_behave_like ScalacCompiler
+end
+
+
+describe 'scala compiler (downloaded from repository)' do
+  old_home = ENV['SCALA_HOME']
+  
+  before :all do
+    ENV['SCALA_HOME'] = nil
+  end
+  
+  it 'requires absent SCALA_HOME' do
+    ENV['SCALA_HOME'].should be_nil
+  end
+  
+  it_should_behave_like ScalacCompiler
+  
+  after :all do
+    ENV['SCALA_HOME'] = old_home
   end
 end
 
