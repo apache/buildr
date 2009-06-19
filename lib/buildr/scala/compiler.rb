@@ -19,18 +19,31 @@ require 'buildr/core/compile'
 require 'buildr/packaging'
 
 module Buildr::Scala
-
+  DEFAULT_VERSION = '2.7.5'   # currently the latest (Jun 19, 2009)
+  
   class << self
+    
+    # Retrieves the Scala version string from the 
+    # standard library or nil if Scala is not
+    # available.
     def version_str
-      # Scala version string normally looks like "version 2.7.3.final"
-      Java.scala.util.Properties.versionString.sub 'version ', ''
+      begin
+        # Scala version string normally looks like "version 2.7.3.final"
+        Java.scala.util.Properties.versionString.sub 'version ', ''
+      rescue
+        nil
+      end
     end
     
     def version
-      # any consecutive sequence of numbers followed by dots
-      match = version_str.match(/\d+\.\d[\d\.]*/) or
-        fail "Unable to parse Scala version: #{version_str} "
-      match[0].sub(/.$/, "") # remove trailing dot, if any
+      if version_str
+        # any consecutive sequence of numbers followed by dots
+        match = version_str.match(/\d+\.\d[\d\.]*/) or
+          fail "Unable to parse Scala version: #{version_str} "
+        match[0].sub(/.$/, "") # remove trailing dot, if any
+      else
+        DEFAULT_VERSION
+      end
     end
   end
 
