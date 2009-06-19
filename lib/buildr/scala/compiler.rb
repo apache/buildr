@@ -75,7 +75,13 @@ module Buildr::Scala
     
     class << self
       def scala_home
-        @home ||= ENV['SCALA_HOME']
+        env_home = ENV['SCALA_HOME']
+        
+        @home ||= (if !env_home.nil? && File.exists?(env_home + '/lib/scala-library.jar') && File.exists?(env_home + '/lib/scala-compiler.jar')
+          env_home
+        else
+          nil
+        end)
       end
       
       def installed?
