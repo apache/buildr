@@ -97,7 +97,9 @@ shared_examples_for 'package with manifest' do
   end
 
   it 'should generate a new manifest for a file that does not have one' do
-    Zip::ZipFile.open("tmp.zip", Zip::ZipFile::CREATE).close 
+    Zip::ZipOutputStream.open 'tmp.zip' do |zip|
+      zip.put_next_entry 'empty.txt'
+    end
     begin
       manifest = Buildr::Packaging::Java::Manifest.from_zip('tmp.zip')
       manifest.each do |key, val|
