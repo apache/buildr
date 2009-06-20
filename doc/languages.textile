@@ -128,26 +128,47 @@ jbehave: 1.0.1
 
 h2(#scala). Scala
 
-Before using Scala features, you must first set the @SCALA_HOME@ environment variable to point to the root of your Scala distribution.
-
-On Windows:
-
-{% highlight sh %}
-> set SCALA_HOME=C:\Path\To\Scala-2.7.3
-{% endhighlight %}
-
-On Linux and other Unix variants,
-
-{% highlight sh %}
-> export SCALA_HOME=/path/to/scala-2.7.3
-{% endhighlight %}
-
-The @SCALA_HOME@ base directory should be such that Scala core libraries are located directly under the "lib" subdirectory, and Scala scripts are under the "bin" directory. This step is not necessary if you installed Scala using MacPorts (OS X).
-
-You must also require the Scala compiler in your buildfile:
+Before using Scala, you must first @require@ the Scala compiler:
 
 {% highlight ruby %}
 require 'buildr/scala'
+{% endhighlight %}
+
+By default, Buildr will attempt to use any version of Scala which is already
+installed on your system.  However, Buildr isn't *quite* smart enough to intuit
+such things on its own, so for most cases, it requires the @SCALA_HOME@
+environment variable to be set pointing to the root of the Scala installation
+(e.g. @/usr/local/scala-2.7.5.final@).  The only exception to this is if you have
+installed Scala via "MacPorts":http://www.macports.org/  Buildr will look in the
+@/opt/local/share/scala/@ directory *before* it uses the @SCALA_HOME@ envar.
+
+However, if @SCALA_HOME@ is not set, or if it points to an invalid Scala
+installation, then Buildr has a fallback option.  The Scala compiler and standard
+library are both available from the "Scala Tools repository":http://scala-tools.org/.
+If no other Scala installation can be found, Buildr will download the appropriate
+artifacts and use them instead of a full install.  The only drawback to this
+approach is the FSC compiler is *not* available when Scala has been downloaded
+in this fashion.
+
+When Scala is downloaded from the Maven2 repository, Buildr will attempt to use
+the very latest version (starting from version 2.7.5).  If you wish to override
+this default, you will need to make use of the @artifact_ns@ construct *before*
+you @require@ Scala support in your buildfile:
+
+{% highlight ruby %}
+artifact_ns['Buildr::Compiler::Scalac'].library = '2.7.5'
+
+require 'buildr/scala'
+{% endhighlight %}
+
+This snippet tells Buildr to use exactly version 2.7.5 of Scala when it downloads
+the JARs from Scala-Tools, regardless of what the latest version may be.
+
+Regardless of how Scala has been obtained, you may determine the version in use
+by querying the @Scala.version@ attribute:
+
+{% highlight ruby %}
+Scala.version       # => '2.7.5'
 {% endhighlight %}
 
 h3. Compiling Scala
