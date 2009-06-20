@@ -1,4 +1,5 @@
 1.3.5 (Pending)
+* Added:  BUILDR-56 Download Scala artifacts if not available locally
 * Added:  Mandriva (urpmi) installation support (with help from Franck Villaume).
 * Added:  BUILDR-163 cobertura:check (Marko Sibakov, Daniel Spiewak).
 * Change: Updated to Rake 0.8.7, RSpec 1.2.6 and JRuby-openssl 0.5.1.
