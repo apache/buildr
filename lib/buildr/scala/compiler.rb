@@ -42,7 +42,7 @@ module Buildr::Scala
           fail "Unable to parse Scala version: #{version_str} "
         match[0].sub(/.$/, "") # remove trailing dot, if any
       else
-        DEFAULT_VERSION
+        DEFAULT_VERSION       # TODO return the version installed from Maven repo
       end
     end
   end
