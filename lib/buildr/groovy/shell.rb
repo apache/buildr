@@ -2,17 +2,11 @@ require 'buildr/shell'
 
 module Buildr
   module Groovy
-    class Shell
-      attr_reader :project
-      
+    class GroovySH < Buildr::Shell::Base
       class << self
         def lang
           :groovy
         end
-      end
-      
-      def initialize(project)
-        @project = project
       end
       
       def launch
@@ -29,4 +23,4 @@ module Buildr
   end
 end
 
-Buildr::ShellProviders << Buildr::Groovy::Shell
+Buildr::ShellProviders << Buildr::Groovy::GroovySH
