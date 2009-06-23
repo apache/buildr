@@ -64,7 +64,70 @@ $ buildr foo:bar:shell
 
 h3. Supported Shells
 
-**TODO**
+By default, Buildr will open the interactive shell which corresponds to your
+project's language.  Thus, if your project is using Groovy, it will invoke the
+@groovysh@ command, configured with the appropriate classpath.  If your project
+is using Scala, then the @shell@ task will invoke the @scala@ command.
+Unfortunately, the Java language does not define an interactive shell of any
+kind, meaning that there is no sane default if your project exclusively uses
+Java.
+
+However, you may still wish to exploit the advantages of an interactive shell from
+some other JVM language even while working in Java.  Alternatively, you may
+want to use some shell other than the default even when working in a language
+which has its own.  There are two ways to acheive this aim.  The quickest way is
+to explicitly specify the relevant shell at the call-site:
+
+{% highlight sh %}
+$ buildr foo:shell:jirb
+{% endhighlight %}
+
+This will open the JIRB shell (the JRuby REPL) for the @foo@ project.  Whenever
+you are specifying a shell explicitly in this fashion, you *must* fully-qualify
+the project name:
+
+{% highlight sh %}
+$ buildr shell:jirb     # wrong!!
+{% endhighlight %}
+
+The above will fail because of the way that Rake tasks are dispatched.
+
+Obviously, this explicit specification is a little bit clunky.  It would be much
+easier if we could simply say that we *always* want to use the JIRB shell for
+this particular project.  This can be done by using the @shell.using@ directive
+within your project definition:
+
+{% highlight ruby %}
+define 'foo' do
+  shell.using :jirb
+end
+{% endhighlight %}
+
+With this project definition, we can now invoke the @shell@ task and JIRB will
+be launched, regardless of the default for our project's language:
+
+{% highlight sh %}
+$ buildr shell
+{% endhighlight %}
+
+Buildr supports several different shell providers, and the framework is flexible
+enough that additional support can be added almost trivially.  The following
+table gives the complete list of supported shells, their corresponding @shell.using@
+descriptor and the language for which they are the default (if applicable):
+
+|_. Shell Name        |_. Descriptor       |_. Language       |
+| Clojure REPL        | @:clj@             | *N/A*            |
+| GroovySH            | @:groovysh@        | Groovy           |
+| JRuby IRB           | @:jirb@            | *N/A*            |
+| Scala Interpreter   | @:scala@           | Scala            |
+
+Note that some of these shells impose certain requirements to enable use.  The
+Groovy shell requires the @GROOVY_HOME@ environment variable to point to the
+Groovy install path.  The Clojure REPL makes a similar requirement of @CLOJURE_HOME@.
+The JRuby and Scala shells will use @JRUBY_HOME@ and @SCALA_HOME@ respectively
+if they are defined.  However, if these environment variables are not defined,
+the relevant JAR files will be automatically downloaded from the appropriate
+Maven2 repository.
 
 
 h2(#gems).  Using Gems
