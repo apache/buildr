@@ -49,6 +49,10 @@ module Buildr
         @project = project
       end
       
+      def build?
+        true
+      end
+      
       def launch
         fail 'Not implemented'
       end
@@ -102,9 +106,13 @@ module Buildr
         name = p.to_sym
         
         trace "Defining task #{project.name}:shell:#{name}"
-        project.task "shell:#{name}" => :compile do
+        
+        p_inst = p.new project
+        deps = if p_inst.build? then [:compile] else [] end
+        
+        project.task "shell:#{name}" => deps do
           trace "Launching #{name} shell"
-          p.new(project).launch
+          p_inst.launch
         end
       end
     end
