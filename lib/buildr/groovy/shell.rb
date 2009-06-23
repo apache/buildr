@@ -10,14 +10,19 @@ module Buildr
       end
       
       def launch
-        # TODO  make this more generic!!
+        fail 'Are we forgetting something? GROOVY_HOME not set.' unless groovy_home
         
         cp = project.compile.dependencies.join(File::PATH_SEPARATOR) + 
           File::PATH_SEPARATOR + project.path_to(:target, :classes)
         
         cmd_args = " -classpath '#{cp}'"
-        
-        system('groovysh' + cmd_args)
+        trace "groovysh #{cmd_args}"
+        system(File.expand_path('bin/groovysh', groovy_home) + cmd_args)
+      end
+      
+    private
+      def groovy_home
+        @home ||= ENV['GROOVY_HOME']
       end
     end
   end
