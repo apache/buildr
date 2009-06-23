@@ -49,10 +49,10 @@ module Buildr
           props['jruby.shell'] = if Utils.win_os? then 'cmd.exe' else '/bin/sh' end
           
           args = [
-            "-Xbootclasspath/a:#{Dir.glob(jruby_home + '/lib/jruby*.jar').join File::PATH_SEPARATOR}"
+            "-Xbootclasspath/a:#{Dir.glob("#{jruby_home}#{File::SEPARATOR}lib#{File::SEPARATOR}jruby*.jar").join File::PATH_SEPARATOR}"
           ]
           
-          Java::Commands.java 'org.jruby.Main', "#{jruby_home}/bin/jirb", {
+          Java::Commands.java 'org.jruby.Main', "#{jruby_home}#{File::SEPARATOR}bin#{File::SEPARATOR}jirb", {
             :properties => props.merge(rebel_props project),
             :classpath => cp,
             :java_args => args + rebel_args
