@@ -19,7 +19,7 @@ module Buildr
         
         cmd_args = " -classpath '#{cp}'"
         trace "groovysh #{cmd_args}"
-        system(File.expand_path('bin/groovysh' + SUFFIX, groovy_home) + cmd_args)
+        system(File.expand_path("bin#{File::SEPARATOR}groovysh#{SUFFIX}", groovy_home) + cmd_args)
       end
       
     private
