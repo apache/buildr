@@ -3,7 +3,13 @@ module Buildr
     class << self
       def add(p)
         @providers ||= {}
-        @providers[p.lang] = p
+        
+        if p.lang == :none
+          @providers[:none] ||= []
+          @providers[:none] << p
+        else
+          @providers[p.lang] = p
+        end
       end
       alias :<< :add
       
@@ -22,11 +28,19 @@ module Buildr
     
     before_define do |project|
       ShellProviders.providers.each do |lang, p|
-        name = p.to_sym
+        load_provider = proc do |prov|
+          name = prov.to_sym
+          
+          project.task "shell:#{name}" => :compile do
+            trace "Launching #{name} shell"
+            prov.new(project).launch
+          end
+        end
         
-        project.task "shell:#{name}" => :compile do
-          trace "Launching #{name} shell"
-          p.new(project).launch
+        if lang == :none
+          p.each load_provider
+        else
+          load_provider.call p
         end
       end
     end
@@ -51,6 +65,10 @@ module Buildr
       attr_reader :project
       
       class << self
+        def lang
+          :none
+        end
+        
         def to_sym
           @symbol ||= name.split('::').last.downcase.to_sym
         end
