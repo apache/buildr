@@ -19,7 +19,6 @@ Buildr.repositories.remote << 'http://scala-tools.org/repo-releases'
 
 require 'buildr/scala/compiler'
 require 'buildr/scala/tests'
-require 'buildr/scala/bdd'
 require 'buildr/scala/shell'
 
 Object::Scala = Buildr::Scala
