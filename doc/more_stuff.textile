@@ -129,6 +129,59 @@ if they are defined.  However, if these environment variables are not defined,
 the relevant JAR files will be automatically downloaded from the appropriate
 Maven2 repository.
 
+h3. JavaRebel Integration
+
+"JavaRebel":http://www.zeroturnaround.com/javarebel is a live bytecode reloading
+solution by Zero Turnaround.  It's a lot like the hot code reload feature found
+in many Java IDE debuggers (like Eclipse and IntelliJ), but capable of handling
+things like member addition or removal and new class definition.  The tool itself
+is commercial and works with any JVM language, but they do offer a free license
+for use with Scala classes only.
+
+If available, Buildr will use JavaRebel when configuring the launch for each
+interactive shell.  Shells launched with JavaRebel integration will automatically
+receive recompiled changes on the fly without any need to restart the shell.
+There are some limitations to this which are specific to the shell in question,
+but for the most part, things Just Work.
+
+JavaRebel auto-magical integration is done by searching for a valid JavaRebel
+install path in the following list of environment variables (in order):
+
+* @REBEL_HOME@
+* @JAVA_REBEL@
+* @JAVAREBEL@
+* @JAVAREBEL_HOME@
+
+These environment variables may point to either the JavaRebel install directory
+(e.g. @~/javarebel-2.0.1@), or the JAR file itself (e.g. @~/javarebel-2.0.1/javarebel.jar@).
+If the path is valid, Buildr will automatically append the appropriate JVM
+switches to the launch configurations of each shell:
+
+<pre>$ buildr shell
+(in ~/foo, development)
+Compiling foo into ~/foo/target/classes
+Running java scala.tools.nsc.MainGenericRunner
+
+#############################################################
+
+ ZeroTurnaround JavaRebel 2.0.1 (200905251513)
+ (c) Copyright Webmedia, Ltd, 2007-2009. All rights reserved.
+
+ This product is licensed to Daniel Spiewak
+ for personal use only. 
+
+#############################################################
+
+Welcome to Scala version 2.7.4.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_03-p3).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> </pre>
+
+Note that Buildr does *not* check to make sure that you have a valid JavaRebel
+license, so you may end up launching with JavaRebel configured but without the
+ability to use it (in which case, JavaRebel will print a notification).
+
 
 h2(#gems).  Using Gems
 
