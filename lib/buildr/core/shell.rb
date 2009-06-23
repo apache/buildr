@@ -92,26 +92,43 @@ module Buildr
         end
       end
       
+      # don't build if it's *only* Clojure sources
+      def build?
+        !has_source?(:clojure) or has_source?(:java) or has_source?(:scala) or has_source?(:groovy)
+      end
+      
       def launch
         fail 'Are we forgetting something? CLOJURE_HOME not set.' unless clojure_home
         
         cp = project.compile.dependencies + 
           [
-            project.path_to(:target, :classes),
+            if build?
+              project.path_to(:target, :classes)
+            else
+              project.path_to(:src, :main, :clojure)
+            end,
             File.expand_path('clojure.jar', clojure_home),
             'jline:jline:jar:0.9.94'
           ]
         
-        Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', {
-          :properties => rebel_props(project),
-          :classpath => cp,
-          :java_args => rebel_args
-        }
+        if build?
+          Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', {
+            :properties => rebel_props(project),
+            :classpath => cp,
+            :java_args => rebel_args
+          }
+        else
+          Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', :classpath => cp
+        end
       end
       
     private
       def clojure_home
         @home ||= ENV['CLOJURE_HOME']
+      end
+      
+      def has_source?(lang)
+        File.exists? project.path_to(:src, :main, lang)
       end
     end
   end
