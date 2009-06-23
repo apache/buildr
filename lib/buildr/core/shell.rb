@@ -33,6 +33,8 @@ module Buildr
     end
     
     class Clojure < Base
+      JLINE_VERSION = '0.9.94'
+      
       class << self
         def lang
           :none
@@ -45,7 +47,6 @@ module Buildr
       
       def launch
         fail 'Are we forgetting something? CLOJURE_HOME not set.' unless clojure_home
-        fail 'Are we forgetting something? JLINE_JAR not set.' unless jline_jar
         
         cp = project.compile.dependencies.join(File::PATH_SEPARATOR) + 
           File::PATH_SEPARATOR + project.path_to(:target, :classes) +
@@ -60,9 +61,11 @@ module Buildr
         @home ||= ENV['CLOJURE_HOME']
       end
       
-      # TODO
       def jline_jar
-        @jline ||= ENV['JLINE_JAR']
+        jline = Buildr.artifact 'jline:jline:jar:0.9.94'
+        jline.install
+        
+        Buildr.repositories.locate jline
       end
     end
   end
