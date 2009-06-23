@@ -51,9 +51,7 @@ module Java
           block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
           puts cmd_args.join(' ') if Buildr.application.options.trace
           cmd_args = cmd_args.map(&:inspect).join(' ') if Util.win_os?
-          system(*cmd_args).tap do |ok|
-            block.call ok, $?
-          end
+          sh(*cmd_args, block)
         end
       end
   
