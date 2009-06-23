@@ -1,4 +1,5 @@
 require 'buildr/shell'
+require 'buildr/java/commands'
 
 module Buildr
   module Scala
@@ -18,15 +19,50 @@ module Buildr
       def launch
         Scalac.scala_home or fail 'Are we forgetting something? SCALA_HOME not set.'
         
-        cp = (project.compile.dependencies + Scalac.dependencies).join(File::PATH_SEPARATOR) +
-          File::PATH_SEPARATOR + project.path_to(:target, :classes)
+        cp = project.compile.dependencies + Scalac.dependencies +
+          [
+            project.path_to(:target, :classes)
+          ]
         
-        cmd_args = " -Denv.classpath='#{cp}'"
-        cmd_args += ' -classpath'
-        cmd_args += " '#{cp}'"
+        props = { 
+          'env.classpath' => cp.join(File::PATH_SEPARATOR),
+          'scala.home' => Scalac.scala_home
+        }
         
-        trace "scala #{cmd_args}"
-        system(File.expand_path('bin/scala' + SUFFIX, Scalac.scala_home) + cmd_args)
+        cmd_args = if rebel_home
+          [
+            '-noverify',
+            "-javaagent:#{rebel_home}"
+          ]
+        else
+          []
+        end
+        
+        trace "Detected JavaRebel #{rebel_home}"
+        
+        Java::Commands.java 'scala.tools.nsc.MainGenericRunner', {
+          :properties => props,
+          :classpath => cp,
+          :java_args => cmd_args
+        }
+      end
+      
+    private
+      
+      def rebel_home
+        unless @rebel_home
+          @rebel_home = ENV['REBEL_HOME'] or ENV['JAVA_REBEL'] or ENV['JAVAREBEL'] or ENV['JAVAREBEL_HOME']
+          
+          if @rebel_home and File.directory? @rebel_home
+            @rebel_home += File::SEPARATOR + 'javarebel.jar'
+          end
+        end
+        
+        if @rebel_home and File.exists? @rebel_home
+          @rebel_home
+        else
+          nil
+        end
       end
     end
   end
