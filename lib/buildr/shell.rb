@@ -61,7 +61,7 @@ module Buildr
     first_time do
       Project.local_task 'shell'
       
-      ShellProviders.each { |p| Project.local_task "shell:#{name}" }
+      ShellProviders.each { |p| Project.local_task "shell:#{name}" }    # TODO  not working
     end
     
     before_define do |project|
