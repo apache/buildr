@@ -27,3 +27,5 @@ require 'buildr/core/checks'
 require 'buildr/core/transports'
 require 'buildr/core/generate'
 require 'buildr/core/osx' if RUBY_PLATFORM =~ /darwin/
+
+require 'buildr/core/jirb'		# where else?
