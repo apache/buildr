@@ -6,8 +6,6 @@ module Buildr
     class ScalaShell < Buildr::Shell::Base
       include Buildr::Shell::JavaRebel
       
-      SUFFIX = if Util.win_os? then '.bat' else '' end
-      
       class << self
         def lang
           :scala

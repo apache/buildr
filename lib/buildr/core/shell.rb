@@ -8,8 +8,6 @@ module Buildr
       
       JRUBY_VERSION = '1.1.6'
       
-      SUFFIX = if Util.win_os? then '.bat' else '' end
-      
       class << self
         def lang
           :none
