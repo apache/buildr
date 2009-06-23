@@ -53,6 +53,43 @@ module Buildr
         fail 'Not implemented'
       end
     end
+    
+    module JavaRebel
+      def rebel_home
+        unless @rebel_home
+          @rebel_home = ENV['REBEL_HOME'] or ENV['JAVA_REBEL'] or ENV['JAVAREBEL'] or ENV['JAVAREBEL_HOME']
+          
+          if @rebel_home and File.directory? @rebel_home
+            @rebel_home += File::SEPARATOR + 'javarebel.jar'
+          end
+        end
+        
+        if @rebel_home and File.exists? @rebel_home
+          @rebel_home
+        else
+          nil
+        end
+      end
+      
+      def rebel_args
+        if rebel_home
+          [
+            '-noverify',
+            "-javaagent:#{rebel_home}"
+          ]
+        else
+          []
+        end
+      end
+      
+      def rebel_props(project)
+        if rebel_home
+          { 'rebel.dirs' => project.path_to(:target, :classes) }
+        else
+          {}
+        end
+      end
+    end
   end
   
   module ShellExtension
