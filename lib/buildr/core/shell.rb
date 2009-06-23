@@ -17,20 +17,48 @@ module Buildr
       end
       
       def launch
-        if jruby_home and not rebel_home     # if JRuby is installed, use it for non-JavaRebel
-          cp = project.compile.dependencies.join(File::PATH_SEPARATOR) + 
-            File::PATH_SEPARATOR + project.path_to(:target, :classes)
+        if jruby_home     # if JRuby is installed, use it
+          cp = project.compile.dependencies + 
+            [project.path_to(:target, :classes)] +
+            Dir.glob("#{jruby_home}#{File::SEPARATOR}lib#{File::SEPARATOR}*.jar")
           
-          cp_var = ENV['CLASSPATH']
-          if cp_var
-            ENV['CLASSPATH'] += File::PATH_SEPARATOR
-          else
-            ENV['CLASSPATH'] = ''
+          props = {
+            'jruby.home' => jruby_home,
+            'jruby.lib' => "#{jruby_home}#{File::SEPARATOR}lib"
+          }
+          
+          if not Util.win_os?
+            uname = `uname -m`
+            cpu = if uname =~ /i[34567]86/
+              'i386'
+            elsif uname == 'i86pc'
+              'x86'
+            elsif uname =~ /amd64|x86_64/
+              'amd64'
+            end
+            
+            os = `uname -s | tr '[A-Z]' '[a-z]'`
+            path = if os == 'darwin'
+              'darwin'
+            else
+              "#{os}-#{cpu}"
+            end
+            
+            props['jna.boot.library.path'] = "#{jruby_home}/lib/native/#{path}"
           end
-          ENV['CLASSPATH'] += cp
           
-          trace "Running jirb using JRUBY_HOME: #{jruby_home}"
-          system(File.expand_path('bin/jirb' + SUFFIX, jruby_home))
+          props['jruby.script'] = if Utils.win_os? then 'jruby.bat' else 'jruby' end
+          props['jruby.shell'] = if Utils.win_os? then 'cmd.exe' else '/bin/sh' end
+          
+          args = [
+            "-Xbootclasspath/a:#{Dir.glob(jruby_home + '/lib/jruby*.jar').join File::PATH_SEPARATOR}"
+          ]
+          
+          Java::Commands.java 'org.jruby.Main', "#{jruby_home}/bin/jirb", {
+            :properties => props.merge(rebel_props project),
+            :classpath => cp,
+            :java_args => args + rebel_args
+          }
         else
           cp = project.compile.dependencies + [
               "org.jruby:jruby-complete:jar:#{JRUBY_VERSION}",
