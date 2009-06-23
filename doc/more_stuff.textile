@@ -5,9 +5,7 @@ title: More Stuff
 
 h2(#shell).  Interactive Shells (REPLs)
 
-Many languages (including Scala and Groovy) provide an interactive shell tool
-which allows developers to run arbitrary expressions and see the results
-immediately:
+Many languages (including Scala and Groovy) provide an interactive shell tool which allows developers to run arbitrary expressions and see the results immediately:
 
 <pre>$ scala
 Welcome to Scala version 2.7.4.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_03-p3).
@@ -19,44 +17,19 @@ res0: Int = 42
 
 scala> </pre>
 
-These tools are alternatively known as "REPLs" (Read, Eval, Print Loop), a term
-which originally comes from Lisp.  This sort of interactive shell can be an
-invaluable asset when developing frameworks or other non-UI-oriented modules.  A
-common use-case is running a quick, manual test to make sure that the framework
-is functioning properly.  It is faster and easier to do this in a shell, and also
-averts the need for extra test cases to be developed just to check simple things
-during development.
+These tools are alternatively known as "REPLs" (Read, Eval, Print Loop), a term which originally comes from Lisp.  This sort of interactive shell can be an invaluable asset when developing frameworks or other non-UI-oriented modules.  A common use-case is running a quick, manual test to make sure that the framework is functioning properly.  It is faster and easier to do this in a shell, and also averts the need for extra test cases to be developed just to check simple things during development.
 
-Unfortunately, for such a tool to be useful in Java, Scala or Groovy development,
-it must have access to the @CLASSPATH@, not only the compiled project binaries,
-but also its full list of dependencies.  While it is usually possible with such
-tools to specify the classpath upon startup (e.g. the @-cp@ switch for the Scala
-shell), this can get extremely tedious for project's with more dependencies,
-especially when some of these dependencies are defined using @transitive@ artifacts.
+Unfortunately, for such a tool to be useful in Java, Scala or Groovy development, it must have access to the @CLASSPATH@, not only the compiled project binaries, but also its full list of dependencies.  While it is usually possible with such tools to specify the classpath upon startup (e.g. the @-cp@ switch for the Scala shell), this can get extremely tedious for project's with more dependencies, especially when some of these dependencies are defined using @transitive@ artifacts.
 
-Buildr is capable of easing this workflow by providing full support for the
-configuration and launch of interactive shells.  In fact, if your project uses
-either Scala or Groovy, the relevant shell may be launched simply by invoking
-the @shell@ task:
+Buildr is capable of easing this workflow by providing full support for the configuration and launch of interactive shells.  In fact, if your project uses either Scala or Groovy, the relevant shell may be launched simply by invoking the @shell@ task:
 
 {% highlight sh %}
 $ buildr shell
 {% endhighlight %}
 
-The @shell@ task depends upon @compile@, meaning that any changed source files
-will be recompiled prior to the shell's launch.  Tests will not be run, nor will
-test files be recompiled.  From within the shell itself, you should have access
-to your project's compilation classpath (anything specified using @compile.with@)
-as well as the compiled sources for your project.
+The @shell@ task depends upon @compile@, meaning that any changed source files will be recompiled prior to the shell's launch.  Tests will not be run, nor will test files be recompiled.  From within the shell itself, you should have access to your project's compilation classpath (anything specified using @compile.with@) as well as the compiled sources for your project.
 
-The project classpath is determined by checking the current working directory of
-your system shell (the path from which the @buildr shell@ command was invoked)
-and recursively finding the relevant project for that directory.  Thus, if you
-have a parent project @foo@ which has sub-projects @bar@ and @baz@, you may
-invoke an interactive shell for the @baz@ project simply by @cd@-ing into its
-project directory (or any of its sub-directories) and invoking the @shell@ task.
-You may also invoke a shell against a specific project by giving its fully-qualified
-descriptor as a prefix to the @shell@ task:
+The project classpath is determined by checking the current working directory of your system shell (the path from which the @buildr shell@ command was invoked) and recursively finding the relevant project for that directory.  Thus, if you have a parent project @foo@ which has sub-projects @bar@ and @baz@, you may invoke an interactive shell for the @baz@ project simply by @cd@-ing into its project directory (or any of its sub-directories) and invoking the @shell@ task. You may also invoke a shell against a specific project by giving its fully-qualified descriptor as a prefix to the @shell@ task:
 
 {% highlight sh %}
 $ buildr foo:bar:shell
@@ -64,27 +37,15 @@ $ buildr foo:bar:shell
 
 h3. Supported Shells
 
-By default, Buildr will open the interactive shell which corresponds to your
-project's language.  Thus, if your project is using Groovy, it will invoke the
-@groovysh@ command, configured with the appropriate classpath.  If your project
-is using Scala, then the @shell@ task will invoke the @scala@ command.
-Unfortunately, the Java language does not define an interactive shell of any
-kind, meaning that there is no sane default if your project exclusively uses
-Java.
+By default, Buildr will open the interactive shell which corresponds to your project's language.  Thus, if your project is using Groovy, it will invoke the @groovysh@ command, configured with the appropriate classpath.  If your project is using Scala, then the @shell@ task will invoke the @scala@ command.  Unfortunately, the Java language does not define an interactive shell of any kind, meaning that there is no sane default if your project exclusively uses Java.
 
-However, you may still wish to exploit the advantages of an interactive shell from
-some other JVM language even while working in Java.  Alternatively, you may
-want to use some shell other than the default even when working in a language
-which has its own.  There are two ways to acheive this aim.  The quickest way is
-to explicitly specify the relevant shell at the call-site:
+However, you may still wish to exploit the advantages of an interactive shell from some other JVM language even while working in Java.  Alternatively, you may want to use some shell other than the default even when working in a language which has its own.  There are two ways to acheive this aim.  The quickest way is to explicitly specify the relevant shell at the call-site:
 
 {% highlight sh %}
 $ buildr foo:shell:jirb
 {% endhighlight %}
 
-This will open the JIRB shell (the JRuby REPL) for the @foo@ project.  Whenever
-you are specifying a shell explicitly in this fashion, you *must* fully-qualify
-the project name:
+This will open the JIRB shell (the JRuby REPL) for the @foo@ project.  Whenever you are specifying a shell explicitly in this fashion, you *must* fully-qualify the project name:
 
 {% highlight sh %}
 $ buildr shell:jirb     # wrong!!
@@ -92,10 +53,7 @@ $ buildr shell:jirb     # wrong!!
 
 The above will fail because of the way that Rake tasks are dispatched.
 
-Obviously, this explicit specification is a little bit clunky.  It would be much
-easier if we could simply say that we *always* want to use the JIRB shell for
-this particular project.  This can be done by using the @shell.using@ directive
-within your project definition:
+Obviously, this explicit specification is a little bit clunky.  It would be much easier if we could simply say that we *always* want to use the JIRB shell for this particular project.  This can be done by using the @shell.using@ directive within your project definition:
 
 {% highlight ruby %}
 define 'foo' do
@@ -103,17 +61,13 @@ define 'foo' do
 end
 {% endhighlight %}
 
-With this project definition, we can now invoke the @shell@ task and JIRB will
-be launched, regardless of the default for our project's language:
+With this project definition, we can now invoke the @shell@ task and JIRB will be launched, regardless of the default for our project's language:
 
 {% highlight sh %}
 $ buildr shell
 {% endhighlight %}
 
-Buildr supports several different shell providers, and the framework is flexible
-enough that additional support can be added almost trivially.  The following
-table gives the complete list of supported shells, their corresponding @shell.using@
-descriptor and the language for which they are the default (if applicable):
+Buildr supports several different shell providers, and the framework is flexible enough that additional support can be added almost trivially.  The following table gives the complete list of supported shells, their corresponding @shell.using@ descriptor and the language for which they are the default (if applicable):
 
 |_. Shell Name        |_. Descriptor       |_. Language       |
 | Clojure REPL        | @:clj@             | *N/A*            |
@@ -121,41 +75,22 @@ descriptor and the language for which they are the default (if applicable):
 | JRuby IRB           | @:jirb@            | *N/A*            |
 | Scala Interpreter   | @:scala@           | Scala            |
 
-Note that some of these shells impose certain requirements to enable use.  The
-Groovy shell requires the @GROOVY_HOME@ environment variable to point to the
-Groovy install path.  The Clojure REPL makes a similar requirement of @CLOJURE_HOME@.
-The JRuby and Scala shells will use @JRUBY_HOME@ and @SCALA_HOME@ respectively
-if they are defined.  However, if these environment variables are not defined,
-the relevant JAR files will be automatically downloaded from the appropriate
-Maven2 repository.
+Note that some of these shells impose certain requirements to enable use.  The Groovy shell requires the @GROOVY_HOME@ environment variable to point to the Groovy install path.  The Clojure REPL makes a similar requirement of @CLOJURE_HOME@.  The JRuby and Scala shells will use @JRUBY_HOME@ and @SCALA_HOME@ respectively if they are defined.  However, if these environment variables are not defined, the relevant JAR files will be automatically downloaded from the appropriate Maven2 repository.
 
 h3. JavaRebel Integration
 
-"JavaRebel":http://www.zeroturnaround.com/javarebel is a live bytecode reloading
-solution by Zero Turnaround.  It's a lot like the hot code reload feature found
-in many Java IDE debuggers (like Eclipse and IntelliJ), but capable of handling
-things like member addition or removal and new class definition.  The tool itself
-is commercial and works with any JVM language, but they do offer a free license
-for use with Scala classes only.
+"JavaRebel":http://www.zeroturnaround.com/javarebel is a live bytecode reloading solution by Zero Turnaround.  It's a lot like the hot code reload feature found in many Java IDE debuggers (like Eclipse and IntelliJ), but capable of handling things like member addition or removal and new class definition.  The tool itself is commercial and works with any JVM language, but they do offer a free license for use with Scala classes only.
 
-If available, Buildr will use JavaRebel when configuring the launch for each
-interactive shell.  Shells launched with JavaRebel integration will automatically
-receive recompiled changes on the fly without any need to restart the shell.
-There are some limitations to this which are specific to the shell in question,
-but for the most part, things Just Work.
+If available, Buildr will use JavaRebel when configuring the launch for each interactive shell.  Shells launched with JavaRebel integration will automatically receive recompiled changes on the fly without any need to restart the shell.  There are some limitations to this which are specific to the shell in question, but for the most part, things Just Work.
 
-JavaRebel auto-magical integration is done by searching for a valid JavaRebel
-install path in the following list of environment variables (in order):
+JavaRebel auto-magical integration is done by searching for a valid JavaRebel install path in the following list of environment variables (in order):
 
 * @REBEL_HOME@
 * @JAVA_REBEL@
 * @JAVAREBEL@
 * @JAVAREBEL_HOME@
 
-These environment variables may point to either the JavaRebel install directory
-(e.g. @~/javarebel-2.0.1@), or the JAR file itself (e.g. @~/javarebel-2.0.1/javarebel.jar@).
-If the path is valid, Buildr will automatically append the appropriate JVM
-switches to the launch configurations of each shell:
+These environment variables may point to either the JavaRebel install directory (e.g. @~/javarebel-2.0.1@), or the JAR file itself (e.g. @~/javarebel-2.0.1/javarebel.jar@).  If the path is valid, Buildr will automatically append the appropriate JVM switches to the launch configurations of each shell:
 
 <pre>$ buildr shell
 (in ~/foo, development)
@@ -178,10 +113,7 @@ Type :help for more information.
 
 scala> </pre>
 
-Note that Buildr does *not* check to make sure that you have a valid JavaRebel
-license, so you may end up launching with JavaRebel configured but without the
-ability to use it (in which case, JavaRebel will print a notification).
-
+Note that Buildr does *not* check to make sure that you have a valid JavaRebel license, so you may end up launching with JavaRebel configured but without the ability to use it (in which case, JavaRebel will print a notification). 
 
 h2(#gems).  Using Gems
 
