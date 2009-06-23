@@ -30,15 +30,18 @@ module Buildr
         }
         
         cmd_args = if rebel_home
+          trace 'Running Scala shell with JavaRebel'
+          
+          props['rebel.dirs'] = project.path_to(:target, :classes)
+          
           [
             '-noverify',
             "-javaagent:#{rebel_home}"
           ]
         else
+          trace 'Running Scala shell'
           []
         end
-        
-        trace "Detected JavaRebel #{rebel_home}"
         
         Java::Commands.java 'scala.tools.nsc.MainGenericRunner', {
           :properties => props,
