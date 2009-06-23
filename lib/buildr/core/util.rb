@@ -362,11 +362,13 @@ if Buildr::Util.java_platform?
       rake_output_message cmd.join(" ") if options[:verbose]
       unless options[:noop]
         cd = "cd '#{Dir.pwd}' && "
-        res = if windows_os? && cmd.size == 1
+        args = if cmd.size > 1 then cmd[1..cmd.size] else [] end
+        
+        res = if Buildr::Util.win_os? && cmd.size == 1
           __native_system__("#{cd} call #{cmd.first}") == 0
         else
           arg_str = args.map { |a| "'#{a}'" }
-          __native_system__(cd + cmd + ' ' + arg_str.join(' ')) == 0
+          __native_system__(cd + cmd.first + ' ' + arg_str.join(' ')) == 0
         end
         $? = Buildr::ProcessStatus.new(0, res)    # KLUDGE
         
