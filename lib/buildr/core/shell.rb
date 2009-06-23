@@ -1,5 +1,6 @@
 require 'buildr/shell'
 require 'buildr/java/commands'
+require 'buildr/core/util'
 
 module Buildr
   module Shell
@@ -45,8 +46,8 @@ module Buildr
             props['jna.boot.library.path'] = "#{jruby_home}/lib/native/#{path}"
           end
           
-          props['jruby.script'] = if Utils.win_os? then 'jruby.bat' else 'jruby' end
-          props['jruby.shell'] = if Utils.win_os? then 'cmd.exe' else '/bin/sh' end
+          props['jruby.script'] = if Util.win_os? then 'jruby.bat' else 'jruby' end
+          props['jruby.shell'] = if Util.win_os? then 'cmd.exe' else '/bin/sh' end
           
           args = [
             "-Xbootclasspath/a:#{Dir.glob("#{jruby_home}#{File::SEPARATOR}lib#{File::SEPARATOR}jruby*.jar").join File::PATH_SEPARATOR}"
