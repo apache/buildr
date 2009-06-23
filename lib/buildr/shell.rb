@@ -83,11 +83,7 @@ module Buildr
       end
       
       def rebel_props(project)
-        if rebel_home
-          { 'rebel.dirs' => project.path_to(:target, :classes) }
-        else
-          {}
-        end
+        {}
       end
     end
   end
