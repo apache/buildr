@@ -31,6 +31,7 @@ module Buildr
         load_provider = proc do |prov|
           name = prov.to_sym
           
+          trace "Defining task #{project.name}:shell:#{name}"
           project.task "shell:#{name}" => :compile do
             trace "Launching #{name} shell"
             prov.new(project).launch
@@ -52,7 +53,7 @@ module Buildr
       if default_shell
         dep = "shell:#{default_shell.to_sym}"
         
-        trace "Defining :shell task based on #{dep}"
+        trace "Defining task shell based on #{dep}"
         project.task :shell => dep
       else
         project.task :shell do
