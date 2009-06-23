@@ -281,6 +281,60 @@ end
 
 if Buildr::Util.java_platform?
   require 'ffi'
+  
+  module Buildr
+    class ProcessStatus
+      attr_reader :pid, :termsig, :stopsig
+      
+      def initialize(pid, success)
+        @pid = pid
+        @success = success
+        
+        @termsig = nil
+        @stopsig = nil
+      end
+      
+      def &(num)
+        pid & num
+      end
+      
+      def ==(other)
+        pid == other.pid
+      end
+      
+      def >>(num)
+        pid >> num
+      end
+      
+      def coredump?
+        false
+      end
+      
+      def exited?
+        true
+      end
+      
+      def stopped?
+        false
+      end
+      
+      def success?
+        @success
+      end
+      
+      def to_i
+        pid
+      end
+      
+      def to_int
+        pid
+      end
+      
+      def to_s
+        pid.to_s
+      end
+    end
+  end
 
   module Kernel
     extend extend FFI::Library
@@ -290,7 +344,10 @@ if Buildr::Util.java_platform?
     def system(cmd, *args)
       arg_str = args.map { |a| "'#{a}'" }
       cd = "cd '#{Dir.pwd}' && "
-      __native_system__(cd + cmd + ' ' + arg_str.join(' ')) == 0
+      back = __native_system__(cd + cmd + ' ' + arg_str.join(' ')) == 0
+      
+      $? = Buildr::ProcessStatus.new(0, back)    # KLUDGE
+      back
     end
   end
 end
