@@ -19,34 +19,19 @@ module Buildr
       def launch
         Scalac.scala_home or fail 'Are we forgetting something? SCALA_HOME not set.'
         
-        cp = project.compile.dependencies + Scalac.dependencies +
-          [
-            project.path_to(:target, :classes)
-          ]
+        cp = project.compile.dependencies + 
+          Scalac.dependencies +
+          [project.path_to(:target, :classes)]
         
-        props = { 
+        props = {
           'env.classpath' => cp.join(File::PATH_SEPARATOR),
           'scala.home' => Scalac.scala_home
         }
         
-        cmd_args = if rebel_home
-          trace 'Running Scala shell with JavaRebel'
-          
-          props['rebel.dirs'] = project.path_to(:target, :classes)
-          
-          [
-            '-noverify',
-            "-javaagent:#{rebel_home}"
-          ]
-        else
-          trace 'Running Scala shell'
-          []
-        end
-        
         Java::Commands.java 'scala.tools.nsc.MainGenericRunner', {
-          :properties => props,
+          :properties => props.merge(rebel_props project),
           :classpath => cp,
-          :java_args => cmd_args
+          :java_args => rebel_args
         }
       end
       
@@ -65,6 +50,25 @@ module Buildr
           @rebel_home
         else
           nil
+        end
+      end
+      
+      def rebel_args
+        if rebel_home
+          [
+            '-noverify',
+            "-javaagent:#{rebel_home}"
+          ]
+        else
+          []
+        end
+      end
+      
+      def rebel_props(project)
+        if rebel_home
+          { 'rebel.dirs' => project.path_to(:target, :classes) }
+        else
+          {}
         end
       end
     end
