@@ -278,3 +278,19 @@ class Hash
   end
 
 end
+
+if Buildr::Util.java_platform?
+  require 'ffi'
+
+  module Kernel
+    extend extend FFI::Library
+    attach_function :system, [:string], :int
+    alias_method :__native_system__, :system
+    
+    def system(cmd, *args)
+      arg_str = args.map { |a| "'#{a}'" }
+      cd = "cd '#{Dir.pwd}' && "
+      __native_system__(cd + cmd + ' ' + arg_str.join(' ')) == 0
+    end
+  end
+end
