@@ -2,17 +2,15 @@ require 'buildr/shell'
 
 module Buildr
   module Scala
-    class Shell
-      attr_reader :project
-      
+    class ScalaShell < Buildr::Shell::Base
       class << self
         def lang
           :scala
         end
-      end
-      
-      def initialize(project)
-        @project = project
+        
+        def to_sym
+          :scala
+        end
       end
       
       def launch
@@ -32,4 +30,4 @@ module Buildr
   end
 end
 
-Buildr::ShellProviders << Buildr::Scala::Shell
+Buildr::ShellProviders << Buildr::Scala::ScalaShell
