@@ -63,7 +63,7 @@ module Buildr
         end
         
         if lang == :none
-          p.each { |x| load_provider.call x }   # grrr...
+          p.each(&load_provider)
         else
           load_provider.call p
         end
