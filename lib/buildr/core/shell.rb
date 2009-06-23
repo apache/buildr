@@ -17,7 +17,7 @@ module Buildr
       end
       
       def launch
-        if jruby_home     # if JRuby is installed, use it!
+        if jruby_home and not rebel_home     # if JRuby is installed, use it for non-JavaRebel
           cp = project.compile.dependencies.join(File::PATH_SEPARATOR) + 
             File::PATH_SEPARATOR + project.path_to(:target, :classes)
           
