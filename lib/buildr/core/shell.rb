@@ -1,4 +1,5 @@
 require 'buildr/shell'
+require 'buildr/java/commands'
 
 module Buildr
   module Shell
@@ -50,24 +51,19 @@ module Buildr
       def launch
         fail 'Are we forgetting something? CLOJURE_HOME not set.' unless clojure_home
         
-        cp = project.compile.dependencies.join(File::PATH_SEPARATOR) + 
-          File::PATH_SEPARATOR + project.path_to(:target, :classes) +
-          File::PATH_SEPARATOR + File.expand_path('clojure.jar', clojure_home) +
-          File::PATH_SEPARATOR + jline_jar
+        cp = project.compile.dependencies + 
+          [
+            project.path_to(:target, :classes),
+            File.expand_path('clojure.jar', clojure_home),
+            'jline:jline:jar:0.9.94'
+          ]
         
-        system("java -classpath '#{cp}' jline.ConsoleRunner clojure.lang.Repl")
+        Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', :classpath => cp
       end
       
     private
       def clojure_home
         @home ||= ENV['CLOJURE_HOME']
-      end
-      
-      def jline_jar
-        jline = Buildr.artifact 'jline:jline:jar:0.9.94'
-        jline.install
-        
-        Buildr.repositories.locate jline
       end
     end
   end
