@@ -1,4 +1,6 @@
 1.3.5 (Pending)
+* Added:  Interactive shell (REPL) support
+* Change: Monkey-Patched FileUtils::sh on JRuby to use POSIX `system`
 * Added:  BUILDR-56 Download Scala artifacts if not available locally
 * Added:  Mandriva (urpmi) installation support (with help from Franck Villaume).
 * Added:  BUILDR-163 cobertura:check (Marko Sibakov, Daniel Spiewak).
