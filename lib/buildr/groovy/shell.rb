@@ -3,6 +3,8 @@ require 'buildr/shell'
 module Buildr
   module Groovy
     class GroovySH < Buildr::Shell::Base
+      SUFFIX = if Util.win_os? then '.bat' else '' end
+      
       class << self
         def lang
           :groovy
@@ -17,7 +19,7 @@ module Buildr
         
         cmd_args = " -classpath '#{cp}'"
         trace "groovysh #{cmd_args}"
-        system(File.expand_path('bin/groovysh', groovy_home) + cmd_args)
+        system(File.expand_path('bin/groovysh' + SUFFIX, groovy_home) + cmd_args)
       end
       
     private

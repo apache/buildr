@@ -3,6 +3,8 @@ require 'buildr/shell'
 module Buildr
   module Scala
     class ScalaShell < Buildr::Shell::Base
+      SUFFIX = if Util.win_os? then '.bat' else '' end
+      
       class << self
         def lang
           :scala
@@ -24,7 +26,7 @@ module Buildr
         cmd_args += " '#{cp}'"
         
         trace "scala #{cmd_args}"
-        system(File.expand_path('bin/scala', Scalac.scala_home) + cmd_args)
+        system(File.expand_path('bin/scala' + SUFFIX, Scalac.scala_home) + cmd_args)
       end
     end
   end

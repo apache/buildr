@@ -3,6 +3,8 @@ require 'buildr/shell'
 module Buildr
   module Shell
     class JIRB < Base
+      SUFFIX = if Util.win_os? then '.bat' else '' end
+      
       class << self
         def lang
           :none
@@ -23,7 +25,7 @@ module Buildr
         end
         ENV['CLASSPATH'] += cp
         
-        system(File.expand_path('bin/jirb', jruby_home))
+        system(File.expand_path('bin/jirb' + SUFFIX, jruby_home))
       end
       
     private
