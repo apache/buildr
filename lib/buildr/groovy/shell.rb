@@ -18,7 +18,8 @@ module Buildr
       def launch
         # TODO  make this more generic!!
         
-        cp = project.compile.dependencies.join(File::PATH_SEPARATOR) + project.path_to(:target, :classes)
+        cp = project.compile.dependencies.join(File::PATH_SEPARATOR) + 
+          File::PATH_SEPARATOR + project.path_to(:target, :classes)
         
         cmd_args = " -classpath '#{cp}'"
         
