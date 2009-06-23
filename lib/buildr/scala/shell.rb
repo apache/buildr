@@ -17,8 +17,6 @@ module Buildr
       end
       
       def launch
-        Scalac.scala_home or fail 'Are we forgetting something? SCALA_HOME not set.'
-        
         cp = project.compile.dependencies + 
           Scalac.dependencies +
           [project.path_to(:target, :classes)]
