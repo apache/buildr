@@ -36,6 +36,8 @@ module Buildr
     end
     
     class Clojure < Base
+      include JavaRebel
+      
       JLINE_VERSION = '0.9.94'
       
       class << self
@@ -58,7 +60,11 @@ module Buildr
             'jline:jline:jar:0.9.94'
           ]
         
-        Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', :classpath => cp
+        Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', {
+          :properties => rebel_props(project),
+          :classpath => cp,
+          :java_args => rebel_args
+        }
       end
       
     private
