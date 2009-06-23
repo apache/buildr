@@ -4,7 +4,9 @@ require 'buildr/java/commands'
 module Buildr
   module Shell
     class JIRB < Base
-      SUFFIX = if Util.win_os? then '.bat' else '' end
+      include JavaRebel
+      
+      JRUBY_VERSION = '1.1.6'
       
       class << self
         def lang
@@ -13,20 +15,16 @@ module Buildr
       end
       
       def launch
-        fail 'Are we forgetting something? JRUBY_HOME not set.' unless jruby_home
+        cp = project.compile.dependencies + [
+            "org.jruby:jruby-complete:jar:#{JRUBY_VERSION}",
+            project.path_to(:target, :classes)
+          ]
         
-        cp = project.compile.dependencies.join(File::PATH_SEPARATOR) + 
-          File::PATH_SEPARATOR + project.path_to(:target, :classes)
-        
-        cp_var = ENV['CLASSPATH']
-        if cp_var
-          ENV['CLASSPATH'] += File::PATH_SEPARATOR
-        else
-          ENV['CLASSPATH'] = ''
-        end
-        ENV['CLASSPATH'] += cp
-        
-        system(File.expand_path('bin/jirb' + SUFFIX, jruby_home))
+        Java::Commands.java 'org.jruby.Main', '--command', 'irb', {
+          :properties => rebel_props(project),
+          :classpath => cp,
+          :java_args => rebel_args
+        }
       end
       
     private
