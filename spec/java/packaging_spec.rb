@@ -341,7 +341,7 @@ describe 'package with meta_inf', :shared=>true do
     package.invoke
     assumed = Array(@meta_inf_ignore)
     Zip::ZipFile.open(package.to_s) do |zip|
-      entries = zip.entries.map(&:to_s).select { |f| File.dirname(f) == 'META-INF' }.map { |f| File.basename(f) }
+      entries = zip.entries.map(&:name).select { |f| File.dirname(f) == 'META-INF' }.map { |f| File.basename(f) }
       assumed.each { |f| entries.should include(f) }
       yield entries - assumed if block_given?
     end
@@ -659,7 +659,7 @@ describe Packaging, 'ear' do
         tmp.write ear.file.read(package)
       end
       manifest = Buildr::Packaging::Java::Manifest.from_zip('tmp.zip')
-      yield manifest.main['Class-Path'].to_s.split(' ')
+      yield manifest.main['Class-Path'].split(' ')
     end
   end
 
@@ -911,7 +911,7 @@ describe Packaging, 'ear' do
       package(:ear) << { :jar=>package(:jar) } << { :jar=>package(:jar, :id=>'bar') }
     end
     inspect_application_xml do |xml|
-      jars = xml.get_elements('/application/jar').map(&:texts).map(&:to_s)
+      jars = xml.get_elements('/application/jar').map(&:texts).map(&:join)
       jars.should include('jar/foo-1.0.jar', 'jar/bar-1.0.jar')
     end
   end

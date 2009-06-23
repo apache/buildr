@@ -32,7 +32,7 @@ describe Buildr.method(:struct) do
   end
 
   it 'should return members when requested' do
-    @struct.members.sort.should eql(@hash.keys.map(&:to_s).sort)
+    @struct.members.map(&:to_s).sort.should eql(@hash.keys.map(&:to_s).sort)
   end
 
   it 'should return valued when requested' do

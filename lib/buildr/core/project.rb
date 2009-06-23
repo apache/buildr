@@ -222,7 +222,7 @@ module Buildr
             @on_define.each { |callback| callback[project] }
           end if @on_define
           # Enhance the project using the definition block.
-          project.enhance { project.instance_eval &block } if block
+          project.enhance { project.instance_exec project, &block } if block
 
           # Top-level project? Invoke the project definition. Sub-project? We don't invoke
           # the project definiton yet (allow project calls to establish order of evaluation),

@@ -253,7 +253,16 @@ unless defined?(SpecHelpers)
       AbsolutePathMatcher.new(path)
     end
 
+    
+    # Value covered by range. For example:
+    #   (1..5).should cover(3)
+    def cover(value)
+      simple_matcher :cover do |given|
+        value >= given.min && value <= given.max 
+      end
+    end
 
+  
     def suppress_stdout
       stdout = $stdout
       $stdout = StringIO.new

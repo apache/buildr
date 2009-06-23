@@ -17,6 +17,16 @@
 require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 
+JAVA_CONTAINER  = 'org.eclipse.jdt.launching.JRE_CONTAINER'
+SCALA_CONTAINER = 'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER'
+
+SCALA_NATURE = 'ch.epfl.lamp.sdt.core.scalanature'
+JAVA_NATURE  = 'org.eclipse.jdt.core.javanature'
+
+SCALA_BUILDER = 'ch.epfl.lamp.sdt.core.scalabuilder'
+JAVA_BUILDER  = 'org.eclipse.jdt.core.javabuilder'
+
+
 module EclipseHelper
   def classpath_xml_elements
     task('eclipse').invoke
@@ -52,6 +62,7 @@ module EclipseHelper
     task('eclipse').invoke
     REXML::Document.new(File.open('.project')).root.elements
   end
+
 end
 
 
@@ -59,15 +70,6 @@ describe Buildr::Eclipse do
   include EclipseHelper
   
   describe "eclipse's .project file" do
-
-    JAVA_CONTAINER  = 'org.eclipse.jdt.launching.JRE_CONTAINER'
-    SCALA_CONTAINER = 'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER'
-
-    SCALA_NATURE = 'ch.epfl.lamp.sdt.core.scalanature'
-    JAVA_NATURE  = 'org.eclipse.jdt.core.javanature'
-    
-    SCALA_BUILDER = 'ch.epfl.lamp.sdt.core.scalabuilder'
-    JAVA_BUILDER  = 'org.eclipse.jdt.core.javabuilder'
 
     def project_natures
       project_xml_elements.collect("natures/nature") { |n| n.text }

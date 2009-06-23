@@ -109,8 +109,9 @@ module Buildr::Scala
             ant.suite    :classname=>suite
             ant.reporter :type=>'stdout', :config=>reporter_options
             ant.reporter :type=>'file', :filename=> reportFile, :config=>reporter_options
-            ant.includes group_includes.join(" ") if group_includes
-            ant.excludes group_excludes.join(" ") if group_excludes
+            # TODO: This should be name=>value pairs!
+            #ant.includes group_includes.join(" ") if group_includes
+            #ant.excludes group_excludes.join(" ") if group_excludes
             (options[:properties] || []).each { |name, value| ant.property :name=>name, :value=>value }
           end
         end

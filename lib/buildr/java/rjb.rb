@@ -134,7 +134,7 @@ module Java
 
     def __package__(name) #:nodoc:
       const = name.split('.').map { |part| part.gsub(/^./) { |char| char.upcase } }.join
-      return const_get(const) if constants.include?(const)
+      return const_get(const) if constants.include?(const) || constants.include?(const.to_sym)
       package = Module.new
       package.extend Package
       package.instance_variable_set :@name, name

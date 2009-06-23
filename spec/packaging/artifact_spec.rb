@@ -231,7 +231,7 @@ describe Repositories, 'remote' do
   it 'should deal well with repositories URL that lack the last slash' do
     repositories.remote = 'http://example.com/base'
     uri = nil
-    URI.should_receive(:download).twice.and_return { |uri, target, options| }
+    URI.should_receive(:download).twice.and_return { |_uri, args| uri = _uri }
     artifact('group:id:jar:1.0').invoke
     uri.to_s.should eql('http://example.com/base/group/id/1.0/id-1.0.pom')
   end
@@ -239,7 +239,7 @@ describe Repositories, 'remote' do
   it 'should deal well with repositories URL that have the last slash' do
     repositories.remote = 'http://example.com/base/'
     uri = nil
-    URI.should_receive(:download).twice.and_return { |uri, target, options| }
+    URI.should_receive(:download).twice.and_return { |_uri, args| p args ; uri = _uri }
     artifact('group:id:jar:1.0').invoke
     uri.to_s.should eql('http://example.com/base/group/id/1.0/id-1.0.pom')
   end

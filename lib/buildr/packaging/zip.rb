@@ -14,7 +14,16 @@
 # the License.
 
 
-$LOADED_FEATURES.unshift 'ftools' if RUBY_VERSION >= '1.9.0' # Required to properly load RubyZip under Ruby 1.9
+if RUBY_VERSION >= '1.9.0' # Required to properly load RubyZip under Ruby 1.9
+  $LOADED_FEATURES.unshift 'ftools'
+  require 'fileutils'
+  def File.move(source, dest)
+    FileUtils.move source, dest
+  end
+  def File.rm_rf(path)
+    FileUtils.rm_rf path
+  end
+end
 require 'zip/zip'
 require 'zip/zipfilesystem'
 

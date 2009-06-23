@@ -166,8 +166,9 @@ describe 'test coverage tool', :shared=>true do
           'public class Foo { /* This comment is a TOKEN to check that test coverage reports include the source code */ }'
         define('foo')
         task("foo:#{toolname}:html").invoke
-        htlm_report_contents = Dir[File.join(test_coverage_config.report_dir, '**/*.html')].map{|path|File.open(path).read}.join
-        htlm_report_contents.should =~ /TOKEN/
+        html_report_contents = Dir[File.join(test_coverage_config.report_dir, '**/*.html')].map{|path|File.open(path).read}.join
+        html_report_contents.force_encoding('ascii-8bit') if RUBY_VERSION >= '1.9'
+        html_report_contents.should =~ /TOKEN/
       end
     end
   end
@@ -203,8 +204,9 @@ describe 'test coverage tool', :shared=>true do
           write 'bar/src/main/java/Bar.java',
             'public class Bar { /* This comment is a TOKEN to check that test coverage reports include the source code */ }'
           task("#{toolname}:html").invoke
-          htlm_report_contents = Dir[File.join(@tool_module.report_to(:html), '**/*.html')].map{|path|File.open(path).read}.join
-          htlm_report_contents.should =~ /TOKEN/
+          html_report_contents = Dir[File.join(@tool_module.report_to(:html), '**/*.html')].map{|path|File.read(path)}.join
+          html_report_contents.force_encoding('ascii-8bit') if RUBY_VERSION >= '1.9'
+          html_report_contents.should =~ /TOKEN/
         end
         
         it 'should handle gracefully a project with no source' do

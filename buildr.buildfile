@@ -16,6 +16,7 @@
 $LOADED_FEATURES << 'jruby' unless RUBY_PLATFORM =~ /java/ # Pretend to have JRuby, keeps Nailgun happy.
 require 'buildr/jetty'
 require 'buildr/nailgun'
+require 'buildr/scala'
 repositories.remote << 'http://repo1.maven.org/maven2'
 repositories.remote << 'http://scala-tools.org/repo-releases/'
 
@@ -23,8 +24,12 @@ repositories.remote << 'http://scala-tools.org/repo-releases/'
 define 'buildr' do
   compile.using :source=>'1.4', :target=>'1.4', :debug=>false
 
-  define 'java' do  
+  define 'java' do
     compile.using(:javac).from(FileList['lib/buildr/java/**/*.java']).into('lib/buildr/java')
+  end
+
+  define 'scala' do
+    compile.using(:scalac).from(FileList['lib/buildr/scala/**/*.scala']).into('lib/buildr/scala')
   end
 
   desc 'Buildr extra packages (Antlr, Cobertura, Hibernate, Javacc, JDepend, Jetty, OpenJPA, XmlBeans)'

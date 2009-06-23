@@ -244,7 +244,7 @@ module Buildr
     #
     # For example:
     #   compile.from('src/java').into('classes').with('module1.jar')
-    def from(*sources)  
+    def from(*sources)
       @sources |= sources.flatten
       guess_compiler if @compiler.nil? && sources.flatten.any? { |source| File.exist?(source) }
       self
