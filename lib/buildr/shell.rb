@@ -16,6 +16,18 @@ module Buildr
       def providers
         @providers ||= {}
       end
+      
+      def each
+        providers.each do |lang, p|
+          if lang == :none
+            p.each do |x|
+              yield x
+            end
+          else
+            yield p
+          end
+        end
+      end
     end
   end
   
@@ -48,24 +60,18 @@ module Buildr
     
     first_time do
       Project.local_task 'shell'
+      
+      ShellProviders.each { |p| Project.local_task "shell:#{name}" }
     end
     
     before_define do |project|
-      ShellProviders.providers.each do |lang, p|
-        load_provider = proc do |prov|
-          name = prov.to_sym
-          
-          trace "Defining task #{project.name}:shell:#{name}"
-          project.task "shell:#{name}" => :compile do
-            trace "Launching #{name} shell"
-            prov.new(project).launch
-          end
-        end
+      ShellProviders.each do |p|
+        name = p.to_sym
         
-        if lang == :none
-          p.each(&load_provider)
-        else
-          load_provider.call p
+        trace "Defining task #{project.name}:shell:#{name}"
+        project.task "shell:#{name}" => :compile do
+          trace "Launching #{name} shell"
+          p.new(project).launch
         end
       end
     end
