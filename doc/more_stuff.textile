@@ -3,6 +3,69 @@ layout: default
 title: More Stuff
 ---
 
+h2(#shell).  Interactive Shells (REPLs)
+
+Many languages (including Scala and Groovy) provide an interactive shell tool
+which allows developers to run arbitrary expressions and see the results
+immediately:
+
+<pre>$ scala
+Welcome to Scala version 2.7.4.final (Java HotSpot(TM) 64-Bit Server VM, Java 1.6.0_03-p3).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> 6 * 7
+res0: Int = 42
+
+scala> </pre>
+
+These tools are alternatively known as "REPLs" (Read, Eval, Print Loop), a term
+which originally comes from Lisp.  This sort of interactive shell can be an
+invaluable asset when developing frameworks or other non-UI-oriented modules.  A
+common use-case is running a quick, manual test to make sure that the framework
+is functioning properly.  It is faster and easier to do this in a shell, and also
+averts the need for extra test cases to be developed just to check simple things
+during development.
+
+Unfortunately, for such a tool to be useful in Java, Scala or Groovy development,
+it must have access to the @CLASSPATH@, not only the compiled project binaries,
+but also its full list of dependencies.  While it is usually possible with such
+tools to specify the classpath upon startup (e.g. the @-cp@ switch for the Scala
+shell), this can get extremely tedious for project's with more dependencies,
+especially when some of these dependencies are defined using @transitive@ artifacts.
+
+Buildr is capable of easing this workflow by providing full support for the
+configuration and launch of interactive shells.  In fact, if your project uses
+either Scala or Groovy, the relevant shell may be launched simply by invoking
+the @shell@ task:
+
+{% highlight sh %}
+$ buildr shell
+{% endhighlight %}
+
+The @shell@ task depends upon @compile@, meaning that any changed source files
+will be recompiled prior to the shell's launch.  Tests will not be run, nor will
+test files be recompiled.  From within the shell itself, you should have access
+to your project's compilation classpath (anything specified using @compile.with@)
+as well as the compiled sources for your project.
+
+The project classpath is determined by checking the current working directory of
+your system shell (the path from which the @buildr shell@ command was invoked)
+and recursively finding the relevant project for that directory.  Thus, if you
+have a parent project @foo@ which has sub-projects @bar@ and @baz@, you may
+invoke an interactive shell for the @baz@ project simply by @cd@-ing into its
+project directory (or any of its sub-directories) and invoking the @shell@ task.
+You may also invoke a shell against a specific project by giving its fully-qualified
+descriptor as a prefix to the @shell@ task:
+
+{% highlight sh %}
+$ buildr foo:bar:shell
+{% endhighlight %}
+
+h3. Supported Shells
+
+**TODO**
+
 
 h2(#gems).  Using Gems
 
