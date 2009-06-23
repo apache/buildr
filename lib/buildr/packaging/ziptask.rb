@@ -122,7 +122,8 @@ module Buildr
 
     # Initialize with hash argument of the form target=>zip_file.
     def initialize(args)
-      @target, arg_names, @zip_file = Buildr.application.resolve_args([args])
+      @target, arg_names, zip_file = Buildr.application.resolve_args([args])
+      @zip_file = zip_file.first
       @paths = {}
     end
 

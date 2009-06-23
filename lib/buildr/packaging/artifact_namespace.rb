@@ -736,7 +736,7 @@ module Buildr
 
     # Like Hash#fetch
     def fetch(name, default = nil, &block)
-      block ||= lambda { raise IndexError.new("No artifact found by name #{name.inspect} in namespace #{self}") }
+      block ||= proc { raise IndexError.new("No artifact found by name #{name.inspect} in namespace #{self}") }
       real_name = name.to_s[/^[\w\-\.]+$/] ? name : ArtifactRequirement.unversioned_spec(name)
       get(real_name.to_sym) || default || block.call(name)
     end

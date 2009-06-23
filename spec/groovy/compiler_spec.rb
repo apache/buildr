@@ -151,6 +151,7 @@ describe 'groovyc compiler options' do
         return compile
       end
     end
+    project('foo').compile
   end
   
   it 'should set warning option to false by default' do 

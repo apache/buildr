@@ -333,10 +333,10 @@ describe Buildr::TestTask, 'with passing tests' do
   it 'should execute teardown task' do
     lambda { test_task.invoke }.should run_task('foo:test:teardown')
   end
-  
+
   it 'should update the last successful run timestamp' do
     before = Time.now ; test_task.invoke ; after = Time.now
-    (before-1..after+1).should include(test_task.timestamp)
+    (before-1..after+1).should cover(test_task.timestamp)
   end
 end
 

@@ -285,7 +285,7 @@ module Buildr
           @config = configurer.call(*args, &block)
         else
           raise ArgumentError, "Missing hash argument after :#{mapper_type}" unless args.size == 1 && Hash === args[0]
-          @config = *args
+          @config = args.first
         end
         @mapper_type = mapper_type
       end
@@ -312,10 +312,8 @@ module Buildr
       
       def erb_transform(content, path = nil)
         case config
-        when Binding, Proc
+        when Binding
           bnd = config
-        when Method
-          bnd = config.to_proc
         when Hash
           bnd = OpenStruct.new
           table = config.inject({}) { |h, e| h[e.first.to_sym] = e.last; h }

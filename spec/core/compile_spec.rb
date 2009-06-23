@@ -293,7 +293,8 @@ describe Buildr::CompileTask, '#invoke' do
   end
 
   it 'should run all source files as prerequisites' do
-    file(mkpath('src')).should_receive :invoke_prerequisites
+    mkpath 'src'
+    file('src').should_receive :invoke_prerequisites
     compile_task.from('src').invoke
   end
 

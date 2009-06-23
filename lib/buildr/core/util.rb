@@ -159,24 +159,54 @@ module Buildr
 end
 
 
-if RUBY_VERSION < '1.9.0'
-  module Kernel #:nodoc:
-    # Borrowed from Ruby 1.9.
+class Object #:nodoc:
+  unless defined? instance_exec # 1.9
+    module InstanceExecMethods #:nodoc:
+    end
+    include InstanceExecMethods
+
+    # Evaluate the block with the given arguments within the context of
+    # this object, so self is set to the method receiver.
+    #
+    # From Mauricio's http://eigenclass.org/hiki/bounded+space+instance_exec
+    def instance_exec(*args, &block)
+      begin
+        old_critical, Thread.critical = Thread.critical, true
+        n = 0
+        n += 1 while respond_to?(method_name = "__instance_exec#{n}")
+        InstanceExecMethods.module_eval { define_method(method_name, &block) }
+      ensure
+        Thread.critical = old_critical
+      end
+
+      begin
+        send(method_name, *args)
+      ensure
+        InstanceExecMethods.module_eval { remove_method(method_name) } rescue nil
+      end
+    end
+  end
+end
+
+module Kernel #:nodoc:
+  unless defined? tap # 1.9
     def tap
       yield self if block_given?
       self
-    end unless method_defined?('tap')
+    end
   end
+end
 
-
-  class Symbol #:nodoc:
+class Symbol #:nodoc:
+  unless defined? to_proc # 1.9
     # Borrowed from Ruby 1.9.
     def to_proc
       Proc.new{|*args| args.shift.__send__(self, *args)}
-    end unless method_defined?('to_proc')
+    end
   end
+end
 
-  # Also borrowed from Ruby 1.9.
+unless defined? BasicObject # 1.9
   class BasicObject #:nodoc:
     (instance_methods - ['__send__', '__id__', '==', 'send', 'send!', 'respond_to?', 'equal?', 'object_id']).
       each do |method|

@@ -14,6 +14,11 @@
 # the License.
 
 
+# TODO: Antwrap 0.7 requires this monkeypatch, have it fixed.
+class Array #:nodoc:
+  alias :nitems :size
+end
+
 require 'buildr/core/common'
 require 'buildr/core/application'
 require 'buildr/core/project'

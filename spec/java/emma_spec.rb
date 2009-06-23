@@ -14,7 +14,7 @@
 # the License.
 
 
-require File.join(File.dirname(__FILE__), 'test_coverage_spec')
+require File.join(File.dirname(__FILE__), 'test_coverage_helper')
 Sandbox.require_optional_extension 'buildr/java/emma'
 artifacts(Buildr::Emma::dependencies).map(&:invoke)
 

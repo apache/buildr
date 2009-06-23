@@ -39,7 +39,7 @@ module Buildr
             sections = str.split(SECTION_SEPARATOR).reject { |s| s.strip.empty? }
             new sections.map { |section|
               lines = section.split(LINE_SEPARATOR).inject([]) { |merged, line|
-                if line[0] == 32
+                if line[/^ /] == ' '
                   merged.last << line[1..-1]
                 else
                   merged << line
@@ -302,7 +302,7 @@ module Buildr
           @wsdls = []
           prepare do
             path('META-INF').include @wsdls
-            path('META-INF').include @services_xml, :as=>['services.xml'] if @services_xml
+            path('META-INF').include @services_xml, :as=>'services.xml' if @services_xml
             path('lib').include Buildr.artifacts(@libs) unless @libs.nil? || @libs.empty?
           end
         end
