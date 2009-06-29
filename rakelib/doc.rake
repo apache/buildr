@@ -59,7 +59,7 @@ end
 
 desc "Generate Buildr documentation as buildr.pdf"
 file 'buildr.pdf'=>'_site' do |task|
-  pages = File.read('doc/preface.textile').scan(/^#.*":(\S*)$/).flatten.map { |f| "_site/#{f}" }
+  pages = File.read('_site/preface.html').scan(/<li><a href=['"]([^'"]+)/).flatten.map { |f| "_site/#{f}" }
   sh 'prince', '--input=html', '--no-network', '--log=prince_errors.log', "--output=#{task.name}", '_site/preface.html', *pages
 end
 

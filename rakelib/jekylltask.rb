@@ -14,7 +14,7 @@
 # the License.
 
 
-#gem 'RedCloth', '4.2.0'
+gem 'mojombo-jekyll', '~> 0.5.2' # skip past some buggy versions
 require 'rake/tasklib'
 require 'jekyll'
 
