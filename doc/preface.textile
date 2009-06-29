@@ -4,17 +4,19 @@ layout: preface
 
 p(title). !images/zbuildr.png!
 
-#(toc) "Getting Started":getting_started.html
-# "Projects":projects.html
-# "Building":building.html
-# "Artifacts":artifacts.html
-# "Packaging":packaging.html
-# "Testing":testing.html
-# "Settings & Profiles":settings_profiles.html
-# "Languages":languages.html
-# "More Stuff":more_stuff.html
-# "Extending Buildr":extending.html
-# "Contributing":contributing.html
+<ol class='toc'>
+  <li>"Getting Started":getting_started.html</li>
+  <li>"Projects":projects.html</li>
+  <li>"Building":building.html</li>
+  <li>"Artifacts":artifacts.html</li>
+  <li>"Packaging":packaging.html</li>
+  <li>"Testing":testing.html</li>
+  <li>"Settings & Profiles":settings_profiles.html</li>
+  <li>"Languages":languages.html</li>
+  <li>"More Stuff":more_stuff.html</li>
+  <li>"Extending Buildr":extending.html</li>
+  <li>"Contributing":contributing.html</li>
+</ol>
 
 
 p(preface). Copyright 2007-2009 Apache Buildr
