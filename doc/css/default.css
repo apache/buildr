@@ -168,6 +168,11 @@ th, thead td {
   margin-top: 2em;
   padding: 0.3em 0 0.5em 0.5em;
 }
+#pages ol li p  {
+  font-weight: normal;
+  color: #000;
+  vertical-align: center;
+}
 
 
 #content { /* Parent Wrapper for inside boxes */
