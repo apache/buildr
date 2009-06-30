@@ -84,3 +84,37 @@ module TocFilter
   end
 end
 Liquid::Template.register_filter(TocFilter)
+
+
+
+# Under Ruby 1.9 [a,b,c].to_s doesn't join the array first. (Jekyll 0.5.2 requires this)
+module Jekyll
+  class HighlightBlock < Liquid::Block
+    def render(context)
+      if context.registers[:site].pygments
+        render_pygments(context, super.join)
+      else
+        render_codehighlighter(context, super.join)
+      end
+    end
+  end
+end
+
+# Ruby 1.9 has sane closure scoping which manages to mess Liquid filters. (Liquid 2.0.0 requires this)
+module Liquid
+  class Variable
+    def render(context)
+      return '' if @name.nil?
+      @filters.inject(context[@name]) do |output, filter|
+        filterargs = filter[1].to_a.collect do |a|
+         context[a]
+        end
+        begin
+          context.invoke(filter[0], output, *filterargs)
+        rescue FilterNotFound
+          raise FilterNotFound, "Error - filter '#{filter[0]}' in '#{@markup.strip}' could not be found."
+        end
+      end
+    end
+  end
+end
