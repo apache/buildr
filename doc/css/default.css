@@ -79,7 +79,7 @@ blockquote {
   padding-right: 2em;
   margin-left: 0.3em;
   margin-right: 0;
-  border-left: 1px solid #3c78b5;
+  font-style: italic;
 }
 
 ul { 

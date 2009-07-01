@@ -93,5 +93,9 @@
     page-break-before: always;
     padding-top: 1.5in;
   }
+  div.preface.quotes {
+    page-break-before: always;
+    padding-top: 1in;
+  }
 
 }
