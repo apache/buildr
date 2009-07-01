@@ -7,7 +7,7 @@ module Buildr
     class JIRB < Base
       include JavaRebel
       
-      JRUBY_VERSION = '1.1.6'
+      JRUBY_VERSION = '1.3.1'
       
       class << self
         def lang
