@@ -236,8 +236,7 @@ module Buildr
     end
 
     def tests(dependencies) #:nodoc:
-      Dir[task.project.path_to(:source, bdd_dir, lang, '**/*_spec.rb')].
-        select do |name| 
+      Dir[task.project.path_to(:source, bdd_dir, lang, '**/*_spec.rb')].select do |name| 
         selector = ENV['SPEC']
         selector.nil? || Regexp.new(selector) === name
       end
