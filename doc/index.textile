@@ -1,13 +1,31 @@
 ---
 layout: default
-title: Welcome
+title: Apache Buildr
 ---
-
-h2(#what_is_apache_buildr).  What is Apache Buildr?
 
 Apache Buildr is a build system for Java-based applications, including support for Scala, Groovy and a growing number of JVM languages and tools.  We wanted something that's simple and intuitive to use, so we only need to tell it what to do, and it takes care of the rest.  But also something we can easily extend for those one-off tasks, with a language that's a joy to use.  And of course, we wanted it to be fast, reliable and have outstanding dependency management.
 
-Here's what we got:
+
+h2(#why).  Why Buildr Rocks
+
+"Daniel Spiewak":http://www.codecommit.com/blog:
+
+bq. If you think about it, the question isn’t “Why use Buildr?”, it’s really “Why use anything else?” The advantages afforded by Buildr are so substantial, I really can’t see myself going with any other tool, at least not when I have a choice.
+
+"Tristan Juricek":http://tristanhunt.com/:
+
+bq. That’s still the strongest sell: it builds everything I need, and as I’ve needed more, I just got things working without a lot of fuss.
+
+"Matthieu Riou":http://offthelip.org/:
+
+bq. We used to rely on Ant, with a fairly extensive set of scripts. It worked but was expensive to maintain. The biggest mistake afterward was to migrate to Maven2. I could write pages of rants explaining all the problems we ran into and we still ended up with thousands of lines of XML.
+
+"Martin Grotzke":http://www.javakaffee.de/blog/:
+
+bq. The positive side effect for me as a java user is that I learn a little ruby, and that’s easy but lots of fun… :-)
+
+
+h2(#what).  What You Get
 
 * A simple way to specify projects, and build large projects out of smaller sub-projects.
 * Pre-canned tasks that require the least amount of configuration, keeping the build script DRY and simple.
@@ -43,3 +61,7 @@ h2(#legal).  Legal Notices
 The Apache Software Foundation is a non-profit organization, consider "sponsoring":http://www.apache.org/foundation/sponsorship.html and check the "thanks":http://www.apache.org/foundation/thanks.html page.
 
 "ColorCons":http://www.mouserunner.com/Spheres_ColoCons1_Free_Icons.html, copyright of Ken Saunders.  "DejaVu fonts":http://dejavu.sourceforge.net, copyright of Bitstream, Inc.
+
+Community member quotes from a thread on "Stack Overflow":http://stackoverflow.com/questions/1015525/why-use-buildr-instead-of-ant-or-maven/1055864.
+
+
