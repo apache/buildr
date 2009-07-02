@@ -7,6 +7,7 @@
 * Change: Updated to Rake 0.8.7, RSpec 1.2.6 and JRuby-openssl 0.5.1.
 * Fixed:  BUILDR-23 Support for setting file mode when packaging (Ittay Dror).
 * Fixed:  BUILDR-290 Dependencies cannot be downloaded over SSL.
+* Fixed:  BUILDR-291 Local tasks do not support arguments (Ittay Dror).
 
 1.3.4 (2009-04-21)
 * Added:  BUILDR-93 Add specs for ScalaCheck integration
