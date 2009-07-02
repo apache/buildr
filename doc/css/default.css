@@ -121,14 +121,16 @@ th, thead td {
 
 #header {
   margin: 0 0 3em 18em;
+  position: relative;
 }
 
 #header .tagline {
   float: right;
-  font-size: 1.5em;
+  font-size: 1.2em;
   font-weight: bold;
-  position: relative;
-  bottom: 4.5em;
+  position: absolute;
+  top: 0.6em;
+  right: 0;
 }
 
 
