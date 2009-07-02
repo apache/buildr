@@ -317,11 +317,12 @@ module Buildr
       #
       # The optional block is called with the project name when the task executes
       # and returns a message that, for example "Building project #{name}".
-      def local_task(args, &block)
-        task args do |task|
+      def local_task(*args, &block)
+        task *args do |task, args|
+          args = task.arg_names.map {|n| args[n]}
           local_projects do |project|
             info block.call(project.name) if block
-            task("#{project.name}:#{task.name}").invoke
+            task("#{project.name}:#{task.name}").invoke *args
           end
         end
       end
