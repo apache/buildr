@@ -375,6 +375,15 @@ describe ZipTask do
     archive(@archive).invoke
     inspect_archive { |archive| archive.keys.should include('code/') }
   end
+
+  it 'should preserve file permissions' do
+    write 'src/main/bin/hello', 'echo hi'
+    chmod 0777,  'src/main/bin/hello'
+    zip('foo.zip').include('src/main/bin/*').invoke
+    unzip('target' => 'foo.zip').extract
+    (File.stat('target/hello').mode & 0777).should == 0777
+  end
+
 end
 
 

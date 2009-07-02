@@ -1,10 +1,11 @@
 1.3.5 (Pending)
 * Added:  Interactive shell (REPL) support
-* Change: Monkey-Patched FileUtils::sh on JRuby to use POSIX `system`
 * Added:  BUILDR-56 Download Scala artifacts if not available locally
 * Added:  Mandriva (urpmi) installation support (with help from Franck Villaume).
 * Added:  BUILDR-163 cobertura:check (Marko Sibakov, Daniel Spiewak).
+* Change: Monkey-Patched FileUtils::sh on JRuby to use POSIX `system`
 * Change: Updated to Rake 0.8.7, RSpec 1.2.6 and JRuby-openssl 0.5.1.
+* Fixed:  BUILDR-23 Support for setting file mode when packaging (Ittay Dror).
 * Fixed:  BUILDR-290 Dependencies cannot be downloaded over SSL.
 
 1.3.4 (2009-04-21)
