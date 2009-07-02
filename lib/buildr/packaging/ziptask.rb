@@ -74,8 +74,9 @@ module Buildr
           elsif content.nil? || File.directory?(content.to_s)
             mkpath.call path
           else
-            zip.put_next_entry(path, compression_level)
+            entry = zip.put_next_entry(path, compression_level)
             File.open content.to_s, 'rb' do |is|
+              entry.unix_perms = is.stat.mode & 07777
               while data = is.read(4096)
                 zip << data
               end
@@ -155,6 +156,7 @@ module Buildr
             dest = File.expand_path(dest, target.to_s)
             trace "Extracting #{dest}"
             mkpath File.dirname(dest) rescue nil
+            entry.restore_permissions = true
             entry.extract(dest) { true }
           end
         end
