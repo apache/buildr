@@ -54,7 +54,7 @@ module Buildr
           ]
           
           Java::Commands.java 'org.jruby.Main', "#{jruby_home}#{File::SEPARATOR}bin#{File::SEPARATOR}jirb", {
-            :properties => props.merge(rebel_props project),
+            :properties => props.merge(rebel_props(project)),
             :classpath => cp,
             :java_args => args + rebel_args
           }

@@ -27,7 +27,7 @@ module Buildr
         }
         
         Java::Commands.java 'scala.tools.nsc.MainGenericRunner', {
-          :properties => props.merge(rebel_props project),
+          :properties => props.merge(rebel_props(project)),
           :classpath => cp,
           :java_args => rebel_args
         }
