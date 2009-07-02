@@ -367,7 +367,7 @@ if Buildr::Util.java_platform?
   end
 
   module FileUtils
-    extend extend FFI::Library
+    extend FFI::Library
     attach_function :system, [:string], :int
     alias_method :__native_system__, :system
     
