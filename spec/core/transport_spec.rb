@@ -511,7 +511,7 @@ describe URI::SFTP, '#write' do
   end
 
   it 'should create missing paths on server' do
-    @sftp_session.should_receive(:opendir!).twice { |path| fail unless path == '/root' }
+    @sftp_session.should_receive(:opendir!) { |path| fail unless path == '/root' }
     @sftp_session.should_receive(:mkdir!).once.with('/root/path', {})
     @uri.write @content
   end
