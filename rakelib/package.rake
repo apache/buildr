@@ -51,9 +51,11 @@ end
 file Rake::GemPackageTask.new(spec).package_dir=>:compile
 file Rake::GemPackageTask.new(spec).package_dir_path=>:compile
 
-# We also need the other package (JRuby if building on Ruby, and vice versa)
+# We also need the other packages (JRuby if building on Ruby, and vice versa)
 # Must call new with block, even if block does nothing, otherwise bad things happen.
-Rake::GemPackageTask.new(spec(RUBY_PLATFORM[/java/] ? 'ruby' : 'java')) { |task| }
+@specs.values.each do |s|
+  Rake::GemPackageTask.new(s) { |task| }
+end
 
 
 desc "Upload snapshot packages over to people.apache.org"
