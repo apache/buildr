@@ -108,8 +108,7 @@ module Buildr
 
 
   module Git  #:nodoc:
-
-  module_function
+    module_function
 
     # :call-seq:
     #   git(*args)
@@ -148,23 +147,19 @@ module Buildr
     # Return the name of the remote repository whose branch the current local branch tracks,
     # or nil if none.
     def remote(branch = current_branch)
-      remote = git('config', '--get', "branch.#{branch}.remote").strip
-      remote if git('remote').include?(remote)
-    rescue
-      nil
+      remote = git('config', '--get', "branch.#{branch}.remote").to_s.strip
+      remote if !remote.empty? && git('remote').include?(remote)
     end
 
     # Return the name of the current branch
     def current_branch
       git('branch')[/^\* (.*)$/, 1]
     end
-
   end
 
 
   module Svn #:nodoc:
-
-  module_function
+    module_function
 
     # :call-seq:
     #   svn(*args)
