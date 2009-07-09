@@ -314,11 +314,12 @@ if Buildr::Util.java_platform?
   
   module Buildr
     class ProcessStatus
-      attr_reader :pid, :termsig, :stopsig
+      attr_reader :pid, :termsig, :stopsig, :exitstatus
       
-      def initialize(pid, success)
+      def initialize(pid, success, exitstatus)
         @pid = pid
         @success = success
+        @exitstatus = exitstatus
         
         @termsig = nil
         @stopsig = nil
@@ -395,12 +396,12 @@ if Buildr::Util.java_platform?
         args = if cmd.size > 1 then cmd[1..cmd.size] else [] end
         
         res = if Buildr::Util.win_os? && cmd.size == 1
-          __native_system__("#{cd} call #{cmd.first}") == 0
+          __native_system__("#{cd} call #{cmd.first}")
         else
           arg_str = args.map { |a| "'#{a}'" }
-          __native_system__(cd + cmd.first + ' ' + arg_str.join(' ')) == 0
+          __native_system__(cd + cmd.first + ' ' + arg_str.join(' '))
         end
-        $? = Buildr::ProcessStatus.new(0, res)    # KLUDGE
+        $? = Buildr::ProcessStatus.new(0, res == 0, res)    # KLUDGE
         
         block.call(res, $?)
       end
