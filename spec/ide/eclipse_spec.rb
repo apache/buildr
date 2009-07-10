@@ -310,4 +310,15 @@ describe Buildr::Eclipse do
     end
   end
   
+  describe 'maven2 repository variable' do
+    it 'should be configurable' do
+      eclipse.options.m2_repo_var = 'PROJ_REPO'
+      define('foo') { compile.using(:javac).with('com.example:library:jar:2.0') }
+      artifact('com.example:library:jar:2.0') { |task| write task.name }
+
+      task('eclipse').invoke
+      classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }.
+        should include('PROJ_REPO/com/example/library/2.0/library-2.0.jar')
+    end
+  end
 end
