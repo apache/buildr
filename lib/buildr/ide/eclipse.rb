@@ -23,6 +23,28 @@ module Buildr
 
     include Extension
 
+    def eclipse
+        Eclipse.instance
+    end
+     
+    class Eclipse
+      include Singleton
+      
+      attr_reader :options
+       
+      def initialize
+        @options = Options.new
+      end
+    end
+     
+    class Options
+      attr_accessor :m2_repo_var
+
+      def initialize
+        @m2_repo_var = 'M2_REPO'
+      end
+    end
+    
     first_time do
       # Global task "eclipse" generates artifacts for all projects.
       desc 'Generate Eclipse artifacts for all projects'
@@ -85,7 +107,7 @@ module Buildr
 
               classpathentry.output project.compile.target if project.compile.target
               classpathentry.lib libs
-              classpathentry.var m2_libs, 'M2_REPO', m2repo
+              classpathentry.var m2_libs, Eclipse.instance.options.m2_repo_var, m2repo
 
               classpathentry.con 'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER' if scala
               classpathentry.con 'org.eclipse.jdt.launching.JRE_CONTAINER'
@@ -214,6 +236,9 @@ module Buildr
     end
 
   end
+  
+  include Eclipse
+  
 end # module Buildr
 
 

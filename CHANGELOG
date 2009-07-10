@@ -3,6 +3,7 @@
 * Added:  BUILDR-56 Download Scala artifacts if not available locally
 * Added:  Mandriva (urpmi) installation support (with help from Franck Villaume).
 * Added:  BUILDR-163 cobertura:check (Marko Sibakov, Daniel Spiewak).
+* Added:  BUILDR-295 Eclipse task: make 'M2_REPO' repository variable configurable
 * Change: Monkey-Patched FileUtils::sh on JRuby to use POSIX `system`
 * Change: Updated to Rake 0.8.7, RSpec 1.2.6 and JRuby-openssl 0.5.1.
 * Fixed:  BUILDR-23 Support for setting file mode when packaging (Ittay Dror).
