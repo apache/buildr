@@ -312,6 +312,20 @@ end
 if Buildr::Util.java_platform?
   require 'ffi'
   
+  module RakeFileUtils
+    def rake_merge_option(args, defaults)
+      defaults[:verbose] = false if defaults[:verbose] == :default
+      
+      if Hash === args.last
+        defaults.update(args.last)
+        args.pop
+      end
+      args.push defaults
+      args
+    end
+    private :rake_merge_option
+  end
+  
   module Buildr
     class ProcessStatus
       attr_reader :pid, :termsig, :stopsig, :exitstatus
