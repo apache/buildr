@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Setup Guide
+title: Installing and Running
 ---
 
 
@@ -180,25 +180,6 @@ $ jruby -S buildr
 {% endhighlight %}
 
 Run @buildr --version@ from the command line to find which version of Buildr you are using by default.  If you see @(JRuby ...)@, Buildr is running on that version of JRuby.
-
-
-h2(#conventions). Document Conventions
-
-Lines that start with @$@ are command lines, for example:
-
-{% highlight sh %}
-$ # Run Buildr
-$ buildr
-{% endhighlight %}
-
-Lines that start with @=>@ show output from the console or the result of a method, for example:
-
-{% highlight sh %}
-puts 'Hello world'
-=> "Hello world"
-{% endhighlight %}
-
-And as you guessed, everything else is Buildfile Ruby or Java code.  You can figure out which language is which.
 
 
 h2(#running). Running Buildr
