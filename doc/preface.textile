@@ -5,7 +5,8 @@ layout: preface
 p(title). !images/zbuildr.png!
 
 <ol class='toc'>
-  <li>"Getting Started":getting_started.html</li>
+  <li>"Quick Start":quick_start.html</li>
+  <li>"Installing and Running":installing.html</li>
   <li>"Projects":projects.html</li>
   <li>"Building":building.html</li>
   <li>"Artifacts":artifacts.html</li>

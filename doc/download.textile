@@ -6,7 +6,7 @@ title: Download
 
 h2(#install).  Installing Buildr
 
-*The easy way:*  The "Getting Started guide":getting_started.html will show you how to install Buildr in a matter of minutes.
+*The easy way:*  Follow the "quick installation instructions":installing.html to get Buildr up and running in a matter of minutes.
 
 
 h2(#dists).  Official & Unofficial Distributions

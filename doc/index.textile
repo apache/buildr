@@ -38,7 +38,7 @@ h2(#what).  What You Get
 * Simple way to upgrade to new versions.
 * Did we mention fast?
 
-So let's get started.  You can "read the documentation online":getting_started.html, or "download the PDF":buildr.pdf.
+So let's get started.  You can "read the documentation online":quick_start.html, or "download the PDF":buildr.pdf.
 
 
 h2(#news).  What's New
