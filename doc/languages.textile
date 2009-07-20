@@ -273,6 +273,23 @@ object StringSpecs extends Specification {
 }
 {% endhighlight %}
 
+ScalaCheck is automatically added to the classpath when Specs is used.  However, JMock, Mockito, CGlib and similar are _not_.  This is to avoid downloading extraneous artifacts which are only used by a small percentage of specifications.  To use Specs with Mockito (or any other library) in a Buildr project, simply add the appropriate dependencies to @test.with@:
+
+{% highlight ruby %}
+MOCKITO = 'org.mockito:mockito-all:jar:1.7'
+CGLIB = 'cglib:cglib:jar:2.1_3'
+ASM = 'asm:asm:jar:1.5.3'
+OBJENESIS = 'org.objenesis:objenesis:jar:1.1'
+
+define 'killer-app' do
+  ...
+  
+  test.with MOCKITO, CGLIB, ASM, OBJENESIS
+end
+{% endhighlight %}
+
+The dependencies for Specs's optional features are defined "here":http://code.google.com/p/specs/wiki/RunningSpecs#Dependencies.
+
 h4. ScalaCheck
 
 You may use ScalaCheck inside ScalaTest- and Specs-inherited classes.  Here is an example illustrating checks inside a ScalaTest suite,
