@@ -267,7 +267,7 @@ import org.specs.runner._
 object StringSpecs extends Specification {
   "empty string" should {
     "have a zero length" in {
-      ("".length) mustEqual(0)
+      "".length mustBe 0
     }
   }
 }
