@@ -40,8 +40,7 @@ module Buildr::Scala
       end
       
       def dependencies
-        ["org.scala-tools.testing:specs:jar:#{version}"] + Check.dependencies + 
-          JMock.dependencies + JUnit.dependencies
+        ["org.scala-tools.testing:specs:jar:#{version}"] + Check.dependencies + JUnit.dependencies
       end
       
       def applies_to?(project)  #:nodoc:
