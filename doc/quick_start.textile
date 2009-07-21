@@ -3,28 +3,9 @@ layout: default
 title: Quick Start
 ---
 
-This quick start guide is meant to be a _very_ simple introduction to Buildr and its most basic concepts.  However, despite its basic level, we will still manage to cover most of the concepts you will ever need to be productive with Buildr.  We will leave out some important things (like "sub-projects":projects.html), and we will over-simplify some other concepts (such as "artifacts":artifacts.html).  Nevertheless, most Buildr projects never need to go beyond the techniques contained within these pages.
+This quick start guide is meant to be a _very_ simple introduction to Buildr and its most basic concepts.  However, despite its basic level, we will still cover most of the concepts you will ever need to be productive with Buildr.  We will leave out some important things (like "sub-projects":projects.html), and we will over-simplify some other concepts (such as "artifacts":artifacts.html).  Nevertheless, most Buildr projects never need to go beyond the techniques contained within these pages.
 
-*No knowledge of Ruby is assumed.*  Buildr is designed to be a very intuitive, very easy-to-use tool.  You can create buildfiles which describe incredibly intricate projects, write custom tasks which do things far beyond Ant, and still never need to pick up more than a smattering of Ruby syntax.  With that said, if you do know Ruby, Buildr's DSL will seem very natural and welcoming, but Ruby expertise is by no means a prerequisite.  We do however assume that you have already "downloaded and installed":installing.html Buildr and are ready to put the tool to good use.
-
-
-h2(#conventions). Document Conventions
-
-Lines that start with @$@ are command lines, for example:
-
-{% highlight sh %}
-$ # Run Buildr
-$ buildr
-{% endhighlight %}
-
-Lines that start with @=>@ show output from the console or the result of a method, for example:
-
-{% highlight sh %}
-puts 'Hello world'
-=> "Hello world"
-{% endhighlight %}
-
-And as you guessed, everything else is buildfile, Ruby or Java code.  You can figure out which language is which.
+*No knowledge of Ruby is assumed.*  Buildr is designed to be a very intuitive, very easy-to-use tool.  You can create buildfiles which describe incredibly intricate projects, write custom tasks which do things far beyond Ant, and still never need to pick up more than a smattering of Ruby syntax.  With that said, if you do know Ruby, Buildr's DSL will seem very natural and welcoming.  We do assume that you have already "downloaded and installed":installing.html Buildr and are ready to put the tool to good use.
 
 
 h2(#first-project). Your First Project
@@ -37,17 +18,17 @@ define 'killer-app'
 
 h3. Compiling
 
-Of course, this isn't really giving Buildr much information.  What it can't learn from the buildfile, Buildr will learn by inspecting your directory structure.  Java sources are expected to exist within the @src/main/java/@ directory.  If Buildr finds these sources, it will automatically configure the compilation to source that directory, depositing the compilation results in the @target/classes/@ directory (all under the project root of course).  We can run this compilation using the following command:
+Of course, this isn't really giving Buildr much information.  What it can't learn from the buildfile, Buildr will figure out by inspecting your directory structure.  Java sources are expected to exist within the @src/main/java/@ directory.  If Buildr finds these sources, it will automatically configure the compilation to source that directory, depositing the results in the @target/classes/@ directory (all under the project directory of course).  We can run this compilation using the following command:
 
 {% highlight sh %}
 $ buildr compile
 {% endhighlight %}
 
-This invocation runs the @compile@ task against the current project.  The current project is determined by inspecting the current working directory for a _buildfile_.  If none is found, then the parent directory will be inspected, continuing all the way to the filesystem root if necessary.  Thus, you can "@cd@" deeply into the project directory structure and still run Buildr commands as if you were at the root.
+Information about the classpath and dependencies is described "later on":#dependencies.
 
-p(tip). By default, Buildr projects assume the Java language and the @src/main/java/@ source directory.  You can also define projects in the Scala or Groovy language (both languages support joint compilation with Java).  To use Scala, place your @.scala@ files in the @src/main/scala/@ directory and include the following invocation at the head of your buildfile: @require 'buildr/scala'@  Similarly, Groovy expects sources in the @src/main/groovy/@ directory and necessitates @require 'buildr/groovy'@.
+p(tip). By default, Buildr projects assume the Java language and the @src/main/java/@ source directory.  You can also have projects in the Scala or Groovy language (both languages support joint compilation with Java).  To use Scala, place your @.scala@ files in the @src/main/scala/@ directory and include the following invocation at the head of your buildfile: @require 'buildr/scala'@  Similarly, Groovy expects sources in the @src/main/groovy/@ directory and necessitates @require 'buildr/groovy'@ (see "languages":languages.html for more information).
 
-The @compile@ task takes care of all of the messy details of configuring and running @javac@ against the @src/main/java/@ directory.  It will also detect _any_ files which exist under the @src/main/resources/@ directory.  These resources are copied verbatim to the @target/resources/@ directory as part of the compilation task.  Buildr also performs some basic change detection to minimize compilation.  If your source files haven't changed since the last compile, then they will not be recompiled.  This change detection is fairly conservative, so if any one file changes, the entire project will be recompiled.  In practice, this isn't a problem.
+The @compile@ task will also detect _any_ files which exist under the @src/main/resources/@ directory.  These resources are copied verbatim to the @target/resources/@ directory as part of the compilation task.  Buildr also performs some basic change detection to minimize compilation.  If your source files haven't changed since the last compile, then they will not be recompiled.
 
 h3. Packaging
 
@@ -55,12 +36,12 @@ At some point, we're going to want to wrap up our classes and produce a single J
 
 {% highlight ruby %}
 define 'killer-app' do
-  project.version '0.1.0'
+  project.version = '0.1.0'
   package :jar
 end
 {% endhighlight %}
 
-The @project.version@ attribute can be any value you like.  Even non-numeric versions are perfectly acceptable (e.g. @'ikj-0.3.1-E'@).  This version, coupled with the packaging information will be used to generate a JAR file: @killer-app-0.1.0.jar@.  As would be expected, this file is placed within the @target/@ directory when the following command is run:
+The @project.version@ attribute can be any value you like.  Even non-numeric versions are perfectly acceptable (e.g. @'ikj-0.3.1-E'@).  This version -- coupled with the packaging information -- will be used to generate a JAR file: @killer-app-0.1.0.jar@.  As would be expected, this file is placed within the @target/@ directory when the following command is run:
 
 {% highlight sh %}
 $ buildr package
@@ -78,94 +59,57 @@ The @clean@ task simply removes the @target/@ directory, effectively wiping out 
 
 h3. Directory Structure
 
-As you may have noticed, Buildr does have some default notions about what a project should look like and how it should be organized.  We think that these defaults are quite nice and make for a more navigable project.  However, we do understand that not all projects are exactly alike.  Buildr's "layouts":extending.html#layouts make it possible for any project to easily change these defaults.  For example, Ant projects conventionally store Java sources in the @src/@ directory and use the @bin/@ directory for compilation results:
-
-{% highlight ruby %}
-ant_layout = Layout.new
-ant_layout[:source, :main, :java] = 'src'
-ant_layout[:target, :classes] = 'bin'
-
-define 'killer-app', :layout => ant_layout do
-  project.version '0.1.0'
-  package :jar
-end
-{% endhighlight %}
+As you may have noticed, Buildr does have some default notions about what a project should look like and how it should be organized.  We think that these defaults are quite nice and make for a more navigable project.  However, we do understand that not all projects are exactly alike.  Buildr's "layouts":extending.html#layouts make it possible for any project to easily change these defaults.  For example, this would allow you to easily migrate a project that had been based on a different directory structure, such as the @src/@ and @bin/@ convention often used by Ant.
 
 
 h2(#dependencies). Dependencies
 
-So far, we have seen how Buildr can automatically infer what amounts to dozens of lines of @build.xml@ contents, all based on a buildfile and a directory structure.  However, the best is yet to come.  Buildr also provides Maven-style dependency management.  In other words, you specify each dependent library using a string descriptor and Buildr figures out how to download and configure your classpath to use these libraries.  For example, we can configure our project to reference the "Apache Commons CLI":http://commons.apache.org/cli/ library:
+So far, we have seen how Buildr can automatically infer what amounts to dozens of lines of @build.xml@ contents, all based on a buildfile and a directory structure.  However, the best is yet to come.  Buildr also provides Maven-style dependency management (but without the long loading times!).  In other words, you specify each dependent library using a string descriptor and Buildr figures out how to download and configure your classpath (the library descriptors are just a Ruby array, therefore they are separated by commas (@,@)).  You must specify at least one remote repository so that Buildr knows from where to download these libraries.  For example, we can configure our project to reference the "Apache Commons CLI":http://commons.apache.org/cli/ library and download libraries from the Ibiblio repository:
 
 {% highlight ruby %}
+repositories.remote << 'http://www.ibiblio.org/maven2'
+
 define 'killer-app' do
-  project.version '0.1.0'
+  project.version = '0.1.0'
   compile.with 'commons-cli:commons-cli:jar:1.2'
-  
   package :jar
 end
 {% endhighlight %}
 
-If you're familiar with Maven, then this sort of dependency declaration should look quite familiar.  Well, minus the verbose XML trapings.  The general format for an artifact descriptor is _groupId_:_artifactId_:_packageType_:_version_.  The _packageType_ bit is almost always @jar@, just as a general rule of thumb.  Any Maven artifacts included in this fashion will be retrieved from the "primary Maven2 repository":http://repo1.maven.org/maven2 and installed in your local repository (@~/.m2/repository/@).
+This sort of dependency declaration should look quite familiar if you are at all familiar with Maven.  The general format for an artifact descriptor is _groupId:artifactId:packageType:version_.  Any Maven artifacts included in this fashion will be retrieved from the "list of remote repositories":artifacts.html#repositories (in this case, Ibiblio) and installed in your local repository at @~/.m2/repository/@.
 
-If you're not familiar with Maven, this syntax might seem a little bit imposing.  In general, the first field represents the project which produces the library.  For example, the Apache Wicket projects uses the groupId "@org.apache.wicket@".  The second field of the descriptor represents the specific project.  This is necessary as many larger projects -- such as Apache Wicket -- publish more than one Maven artifact under a single groupId.  Thus, the main Wicket library would have a groupId and artifactId of "@org.apache.wicket:wicket@", while the Guice integration layer would be "@org.apache.wicket:wicket-guice@".  As for the third field, you can basically think "@jar@" here and forget about it.  You will almost never need to specify a different artifact package type.  The final field is the version number.  I happen to know that the latest version of the Commons CLI library is "1.2", so that's the version I picked.  I could have just as easily chosen an older version (e.g. "1.1").
+p(tip). You can search the global repository of artifacts at sites like "MvnBrowser":http://www.mvnbrowser.com.  Simply enter the name of the library you are looking for, and the search should pull up the groupId, artifactId and a list of available versions.
 
-p(tip). You can search the global repository of artifacts at sites like "MvnRepository":http://mvnrepository.com  Simply enter the name of the library you are looking for, and the search should pull up the groupId, artifactId and a list of available versions.
-
-Buildr uses the artifact descriptor and its "list of remote repositories":artifacts.html#repositories to download the relevant JAR file(s) and cache them locally.  Specifically, every downloaded artifact is installed in your local repository, by default located in the @~/.m2/repository/@ directory (yes, even on Windows).  Every time you run the @compile@ task, Buildr will check to make sure you have the correct version of every artifact mentioned in your buildfile.  It will then place the relevant JAR files on the classpath for the @javac@ compiler, allowing you to use the libraries in your project.  In one line of Ruby, Buildr handles everything that Ivy can do in twenty lines of XML.
-
-Unfortunately, not all libraries are quite as simple as Commons CLI.  In particular, many libraries, such as Apache Wicket, have dependencies of their own.  While we may be able to _compile_ against Apache Wicket without these extra libraries on our classpath, we cannot actually _run_ our application without its transitive dependencies.
+Unfortunately, not all libraries are quite as simple as Commons CLI.  Many libraries (such as Apache Wicket) have dependencies of their own.  While we may be able to _compile_ against Apache Wicket without these extra libraries on our classpath, we cannot actually _run_ our application without its transitive dependencies. To avoid tracking down each of these dependencies and adding them manually, we can simply use the @transitive@ directive (this is how Maven behaves by default):
 
 {% highlight ruby %}
-define 'killer-app' do
-  project.version '0.1.0'
-  compile.with 'org.apache.wicket:wicket:jar:1.4-rc6'
-  
-  package :jar
-end
-{% endhighlight %}
+repositories.remote << 'http://www.ibiblio.org/maven2'
 
-This buildfile directs Buildr to download the Apache Wicket JAR file and _only_ the Apache Wicket JAR.  However, Wicket depends upon "SLF4J":http://www.slf4j.org, which will not be downloaded.  There are two ways of rectifying this situation.  We can either track down all of Wicket's dependencies, their dependencies's dependencies, and so on, adding them all to our buildfile; or we can simply use the @transitive@ directive:
-
-{% highlight ruby %}
 define 'killer-app' do
-  project.version '0.1.0'
+  project.version = '0.1.0'
   compile.with transitive('org.apache.wicket:wicket:jar:1.4-rc6')
-  
   package :jar
 end
 {% endhighlight %}
 
-The @transitive@ directive instructs Buildr to recursively traverse the entire dependency graph, starting with Apache Wicket and passing through all of its dependencies until a complete list of artifacts has been compiled.  Buildr then assigns that list to the @compile.with@ property, which downloads each and every one of these artifacts, installing them into your local repository and placing them on the classpath for the @compile@ task.  This is how Maven behaves by default.
-
-We're still not quite done though.  I happen to know that Apache Wicket does not specify a particular backend for SLF4J.  Thus, despite the fact that we have installed all of its @transitive@ dependencies, we still must explicitly notify Buildr about one other artifact.  The completed buildfile looks like the following:
+The @compile.with@ property accepts a full array of comma-separated artifacts, making it possible to specify any number of dependencies as necessary.  Of course, such a long list of verbose string descriptors could get very tiresome and messy.  For this reason, it is conventional to assign each dependency to a constant (e.g. @WICKET@) which is declared just above the project in the buildfile and passed to @compile.with@ in a clean, easy-to-read style:
 
 {% highlight ruby %}
-define 'killer-app' do
-  project.version '0.1.0'
-  compile.with transitive('org.apache.wicket:wicket:jar:1.4-rc6'),
-               'org.slf4j:slf4j-jdk14:jar:1.5.8'
-  
-  package :jar
-end
-{% endhighlight %}
+repositories.remote << 'http://www.ibiblio.org/maven2'
 
-The linebreak here is merely for formatting reasons, the comma (@,@) is really all that is necessary.  As you can see, the @compile.with@ property accepts a full list of artifacts, making it possible to specify any number of dependencies as necessary.  Of course, such a long list of verbose string descriptors could get very tiresome and messy.  For this reason, it is conventional to assign each of your dependencies to a constant (e.g. @WICKET@) which is declared just above the project in the buildfile and passed to @compile.with@ in a clean, easy-to-read style:
-
-{% highlight ruby %}
 WICKET = transitive('org.apache.wicket:wicket:jar:1.4-rc6')
 SLF4J = 'org.slf4j:slf4j-jdk14:jar:1.5.8'
 
 define 'killer-app' do
-  project.version '0.1.0'
+  project.version = '0.1.0'
   compile.with WICKET, SLF4J
-  
   package :jar
 end
 {% endhighlight %}
 
-Unfortunate as it may seem, not all libraries are available in Maven repositories.  While most of the major libraries (e.g. Hibernate, Spring, etc) are kept updated by intrepid volunteers, some of the more obscure frameworks are left out in the cold.  An example of one such framework is "DBPool":http://www.snaq.net/java/DBPool, a very fast connection pooling framework designed to integrate with JDBC.  However, like most Java libraries, DBPool does allow the download of a zip archive which contains the JAR file, as well as some documentation and perhaps a license or two.  
+Unfortunate as it may seem, not all libraries are available in Maven repositories.  While most of the major libraries (e.g. Hibernate, Spring, etc) are kept updated by intrepid volunteers, some of the more obscure frameworks are left out in the cold.  An example of one such framework is "DBPool":http://www.snaq.net/java/DBPool, a very fast connection pool designed to integrate with JDBC.  However, like most Java libraries, DBPool does provide a zip archive which contains the JAR file, as well as some documentation and perhaps a license or two.
 
-Almost magically, we can simply instruct Buildr to get the DBPool artifact from this URL.  Buildr will treat this download just like any other artifact, downloading it as necessary when requried by the @compile@ task.  However, unlike a normal Maven artifact, Buildr will do some extra processing once the download is complete.  It will actually dig into the downloaded archive, detect and extract the JAR file, installing it into the local repository just like any other artifact:
+Almost magically, we can instruct Buildr to get the DBPool artifact from this URL.  Buildr will treat this download just like any other artifact, retrieving it when requried by the @compile@ task.  However, unlike a normal Maven artifact, Buildr will do some extra processing once the download is complete.  It will actually dig into the downloaded archive, detect and extract the JAR file, installing it into the local repository just like any other artifact:
 
 {% highlight ruby %}
 DBPOOL = 'net.snaq:dbpool:jar:4.8.3'
@@ -174,7 +118,6 @@ download artifact(DBPOOL) => 'http://www.snaq.net/java/DBPool/DBPool_v4.8.3.zip'
 define 'killer-app' do
   project.version '0.1.0'
   compile.with DBPool
-  
   package :jar
 end
 {% endhighlight %}
@@ -184,27 +127,19 @@ This is one area where Buildr's dependency management vastly excedes Maven's.  W
 
 h2(#testing). Testing
 
-Buildr supports auto-magical integration with a number of mainstream testing frameworks.  For Java, this includes the ubiquitus JUnit4, as well as TestNG and a number of others.  Scala supports Specs and ScalaTest, while Groovy supports EasyB.  Configuration is as simple as placing our test sources in the appropriate directory.  In the case of JUnit4, this would be @src/test/java/@.  Once these tests are in place, we can run them using the @test@ task:
+Buildr supports auto-magical integration with a number of mainstream testing frameworks.  For Java, this includes the ubiquitus JUnit4, as well as TestNG and a number of others.  Scala supports Specs and ScalaTest, while Groovy supports EasyB.  Configuration is as simple as placing your test sources in the appropriate directory.  In the case of JUnit or TestNG, this would be @src/test/java/@.  Once these tests are in place, we can run them using the @test@ task:
 
 {% highlight sh %}
 $ buildr test
 {% endhighlight %}
 
-Actually, we can also use the @build@ task to accomplish this same goal.  The @build@ task depends upon @test@, which in turn depends upon @compile@.  We can even save a few keystrokes by exploiting the fact that @build@ is the default task, chosen when no other task is specified:
-
-{% highlight sh %}
-$ buildr
-{% endhighlight %}
-
-When the @test@ task runs, it will ensure that your main sources are compiled, as well as the tests themselves.  In the case of JUnit4, test classes are auto-detected based on which interface they extend (@TestCase@).  These tests will be invoked using the special test classpath.  This classpath includes all of the dependencies passed to @compile.with@ along with anything required for testing.  Thus, Buildr will actually go out and download JUnit 4.5 (if necessary) and place that JAR on the classpath in order to run your tests.  It is also possible to add artifacts specifically required for testing.  So, if your tests make use of the Commons Collections library, but your main sources do not, you can include that dependency only for the tests by using the @test.with@ property.  This functions identically to @compile.with@:
+When the @test@ task runs, it will ensure that your main sources are compiled, as well as the tests themselves.  In the case of JUnit4, test classes are auto-detected based on which base class they extend (@TestCase@).  These tests will be invoked using the special test classpath.  This classpath includes all of the dependencies passed to @compile.with@ along with the dependencies required for testing.  Thus, Buildr will actually go out and download JUnit 4.5 (if necessary) and place that JAR on the classpath in order to run your tests.  It is also possible to add artifacts specifically required for testing.  So, if your tests make use of the Commons Collections library, but your main sources do not, you can include that dependency only for the tests by using the @test.with@ property.  This functions identically to @compile.with@:
 
 {% highlight ruby %}
 define 'killer-app' do
-  project.version '0.1.0'
-  
+  project.version = '0.1.0'
   compile.with 'commons-cli:commons-cli:jar:1.2'
   test.with 'commons-collections:commons-collections:jar:3.2'
-  
   package :jar
 end
 {% endhighlight %}
@@ -213,15 +148,13 @@ Of course, not everyone _likes_ JUnit4.  As mentioned previously, Buildr support
 
 {% highlight ruby %}
 define 'killer-app' do
-  project.version '0.1.0'
-  
+  project.version = '0.1.0'
+  compile.with 'commons-cli:commons-cli:jar:1.2'
+  test.with 'commons-collections:commons-collections:jar:3.2'
   test.using :testng
-  
   package :jar
 end
 {% endhighlight %}
-
-Once again, tests are assumed to be in the @src/test/java/@ directory.  However, this time, the auto-detection is based on whether or not a class has the @\@Test@ annotation.
 
 Note that only one test framework per-project may be used.  This may seem like an obvious restriction given that both frameworks introduced so far have used the same directory, but other frameworks such as Specs and EasyB do not follow the same convention.  In cases of ambiguity (for example, when tests are present in both @src/test/java/@ _and_ @src/spec/scala/@), only one test framework will be chosen, but this choice is not well-defined.  When in doubt, explicitly specify the test framework with the @test.using@ property.  This overrides Buildr's auto-detection and ensures sane behavior.
 
@@ -234,8 +167,7 @@ If there is one area in which Buildr excels, it is defining custom tasks.  This 
 
 {% highlight ruby %}
 define 'killer-app' do
-  project.version '0.1.0'
-  
+  project.version = '0.1.0'
   package :jar
   
   task :run => :compile do
