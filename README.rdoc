@@ -27,7 +27,7 @@ http://buildr.apache.org/
 
 === RTFM
 
-* Buildr documentation: http://buildr.apache.org/
+* Buildr documentation: http://buildr.apache.org
 * More about Rake: http://docs.rubyrake.org
 * Antwrap documentation: http://antwrap.rubyforge.org
 
