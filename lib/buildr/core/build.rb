@@ -369,7 +369,13 @@ module Buildr
   class GitRelease < Release
     class << self
       def applies_to?
-        File.exist?('.git/config')
+        if File.exist? '.git/config'
+          true
+        else
+          File.expand_path(Dir.pwd) != '/' && Dir.chdir('..') do
+            applies_to?
+          end
+        end
       end
     end
 
