@@ -340,7 +340,9 @@ describe Release do
     end
 
     it 'should return nil if no known release process' do
-      Release.find.should be_nil
+      Dir.chdir(Dir.tmpdir) do
+        Release.find.should be_nil
+      end
     end
 
     after :each do
@@ -507,7 +509,9 @@ describe GitRelease do
 
   describe '#applies_to?' do
     it 'should reject a non-git repo' do
-      GitRelease.applies_to?.should be_false
+      Dir.chdir(Dir.tmpdir) do
+        GitRelease.applies_to?.should be_false
+      end
     end
 
     it 'should accept a git repo' do
