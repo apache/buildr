@@ -46,7 +46,7 @@ module Buildr
       
       JRUBY_VERSION = '1.3.1'
       
-      class << self
+      class << self        
         def lang
           :none
         end
@@ -97,7 +97,7 @@ module Buildr
           }
         else
           cp = project.compile.dependencies + [
-              "org.jruby:jruby-complete:jar:#{JRUBY_VERSION}",
+              jruby_artifact,
               project.path_to(:target, :classes)
             ]
           
@@ -110,8 +110,14 @@ module Buildr
       end
     private
       def jruby_home
-        @home ||= ENV['JRUBY_HOME']
+        @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : ENV['JRUBY_HOME']
       end
+
+      def jruby_artifact
+        version = Buildr.settings.build['jruby'] || JRUBY_VERSION
+        "org.jruby:jruby-complete:jar:#{version}"
+      end
+    
     end
     
     class Clojure < Base
