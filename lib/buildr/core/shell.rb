@@ -4,6 +4,43 @@ require 'buildr/core/util'
 
 module Buildr
   module Shell
+
+    class BeanShell < Base
+      
+      include JavaRebel
+      
+      VERSION = '2.0b4'
+
+      class << self
+        def version
+          Buildr.settings.build['bsh'] || VERSION
+        end
+        
+        def artifact
+          "org.beanshell:bsh:jar:#{version}"
+        end
+        
+        def lang
+          :java
+        end
+        
+        def to_sym
+          :bsh
+        end
+      end
+      
+      def launch        
+        cp = project.compile.dependencies + [Buildr.artifact(BeanShell.artifact)]
+        Java::Commands.java 'bsh.Console', {
+          :properties => rebel_props(project),
+          :classpath => cp,
+          :java_args => rebel_args
+        }
+      end
+      
+    end # BeanShell
+
+        
     class JIRB < Base
       include JavaRebel
       
@@ -134,5 +171,6 @@ module Buildr
   end
 end
 
+Buildr::ShellProviders << Buildr::Shell::BeanShell
 Buildr::ShellProviders << Buildr::Shell::JIRB
 Buildr::ShellProviders << Buildr::Shell::Clojure
