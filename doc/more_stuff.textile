@@ -21,7 +21,7 @@ These tools are alternatively known as "REPLs" (Read, Eval, Print Loop), a term 
 
 Unfortunately, for such a tool to be useful in Java, Scala or Groovy development, it must have access to the @CLASSPATH@, not only the compiled project binaries, but also its full list of dependencies.  While it is usually possible with such tools to specify the classpath upon startup (e.g. the @-cp@ switch for the Scala shell), this can get extremely tedious for project's with more dependencies, especially when some of these dependencies are defined using @transitive@ artifacts.
 
-Buildr is capable of easing this workflow by providing full support for the configuration and launch of interactive shells.  In fact, if your project uses either Scala or Groovy, the relevant shell may be launched simply by invoking the @shell@ task:
+Buildr is capable of easing this workflow by providing full support for the configuration and launch of interactive shells, the relevant shell may be launched simply by invoking the @shell@ task:
 
 {% highlight sh %}
 $ buildr shell
@@ -37,7 +37,7 @@ $ buildr foo:bar:shell
 
 h3. Supported Shells
 
-By default, Buildr will open the interactive shell which corresponds to your project's language.  Thus, if your project is using Groovy, it will invoke the @groovysh@ command, configured with the appropriate classpath.  If your project is using Scala, then the @shell@ task will invoke the @scala@ command.  Unfortunately, the Java language does not define an interactive shell of any kind, meaning that there is no sane default if your project exclusively uses Java.
+By default, Buildr will open the interactive shell which corresponds to your project's language.  Thus, if your project is using Groovy, it will invoke the @groovysh@ command, configured with the appropriate classpath.  If your project is using Scala, then the @shell@ task will invoke the @scala@ command.  Unfortunately, the Java language does not define an interactive shell of any kind, however for those projects using exclusively the Java language, Buildr will use the "BeanShell":http://www.beanshell.org/manual/quickstart.html#The_BeanShell_GUI console.
 
 However, you may still wish to exploit the advantages of an interactive shell from some other JVM language even while working in Java.  Alternatively, you may want to use some shell other than the default even when working in a language which has its own.  There are two ways to acheive this aim.  The quickest way is to explicitly specify the relevant shell at the call-site:
 
@@ -70,6 +70,7 @@ $ buildr shell
 Buildr supports several different shell providers, and the framework is flexible enough that additional support can be added almost trivially.  The following table gives the complete list of supported shells, their corresponding @shell.using@ descriptor and the language for which they are the default (if applicable):
 
 |_. Shell Name        |_. Descriptor       |_. Language       |
+| BeanShell Console   | @:bsh@             | Java             |
 | Clojure REPL        | @:clj@             | *N/A*            |
 | GroovySH            | @:groovysh@        | Groovy           |
 | JRuby IRB           | @:jirb@            | *N/A*            |
