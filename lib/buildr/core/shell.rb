@@ -29,8 +29,8 @@ module Buildr
         end
       end
       
-      def launch        
-        cp = project.compile.dependencies + [Buildr.artifact(BeanShell.artifact)]
+      def launch
+        cp = project.compile.dependencies + [project.path_to(:target, :classes), Buildr.artifact(BeanShell.artifact)]
         Java::Commands.java 'bsh.Console', {
           :properties => rebel_props(project),
           :classpath => cp,
