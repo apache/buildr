@@ -11,6 +11,7 @@
 * Change: Updated to Rake 0.8.7, RSpec 1.2.6 and JRuby-openssl 0.5.1.
 * Fixed:  BUILDR-292 Workaround for JRUBY-3381 on FileUtils.mv
 * Fixed:  BUILDR-23 Support for setting file mode when packaging (Ittay Dror).
+* Fixed:  BUILDR-282 release goal should not strip leading '0' digits from version numbers.
 * Fixed:  BUILDR-290 Dependencies cannot be downloaded over SSL.
 * Fixed:  BUILDR-291 Local tasks do not support arguments (Ittay Dror).
 
