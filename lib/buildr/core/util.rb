@@ -324,7 +324,7 @@ if Buildr::Util.java_platform?
         dir_from = File.dirname(from)
         if File.stat(dir_from).dev != File.stat(dir_to).dev
           cp from, to, options
-          rm to, options
+          rm from, options
         else
           __mv_native from, to, options
         end
