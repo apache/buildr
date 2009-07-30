@@ -311,7 +311,7 @@ module Buildr
     # for the release buildfile.
     def with_release_candidate_version
       release_candidate_buildfile = Buildr.application.buildfile.to_s + '.next'
-      release_candidate_buildfile_contents = change_version { |version| version[-1] = version[-1].to_i }
+      release_candidate_buildfile_contents = change_version { |version| version[-1] = version[-1].split('-')[0] }
       File.open(release_candidate_buildfile, 'w') { |file| file.write release_candidate_buildfile_contents }
       begin
         yield release_candidate_buildfile
@@ -348,7 +348,7 @@ module Buildr
 
     # Move the version to next and save the updated buildfile
     def update_buildfile
-      buildfile = change_version { |version| version[-1] = (version[-1].to_i + 1).to_s + '-SNAPSHOT' }
+      buildfile = change_version { |version| version[-1] = sprintf("%0#{version[-1].size}d", version[-1].to_i + 1) + '-SNAPSHOT' }
       File.open(Buildr.application.buildfile.to_s, 'w') { |file| file.write buildfile }
     end
 

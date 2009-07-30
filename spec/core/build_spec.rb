@@ -383,6 +383,13 @@ describe 'a release process', :shared=>true do
       file('buildfile').should contain('VERSION_NUMBER = "1.0.1-SNAPSHOT"')
     end
 
+    it 'should keep leading zeros in the next version number' do
+      write 'buildfile', "VERSION_NUMBER = '1.0.001-SNAPSHOT'"
+      @release.stub!(:tag_release)
+      @release.make
+      file('buildfile').should contain('VERSION_NUMBER = "1.0.002-SNAPSHOT"')
+    end
+
     it 'should commit the updated buildfile' do
       @release.stub!(:tag_release)
       @release.make
