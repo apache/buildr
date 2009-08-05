@@ -20,13 +20,12 @@ require 'buildr/packaging'
 
 module Buildr
   module Eclipse #:nodoc:
-
     include Extension
 
     def eclipse
-        Eclipse.instance
+      Eclipse.instance
     end
-     
+
     class Eclipse
       include Singleton
       
@@ -48,7 +47,7 @@ module Buildr
     first_time do
       # Global task "eclipse" generates artifacts for all projects.
       desc 'Generate Eclipse artifacts for all projects'
-      Project.local_task 'eclipse'=>'artifacts'
+      Project.local_task('eclipse'=>'artifacts') { |name|  "Generating Eclipse project for #{name}" }
     end
 
     before_define do |project|
@@ -145,6 +144,7 @@ module Buildr
 
     end
 
+
     # Writes 'classpathentry' tags in an xml file.
     # It converts tasks to paths.
     # It converts absolute paths to relative paths.
@@ -236,8 +236,6 @@ module Buildr
     end
 
   end
-  
-  include Eclipse
   
 end # module Buildr
 
