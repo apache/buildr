@@ -312,8 +312,10 @@ describe Buildr::Eclipse do
   
   describe 'maven2 repository variable' do
     it 'should be configurable' do
-      eclipse.options.m2_repo_var = 'PROJ_REPO'
-      define('foo') { compile.using(:javac).with('com.example:library:jar:2.0') }
+      define('foo') do
+        eclipse.options.m2_repo_var = 'PROJ_REPO'
+        compile.using(:javac).with('com.example:library:jar:2.0') 
+      end
       artifact('com.example:library:jar:2.0') { |task| write task.name }
 
       task('eclipse').invoke
