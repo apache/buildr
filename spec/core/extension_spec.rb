@@ -27,29 +27,37 @@ describe Extension do
   end
   
   it 'should call before_define and after_define in order when project is defined' do
-    TestExtension.initialized do |extension|
-      extension.should_receive(:before_define_called).once.ordered
-      extension.should_receive(:after_define_called).once.ordered
+    begin
+      TestExtension.initialized do |extension|
+        extension.should_receive(:before_define_called).once.ordered
+        extension.should_receive(:after_define_called).once.ordered
+      end
+      class Buildr::Project
+        include TestExtension
+      end
+      define('foo')
+    ensure
+      TestExtension.initialized { |ignore| }
     end
-    class Buildr::Project
-      include TestExtension
-    end
-    define('foo')
   end
 
   it 'should call before_define and after_define for each project defined' do
-    extensions = 0
-    TestExtension.initialized do |extension|
-      extensions += 1
-      extension.should_receive(:before_define_called).once.ordered
-      extension.should_receive(:after_define_called).once.ordered
+    begin
+      extensions = 0
+      TestExtension.initialized do |extension|
+        extensions += 1
+        extension.should_receive(:before_define_called).once.ordered
+        extension.should_receive(:after_define_called).once.ordered
+      end
+      class Buildr::Project
+        include TestExtension
+      end
+      define('foo')
+      define('bar')
+      extensions.should equal(2)
+    ensure  
+      TestExtension.initialized { |ignore| }
     end
-    class Buildr::Project
-      include TestExtension
-    end
-    define('foo')
-    define('bar')
-    extensions.should equal(2)
   end
 end
 
