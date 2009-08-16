@@ -91,6 +91,14 @@ If you want to learn more about Git, you can start by watching Scott Chacon’s 
 
 And keep this "Git cheat sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet-medium.png close at hand. Very useful.
 
+h4. GitHub
+
+You are also welcome to fork or clone the "Buildr repository on GitHub":http://github.com/apache/buildr.  This repository is just an exact mirror of the official Apache Git clone referenced above (updated every 30 minutes).  Some of the core committers also maintain their own forks of Buildr on GitHub, often containing experimental and in-progress development slated for eventual inclusion into the SVN.  For reference, they are listed below:
+
+* "Assaf Arkin":http://github.com/assaf/buildr
+* "Victor Hugo Borja":http://github.com/vic/buildr
+* "Daniel Spiewak":http://github.com/djspiewak/buildr
+
 h3. Working with Source Code
 
 To install Buildr from the source directory:
