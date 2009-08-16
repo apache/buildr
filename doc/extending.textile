@@ -46,10 +46,17 @@ I prefer the second.  It's easier to look at the Buildfile and understand what i
 
 But just using functions is not always enough.  You end up with a Buildfile containing a lot of code that clearly doesn't belong there.  For starters, I recommend putting it in the @tasks@ directory.  Write it into a file with a @.rake@ extension and place that in the @tasks@ directory next to the Buildfile.  Buildr will automatically pick it up and load it for you.
 
-If you want to share these pre-canned definitions between projects, you have a few more options.  You can share the @tasks@ directory using SVN externals. Another mechanism with better version control is to package all these tasks, functions and modules into a "Gem":http://rubygems.org/ and require it from your Buildfile.  You can run your own internal Gem server for that.
+If you want to share these pre-canned definitions between projects, you have a few more options.  You can share the @tasks@ directory using SVN externals, Git modules, or whichever cross-repository feature your source control system supports. Another mechanism with better version control is to package all these tasks, functions and modules into a "Gem":http://rubygems.org/ and require it from your Buildfile.  You can run your own internal Gem server for that.
 
-For individual task files, you can also use "Sake":http://errtheblog.com/post/6069 for system-wide Rake tasks deployment.
+To summarize, there are several common ways to distribute extensions: 
+* Put them in the same place (e.g. @~/.buildr@) and require them from your
+@buildfile@
+* Put them directly in the project, typically under the @tasks@ directory.
+* Put them in a shared code repository, and link to them from your project's @tasks@ directory
+* As Ruby gems and specify which gems are used in the settings file
 
+You can also get creative and devise your own way to distribute extensions.  
+"Sake":http://errtheblog.com/post/6069 is a good example of such initiative that lets you deploy Rake tasks on a system-wide basis.
 
 h2(#extensions).  Creating Extensions
 
@@ -119,6 +126,7 @@ class Buildr::Project
 end
 {% endhighlight %}
 
+You may find interesting that this Extension API is used pervasively inside Buildr itself.  Many of the standard tasks such as @compile@, @test@, @package@  are extensions to a very small core.
 
 h2(#layouts).  Using Alternative Layouts
 
