@@ -80,6 +80,13 @@ describe Buildr::Application do
       lambda { Buildr.application.send :load_buildfile }.should show(%r{(in .*, spec)})
     end
   end
+  
+  describe 'options' do
+    it "should have 'tasks' as the sole default rakelib" do
+      Buildr.application.send(:handle_options)
+      Buildr.application.options.rakelib.should == ['tasks']
+    end
+  end
 
   describe 'gems' do
     before do
@@ -122,7 +129,6 @@ describe Buildr::Application do
       Buildr.application.gems.each { |gem| gem.version.should eql(Gem.loaded_specs[gem.name].version) }
     end
   end
-
 
   describe 'load_gems' do
     before do
@@ -231,6 +237,82 @@ describe Buildr::Application do
       write 'build.yaml', 'gems: foo >=2.0 !=2.1'
       Gem::SourceInfoCache.should_receive(:search).with(Gem::Dependency.new('foo', ['>=2.0', '!=2.1'])).and_return([])
       lambda { Buildr.application.load_gems }.should raise_error
+    end
+  end
+
+  describe 'load_tasks' do
+    before do
+      class << Buildr.application
+        public :load_tasks
+      end
+      @original_loaded_features = $LOADED_FEATURES.dup
+      Buildr.application.options.rakelib = ["tasks"]
+    end
+    
+    after do
+      $taskfiles = nil
+      ($LOADED_FEATURES - @original_loaded_features).each do |new_load|
+        $LOADED_FEATURES.delete(new_load)
+      end
+    end
+    
+    def write_task(filename)
+      write filename, <<-RUBY
+        $taskfiles ||= []
+        $taskfiles << __FILE__
+      RUBY
+    end
+    
+    def loaded_tasks
+      @loaded ||= Buildr.application.load_tasks
+      $taskfiles
+    end
+    
+    it "should load {options.rakelib}/foo.rake" do
+      write_task 'tasks/foo.rake'
+      loaded_tasks.should have(1).task
+      loaded_tasks.first.should =~ %r{tasks/foo\.rake$}
+    end
+    
+    it 'should load all *.rake files from the rakelib' do
+      write_task 'tasks/bar.rake'
+      write_task 'tasks/quux.rake'
+      loaded_tasks.should have(2).tasks
+    end
+    
+    it 'should not load files which do not have the .rake extension' do
+      write_task 'tasks/foo.rb'
+      write_task 'tasks/bar.rake'
+      loaded_tasks.should have(1).task
+      loaded_tasks.first.should =~ %r{tasks/bar\.rake$}
+    end
+    
+    it 'should load files only from the directory specified in the rakelib option' do
+      Buildr.application.options.rakelib = ['extensions']
+      write_task 'extensions/amp.rake'
+      write_task 'tasks/bar.rake'
+      write_task 'extensions/foo.rake'
+      loaded_tasks.should have(2).tasks
+      loaded_tasks[0].should =~ %r{extensions/amp\.rake$}
+      loaded_tasks[1].should =~ %r{extensions/foo\.rake$}
+    end
+    
+    it 'should load files from all the directories specified in the rakelib option' do
+      Buildr.application.options.rakelib = ['ext', 'more', 'tasks']
+      write_task 'ext/foo.rake'
+      write_task 'tasks/bar.rake'
+      write_task 'tasks/zeb.rake'
+      write_task 'more/baz.rake'
+      loaded_tasks.should have(4).tasks
+    end
+    
+    it 'should not load files from the rakelib more than once' do
+      write_task 'tasks/new_one.rake'
+      write_task 'tasks/already.rake'
+      $LOADED_FEATURES << 'tasks/already.rake'
+      
+      loaded_tasks.should have(1).task
+      loaded_tasks.first.should =~ %r{tasks/new_one\.rake$}
     end
   end
 

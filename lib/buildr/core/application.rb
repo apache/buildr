@@ -396,11 +396,6 @@ module Buildr
     def raw_load_buildfile # replaces raw_load_rakefile
       puts "(in #{Dir.pwd}, #{environment})" unless options.silent
       load File.expand_path(@rakefile) if @rakefile && @rakefile != ''
-      options.rakelib.each do |rlib|
-        glob("#{rlib}/*.rake") do |name|
-          add_import name
-        end
-      end
       load_imports
       Buildr.projects
     end
@@ -456,6 +451,8 @@ module Buildr
       files = [ File.expand_path('buildr.rb', ENV['HOME']), 'buildr.rb' ].select { |file| File.exist?(file) }
       files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
         select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
+      files += (options.rakelib || []).collect { |rlib| Dir["#{rlib}/*.rake"] }.flatten
+
       files.each do |file|
         unless $LOADED_FEATURES.include?(file)
           load file
