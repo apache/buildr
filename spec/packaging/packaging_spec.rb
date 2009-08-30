@@ -299,6 +299,35 @@ POM
     lambda { task('artifacts').invoke }.should_not raise_error
   end
 
+  describe "existing package access" do
+    it "should return the same instance for identical optionless invocations" do
+      define 'foo', :version => '1.0' do
+        package(:zip).should equal(package(:zip))
+      end
+      project('foo').packages.size.should == 1
+    end
+
+    it "should return the exactly matching package identical invocations with options" do
+      define 'foo', :version => '1.0' do
+        package(:zip, :id => 'src')
+        package(:zip, :id => 'bin')
+      end
+      project('foo').package(:zip, :id => 'src').should equal(project('foo').packages.first)
+      project('foo').package(:zip, :id => 'bin').should equal(project('foo').packages.last)
+      project('foo').packages.size.should == 2
+    end
+
+    it "should return the first of the same type for subsequent optionless invocations" do
+      define 'foo', :version => '1.0' do
+        package(:zip, :file => 'override.zip')
+        package(:jar, :file => 'another.jar')
+      end
+      project('foo').package(:zip).name.should == 'override.zip'
+      project('foo').package(:jar).name.should == 'another.jar'
+      project('foo').packages.size.should == 2
+    end
+  end
+
 end
 
 

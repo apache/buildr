@@ -941,7 +941,7 @@ describe Packaging, 'ear' do
   it 'should update EJB component classpath to include libraries' do
     define 'foo', :version=>'1.0' do
       package(:ear) << package(:jar, :id=>'lib1') << package(:jar, :id=>'lib2')
-      package(:ear).add :ejb=>package(:jar)
+      package(:ear).add :ejb=>package(:jar, :id=>'foo')
     end
     inspect_classpath 'ejb/foo-1.0.jar' do |classpath|
       classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
@@ -951,7 +951,7 @@ describe Packaging, 'ear' do
   it 'should update JAR component classpath to include libraries' do
     define 'foo', :version=>'1.0' do
       package(:ear) << package(:jar, :id=>'lib1') << package(:jar, :id=>'lib2')
-      package(:ear).add :jar=>package(:jar)
+      package(:ear).add :jar=>package(:jar, :id=>'foo')
     end
     inspect_classpath 'jar/foo-1.0.jar' do |classpath|
       classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
@@ -961,7 +961,7 @@ describe Packaging, 'ear' do
   it 'should deal with very long classpaths' do
     define 'foo', :version=>'1.0' do
       20.times { |i| package(:ear) << package(:jar, :id=>"lib#{i}") }
-      package(:ear).add :jar=>package(:jar)
+      package(:ear).add :jar=>package(:jar, :id=>'foo')
     end
     inspect_classpath 'jar/foo-1.0.jar' do |classpath|
       classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')

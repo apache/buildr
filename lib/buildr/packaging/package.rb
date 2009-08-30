@@ -129,6 +129,7 @@ module Buildr
     #   end
     def package(*args)
       spec = Hash === args.last ? args.pop.dup : {}
+      no_options = spec.empty? # since spec is mutated
       if spec[:file]
         rake_check_options spec, :file, :type
         spec[:type] = args.shift || spec[:type] || spec[:file].split('.').last
@@ -147,7 +148,10 @@ module Buildr
           spec = send("package_as_#{spec[:type]}_spec", spec) if respond_to?("package_as_#{spec[:type]}_spec")
           file_name = path_to(:target, Artifact.hash_to_file_name(spec))
         end
-        package = packages.find { |pkg| pkg.name == file_name } || packager.call(file_name)
+
+        package = (no_options && packages.detect { |pkg| pkg.type == spec[:type] }) ||
+          packages.find { |pkg| pkg.name == file_name }                             ||
+          packager.call(file_name)
       else
         Buildr.application.deprecated "We changed the way package_as methods are implemented.  See the package method documentation for more details."
         file_name ||= path_to(:target, Artifact.hash_to_file_name(spec))
