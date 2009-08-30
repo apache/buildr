@@ -1,5 +1,7 @@
 1.3.5 (Pending)
 * Fixed:  BUILDR-278 tasks/*.rake files are loaded after the buildfile (Rhett Sutphin)
+* Fixed:  BUILDR-304 Referencing an existing package task using the package
+	        method fails if the package has a custom filename (Rhett Sutphin)
 * Added:  BeanShell as default shell for java projects, bsh is small and it's
           syntax provides the closest to an interpreted java. The BeanShell
           console includes a graphical class browser. Shell is named :bsh
