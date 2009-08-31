@@ -47,7 +47,7 @@ begin
 rescue LoadError
   puts "Buildr uses the mojombo-jekyll to generate the Web site. You can install it by running rake doc:setup"
   task 'doc:setup' do
-    install_gem 'mojombo-jekyll', :source=>'http://gems.github.com', :version=>'0.5.1'
+    install_gem 'mojombo-jekyll', :source=>'http://gems.github.com', :version=>'0.5.4'
     if `pygmentize -V`.empty?
       args = %w{easy_install Pygments}
       args.unshift 'sudo' unless Config::CONFIG['host_os'] =~ /windows/
