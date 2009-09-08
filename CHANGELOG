@@ -1,4 +1,5 @@
 1.3.5 (Pending)
+* Fixed:  BUILDR-307 Failures are not reported correctly for ScalaTest (Jeremie Lenfant-Engelmann)
 * Fixed:  BUILDR-278 tasks/*.rake files are loaded after the buildfile (Rhett Sutphin)
 * Fixed:  BUILDR-304 Referencing an existing package task using the package
 	        method fails if the package has a custom filename (Rhett Sutphin)
