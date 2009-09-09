@@ -30,7 +30,7 @@ artifacts(TestFramework.frameworks.map(&:dependencies).flatten, JUnit.ant_taskde
   file(path).invoke
 end
 
-ENV['HOME'] = File.expand_path('tmp/home')
+ENV['HOME'] = File.expand_path(File.join(File.dirname(__FILE__), '..', 'tmp', 'home'))
 
 # We need to run all tests inside a _sandbox, tacking a snapshot of Buildr before the test,
 # and restoring everything to its previous state after the test. Damn state changes.
