@@ -55,7 +55,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'highline',             '1.5.1'
   spec.add_dependency 'rubyforge',            '1.0.4'
   spec.add_dependency 'hoe',                  '2.3.3'
-  spec.add_dependency 'rjb',                  '1.1.8' if spec.platform.to_s == 'ruby'
+  spec.add_dependency 'rjb',                  '1.1.9' if spec.platform.to_s == 'ruby'
   spec.add_dependency 'rjb',                  '1.1.6' if spec.platform.to_s == 'x86-mswin32'
   spec.add_dependency 'Antwrap',              '0.7.0'
   spec.add_dependency 'rspec',                '1.2.8'
