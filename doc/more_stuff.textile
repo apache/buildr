@@ -282,7 +282,7 @@ end
 
 You can place this code inside @buildr.rb@ in your home directory.
 
-h2(#eclipse_idea). Eclipse, IDEA
+h2(#eclipse). Eclipse
 
 If you're using Eclipse, you can generate @.classpath@ and @.project@ from your Buildfile and use them to create a project in your workspace:
 
@@ -293,8 +293,30 @@ $ buildr eclipse
 The @eclipse@ task will generate a @.classpath@ and @.project@ file for each of projects (and sub-project) that compiles source code.  It will not generate files for other projects, for examples, projects you use strictly for packaging a distribution, or creating command line scripts, etc.
 
 If you add a new project, change the dependencies, or make any other change to your Buildfile, just run the @eclipse@ task again to re-generate the Eclipse project files.  To have your libraries' source code available in Eclipse, run the @artifacts:sources@ task.
- 
-If you prefer IntelliJ IDEA, you can always:
+
+You may explicitly specify the nature of your project, for example if you are developing an Eclipse plugin:
+
+{% highlight ruby %}
+define 'my-plugin' do
+  eclipse.natures :plugin
+end
+{% endhighlight %}
+
+The currently supported natures are @:java@, @:scala@ and @:plugin@.  Buildr will attempts to auto-detect your project type and apply the most relevant settings by default.   If it doesn't or you need something special, you may also explicitly set the nature, container and builders of your project by doing:
+
+{% highlight ruby %}
+define 'custom-plugin' do
+  eclipse.natures 'org.eclipse.pde.PluginNature'
+  eclipse.classpath_containers 'org.eclipse.pde.core.requiredPlugins'
+  eclipse.builders ['org.eclipse.pde.ManifestBuilder', 'org.eclipse.pde.SchemaBuilder']
+end
+{% endhighlight %}
+
+One more thing; these settings are inherited hierarchically so you may set them on a parent project if you want to share them across different projects.
+
+h2(#idea). IntelliJ IDEA
+
+If you use IntelliJ IDEA, you can generate project files by issuing:
 
 {% highlight sh %}
 $ buildr idea
