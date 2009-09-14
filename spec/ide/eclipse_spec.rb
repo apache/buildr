@@ -354,6 +354,30 @@ describe Buildr::Eclipse do
     end
   end
 
+  describe 'local dependency' do
+    before do
+      write 'lib/some-local.jar'
+      define('foo') { compile.using(:javac).with(_('lib/some-local.jar')) }
+    end
+    
+    it 'should have a lib artifact reference in the .classpath file' do
+      classpath_xml_elements.collect("classpathentry[@kind='lib']") { |n| n.attributes['path'] }.
+        should include(File.expand_path 'lib/some-local.jar')
+    end
+  end
+
+  describe 'generated .classes' do
+    before do
+      write 'lib/some.class'
+      define('foo') { compile.using(:javac).with(_('lib')) }
+    end
+    
+    it 'should have src reference in the .classpath file' do
+      classpath_xml_elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.
+        should include('lib')
+    end
+  end
+
   describe 'maven2 artifact dependency' do
     before do
       define('foo') { compile.using(:javac).with('com.example:library:jar:2.0') }
