@@ -175,8 +175,8 @@ module Buildr
               # Separate artifacts from Maven2 repository
               m2_libs, others = others.partition { |path| path.to_s.index(m2repo) == 0 }
 
-              # Generated: classpath elements in the project are assumed to be generated
-              generated, libs = others.partition { |path| path.to_s.index(project.path_to.to_s) == 0 }
+              # Generated: Any non-file classpath elements in the project are assumed to be generated
+              libs, generated = others.partition { |path| File.file?(path.to_s) }
 
               classpathentry.src project.compile.sources + generated
               classpathentry.src project.resources
