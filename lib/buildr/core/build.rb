@@ -126,7 +126,7 @@ module Buildr
 
     # Returns list of uncommited/untracked files as reported by git status.
     def uncommitted_files
-      `git status`.scan(/^#\s{7}(\S.*)$/).map { |match| match.first.split.last }
+      `git status`.scan(/^#(\t|\s{7})(\S.*)$/).map { |match| match.last.split.last }
     end
 
     # Commit the given file with a message.

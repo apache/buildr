@@ -1,4 +1,5 @@
 1.3.5 (Pending)
+* Fixed:  BUILDR-313: Prevent release with uncommitted_files on Git 1.4.3+ (Alexis Midon)
 * Fixed:  BUILDR-315: Fix Eclipse .classpath for local libraries (Mat Schaffer)
 * Added:  BUILDR-300: Make Eclipse task more configurable (Antoine Toulme, Alex Boisvert)
 * Fixed:  BUILDR-307 Failures are not reported correctly for ScalaTest (Jeremie Lenfant-Engelmann)

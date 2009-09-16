@@ -211,7 +211,7 @@ nothing to commit (working directory clean)
       Git.uncommitted_files.should be_empty
     end
 
-    it 'should reject a dirty repository' do
+    it 'should reject a dirty repository, Git 1.4.2 or former' do
       Git.should_receive(:`).with('git status').and_return <<-EOF
 # On branch master
 #
@@ -226,6 +226,24 @@ nothing to commit (working directory clean)
 #   (use "git add <file>..." to include in what will be committed)
 #
 #       error.log
+      EOF
+      Git.uncommitted_files.should include('lib/buildr.rb', 'error.log')
+    end
+
+    it 'should reject a dirty repository, Git 1.4.3 or higher' do
+      Git.should_receive(:`).with('git status').and_return <<-EOF
+# On branch master 
+# Changed but not updated:
+#   (use "git add <file>..." to update what will be committed)
+#
+#\tmodified:   lib/buildr.rb
+#\tmodified:   spec/buildr_spec.rb
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#\terror.log
+no changes added to commit (use "git add" and/or "git commit -a")
       EOF
       Git.uncommitted_files.should include('lib/buildr.rb', 'error.log')
     end
