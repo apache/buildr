@@ -317,7 +317,8 @@ module Buildr
       rescue
         # testng-failed.xml contains the list of failed tests *only*
         report = File.read(File.join(task.report_to.to_s, 'testng-failed.xml'))
-        failed = report.scan(/<class name="(.*)">/im).flatten
+        failed = report.scan(/<class name="(.*?)">/im).flatten
+        error "TestNG regexp returned unexpected failed tests #{failed.inspect}" unless (failed - tests).empty?
         # return the list of passed tests
         return tests - failed
       end
