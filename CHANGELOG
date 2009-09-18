@@ -1,4 +1,5 @@
 1.3.5 (Pending)
+* Fixed:  BUILDR-289 Improved error message when JAVA_HOME points to an invalid JRE/JDK installation
 * Fixed:  BUILDR-301 TestNG doesn't report failure if more than one test fails
 * Fixed:  BUILDR-313 Prevent release with uncommitted_files on Git 1.4.3+ (Alexis Midon)
 * Fixed:  BUILDR-315 Fix Eclipse .classpath for local libraries (Mat Schaffer)

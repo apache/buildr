@@ -89,6 +89,32 @@ describe Java, '#tools_jar' do
   end
 end
 
+describe Java, '#java' do
+  before do
+    @old_home = ENV['JAVA_HOME']
+  end
+  
+  describe 'when JAVA_HOME points to an invalid JRE/JDK installation' do
+    before do
+      write 'jdk'
+      ENV['JAVA_HOME'] = File.expand_path('jdk')
+    end
+  
+    it 'should fail with an error message mentioning JAVA_HOME' do
+      begin
+        Java.java ['-version']
+        fail 'Java.java did not fail with JAVA_HOME pointing to invalid JRE/JDK installation'
+      rescue => error
+        error.message.to_s.should match(/JAVA_HOME/)
+      end
+    end
+  end
+  
+  after do
+    ENV['JAVA_HOME'] = @old_home
+  end
+end
+
 
 describe Java::JavaWrapper do
   it 'should be removed in version 1.5 since it was deprecated in version 1.3' do

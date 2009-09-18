@@ -190,7 +190,9 @@ module Java
       # Returns the path to the specified Java command (with no argument to java itself).
       def path_to_bin(name = nil)
         home = ENV['JAVA_HOME'] or fail 'Are we forgetting something? JAVA_HOME not set.'
-        File.expand_path(File.join(home, 'bin', name.to_s))
+        bin = File.expand_path(File.join(home, 'bin'))
+        fail 'JAVA_HOME environment variable does not point to a valid JRE/JDK installation.' unless File.exist? bin
+        File.expand_path(File.join(bin, name.to_s))
       end
 
       # :call-seq:
