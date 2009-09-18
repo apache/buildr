@@ -20,7 +20,7 @@ There are other environment variables you will want to set when running Buildr, 
 $ buildr test=no
 {% endhighlight %}
 
-For convenience, when you set environment variables on the command line, the variable name is case insensitive, you can use either @test=no@ or @TEST=no@. Any other way (@export@, @ENV@, etc) the variable names are case sensitive.
+For convenience, the environment variables @TEST@ and @DEBUG@ are case insensitive, you can use either @test=no@ or @TEST=no@. Any other environment variable names are case sensitive.
 
 You can also set environment variables from within your Buildfile.  For example, if you discover that building your project requires gobs of JVM heap space, and you want all other team members to run with the same settings:
 
