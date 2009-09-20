@@ -49,11 +49,11 @@ for those one-off tasks, with a language that's a joy to use.
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.8.7'
   spec.add_dependency 'builder',              '2.1.2'
-  spec.add_dependency 'net-ssh',              '2.0.14'
+  spec.add_dependency 'net-ssh',              '2.0.15'
   spec.add_dependency 'net-sftp',             '2.0.2'
   spec.add_dependency 'rubyzip',              '0.9.1'
   spec.add_dependency 'highline',             '1.5.1'
-  spec.add_dependency 'rubyforge',            '1.0.4'
+  spec.add_dependency 'rubyforge',            '1.0.5'
   spec.add_dependency 'hoe',                  '2.3.3'
   spec.add_dependency 'rjb',                  '1.1.9' if spec.platform.to_s == 'ruby'
   spec.add_dependency 'rjb',                  '1.1.6' if spec.platform.to_s == 'x86-mswin32'
