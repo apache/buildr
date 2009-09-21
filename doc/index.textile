@@ -24,6 +24,9 @@ bq. We used to rely on Ant, with a fairly extensive set of scripts. It worked bu
 
 bq. The positive side effect for me as a java user is that I learn a little ruby, and that’s easy but lots of fun… :-)
 
+"Ijonas Kisselbach":http://twitter.com/ijonas/statuses/4134103928:
+
+bq. I've cleaned up & migrated the Vamosa build process from 768 lines of Ant build.xml to 28 lines of Buildr.
 
 h2(#what).  What You Get
 
