@@ -155,22 +155,23 @@ module Buildr::Scala
           end
           fail 'Failed to compile, see errors above' if Java.scala.tools.nsc.Main.reporter.hasErrors
         end
-        
-        if java_applies? sources
+ 
+        java_sources = java_sources(sources)
+        unless java_sources.empty?
           trace 'Compiling mixed Java/Scala sources'
           
           # TODO  includes scala-compiler.jar
           deps = dependencies + Scalac.dependencies + [ File.expand_path(target) ]
-          @java.compile(sources, target, deps)
+          @java.compile(java_sources, target, deps)
         end
       end
     end
 
   private
-  
-    def java_applies?(sources)
-      not sources.flatten.map { |source| File.directory?(source) ? FileList["#{source}/**/*.java"] : source }.
-        flatten.reject { |file| File.directory?(file) }.map { |file| File.expand_path(file) }.uniq.empty?
+
+    def java_sources(sources)
+      sources.flatten.map { |source| File.directory?(source) ? FileList["#{source}/**/*.java"] : source } .
+        flatten.reject { |file| File.directory?(file) || File.extname(file) != 'java' }.map { |file| File.expand_path(file) }.uniq
     end
 
     # Returns Scalac command line arguments from the set of options.
