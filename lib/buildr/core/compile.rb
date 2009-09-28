@@ -175,14 +175,32 @@ module Buildr
             FileList["#{source}/**/*.{#{ext_glob}}"].reject { |file| File.directory?(file) }.
               each { |file| map[file] = File.join(target, Util.relative_path(file, source).ext(target_ext)) }
           else
-            map[source] = target # File.join(target, File.basename(source).ext(target_ext))
+            # try to extract package name from .java or .scala files
+            if ['.java', '.scala', '.groovy'].include? File.extname(source)
+              package = findFirst(source, /^\s*package\s+(\S+)\s*;?\s*$/)
+              map[source] = package ? File.join(target, package[1].gsub('.', '/'), File.basename(source).ext(target_ext)) : target
+            elsif
+              map[source] = target
+            end
           end
           map
         end
       end
-      
-    end
 
+    private
+      
+      def findFirst(file, pattern)
+        match = nil
+        File.open(file, "r") do |infile|
+          while (line = infile.gets)
+            match = line.match(pattern)
+            break if match
+          end
+        end
+        match
+      end
+
+    end
   end
 
 
