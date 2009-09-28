@@ -171,7 +171,7 @@ module Buildr::Scala
 
     def java_sources(sources)
       sources.flatten.map { |source| File.directory?(source) ? FileList["#{source}/**/*.java"] : source } .
-        flatten.reject { |file| File.directory?(file) || File.extname(file) != 'java' }.map { |file| File.expand_path(file) }.uniq
+        flatten.reject { |file| File.directory?(file) || File.extname(file) != '.java' }.map { |file| File.expand_path(file) }.uniq
     end
 
     # Returns Scalac command line arguments from the set of options.
