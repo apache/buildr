@@ -9,7 +9,8 @@ import java.io.File
 object SpecsSingletonRunner {
   type Spec = { def main(args: Array[String]) }
   
-  @throws(classOf[Throwable])
+  // Incompatible with JVM 1.4 target
+  // @throws(classOf[Throwable])
   def main(args: Array[String]) {
     val (colors, spec) = if (args.length > 1 && args(1) == "-c")
       (true, args(2))
@@ -19,7 +20,8 @@ object SpecsSingletonRunner {
     run(args(0), colors, spec)
   }
   
-  @throws(classOf[Throwable])
+  // Incompatible with JVM 1.4 target
+  // @throws(classOf[Throwable])
   def run(path: String, colors: Boolean, spec: String) = {
     val parent = new File(path)
     val specURL = new File(parent, spec.replace('.', '/') + ".class").toURL
