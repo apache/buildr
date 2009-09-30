@@ -31,11 +31,11 @@ describe Buildr::Groovy::EasyB do
 
   it 'should apply to a project having EasyB sources' do
     define('one', :base_dir => 'one') do
-      write _('src/spec/groovy/SomeBehaviour.groovy'), 'true;'
+      write _('src/spec/groovy/SomeSpecification.groovy'), 'true;'
       Buildr::Groovy::EasyB.applies_to?(self).should be_true
     end
     define('two', :base_dir => 'two') do
-      write _('src/test/groovy/SomeBehaviour.groovy'), 'true;'
+      write _('src/test/groovy/SomeSpecification.groovy'), 'true;'
       Buildr::Groovy::EasyB.applies_to?(self).should be_false
     end
     define('three', :base_dir => 'three') do
@@ -54,14 +54,14 @@ describe Buildr::Groovy::EasyB do
 
   it 'should select a java compiler if java sources are found' do
     foo do
-      write _('src/spec/java/SomeBehavior.java'), 'public class SomeBehavior {}'
+      write _('src/spec/java/SomeSpecification.java'), 'public class SomeSpecification {}'
       test.compile.language.should eql(:java)
     end
   end
   
-  it 'should include src/spec/groovy/*Behavior.groovy' do
+  it 'should include src/spec/groovy/*Specification.groovy' do
     foo do 
-      spec = _('src/spec/groovy/SomeBehavior.groovy')
+      spec = _('src/spec/groovy/SomeSpecification.groovy')
       write spec, 'true'
       test.invoke
       test.tests.should include(spec)
