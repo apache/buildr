@@ -293,8 +293,9 @@ describe Buildr::Application do
       write_task 'tasks/bar.rake'
       write_task 'extensions/foo.rake'
       loaded_tasks.should have(2).tasks
-      loaded_tasks[0].should =~ %r{extensions/amp\.rake$}
-      loaded_tasks[1].should =~ %r{extensions/foo\.rake$}
+      %w[amp foo].each do |filename|
+        loaded_tasks.select{|x| x =~ %r{extensions/#{filename}\.rake}}.should have(1).entry
+      end
     end
     
     it 'should load files from all the directories specified in the rakelib option' do
