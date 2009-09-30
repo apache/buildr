@@ -23,7 +23,7 @@ module Buildr::Groovy
   # 
   # This framework will search in your project for:
   #   src/spec/groovy/**/*Story.groovy
-  #   src/spec/groovy/**/*Behavior.groovy
+  #   src/spec/groovy/**/*Specification.groovy
   #
   # Support the following options:
   # * :format -- Report format :txt or :xml, default is :txt
@@ -33,8 +33,8 @@ module Buildr::Groovy
     @lang = :groovy
     @bdd_dir = :spec
 
-    VERSION = "0.7"
-    TESTS_PATTERN = [ /(Story|Behavior).groovy$/ ]
+    VERSION = "0.9"
+    TESTS_PATTERN = [ /(Story|Specification).groovy$/ ]
     OPTIONS = [:format, :properties, :java_args]
 
     class << self
@@ -50,7 +50,7 @@ module Buildr::Groovy
 
       def applies_to?(project) #:nodoc:
         %w{
-          **/*Behaviour.groovy **/*Behavior.groovy **/*Story.groovy
+          **/*Specification.groovy **/*Story.groovy
         }.any? { |glob| !Dir[project.path_to(:source, bdd_dir, lang, glob)].empty? }
       end
 
@@ -78,7 +78,7 @@ module Buildr::Groovy
         raise "Invalid format #{options[:format]} expected one of :txt :xml"
       end
     
-      cmd_args = [ 'org.disco.easyb.SpecificationRunner' ]
+      cmd_args = [ 'org.disco.easyb.BehaviorRunner' ]
       cmd_options = { :properties => options[:properties],
                       :java_args => options[:java_args],
                       :classpath => dependencies }
