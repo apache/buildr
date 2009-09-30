@@ -216,6 +216,7 @@ describe Buildr::JUnit do
     JAVA
     define('foo').test.using :properties=>{ 'name'=>'value' }
     project('foo').test.invoke
+    project('foo').test.options[:properties]["baseDir"].should eql(project("foo").test.compile.target.to_s)
   end
 
   it 'should pass environment to JVM' do
