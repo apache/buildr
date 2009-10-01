@@ -168,6 +168,34 @@ describe Project, '#package' do
     lambda { define('foo') { package(:weirdo) } }.should raise_error(RuntimeError, /Don't know how to create a package/)
   end
 
+  it 'should call package_as_foo when using package(:foo)' do
+    class Buildr::Project  
+      def package_as_foo(file_name)
+        file(file_name) do |t|
+          mkdir_p File.dirname(t.to_s)
+          File.open(t.to_s, 'w') {|f| f.write('foo') }
+        end
+      end
+    end
+    define('foo', :version => '1.0') do |project|
+      package(:foo).invoke
+      package(:foo).should exist
+      package(:foo).should contain('foo')
+    end
+  end
+
+  it 'should allow to respec package(:sources) using package_as_sources_spec()' do
+    class Buildr::Project  
+      def package_as_sources_spec(spec)
+        spec.merge({ :type=>:jar, :classifier=>'sources' })
+      end
+    end
+    define('foo', :version => '1.0') do
+      package(:sources).type.should eql(:jar)
+      package(:sources).classifier.should eql('sources')
+    end
+  end
+
   it 'should default to no classifier' do
     define 'foo', :version=>'1.0' do
       package.classifier.should be_nil
@@ -203,8 +231,17 @@ describe Project, '#package' do
       package(:war)
       package(:jar, :id=>'bar')
       package(:jar, :classifier=>'srcs')
+      package(:jar, :classifier=>'doc')
     end
-    project('foo').packages.uniq.size.should be(4)
+    project('foo').packages.uniq.size.should be(5)
+  end
+
+  it 'should create different tasks for package with classifier' do
+    define 'foo', :version=>'1.0' do
+      package(:jar)
+      package(:jar, :classifier=>'foo')
+    end
+    project('foo').packages.uniq.size.should be(2)
   end
 
   it 'should not create multiple packages for the same spec' do
@@ -213,8 +250,9 @@ describe Project, '#package' do
       package(:war)
       package(:jar, :id=>'bar')
       package(:jar, :id=>'bar')
+      package(:jar, :id=>'baz')
     end
-    project('foo').packages.uniq.size.should be(2)
+    project('foo').packages.uniq.size.should be(3)
   end
 
   it 'should return the same task for subsequent calls' do
