@@ -444,8 +444,7 @@ module Buildr
         info "Running tests in #{@project.name}"
         begin
           # set the baseDir system property if not set
-          target = @project.test.compile.target.to_s
-          @framework.options[:properties] = { 'baseDir' => target }.merge(@framework.options[:properties] || {})
+          @framework.options[:properties] = { 'baseDir' => @project.test.compile.target.to_s }.merge(@framework.options[:properties] || {})
           @passed_tests = @framework.run(@tests, dependencies)
         rescue Exception=>ex
           error "Test framework error: #{ex.message}"
