@@ -195,6 +195,34 @@ describe Project, '#package' do
       package(:sources).classifier.should eql('sources')
     end
   end
+  
+  it 'should produce different packages for different specs' do
+    class Buildr::Project  
+      def package_as_foo(file_name)
+        file(file_name)  
+      end
+      
+      def package_as_foo_spec(spec)
+        spec.merge(:type => :zip)
+      end
+      
+      def package_as_bar(file_name)
+        file(file_name)
+      end
+      
+      def package_as_bar_spec(spec)
+        spec.merge(:type => :zip, :classifier => "foobar")
+      end
+      
+    end
+    define('foo', :version => '1.0') do
+      package(:foo).type.should eql(:zip)
+      package(:foo).classifier.should be_nil
+      package(:bar).type.should eql(:zip)
+      package(:bar).classifier.should eql('foobar')
+      package(:foo).equal?(package(:bar)).should be_false
+    end
+  end
 
   it 'should default to no classifier' do
     define 'foo', :version=>'1.0' do
