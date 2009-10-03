@@ -439,8 +439,7 @@ if Buildr::Util.java_platform?
           __native_system__(cd + cmd.first + ' ' + arg_str.join(' '))
         end
         $? = Buildr::ProcessStatus.new(0, res == 0, res)    # KLUDGE
-        
-        block.call(res, $?)
+        block.call(res == 0, $?)
       end
     end
 
