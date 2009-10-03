@@ -94,7 +94,7 @@ module Buildr
       
       Buildr.write(runner.file, runner.content)
       rm_f runner.result
-      
+
       if RUBY_PLATFORM[/java/] && !options.fork
         runtime = new_runtime
         runtime.getObject.java.lang.System.getProperties().putAll(options[:properties] || {})
@@ -267,7 +267,8 @@ module Buildr
         argv.push *<%= tests.inspect %>
         parser.order!(argv)
         $rspec_options = parser.options
-        Buildr::TestFramework::TestResult::Error.guard('<%= runner.file %>') do
+        
+        Buildr::TestFramework::TestResult::Error.guard('<%= runner.result %>') do
           ::Spec::Runner::CommandLine.run($rspec_options)
         end
         exit 0 # let buildr figure the result from the yaml file
