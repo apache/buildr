@@ -12,6 +12,7 @@
 * Change: Monkey-Patched FileUtils::sh on JRuby to use POSIX `system`
 * Change: Updated to Rake 0.8.7, RSpec 1.2.6 and JRuby-openssl 0.5.1.
 * Change: Updated to easyb 0.9 (Joel Muzzerall)
+* Change: Updated to TestNG 5.10
 * Fixed:  BUILDR-23 Support for setting file mode when packaging (Ittay Dror).
 * Fixed:  BUILDR-278 tasks/*.rake files are loaded after the buildfile (Rhett Sutphin)
 * Fixed:  BUILDR-282 release goal should not strip leading '0' digits from version numbers.

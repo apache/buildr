@@ -278,7 +278,7 @@ module Buildr
   # * :java_args -- Arguments passed to the JVM.
   class TestNG < TestFramework::Java
 
-    VERSION = '5.7'
+    VERSION = '5.10'
 
     class << self
       def version
