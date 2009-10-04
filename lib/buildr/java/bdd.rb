@@ -109,7 +109,7 @@ module Buildr
       if Exception === result
         raise [result.message, result.backtrace].flatten.join("\n")
       end
-      result.succeeded
+      tests - result.failed
     end
 
     def jruby_home
@@ -201,9 +201,13 @@ module Buildr
       runner.gems ||= {}
       runner.rspec ||= ['--format', 'progress', '--format', "html:#{runner.html_report}"]
       runner.format.each { |format| runner.rspec << '--format' << format } if runner.format
-      runner.rspec.push '--format', "Buildr::TestFramework::TestResult::YamlFormatter:#{runner.result}"
+      runner.rspec.push '--format', "#{runner_formatter}:#{runner.result}"
       runner
-    end    
+    end
+    
+    def runner_formatter
+      "Buildr::TestFramework::TestResult::YamlFormatter"
+    end
     
   end
 
@@ -377,6 +381,10 @@ module Buildr
     def runner_content(binding)
       runner_erb = File.join(File.dirname(__FILE__), 'jtestr_runner.rb.erb')
       Filter::Mapper.new(:erb, binding).transform(File.read(runner_erb), runner_erb)
+    end
+    
+    def runner_formatter
+      'Buildr::TestFramework::TestResult::JtestRYamlFormatter'
     end
     
   end

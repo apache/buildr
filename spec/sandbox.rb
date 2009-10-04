@@ -29,6 +29,8 @@ Java.load # Anything added to the classpath.
 artifacts(TestFramework.frameworks.map(&:dependencies).flatten, JUnit.ant_taskdef).each do |path|
   file(path).invoke
 end
+# JtestR currently requires JUnit 4.4
+file(artifact("junit:junit:jar:4.4")).invoke
 
 ENV['HOME'] = File.expand_path(File.join(File.dirname(__FILE__), '..', 'tmp', 'home'))
 
