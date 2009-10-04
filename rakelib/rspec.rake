@@ -22,7 +22,7 @@ begin
   Spec::Rake::SpecTask.new :spec=>['_reports', :compile] do |task|
     task.spec_files = FileList['spec/**/*_spec.rb']
     task.spec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
-    task.spec_opts = %w{--format specdoc --format failing_examples:failed --format html:_reports/specs.html --loadby mtime --backtrace}    
+    task.spec_opts = %w{--format specdoc --format failing_examples:failed --format html:_reports/specs.html --backtrace}    
     task.spec_opts << '--colour' if $stdout.isatty
   end
   file('_reports/specs.html') { task(:spec).invoke }
