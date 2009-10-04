@@ -46,15 +46,14 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-New in Buildr 1.3.4:
+New in Buildr 1.3.5:
 
-* Support for Git version control system
-* Improved all-around Scala support, including joint Java-Scala compilation and upgraded to Scala 2.7.3 dependencies: ScalaSpecs 1.4.3, ScalaCheck 1.5 and ScalaTest 0.9.5
-* New 'artifacts:sources' task to download source code for artifact jars
-* Source code attachments for external dependencies in Eclipse and IDEA projects
-* Dependency upgrades such as Rake 0.8.4, Net-SSH 2.0.11, RSpec 1.2.2, JRuby 1.1.6.
-* Documentation now uses "Jekyll":http://github.com/mojombo/jekyll/ to generate web site and PDF document.  This replaces Docter so less code to maintain and the same Textile/Liquid mechanism as when using Github pages.
-* And 20 or so bug fixes.
+* Interactive shell (REPL) support, including BeanShell for Java projects
+* Scala libraries are automatically downloaded if not availabe locally
+* New 'cobertura:check' allows you to check for code coverage levels in your projects
+* Eclipse task is configurable to support various types of natures, builders, etc.
+* Dependency upgrades such as Net-SSH 2.0.15, JRuby 1.3.1, Rake 0.8.7, RSpec 1.2.8, easyb 0.9, TestNG 5.10
+* And 15+ bug fixes.
 
 See the "CHANGELOG":CHANGELOG for full details.
 
