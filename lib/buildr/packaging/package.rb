@@ -168,7 +168,7 @@ module Buildr
 
         if spec[:file]
           class << package ; self ; end.send(:define_method, :type) { spec[:type] }
-        elsif !package.respond_to?(:install)
+        else
           # Make it an artifact using the specifications, and tell it how to create a POM.
           package.extend ActsAsArtifact
           package.send :apply_spec, spec.only(*Artifact::ARTIFACT_ATTRIBUTES)
