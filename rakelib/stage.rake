@@ -62,6 +62,13 @@ task :prepare do |task, args|
     puts "[X] We have JRuby, Scala and Groovy"
   end.call
 
+  # Need Prince to generate PDF
+  lambda do
+    puts "Checking that we have prince available ... "
+    sh 'prince --version'
+    puts "[X] We have prince available"
+  end.call
+
   # Need RubyForge to upload new release files.
   lambda do
     puts "[!] Make sure you have admin privileges to make a release on RubyForge"
