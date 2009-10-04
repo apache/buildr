@@ -68,6 +68,53 @@ module Buildr #:nodoc:
           module_eval "def #{meth}(*args); end"
         end
 
+        def example_group_started(example_group)
+          @example_group = example_group
+        end
+
+        def example_passed(example)
+          result.succeeded << example_group.location.gsub(/:\d+$/, '')
+        end
+
+        def example_pending(example, counter, failure)
+          result.succeeded << example_group.location.gsub(/:\d+$/, '')
+        end
+
+        def example_failed(example, counter, failure)
+          result.failed << example_group.location.gsub(/:\d+$/, '')
+        end
+
+        def start(example_count)
+          @result = TestResult.new
+        end
+
+        def close
+          result.succeeded = result.succeeded - result.failed
+          FileUtils.mkdir_p File.dirname(where)
+          File.open(where, 'w') { |f| f.puts YAML.dump(result) }
+        end
+      end # YamlFormatter
+
+      # Rspec formatter used for JtestR
+      # (JtestR provides its own version of rspec)
+      class JtestRYamlFormatter
+        attr_reader :result
+
+        attr_accessor :example_group, :options, :where
+        
+        def initialize(options, where)
+          @options = options
+          @where = where
+          @result = Hash.new
+          @result[:succeeded] = []
+          @result[:failed] = []
+        end
+        
+        %w[ example_started
+            start_dump dump_failure dump_summary dump_pending ].each do |meth|
+          module_eval "def #{meth}(*args); end"
+        end
+
         def add_example_group(example_group)
           @example_group = example_group
         end
@@ -108,7 +155,7 @@ module Buildr #:nodoc:
           FileUtils.mkdir_p File.dirname(where)
           File.open(where, 'w') { |f| f.puts YAML.dump(result) }
         end
-      end # YamlFormatter
+      end # JtestRYamlFormatter
 
       # A JtestR ResultHandler
       # Using this handler we can use RSpec formatters, like html/ci_reporter with JtestR
