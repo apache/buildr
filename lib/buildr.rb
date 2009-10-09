@@ -14,7 +14,7 @@
 # the License.
 
 module Buildr
-  VERSION = '1.3.5'.freeze
+  VERSION = '1.4.0'.freeze
 end
 
 require 'buildr/core'
