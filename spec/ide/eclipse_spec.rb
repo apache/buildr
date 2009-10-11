@@ -232,7 +232,7 @@ describe Buildr::Eclipse do
         write 'src/main/java/Activator.java'
       end
 
-      it 'should have plugin nature by default if MANIFEST.MF contains "Bundle-SymblicName:"' do
+      it 'should have plugin nature by default if MANIFEST.MF contains "Bundle-SymbolicName:"' do
         write 'META-INF/MANIFEST.MF', <<-MANIFEST
 Manifest-Version: 1.0
 Name: example/
@@ -242,13 +242,13 @@ Specification-Vendor: "Acme Corp.".
 Implementation-Title: "example" 
 Implementation-Version: "build57"
 Implementation-Vendor: "Acme Corp."
-Bundle-SymblicName: acme.plugin.example
+Bundle-SymbolicName: acme.plugin.example
 MANIFEST
         define('foo')
         project_natures.should include(PLUGIN_NATURE)
       end
 
-      it 'should not have plugin nature if MANIFEST.MF exists but doesn\'t contain "Bundle-SymblicName:"' do
+      it 'should not have plugin nature if MANIFEST.MF exists but doesn\'t contain "Bundle-SymbolicName:"' do
         write 'META-INF/MANIFEST.MF', <<-MANIFEST
 Manifest-Version: 1.0
 Name: example/
