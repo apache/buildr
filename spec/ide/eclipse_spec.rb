@@ -202,7 +202,7 @@ describe Buildr::Eclipse do
       end
     end
     
-    describe 'Non standard Plugin project' do
+    describe 'Plugin project' do
 
       before do
         write 'buildfile'
@@ -211,21 +211,56 @@ describe Buildr::Eclipse do
       end
 
       it 'should have plugin nature before Java nature' do
-        define('foo') do
-          eclipse.natures = [:java, :plugin]
-        end
+        define('foo')
         project_natures.should include(PLUGIN_NATURE)
         project_natures.should include(JAVA_NATURE)
         project_natures.index(PLUGIN_NATURE).should < project_natures.index(JAVA_NATURE)
       end
 
       it 'should have plugin build commands and the Java build command' do
-        define('foo') do
-          eclipse.natures = [:java, :plugin]
-        end
+        define('foo')
         build_commands.should include(PLUGIN_BUILDERS[0])
         build_commands.should include(PLUGIN_BUILDERS[1])
         build_commands.should include(JAVA_BUILDER)
+      end
+    end
+    
+    describe 'Plugin project with META-INF/MANIFEST.MF' do
+
+      before do
+        write 'buildfile'
+        write 'src/main/java/Activator.java'
+      end
+
+      it 'should have plugin nature by default if MANIFEST.MF contains "Bundle-SymblicName:"' do
+        write 'META-INF/MANIFEST.MF', <<-MANIFEST
+Manifest-Version: 1.0
+Name: example/
+Specification-Title: "Examples" 
+Specification-Version: "1.0"
+Specification-Vendor: "Acme Corp.".
+Implementation-Title: "example" 
+Implementation-Version: "build57"
+Implementation-Vendor: "Acme Corp."
+Bundle-SymblicName: acme.plugin.example
+MANIFEST
+        define('foo')
+        project_natures.should include(PLUGIN_NATURE)
+      end
+
+      it 'should not have plugin nature if MANIFEST.MF exists but doesn\'t contain "Bundle-SymblicName:"' do
+        write 'META-INF/MANIFEST.MF', <<-MANIFEST
+Manifest-Version: 1.0
+Name: example/
+Specification-Title: "Examples" 
+Specification-Version: "1.0"
+Specification-Vendor: "Acme Corp.".
+Implementation-Title: "example" 
+Implementation-Version: "build57"
+Implementation-Vendor: "Acme Corp."
+MANIFEST
+        define('foo')
+        project_natures.should_not include(PLUGIN_NATURE)
       end
     end
   end
