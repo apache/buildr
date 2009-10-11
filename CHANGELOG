@@ -1,5 +1,5 @@
 1.4.0 (Pending)
-* Added:  BUILDR-328 Detect Eclipse plugin project with META-INF/MANIFEST.MF and Bundle-SymblicName:
+* Added:  BUILDR-328 Detect Eclipse plugin project with META-INF/MANIFEST.MF and Bundle-SymbolicName:
           entry
 * Fixed:  BUILDR-327 Specifying :plugin eclipse nature explicitly fails
 

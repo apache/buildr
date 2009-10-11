@@ -33,7 +33,7 @@ module Buildr
         if eclipse.natures.empty? && (
             (File.exists? project.path_to("plugin.xml")) ||
             (File.exists? project.path_to("OSGI-INF")) ||
-            (File.exists?(project.path_to("META-INF/MANIFEST.MF")) && File.read(project.path_to("META-INF/MANIFEST.MF")).match(/^Bundle-SymblicName:/)))
+            (File.exists?(project.path_to("META-INF/MANIFEST.MF")) && File.read(project.path_to("META-INF/MANIFEST.MF")).match(/^Bundle-SymbolicName:/)))
           eclipse.natures = [NATURE, Buildr::Eclipse::Java::NATURE]
           eclipse.classpath_containers = [CONTAINER, Buildr::Eclipse::Java::CONTAINER] if eclipse.classpath_containers.empty?
           eclipse.builders = BUILDERS + [Buildr::Eclipse::Java::BUILDER] if eclipse.builders.empty?
