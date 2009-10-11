@@ -1,4 +1,5 @@
 1.4.0 (Pending)
+* Fixed:  BUILDR-327 Specifying :plugin eclipse nature explicitly fails
 
 1.3.5 (2009-10-05)
 * Added:  Interactive shell (REPL) support

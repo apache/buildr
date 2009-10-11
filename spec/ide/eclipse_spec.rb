@@ -201,6 +201,33 @@ describe Buildr::Eclipse do
         build_commands.should include(JAVA_BUILDER)
       end
     end
+    
+    describe 'Non standard Plugin project' do
+
+      before do
+        write 'buildfile'
+        write 'src/main/java/Activator.java'
+        write 'plugin.xml'
+      end
+
+      it 'should have plugin nature before Java nature' do
+        define('foo') do
+          eclipse.natures = [:java, :plugin]
+        end
+        project_natures.should include(PLUGIN_NATURE)
+        project_natures.should include(JAVA_NATURE)
+        project_natures.index(PLUGIN_NATURE).should < project_natures.index(JAVA_NATURE)
+      end
+
+      it 'should have plugin build commands and the Java build command' do
+        define('foo') do
+          eclipse.natures = [:java, :plugin]
+        end
+        build_commands.should include(PLUGIN_BUILDERS[0])
+        build_commands.should include(PLUGIN_BUILDERS[1])
+        build_commands.should include(JAVA_BUILDER)
+      end
+    end
   end
 
   describe "eclipse's .classpath file" do
