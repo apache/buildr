@@ -38,9 +38,9 @@ module Buildr
 
         # :java nature explicitly set
         if eclipse.natures.include? :java
-          eclipse.natures += NATURE unless eclipse.natures.include? NATURE
-          eclipse.classpath_containers += CONTAINER unless eclipse.classpath_containers.include? CONTAINER
-          eclipse.builders += BUILDER unless eclipse.builders.include? BUILDER
+          eclipse.natures += [NATURE] unless eclipse.natures.include? NATURE
+          eclipse.classpath_containers += [CONTAINER] unless eclipse.classpath_containers.include? CONTAINER
+          eclipse.builders += [BUILDER] unless eclipse.builders.include? BUILDER
         end
       end
 
