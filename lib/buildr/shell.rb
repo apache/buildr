@@ -77,10 +77,10 @@ module Buildr
     module JavaRebel
       def rebel_home
         unless @rebel_home
-          @rebel_home = ENV['REBEL_HOME'] or ENV['JAVA_REBEL'] or ENV['JAVAREBEL'] or ENV['JAVAREBEL_HOME']
+          @rebel_home = ENV['REBEL_HOME'] or ENV['JREBEL'] or ENV['JREBEL_HOME']
           
           if @rebel_home and File.directory? @rebel_home
-            @rebel_home += File::SEPARATOR + 'javarebel.jar'
+            @rebel_home += File::SEPARATOR + 'jrebel.jar'
           end
         end
         
