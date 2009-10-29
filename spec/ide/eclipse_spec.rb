@@ -424,7 +424,7 @@ MANIFEST
     
     it 'should have a lib artifact reference in the .classpath file' do
       classpath_xml_elements.collect("classpathentry[@kind='lib']") { |n| n.attributes['path'] }.
-        should include(File.expand_path 'lib/some-local.jar')
+        should include('lib/some-local.jar')
     end
   end
 

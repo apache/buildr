@@ -1,6 +1,8 @@
 1.4.0 (Pending)
-* Added:  BUILDR-328 Detect Eclipse plugin project with META-INF/MANIFEST.MF and Bundle-SymbolicName:
-          entry
+* Added:  BUILDR-328 Detect Eclipse plugin project with META-INF/MANIFEST.MF 
+          and Bundle-SymbolicName: entry
+* Fixed:  BUILDR-334 Eclipse .classpath files use absolute paths for library 
+          entries (Stefan Wasilewski)
 * Fixed:  BUILDR-327 Specifying :plugin eclipse nature explicitly fails
 
 1.3.5 (2009-10-05)
