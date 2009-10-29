@@ -32,6 +32,22 @@ module Buildr
       end
 
       # :call-seq:
+      #   classpath_variables { :VAR => '/path/to/location' }
+      # Sets classpath variables to be used for library path substitution
+      # on the project.
+      #
+      def classpath_variables(*values)
+        fail "eclipse.classpath_variables expects a single hash argument" if values.size > 1
+        if values.size == 1
+          fail "eclipse.classpath_variables expects a Hash argument" unless values[0].is_a? Hash
+          # convert keys to strings
+          values = values[0].inject({}) { |h, (k,v)| h[k.to_s] = @project.path_to(v); h }
+          @variables = values.merge(@variables || {})
+        end
+        @variables || (@project.parent ? @project.parent.eclipse.classpath_variables : {})
+      end
+
+      # :call-seq:
       #   natures=(natures)
       # Sets the Eclipse project natures on the project.
       #
@@ -172,8 +188,15 @@ module Buildr
               # project_libs: artifacts created by other projects
               project_libs, others = cp.partition { |path| path.is_a?(Project) }
 
-              # Separate artifacts from Maven2 repository
-              m2_libs, others = others.partition { |path| path.to_s.index(m2repo) == 0 }
+              # Separate artifacts under known classpath variable paths
+              # including artifacts located in local Maven2 repository
+              vars = []
+              project.eclipse.classpath_variables.merge(project.eclipse.options.m2_repo_var => m2repo).each do |name, path|
+                matching, others = others.partition { |f| File.expand_path(f.to_s).index(path) == 0 }
+                matching.each do |m|
+                  vars << [m, name, path]
+                end
+              end
 
               # Generated: Any non-file classpath elements in the project are assumed to be generated
               libs, generated = others.partition { |path| File.file?(path.to_s) }
@@ -191,7 +214,7 @@ module Buildr
 
               classpathentry.output project.compile.target if project.compile.target
               classpathentry.lib libs
-              classpathentry.var m2_libs, project.eclipse.options.m2_repo_var, m2repo
+              classpathentry.var vars
 
               project.eclipse.classpath_containers.each { |container|
                 classpathentry.con container
@@ -282,13 +305,17 @@ module Buildr
       # * +var_name+ is a variable name as defined in Eclipse (e.g., 'M2_REPO').
       # * +var_value+ is the value of this variable (e.g., '/home/me/.m2').
       # E.g., <tt>var([lib1, lib2], 'M2_REPO', '/home/me/.m2/repo')</tt>
-      def var libs, var_name, var_value
-        libs.each do |lib_path|
+      def var(libs)
+        libs.each do |lib_path, var_name, var_value|
           lib_artifact = file(lib_path)
-          source_path = lib_artifact.sources_artifact.to_s
           relative_lib_path = lib_path.sub(var_value, var_name)
-          relative_source_path = source_path.sub(var_value, var_name)
-          @xml.classpathentry :kind=>'var', :path=>relative_lib_path, :sourcepath=>relative_source_path
+          if lib_artifact.respond_to? :sources_artifact
+            source_path = lib_artifact.sources_artifact.to_s
+            relative_source_path = source_path.sub(var_value, var_name)
+            @xml.classpathentry :kind=>'var', :path=>relative_lib_path, :sourcepath=>relative_source_path
+          else
+            @xml.classpathentry :kind=>'var', :path=>relative_lib_path
+          end            
         end
       end
 

@@ -1,6 +1,9 @@
 1.4.0 (Pending)
 * Added:  BUILDR-328 Detect Eclipse plugin project with META-INF/MANIFEST.MF 
           and Bundle-SymbolicName: entry
+* Added:  Support for Eclipse classpath variables to avoid absolute pathnames in
+          generated .classpath using: 
+            eclipse.classpath_variables { :VAR => '/path/to/libraries' }
 * Fixed:  BUILDR-334 Eclipse .classpath files use absolute paths for library 
           entries (Stefan Wasilewski)
 * Fixed:  BUILDR-327 Specifying :plugin eclipse nature explicitly fails
