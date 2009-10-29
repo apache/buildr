@@ -251,7 +251,7 @@ module Buildr
 
       def lib libs
         libs.map(&:to_s).sort.uniq.each do |path|
-          @xml.classpathentry :kind=>'lib', :path=>path
+          @xml.classpathentry :kind=>'lib', :path=>relative(path)
         end
       end
 
