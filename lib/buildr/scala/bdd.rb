@@ -81,12 +81,11 @@ module Buildr::Scala
       
       cmd_options = { :properties => options[:properties],
                       :java_args => options[:java_args],
-                      :classpath => dependencies }
+                      :classpath => dependencies,
+                      :name => false }
 
       runner = 'org.apache.buildr.SpecsSingletonRunner'
       specs.inject [] do |passed, spec|
-        cmd_options[:name] = spec
-        
         begin
           unless Util.win_os?
             Java::Commands.java(runner, task.compile.target.to_s, '-c', spec + '$', cmd_options)
