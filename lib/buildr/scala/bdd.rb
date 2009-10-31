@@ -73,7 +73,7 @@ module Buildr::Scala
       
       filter = Java.org.apache.buildr.JavaTestFilter.new(dependencies.to_java(Java.java.lang.String))
       filter.add_fields ['MODULE$'].to_java(Java.java.lang.String)
-      filter.filter(candidates.to_java(Java.java.lang.String))      # we only want singletons
+      filter.filter(candidates.to_java(Java.java.lang.String)).map { |s| s[0..(s.size - 2)] }
     end
     
     def run(specs, dependencies)  #:nodoc:
@@ -85,11 +85,13 @@ module Buildr::Scala
 
       runner = 'org.apache.buildr.SpecsSingletonRunner'
       specs.inject [] do |passed, spec|
+        cmd_options[:name] = spec
+        
         begin
           unless Util.win_os?
-            Java::Commands.java(runner, task.compile.target.to_s, '-c', spec, cmd_options)
+            Java::Commands.java(runner, task.compile.target.to_s, '-c', spec + '$', cmd_options)
           else
-            Java::Commands.java(runner, task.compile.target.to_s, spec, cmd_options)
+            Java::Commands.java(runner, task.compile.target.to_s, spec + '$', cmd_options)
           end
         rescue => e
           passed
