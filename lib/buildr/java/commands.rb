@@ -39,7 +39,11 @@ module Java
         options[:verbose] ||= Buildr.application.options.trace || false
         rake_check_options options, :classpath, :java_args, :properties, :name, :verbose
 
-        name = options[:name] || "java #{args.first}"
+        name = options[:name]
+        if name.nil?
+          name = "java #{args.first}"
+        end
+        
         cmd_args = [path_to_bin('java')]
         classpath = classpath_from(options)
         cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
@@ -47,7 +51,7 @@ module Java
         cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
         cmd_args += args.flatten.compact
         unless Buildr.application.options.dryrun
-          info "Running #{name}"
+          info "Running #{name}" if name
           block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
           puts cmd_args.join(' ') if Buildr.application.options.trace
           cmd_args = cmd_args.map(&:inspect).join(' ') if Util.win_os?
