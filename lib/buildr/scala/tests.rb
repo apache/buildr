@@ -23,7 +23,7 @@ require 'buildr/java/tests'
 module Buildr::Scala
   # Scala::Check is available when using Scala::Test or Scala::Specs
   module Check
-    VERSION = '1.6'
+    VERSION = '1.5'
     
     class << self
       def version
