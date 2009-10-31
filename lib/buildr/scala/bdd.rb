@@ -81,7 +81,7 @@ module Buildr::Scala
       
       cmd_options = { :properties => options[:properties],
                       :java_args => options[:java_args],
-                      :classpath => dependencies}
+                      :classpath => dependencies }
 
       runner = 'org.apache.buildr.SpecsSingletonRunner'
       specs.inject [] do |passed, spec|
