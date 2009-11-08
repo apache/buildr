@@ -45,14 +45,14 @@ module Sandbox
       spec.before(:each) { sandbox }
       spec.after(:each) { reset }
     end
-    
+
     # Require an optional extension without letting its callbacks pollute the Project class.
     def require_optional_extension(extension_require_path)
-      project_callbacks_without_extension = Project.class_eval { @callbacks }.dup
+      project_callbacks_without_extension = Project.class_eval { @global_callbacks }.dup
       begin
         require extension_require_path
       ensure
-        Project.class_eval { @callbacks = project_callbacks_without_extension }
+        Project.class_eval { @global_callbacks = project_callbacks_without_extension }
       end
     end
   end
@@ -71,7 +71,7 @@ module Sandbox
 
   def sandbox
     @_sandbox = {}
-    
+
     # Create a temporary directory where we can create files, e.g,
     # for projects, compilation. We need a place that does not depend
     # on the current directory.
@@ -88,10 +88,11 @@ module Sandbox
 
     @_sandbox[:load_path] = $LOAD_PATH.clone
     #@_sandbox[:loaded_features] = $LOADED_FEATURES.clone
-    
+
     # Later on we'll want to lose all the on_define created during the test.
     @_sandbox[:on_define] = Project.class_eval { (@on_define || []).dup }
-    @_sandbox[:callbacks] = Project.class_eval { (@callbacks || []).dup }
+    @_sandbox[:extension_modules] = Project.class_eval { (@extension_modules || []).dup }
+    @_sandbox[:global_callbacks] = Project.class_eval { (@global_callbacks || []).dup }
     @_sandbox[:layout] = Layout.default.clone
 
     # Create a local repository we can play with. However, our local repository will be void
@@ -120,10 +121,17 @@ module Sandbox
   def reset
     # Get rid of all the projects and the on_define blocks we used.
     Project.clear
+
     on_define = @_sandbox[:on_define]
-    Project.class_eval { @on_define = on_define }
-    callbacks = @_sandbox[:callbacks]
-    Project.class_eval { @callbacks = callbacks }
+    extension_modules = @_sandbox[:extension_modules]
+    global_callbacks = @_sandbox[:global_callbacks]
+
+    Project.class_eval do
+      @on_define = on_define
+      @global_callbacks = global_callbacks
+      @extension_modules = extension_modules
+    end
+
     Layout.default = @_sandbox[:layout].clone
 
     $LOAD_PATH.replace @_sandbox[:load_path]

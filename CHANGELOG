@@ -1,4 +1,6 @@
 1.4.0 (Pending)
+* Added:  Project extensions (before/after_define) now support dependency ordering
+          similar to Rake (e.g. before_define(:my_setup => :compile)
 * Added:  BUILDR-328 Detect Eclipse plugin project with META-INF/MANIFEST.MF 
           and Bundle-SymbolicName: entry
 * Added:  Support for Eclipse classpath variables to avoid absolute pathnames in
@@ -37,7 +39,7 @@
 * Fixed:  BUILDR-315 Fix Eclipse .classpath for local libraries (Mat Schaffer)
 * Fixed:  BUILDR-304 Referencing an existing package task using the package
           method fails if the package has a custom filename (Rhett Sutphin)
-* Fixed:  BUILDR-322 When specifying files (instead of directories) as sources for compile task, 
+* Fixed:  BUILDR-322 When specifying files (instead of directories) as sources for compile task,
           Buildr uses target directory timestamp only (not compiled output timestamp)
 * Fixed:  BUILDR-324: Regression - baseDir system property is not set when executing tests [Alexis Midon]
 * Fixed:  BUILDR-325: Overriding package spec with classifer doesn't work (Antoine Toulme)
@@ -51,7 +53,7 @@
           for artifact jars.
 * Added:  BUILDR-222 Support Git as a version control system
 * Added   BUILDR-223 Release Task: customizable commit message
-* Added:  BUILDR-242 Include Scala-Tools Repository by Default.  
+* Added:  BUILDR-242 Include Scala-Tools Repository by Default.
 * Added:  BUILDR-268 Allow proxying for https connections (Joel Muzzerall).
 * Added:  Info message "Packaging filename.ext" now displayed for packaging tasks
 * Added:  Added Scala.version and Scala.version_str
@@ -65,13 +67,13 @@
 * Change: Upgraded to use JRuby 1.1.6 (when auto-installing).
 * Change: Buildr, no longer in incubation (hurray!): new site, mailing list, SVN, Git.
 * Change: BUILDR-171 Eclipse task generates meta-data files for projects with
-          test source code but no main source code. 
+          test source code but no main source code.
 * Change: BUILDR-177 Moved cobertura and emma extensions to lib directory.
 * Change: BUILDR-187 Source code attachment for Eclipse .classpath.
 * Change: BUILDR-188 Source code attachment for IDEA .iml file (Marko Sibakov).
 * Change: BUILDR-209 Scala Specs Should Use src/specs/scala/
 * Change: BUILDR-237 Use MacPorts Scala on OS X.
-* Change: BUILDR-260 Upgrade to Scala 2.7.3 compatible dependencies:  
+* Change: BUILDR-260 Upgrade to Scala 2.7.3 compatible dependencies:
           ScalaSpecs 1.4.3, ScalaCheck 1.5 and ScalaTest 0.9.5
 * Change: Buildr now uses Jekyll to generate Web site/documentation:
 http://github.com/mojombo/jekyll/ This replaces Docter so less code to
@@ -159,7 +161,7 @@ no longer running with the rake command.
           like java.util.Properties (Lacton).
 * Fixed:  BUILDR-116: TestTask should include the main compile target in its
           dependencies, even when using non standard directories (Lacton).
-* Fixed:  BUILDR-117 Shared directory for both code and resources produces 
+* Fixed:  BUILDR-117 Shared directory for both code and resources produces
           duplicate Eclipse classpath entries (Nathan Hamblen)
 * Fixed:  BUILDR-119 Eclipse task does not accept test resource folders
           (Lacton)
@@ -176,7 +178,7 @@ no longer running with the rake command.
 * Fixed:  BUILDR-138 ScalaTest premature use of Buildr::Repositories
           inconsistent with customizing locations.
 * Fixed:  BUILDR-152 Project.task fails when task name starts with a colon.
-* Fixed:  BUILDR-157 Tasks library not loaded from a submodule. 
+* Fixed:  BUILDR-157 Tasks library not loaded from a submodule.
 * Docs:   BUILDR-111 Troubleshoot tip when Buildr's bin directory shows up in
           RUBYLIB (Geoffrey Ruscoe).
 
@@ -235,7 +237,7 @@ JRuby.
 * Added: Cobertura tasks can be invoked for a single project using project
 name as prefix to cobetura tasks.
 * Added: Cobertura can exclude specified classes from instrumentation.
-* Added: ArchiveTask#clean can be used to remove content from a package. 
+* Added: ArchiveTask#clean can be used to remove content from a package.
 * Added: Groovy compiler.
 * Added: Mechanism to simplify creating extensions (see Extension module).
 * Added: To run all test cases 'rake spec'.  Test coverage reports will show
@@ -246,7 +248,7 @@ places where paths were used instead of path names.
 * Added: EAR packaging (Victor Hugo Borja).
 * Added: Profiles(.yaml), based on the code provided by Yanko Ivanov.
 * Added: Resources task picks the default mapping from the filter element of
-the current profile (if specified). 
+the current profile (if specified).
 * Added: Consolidated API for RJB and JRuby, replacing the now deprecated
 JavaWrapper.
 * Added: JRuby 1.1 support (Victor Hugo Borja, Nick Sieger).

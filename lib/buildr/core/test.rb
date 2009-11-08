@@ -568,7 +568,7 @@ module Buildr
 
     end
     
-    before_define do |project|
+    before_define(:test) do |project|
       # Define a recursive test task, and pass it a reference to the project so it can discover all other tasks.
       test = TestTask.define_task('test')
       test.send :associate_with, project
@@ -587,7 +587,7 @@ module Buildr
       test.setup ; test.teardown
     end
 
-    after_define do |project|
+    after_define(:test => :compile) do |project|
       test = project.test
       # Dependency on compiled tests and resources.  Dependencies added using with.
       test.dependencies.concat [test.compile.target, test.resources.target].compact

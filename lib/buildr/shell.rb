@@ -117,7 +117,7 @@ module Buildr
       ShellProviders.each { |p| Project.local_task "shell:#{p.to_sym}" }    # TODO  not working
     end
     
-    before_define do |project|
+    before_define(:shell => :compile) do |project|
       ShellProviders.each do |p|
         name = p.to_sym
         
@@ -133,7 +133,7 @@ module Buildr
       end
     end
     
-    after_define do |project|
+    after_define(:shell => :compile) do |project|
       default_shell = project.shell.using
       
       if default_shell

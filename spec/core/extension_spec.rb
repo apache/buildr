@@ -18,17 +18,31 @@ require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 
 describe Extension do
-  
+
+  before do
+    @saved_modules   = Project.class_eval { @extension_modules }.dup
+    @saved_callbacks = Project.class_eval { @global_callbacks }.dup
+  end
+
+  after do
+    modules   = @saved_modules
+    callbacks = @saved_callbacks
+    Project.class_eval do
+      @global_callbacks  = callbacks
+      @extension_modules = modules
+    end
+  end
+
   it 'should call Extension.first_time during include' do
     TestExtension.should_receive(:first_time_called).once
     class Buildr::Project
       include TestExtension
     end
   end
-  
+
   it 'should call before_define and after_define in order when project is defined' do
     begin
-      TestExtension.initialized do |extension|
+      TestExtension.callback do |extension|
         extension.should_receive(:before_define_called).once.ordered
         extension.should_receive(:after_define_called).once.ordered
       end
@@ -37,14 +51,14 @@ describe Extension do
       end
       define('foo')
     ensure
-      TestExtension.initialized { |ignore| }
+      TestExtension.callback { |ignore| }
     end
   end
 
   it 'should call before_define and after_define for each project defined' do
     begin
       extensions = 0
-      TestExtension.initialized do |extension|
+      TestExtension.callback do |extension|
         extensions += 1
         extension.should_receive(:before_define_called).once.ordered
         extension.should_receive(:after_define_called).once.ordered
@@ -55,39 +69,133 @@ describe Extension do
       define('foo')
       define('bar')
       extensions.should equal(2)
-    ensure  
-      TestExtension.initialized { |ignore| }
+    ensure
+      TestExtension.callback { |ignore| }
     end
+  end
+
+  it 'should call before_define callbacks in dependency order' do
+    class Buildr::Project
+      include ExtensionOneTwo
+      include ExtensionThreeFour
+    end
+    define('foo')
+    project('foo').before_order.should == [ :one, :two, :three, :four ]
+    project('foo').after_order.should  == [ :four, :three, :two, :one ]
+  end
+
+  it 'should call before_define callbacks when extending project' do
+    define('foo') do
+      extend ExtensionOneTwo
+      extend ExtensionThreeFour
+    end
+    project('foo').before_order.should == [ :two, :one, :four, :three ]
+    project('foo').after_order.should  == [ :four, :three, :two, :one ]
+  end
+
+  it 'should raise error when including if callback dependencies cannot be satisfied' do
+    class Buildr::Project
+      include ExtensionOneTwo # missing ExtensionThreeFour
+    end
+    lambda { define('foo') }.should raise_error
+  end
+
+  it 'should raise error when extending if callback dependencies cannot be satisfied' do
+    lambda {
+      define('foo') do |project|
+        extend ExtensionOneTwo # missing ExtensionThreeFour
+      end
+    }.should raise_error
+  end
+
+  it 'should ignore dependencies when extending project' do
+    define('bar') do |project|
+      extend ExtensionThreeFour # missing ExtensionOneTwo
+    end
+    project('bar').before_order.should == [:four, :three]
+    project('bar').after_order.should == [:four, :three]
   end
 end
 
 module TestExtension
   include Extension
-  
+
   def initialize(*args)
-    # callback is used to obtain extension instance created by buildr
-    @@initialized.call(self) if @@initialized
     super
+    # callback is used to obtain extension instance created by buildr
+    @@callback.call(self) if @@callback
   end
-  
-  def TestExtension.initialized(&block)
-    @@initialized = block
+
+  def self.callback(&block)
+    @@callback = block
   end
-  
+
   first_time do
-    TestExtension.first_time_called()
+    self.first_time_called()
   end
-  
+
   before_define do |project|
     project.before_define_called()
   end
-  
+
   after_define do |project|
     project.after_define_called()
   end
 
-  def TestExtension.first_time_called()
+  def self.first_time_called()
   end
-  
+
+end
+
+module BeforeAfter
+  def before_order
+    @before_order ||= []
+  end
+
+  def after_order
+    @after_order ||= []
+  end
+end
+
+module ExtensionOneTwo
+  include Extension, BeforeAfter
+
+  before_define(:two => :one) do |project|
+    project.before_order << :two
+  end
+
+  before_define(:one) do |project|
+    project.before_order << :one
+  end
+
+  after_define(:one => :two) do |project|
+    project.after_order << :one
+  end
+
+  after_define(:two => :three) do |project|
+    project.after_order << :two
+  end
+end
+
+module ExtensionThreeFour
+  include Extension, BeforeAfter
+
+  before_define(:three => :two)
+
+  before_define(:four => :three) do |project|
+    project.before_order << :four
+  end
+
+  before_define(:three) do |project|
+    project.before_order << :three
+  end
+
+  after_define(:three => :four) do |project|
+    project.after_order << :three
+  end
+
+  after_define(:four) do |project|
+    project.after_order << :four
+  end
 end
 

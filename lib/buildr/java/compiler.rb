@@ -276,14 +276,14 @@ module Buildr
       Project.local_task('javadoc')
     end
 
-    before_define do |project|
+    before_define(:javadoc) do |project|
       JavadocTask.define_task('javadoc').tap do |javadoc|
         javadoc.into project.path_to(:target, :javadoc)
         javadoc.using :windowtitle=>project.comment || project.name
       end
     end
 
-    after_define do |project|
+    after_define(:javadoc) do |project|
       project.javadoc.from project
     end
 

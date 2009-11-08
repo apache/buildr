@@ -139,7 +139,7 @@ module Buildr
 
     include Extension
 
-    before_define do |project|
+    before_define(:check => :package) do |project|
       # The check task can do any sort of interesting things, but the most important is running expectations.
       project.task("check") do |task|
         project.expectations.inject(true) do |passed, expect|

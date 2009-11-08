@@ -37,7 +37,7 @@ module Buildr
       end
 
       # Adds a compiler to the list of supported compiler.
-      #   
+      #
       # For example:
       #   Buildr::Compiler << Buildr::Javac
       def add(compiler)
@@ -188,7 +188,7 @@ module Buildr
       end
 
     private
-      
+
       def findFirst(file, pattern)
         match = nil
         File.open(file, "r") do |infile|
@@ -383,7 +383,7 @@ module Buildr
       @project, @usage = project, usage
       guess_compiler
     end
-    
+
     # Try to guess if we have a compiler to match source files.
     def guess_compiler #:nodoc:
       candidate = Compiler.compilers.detect { |cls| cls.applies_to?(project, self) }
@@ -497,7 +497,7 @@ module Buildr
       Project.local_task('compile') { |name| "Compiling #{name}" }
     end
 
-    before_define do |project|
+    before_define(:compile) do |project|
       resources = ResourcesTask.define_task('resources')
       resources.send :associate_with, project, :main
       project.path_to(:source, :main, :resources).tap { |dir| resources.from dir if File.exist?(dir) }
@@ -507,7 +507,7 @@ module Buildr
       project.recursive_task('compile')
     end
 
-    after_define do |project|
+    after_define(:compile) do |project|
       if project.compile.target
         # This comes last because the target path is set inside the project definition.
         project.build project.compile.target
@@ -517,7 +517,7 @@ module Buildr
       end
     end
 
-      
+
     # :call-seq:
     #   compile(*sources) => CompileTask
     #   compile(*sources) { |task| .. } => CompileTask
