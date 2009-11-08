@@ -113,7 +113,7 @@ describe Buildr::Scala::ScalaTest do
           val sum = 1 + 1
           assert(sum === 2)
         }
-        
+
         class InnerSuite extends FunSuite {
           test("addition") {
             val sum = 1 + 1
@@ -180,15 +180,16 @@ describe Buildr::Scala::ScalaTest do
     write 'src/test/scala/PropertyTestSuite.scala', <<-SCALA
       import org.scalatest._
       class PropertyTestSuite extends FunSuite {
-        var properties = Map[String, Any]()
+        var configMap = Map[String, Any]()
         test("testProperty") {
-          assert(properties("name") === "value")
+          assert(configMap("name") === "value")
         }
-        
+
         protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper,
-                                        includes: Set[String], excludes: Set[String], properties: Map[String, Any]) {
-          this.properties = properties;                              
-          super.runTests(testName, reporter, stopper, includes, excludes, properties)
+                                        filter: Filter, configMap: Map[String, Any],
+                                        distributor: Option[Distributor], tracker: Tracker) {
+          this.configMap = configMap
+          super.runTests(testName, reporter, stopper, filter, configMap, distributor, tracker)
         }
       }
     SCALA
@@ -198,54 +199,55 @@ describe Buildr::Scala::ScalaTest do
 
   it 'should run with ScalaCheck automatic test case generation' do
     write 'src/test/scala/MySuite.scala', <<-SCALA
-      import org.scalatest.prop.PropSuite
+      import org.scalatest.FunSuite
+      import org.scalatest.prop.Checkers
       import org.scalacheck.Arbitrary._
       import org.scalacheck.Prop._
-      
-      class MySuite extends PropSuite {
-      
+
+      class MySuite extends FunSuite with Checkers {
+
         test("list concatenation") {
           val x = List(1, 2, 3)
           val y = List(4, 5, 6)
           assert(x ::: y === List(1, 2, 3, 4, 5, 6))
           check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
         }
-      
-        test(
-          "list concatenation using a test method",
-          (a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size
-        )
+
+        test("list concatenation using a test method") {
+          check((a: List[Int], b: List[Int]) => a.size + b.size == (a ::: b).size)
+        }
       }
     SCALA
     define('foo')
     project('foo').test.invoke
     project('foo').test.passed_tests.should include('MySuite')
   end
-  
+
   it 'should fail if ScalaCheck test case fails' do
     write 'src/test/scala/StringSuite.scala', <<-SCALA
-      import org.scalatest.prop.PropSuite
+      import org.scalatest.FunSuite
+      import org.scalatest.prop.Checkers
       import org.scalacheck.Arbitrary._
       import org.scalacheck.Prop._
 
-      class StringSuite extends PropSuite {
+      class StringSuite extends FunSuite with Checkers {
         test("startsWith") {
           check( (a: String, b: String) => (a+b).startsWith(a) )
         }
-      
+
         test("endsWith") {
           check( (a: String, b: String) => (a+b).endsWith(b) )
         }
-      
+
         // Is this really always true?
         test("concat") {
           check( (a: String, b: String) => (a+b).length > a.length && (a+b).length > b.length )
         }
-      
+
         test("substring2") {
           check( (a: String, b: String) => (a+b).substring(a.length) == b )
         }
-      
+
         test("substring3") {
           check( (a: String, b: String, c: String) =>
                    (a+b+c).substring(a.length, a.length+b.length) == b )

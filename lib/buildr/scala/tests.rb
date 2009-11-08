@@ -23,7 +23,7 @@ require 'buildr/java/tests'
 module Buildr::Scala
   # Scala::Check is available when using Scala::Test or Scala::Specs
   module Check
-    VERSION = '1.6'
+    VERSION = '1.5'
     
     class << self
       def version
@@ -112,7 +112,7 @@ module Buildr::Scala
             # TODO: This should be name=>value pairs!
             #ant.includes group_includes.join(" ") if group_includes
             #ant.excludes group_excludes.join(" ") if group_excludes
-            (options[:properties] || []).each { |name, value| ant.property :name=>name, :value=>value }
+            (options[:properties] || []).each { |name, value| ant.config :name=>name, :value=>value }
           end
         end
         
@@ -127,7 +127,7 @@ module Buildr::Scala
           File.open(reportFile, "r") do |input|
             while (line = input.gets) do
               failed = (line =~ /(TESTS? FAILED -)|(RUN STOPPED)|(RUN ABORTED)/) unless failed
-              completed |= (line =~ /Run completed\./)
+              completed |= (line =~ /Run completed/)
               break if (failed)
             end
           end
