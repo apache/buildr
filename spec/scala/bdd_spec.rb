@@ -65,7 +65,7 @@ describe Buildr::Scala::Specs do
       }
     SCALA
     define('foo').test.invoke
-    project('foo').test.tests.should include('com.example.MySpecs$')
+    project('foo').test.tests.should include('com.example.MySpecs')
   end
 
   it 'should include public objects extending org.specs.Specification even with companion classes' do
@@ -82,7 +82,7 @@ describe Buildr::Scala::Specs do
       class MySpecs extends org.specs.runner.JUnit4(MySpecs)
     SCALA
     define('foo').test.invoke
-    project('foo').test.tests.should include('com.example.MySpecs$')
+    project('foo').test.tests.should include('com.example.MySpecs')
   end
 
   it 'should pass when spec passes' do
@@ -114,6 +114,6 @@ describe Buildr::Scala::Specs do
     SCALA
     define('foo')
     project('foo').test.invoke rescue
-    project('foo').test.failed_tests.should include('StringSpecs$')
+    project('foo').test.failed_tests.should include('StringSpecs')
   end
 end
