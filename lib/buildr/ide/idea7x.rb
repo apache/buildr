@@ -39,11 +39,11 @@ module Buildr
       Project.local_task "idea7x"=>"artifacts"
     end
 
-    before_define do |project|
+    before_define(:idea7x) do |project|
       project.recursive_task("idea7x")
     end
 
-    after_define do |project|
+    after_define(:idea7x => :package) do |project|
       idea7x = project.task("idea7x")
 
       # We need paths relative to the top project's base directory.

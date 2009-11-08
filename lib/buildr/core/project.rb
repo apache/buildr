@@ -210,8 +210,8 @@ module Buildr
           @projects[name] = project
           # Set the project properties first, actions may use them.
           properties.each { |name, value| project.send "#{name}=", value } if properties
-          # Instantiate callbacks for this project, and setup to call before/after define.
-          # Don't cache list of callbacks, since project may add new callbacks.
+          # Setup to call before/after define extension callbacks
+          # Don't cache list of extensions, since project may add new extensions.
           project.enhance do |project|
             project.send :call_callbacks, :before_define
             project.enhance do |project|
@@ -219,14 +219,14 @@ module Buildr
             end
           end
           project.enhance do |project|
-            @on_define.each { |callback| callback[project] }
+            @on_define.each { |extension| extension[project] }
           end if @on_define
           # Enhance the project using the definition block.
           project.enhance { project.instance_exec project, &block } if block
 
           # Top-level project? Invoke the project definition. Sub-project? We don't invoke
           # the project definiton yet (allow project calls to establish order of evaluation),
-          # but must do so before the parent project's definition is done. 
+          # but must do so before the parent project's definition is done.
           project.parent.enhance { project.invoke } if project.parent
         end
       end
@@ -375,11 +375,15 @@ module Buildr
         project if Project === project
       end
 
-      # Callback classes.
-      def callbacks #:nodoc:
-        @callbacks ||= []
+      # Loaded extension modules.
+      def extension_modules #:nodoc:
+        @extension_modules ||= []
       end
 
+      # Extension callbacks that apply to all projects
+      def global_callbacks #:nodoc:
+        @global_callbacks ||= []
+      end
     end
 
 
@@ -402,11 +406,8 @@ module Buildr
         @parent = task(split[0...-1].join(':'))
         raise "No parent project #{split[0...-1].join(':')}" unless @parent && Project === parent
       end
-      callbacks = Project.callbacks.uniq.map(&:new)
-      @callbacks = [:before_define, :after_define].inject({}) do |hash, state|
-        methods = callbacks.select { |callback| callback.respond_to?(state) }.map { |callback| callback.method(state) }
-        hash.update(state=>methods)
-      end
+      # Inherit all global callbacks
+      @callbacks = Project.global_callbacks.dup
     end
 
     # :call-seq:
@@ -587,6 +588,16 @@ module Buildr
       %Q{project(#{name.inspect})}
     end
 
+    def callbacks #:nodoc:
+      # global + project_local callbacks for this project
+      @callbacks ||= []
+    end
+
+    def calledback #:nodoc:
+      # project-local callbacks that have been called
+      @calledback ||= {}
+    end
+
   protected
 
     # :call-seq:
@@ -626,14 +637,32 @@ module Buildr
       end
     end
 
-    # Call all callbacks for a particular state, e.g. :before_define, :after_define.
-    def call_callbacks(state) #:nodoc:
-      methods = @callbacks.delete(state) || []
-      methods.each { |method| method.call(project) }
-    end
+    # Call all extension callbacks for a particular phase, e.g. :before_define, :after_define.
+    def call_callbacks(phase) #:nodoc:
+      remaining = @callbacks.select { |cb| cb.phase == phase }
+      known_callbacks = remaining.map { |cb| cb.name }
 
-    def add_callback(callback)
-      @callbacks[:after_define] << callback.method(:after_define) if callback.respond_to?(:after_define)
+      # find first callback with satisfied dependencies
+      first_satisfied = lambda do
+        remaining_names = remaining.map { |cb| cb.name }
+        remaining.find do |cb|
+          cb.dependencies.each do |dep|
+            fail "Unknown #{phase.inspect} extension dependency: #{dep.inspect}" unless known_callbacks.index(dep)
+          end
+          satisfied = cb.dependencies.find { |dep| remaining_names.index(dep) } == nil
+          remaining.delete cb if satisfied
+        end
+      end
+
+      # call each extension in order
+      until remaining.empty?
+        callback = first_satisfied.call
+        if callback.nil?
+          hash = remaining.map { |cb| { cb.name => cb.dependencies} }
+          fail "Unsatisfied dependencies in extensions for #{phase}: #{hash.inspect}"
+        end
+        callback.blocks.each { |b| b.call(self) }
+      end
     end
 
   end
@@ -707,6 +736,22 @@ module Buildr
   #   end
   module Extension
 
+    # Extension callback details
+    class Callback #:nodoc:
+      attr_accessor :phase, :name, :dependencies, :blocks
+
+      def initialize(phase, name, dependencies, blocks)
+        @phase = phase
+        @name = name
+        @dependencies = dependencies
+        @blocks = (blocks ? (Array === blocks ? blocks : [blocks]) : [])
+      end
+
+      def merge(callback)
+        Callback.new(phase, name, @dependencies + callback.dependencies, @blocks + callback.blocks)
+      end
+    end
+
     def self.included(base) #:nodoc:
       base.extend ClassMethods
     end
@@ -715,49 +760,109 @@ module Buildr
     module ClassMethods
 
       def included(base) #:nodoc:
-        # When included in Project, add callback and call first_time.
-        if Project == base && !base.callbacks.include?(callbacks)
-          base.callbacks << callbacks
-          callbacks.first_time if callbacks.respond_to?(:first_time)
+        # When included in Project, add module instance, merge callbacks and call first_time.
+        if Project == base && !base.extension_modules.include?(module_callbacks)
+          base.extension_modules << module_callbacks
+          merge_callbacks(base.global_callbacks, module_callbacks)
+          first_time = module_callbacks.select { |c| c.phase == :first_time }
+          first_time.each do |c|
+            c.blocks.each { |b| b.call }
+          end
         end
       end
 
       def extended(base) #:nodoc:
-        # When extending project, add instance and call before_define.
+        # When extending project, merge after_define callbacks and call before_define callback(s)
+        # immediately
         if Project === base
-          callbacks = self.send(:callbacks).new
-          callbacks.before_define(base) if callbacks.respond_to?(:before_define)
-          base.send :add_callback, callbacks
+          merge_callbacks(base.callbacks, module_callbacks.select { |cb| cb.phase == :after_define })
+          calls = module_callbacks.select { |cb| cb.phase == :before_define }
+          calls.each do |cb|
+            cb.blocks.each { |b| b.call(base) } unless base.calledback[cb]
+            base.calledback[cb] = cb
+          end
         end
       end
 
-      # This block will be called once for any particular extension.
+      # This block will be called once for any particular extension included in Project.
       # You can use this to setup top-level and local tasks.
       def first_time(&block)
-        meta = class << callbacks ; self ; end
-        meta.send :define_method, :first_time, &block
+        module_callbacks << Callback.new(:first_time, self.name, [], block)
       end
 
       # This block is called once for the project with the project instance,
       # right before running the project definition.  You can use this to add
       # tasks and set properties that will be used in the project definition.
-      def before_define(&block)
-        callbacks.send :define_method, :before_define, &block
+      #
+      # The block may be named and dependencies may be declared similar to Rake
+      # task dependencies:
+      #
+      #   before_define(:my_setup) do |project|
+      #     # do stuff on project
+      #   end
+      #
+      #   # my_setup code must run before :compile
+      #   before_define(:compile => :my_setup)
+      #
+      def before_define(*args, &block)
+        if args.empty?
+          name = self.name
+          deps = []
+        else
+          name, args, deps = Buildr.application.resolve_args(args)
+        end
+        module_callbacks << Callback.new(:before_define, name, deps, block)
       end
 
       # This block is called once for the project with the project instance,
       # right after running the project definition.  You can use this to do
       # any post-processing that depends on the project definition.
-      def after_define(&block)
-        callbacks.send :define_method, :after_define, &block
+      #
+      # The block may be named and dependencies may be declared similar to Rake
+      # task dependencies:
+      #
+      #   after_define(:my_setup) do |project|
+      #     # do stuff on project
+      #   end
+      #
+      #   # my_setup code must run before :compile (but only after project is defined)
+      #   after_define(:compile => :my_setup)
+      #
+      def after_define(*args, &block)
+        if args.empty?
+          name = self.name
+          deps = []
+        else
+          name, args, deps = Buildr.application.resolve_args(args)
+        end
+        module_callbacks << Callback.new(:after_define, name, deps, block)
       end
 
     private
 
-      def callbacks
-        const_get('Callbacks') rescue const_set('Callbacks', Class.new)
+      def module_callbacks
+        begin
+          const_get('Callbacks')
+        rescue
+          callbacks = []
+          const_set('Callbacks', callbacks)
+        end
       end
 
+      def merge_callbacks(base, merge)
+        # index by phase and name
+        index = base.inject({}) { |hash,cb| { [cb.phase, cb.name] => cb } }
+        merge.each do |cb|
+          existing = index[[cb.phase, cb.name]]
+          if existing
+            base[base.index(existing)] = existing.merge(cb)
+          else
+            base << cb
+          end
+          index[[cb.phase, cb.name]] = cb
+        end
+        base
+      end
     end
 
   end

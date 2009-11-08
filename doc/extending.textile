@@ -16,7 +16,7 @@ file('derby.sql') do
   REQUIRES = [
     'org.apache.openjpa:openjpa-all:jar:0.9.7-incubating',
     'commons-collections:commons-collections:jar:3.1',
-    . . . 
+    . . .
     'net.sourceforge.serp:serp:jar:1.11.0' ]
   ant('openjpa') do |ant|
     ant.taskdef :name=>'mapping',
@@ -48,20 +48,20 @@ But just using functions is not always enough.  You end up with a Buildfile cont
 
 If you want to share these pre-canned definitions between projects, you have a few more options.  You can share the @tasks@ directory using SVN externals, Git modules, or whichever cross-repository feature your source control system supports. Another mechanism with better version control is to package all these tasks, functions and modules into a "Gem":http://rubygems.org/ and require it from your Buildfile.  You can run your own internal Gem server for that.
 
-To summarize, there are several common ways to distribute extensions: 
+To summarize, there are several common ways to distribute extensions:
 * Put them in the same place (e.g. @~/.buildr@) and require them from your
 @buildfile@
 * Put them directly in the project, typically under the @tasks@ directory.
 * Put them in a shared code repository, and link to them from your project's @tasks@ directory
 * As Ruby gems and specify which gems are used in the settings file
 
-You can also get creative and devise your own way to distribute extensions.  
+You can also get creative and devise your own way to distribute extensions.
 "Sake":http://errtheblog.com/post/6069 is a good example of such initiative that lets you deploy Rake tasks on a system-wide basis.
 
 h2(#extensions).  Creating Extensions
 
 The basic mechanism for extending projects in Buildr are Ruby modules.  In fact, base features like compiling and testing are all developed in the form of modules, and then added to the core Project class.
-  
+
 A module defines instance methods that are then mixed into the project and become instance methods of the project.  There are two general ways for extending projects.  You can extend all projects by including the module in Project:
 
 {% highlight ruby %}
@@ -127,6 +127,25 @@ end
 {% endhighlight %}
 
 You may find interesting that this Extension API is used pervasively inside Buildr itself.  Many of the standard tasks such as @compile@, @test@, @package@  are extensions to a very small core.
+
+Starting with Buildr 1.4, it's possible to define ordering between @before_define@ and @after_define@ code blocks in a way similar to Rake's dependencies.  For example, if you wanted to override @project.test.compile.from@ in @after_define@, you could do so by in
+
+{% highlight ruby %}
+after_define(:functional_tests) do |project|
+  # Change project.test.compile.from if it's not already pointing
+  # to a location with Java sources
+  if Dir["#{project.test.compile.from}/**/*.java"].size == 0 &&
+     Dir["#{project._(:src, 'test-functional', :java)}/**/*.java"].size > 0
+    project.test.compile.from project._(:src, 'test-functional', :java)
+  end
+end
+
+# make sure project.test.compile.from is updated before the
+# compile extension picks up its value
+after_define(:compile => :functional_test)
+{% endhighlight %}
+
+Core extensions provide the following named callbacks: @compile@, @test@, @build@, @package@ and @check@.
 
 h2(#layouts).  Using Alternative Layouts
 

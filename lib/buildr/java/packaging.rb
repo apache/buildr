@@ -573,7 +573,7 @@ module Buildr
 
       include Extension
 
-      before_define do |project|
+      before_define(:package => :build) do |project|
         ::Java.load
         if project.parent && project.parent.manifest 
           project.manifest = project.parent.manifest.dup

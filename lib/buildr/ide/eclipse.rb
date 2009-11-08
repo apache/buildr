@@ -163,7 +163,7 @@ module Buildr
       project.recursive_task('eclipse')
     end
 
-    after_define do |project|
+    after_define(:eclipse => :package) do |project|
       eclipse = project.task('eclipse')
 
       eclipse.enhance [ file(project.path_to('.classpath')), file(project.path_to('.project')) ]

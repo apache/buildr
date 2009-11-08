@@ -43,7 +43,7 @@ module Buildr
       end
     end
 
-    before_define do |project|
+    before_define(:package => :build) do |project|
       [ :package, :install, :uninstall, :upload ].each { |name| project.recursive_task name }
       # Need to run build before package, since package is often used as a dependency by tasks that
       # expect build to happen.
@@ -51,6 +51,8 @@ module Buildr
       project.group ||= project.parent && project.parent.group || project.name
       project.version ||= project.parent && project.parent.version
     end
+    
+    after_define(:package)
 
     # The project's identifier. Same as the project name, with colons replaced by dashes.
     # The ID for project foo:bar is foo-bar.

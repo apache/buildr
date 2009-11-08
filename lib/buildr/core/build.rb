@@ -52,7 +52,7 @@ module Buildr
       task 'default'=>'build'
     end
 
-    before_define do |project|
+    before_define(:build => [:compile, :test]) do |project|
       project.recursive_task 'build'
       project.recursive_task 'clean'
       project.clean do
@@ -61,6 +61,7 @@ module Buildr
       end
     end
 
+    after_define(:build)
 
     # *Deprecated:* Use +path_to(:target)+ instead.
     def target
