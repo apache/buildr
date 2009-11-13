@@ -199,7 +199,7 @@ module Buildr
   #
   # Note: You can enhance this task to create the artifact yourself, e.g. download it from
   # a site that doesn't have a remote repository structure, copy it from a different disk, etc.
-  class Artifact < Rake::FileCreationTask
+  class Artifact < Rake::FileTask
 
     # The default artifact type.
     DEFAULT_TYPE = :jar

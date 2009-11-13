@@ -538,6 +538,13 @@ describe Buildr, '#install' do
     lambda { install.invoke }.should change { File.exist?(artifact(@spec).to_s) }.to(true)
   end
 
+  it 'should re-install artifact when "from" is newer' do
+    install artifact(@spec).from(@file)
+    write artifact(@spec).to_s # install a version of the artifact
+    sleep 1; write @file       # make sure the "from" file has newer modification time 
+    lambda { install.invoke }.should change { File.exist?(artifact(@spec).to_s) and File.mtime(@file) == File.mtime(artifact(@spec).to_s) }.to(true)
+  end
+
   it 'should install POM alongside artifact' do
     write @file
     install artifact(@spec).from(@file)
