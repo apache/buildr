@@ -421,15 +421,15 @@ describe 'a release process', :shared=>true do
     end
 
     it 'should return tag specified by tag_name' do
-      @release.tag_name  = 'first'
+      Release.tag_name  = 'first'
       @release.send(:resolve_tag).should == 'first'
     end
     
     it 'should use tag returned by tag_name if tag_name is a proc' do
-      @release.tag_name  = lambda { |version| "buildr-#{version}" }
+      Release.tag_name  = lambda { |version| "buildr-#{version}" }
       @release.send(:resolve_tag).should == 'buildr-1.0.0'
     end
-    after { @release.tag_name = nil }
+    after { Release.tag_name = nil }
   end
 
   describe '#tag_release' do
@@ -501,13 +501,13 @@ describe 'a release process', :shared=>true do
     end
 
     it 'should use the commit message specified by commit_message' do
-      @release.commit_message  = 'Here is my custom message'
+      Release.commit_message  = 'Here is my custom message'
       @release.should_receive(:message).and_return('Here is my custom message')
       @release.update_version_to_next
     end
     
     it 'should use the commit message returned by commit_message if commit_message is a proc' do
-      @release.commit_message  = lambda { |new_version| 
+      Release.commit_message  = lambda { |new_version| 
         new_version.should == '1.0.1-SNAPSHOT'
         "increment version number to #{new_version}"
       }
@@ -518,6 +518,7 @@ describe 'a release process', :shared=>true do
     it 'should inform the user of the new version' do
       lambda { @release.update_version_to_next }.should show_info('Current version is now 1.0.1-SNAPSHOT')
     end
+    after { Release.commit_message = nil }
   end
 
 end

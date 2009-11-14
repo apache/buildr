@@ -7,6 +7,7 @@
           generated .classpath using: 
             eclipse.classpath_variables { :VAR => '/path/to/libraries' }
 * Change: Updated to JRuby 1.4.0
+* Fixed:  BUILDR-223 Release Task: customizable commit message (Alexis Midon)
 * Fixed:  BUILDR-330  Install task should re-install artifact even if they 
           already exist (Alexis Midon)
 * Fixed:  BUILDR-334 Eclipse .classpath files use absolute paths for library 

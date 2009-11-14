@@ -226,7 +226,19 @@ module Buildr
     THIS_VERSION_PATTERN  = /(THIS_VERSION|VERSION_NUMBER)\s*=\s*(["'])(.*)\2/
 
     class << self
-      
+ 
+      # Use this to specify a different tag name for tagging the release in source control.
+      # You can set the tag name or a proc that will be called with the version number,
+      # for example:
+      #   Release.tag_name = lambda { |ver| "foo-#{ver}" }
+      attr_accessor :tag_name
+
+      # Use this to specify a different commit message to commit the buildfile with the next version in source control.
+      # You can set the commit message or a proc that will be called with the next version number,
+      # for example:
+      #   Release.commit_message = lambda { |ver| "Changed version number to #{ver}" }
+      attr_accessor :commit_message
+
       # :call-seq:
       #     add(MyReleaseClass)
       #
@@ -252,18 +264,6 @@ module Buildr
       end
 
     end
- 
-    # Use this to specify a different tag name for tagging the release in source control.
-    # You can set the tag name or a proc that will be called with the version number,
-    # for example:
-    #   Release.tag_name = lambda { |ver| "foo-#{ver}" }
-    attr_accessor :tag_name
-
-    # Use this to specify a different commit message to commit the buildfile with the next version in source control.
-    # You can set the commit message or a proc that will be called with the next version number,
-    # for example:
-    #   Release.commit_message = lambda { |ver| "Changed version number to #{ver}" }
-    attr_accessor :commit_message
 
     # :call-seq:
     #   make()
@@ -342,7 +342,7 @@ module Buildr
     # Return the name of the tag to tag the release with.
     def resolve_tag
       version = extract_version
-      tag = tag_name || version
+      tag = Release.tag_name || version
       tag = tag.call(version) if Proc === tag
       tag
     end
@@ -356,7 +356,7 @@ module Buildr
     # Return the message to use to cimmit the buildfile with the next version
     def message
       version = extract_version
-      msg = commit_message || "Changed version number to #{version}"
+      msg = Release.commit_message || "Changed version number to #{version}"
       msg = msg.call(version) if Proc === msg
       msg
     end
