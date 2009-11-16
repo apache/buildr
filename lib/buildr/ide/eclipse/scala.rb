@@ -26,14 +26,15 @@ module Buildr
       CONTAINER = 'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER'
       BUILDER   = 'ch.epfl.lamp.sdt.core.scalabuilder'
 
-      after_define do |project|
+      after_define :eclipse => :eclipse_scala
+      after_define :eclipse_scala do |project|
         eclipse = project.eclipse
-
         # smart defaults
         if eclipse.natures.empty? && (project.compile.language == :scala || project.test.compile.language == :scala)
           eclipse.natures = [NATURE, Buildr::Eclipse::Java::NATURE]
           eclipse.classpath_containers = [CONTAINER, Buildr::Eclipse::Java::CONTAINER] if eclipse.classpath_containers.empty?
           eclipse.builders = BUILDER if eclipse.builders.empty?
+          eclipse.exclude_libs += Buildr::Scala::Scalac.dependencies
         end
 
         # :scala nature explicitly set
@@ -54,6 +55,7 @@ module Buildr
             eclipse.builders -= [Buildr::Eclipse::Java::BUILDER]
             eclipse.builders += [BUILDER]
           end
+          eclipse.exclude_libs += Buildr::Scala::Scalac.dependencies
         end
       end
 

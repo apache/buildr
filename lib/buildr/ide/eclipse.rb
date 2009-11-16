@@ -44,7 +44,14 @@ module Buildr
           values = values[0].inject({}) { |h, (k,v)| h[k.to_s] = @project.path_to(v); h }
           @variables = values.merge(@variables || {})
         end
-        @variables || (@project.parent ? @project.parent.eclipse.classpath_variables : {})
+        @variables || (@project.parent ? @project.parent.eclipse.classpath_variables : default_classpath_variables)
+      end
+
+      def default_classpath_variables
+        vars = {}
+        vars[:SCALA_HOME] = ENV['SCALA_HOME'] if ENV['SCALA_HOME']
+        vars[:JAVA_HOME]  = ENV['JAVA_HOME']  if ENV['JAVA_HOME']
+        vars
       end
 
       # :call-seq:
@@ -94,6 +101,26 @@ module Buildr
         else
           @classpath_containers || (@project.parent ? @project.parent.eclipse.classpath_containers : [])
         end
+      end
+
+      # :call-seq:
+      #   exclude_libs() => [lib1, lib2]
+      # Returns the an array of libraries to be excluded from the generated Eclipse classpath
+      def exclude_libs(*values)
+        if values.size > 0
+          @exclude_libs ||= []
+          @exclude_libs += values
+        else
+          @exclude_libs || (@project.parent ? @project.parent.eclipse.exclude_libs : [])
+        end
+      end
+
+      # :call-seq:
+      #   exclude_libs=(lib1, lib2)
+      # Sets libraries to be excluded from the generated Eclipse classpath
+      #
+      def exclude_libs=(libs)
+        @exclude_libs = arrayfy(libs)
       end
 
       # :call-seq:
@@ -184,6 +211,9 @@ module Buildr
 
               # Convert classpath elements into applicable Project objects
               cp.collect! { |path| Buildr.projects.detect { |prj| prj.packages.detect { |pkg| pkg.to_s == path } } || path }
+
+              # Remove excluded libs
+              cp -= project.eclipse.exclude_libs.map(&:to_s)
 
               # project_libs: artifacts created by other projects
               project_libs, others = cp.partition { |path| path.is_a?(Project) }
@@ -308,14 +338,14 @@ module Buildr
       def var(libs)
         libs.each do |lib_path, var_name, var_value|
           lib_artifact = file(lib_path)
-          relative_lib_path = lib_path.sub(var_value, var_name)
+          relative_lib_path = lib_path.sub(var_value, var_name.to_s)
           if lib_artifact.respond_to? :sources_artifact
             source_path = lib_artifact.sources_artifact.to_s
             relative_source_path = source_path.sub(var_value, var_name)
             @xml.classpathentry :kind=>'var', :path=>relative_lib_path, :sourcepath=>relative_source_path
           else
             @xml.classpathentry :kind=>'var', :path=>relative_lib_path
-          end            
+          end
         end
       end
 
