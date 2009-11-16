@@ -6,6 +6,8 @@
 * Added:  Support for Eclipse classpath variables to avoid absolute pathnames in
           generated .classpath using: 
             eclipse.classpath_variables { :VAR => '/path/to/libraries' }
+* Added:  Support for excluding libraries from Eclipse classpath using:
+            eclipse.exclude_libs += ['/path/to/some/library.jar']
 * Change: Updated to JRuby 1.4.0
 * Fixed:  BUILDR-223 Release Task: customizable commit message (Alexis Midon)
 * Fixed:  BUILDR-330  Install task should re-install artifact even if they 

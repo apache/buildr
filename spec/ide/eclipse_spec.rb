@@ -201,7 +201,7 @@ describe Buildr::Eclipse do
         build_commands.should include(JAVA_BUILDER)
       end
     end
-    
+
     describe 'Plugin project' do
 
       before do
@@ -224,7 +224,7 @@ describe Buildr::Eclipse do
         build_commands.should include(JAVA_BUILDER)
       end
     end
-    
+
     describe 'Plugin project with META-INF/MANIFEST.MF' do
 
       before do
@@ -236,10 +236,10 @@ describe Buildr::Eclipse do
         write 'META-INF/MANIFEST.MF', <<-MANIFEST
 Manifest-Version: 1.0
 Name: example/
-Specification-Title: "Examples" 
+Specification-Title: "Examples"
 Specification-Version: "1.0"
 Specification-Vendor: "Acme Corp.".
-Implementation-Title: "example" 
+Implementation-Title: "example"
 Implementation-Version: "build57"
 Implementation-Vendor: "Acme Corp."
 Bundle-SymbolicName: acme.plugin.example
@@ -252,10 +252,10 @@ MANIFEST
         write 'META-INF/MANIFEST.MF', <<-MANIFEST
 Manifest-Version: 1.0
 Name: example/
-Specification-Title: "Examples" 
+Specification-Title: "Examples"
 Specification-Version: "1.0"
 Specification-Vendor: "Acme Corp.".
-Implementation-Title: "example" 
+Implementation-Title: "example"
 Implementation-Version: "build57"
 Implementation-Vendor: "Acme Corp."
 MANIFEST
@@ -421,7 +421,7 @@ MANIFEST
       write 'lib/some-local.jar'
       define('foo') { compile.using(:javac).with(_('lib/some-local.jar')) }
     end
-    
+
     it 'should have a lib artifact reference in the .classpath file' do
       classpath_xml_elements.collect("classpathentry[@kind='lib']") { |n| n.attributes['path'] }.
         should include('lib/some-local.jar')
@@ -437,7 +437,7 @@ MANIFEST
         compile.using(:javac).with(_('../libs/some-local.jar'))
       end
     end
-    
+
     it 'supports generating library paths with classpath variables' do
       classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }.
         should include('LIBS/some-local.jar')
@@ -449,7 +449,7 @@ MANIFEST
       write 'lib/some.class'
       define('foo') { compile.using(:javac).with(_('lib')) }
     end
-    
+
     it 'should have src reference in the .classpath file' do
       classpath_xml_elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.
         should include('lib')
@@ -574,6 +574,31 @@ MANIFEST
       end
       project('foo:bar').eclipse.classpath_containers.should include('foo_classpath_containers')
       project('foo:bar2').eclipse.classpath_containers.should include('bar2_classpath_containers')
+    end
+  end
+
+  describe 'exclude_libs' do
+    it 'should support artifacts' do
+      define('foo') do
+        compile.using(:javac).with('com.example:library:jar:2.0')
+        eclipse.exclude_libs += [ artifact('com.example:library:jar:2.0') ]
+      end
+      artifact('com.example:library:jar:2.0') { |task| write task.name }
+
+      task('eclipse').invoke
+      classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }.
+        should_not include('M2_REPO/com/example/library/2.0/library-2.0.jar')
+    end
+    it 'should support string paths' do
+      define('foo') do
+        compile.using(:javac).with _('path/to/library.jar')
+        eclipse.exclude_libs += [ _('path/to/library.jar') ]
+      end
+      write project('foo').path_to('path/to/library.jar')
+
+      task('eclipse').invoke
+      classpath_xml_elements.collect("classpathentry[@kind='lib']") { |n| n.attributes['path'] }.
+        should_not include('path/to/library.jar')
     end
   end
 end
