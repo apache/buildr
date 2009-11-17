@@ -8,6 +8,8 @@
             eclipse.classpath_variables { :VAR => '/path/to/libraries' }
 * Added:  Support for excluding libraries from Eclipse classpath using:
             eclipse.exclude_libs += ['/path/to/some/library.jar']
+* Added:  Environment variable IGNORE_BUILDFILE can be set to "yes" or
+          "true" to ignore changes in Buildfile when running tests.
 * Change: Updated to JRuby 1.4.0
 * Fixed:  BUILDR-223 Release Task: customizable commit message (Alexis Midon)
 * Fixed:  BUILDR-330  Install task should re-install artifact even if they 
