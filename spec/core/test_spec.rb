@@ -684,7 +684,18 @@ describe Buildr::TestTask, '#invoke' do
     
     it 'should run tests if buildfile changed' do
       touch 'buildfile'
+      test_task.should_receive(:run_tests)
       lambda { test_task.invoke }.should run_task('foo:test')
+    end
+
+    it 'should not run tests if buildfile changed but IGNORE_BUILDFILE is true' do
+      begin
+        ENV["IGNORE_BUILDFILE"] = "true"
+        test_task.should_not_receive(:run_tests)
+        test_task.invoke
+      ensure
+        ENV["IGNORE_BUILDFILE"] = nil
+      end
     end
   end
 end
