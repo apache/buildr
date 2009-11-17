@@ -228,7 +228,7 @@ module Buildr
       begin
         super
       rescue RuntimeError
-        raise if options[:fail_on_failure]
+        raise if options[:fail_on_failure] && Buildr.options.test != :all
       ensure
         teardown.invoke
       end
