@@ -41,6 +41,7 @@ Buildr supports the following environment variables:
 | @HOME@        | Your home directory. |
 | @HTTP_PROXY@  | URL for HTTP proxy server (see "Specifying Repositories":artifacts.html#repositories). |
 | @HTTPS_PROXY@ | URL for HTTPS proxy server (see "Specifying Repositories":artifacts.html#repositories). |
+| @IGNORE_BUILDFILE@ | Set to "true" or "yes" to ignore changes in Buildfile or its dependencies when running tests. |
 | @JAVA_HOME@   | Points to your JDK, required when using Java and Ant. |
 | @JAVA_OPTS@   | Command line options to pass to the JDK (e.g. @'-Xms1g'@). |
 | @M2_REPO@     | Location of the Maven2 local repository.  Defaults to the @.m2@ directory in your home directory (@ENV['HOME']@). |
