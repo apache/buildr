@@ -76,7 +76,7 @@ module Buildr #:nodoc:
           result.succeeded << example_group.location.gsub(/:\d+$/, '')
         end
 
-        def example_pending(example, counter, failure)
+        def example_pending(example, counter)
           result.succeeded << example_group.location.gsub(/:\d+$/, '')
         end
 
