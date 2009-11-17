@@ -13,7 +13,9 @@ Feed it a project definition, and Buildr will set up all these tasks for you. Th
 The remainder of this guide deals with what it takes to build a project.  But first, let's pick up a sample project to work with.  We'll call it _killer-app_:
 
 {% highlight ruby %}
-require 'buildr'
+require "buildr/openjpa"
+
+include Buildr::OpenJPA
  
 VERSION_NUMBER = '1.0'
  
@@ -90,7 +92,7 @@ When you start with a new project you won't see the @target@ or @reports@ direct
 
 h2(#naming). Naming And Finding Projects
 
-Each project has a given name, the first argument you pass when calling @define@.  The project name is just a string, but we advise to stay clear of colon (@:@) and slashes (@/@ and @\@), which could conflict with other task and file names.  Also, avoid using common Buildr task names, don't pick @compile@ or @build@ for your project name.
+Each project has a given name, the first argument you pass when calling @define@.  The project name is just a string, but we advise to stay clear of colon (@:@) and slashes (@/@ and @\@), which could conflict with other task and file names.  Also, avoid using common Buildr task names, don't pick @compile@, @build@ or any existing task name for your project name.
 
 Since each project knows its parent project, child projects and siblings, you can reference them from within the project using just the given name.  In other cases, you'll need to use the full name.  The full name is just @parent:child@. So if you wanted to refer to _teh-impl_, you could do so with either @project('killer-app:teh-impl')@ or @project('killer-app').project('teh-impl')@.
 
@@ -200,6 +202,9 @@ For example:
 {% highlight ruby %}
 # Relative to the current project
 path_to('src', 'main', 'java')
+
+# the same using symbols
+path_to(:src, :main, :java)
 
 # Exactly the same thing
 _('src/main/java')
