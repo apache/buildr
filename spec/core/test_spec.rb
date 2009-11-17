@@ -728,6 +728,13 @@ describe Rake::Task, 'test' do
     lambda { task('test').invoke rescue nil }.should run_tasks('foo:test', 'bar:test')
   end
 
+  it 'should ignore failure if options.test is :all and target is build task ' do
+    define('foo') { test { fail } }
+    define('bar') { test { fail } }
+    options.test = :all 
+    lambda { task('build').invoke rescue nil }.should run_tasks('foo:test', 'bar:test')
+  end
+
   it 'should ignore failure if environment variable test is \'all\'' do
     define('foo') { test { fail } }
     define('bar') { test { fail } }
