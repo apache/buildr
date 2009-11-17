@@ -18,6 +18,8 @@
           entries (Stefan Wasilewski)
 * Fixed:  BUILDR-327 Specifying :plugin eclipse nature explicitly fails
 * Fixed:  buildr test=all didn't run all tests as expected
+* Fixed:  BUILDR-344 Buildr::TestFramework::TestResult::YamlFormatter uses 
+          deprecated form of example_pending (Rhett Sutphin)
 * Fixed:  BUILDR-345 Improve project documentation (Peter Schröder)
 
 1.3.5 (2009-10-05)

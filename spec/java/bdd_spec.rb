@@ -261,7 +261,7 @@ describe Buildr::JtestR do
     error = File.expand_path('src/spec/ruby/error_spec.rb')
     write(error, 'describe("error") { it("raises") { lambda; } }')
     pending =  File.expand_path('src/spec/ruby/pending_spec.rb')
-    write(pending, 'describe("peding") { it "is not implemented" }')
+    write(pending, 'describe("pending") { it "is not implemented" }')
     foo do
       lambda { test.invoke }.should raise_error(/Tests failed/)
       test.tests.should include(success, failure, error)
