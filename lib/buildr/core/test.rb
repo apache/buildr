@@ -196,7 +196,10 @@ module Buildr
         @options = OpenObject.new(default_options)
       end
 
-      enhance application.buildfile.prerequisites unless ENV["IGNORE_BUILDFILE"] =~ /(true)|(yes)/i
+      unless ENV["IGNORE_BUILDFILE"] =~ /(true)|(yes)/i
+        enhance [ application.buildfile.name ]
+        enhance application.buildfile.prerequisites
+      end
       enhance do
         run_tests if framework
       end
