@@ -268,6 +268,14 @@ describe Buildr::TestTask do
     mkpath project('foo').test.report_to.to_s
     lambda { task('clean').invoke }.should change { File.exist?(project('foo').test.report_to.to_s) }.to(false)
   end
+
+  it 'should only run tests explicitly specified if options.test is :only' do
+    Buildr.options.test = :only 
+    write 'bar/src/main/java/Bar.java', 'public class Bar {}'
+    define('bar', :version=>'1.0', :base_dir=>'bar') { package :jar }
+    define('foo') { compile.with project('bar') }
+    lambda { task('foo:test').invoke rescue nil }.should_not run_tasks('bar:test')
+  end
 end
 
 
