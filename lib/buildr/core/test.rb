@@ -208,18 +208,18 @@ module Buildr
     # The dependencies used for running the tests. Includes the compiled files (compile.target)
     # and their dependencies. Will also include anything you pass to #with, shared between the
     # testing compile and run dependencies.
-    attr_reader :dependencies
+    attr_accessor :dependencies
 
     # *Deprecated*: Use dependencies instead.
     def classpath
       Buildr.application.deprecated 'Use dependencies instead.'
-      dependencies
+      @dependencies
     end
 
     # *Deprecated*: Use dependencies= instead.
     def classpath=(artifacts)
       Buildr.application.deprecated 'Use dependencies= instead.'
-      self.dependencies = artifacts
+      @dependencies = artifacts
     end
 
     def execute(args) #:nodoc:

@@ -25,6 +25,7 @@
 * Fixed:  BUILDR-344 Buildr::TestFramework::TestResult::YamlFormatter uses 
           deprecated form of example_pending (Rhett Sutphin)
 * Fixed:  BUILDR-345 Improve project documentation (Peter Schröder)
+* Fixed:  BUILDR-346 Test classpath can not be set (Peter Schröder)
 * Fixed:  BUILDR-347 Compile.from does not work correctly with FileTask when
           no compiler is set (Peter Schröder)
 
