@@ -106,6 +106,11 @@ $ buildr package test=all
 
 We're using @package@ and not @build@ above.  When using a continuous build system, you want to make sure that packages are created, contain the right files, and also run the integration tests.
 
+One last note on running tests.  By default when you run tests, Buildr will automatically run all transitive test dependencies.  This mean if you run "buildr test" inside project @bar@ and @bar@ depends on project @foo@, Buildr will first run tests in project @foo@ if there have been any changes affecting @foo@ that haven't been taken into account yet.   This behavior often surprises people, especially when they are trying to get things done and only care about tests in @bar@ at that moment.  For those times when you'd like to focus your testing on specific projects, Buildr has the @only@ option that will only run tests for projects specified on the command line,
+
+{% highlight sh %}
+$ buildr test=only bar:test
+{% endhighlight %}
 
 h2(#integration). Integration Tests
 

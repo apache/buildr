@@ -602,7 +602,7 @@ module Buildr
       # Picking up the test frameworks adds further dependencies.
       test.framework
 
-      project.build test unless test.options[:integration]
+      project.build test unless test.options[:integration] || Buildr.options.test == :only
 
       project.clean do
         rm_rf test.compile.target.to_s if test.compile.target
@@ -687,6 +687,8 @@ module Buildr
         false
       when /^all$/i
         :all
+      when /^only$/i
+        :only
       when /^(yes|on|true)$/i, nil
         true
       else
