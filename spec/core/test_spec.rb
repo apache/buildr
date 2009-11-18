@@ -109,7 +109,17 @@ describe Buildr::TestTask do
     test_task.compile.dependencies.should include(File.expand_path('test.jar'))
     test_task.compile.dependencies.should include(artifact('acme:example:jar:1.0'))
   end
-
+  
+  it 'should respond to deprecated classpath' do
+    test_task.classpath = artifact('acme:example:jar:1.0')
+    test_task.classpath.should be(artifact('acme:example:jar:1.0'))
+  end
+  
+  it 'should respond to dependencies' do
+    test_task.dependencies = artifact('acme:example:jar:1.0')
+    test_task.dependencies.should be(artifact('acme:example:jar:1.0'))
+  end
+  
   it 'should respond to :with and add artifacfs to task dependencies' do
     test_task.with 'test.jar', 'acme:example:jar:1.0'
     test_task.dependencies.should include(File.expand_path('test.jar'))
