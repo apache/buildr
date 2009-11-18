@@ -201,12 +201,8 @@ module Buildr
       runner.gems ||= {}
       runner.rspec ||= ['--format', 'progress', '--format', "html:#{runner.html_report}"]
       runner.format.each { |format| runner.rspec << '--format' << format } if runner.format
-      runner.rspec.push '--format', "#{runner_formatter}:#{runner.result}"
+      runner.rspec.push '--format', "Buildr::TestFramework::TestResult::YamlFormatter:#{runner.result}"
       runner
-    end
-    
-    def runner_formatter
-      "Buildr::TestFramework::TestResult::YamlFormatter"
     end
     
   end
@@ -222,7 +218,7 @@ module Buildr
   # * :requires   -- A list of ruby files to require before running the specs
   #                  Mainly used if an rspec format needs to require some file.
   # * :format     -- A list of valid Rspec --format option values. (defaults to 'progress')
-  # * :output     -- File path to output dump. @false@ to supress output
+  # * :output     -- File path to output dump. @false@ to suppress output
   # * :fork       -- Create a new JavaVM to run the tests on
   # * :properties -- Hash of properties passed to the test suite.
   # * :java_args  -- Arguments passed to the JVM.
@@ -304,7 +300,7 @@ module Buildr
 
     include TestFramework::JRubyBased
 
-    VERSION = '0.3.1'
+    VERSION = '0.5'
     
     # pattern for rspec stories
     STORY_PATTERN    = /_(steps|story)\.rb$/
@@ -381,10 +377,6 @@ module Buildr
     def runner_content(binding)
       runner_erb = File.join(File.dirname(__FILE__), 'jtestr_runner.rb.erb')
       Filter::Mapper.new(:erb, binding).transform(File.read(runner_erb), runner_erb)
-    end
-    
-    def runner_formatter
-      'Buildr::TestFramework::TestResult::JtestRYamlFormatter'
     end
     
   end

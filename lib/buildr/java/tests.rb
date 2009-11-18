@@ -167,7 +167,7 @@ module Buildr
     end
 
     # JUnit version number.
-    VERSION = '4.5'
+    VERSION = '4.7'
 
     class << self
       # :call-seq:
