@@ -61,9 +61,6 @@ end if RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME'] # RSpec
 describe Buildr::JtestR do
 
   before do
-    # JtestR currently requires JUnit 4.4
-    Buildr.settings.build['junit'] = '4.4'
-
     # clear cached dependencies
     Buildr::JUnit.instance_eval { @dependencies = nil }
     Buildr::JtestR.instance_eval { @dependencies = nil }

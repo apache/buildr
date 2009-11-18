@@ -16,8 +16,8 @@
 require 'fileutils'
 module Buildr #:nodoc:
   module TestFramework
-    
-    # A class used by buildr for jruby based frameworks, so that buildr can know 
+
+    # A class used by buildr for jruby based frameworks, so that buildr can know
     # which tests succeeded/failed.
     class TestResult
 
@@ -35,14 +35,14 @@ module Buildr #:nodoc:
         end
 
         def self.guard(file)
-          begin 
+          begin
             yield
           rescue => e
             dump_yaml(file, e)
           end
         end
       end
-      
+
       attr_accessor :failed, :succeeded
 
       def initialize
@@ -54,7 +54,7 @@ module Buildr #:nodoc:
         attr_reader :result
 
         attr_accessor :example_group, :options, :where
-        
+
         def initialize(options, where)
           @options = options
           @where = where
@@ -62,7 +62,7 @@ module Buildr #:nodoc:
           @result[:succeeded] = []
           @result[:failed] = []
         end
-        
+
         %w[ example_started
             start_dump dump_failure dump_summary dump_pending ].each do |meth|
           module_eval "def #{meth}(*args); end"
@@ -73,15 +73,15 @@ module Buildr #:nodoc:
         end
 
         def example_passed(example)
-          result.succeeded << example_group.location.gsub(/:\d+$/, '')
+          result.succeeded << example_name(example)
         end
 
         def example_pending(example, counter)
-          result.succeeded << example_group.location.gsub(/:\d+$/, '')
+          result.succeeded << example_name(example)
         end
 
         def example_failed(example, counter, failure)
-          result.failed << example_group.location.gsub(/:\d+$/, '')
+          result.failed << example_name(example)
         end
 
         def start(example_count)
@@ -93,69 +93,16 @@ module Buildr #:nodoc:
           FileUtils.mkdir_p File.dirname(where)
           File.open(where, 'w') { |f| f.puts YAML.dump(result) }
         end
-      end # YamlFormatter
 
-      # Rspec formatter used for JtestR
-      # (JtestR provides its own version of rspec)
-      class JtestRYamlFormatter
-        attr_reader :result
-
-        attr_accessor :example_group, :options, :where
-        
-        def initialize(options, where)
-          @options = options
-          @where = where
-          @result = Hash.new
-          @result[:succeeded] = []
-          @result[:failed] = []
-        end
-        
-        %w[ example_started
-            start_dump dump_failure dump_summary dump_pending ].each do |meth|
-          module_eval "def #{meth}(*args); end"
-        end
-
-        def add_example_group(example_group)
-          @example_group = example_group
-        end
-
-        def example_passed(example)
-        end
-
-        def example_pending(example, counter, failure)
-        end
-
-        def example_failed(example, counter, failure)
-          if example_group.respond_to?(:spec_path)
-            result.failed << example_group.spec_path.gsub(/:\d+$/, '')
+      private
+        def example_name(example)
+          if Spec::Example::ExampleProxy === example
+            example_group.location.gsub(/:\d+$/, '')
           else
-            path = path_from_bt(failure.exception.backtrace)
-            result.failed << path if path
+            example.name.gsub(/(.+)(\..+\(\))/, '\1')
           end
         end
-
-        def start(example_count)
-          @result = TestResult.new
-        end
-
-        def path_from_bt(ary)
-          files = options.files
-          test = nil
-          ary.find do |bt|
-            bt = bt.split(':').first.strip
-            test = bt if files.include?(bt)
-          end
-          test
-        end
-
-        def close
-          files = options.files
-          result.succeeded = files - result.failed
-          
-          FileUtils.mkdir_p File.dirname(where)
-          File.open(where, 'w') { |f| f.puts YAML.dump(result) }
-        end
-      end # JtestRYamlFormatter
+      end # YamlFormatter
 
       # A JtestR ResultHandler
       # Using this handler we can use RSpec formatters, like html/ci_reporter with JtestR
@@ -177,7 +124,7 @@ module Buildr #:nodoc:
             ignore_patterns << /org\.jruby\.javasupport\.JavaMethod\./
             ignore_patterns << /jtestr.*\.jar!/i << /runner\.rb/
           end
-          
+
           def clean_up_double_slashes(line)
             line.gsub!('//','/')
           end
@@ -197,10 +144,11 @@ module Buildr #:nodoc:
             error.backtrace.compact!
           end
         end
-        
+
         class << self
           # an rspec reporter used to proxy events to rspec formatters
           attr_reader :reporter
+          attr_accessor :test_files
 
           def init(argv = [], out = STDOUT, err = STDERR)
             ::JtestR::TestNGResultHandler.module_eval { include TestNGResultHandlerMixin }
@@ -218,10 +166,11 @@ module Buildr #:nodoc:
             reporter.end
             reporter.dump
           end
+
         end
 
         module ExampleMethods
-          attr_accessor :name, :description, :__full_description
+          attr_accessor :name, :description, :__full_description, :location
         end
 
         def reporter
@@ -239,8 +188,9 @@ module Buildr #:nodoc:
           else
             example_group.description = name.to_s
           end
-          reporter.add_example_group(example_group)
+          reporter.example_group_started(example_group)
         end
+
 
         def starting
         end
@@ -261,8 +211,8 @@ module Buildr #:nodoc:
           current_example.extend ::Spec::Example::ExampleMethods
           current_example.extend ExampleMethods
           name = name.to_s
-          name[/\((pen?ding|error|failure|success)\)?$/]
-          name = $`
+          current_example.location = name.to_s
+          current_example.name = name.gsub(/(.*)\((.+)\)/, '\2')
           current_example.description = name
           if example_group.name[/Spec/]
             current_example.__full_description = "#{example_group.description} #{name}"
@@ -270,31 +220,56 @@ module Buildr #:nodoc:
             current_example.__full_description = "#{example_group.name}: #{name}"
           end
           reporter.example_started(current_example)
-          #puts "STARTED #{name} #{current_example.__full_description}"
         end
 
         def succeed_single(name = nil)
-          #puts "SUCC SINGLE #{name}"
           reporter.example_finished(current_example, nil)
         end
-        
+
         def fail_single(name = nil)
-          #puts "FAIL SINGLE #{name}"
+          current_example.name = current_name
           reporter.example_finished(current_example, current_error)
         end
 
         def error_single(name = nil)
-          #puts "ERR SINGLE #{name}"
+          current_example.name = current_name
           reporter.example_finished(current_example, current_error)
         end
 
         def pending_single(name = nil)
-          #puts "PEND SINGLE #{name}"
           error = ::Spec::Example::ExamplePendingError.new(name)
           reporter.example_finished(current_example, error)
         end
 
       private
+        def detect_file(trace)
+          # find first matching test file in stacktrace
+          file = nil
+          first_pos = nil
+          RSpecResultHandler.test_files.each do |f|
+            pos = trace.index(f)
+            if pos && (first_pos.nil? || pos < first_pos)
+              file = f
+              first_pos = pos
+            end
+          end
+          file || fail("RSpecResultHandler.detect_file failed: #{trace}")
+        end
+
+        def current_name(example = current_example, fault = current_failure)
+          return example.name unless fault
+          case fault
+          when Test::Unit::Error
+            detect_file(fault.long_display)
+          when Test::Unit::Failure
+            detect_file(fault.location.to_s)
+          when Spec::Runner::Reporter::Failure
+            detect_file(fault.exception.backtrace.to_s)
+          else
+            example.name
+          end
+        end
+
         def current_error(fault = current_failure)
           case fault
           when nil
@@ -314,8 +289,7 @@ module Buildr #:nodoc:
             fault.exception
           when Spec::Runner::Reporter::Failure
             ex = fault.exception
-            fault.example.instance_variable_get(:@_implementation).to_s =~ /@(.+:\d+)/
-            Error.new(ex.message, [$1.to_s] + ex.backtrace)
+            Error.new(ex.message, ex.backtrace)
           when Expectations::Results
             file = fault.file
             line = fault.line
@@ -326,7 +300,7 @@ module Buildr #:nodoc:
               test_cls, test_meth = $1.to_s, $`.to_s
               exception = fault.exception
               (class << exception; self; end).module_eval do
-                define_method(:backtrace) do 
+                define_method(:backtrace) do
                   (["#{test_cls}:in `#{test_meth}'"] + stackTrace).map { |s| s.to_s }
                 end
               end
@@ -335,7 +309,7 @@ module Buildr #:nodoc:
               test_cls, test_meth = fault.method.test_class.name, fault.method.method_name
               exception = fault.throwable
               (class << exception; self; end).module_eval do
-                define_method(:backtrace) do 
+                define_method(:backtrace) do
                   (["#{test_cls}:in `#{test_meth}'"] + stackTrace).map { |s| s.to_s }
                 end
               end

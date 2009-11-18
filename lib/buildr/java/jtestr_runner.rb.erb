@@ -78,7 +78,7 @@ begin
   end # config
 
   fake_out = StringIO.new
-
+  
   <% if runner.output == false %>
      output = fake_out
   <% elsif runner.output.kind_of?(String) %>
@@ -89,10 +89,11 @@ begin
   
   
   args = [ '<%= spec_dir %>', # the directory to search for jtestr files
-           JtestR::SimpleLogger::ERR, # log level
-           JtestR::GenericResultHandler::QUIET, #output level 
+           JtestR::SimpleLogger::ERR, # log level (DEBUG/WARN/ERR)
+           JtestR::GenericResultHandler::QUIET, #output level (QUIET/VERBOSE)
            fake_out, # output STDOUT
            [], # groups to run 
+           # Use JtestR::GenericResultHandler for debugging
            Buildr::TestFramework::TestResult::RSpecResultHandler, # result handler
            []  # classpath
          ]
@@ -100,6 +101,7 @@ begin
   argv = <%= runner.rspec.inspect %> || []
   argv.push *<%= tests.inspect %>
   Buildr::TestFramework::TestResult::RSpecResultHandler.init(argv, output, output)
+  Buildr::TestFramework::TestResult::RSpecResultHandler.test_files = <%= tests.inspect %>
   
   jtestr.run *args
 
