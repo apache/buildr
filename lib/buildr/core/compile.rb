@@ -264,7 +264,7 @@ module Buildr
     #   compile.from('src/java').into('classes').with('module1.jar')
     def from(*sources)
       @sources |= sources.flatten
-      guess_compiler if @compiler.nil? && sources.flatten.any? { |source| File.exist?(source) }
+      guess_compiler if @compiler.nil? && sources.flatten.any? { |source| File.exist?(source.to_s) }
       self
     end
 
