@@ -28,6 +28,8 @@
 * Fixed:  BUILDR-346 Test classpath can not be set (Peter Schröder)
 * Fixed:  BUILDR-347 Compile.from does not work correctly with FileTask when
           no compiler is set (Peter Schröder)
+* Fixed:  BUILDR-349 resources.filter should use defaults from profile.yaml
+          even if mapping is provided
 
 1.3.5 (2009-10-05)
 * Added:  Interactive shell (REPL) support

@@ -592,4 +592,33 @@ describe Project, '#resources' do
     define('foo').compile.invoke
     file('target/resources/foo').should contain('bar')
   end
+
+  it 'should use current profile as default for filtering' do
+    write 'profiles.yaml', <<-YAML
+      development:
+        filter:
+          foo: bar
+    YAML
+    write 'src/main/resources/foo', '${foo} ${baz}'
+    define('foo') do
+      resources.filter.using 'baz' => 'qux'
+    end
+    project('foo').compile.invoke
+    file('target/resources/foo').should contain('bar qux')
+  end
+
+  it 'should allow clearing default filter mapping' do
+    write 'profiles.yaml', <<-YAML
+      development:
+        filter:
+          foo: bar
+    YAML
+    write 'src/main/resources/foo', '${foo} ${baz}'
+    define('foo') do
+      resources.filter.mapping.clear
+      resources.filter.using 'baz' => 'qux'
+    end
+    project('foo').compile.invoke
+    file('target/resources/foo').should contain('${foo} qux')
+  end
 end
