@@ -62,6 +62,7 @@ module Buildr
       def include(*args)
         options = args.pop if Hash === args.last
         files = args.flatten
+        raise 'AchiveTask.include() values should not include nil' if files.include? nil 
 
         if options.nil? || options.empty?
           @includes.include *files.flatten
@@ -74,7 +75,8 @@ module Buildr
           include_as files.first.to_s, options[:as]
         elsif options[:from]
           raise 'You can only use the :from option in combination with the :path option' unless options.size == 1
-          raise 'You canont use the :from option with file names' unless files.empty?
+          raise 'You cannot use the :from option with file names' unless files.empty?
+          fail 'AchiveTask.include() :from value should not be nil' if [options[:from]].flatten.include? nil 
           [options[:from]].flatten.each { |path| include_as path.to_s, '.' }
         elsif options[:merge]
           raise 'You can only use the :merge option in combination with the :path option' unless options.size == 1
@@ -172,7 +174,7 @@ module Buildr
 
     protected
 
-      def include_as(source, as)
+    def include_as(source, as)
         @sources << proc { source }
         @actions << proc do |file_map|
           file = source.to_s
@@ -346,7 +348,8 @@ module Buildr
     #   zip(..).include('foo.zip', :merge=>true).include('bar.zip')
     # You can also use the method #merge.
     def include(*files)
-      @paths[''].include *files
+      fail "AchiveTask.include() called with nil values" if files.include? nil
+      @paths[''].include *files if files.compact.size > 0
       self
     end 
     alias :add :include

@@ -454,6 +454,12 @@ describe Packaging, 'jar' do
       jar.entries.map(&:to_s).sort.should include('empty/')
     end
   end
+  
+  it 'should raise error when calling with() with nil value' do
+    lambda {
+      define('foo', :version=>'1.0') { package(:jar).with(nil) }
+    }.should raise_error
+  end
 end
 
 
