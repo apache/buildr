@@ -225,7 +225,8 @@ module Buildr
         #   package(:jar).with(:manifest=>'MANIFEST_MF')
         def with(*args)
           super args.pop if Hash === args.last
-          include :from=>args
+          fail "package.with() should not contain nil values" if args.include? nil
+          include :from=>args if args.size > 0
           self
         end
 

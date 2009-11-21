@@ -59,6 +59,11 @@ describe 'ArchiveTask', :shared=>true do
     inspect_archive { |archive| archive.should be_empty }
   end
 
+  it 'should raise error when include() is called with nil values' do
+    lambda { archive(@archive).include(nil) }.should raise_error
+    lambda { archive(@archive).include([nil]) }.should raise_error
+  end
+
   it 'should create empty archive if called #clean method' do
     archive(@archive).include(@files).clean.invoke
     inspect_archive { |archive| archive.should be_empty }
@@ -110,6 +115,12 @@ describe 'ArchiveTask', :shared=>true do
       archive.keys.should include(File.basename(@files.first))
       archive.keys.should_not include(File.basename(@files.last))
     end
+  end
+
+  it 'should raise error when using :from with nil value' do
+    lambda {
+      archive(@archive).include(:from=>nil)
+    }.should raise_error
   end
 
   it 'should exclude entire directory and all its children' do
