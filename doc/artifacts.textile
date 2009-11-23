@@ -125,7 +125,7 @@ You can choose to relocate the local repository by giving it a different path, f
 repositories.local = '/usr/local/maven/repository'
 {% endhighlight %}
 
-That's one change you don't want to commit into the Buildfile, so the best place to do it is in your home directory's @buildr.rb@ file.
+That's one change you don't want to commit into the Buildfile, so the best place to do it is in the @buildr.rb@ file in the @.buildr@ directory under your home directory.
 
 Buildr downloads artifacts when it needs to use them, for example, to compile a project.  You don't need to download artifacts directly.  Except when you do, for example, if you want to download all the latest artifacts and then go off-line.  It's as simple as:
 

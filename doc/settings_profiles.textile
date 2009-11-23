@@ -166,9 +166,9 @@ Build settings can be retreived using the @Buildr.settings.build@ accessor.
 
 h2(#variable). Non constant settings
 
-Before loading the Buildfile, Buildr will attempt to load two other files: the @buildr.rb@ file it finds in your home directory, followed by the @buildr.rb@ file it finds in the build directory.
+Before loading the Buildfile, Buildr will attempt to load two other files: the @buildr.rb@ file in the @.buildr@ directory under your home directory, followed by the @buildr.rb@ file it finds in the build directory.
 
-The loading order allows you to place global settings that affect all your builds in your home directory's @buildr.rb@, but also over-ride those with settings for a given project.
+The loading order allows you to place global settings that affect all your builds in your @buildr.rb@, but also over-ride those with settings for a given project.
 
 Here's an example @buildr.rb@:
 
@@ -180,6 +180,12 @@ repositories.upload_to[:password] = 'supersecret'
 repositories.remote << 'http://inside-the-firewall'
 {% endhighlight %}
 
+p(note). Buildr 1.3 and earlier used the file @buildr.rb@ directly in your home directory.  Starting with version 1.4, Buildr loads @buildr.rb@ from the @.buildr@ directory under your home directory in preference.  If you use Buildr 1.3 and earlier and don't want to duplicate your settings, you can move you existing @buildr.rb@ under the @.buildr@ directory and create a new @buildr.rb@ in your home directory containing:
+
+{% highlight ruby %}
+# Backward compatibility:  Buildr 1.4+ uses $HOME/.buildr/buildr.rb
+load File.expand_path('buildr.rb', Buildr.application.home_dir)
+{% endhighlight %}
 
 h2(#environments). Environments
 
