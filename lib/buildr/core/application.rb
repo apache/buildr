@@ -444,11 +444,17 @@ module Buildr
       Buildr::ArtifactNamespace.load(:root => hash)
     end
     
-    # Loads buildr.rb files from users home directory and project directory.
+    # Loads buildr.rb files from home/.buildr directory and project directory.
     # Loads custom tasks from .rake files in tasks directory.
     def load_tasks #:nodoc:
       # TODO: this might need to be split up, look for deprecated features, better method name.
-      files = [ File.expand_path('buildr.rb', ENV['HOME']), 'buildr.rb' ].select { |file| File.exist?(file) }
+      old = File.expand_path('buildr.rb', ENV['HOME'])
+      new = File.expand_path('buildr.rb', home_dir)
+      if File.exist?(old) && !File.exist?(new) 
+        warn "Deprecated: Please move buildr.rb from your home directory to the .buildr directory in your home directory"
+      end
+      # Load home/.buildr/buildr.rb in preference
+      files = [ File.exist?(new) ? new : old, 'buildr.rb' ].select { |file| File.exist?(file) }
       files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
         select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
       files += (options.rakelib || []).collect { |rlib| Dir["#{rlib}/*.rake"] }.flatten

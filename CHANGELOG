@@ -15,6 +15,8 @@
 * Change: Updated to JRuby 1.4.0
 * Change: Updated to JtestR 0.5
 * Change: Updated to JUnit 4.7
+* Change: Load buildr.rb from $HOME/.buildr instead of $HOME
+          ($HOME/buildr.rb is still loaded with deprecation warning)
 * Fixed:  BUILDR-223 Release Task: customizable commit message (Alexis Midon)
 * Fixed:  BUILDR-330  Install task should re-install artifact even if they 
           already exist (Alexis Midon)
