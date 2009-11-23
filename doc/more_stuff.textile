@@ -280,7 +280,7 @@ Buildr.application.on_failure do |title, message, ex|
 end
 {% endhighlight %}
 
-You can place this code inside @buildr.rb@ in your home directory.
+You can place this code inside @buildr.rb@ in the @.buildr@ directory under your home directory.
 
 h2(#eclipse). Eclipse
 
@@ -390,7 +390,7 @@ require 'buildr/java/emma'
 require 'buildr/jdepend'
 {% endhighlight %}
 
-You may want to add those to the Buildfile.  Alternatively, you can use these tasks for all your projects without modifying the Buildfile.  One convenient method is to add these lines to the @buildr.rb@ file in your home directory.
+You may want to add those to the Buildfile.  Alternatively, you can use these tasks for all your projects without modifying the Buildfile.  One convenient method is to add these lines to the @buildr.rb@ file in the @.buildr@ directory under your home directory.
 
 Another option is to require it from the command line (@--require@ or @-r@), for example:
 
