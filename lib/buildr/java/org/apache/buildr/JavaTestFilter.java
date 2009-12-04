@@ -123,7 +123,7 @@ public class JavaTestFilter {
         Class cls = _loader.loadClass(names[i]);
         if (isTest(cls)) { testCases.add(names[i]); }
       } catch (Throwable e) {
-        System.err.println("JavaTestFilter: Unable to load class "+names[i]+" to dertermine testing ability");
+        System.err.println("JavaTestFilter: Unable to load class "+names[i]+" to determine testing ability");
         throw e;
       }
     }
