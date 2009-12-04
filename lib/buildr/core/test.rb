@@ -596,6 +596,7 @@ module Buildr
       test = project.test
       # Dependency on compiled tests and resources.  Dependencies added using with.
       test.dependencies.concat [test.compile.target, test.resources.target].compact
+      test.dependencies.concat test.compile.dependencies
       # Dependency on compiled code, its dependencies and resources.
       test.with [project.compile.target, project.resources.target].compact
       test.with project.compile.dependencies

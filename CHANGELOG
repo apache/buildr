@@ -34,6 +34,7 @@
           even if mapping is provided
 * Fixed:  Fail-fast if package.with() or include() called with nil values
 * Fixed:  Failures not reported correctly for ScalaTest (Alex Eagle)
+* Fixed:  Test dependencies should include test compile dependencies
 
 1.3.5 (2009-10-05)
 * Added:  Interactive shell (REPL) support
