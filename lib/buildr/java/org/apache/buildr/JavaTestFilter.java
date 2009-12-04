@@ -116,11 +116,16 @@ public class JavaTestFilter {
   }
 
 
-  public String[] filter(String[] names) throws ClassNotFoundException {
+  public String[] filter(String[] names) throws Throwable {
     Vector testCases = new Vector();
     for (int i = names.length ; i-- > 0 ;) {
-      Class cls = _loader.loadClass(names[i]);
-      if (isTest(cls)) { testCases.add(names[i]); }
+      try {
+        Class cls = _loader.loadClass(names[i]);
+        if (isTest(cls)) { testCases.add(names[i]); }
+      } catch (Throwable e) {
+        System.err.println("JavaTestFilter: Unable to load class "+names[i]+" to dertermine testing ability");
+        throw e;
+      }
     }
     String[] result = new String[testCases.size()];
     testCases.toArray(result);
