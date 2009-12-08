@@ -235,7 +235,7 @@ module Buildr
       #         groovy:     org.codehaus.groovy:groovy:jar:1.5.4
       #         logging:    # define a named group
       #           - log4j:log4j:jar:1.2.15
-      #           - commons-logging:commons-logging:1.1.1
+      #           - commons-logging:commons-logging:jar:1.1.1
       #       
       #       # open Buildr::XMLBeans namespace
       #       Buildr::XMLBeans:
@@ -246,7 +246,7 @@ module Buildr
       #         spring:  org.springframework:spring:jar:1.0
       #
       #   -- buildfile --
-      #   ArtifactNamespace.load(Buildr.profile['artifacts'])
+      #   ArtifactNamespace.load(Buildr.settings.profile['artifacts'])
       def load(namespaces = {})
         namespaces.each_pair { |name, uses| instance(name).use(uses) }
       end
