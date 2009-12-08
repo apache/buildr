@@ -113,7 +113,7 @@ task :stage=>['setup', 'doc:setup', :clobber, :prepare] do |task, args|
       File.open(pkg + '.sha1', 'w') { |file| file.write Digest::SHA1.hexdigest(bytes) << ' ' << File.basename(pkg) }
       sh 'gpg2', '--local-user', args.gpg, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
     end
-    cp 'etc/KEYS', '_staged'
+    cp 'etc/KEYS', '_staged/dist'
     puts "[X] Created and signed release packages in _staged/dist"
   end.call
 
@@ -121,10 +121,11 @@ task :stage=>['setup', 'doc:setup', :clobber, :prepare] do |task, args|
   # want to do that before generating the site/documentation.
   lambda do
     puts "Updating download page with links to release packages ... "
-    url = "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
+    mirror = "http://www.apache.org/dyn/closer.cgi/#{spec.name}/#{spec.version}"
+    official = "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
     rows = FileList['_staged/dist/*.{gem,tgz,zip}'].map { |pkg|
       name, md5 = File.basename(pkg), Digest::MD5.file(pkg).to_s
-      %{| "#{name}":#{url}/#{name} | "#{md5}":#{url}/#{name}.md5 | "Sig":#{url}/#{name}.asc |}
+      %{| "#{name}":#{mirror}/#{name} | "#{md5}":#{official}/#{name}.md5 | "Sig":#{official}/#{name}.asc |}
     }
     textile = <<-TEXTILE
 h3. #{spec.name} #{spec.version} (#{Time.now.strftime('%Y-%m-%d')})
@@ -132,7 +133,7 @@ h3. #{spec.name} #{spec.version} (#{Time.now.strftime('%Y-%m-%d')})
 |_. Package |_. MD5 Checksum |_. PGP |
 #{rows.join("\n")}
 
-p>. ("Release signing keys":#{url}/KEYS)
+p>. ("Release signing keys":#{official}/KEYS)
     TEXTILE
     file_name = 'doc/download.textile'
     print "Adding download links to #{file_name} ... "
