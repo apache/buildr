@@ -25,7 +25,7 @@ Buildr uses file tasks to handle dependencies, but here we're talking about the 
 
 An easier way to specify dependencies is by calling the @compile.with@ method. It takes a list of arguments and adds them to the dependency list.  The @compile.with@ method is easier to use, it accepts several type of dependencies.  You can use file names, file tasks, projects, artifacts specifications and even pass arrays of dependencies.
 
-Most dependencies fall into the last three categories.  When you pass a project to @compile.with@, it picks up all the packages created by that project.  In doing so, it establishes an order of dependency between the two projects (see "Defining the Project":projects.html#defining).  For example, if you make a change in project _teh-api_ and build _teh-impl_, Buildr will detect that change, recompile and package _teh-api_ before compiling _teh-impl_.  You can also select a specific package using the @package@ or @packages@ methods (see "Packaging":packaging.html).
+Most dependencies fall into the last three categories.  When you pass a project to @compile.with@, it picks up all the packages created by that project.  In doing so, it establishes an order of dependency between the two projects (see "Defining the Project":projects.html#defining).  For example, if you make a change in project _teh-api_ and build _teh-impl_, Buildr will detect that change, recompile and package _teh-api_ before compiling _teh-impl_.  You can also select a specific package using the project's @package@ or @packages@ methods (see "Packaging":packaging.html).
 
 When you pass an artifact specification to @compile.with@, it creates an @Artifact@ task that will download that artifact from one of the remote repositories, install it in the local repository, and use it in your project. Rake's dependency mechanism is used here to make sure the artifact is downloaded once, when needed.  Check the "Artifacts":artifacts.html section for more information about artifact specification and repositories.
 
@@ -115,7 +115,7 @@ The default source and target directories, compiler settings and other options y
 h2(#resources). Resources
 
 
-The @compile@ task comes bundled with a @resources@ task.  It copies files from the @src/main/resources@ directory into @target/resources@.  Best used for copying files that you want to included in the generated code, like configuration files, i18n messages, images, etc.
+The @compile@ task comes bundled with a @resources@ task.  It copies files from the @src/main/resources@ directory into @target/resources@.  Best used for copying files that you want to include in the generated code, like configuration files, i18n messages, images, etc.
 
 The @resources@ task uses a filter that can change files as it copies them from source to destination.  The most common use is by mapping values using a hash. For example, to substitute "${version}" for the project's version number and "${copyright}" for "Acme Inc (C) 2007" :
 
@@ -140,9 +140,10 @@ test:
 You can specify a different format by passing it as the first argument. Supported formats include:
 
 |_. Format  |_. Usage |
-| @:ant@    | Map from @key@ to value. |
+| @:ant@    | Map from <code>@key@</code> to value. |
 | @:maven@  | Map from @${key}@ to value (default). |
 | @:ruby@   | Map from @#{key}@ to value. |
+| @:erb@    | Map from @<%=key%>@ to value. | 
 | @Regexp@  | Map using the matched value of the regular expression (e.g. @/=(.*?)=/@). |
 
 For example, using the @:ruby@ format instead of the default @:maven@ format:
