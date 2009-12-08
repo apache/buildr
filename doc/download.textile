@@ -21,8 +21,7 @@ The source code is included in both source and binary distribution, the Gem dist
 h2(#dist).  Binaries and Source Code
 
 h3. buildr 1.3.5 (2009-10-05)
-http://www.apache.org/dyn/closer.cgi/
-http://www.apache.org/dist/
+
 |_. Package |_. MD5 Checksum |_. PGP |
 | "buildr-1.3.5.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.3.5/buildr-1.3.5.gem | "5a04d8593f98606f15dd589988afe24d":http://www.apache.org/dist/buildr/1.3.5/buildr-1.3.5.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.3.5/buildr-1.3.5.gem.asc |
 | "buildr-1.3.5-java.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.3.5/buildr-1.3.5-java.gem | "d930c851196cd8f9ea66b7190d324dd4":http://www.apache.org/dist/buildr/1.3.5/buildr-1.3.5-java.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.3.5/buildr-1.3.5-java.gem.asc |
