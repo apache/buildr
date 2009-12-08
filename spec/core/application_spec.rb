@@ -478,7 +478,7 @@ describe Buildr, 'settings' do
     end
 
     it 'should have the same timestamp as build.rb in home dir if the latter is newer' do
-      write 'home/.buildr/buildr.rb'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'home/buildr.rb')
+      write 'home/.buildr/buildr.rb'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'home/.buildr/buildr.rb')
       Buildr.application.send :load_tasks
       Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
     end
