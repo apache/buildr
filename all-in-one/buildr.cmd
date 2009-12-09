@@ -1,0 +1,1 @@
+@%~dp0\_buildr.exe %*
