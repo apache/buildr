@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
+desc "Create JRuby all-in-one distribution"
 task "all-in-one" => :gem do
   version = "1.4.0"
   jruby_distro = "jruby-bin-#{version}.tar.gz"
@@ -47,6 +47,7 @@ task "all-in-one" => :gem do
     mv Dir["LICENSE*"], 'jruby-docs'
     mv 'README', 'jruby-docs'
     rm_rf 'lib/ruby/1.9'
+    rm_rf 'lib/ruby/gems/1.8/doc'
     rm_rf 'samples'
     rm_rf 'share'
   end.call
@@ -69,7 +70,7 @@ task "all-in-one" => :gem do
   lambda do
     puts "Zipping distribution ..."
     cd '..'
-    new_dir  = "buildr-#{dir}"
+    new_dir  = "#{spec.name}-#{spec.version}-#{dir}"
     mv dir, new_dir
     zip = "#{new_dir}.zip"
     rm zip if File.exist? zip
