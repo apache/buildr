@@ -21,30 +21,31 @@ module Buildr
   module Scala
     class ScalaShell < Buildr::Shell::Base
       include Buildr::Shell::JavaRebel
-      
+
       class << self
         def lang
           :scala
         end
-        
+
         def to_sym
           :scala
         end
       end
-      
+
       def launch
-        cp = project.compile.dependencies + 
+        cp = project.compile.dependencies +
           Scalac.dependencies +
           [project.path_to(:target, :classes)]
-        
+
         props = {
-          'env.classpath' => cp.join(File::PATH_SEPARATOR),
           'scala.home' => Scalac.scala_home
         }
-        
-        Java::Commands.java 'scala.tools.nsc.MainGenericRunner', {
+
+        Java::Commands.java 'scala.tools.nsc.MainGenericRunner',
+                            '-cp', cp.join(File::PATH_SEPARATOR),
+        {
           :properties => props.merge(rebel_props(project)),
-          :classpath => cp,
+          :classpath => Scalac.dependencies,
           :java_args => rebel_args
         }
       end
