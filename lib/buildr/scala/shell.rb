@@ -41,11 +41,15 @@ module Buildr
           'scala.home' => Scalac.scala_home
         }
 
+        jline = [File.expand_path("lib/jline.jar", Scalac.scala_home)].find_all do |f|
+          File.exist? f
+        end
+
         Java::Commands.java 'scala.tools.nsc.MainGenericRunner',
                             '-cp', cp.join(File::PATH_SEPARATOR),
         {
           :properties => props.merge(rebel_props(project)),
-          :classpath => Scalac.dependencies,
+          :classpath => Scalac.dependencies + jline,
           :java_args => rebel_args
         }
       end
