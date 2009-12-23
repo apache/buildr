@@ -102,21 +102,21 @@ And the same way you @include@, you can also @exclude@ specific files you don't 
 
 {% highlight ruby %}
 package(:zip).include('target/docs').
-  exclude('target/docs/**/*.{draft,raw}')
+  exclude(_('target/docs/**/*.{draft,raw}'))
 {% endhighlight %}
 
 So far we've included files under the root of the ZIP.  Let's include some files under a given path using the @:path@ option:
 
 {% highlight ruby %}
-package(:zip).include 'target/docs', :path=>"#{id}-#{version}"
+package(:zip).include _('target/docs'), :path=>"#{id}-#{version}"
 {% endhighlight %}
 
 If you need to use the @:path@ option repeatedly, consider using the @tap@ method instead.  For example:
 
 {% highlight ruby %}
 package(:zip).path("#{id}-#{version}").tap do |path|
-  path.include 'target/docs'
-  path.include 'README'
+  path.include _('target/docs')
+  path.include _('README')
 end
 {% endhighlight %}
 
@@ -127,14 +127,14 @@ p(note). To allow you to spread files across different paths, the include/exclud
 If you need to include a file or directory under a different name, use the @:as@ option.  For example:
 
 {% highlight ruby %}
-package(:zip).include('corporate-logo-350x240.png', :as=>'logo.png')
+package(:zip).include(_('corporate-logo-350x240.png'), :as=>'logo.png')
 {% endhighlight %}
 
 You can also use @:as=>'.'@ to include all files from the given directory.  For example:
 
 {% highlight ruby %}
-package(:zip).include 'target/docs/*'
-package(:zip).include 'target/docs', :as=>'.'
+package(:zip).include _('target/docs/*')
+package(:zip).include _('target/docs'), :as=>'.'
 {% endhighlight %}
 
 These two are almost identical.  They both include all the files from the @target/docs@ directory, but not the directory itself.  But they operate differently.  The first line expands to include all the files in @target/docs@. If you don't already have files in @target/docs@, well, then it won't do anything interesting.  Your ZIP will come up empty.  The second file includes the directory itself, but strips the path during inclusion.  You can define it now, create these files later, and then ZIP them all up.
@@ -146,14 +146,14 @@ If you need to get rid of all the included files, call the @clean@ method. Some 
 You can also merge two ZIP files together, expanding the content of one ZIP into the other.  For example:
 
 {% highlight ruby %}
-package(:zip).merge 'part1.zip', 'part2.zip'
+package(:zip).merge _('part1.zip'), _('part2.zip')
 {% endhighlight %}
 
 If you need to be more selective, you can apply the include/exclude pattern to the expanded ZIP.  For example:
 
 {% highlight ruby %}
 # Everything but the libs
-package(:zip).merge('bigbad.war').exclude('libs/**/*')
+package(:zip).merge(_('bigbad.war')).exclude('libs/**/*')
 {% endhighlight %}
 
 
@@ -257,7 +257,7 @@ If you already have WSDL files in the @src/main/axis2@ directory but would like 
 {% highlight ruby %}
 # Host name depends on environment.
 host = ENV['ENV'] == 'test' ? 'test.host' : 'ws.example.com'
-filter.from('src/main/axis2').into('target').
+filter.from(_('src/main/axis2')).into(_(:target)).
   include('services.xml', '==*==.wsdl').using('http_port'=>'8080', 'http_host'=>host)
 package(:aar).wsdls.clear
 package(:aar).with(:services_xml=>_('target/services.xml'), :wsdls=>_('target/==*==.wsdl'))
