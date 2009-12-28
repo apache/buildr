@@ -127,3 +127,17 @@ describe Buildr::VersionRequirement, '#default' do
     Buildr::VersionRequirement.create('1 & 2 | 3').default.should == '3'
   end
 end
+
+describe Buildr::VersionRequirement, '#version?' do
+  it 'should identify valid versions' do 
+    Buildr::VersionRequirement.version?('1').should be_true
+    Buildr::VersionRequirement.version?('1a').should be_true
+    Buildr::VersionRequirement.version?('1.0').should be_true
+    Buildr::VersionRequirement.version?('11.0').should be_true
+    Buildr::VersionRequirement.version?(' 11.0 ').should be_true
+    Buildr::VersionRequirement.version?('11.0-alpha').should be_true
+    
+    Buildr::VersionRequirement.version?('a').should be_false
+    Buildr::VersionRequirement.version?('a1').should be_false
+  end
+end
