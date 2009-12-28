@@ -44,7 +44,7 @@ module Java
       Buildr.application.deprecated 'See documentation for new way to access Java code.'
       yield self if block_given?
     end
-    
+
     # *Deprecated:* Use Java.load instead.
     def load
       Buildr.application.deprecated 'Use Java.load instead.'
@@ -66,19 +66,19 @@ module Java
     # *Deprecated*: Use Java::Commands.java instead.
     def java(*args, &block)
       return send(:method_missing, :java) if args.empty?
-      Buildr.application.deprecated 'Use Java::Commands.javadoc instead.'
+      Buildr.application.deprecated 'Use Java::Commands.java instead.'
       Commands.java(*args, &block)
     end
 
     # *Deprecated*: Use Java::Commands.apt instead.
     def apt(*args)
-      Buildr.application.deprecated 'Use Java::Commands.javadoc instead.'
+      Buildr.application.deprecated 'Use Java::Commands.apt instead.'
       Commands.apt(*args)
     end
 
     # *Deprecated*: Use Java::Commands.javac instead.
     def javac(*args)
-      Buildr.application.deprecated 'Use Java::Commands.javadoc instead.'
+      Buildr.application.deprecated 'Use Java::Commands.javac instead.'
       Commands.javac(*args)
     end
 
