@@ -169,7 +169,7 @@ If there is one area in which Buildr excels, it is defining custom tasks.  This 
 define 'killer-app' do
   project.version = '0.1.0'
   package :jar
-  
+
   task :run => :compile do
     system 'java -cp target/classes org.apache.killer.Main'
   end
@@ -185,13 +185,13 @@ $ buildr killer-app:run
 This works, but it's clumsy.  The reason we had to give the "@killer-app:@" prefix is because we defined the @run@ task _within_ our project, rather than outside of the @define@ block.  However, if we define @run@ outside of the project, then we don't really have access to the @compile@ task (which is project-specific).  The solution here is a bit of magic known as @local_task@.  This is how tasks like @compile@ and @test@, which are technically project-specific (think: instance methods) can be invoked without the fully-qualified project name:
 
 {% highlight ruby %}
-local_task :run
+Project.local_task :run
 
 define 'killer-app' do
   project.version '0.1.0'
-  
+
   package :jar
-  
+
   task :run => :compile do
     system 'java -cp target/classes org.apache.killer.Main'
   end
