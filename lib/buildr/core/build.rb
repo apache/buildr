@@ -293,6 +293,16 @@ module Buildr
       fail 'Looking for THIS_VERSION = "..." in your Buildfile, none found'
     end
     
+    # Use this to specify a different tag name for tagging the release in source control.
+    # You can set the tag name or a proc that will be called with the version number,
+    # for example:
+    #   Release.find.tag_name = lambda { |ver| "foo-#{ver}" } 
+    # Deprecated: you should use Release.tag_name instead
+    def tag_name(tag_proc)
+      warn("Release.find.tag_name is deprecated. You should use Release.tag_name instead")
+      Release.tag_name(tag_proc)
+    end
+    
   protected
     
     # :call-seq:
