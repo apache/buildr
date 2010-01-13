@@ -32,6 +32,8 @@
           no compiler is set (Peter Schröder)
 * Fixed:  BUILDR-349 resources.filter should use defaults from profile.yaml
           even if mapping is provided
+* Fixed:  BUILDR-360 Reintroduce tag_name instance method for Git release task for
+          backward compatibility (Antoine Toulme)
 * Fixed:  Fail-fast if package.with() or include() called with nil values
 * Fixed:  Failures not reported correctly for ScalaTest (Alex Eagle)
 * Fixed:  Test dependencies should include test compile dependencies
