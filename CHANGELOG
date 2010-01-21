@@ -36,6 +36,9 @@
           even if mapping is provided
 * Fixed:  BUILDR-360 Reintroduce tag_name instance method for Git release task for
           backward compatibility (Antoine Toulme)
+* Fixed:  BUILDR-361 Generate Eclipse .project file even if project has no
+          nature.  Also prevent generation of .project if project has
+          children. (Antoine Toulme)
 * Fixed:  Fail-fast if package.with() or include() called with nil values
 * Fixed:  Failures not reported correctly for ScalaTest (Alex Eagle)
 * Fixed:  Test dependencies should include test compile dependencies
