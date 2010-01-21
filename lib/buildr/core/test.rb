@@ -176,6 +176,13 @@ module Buildr
         # all sub-projects, but only invoke test on the local project.
         Project.projects.each { |project| project.test.send :only_run, tests }
       end
+      
+      # Used by the test/integration rule to only run tests that failed the last time.
+      def only_run_failed() #:nodoc:
+        # Since the tests may reside in a sub-project, we need to set the include/exclude pattern on
+        # all sub-projects, but only invoke test on the local project.
+        Project.projects.each { |project| project.test.send :only_run_failed }
+      end
     end
 
     # Default options already set on each test task.
@@ -399,6 +406,25 @@ module Buildr
     def report_to
       @report_to ||= file(@project.path_to(:reports, framework)=>self)
     end
+    
+    # :call-seq:
+    #   failures_to => file
+    #
+    # We record the list of failed tests for the current framework in this file.
+    #
+    # 
+    def failures_to
+      @failures_to ||= file(@project.path_to(:target, "#{framework}-failed")=>self)
+    end
+    
+    # :call-seq:
+    #    last_failures => array
+    #
+    # We read the last test failures if any and return them.
+    #
+    def last_failures
+      @last_failures ||= failures_to.exist? ? File.read(failures_to.to_s).split('\n') : []
+    end
 
     # The path to the file that stores the time stamp of the last successful test run.
     def last_successful_run_file #:nodoc:
@@ -442,6 +468,7 @@ module Buildr
     def run_tests
       dependencies = Buildr.artifacts(self.dependencies).map(&:to_s).uniq
       rm_rf report_to.to_s
+      rm_rf failures_to.to_s
       @tests = @framework.tests(dependencies).select { |test| include?(test) }.sort
       if @tests.empty?
         @passed_tests, @failed_tests = [], []
@@ -458,6 +485,7 @@ module Buildr
         end
         @failed_tests = @tests - @passed_tests
         unless @failed_tests.empty?
+          Buildr::write(failures_to.to_s, @failed_tests.join("\n"))
           error "The following tests failed:\n#{@failed_tests.join("\n")}"
           fail 'Tests failed!'
         end
@@ -474,6 +502,13 @@ module Buildr
     # Limit running tests to specific list.
     def only_run(tests)
       @include = Array(tests)
+      @exclude.clear
+      @forced_need = true
+    end
+    
+    # Limit running tests to those who failed the last time.
+    def only_run_failed()
+      @include = Array(last_failures)
       @exclude.clear
       @forced_need = true
     end
@@ -547,6 +582,12 @@ module Buildr
     first_time do
       desc 'Run all tests'
       task('test') { TestTask.run_local_tests false }
+      
+      desc 'Run failed tests'
+      task('test:failed') {
+        TestTask.only_run_failed 
+        task('test').invoke
+      }
 
       # This rule takes a suffix and runs that tests in the current project. For example;
       #   buildr test:MyTest
@@ -591,6 +632,8 @@ module Buildr
       # Define these tasks once, otherwise we may get a namespace error.
       test.setup ; test.teardown
     end
+    
+    
 
     after_define(:test => :compile) do |project|
       test = project.test
