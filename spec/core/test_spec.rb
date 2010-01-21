@@ -382,6 +382,11 @@ describe Buildr::TestTask, 'with failed test' do
   it 'should report failed tests' do
     lambda { verbose(true) { test_task.invoke rescue nil } }.should show_error(/FailingTest/)
   end
+  
+  it 'should record failed tests' do
+    test_task.invoke rescue nil
+    File.read(project('foo').path_to('target', "#{test_task.framework}-failed")).should == 'FailingTest'
+  end
 
   it 'should return failed tests' do
     test_task.invoke rescue nil
@@ -391,6 +396,11 @@ describe Buildr::TestTask, 'with failed test' do
   it 'should return passing tests as well' do
     test_task.invoke rescue nil
     test_task.passed_tests.should == ['PassingTest']
+  end
+  
+  it 'should know what tests failed last time' do
+    test_task.invoke rescue nil
+    project('foo').test.last_failures.should == ['FailingTest']
   end
 
   it 'should not fail if fail_on_failure is false' do
@@ -788,8 +798,7 @@ describe Rake::Task, 'test' do
     lambda { task('test').invoke rescue nil }.should_not run_tasks('foo:test', 'bar:test')
   end
 end
-
-
+  
 describe 'test rule' do
   include TestHelper
   
@@ -873,6 +882,38 @@ describe 'test rule' do
     task('test:something').invoke
     project('foo').test.timestamp.should <= a_second_ago
   end
+end
+
+describe 'test failed' do
+  include TestHelper
+  
+  def test_task
+    @test_task ||= begin
+      define 'foo' do
+        test.using(:junit)
+        test.instance_eval do
+          @framework.stub!(:tests).and_return(['FailingTest', 'PassingTest'])
+          @framework.stub!(:run).and_return(['PassingTest'])
+        end
+      end
+      project('foo').test
+    end
+  end
+  
+  it 'should run the tests that failed the last time' do
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval do
+        @framework.stub!(:tests).and_return(['FailingTest', 'PassingTest'])
+        @framework.stub!(:run).and_return(['PassingTest'])
+      end
+    end
+    write project('foo').path_to(:target, "junit-failed"), "FailingTest"
+    task('test:failed').invoke rescue nil
+    project('foo').test.tests.should include('FailingTest')
+    project('foo').test.tests.should_not include('PassingTest')
+  end
+  
 end
 
 

@@ -1,4 +1,6 @@
 1.4.0 (Pending)
+* Added:  New "test:failed" task to execute only tests that failed during last
+          run (Antoine Toulme)
 * Added:  Project extensions (before/after_define) now support dependency ordering
           similar to Rake (e.g. before_define(:my_setup => :compile)
 * Added:  BUILDR-328 Detect Eclipse plugin project with META-INF/MANIFEST.MF 
