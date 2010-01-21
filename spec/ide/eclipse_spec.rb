@@ -85,6 +85,52 @@ describe Buildr::Eclipse do
 
   describe "eclipse's .project file" do
 
+    describe 'default project' do
+      before do
+        write 'buildfile'
+        write 'src/main/nono/Main.nono'
+      end
+      
+      it 'should not have natures' do
+        define('foo')
+        project_natures.should be_empty
+      end
+
+      it 'should not have build commands' do
+        define('foo')
+        build_commands.should be_empty
+      end
+      
+      it 'should generate a .project file' do
+        define('foo')
+        task('eclipse').invoke
+        REXML::Document.new(File.open('.project')).root.
+          elements.collect("name") { |e| e.text }.should == ['foo']
+      end
+      
+      it 'should not generate a .classpath file' do
+        define('foo')
+        task('eclipse').invoke
+        File.exists?('.classpath').should be_false
+      end
+    end
+    
+    describe 'parent project' do
+      before do
+        write 'buildfile'
+        mkpath 'bar'
+      end
+
+      it 'should not generate a .project for the parent project' do
+        define('foo') do
+          define('bar')
+        end
+        task('eclipse').invoke
+        File.exists?('.project').should be_false
+        File.exists?(File.join('bar','.project')).should be_true
+      end
+    end
+    
     describe 'java project' do
       before do
         write 'buildfile'
