@@ -135,7 +135,7 @@ module Buildr
       no_options = spec.empty? # since spec is mutated
       if spec[:file]
         rake_check_options spec, :file, :type
-        spec[:type] = args.shift || spec[:type] || spec[:file].split('.').last
+        spec[:type] = args.shift || spec[:type] || spec[:file].split('.').last.to_sym
         file_name = spec[:file]
       else
         rake_check_options spec, *ActsAsArtifact::ARTIFACT_ATTRIBUTES
