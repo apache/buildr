@@ -101,8 +101,7 @@ The @include@ method accepts files, directories and file tasks.  You can also us
 And the same way you @include@, you can also @exclude@ specific files you don't want showing up in the ZIP.  For example, to exclude @.draft@ and @.raw@ files:
 
 {% highlight ruby %}
-package(:zip).include('target/docs').
-  exclude(_('target/docs/**/*.{draft,raw}'))
+package(:zip).include(_('target/docs')).exclude('*.draft', '*.raw')
 {% endhighlight %}
 
 So far we've included files under the root of the ZIP.  Let's include some files under a given path using the @:path@ option:
