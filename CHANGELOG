@@ -41,6 +41,7 @@
           children. (Antoine Toulme)
 * Fixed:  BUILDR-364 Package spec should be set to a Symbol when :file is
           used (Klaas Prause)
+* Fixed:  BUILDR-365 test task should use test compile dependencies
 * Fixed:  Fail-fast if package.with() or include() called with nil values
 * Fixed:  Failures not reported correctly for ScalaTest (Alex Eagle)
 * Fixed:  Test dependencies should include test compile dependencies
