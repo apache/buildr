@@ -33,9 +33,9 @@ module Buildr::Groovy
   # * :encoding          -- Encoding of source files
   # * :verbose           -- Asks the compiler for verbose output, true when running in verbose mode.
   # * :fork              -- Whether to execute groovyc using a spawned instance of the JVM; defaults to no
-  # * :memoryInitialSize -- The initial size of the memory for the underlying VM, if using fork mode; ignored otherwise. 
+  # * :memoryInitialSize -- The initial size of the memory for the underlying VM, if using fork mode; ignored otherwise.
   #                                     Defaults to the standard VM memory setting. (Examples: 83886080, 81920k, or 80m)
-  # * :memoryMaximumSize -- The maximum size of the memory for the underlying VM, if using fork mode; ignored otherwise. 
+  # * :memoryMaximumSize -- The maximum size of the memory for the underlying VM, if using fork mode; ignored otherwise.
   #                                     Defaults to the standard VM memory setting. (Examples: 83886080, 81920k, or 80m)
   # * :listfiles         -- Indicates whether the source files to be compiled will be listed; defaults to no
   # * :stacktrace        -- If true each compile error message will contain a stacktrace
@@ -49,7 +49,7 @@ module Buildr::Groovy
   # * :javac             -- Hash of options passed to the ant javac task
   #
   class Groovyc < Compiler::Base
-    
+
     # The groovyc compiler jars are added to classpath at load time,
     # if you want to customize artifact versions, you must set them on the
     #
@@ -62,7 +62,7 @@ module Buildr::Groovy
       ns.asm!          'asm:asm:jar:>=2.2'
       ns.antlr!        'antlr:antlr:jar:>=2.7.7'
     end
-    
+
     ANT_TASK = 'org.codehaus.groovy.ant.Groovyc'
     GROOVYC_OPTIONS = [:encoding, :verbose, :fork, :memoryInitialSize, :memoryMaximumSize, :listfiles, :stacktrace]
     JAVAC_OPTIONS = [:optimise, :warnings, :debug, :deprecation, :source, :target, :javac]
@@ -80,10 +80,10 @@ module Buildr::Groovy
         paths.any? { |path| !Dir["#{path}/**/*.groovy"].empty? }
       end
     end
-    
-    Java.classpath << dependencies
-    
-    specify :language => :groovy, :sources => [:groovy, :java], :source_ext => [:groovy, :java], 
+
+    Java.classpath << lambda { dependencies }
+
+    specify :language => :groovy, :sources => [:groovy, :java], :source_ext => [:groovy, :java],
             :target => 'classes', :target_ext => 'class', :packaging => :jar
 
     def initialize(project, options) #:nodoc:
@@ -100,7 +100,7 @@ module Buildr::Groovy
     def compile(sources, target, dependencies) #:nodoc:
       return if Buildr.application.options.dryrun
       Buildr.ant 'groovyc' do |ant|
-        classpath = dependencies | self.class.dependencies.map(&:to_s)
+        classpath = dependencies
         ant.taskdef :name => 'groovyc', :classname => ANT_TASK, :classpath => classpath.join(File::PATH_SEPARATOR)
         ant.groovyc groovyc_options(sources, target) do
           sources.each { |src| ant.src :path => src }
@@ -112,7 +112,7 @@ module Buildr::Groovy
       end
     end
 
-   private 
+   private
     def groovyc_options(sources, target)
       check_options options, OPTIONS
       groovyc_options = options.to_hash.only(*GROOVYC_OPTIONS)
@@ -129,7 +129,7 @@ module Buildr::Groovy
       javac_options.merge!(other)
       javac_options
     end
-    
+
   end
 end
 

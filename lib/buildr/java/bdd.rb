@@ -31,7 +31,7 @@ module Buildr
     def initialize(task, options)
       self.bdd_dir = self.class.bdd_dir
       project = task.project
-      project.task('test:compile').tap do |comp| 
+      project.task('test:compile').tap do |comp|
         comp.send :associate_with, project, bdd_dir
         self.lang = comp.language || self.class.lang
       end
@@ -42,7 +42,7 @@ module Buildr
       end
       super
     end
-    
+
   end
 
   module TestFramework::JRubyBased
@@ -58,9 +58,12 @@ module Buildr
       def jruby_artifact
         "org.jruby:jruby-complete:jar:#{version}"
       end
-      
+
       def dependencies
-        [jruby_artifact]
+        unless @dependencies
+          @dependencies = [jruby_artifact]
+        end
+        @dependencies
       end
 
       def included(mod)
@@ -71,18 +74,20 @@ module Buildr
 
     module ClassMethods
       def dependencies
-        deps = super
-        unless RUBY_PLATFORM[/java/] && TestFramework::JRubyBased.jruby_installed?
-          deps |= TestFramework::JRubyBased.dependencies
+        unless @dependencies
+          super
+          unless RUBY_PLATFORM[/java/] && TestFramework::JRubyBased.jruby_installed?
+            @dependencies |= TestFramework::JRubyBased.dependencies
+          end
         end
-        deps
+        @dependencies
       end
     end
 
     def run(tests, dependencies)
       maybe_install_jruby
       dependencies |= [task.compile.target.to_s]
-      
+
       spec_dir = task.project.path_to(:source, :spec, :ruby)
       report_dir = task.report_to.to_s
       rm_rf report_dir
@@ -91,7 +96,7 @@ module Buildr
 
       runner = runner_config
       runner.content = runner_content(binding)
-      
+
       Buildr.write(runner.file, runner.content)
       rm_f runner.result
 
@@ -104,7 +109,7 @@ module Buildr
         cmd_options.update(:classpath => dependencies, :project => task.project)
         jruby runner.file, tests, cmd_options
       end
-      
+
       result = YAML.load(File.read(runner.result))
       if Exception === result
         raise [result.message, result.backtrace].flatten.join("\n")
@@ -113,14 +118,14 @@ module Buildr
     end
 
     def jruby_home
-      @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : 
+      @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] :
         ( ENV['JRUBY_HOME'] || File.expand_path('~/.jruby') )
     end
 
     def jruby_installed?
       !Dir.glob(File.join(jruby_home, 'lib', 'jruby*.jar')).empty?
     end
-    
+
   protected
     def maybe_install_jruby
       unless jruby_installed?
@@ -137,7 +142,7 @@ module Buildr
           jruby_artifact.invoke
           Java::Commands.java('-jar', jruby_artifact.to_s, '-S', 'extract', jruby_home)
         end
-        
+
         fail msg unless jruby_installed?
       end
     end
@@ -164,7 +169,7 @@ module Buildr
       yield config if block_given?
       Java.org.jruby.Ruby.newInstance config
     end
-    
+
     def jruby_gem
       %{
        require 'jruby'
@@ -204,7 +209,7 @@ module Buildr
       runner.rspec.push '--format', "Buildr::TestFramework::TestResult::YamlFormatter:#{runner.result}"
       runner
     end
-    
+
   end
 
   # <a href="http://rspec.info">RSpec</a> is the defacto BDD framework for ruby.
@@ -227,7 +232,7 @@ module Buildr
     @bdd_dir = :spec
 
     include TestFramework::JRubyBased
-  
+
     TESTS_PATTERN = [ /_spec.rb$/ ]
     OPTIONS = [:properties, :java_args]
 
@@ -236,7 +241,7 @@ module Buildr
     end
 
     def tests(dependencies) #:nodoc:
-      Dir[task.project.path_to(:source, bdd_dir, lang, '**/*_spec.rb')].select do |name| 
+      Dir[task.project.path_to(:source, bdd_dir, lang, '**/*_spec.rb')].select do |name|
         selector = ENV['SPEC']
         selector.nil? || Regexp.new(selector) === name
       end
@@ -267,7 +272,7 @@ module Buildr
         argv.push *<%= tests.inspect %>
         parser.order!(argv)
         $rspec_options = parser.options
-        
+
         Buildr::TestFramework::TestResult::Error.guard('<%= runner.result %>') do
           ::Spec::Runner::CommandLine.run($rspec_options)
         end
@@ -296,12 +301,12 @@ module Buildr
   # * :java_args  -- Arguments passed to the JVM.
   class JtestR < TestFramework::JavaBDD
     @lang = :ruby
-    @bdd_dir = :spec    
+    @bdd_dir = :spec
 
     include TestFramework::JRubyBased
 
     VERSION = '0.5'
-    
+
     # pattern for rspec stories
     STORY_PATTERN    = /_(steps|story)\.rb$/
     # pattern for test_unit files
@@ -318,10 +323,14 @@ module Buildr
       end
 
       def dependencies
-        @dependencies ||= Array(super) + ["org.jtestr:jtestr:jar:#{version}"] +
-          JUnit.dependencies + TestNG.dependencies
+        unless @dependencies
+          super
+          @dependencies |= ["org.jtestr:jtestr:jar:#{version}"] +
+                           JUnit.dependencies + TestNG.dependencies
+        end
+        @dependencies
       end
-    
+
       def applies_to?(project) #:nodoc:
         File.exist?(project.path_to(:source, bdd_dir, lang, 'jtestr_config.rb')) ||
           Dir[project.path_to(:source, bdd_dir, lang, '**/*.rb')].any? { |f| TESTS_PATTERN.any? { |r| r === f } } ||
@@ -368,7 +377,7 @@ module Buildr
 
     def runner_config
       runner = super
-      # JtestR 0.3.1 comes with rspec 1.1.4 (and any other jtestr dependency) included, 
+      # JtestR 0.3.1 comes with rspec 1.1.4 (and any other jtestr dependency) included,
       # so the rspec version used depends on the jtestr jar.
       runner.requires.unshift 'jtestr'
       runner
@@ -378,16 +387,16 @@ module Buildr
       runner_erb = File.join(File.dirname(__FILE__), 'jtestr_runner.rb.erb')
       Filter::Mapper.new(:erb, binding).transform(File.read(runner_erb), runner_erb)
     end
-    
+
   end
 
-  
+
   # JBehave is a Java BDD framework. To use in your project:
   #   test.using :jbehave
-  # 
+  #
   # This framework will search in your project for:
   #   src/spec/java/**/*Behaviour.java
-  # 
+  #
   # JMock libraries are included on runtime.
   #
   # Support the following options:
@@ -399,15 +408,19 @@ module Buildr
 
     VERSION = '1.0.1'
     TESTS_PATTERN = [ /Behaviou?r$/ ] #:nodoc:
-    
+
     class << self
       def version
         Buildr.settings.build['jbehave'] || VERSION
       end
 
       def dependencies
-        @dependencies ||= ["org.jbehave:jbehave:jar:#{version}", 'cglib:cglib-full:jar:2.0.2'] +
-          JMock.dependencies + JUnit.dependencies
+        unless @dependencies
+          super
+          @dependencies |= ["org.jbehave:jbehave:jar:#{version}", 'cglib:cglib-full:jar:2.0.2'] +
+                           JMock.dependencies + JUnit.dependencies
+        end
+        @dependencies
       end
 
       def applies_to?(project) #:nodoc:
@@ -428,7 +441,7 @@ module Buildr
       filter_classes(dependencies, :class_names => TESTS_PATTERN,
                      :interfaces => %w{ org.jbehave.core.behaviour.Behaviours })
     end
-    
+
     def run(tests, dependencies) #:nodoc:
       cmd_args = ['org.jbehave.core.BehaviourRunner']
       cmd_options = { :properties=>options[:properties], :java_args=>options[:java_args], :classpath=>dependencies }
@@ -441,7 +454,7 @@ module Buildr
         end
       end
     end
-    
+
   end
 
 end

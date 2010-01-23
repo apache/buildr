@@ -24,13 +24,21 @@ module Buildr
   class TestFramework::Java < TestFramework::Base
 
     class << self
-      
+
       def applies_to?(project) #:nodoc:
         project.test.compile.language == :java
       end
-      
+
+      def dependencies
+        unless @dependencies
+          super
+          # Add buildr utility classes (e.g. JavaTestFilter)
+          @dependencies |= [ File.join(File.dirname(__FILE__)) ]
+        end
+        @dependencies
+      end
     end
-    
+
   private
 
     # Add buildr utilities (JavaTestFilter) to classpath
@@ -38,8 +46,8 @@ module Buildr
 
     # :call-seq:
     #     filter_classes(dependencies, criteria)
-    # 
-    # Return a list of classnames that match the given criteria. 
+    #
+    # Return a list of classnames that match the given criteria.
     # The criteria parameter is a hash that must contain at least one of:
     #
     # * :class_names -- List of patterns to match against class name
@@ -62,7 +70,7 @@ module Buildr
         Java.load
         filter = Java.org.apache.buildr.JavaTestFilter.new(dependencies.to_java(Java.java.lang.String))
         if criteria[:interfaces]
-          filter.add_interfaces(criteria[:interfaces].to_java(Java.java.lang.String)) 
+          filter.add_interfaces(criteria[:interfaces].to_java(Java.java.lang.String))
         end
         if criteria[:class_annotations]
           filter.add_class_annotations(criteria[:class_annotations].to_java(Java.java.lang.String))
@@ -79,15 +87,15 @@ module Buildr
         raise
       end
     end
-    
+
   end
 
 
   # JMock is available when using JUnit and TestNG, JBehave.
   module JMock
-    
+
     VERSION = '1.2.0'
-    
+
     class << self
       def version
         Buildr.settings.build['jmock'] || VERSION
@@ -96,14 +104,14 @@ module Buildr
       def dependencies
         @dependencies ||= ["jmock:jmock:jar:#{version}"]
       end
-      
+
     private
       def const_missing(const)
         return super unless const == :REQUIRES # TODO: remove in 1.5
         Buildr.application.deprecated "Please use JMock.dependencies/.version instead of JMock::REQUIRES/VERSION"
         dependencies
       end
-    end    
+    end
   end
 
 
@@ -147,7 +155,7 @@ module Buildr
       def generate(projects, target = @target.to_s)
         html_in = File.join(target, 'html')
         rm_rf html_in ; mkpath html_in
-        
+
         Buildr.ant('junit-report') do |ant|
           ant.taskdef :name=>'junitreport', :classname=>'org.apache.tools.ant.taskdefs.optional.junit.XMLResultAggregator',
             :classpath=>Buildr.artifacts(JUnit.ant_taskdef).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
@@ -184,25 +192,25 @@ module Buildr
       def version
         Buildr.settings.build['junit'] || VERSION
       end
-      
+
       def dependencies
         @dependencies ||= ["junit:junit:jar:#{version}"]+ JMock.dependencies
       end
-      
+
       def ant_taskdef #:nodoc:
         "org.apache.ant:ant-junit:jar:#{Ant.version}"
       end
-      
+
     private
       def const_missing(const)
         return super unless const == :REQUIRES # TODO: remove in 1.5
         Buildr.application.deprecated "Please use JUnit.dependencies/.version instead of JUnit::REQUIRES/VERSION"
         dependencies
       end
-    end          
+    end
 
     def tests(dependencies) #:nodoc:
-      filter_classes(dependencies, 
+      filter_classes(dependencies,
                      :interfaces => %w{junit.framework.TestCase},
                      :class_annotations => %w{org.junit.runner.RunWith},
                      :method_annotations => %w{org.junit.Test})
@@ -284,21 +292,21 @@ module Buildr
       def version
         Buildr.settings.build['testng'] || VERSION
       end
-      
+
       def dependencies
         ["org.testng:testng:jar:jdk15:#{version}"]+ JMock.dependencies
-      end  
-      
+      end
+
     private
       def const_missing(const)
         return super unless const == :REQUIRES # TODO: remove in 1.5
         Buildr.application.deprecated "Please use TestNG.dependencies/.version instead of TestNG::REQUIRES/VERSION"
         dependencies
       end
-    end          
+    end
 
     def tests(dependencies) #:nodoc:
-      filter_classes(dependencies, 
+      filter_classes(dependencies,
                      :class_annotations => %w{org.testng.annotations.Test},
                      :method_annotations => %w{org.testng.annotations.Test})
     end

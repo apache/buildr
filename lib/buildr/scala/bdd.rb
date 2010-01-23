@@ -40,7 +40,14 @@ module Buildr::Scala
       end
 
       def dependencies
-        ["org.scala-tools.testing:specs:jar:#{version}"] + Check.dependencies + JUnit.dependencies
+        unless @dependencies
+          super
+          # Add utility classes (e.g. SpecsSingletonRunner) and other dependencies
+          @dependencies |= [ File.join(File.dirname(__FILE__)) ] +
+                           ["org.scala-tools.testing:specs:jar:#{version}"] +
+                           Check.dependencies + JUnit.dependencies + Scalac.dependencies
+        end
+        @dependencies
       end
 
       def applies_to?(project)  #:nodoc:
@@ -76,8 +83,6 @@ module Buildr::Scala
     end
 
     def run(specs, dependencies)  #:nodoc:
-      dependencies += [task.compile.target.to_s, File.join(File.dirname(__FILE__))] + Scalac.dependencies
-
       cmd_options = { :properties => options[:properties],
                       :java_args => options[:java_args],
                       :classpath => dependencies,
