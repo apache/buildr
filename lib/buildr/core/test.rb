@@ -176,7 +176,7 @@ module Buildr
         # all sub-projects, but only invoke test on the local project.
         Project.projects.each { |project| project.test.send :only_run, tests }
       end
-      
+
       # Used by the test/integration rule to only run tests that failed the last time.
       def only_run_failed() #:nodoc:
         # Since the tests may reside in a sub-project, we need to set the include/exclude pattern on
@@ -406,17 +406,17 @@ module Buildr
     def report_to
       @report_to ||= file(@project.path_to(:reports, framework)=>self)
     end
-    
+
     # :call-seq:
     #   failures_to => file
     #
     # We record the list of failed tests for the current framework in this file.
     #
-    # 
+    #
     def failures_to
       @failures_to ||= file(@project.path_to(:target, "#{framework}-failed")=>self)
     end
-    
+
     # :call-seq:
     #    last_failures => array
     #
@@ -466,7 +466,7 @@ module Buildr
 
     # Runs the tests using the selected test framework.
     def run_tests
-      dependencies = Buildr.artifacts(self.dependencies).map(&:to_s).uniq
+      dependencies = (Buildr.artifacts(self.dependencies + compile.dependencies) + [compile.target]).map(&:to_s).uniq
       rm_rf report_to.to_s
       rm_rf failures_to.to_s
       @tests = @framework.tests(dependencies).select { |test| include?(test) }.sort
@@ -476,7 +476,7 @@ module Buildr
         info "Running tests in #{@project.name}"
         begin
           # set the baseDir system property if not set
-          @framework.options[:properties] = { 'baseDir' => @project.test.compile.target.to_s }.merge(@framework.options[:properties] || {})
+          @framework.options[:properties] = { 'baseDir' => compile.target.to_s }.merge(@framework.options[:properties] || {})
           @passed_tests = @framework.run(@tests, dependencies)
         rescue Exception=>ex
           error "Test framework error: #{ex.message}"
@@ -505,7 +505,7 @@ module Buildr
       @exclude.clear
       @forced_need = true
     end
-    
+
     # Limit running tests to those who failed the last time.
     def only_run_failed()
       @include = Array(last_failures)
@@ -582,10 +582,10 @@ module Buildr
     first_time do
       desc 'Run all tests'
       task('test') { TestTask.run_local_tests false }
-      
+
       desc 'Run failed tests'
       task('test:failed') {
-        TestTask.only_run_failed 
+        TestTask.only_run_failed
         task('test').invoke
       }
 
@@ -632,8 +632,8 @@ module Buildr
       # Define these tasks once, otherwise we may get a namespace error.
       test.setup ; test.teardown
     end
-    
-    
+
+
 
     after_define(:test => :compile) do |project|
       test = project.test

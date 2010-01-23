@@ -20,10 +20,10 @@ require 'buildr/packaging'
 
 module Buildr::Scala
   DEFAULT_VERSION = '2.7.7'   # currently the latest (Oct 31, 2009)
-  
+
   class << self
-    
-    # Retrieves the Scala version string from the 
+
+    # Retrieves the Scala version string from the
     # standard library or nil if Scala is not
     # available.
     def version_str
@@ -34,7 +34,7 @@ module Buildr::Scala
         nil
       end
     end
-    
+
     def version
       if version_str
         # any consecutive sequence of numbers followed by dots
@@ -60,7 +60,7 @@ module Buildr::Scala
   # * :debug       -- Generate debugging info.
   # * :other       -- Array of options to pass to the Scalac compiler as is, e.g. -Xprint-types
   class Scalac < Buildr::Compiler::Base
-    
+
     # The scalac compiler jars are added to classpath at load time,
     # if you want to customize artifact versions, you must set them on the
     #
@@ -72,18 +72,18 @@ module Buildr::Scala
       ns.library!      'org.scala-lang:scala-library:jar:>=' + DEFAULT_VERSION
       ns.compiler!     'org.scala-lang:scala-compiler:jar:>=' + DEFAULT_VERSION
     end
-    
+
     class << self
       def scala_home
         env_home = ENV['SCALA_HOME']
-        
+
         @home ||= (if !env_home.nil? && File.exists?(env_home + '/lib/scala-library.jar') && File.exists?(env_home + '/lib/scala-compiler.jar')
           env_home
         else
           nil
         end)
       end
-      
+
       def installed?
         !scala_home.nil?
       end
@@ -99,21 +99,22 @@ module Buildr::Scala
       def use_fsc
         installed? && ENV["USE_FSC"] =~ /^(yes|on|true)$/i
       end
-      
+
       def applies_to?(project, task) #:nodoc:
         paths = task.sources + [sources].flatten.map { |src| Array(project.path_to(:source, task.usage, src.to_sym)) }
         paths.flatten!
-        
+
         # Just select if we find .scala files
         paths.any? { |path| !Dir["#{path}/**/*.scala"].empty? }
       end
     end
-    
+
     Javac = Buildr::Compiler::Javac
 
     OPTIONS = [:warnings, :deprecation, :optimise, :target, :debug, :other, :javac]
-    
-    Java.classpath << dependencies
+
+    # Lazy evaluation to allow change in buildfile
+    Java.classpath << lambda { dependencies }
 
     specify :language=>:scala, :sources => [:scala, :java], :source_ext => [:scala, :java],
             :target=>'classes', :target_ext=>'class', :packaging=>:jar
@@ -125,7 +126,7 @@ module Buildr::Scala
       options[:deprecation] ||= false
       options[:optimise] ||= false
       options[:javac] ||= {}
-      
+
       @java = Javac.new(project, options[:javac])
     end
 
@@ -133,7 +134,7 @@ module Buildr::Scala
       check_options options, OPTIONS
 
       cmd_args = []
-      cmd_args << '-classpath' << (dependencies + Scalac.dependencies).join(File::PATH_SEPARATOR)
+      cmd_args << '-classpath' << dependencies.join(File::PATH_SEPARATOR)
       source_paths = sources.select { |source| File.directory?(source) }
       cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
       cmd_args << '-d' << File.expand_path(target)
@@ -142,7 +143,7 @@ module Buildr::Scala
 
       unless Buildr.application.options.dryrun
         trace((['scalac'] + cmd_args).join(' '))
-        
+
         if Scalac.use_fsc
           system(([File.expand_path('bin/fsc', Scalac.scala_home)] + cmd_args).join(' ')) or
             fail 'Failed to compile, see errors above'
@@ -151,15 +152,15 @@ module Buildr::Scala
           begin
             Java.scala.tools.nsc.Main.process(cmd_args.to_java(Java.java.lang.String))
           rescue => e
-            fail "Scala compiler crashed:\n#{e.inspect}" 
+            fail "Scala compiler crashed:\n#{e.inspect}"
           end
           fail 'Failed to compile, see errors above' if Java.scala.tools.nsc.Main.reporter.hasErrors
         end
- 
+
         java_sources = java_sources(sources)
         unless java_sources.empty?
           trace 'Compiling mixed Java/Scala sources'
-          
+
           # TODO  includes scala-compiler.jar
           deps = dependencies + Scalac.dependencies + [ File.expand_path(target) ]
           @java.compile(java_sources, target, deps)
@@ -187,7 +188,7 @@ module Buildr::Scala
     end
 
   end
-    
+
 end
 
 # Scala compiler comes first, ahead of Javac, this allows it to pick
