@@ -137,9 +137,9 @@ package(:zip).include _('target/docs/*')
 package(:zip).include _('target/docs'), :as=>'.'
 {% endhighlight %}
 
-These two are almost identical.  They both include all the files from the @target/docs@ directory, but not the directory itself.  But they operate differently.  The first line expands to include all the files in @target/docs@. If you don't already have files in @target/docs@, well, then it won't do anything interesting.  Your ZIP will come up empty.  The second file includes the directory itself, but strips the path during inclusion.  You can define it now, create these files later, and then ZIP them all up.
+These two perform identically.  They both include all the files from the @target/docs@ directory, but not the directory itself, and they are both lazy, meaning that the files can be created later and they will still get packaged into the zip package.
 
-For example, when @package :jar@ decides to include all the files from @target/classes@, it's still working on the project definition, and has yet to compile anything.  Since @target/classes@ may be empty, may not even exist, it uses @:as=>'.'@.
+For example, when you use @package :jar@, under the hood it specifies to include all the files from @target/classes@ with @:as=>'.'@.  Even though this happens during project definition and nothing has been compiled yet (and in fact @target/classes@ may not even exist yet), the .class files generated during compilation are still packaged in the .jar file, as expected.
 
 If you need to get rid of all the included files, call the @clean@ method. Some packaging types default to adding various files and directories, for example, JAR packaging will include all the compiled classes and resources.
 
