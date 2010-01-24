@@ -26,46 +26,46 @@ describe Buildr::ArtifactNamespace do
     Object.send :remove_const, :A
   end
 
-  describe '.root' do 
+  describe '.root' do
     it 'should return the top level namespace' do
       Buildr::ArtifactNamespace.root.should be_root
     end
-    
+
     it 'should yield the namespace if a block is given' do
       Buildr::ArtifactNamespace.root { |ns| ns.should be_root }
     end
   end
 
-  describe '.instance' do 
+  describe '.instance' do
     it 'should return the top level namespace when invoked outside a project definition' do
       artifact_ns.should be_root
     end
 
-    it 'should return the namespace for the receiving project' do 
+    it 'should return the namespace for the receiving project' do
       define('foo') { }
       project('foo').artifact_ns.name.should == 'foo'
     end
-    
+
     it 'should return the current project namespace when invoked inside a project' do
       define 'foo' do
         artifact_ns.should_not be_root
         artifact_ns.name.should == 'foo'
-        task :doit do 
+        task :doit do
           artifact_ns.should_not be_root
           artifact_ns.name.should == 'foo'
         end.invoke
       end
     end
-  
+
     it 'should return the root namespace if given :root' do
       artifact_ns(:root).should be_root
     end
-    
-    it 'should return the namespace for the given name' do 
+
+    it 'should return the namespace for the given name' do
       artifact_ns(:foo).name.should == 'foo'
       artifact_ns('foo:bar').name.should == 'foo:bar'
       artifact_ns(['foo', 'bar', 'baz']).name.should == 'foo:bar:baz'
-      abc_module do 
+      abc_module do
         artifact_ns(A::B::C).name.should == 'A::B::C'
       end
       artifact_ns(:root).should be_root
@@ -79,12 +79,12 @@ describe Buildr::ArtifactNamespace do
     end
   end
 
-  describe '#parent' do 
-    it 'should be nil for root namespace' do 
+  describe '#parent' do
+    it 'should be nil for root namespace' do
       artifact_ns(:root).parent.should be_nil
     end
-    
-    it 'should be the parent namespace for nested modules' do 
+
+    it 'should be the parent namespace for nested modules' do
       abc_module do
         artifact_ns(A::B::C).parent.should == artifact_ns(A::B)
         artifact_ns(A::B).parent.should == artifact_ns(A)
@@ -93,8 +93,8 @@ describe Buildr::ArtifactNamespace do
     end
 
     it 'should be the parent namespace for nested projects' do
-      define 'a' do 
-        define 'b' do 
+      define 'a' do
+        define 'b' do
           define 'c' do
             artifact_ns.parent.should == artifact_ns(parent)
           end
@@ -104,9 +104,9 @@ describe Buildr::ArtifactNamespace do
       end
     end
   end
-  
+
   describe '#parent=' do
-    it 'should reject to set parent for root namespace' do 
+    it 'should reject to set parent for root namespace' do
       lambda { artifact_ns(:root).parent = :foo }.should raise_error(Exception, /cannot set parent/i)
     end
 
@@ -118,10 +118,10 @@ describe Buildr::ArtifactNamespace do
     end
 
     it 'should allow to set parent to :current' do
-      abc_module do 
+      abc_module do
         mod = A::B
         artifact_ns(mod).parent = :current
-        def mod.stuff 
+        def mod.stuff
           Buildr::artifact_ns(self)
         end
         define 'a' do
@@ -133,14 +133,14 @@ describe Buildr::ArtifactNamespace do
       end
     end
   end
-  
-  describe '#need' do 
+
+  describe '#need' do
     it 'should accept an artifact spec' do
       define 'one' do
         artifact_ns.need 'a:b:c:1'
         # referenced by spec
         artifact_ns['a:b:c'].should_not be_selected
-        
+
         # referenced by name
         artifact_ns[:b].should_not be_selected
         artifact_ns[:b].should be_satisfied_by('a:b:c:1')
@@ -155,7 +155,7 @@ describe Buildr::ArtifactNamespace do
         artifact_ns.need 'thing -> a:b:c:2.1 -> ~>2.0'
         # referenced by spec
         artifact_ns['a:b:c'].should_not be_selected
-        
+
         # referenced by name
         artifact_ns.key?(:b).should be_false
         artifact_ns[:thing].should_not be_selected
@@ -165,7 +165,7 @@ describe Buildr::ArtifactNamespace do
       end
     end
 
-    it 'should accept a hash :name -> requirement_spec' do 
+    it 'should accept a hash :name -> requirement_spec' do
       define 'one' do
         artifact_ns.need :thing => 'a:b:c:2.1 -> ~>2.0'
         artifact_ns[:thing].should be_satisfied_by('a:b:c:2.5')
@@ -181,8 +181,8 @@ describe Buildr::ArtifactNamespace do
       end
     end
 
-    it 'should take a hash :name -> specs_array' do 
-      define 'one' do 
+    it 'should take a hash :name -> specs_array' do
+      define 'one' do
         artifact_ns.need :things => ['foo:bar:jar:1.0',
                                      'foo:baz:jar:2.0',]
         artifact_ns['foo:bar:jar'].should_not be_selected
@@ -194,8 +194,8 @@ describe Buildr::ArtifactNamespace do
       end
     end
 
-    it 'should select best matching version if defined' do 
-      define 'one' do 
+    it 'should select best matching version if defined' do
+      define 'one' do
         artifact_ns.use :a => 'foo:bar:jar:1.5'
         artifact_ns.use :b => 'foo:baz:jar:2.0'
         define 'two' do
@@ -205,7 +205,7 @@ describe Buildr::ArtifactNamespace do
           artifact_ns.need :c => 'foo:bat:jar:3.0'
           artifact_ns['foo:bat:jar'].should_not be_selected
           artifact_ns[:c].should_not be_selected
-          
+
           artifact_ns.need :one => 'foo:bar:jar:>=1.0'
           artifact_ns[:one].version.should == '1.5'
           artifact_ns[:one].should be_selected
@@ -220,7 +220,7 @@ describe Buildr::ArtifactNamespace do
     end
   end
 
-  describe '#use' do 
+  describe '#use' do
     it 'should register the artifact on namespace' do
       define 'one' do
         artifact_ns.use :thing => 'a:b:c:1'
@@ -232,7 +232,7 @@ describe Buildr::ArtifactNamespace do
           artifact_ns[:thing].requirement.should be_nil
           artifact_ns[:thing].version.should == '2'
           artifact_ns[:thing].id.should == 'd'
-          
+
           artifact_ns.use :copied => artifact_ns.parent[:thing]
           artifact_ns[:copied].should_not == artifact_ns.parent[:thing]
           artifact_ns[:copied].requirement.should be_nil
@@ -258,7 +258,7 @@ describe Buildr::ArtifactNamespace do
         artifact_ns['a:b:c'].version.should == '2'
       end
     end
-    
+
     it 'should complain if namespace requirement is not satisfied' do
       define 'one' do
         artifact_ns.need :bar => 'foo:bar:baz:~>1.5'
@@ -266,7 +266,7 @@ describe Buildr::ArtifactNamespace do
       end
     end
 
-    it 'should be able to register a group' do 
+    it 'should be able to register a group' do
       specs = ['its:me:here:1', 'its:you:there:2']
       artifact_ns.use :them => specs
       artifact_ns[:them].map(&:to_spec).should == specs
@@ -274,7 +274,7 @@ describe Buildr::ArtifactNamespace do
       artifact_ns[:you].should be_nil
     end
 
-    it 'should be able to assign sub namespaces' do 
+    it 'should be able to assign sub namespaces' do
       artifact_ns(:foo).bar = "foo:bar:baz:0"
       artifact_ns(:moo).foo = artifact_ns(:foo)
       artifact_ns(:moo).foo.should == artifact_ns(:foo)
@@ -291,13 +291,13 @@ describe Buildr::ArtifactNamespace do
 
   end
 
-  describe '#values' do 
-    it 'returns the artifacts defined on namespace' do 
+  describe '#values' do
+    it 'returns the artifacts defined on namespace' do
       define 'foo' do
         artifact_ns.use 'foo:one:baz:1.0'
         define 'bar' do
           artifact_ns.use 'foo:two:baz:1.0'
-          
+
           specs = artifact_ns.values.map(&:to_spec)
           specs.should include('foo:two:baz:1.0')
           specs.should_not include('foo:one:baz:1.0')
@@ -309,13 +309,13 @@ describe Buildr::ArtifactNamespace do
     end
   end
 
-  describe '#values_at' do 
-    it 'returns the named artifacts' do 
+  describe '#values_at' do
+    it 'returns the named artifacts' do
       define 'foo' do
         artifact_ns.use 'foo:one:baz:1.0'
         define 'bar' do
           artifact_ns.use :foo_baz => 'foo:two:baz:1.0'
-          
+
           specs = artifact_ns.values_at('one').map(&:to_spec)
           specs.should include('foo:one:baz:1.0')
           specs.should_not include('foo:two:baz:1.0')
@@ -332,7 +332,7 @@ describe Buildr::ArtifactNamespace do
         artifact_ns.use 'foo:one:baz:2.0'
         define 'bar' do
           artifact_ns.use :older => 'foo:one:baz:1.0'
-          
+
           specs = artifact_ns.values_at('foo:one:baz').map(&:to_spec)
           specs.should include('foo:one:baz:1.0')
           specs.should_not include('foo:one:baz:2.0')
@@ -348,7 +348,7 @@ describe Buildr::ArtifactNamespace do
         artifact_ns.use 'foo:one:baz:2.0'
         define 'bar' do
           artifact_ns.use :older => 'foo:one:baz:1.0'
-          
+
           specs = artifact_ns.values_at('foo:one:baz:>1.0').map(&:to_spec)
           specs.should include('foo:one:baz:2.0')
           specs.should_not include('foo:one:baz:1.0')
@@ -356,14 +356,57 @@ describe Buildr::ArtifactNamespace do
       end
     end
   end
-  
-  describe '#method_missing' do 
-    it 'should use cool_aid! to create a requirement' do 
+
+  describe '#artifacts' do
+    it 'returns artifacts in namespace' do
+      define 'one' do
+        artifact_ns[:foo] = 'group:foo:jar:1'
+        artifact_ns[:bar] = 'group:bar:jar:1'
+        artifact_ns.artifacts.map{|a| a.to_spec}.should include('group:foo:jar:1', 'group:bar:jar:1')
+      end
+    end
+  end
+
+  describe '#keys' do
+    it 'returns names in namespace' do
+      define 'one' do
+        artifact_ns[:foo] = 'group:foo:jar:1'
+        artifact_ns[:bar] = 'group:bar:jar:1'
+        artifact_ns.keys.should include('foo', 'bar')
+      end
+    end
+  end
+
+  describe '#delete' do
+    it 'deletes corresponding artifact requirement' do
+      define 'one' do
+        artifact_ns[:foo] = 'group:foo:jar:1'
+        artifact_ns[:bar] = 'group:bar:jar:1'
+        artifact_ns.delete :bar
+        artifact_ns.artifacts.map{|a| a.to_spec}.should include('group:foo:jar:1')
+        artifact_ns[:foo].to_spec.should eql('group:foo:jar:1')
+      end
+    end
+  end
+
+  describe '#clear' do
+    it 'clears all artifact requirements in namespace' do
+      define 'one' do
+        artifact_ns[:foo] = 'group:foo:jar:1'
+        artifact_ns[:bar] = 'group:bar:jar:1'
+        artifact_ns.clear
+        artifact_ns.artifacts.should be_empty
+      end
+    end
+  end
+
+  describe '#method_missing' do
+    it 'should use cool_aid! to create a requirement' do
       define 'foo' do
         artifact_ns.cool_aid!('cool:aid:jar:2').should be_kind_of(ArtifactNamespace::ArtifactRequirement)
         artifact_ns[:cool_aid].version.should == '2'
         artifact_ns[:cool_aid].should_not be_selected
-        define 'bar' do 
+        define 'bar' do
           artifact_ns.cool_aid! 'cool:aid:man:3', '>2'
           artifact_ns[:cool_aid].version.should == '3'
           artifact_ns[:cool_aid].requirement.should be_satisfied_by('2.5')
@@ -372,11 +415,11 @@ describe Buildr::ArtifactNamespace do
       end
     end
 
-    it 'should use cool_aid= as shorhand for [:cool_aid]=' do 
+    it 'should use cool_aid= as shorhand for [:cool_aid]=' do
       artifact_ns.cool_aid = 'cool:aid:jar:1'
       artifact_ns[:cool_aid].should be_selected
     end
-    
+
     it 'should use cool_aid as shorthand for [:cool_aid]' do
       artifact_ns.need :cool_aid => 'cool:aid:jar:1'
       artifact_ns.cool_aid.should_not be_selected
@@ -391,25 +434,25 @@ describe Buildr::ArtifactNamespace do
     end
   end
 
-  describe '#ns' do 
+  describe '#ns' do
     it 'should create a sub namespace' do
       artifact_ns.ns :foo
       artifact_ns[:foo].should be_kind_of(ArtifactNamespace)
       artifact_ns(:foo).should_not === artifact_ns.foo
       artifact_ns.foo.parent.should == artifact_ns
     end
-    
+
     it 'should take any use arguments' do
       artifact_ns.ns :foo, :bar => 'foo:bar:jar:0', :baz => 'foo:baz:jar:0'
       artifact_ns.foo.bar.should be_selected
       artifact_ns.foo[:baz].should be_selected
     end
-    
-    it 'should access sub artifacts using with foo_bar like syntax' do 
+
+    it 'should access sub artifacts using with foo_bar like syntax' do
       artifact_ns.ns :foo, :bar => 'foo:bar:jar:0', :baz => 'foo:baz:jar:0'
       artifact_ns[:foo_baz].should be_selected
       artifact_ns.foo_bar.should be_selected
-      
+
       artifact_ns.foo.ns :bat, 'bat:man:jar:>1'
       batman = artifact_ns.foo.bat.man
       batman.should be_selected
@@ -418,7 +461,7 @@ describe Buildr::ArtifactNamespace do
       artifact_ns[:foo_bat_man].version.should == '3'
     end
 
-    it 'should include sub artifacts when calling #values' do 
+    it 'should include sub artifacts when calling #values' do
       artifact_ns.ns :bat, 'bat:man:jar:>1'
       artifact_ns.values.should_not be_empty
       artifact_ns.values.first.unversioned_spec.should == 'bat:man:jar'
@@ -435,13 +478,13 @@ describe Buildr::ArtifactNamespace do
       lambda { artifact_ns.ns(:foo) }.should raise_error(TypeError, /not a sub/i)
     end
 
-    it 'should clone artifacts when assigned' do 
+    it 'should clone artifacts when assigned' do
       artifact_ns(:foo).bar = "foo:bar:jar:0"
       artifact_ns(:moo).ns :muu, :miu => artifact_ns(:foo).bar
       artifact_ns(:moo).muu.miu.should_not == artifact_ns(:foo).bar
       artifact_ns(:moo).muu.miu.to_spec.should == artifact_ns(:foo).bar.to_spec
     end
-    
+
     it 'should clone parent artifacts by name' do
       define 'foo' do
         artifact_ns.bar = "foo:bar:jar:0"
@@ -465,9 +508,9 @@ end # ArtifactNamespace
 describe Buildr do
   before(:each) { Buildr::ArtifactNamespace.clear }
 
-  describe '.artifacts' do 
+  describe '.artifacts' do
     it 'should take ruby symbols and ask the current namespace for them' do
-      define 'foo' do 
+      define 'foo' do
         artifact_ns.cool = 'cool:aid:jar:1.0'
         artifact_ns.use 'some:other:jar:1.0'
         artifact_ns.use 'bat:man:jar:1.0'
@@ -475,8 +518,8 @@ describe Buildr do
         compile.dependencies.map(&:to_spec).should include('cool:aid:jar:1.0', 'some:other:jar:1.0', 'bat:man:jar:1.0')
       end
     end
-    
-    it 'should take a namespace' do 
+
+    it 'should take a namespace' do
       artifact_ns(:moo).muu = 'moo:muu:jar:1.0'
       define 'foo' do
         compile.with artifact_ns(:moo)
@@ -484,28 +527,28 @@ describe Buildr do
       end
     end
   end
-  
+
   describe '.artifact' do
-    it 'should search current namespace if given a symbol' do 
-      define 'foo' do 
+    it 'should search current namespace if given a symbol' do
+      define 'foo' do
         artifact_ns.use :cool => 'cool:aid:jar:1.0'
         define 'bar' do
           artifact(:cool).should == artifact_ns[:cool].artifact
         end
       end
     end
-    
-    it 'should search current namespace if given a symbol spec' do 
-      define 'foo' do 
+
+    it 'should search current namespace if given a symbol spec' do
+      define 'foo' do
         artifact_ns.use 'cool:aid:jar:1.0'
         define 'bar' do
           artifact(:'cool:aid:jar').should == artifact_ns[:aid].artifact
         end
       end
     end
-    
+
     it 'should fail when no artifact by that name is found' do
-      define 'foo' do 
+      define 'foo' do
         artifact_ns.use 'cool:aid:jar:1.0'
         define 'bar' do
           lambda { artifact(:cool) }.should raise_error(IndexError, /artifact/)
@@ -524,12 +567,12 @@ describe "Extension using ArtifactNamespace" do
   ensure
     Object.send :remove_const, :A
   end
-  
+
   it 'can register namespace listeners' do
     abc_module do
       # An example extension to illustrate namespace listeners and method forwarding
       class A::Example
-        
+
         module Ext
           include Buildr::Extension
           def example; @example ||= A::Example.new; end
@@ -537,22 +580,22 @@ describe "Extension using ArtifactNamespace" do
             Rake::Task.define_task('example') { p.example.doit }
           end
         end
-        
+
         REQUIRES = ArtifactNamespace.for(self) do |ns|
           ns.xmlbeans! 'org.apache.xmlbeans:xmlbeans:jar:2.3.0', '>2'
           ns.stax_api! 'stax:stax-api:jar:>=1.0.1'
         end
 
         attr_reader :options, :requires
-        
+
         def initialize
           # We could actually use the REQUIRES namespace, but to make things
-          # a bit more interesting, suppose each Example instance can have its 
+          # a bit more interesting, suppose each Example instance can have its
           # own artifact requirements in adition to those specified on REQUIRES.
           # To achieve this we create an anonymous namespace.
           @requires = ArtifactNamespace.new # a namespace per instance
           REQUIRES.each { |requirement| @requires.need requirement }
-          
+
           # For user convenience, we make the options object respond to
           #    :xmlbeans, :xmlbeans=, :xmlbeans?
           # forwarding them to the namespace.
@@ -573,7 +616,7 @@ describe "Extension using ArtifactNamespace" do
         end
 
         include Spec::Matchers # for assertions
-        
+
         # Called with the ArtifactRequirement that has just been selected
         # by a user. This allows extension author to selectively perform
         # some action by inspecting the requirement state.
@@ -591,20 +634,20 @@ describe "Extension using ArtifactNamespace" do
           # Now call ant task with our selected artifact and options
           classpath = requires.map(&:artifact).map(&:to_s).join(File::PATH_SEPARATOR)
           lambda { ant('thing') { |ant| ant.classpath classpath, :math => options[:math] } }
-          
+
           # We are not a Project instance, hence we have no artifact_ns
           lambda { artifact_ns }.should raise_error(NameError)
 
           # Extension authors may NOT rely project's namespaces.
-          # However the ruby-way gives you power and at the same time 
+          # However the ruby-way gives you power and at the same time
           # makes you dangerous, (think open-modules, monkey-patching)
           # Given that buildr is pure ruby, consider it a sharp-edged sword.
-          # Having said that, you may actually inspect a project's 
+          # Having said that, you may actually inspect a project's
           # namespace, but don't write on it without letting your users
           # know you will.
           # This example obtains the current project namespace to make
           # some assertions.
-          
+
           # To obtain a project's namespace we need either
           # 1) a reference to the project, and call artifact_ns on it
           #      project.artifact_ns  # the namespace for project
@@ -627,7 +670,7 @@ describe "Extension using ArtifactNamespace" do
           end
         end
       end
-      
+
       define 'foo' do
         define 'bar' do
           extend A::Example::Ext
@@ -643,7 +686,7 @@ describe "Extension using ArtifactNamespace" do
 
       project('foo:bar').example.requires.should_not == project('foo:baz').example.requires
       project('foo:bar').example.requires.xmlbeans.should_not == project('foo:baz').example.requires.xmlbeans
-      
+
       # current namespace outside a project is :root, see the stax callback
       project('foo:baz').example.options.stax_api = '1.6180'
       # we call the task outside the project, see #doit
