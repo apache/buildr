@@ -18,7 +18,7 @@ require 'buildr/packaging/version_requirement'
 
 
 module Buildr
-  
+
   # An ArtifactNamespace is a hierarchical dictionary used to manage ArtifactRequirements.
   # It can be used to have different artifact versions per project
   # or to allow users to select a version for addons or modules.
@@ -33,25 +33,25 @@ module Buildr
   #
   # = Avoiding constant polution on buildfile
   #
-  # Each project has its own ArtifactNamespace inheriting the one from the 
+  # Each project has its own ArtifactNamespace inheriting the one from the
   # parent project up to the root namespace.
-  # 
-  # Consider the following snippet, as project grows, each subproject 
-  # may need diferent artifact combinations and/or versions. Asigning 
+  #
+  # Consider the following snippet, as project grows, each subproject
+  # may need diferent artifact combinations and/or versions. Asigning
   # artifact specifications to constants can make it painful to maintain
   # their references even if using structs/hashes.
   #
   #   -- buildfile --
   #   SPRING = 'org.springframework:spring:jar:2.5'
   #   SPRING_OLD = 'org.springframework:spring:jar:1.0'
-  #   LOGGING = ['comons-logging:commons-logging:jar:1.1.1', 
+  #   LOGGING = ['comons-logging:commons-logging:jar:1.1.1',
   #              'log4j:log4j:jar:1.2.15']
   #   WL_LOGGING = artifact('bea:wlcommons-logging:jar:8.1').from('path/to/wlcommons-logging.jar')
-  #   LOGGING_WEBLOGIC = ['comons-logging:commons-logging:jar:1.1.1', 
+  #   LOGGING_WEBLOGIC = ['comons-logging:commons-logging:jar:1.1.1',
   #                       WL_LOGGING]
   #   COMMONS = struct :collections => 'commons-collection:commons-collection:jar:3.1',
   #                    :net => 'commons-net:commons-net:jar:1.4.0'
-  #   
+  #
   #   define 'example1' do
   #     define 'one' do
   #       compile.with SPRING, LOGGING_WEBLOGIC, COMMONS
@@ -64,11 +64,11 @@ module Buildr
   #     end
   #   end
   #
-  # 
+  #
   # With ArtifactNamespace you can do some more advanced stuff, the following
   # annotated snipped could still be reduced if default artifact definitions were
   # loaded from yaml file (see section bellow and ArtifactNamespace.load).
-  # 
+  #
   #   -- buildfile --
   #   artifact_ns do |ns| # the current namespace (root if called outside a project)
   #     # default artifacts
@@ -83,15 +83,15 @@ module Buildr
   #                     :logging => 'comons-logging:commons-logging:jar:1.1.1'
   #
   #
-  #     # When a child namespace asks for the :log artifact, 
+  #     # When a child namespace asks for the :log artifact,
   #     # these artifacts will be searched starting from the :current namespace.
   #     ns.virtual :log, :logger, :commons_logging
   #   end
-  #   
+  #
   #   artifact_ns('example2:one') do |ns| # namespace for the one subproject
   #     ns.logger = artifact('bea:wlcommons-logging:jar:8.1').from('path/to/wlcommons-logging.jar')
   #   end
-  #   artifact_ns('example2:two') do |ns| 
+  #   artifact_ns('example2:two') do |ns|
   #     ns.spring = '1.0' # for project two use an older spring version (just for an example)
   #   end
   #   artifact_ns('example2:three').commons_collections = 2.2'
@@ -100,8 +100,8 @@ module Buildr
   #     ns.ns(:compilation).use :commons_logging, :beanutils, :spring       # compile time dependencies
   #     ns.ns(:testing).use :log, :beanutils, 'cglib:cglib-nodep:jar:2.1.3' # run time dependencies
   #   end
-  #   
-  #   define 'example2' do 
+  #
+  #   define 'example2' do
   #     define 'one' do
   #       compile.with :spring, :log, :commons # uses weblogic logging
   #     end
@@ -130,7 +130,7 @@ module Buildr
   # An example usage is documented on the ArtifactNamespace.load method.
   #
   # = For addon/plugin writers & Customizing artifact versions
-  # 
+  #
   # Sometimes users would need to change the default artifact versions used by some
   # module, for example, the XMLBeans compiler needs this, because of compatibility
   # issues. Another example would be to select the groovy version to use on all our
@@ -145,14 +145,14 @@ module Buildr
   # syntactic sugar is provided by ArtifactNamespace#method_missing.
   #
   # The following example is taken from the XMLBeans compiler module.
-  # And illustrates how addon authors should specify their requirements, 
+  # And illustrates how addon authors should specify their requirements,
   # provide default versions, and document the namespace for users to customize.
-  # 
+  #
   #    module Buildr::XMLBeans
   #
   #       # You need to document this constant, giving users some hints
-  #       # about when are (maybe some of) these artifacts used. I mean, 
-  #       # some modules, add jars to the Buildr classpath when its file 
+  #       # about when are (maybe some of) these artifacts used. I mean,
+  #       # some modules, add jars to the Buildr classpath when its file
   #       # is required, you would need to tell your users, so that they
   #       # can open the namespace and specify their defaults. Of course
   #       # when the requirements are defined, buildr checks if any compatible
@@ -174,29 +174,29 @@ module Buildr
   #         ns.need " some_name ->  ar:ti:fact:3.2.5 ->  ( >2 & <4)"
   #
   #         # As you can see it's just an artifact spec, prefixed with
-  #         # ' some_name -> ', this means users can use that name to 
+  #         # ' some_name -> ', this means users can use that name to
   #         # reference the requirement, also this string has a VersionRequirement
   #         # just after another ->.
   #       end
   #
-  #       # The REQUIRES constant is an ArtifactNamespace instance, 
-  #       # that means we can use it directly. Note that calling 
+  #       # The REQUIRES constant is an ArtifactNamespace instance,
+  #       # that means we can use it directly. Note that calling
   #       # Buildr.artifact_ns would lead to the currently executing context,
   #       # not the one for this module.
   #       def use
   #         # test if user specified his own version, if so, we could perform some
   #         # functionallity based on this.
-  #         REQUIRES.some_name.selected? # => false 
-  #         
+  #         REQUIRES.some_name.selected? # => false
+  #
   #         REQUIRES.some_name.satisfied_by?('1.5') # => false
   #         puts REQUIRES.some_name.requirement     # => ( >2 & <4 )
   #
   #         REQUIRES.artifacts # get the Artifact tasks
   #       end
   #
-  #    end 
+  #    end
   #
-  # A more advanced example using ArtifactRequirement listeners is included 
+  # A more advanced example using ArtifactRequirement listeners is included
   # in the artifact_namespace_spec.rb description for 'Extension using ArtifactNamespace'
   # That's it for addon writers, now, users can select their prefered version with
   # something like:
@@ -210,8 +210,8 @@ module Buildr
   #
   #    Buildr::XMLBeans::REQUIRES.parent = :current
   #
-  # Now, provided that the compiler does not caches its artifacts, it will 
-  # select the correct version. (See the first section for how to select per project 
+  # Now, provided that the compiler does not caches its artifacts, it will
+  # select the correct version. (See the first section for how to select per project
   # artifacts).
   #
   #
@@ -224,7 +224,7 @@ module Buildr
         const_set(:ROOT, new('root'))
       end
 
-      # Populate namespaces from a hash of hashes. 
+      # Populate namespaces from a hash of hashes.
       # The following example uses the profiles yaml to achieve this.
       #
       #   -- profiles.yaml --
@@ -236,7 +236,7 @@ module Buildr
       #         logging:    # define a named group
       #           - log4j:log4j:jar:1.2.15
       #           - commons-logging:commons-logging:jar:1.1.1
-      #       
+      #
       #       # open Buildr::XMLBeans namespace
       #       Buildr::XMLBeans:
       #         xmlbeans: 2.2
@@ -250,7 +250,7 @@ module Buildr
       def load(namespaces = {})
         namespaces.each_pair { |name, uses| instance(name).use(uses) }
       end
-      
+
       # :call-seq:
       #   ArtifactNamespace.instance { |current_ns| ... } -> current_ns
       #   ArtifactNamespace.instance(name) { |ns| ... } -> ns
@@ -284,7 +284,7 @@ module Buildr
 
       alias_method :[], :instance
       alias_method :for, :instance
-      
+
       # :call-seq:
       #   ArtifactNamespace.root { |ns| ... } -> ns
       #
@@ -296,9 +296,9 @@ module Buildr
     end
 
     module DClone #:nodoc:
-      def dclone 
+      def dclone
         clone = self.clone
-        clone.instance_variables.each do |i| 
+        clone.instance_variables.each do |i|
           value = clone.instance_variable_get(i)
           value = value.dclone rescue
           clone.instance_variable_set(i, value)
@@ -325,7 +325,7 @@ module Buildr
         end
         obj
       end
-      
+
       def aliases(name)
         return [] unless name
         name = name.to_sym
@@ -338,7 +338,7 @@ module Buildr
       end
 
       def get(key, include_parent = nil)
-        [].tap { |a| aliases(key).select { |n| a[0] = self[n] } }.first || 
+        [].tap { |a| aliases(key).select { |n| a[0] = self[n] } }.first ||
           (include_parent && parent && parent.get(key, include_parent))
       end
 
@@ -361,17 +361,17 @@ module Buildr
     end
 
     # An artifact requirement is an object that ActsAsArtifact and has
-    # an associated VersionRequirement. It also knows the name (some times equal to the 
+    # an associated VersionRequirement. It also knows the name (some times equal to the
     # artifact id) that is used to store it in an ArtifactNamespace.
     class ArtifactRequirement
       attr_accessor :version
       attr_reader :name, :requirement
 
       include DClone
-  
+
       # Create a requirement from an `artifact requirement spec`.
-      # This spec has three parts, separated by  -> 
-      # 
+      # This spec has three parts, separated by  ->
+      #
       #     some_name ->  ar:ti:fact:3.2.5 ->  ( >2 & <4)
       #
       # As you can see it's just an artifact spec, prefixed with
@@ -387,7 +387,7 @@ module Buildr
       #
       # The last part consist of a VersionRequirement.
       #                                     ->  ( >2 & <4)
-      #                        
+      #
       # VersionRequirement supports RubyGem's comparision operators
       # in adition to parens, logical and, logical or and negation.
       # See the docs for VersionRequirement for more info on operators.
@@ -416,7 +416,7 @@ module Buildr
       def name=(name)
         @name = name.to_s
       end
-      
+
       # Set a the requirement, this must be an string formatted for
       # VersionRequirement#create to parse.
       def requirement=(version_requirement)
@@ -426,7 +426,7 @@ module Buildr
       # Return a hash consisting of :name, :spec, :requirement
       def requirement_hash(spec = self)
         result = {}
-        if String === spec 
+        if String === spec
           parts = spec.split(/\s*->\s*/, 3).map(&:strip)
           case parts.size
           when 1
@@ -451,7 +451,7 @@ module Buildr
         result[:requirement] ||= VersionRequirement.create(result[:spec][:version])
         result
       end
-      
+
       # Test if this requirement is satisfied by an artifact spec.
       def satisfied_by?(spec)
         return false unless requirement
@@ -502,7 +502,7 @@ module Buildr
         ary = ary[0...-1] if ary.size > 3
         ary.join(':')
       end
-    
+
       class << self
         # Return an artifact spec without the version part.
         def unversioned_spec(spec)
@@ -522,16 +522,16 @@ module Buildr
     include DClone
     include Enumerable
     attr_reader :name
-    
+
     def initialize(name = nil) #:nodoc:
       @name = name.to_s if name
     end
     clear
-    
+
     def root
       ROOT
     end
-    
+
     # ROOT namespace has no parent
     def parent
       if root?
@@ -547,22 +547,22 @@ module Buildr
         root
       end
     end
-    
+
     # Set the parent for the current namespace, except if it is ROOT
     def parent=(other)
       raise 'Cannot set parent of root namespace' if root?
       @parent = other
       @registry = nil
     end
-    
+
     # Is this the ROOT namespace?
     def root?
       ROOT == self
     end
 
-    # Create a named sub-namespace, sub-namespaces are themselves 
+    # Create a named sub-namespace, sub-namespaces are themselves
     # ArtifactNamespace instances but cannot be referenced by
-    # the Buildr.artifact_ns, ArtifactNamespace.instance methods. 
+    # the Buildr.artifact_ns, ArtifactNamespace.instance methods.
     # Reference needs to be through this object using the given +name+
     #
     #   artifact_ns('foo').ns(:bar).need :thing => 'some:thing:jar:1.0'
@@ -617,7 +617,7 @@ module Buildr
       end
       named.each_pair do |name, artifact|
         if Array === artifact # a group
-          artifact.each do |a| 
+          artifact.each do |a|
             unvers = a.unversioned_spec
             previous = registry[unvers]
             if previous && previous.selected? && a.satisfied_by?(previous)
@@ -645,7 +645,7 @@ module Buildr
     #   artifact_ns.use :name => 'org:foo:bar:jar:1.2.3'
     #   artifact_ns.use :name => '2.5.6'
     #
-    # First and second form are equivalent, the third is used when an 
+    # First and second form are equivalent, the third is used when an
     # ArtifactRequirement has been previously defined with :name, so it
     # just selects the version.
     #
@@ -686,7 +686,7 @@ module Buildr
         is_group = Array === artifact
         artifact = [artifact].flatten.map do |artifact|
           unvers = artifact.unversioned_spec
-          previous = get(unvers, false) || get(name, false) 
+          previous = get(unvers, false) || get(name, false)
           if previous # have previous on current namespace
             if previous.requirement # we must satisfy the requirement
               unless unvers # we only have the version
@@ -697,7 +697,7 @@ module Buildr
               raise "Unsatisfied dependency #{previous} " +
                 "not satisfied by #{artifact}" unless satisfied
               previous.version = artifact.version # OK, set new version
-              artifact = previous # use the same object for aliases  
+              artifact = previous # use the same object for aliases
             else # not a requirement, set the new values
               unless artifact.id == previous.id && name != previous.name
                 previous.copy_attrs(artifact)
@@ -711,13 +711,13 @@ module Buildr
               artifact.copy_attrs(previous)
               artifact.version = version
             end
-            artifact.requirement = nil  
+            artifact.requirement = nil
           end
           artifact.selected!
         end
         artifact = artifact.first unless is_group
         if is_group
-          names = artifact.map do |art| 
+          names = artifact.map do |art|
             unv = art.unversioned_spec
             registry[unv] = art
             unv
@@ -792,7 +792,7 @@ module Buildr
 
     # Return only the named requirements
     def values_at(*names)
-      names.map do |name| 
+      names.map do |name|
         catch :artifact do
           unless name.to_s[/^[\w\-\.]+$/]
             unvers = ArtifactRequirement.unversioned_spec(name)
@@ -816,11 +816,19 @@ module Buildr
       registry.key?(name, include_parents)
     end
 
+    def keys
+      values.map(&:name)
+    end
+
     def delete(name, include_parents = false)
       registry.delete(name, include_parents)
       self
     end
-    
+
+    def clear
+      keys.each { |k| delete(k) }
+    end
+
     # :call-seq:
     #   group :who, :me, :you
     #   group :them, :me, :you, :namespace => ns
@@ -828,7 +836,7 @@ module Buildr
     # Create a virtual group on this namespace. When the namespace
     # is asked for the +who+ artifact, it's value is an array made from
     # the remaining names. These names are searched by default from the current
-    # namespace. 
+    # namespace.
     # Second form specified the starting namespace to search from.
     def group(group_name, *members)
       namespace = (Hash === members.last && members.pop[:namespace]) || :current
@@ -867,7 +875,7 @@ module Buildr
     # and is equivalent to:
     #   artifact_ns.use :cool_aid => '1.0'
     #
-    # Third form obtains the named ArtifactRequirement, can be 
+    # Third form obtains the named ArtifactRequirement, can be
     # used to test if a named requirement has been defined.
     # It is equivalent to:
     #   artifact_ns.fetch(:cool_aid) { nil }
@@ -892,7 +900,7 @@ module Buildr
       when /\?$/ then
         name = $`.gsub(/^(has|have)_/, '').intern
         [get(name)].flatten.all? { |a| a && a.selected? }
-      else 
+      else
         if block || args.size > 0
           raise ArgumentError.new("wrong number of arguments #{args.size} for 0 or block given")
         end
@@ -900,7 +908,7 @@ module Buildr
       end
     end
 
-    # Return an anonymous module 
+    # Return an anonymous module
     #   # first create a requirement
     #   artifact_ns.cool_aid! 'cool:aid:jar:>=1.0'
     #
@@ -911,7 +919,7 @@ module Buildr
     #   artifact_ns.cool_aid.version # -> '2.0'
     def accessor(*names)
       ns = self
-      Module.new do 
+      Module.new do
         names.each do |name|
           define_method("#{name}") { ns.send("#{name}") }
           define_method("#{name}?") { ns.send("#{name}?") }
@@ -950,7 +958,7 @@ module Buildr
         m.parent = parent.send(:registry) unless root?
       end
     end
-     
+
   end # ArtifactNamespace
 
   # :call-seq:
@@ -966,7 +974,7 @@ module Buildr
     name = self if name.nil? && self.kind_of?(Project)
     ArtifactNamespace.instance(name, &block)
   end
-  
+
 end
 
 
