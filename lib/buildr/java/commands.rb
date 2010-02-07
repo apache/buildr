@@ -27,6 +27,12 @@ module Java
       #
       # Runs Java with the specified arguments.
       #
+      # Each argument should be provided as separate array value, e.g.
+      #
+      #  java("-jar", "yuicompressor-2.4.2.jar", "--type","css",
+      #       "src/main/webapp/styles/styles-all.css",
+      #       "-o", "src/main/webapp/styles/styles-all-min.css")
+      #
       # The last argument may be a Hash with additional options:
       # * :classpath -- One or more file names, tasks or artifact specifications.
       #   These are all expanded into artifacts, and all tasks are invoked.
@@ -43,7 +49,7 @@ module Java
         if name.nil?
           name = "java #{args.first}"
         end
-        
+
         cmd_args = [path_to_bin('java')]
         classpath = classpath_from(options)
         cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
@@ -60,7 +66,7 @@ module Java
           end
         end
       end
-  
+
       # :call-seq:
       #   apt(*files, options)
       #
@@ -131,7 +137,7 @@ module Java
           info "Compiling #{files.size} source files in #{name}"
           trace (['javac'] + cmd_args).join(' ')
           Java.load
-          Java.com.sun.tools.javac.Main.compile(cmd_args.to_java(Java.java.lang.String)) == 0 or 
+          Java.com.sun.tools.javac.Main.compile(cmd_args.to_java(Java.java.lang.String)) == 0 or
             fail 'Failed to compile, see errors above'
         end
       end
