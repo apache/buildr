@@ -251,7 +251,7 @@ describe 'javac compiler options' do
 end
 
 
-describe Project, '#javadoc' do
+describe Project, '#doc' do
   def sources
     @sources ||= (1..3).map { |i| "Test#{i}" }.
       each { |name| write "src/main/java/foo/#{name}.java", "package foo; public class #{name}{}" }.
@@ -260,64 +260,64 @@ describe Project, '#javadoc' do
 
   it 'should return the project\'s Javadoc task' do
     define('foo') { compile.using(:javac) }
-    project('foo').javadoc.name.should eql('foo:javadoc')
+    project('foo').doc.name.should eql('foo:doc')
   end
 
-  it 'should return a Javadoc task' do
+  it 'should return a DocTask' do
     define('foo') { compile.using(:javac) }
-    project('foo').javadoc.should be_kind_of(Javadoc::JavadocTask)
+    project('foo').doc.should be_kind_of(Doc::DocTask)
   end
 
-  it 'should set target directory to target/javadoc' do
+  it 'should set target directory to target/doc' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.target.to_s.should point_to_path('target/javadoc')
+      doc.target.to_s.should point_to_path('target/doc')
     end
   end
 
   it 'should create file task for target directory' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.should_receive(:invoke_prerequisites)
+      doc.should_receive(:invoke_prerequisites)
     end
-    project('foo').file('target/javadoc').invoke
+    project('foo').file('target/doc').invoke
   end
 
   it 'should respond to into() and return self' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.into('docs').should be(javadoc)
+      doc.into('docs').should be(doc)
     end
   end
 
   it 'should respond to into() and change target directory' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.into('docs')
-      javadoc.should_receive(:invoke_prerequisites)
+      doc.into('docs')
+      doc.should_receive(:invoke_prerequisites)
     end
     file('docs').invoke
   end
 
   it 'should respond to from() and return self' do
     task = nil
-    define('foo') { task = javadoc.from('srcs') }
-    task.should be(project('foo').javadoc)
+    define('foo') { task = doc.from('srcs') }
+    task.should be(project('foo').doc)
   end
 
   it 'should respond to from() and add sources' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.from('srcs').should be(javadoc)
+      doc.from('srcs').should be(doc)
     end
   end
 
   it 'should respond to from() and add file task' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.from('srcs').should be(javadoc)
+      doc.from('srcs').should be(doc)
     end
-    project('foo').javadoc.source_files.first.should point_to_path('srcs')
+    project('foo').doc.source_files.first.should point_to_path('srcs')
   end
 
   it 'should respond to from() and add project\'s sources and dependencies' do
@@ -325,27 +325,27 @@ describe Project, '#javadoc' do
     define 'foo' do
       compile.using(:javac)
       define('bar') { compile.using(:javac).with 'group:id:jar:1.0' }
-      javadoc.from project('foo:bar')
+      doc.from project('foo:bar')
     end
-    project('foo').javadoc.source_files.first.should point_to_path('bar/src/main/java/Test.java')
-    project('foo').javadoc.classpath.map(&:to_spec).should include('group:id:jar:1.0')
+    project('foo').doc.source_files.first.should point_to_path('bar/src/main/java/Test.java')
+    project('foo').doc.classpath.map(&:to_spec).should include('group:id:jar:1.0')
   end
 
-  it 'should generate javadocs from project' do
+  it 'should generate docs from project' do
     sources
     define('foo') { compile.using(:javac) }
-    project('foo').javadoc.source_files.sort.should == sources.sort.map { |f| File.expand_path(f) }
+    project('foo').doc.source_files.sort.should == sources.sort.map { |f| File.expand_path(f) }
   end
 
   it 'should include compile dependencies' do
     define('foo') { compile.using(:javac).with 'group:id:jar:1.0' }
-    project('foo').javadoc.classpath.map(&:to_spec).should include('group:id:jar:1.0')
+    project('foo').doc.classpath.map(&:to_spec).should include('group:id:jar:1.0')
   end
 
   it 'should respond to include() and return self' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.include('srcs').should be(javadoc)
+      doc.include('srcs').should be(doc)
     end
   end
 
@@ -353,15 +353,15 @@ describe Project, '#javadoc' do
     included = sources.first
     define 'foo' do
       compile.using(:javac)
-      javadoc.include included
+      doc.include included
     end
-    project('foo').javadoc.source_files.should include(included)
+    project('foo').doc.source_files.should include(included)
   end
 
   it 'should respond to exclude() and return self' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.exclude('srcs').should be(javadoc)
+      doc.exclude('srcs').should be(doc)
     end
   end
 
@@ -369,35 +369,35 @@ describe Project, '#javadoc' do
     excluded = sources.first
     define 'foo' do
       compile.using(:javac)
-      javadoc.exclude excluded
+      doc.exclude excluded
     end
     sources
-    project('foo').javadoc.source_files.sort.should == sources[1..-1].map { |f| File.expand_path(f) }
+    project('foo').doc.source_files.sort.should == sources[1..-1].map { |f| File.expand_path(f) }
   end
 
   it 'should respond to using() and return self' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.using(:windowtitle=>'Fooing').should be(javadoc)
+      doc.using(:windowtitle=>'Fooing').should be(doc)
     end
   end
 
   it 'should respond to using() and accept options' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.using :windowtitle=>'Fooing'
+      doc.using :windowtitle=>'Fooing'
     end
-    project('foo').javadoc.options[:windowtitle].should eql('Fooing')
+    project('foo').doc.options[:windowtitle].should eql('Fooing')
   end
 
   it 'should pick -windowtitle from project name' do
     define 'foo' do
       compile.using(:javac)
-      javadoc.options[:windowtitle].should eql('foo')
+      doc.options[:windowtitle].should eql('foo')
 
       define 'bar' do
         compile.using(:javac)
-        javadoc.options[:windowtitle].should eql('foo:bar')
+        doc.options[:windowtitle].should eql('foo:bar')
       end
     end
   end
@@ -406,32 +406,32 @@ describe Project, '#javadoc' do
     desc 'My App'
     define 'foo' do
       compile.using(:javac)
-      javadoc.options[:windowtitle].should eql('My App')
+      doc.options[:windowtitle].should eql('My App')
     end
   end
 
   it 'should produce documentation' do
     sources
     define('foo') { compile.using(:javac) }
-    project('foo').javadoc.invoke
-    (1..3).map { |i| "target/javadoc/foo/Test#{i}.html" }.each { |f| file(f).should exist }
+    project('foo').doc.invoke
+    (1..3).map { |i| "target/doc/foo/Test#{i}.html" }.each { |f| file(f).should exist }
   end
 
   it 'should fail on error' do
     write 'Test.java', 'class Test {}'
     define 'foo' do
       compile.using(:javac)
-      javadoc.include 'Test.java'
+      doc.include 'Test.java'
     end
-    lambda { project('foo').javadoc.invoke }.should raise_error(RuntimeError, /Failed to generate Javadocs/)
+    lambda { project('foo').doc.invoke }.should raise_error(RuntimeError, /Failed to generate Javadocs/)
   end
 
   it 'should be local task' do
     define 'foo' do
       define('bar') { compile.using(:javac) }
     end
-    project('foo:bar').javadoc.should_receive(:invoke_prerequisites)
-    in_original_dir(project('foo:bar').base_dir) { task('javadoc').invoke }
+    project('foo:bar').doc.should_receive(:invoke_prerequisites)
+    in_original_dir(project('foo:bar').base_dir) { task('doc').invoke }
   end
 
   it 'should not recurse' do
@@ -439,8 +439,8 @@ describe Project, '#javadoc' do
       compile.using(:javac)
       define('bar') { compile.using(:javac) }
     end
-    project('foo:bar').javadoc.should_not_receive(:invoke_prerequisites)
-    project('foo').javadoc.invoke
+    project('foo:bar').doc.should_not_receive(:invoke_prerequisites)
+    project('foo').doc.invoke
   end
 end
 
