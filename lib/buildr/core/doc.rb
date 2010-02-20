@@ -132,8 +132,8 @@ module Buildr
         args.pop.each { |key, value| @options[key.to_sym] = value } if Hash === args.last
         
         until args.empty?
-          new_engine = doc.select_by_name(args.pop)
-          @engine = new_engine unless new_engine.nil?
+          new_engine = Doc.select_by_name(args.pop)
+          @engine = new_engine.new(project) unless new_engine.nil?
         end
         
         self
