@@ -1,4 +1,6 @@
 1.4.0 (Pending)
+* Added:  Generic documentation framework (using the `doc` task).  Replaces 
+          `javadoc` task
 * Added:  New "test:failed" task to execute only tests that failed during last
           run (Antoine Toulme)
 * Added:  Project extensions (before/after_define) now support dependency ordering
