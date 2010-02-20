@@ -126,6 +126,42 @@ jbehave: 1.0.1
 {% endhighlight %}
 
 
+h3. Documentation
+
+Buildr offers support for using JavaDoc to generate documentation from any Java sources in a project.  This is done using the @doc@ task:
+
+{% highlight sh %}
+$ buildr doc
+{% endhighlight %}
+
+This will use the same @.java@ sources used by the @compile@ task to produce JavaDoc results in the @target/doc/@ directory.  By default, these sources are chosen only from the current project.  However, it is possible to override this and generate documentation from the sources in a sub-project (potentially more than one):
+
+{% highlight ruby %}
+define 'foo' do
+  # ...
+  
+  doc.from projects('foo:bar', 'foo')
+  
+  define 'bar' do
+    # ...
+  end
+end
+{% endhighlight %}
+
+With this configuration, the @doc@ task will use sources from both @foo:bar@ and
+@foo@.
+
+The @doc@ task supports any option that the @javadoc@ command does (e.g. @-windowtitle@).  To pass an option to the JavaDoc generator, simply specify it using the @doc@ method:
+
+{% highlight ruby %}
+define 'foo' do
+  # ...
+  
+  doc :windowtitle => 'Abandon All Hope, Ye Who Enter Here', :private => true
+end
+{% endhighlight %}
+
+
 h2(#scala). Scala
 
 Before using Scala, you must first @require@ the Scala compiler:
@@ -316,6 +352,52 @@ class MySuite extends PropSuite {
 {% endhighlight %}
 
 
+h3. Documentation
+
+Buildr offers support for using ScalaDoc or VScalaDoc to generate documentation from any Scala sources in a project.  This is done using the @doc@ task:
+
+{% highlight sh %}
+$ buildr doc
+{% endhighlight %}
+
+This will use the same @.scala@ sources used by the @compile@ task to produce ScalaDoc results in the @target/doc/@ directory.  By default, these sources are chosen only from the current project.  However, it is possible to override this and generate documentation from the sources in a sub-project (potentially more than one):
+
+{% highlight ruby %}
+define 'foo' do
+  # ...
+  
+  doc.from projects('foo:bar', 'foo')
+  
+  define 'bar' do
+    # ...
+  end
+end
+{% endhighlight %}
+
+With this configuration, the @doc@ task will use sources from both @foo:bar@ and
+@foo@.
+
+The @doc@ task supports any option that the @scaladoc@ command does (e.g. @-windowtitle@).  To pass an option to the ScalaDoc (or VScalaDoc) generator, simply specify it using the @doc@ method:
+
+{% highlight ruby %}
+define 'foo' do
+  # ...
+  
+  doc :windowtitle => 'Abandon All Hope, Ye Who Enter Here', :private => true
+end
+{% endhighlight %}
+
+By default, the @doc@ task will use the ScalaDoc generator on Scala projects.  To select the VScalaDoc generator, you must use the @doc.using@ invocation:
+
+{% highlight ruby %}
+define 'foo' do
+  doc.using :vscaladoc
+end
+{% endhighlight %}
+
+The @doc@ task is *not* joint-compilation aware.  Thus, it will only generate ScalaDoc for mixed-source projects, it will not attempt to generate both JavaDoc and ScalaDoc.
+
+
 h2(#groovy). Groovy
 
 h3. Compiling Groovy
@@ -376,6 +458,44 @@ Supports the following options:
 | @:properties@   | Hash of system properties available to the test case. |
 | @:java_args@    | Arguments passed as is to the JVM. |
 | @:format@       | Report format, either @:txt@ or @:xml@ |
+
+
+h3. Documentation
+
+Buildr offers support for using GroovyDoc to generate documentation from any Groovy sources in a project.  This is done using the @doc@ task:
+
+{% highlight sh %}
+$ buildr doc
+{% endhighlight %}
+
+This will use the same @.groovy@ sources used by the @compile@ task to produce GroovyDoc results in the @target/doc/@ directory.  By default, these sources are chosen only from the current project.  However, it is possible to override this and generate documentation from the sources in a sub-project (potentially more than one):
+
+{% highlight ruby %}
+define 'foo' do
+  # ...
+  
+  doc.from projects('foo:bar', 'foo')
+  
+  define 'bar' do
+    # ...
+  end
+end
+{% endhighlight %}
+
+With this configuration, the @doc@ task will use sources from both @foo:bar@ and
+@foo@.
+
+The @doc@ task supports any option that the @groovydoc@ command does (e.g. @-windowtitle@).  To pass an option to the GroovyDoc generator, simply specify it using the @doc@ method:
+
+{% highlight ruby %}
+define 'foo' do
+  # ...
+  
+  doc :windowtitle => 'Abandon All Hope, Ye Who Enter Here', :private => true
+end
+{% endhighlight %}
+
+The @doc@ task is *not* joint-compilation aware.  Thus, it will only generate GroovyDoc for mixed-source projects, it will not attempt to generate both JavaDoc and GroovyDoc.
 
 
 h2(#ruby).  Ruby
