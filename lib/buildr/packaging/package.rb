@@ -192,7 +192,7 @@ module Buildr
 
         task('install')   { package.install if package.respond_to?(:install) }
         task('uninstall') { package.uninstall if package.respond_to?(:uninstall) }
-        task('upload' => package.upload_task ) if package.respond_to?(:upload_task)
+        task('upload')    { package.upload if package.respond_to?(:upload) }
 
         packages << package
       end
