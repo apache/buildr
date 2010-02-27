@@ -1036,7 +1036,7 @@ describe Packaging, 'sources' do
 
   it 'should be a ZipTask' do
     define 'foo', :version=>'1.0' do
-      package(:javadoc).should be_kind_of(ZipTask)
+      package(:sources).should be_kind_of(ZipTask)
     end
   end
 end
