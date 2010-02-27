@@ -59,7 +59,6 @@ module Java
         unless Buildr.application.options.dryrun
           info "Running #{name}" if name
           block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
-          puts cmd_args.join(' ') if Buildr.application.options.trace
           cmd_args = cmd_args.map(&:inspect).join(' ') if Util.win_os?
           sh(*cmd_args) do |ok, ps|
             block.call ok, ps
