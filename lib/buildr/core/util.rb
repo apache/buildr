@@ -446,4 +446,40 @@ if Buildr::Util.java_platform?
     end
 
   end
+else
+  module FileUtils
+    # code "borrowed" directly from Rake
+    def sh(*cmd, &block)
+      options = (Hash === cmd.last) ? cmd.pop : {}
+      unless block_given?
+        show_command = cmd.join(" ")
+        show_command = show_command[0,42] + "..."
+        
+        block = lambda { |ok, status|
+          ok or fail "Command failed with status (#{status.exitstatus}): [#{show_command}]"
+        }
+      end
+      if RakeFileUtils.verbose_flag == :default
+        options[:verbose] = false
+      else
+        options[:verbose] ||= RakeFileUtils.verbose_flag
+      end
+      options[:noop]    ||= RakeFileUtils.nowrite_flag
+      rake_check_options options, :noop, :verbose
+      rake_output_message cmd.join(" ") if options[:verbose]
+      unless options[:noop]
+        cd = "cd '#{Dir.pwd}' && "
+        args = if cmd.size > 1 then cmd[1..cmd.size] else [] end
+        
+        res = if Buildr::Util.win_os? && cmd.size == 1
+          system("#{cd} call #{cmd.first}")
+        else
+          arg_str = args.map { |a| "'#{a}'" }
+          system(cd + cmd.first + ' ' + arg_str.join(' '))
+        end
+        
+        block.call(res, $?)
+      end
+    end
+  end
 end
