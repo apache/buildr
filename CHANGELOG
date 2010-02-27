@@ -17,6 +17,7 @@
 * Added:  "buildr test=only" will only run tests explicitly specified on the
           command line (and ignore transitive test dependencies)
 * Added:  ArtifactNamespace.{keys,clear} methods
+* Added:  BUILDR-326 Support unzipping tar.gz files (Antoine Toulme)
 * Added:  BUILDR-375 Buildr now recognizes buildfile.rb and Buildfile.rb
           (Kerry Wilson)
 * Change: Updated to JRuby 1.4.0

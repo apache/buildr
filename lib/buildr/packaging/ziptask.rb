@@ -106,7 +106,7 @@ module Buildr
   end
 
 
-  # An object for unzipping a file into a target directory. You can tell it to include
+  # An object for unzipping/untarring a file into a target directory. You can tell it to include
   # or exclude only specific files and directories, and also to map files from particular
   # paths inside the zip file into the target directory. Once ready, call #extract.
   #
@@ -131,7 +131,7 @@ module Buildr
     # :call-seq:
     #   extract
     #
-    # Extract the zip file into the target directory.
+    # Extract the zip/tgz file into the target directory.
     #
     # You can call this method directly. However, if you are using the #unzip method,
     # it creates a file task for the target directory: use that task instead as a
@@ -148,22 +148,60 @@ module Buildr
 
       # Otherwise, empty unzip creates target as a file when touching.
       mkpath target.to_s
-      Zip::ZipFile.open(zip_file.to_s) do |zip|
-        entries = zip.collect
-        @paths.each do |path, patterns|
-          patterns.map(entries).each do |dest, entry|
-            next if entry.directory?
-            dest = File.expand_path(dest, target.to_s)
-            trace "Extracting #{dest}"
-            mkpath File.dirname(dest) rescue nil
-            entry.restore_permissions = true
-            entry.extract(dest) { true }
+      if zip_file.to_s.match /\.t?gz$/
+        #un-tar.gz
+        Zlib::GzipReader.open(zip_file.to_s) { |tar|
+          Archive::Tar::Minitar::Input.open(tar) do |inp|
+            inp.each do |tar_entry|
+              @paths.each do |path, patterns|
+                patterns.map([tar_entry]).each do |dest, entry|
+                  next if entry.directory?
+                  dest = File.expand_path(dest, target.to_s)
+                  trace "Extracting #{dest}"
+                  mkpath File.dirname(dest) rescue nil
+                  #entry.restore_permissions = true
+                  File.open(dest, 'w') {|f| f.write entry.read}
+                end
+              end
+            end
+          end
+        }
+      else
+        Zip::ZipFile.open(zip_file.to_s) do |zip|
+          entries = zip.collect
+          @paths.each do |path, patterns|
+            patterns.map(entries).each do |dest, entry|
+              next if entry.directory?
+              dest = File.expand_path(dest, target.to_s)
+              trace "Extracting #{dest}"
+              mkpath File.dirname(dest) rescue nil
+              entry.restore_permissions = true
+              entry.extract(dest) { true }
+            end
           end
         end
       end
       # Let other tasks know we updated the target directory.
       touch target.to_s
     end
+
+    #reads the includes/excludes and apply them to the entry_name
+    def included?(entry_name)
+      @paths.each do |path, patterns|
+        return true if path.nil?
+        if entry_name =~ /^#{path}/
+          short = entry_name.sub(path, '')
+          if patterns.include.any? { |pattern| File.fnmatch(pattern, entry_name) } &&
+            !patterns.exclude.any? { |pattern| File.fnmatch(pattern, entry_name) }
+            # trace "tar_entry.full_name " + entry_name + " is included"
+            return true
+          end
+        end
+      end
+      # trace "tar_entry.full_name " + entry_name + " is excluded"
+      return false
+    end
+
 
     # :call-seq:
     #   include(*files) => self
@@ -303,7 +341,7 @@ module Buildr
   #
   # For example:
   #   unzip('all'=>'test.zip')
-  #   unzip('src'=>'test.zip').include('README', 'LICENSE') 
+  #   unzip('src'=>'test.zip').include('README', 'LICENSE')
   #   unzip('libs'=>'test.zip').from_path('libs')
   def unzip(args)
     target, arg_names, zip_file = Buildr.application.resolve_args([args])

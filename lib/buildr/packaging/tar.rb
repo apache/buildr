@@ -41,7 +41,7 @@ module Buildr
 
     def initialize(*args, &block) #:nodoc:
       super
-      self.gzip = name =~ /\.[t?]gz$/
+      self.gzip = name =~ /\.t?gz$/
       self.mode = '0755'
     end
 
