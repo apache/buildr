@@ -323,18 +323,24 @@ module Buildr
     #   install test
     # See also Buildr#install and Buildr#upload.
     def from(path)
-      path = File.expand_path(path.to_s)
-      enhance [path] do
-        mkpath File.dirname(name)
-        pom.invoke unless type == :pom
-        cp path, name
-        info "Installed #{path} as #{to_spec}"
+      path = path.is_a?(Rake::Task) ? path : File.expand_path(path.to_s)
+      unless exist?
+        enhance [path] do
+          path = File.expand_path(path.to_s)
+          mkpath File.dirname(name)
+          pom.invoke unless type == :pom
+          
+          cp path, name
+          info "Installed #{path} as #{to_spec}"
+        end
       end
       unless type == :pom
         pom.enhance do
+          unless pom.exist?
           mkpath File.dirname(pom.name)
           File.open(pom.name, 'w') { |file| file.write pom.pom_xml }
         end
+      end
       end
       self
     end

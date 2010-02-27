@@ -428,6 +428,40 @@ describe Buildr, '#artifact' do
     artifact = artifact('group:id:jar:1.0').from('test.jar')
     lambda { artifact.invoke }.should change { File.exist?(artifact.to_s) }.to(true)
   end
+  
+  it 'should use from method to install artifact from a file task' do
+    test_jar = file('test.jar')
+    test_jar.enhance do
+      #nothing...
+    end
+    write 'test.jar'
+    artifact = artifact('group:id:jar:1.0').from(test_jar)
+    lambda { artifact.invoke }.should change { File.exist?(artifact.to_s) }.to(true)
+  end
+  
+  it 'should invoke the artifact associated file task if the file doesnt exist' do
+    test_jar = file('test.jar')
+    called = false
+    test_jar.enhance do
+      write 'test.jar'
+      called = true
+    end
+    artifact = artifact('group:id:jar:1.0').from(test_jar)
+    artifact.invoke
+    unless called 
+      raise "The file task was not called."
+    end
+  end
+  
+  it 'should not invoke the artifact associated file task if the file already exists' do
+    test_jar = file('test.jar')
+    test_jar.enhance do
+      raise 'the test.jar file is created again!'
+    end
+    write 'test.jar'
+    artifact = artifact('group:id:jar:1.0').from(test_jar)
+    artifact.invoke
+  end
 
   it 'should reference artifacts defined on build.yaml by using ruby symbols' do
     write 'build.yaml', <<-YAML
