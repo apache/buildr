@@ -383,7 +383,9 @@ module Buildr
         if File.exist? '.git/config'
           true
         else
-          File.expand_path(Dir.pwd) != '/' && Dir.chdir('..') do
+          curr_pwd = Dir.pwd
+          Dir.chdir('..') do
+            return false if curr_pwd == Dir.pwd # Means going up one level is not possible.
             applies_to?
           end
         end
