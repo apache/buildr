@@ -49,6 +49,8 @@
 * Fixed:  BUILDR-365 test task should use test compile dependencies
 * Fixed:  BUILDR-366 Scala dependencies should be lazily loaded into
           Java.classpath
+* Fixed:  BUILDR-383 artifact().from(task_dependency) should not trigger 
+          task_dependency if artifact exists
 * Fixed:  BUILDR-384 Buildr fails with rubygems 1.3.6
 * Fixed:  Fail-fast if package.with() or include() called with nil values
 * Fixed:  Failures not reported correctly for ScalaTest (Alex Eagle)
