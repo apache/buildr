@@ -14,14 +14,34 @@
 # the License.
 
 
+# Rubygems 1.3.6 removed the 'version' accessor so monkey-patch it back to
+# circumvent version validation.  This is needed because Gem::Version doesn't
+# accept version specs with dashes.
+unless Gem::Version.new(0).respond_to?(:version=)
+  class Gem::Version
+    def version=(version)
+      @version = version.to_s
+      @version.strip!
+
+      # re-prime @segments
+      @segments = nil
+      segments
+    end
+  end
+end
+
 module Buildr
-  
+
   #
   # See ArtifactNamespace#need
   class VersionRequirement
-    
+
     CMP_PROCS = Gem::Requirement::OPS.dup
-    CMP_REGEX = Gem::Requirement::OP_RE.dup
+    CMP_REGEX = if defined?(Gem::Requirement::OP_RE)
+      Gem::Requirement::OP_RE
+    else
+      Gem::Requirement::OPS.keys.map { |k| Regexp.quote k }.join "|"
+    end
     CMP_CHARS = CMP_PROCS.keys.join
     BOOL_CHARS = '\|\&\!'
     VER_CHARS = '\w\.\-'
@@ -31,16 +51,16 @@ module Buildr
       def version?(str)
         /^\s*\d[#{VER_CHARS}]*\s*$/ === str
       end
-      
+
       # is +str+ a version requirement?
       def requirement?(str)
         /[#{BOOL_CHARS}#{CMP_CHARS}\(\)]/ === str
       end
-      
+
       # :call-seq:
       #    VersionRequirement.create(" >1 <2 !(1.5) ") -> requirement
       #
-      # parse the +str+ requirement 
+      # parse the +str+ requirement
       def create(str)
         instance_eval normalize(str)
       rescue StandardError => e
@@ -61,7 +81,7 @@ module Buildr
         vreq.negative = !vreq.negative
         vreq
       end
-      
+
       def normalize(str)
         str = str.strip
         if str[/[^\s\(\)#{BOOL_CHARS + VER_CHARS + CMP_CHARS}]/]
@@ -147,7 +167,7 @@ module Buildr
     def &(other)
       operation(:&, other)
     end
-    
+
     # return the parsed expression
     def to_s
       str = requirements.map(&:to_s).join(" " + @op.to_s + " ").to_s
@@ -160,7 +180,7 @@ module Buildr
     protected
     attr_reader :requirements, :op
     def operation(op, other)
-      @op ||= op 
+      @op ||= op
       if negative == other.negative && @op == op && other.requirements.size == 1
         @requirements << other.requirements.first
         self

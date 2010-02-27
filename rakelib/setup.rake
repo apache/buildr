@@ -35,7 +35,14 @@ def install_gem(name, options = {})
     args = []
     args << 'sudo' << 'env' << "JAVA_HOME=#{ENV['JAVA_HOME']}" if sudo_needed? and RAKE_SUDO
     args << rb_bin << '-S' << 'gem' << 'install' << name
-    args << '--version' << dep.version_requirements.to_s
+
+    if (spec.respond_to? :requirement)
+      args << '--version' << dep.requirement.to_s
+    else
+      # Dependency.version_requirements deprecated in rubygems 1.3.6
+      args << '--version' << dep.version_requirements.to_s
+    end
+
     args << '--source' << options[:source] if options[:source]
     args << '--source' << 'http://gems.rubyforge.org'
     args << '--install-dir' << ENV['GEM_HOME'] if ENV['GEM_HOME']
@@ -49,6 +56,11 @@ desc "If you're building from sources, run this task first to setup the necessar
 task :setup do
   missing = spec.dependencies.select { |dep| Gem::SourceIndex.from_installed_gems.search(dep).empty? }
   missing.each do |dep|
-    install_gem dep.name, :version=>dep.version_requirements
+    if (spec.respond_to? :requirement)
+      install_gem dep.name, :version=>dep.requirement
+    else
+      # Dependency.version_requirements deprecated in rubygems 1.3.6
+      install_gem dep.name, :version=>dep.version_requirements
+    end
   end
 end
