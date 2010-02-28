@@ -52,7 +52,10 @@ module Buildr
     end
     
     before_define do |project|
-      project.task :cc => [:compile, 'test:compile'] do
+      project.task :cc do
+        # we don't want to actually fail if our dependencies don't succede
+        [:compile, 'test:compile'].each { |name| project.task(name).invoke }
+        
         main_dirs = project.compile.sources.map(&:to_s)
         test_dirs = project.task('test:compile').sources.map(&:to_s)
         res_dirs = project.resources.sources.map(&:to_s)
