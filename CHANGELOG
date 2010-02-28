@@ -28,6 +28,8 @@
 * Change: Updated to JMock 2.5.1 (Antoine Toulme)
 * Change: Load buildr.rb from $HOME/.buildr instead of $HOME
           ($HOME/buildr.rb is still loaded with deprecation warning)
+* Fixed:  BUILDR-183 Can't define root artifact namespace outside of project
+          (Ittay Dror)
 * Fixed:  BUILDR-223 Release Task: customizable commit message (Alexis Midon)
 * Fixed:  BUILDR-327 Specifying :plugin eclipse nature explicitly fails
 * Fixed:  BUILDR-330  Install task should re-install artifact even if they 

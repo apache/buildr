@@ -274,10 +274,13 @@ module Buildr
                  end
         end
         name = name.to_s
-        return ROOT if name.size == 0
-        name = name.to_s
-        @instances ||= Hash.new { |h, k| h[k] = new(k) }
-        instance = @instances[name]
+        if name.size == 0
+          instance = ROOT
+        else
+          name = name.to_s
+          @instances ||= Hash.new { |h, k| h[k] = new(k) }
+          instance = @instances[name]
+        end
         yield(instance) if block_given?
         instance
       end
@@ -529,6 +532,7 @@ module Buildr
     clear
 
     def root
+      yield ROOT if block_given?
       ROOT
     end
 
