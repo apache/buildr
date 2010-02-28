@@ -91,6 +91,7 @@ This example illustrates how to write a simple extension:
 
 {% highlight ruby %}
 module LinesOfCode
+
   include Extension
 
   first_time do
@@ -101,28 +102,34 @@ module LinesOfCode
 
   before_define do |project|
     # Define the loc task for this particular project.
-    define_task 'loc' do |task|
-      lines = task.prerequisites.map { |path| Dir["#{path}/**/*"] }.flatten.uniq.
-        inject(0) { |total, file| total + File.readlines(file).count }
+    project.recursive_task 'loc' do |task|
+      lines = task.prerequisites.map { |path|
+        Dir["#{path}/**/*"]
+      }.flatten.uniq.inject(0) { |total, file|
+        total = 0 if total.nil?
+        if File.file? file then
+          total + File.readlines(file).count
+        end
+      }
       puts "Project #{project.name} has #{lines} lines of code"
-    end
+      end
   end
 
   after_define do |project|
     # Now that we know all the source directories, add them.
-    task('loc'=>compile.sources + compile.test.sources)
+    task('loc' => project.compile.sources + project.test.sources)
   end
 
   # To use this method in your project:
-  #   loc path_1, path_2
+  # loc path_1, path_2
   def loc(*paths)
-    task('loc'=>paths)
+    task('loc' => paths)
   end
 
 end
 
 class Buildr::Project
-  include LinesOfCode
+    include LinesOfCode
 end
 {% endhighlight %}
 
