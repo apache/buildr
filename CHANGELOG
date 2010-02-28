@@ -1,4 +1,5 @@
 1.4.0 (Pending)
+* Added:  Continuous compilation
 * Added:  Generic documentation framework (using the `doc` task).  Replaces 
           `javadoc` task
 * Added:  New "test:failed" task to execute only tests that failed during last
