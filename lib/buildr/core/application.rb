@@ -354,7 +354,7 @@ module Buildr
         ],
         ['--version', '-V', "Display the program version.",
           lambda { |value|
-            puts "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby '+JRUBY_VERSION+')'}"
+            puts "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby '+ (Buildr.settings.build['jruby'] || JRUBY_VERSION) +')'}"
             exit
           }
         ]

@@ -86,6 +86,16 @@ describe Buildr::Application do
       Buildr.application.send(:handle_options)
       Buildr.application.options.rakelib.should == ['tasks']
     end
+    
+    it 'should show the version when prompted with -V' do
+      ARGV.push('-V')
+      test_exit(0) { Buildr.application.send(:handle_options) }.should show(/Buildr #{Buildr::VERSION}.*/)
+    end
+    
+    it 'should show the version when prompted with --version' do
+      ARGV.push('--version')
+      test_exit(0) { Buildr.application.send(:handle_options) }.should show(/Buildr #{Buildr::VERSION}.*/)
+    end
   end
 
   describe 'gems' do
