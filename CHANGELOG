@@ -31,6 +31,7 @@
 * Fixed:  BUILDR-183 Can't define root artifact namespace outside of project
           (Ittay Dror)
 * Fixed:  BUILDR-223 Release Task: customizable commit message (Alexis Midon)
+* Fixed:  BUILDR-281 Application#initialize fails if home dir isn't writable
 * Fixed:  BUILDR-327 Specifying :plugin eclipse nature explicitly fails
 * Fixed:  BUILDR-330  Install task should re-install artifact even if they 
           already exist (Alexis Midon)
