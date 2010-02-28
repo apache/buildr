@@ -97,6 +97,17 @@ describe 'groovyc compiler' do
     define('foo').compile.invoke
     file('target/classes/some/Example.class').should exist
   end
+  
+  it 'should compile test groovy sources that rely on junit' do
+    write 'src/main/groovy/some/Example.groovy', 'package some; class Example { static main(args) { println "Hello" } }'
+    write 'src/test/groovy/some/ExampleTest.groovy', "package some\n import junit.framework.TestCase\n class ExampleTest extends TestCase { public testHello() { println \"Hello\" } }"
+    foo = define('foo') do
+      test.using :junit
+    end
+    foo.test.compile.invoke
+    file('target/classes/some/Example.class').should exist
+    file('target/test/classes/some/ExampleTest.class').should exist
+  end
 
   it 'should include as classpath dependency' do
     write 'src/bar/groovy/some/Foo.groovy', 'package some; interface Foo {}'

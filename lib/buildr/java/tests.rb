@@ -26,7 +26,7 @@ module Buildr
     class << self
 
       def applies_to?(project) #:nodoc:
-        project.test.compile.language == :java
+        project.test.compile.language == :java || project.test.compile.language == :groovy
       end
 
       def dependencies
@@ -42,7 +42,7 @@ module Buildr
   private
 
     # Add buildr utilities (JavaTestFilter) to classpath
-    Java.classpath << File.join(File.dirname(__FILE__))
+    Java.classpath << lambda { dependencies }
 
     # :call-seq:
     #     filter_classes(dependencies, criteria)
