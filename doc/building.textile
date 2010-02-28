@@ -242,4 +242,35 @@ clean { rm_rf _('staged') }
 
 The @rm_rf@ method deletes the directory and all files in it.  It's named after UNIX's infamous @rm -rf@.  Use it wisely.  This is also a good time to introduce you to @FileUtils@, a standard Ruby library that contains convenient methods for creating and deleting directories, copying and moving files, even comparing two files.  They're all free of charge when you use Buildr.
 
+
+h2(#continuous-compilation). Continuous Compilation
+
+And if all that weren't enough, Buildr also offers a time-saving feature called continuous compilation.  This feature, implemented by the @cc@ task, instructs Buildr to loop eternally, polling your project's source directories for changes.  Whenever a change is detected, Buildr immediately triggers the appropriate compilation step and goes right back to polling.  This allows you to reap many of the benefits of an incrementally compiling IDE like Eclipse without sacrificing your favorite build tool.
+
+To get started, simply invoke the @cc@ task at the command prompt:
+
+{% highlight sh %}
+$ buildr cc
+{% endhighlight %}
+
+This task will immediately invoke the @compile@ and @test:compile@ tasks on your project if necessary.  This ensures that your build is completely up to the minute before polling is initiated.  After this initial build (if required), Buildr will print a notification indicating which directories are being monitored.  By default, these directories will include any source folders (e.g. @src/main/java/@), any test directories (e.g. @src/spec/scala/@) as well as any resources (e.g. @src/main/resources/).  The Buildr process will remain running during this time, meaning that in order to test this functionality, we will need to open a new shell:
+
+{% highlight sh %}
+$ touch src/main/java/Test.java
+{% endhighlight %}
+
+The moment we run this command, Buildr will detect the change and invoke the @compile@ task.  It will *not* invoke the @test:compile@ task, since none of the test files were actually changed.  This ensures that potentially time-consuming tasks are avoided if possible.  Note that, unlike the @build@ task, the continuous compilation also does not actually run any of your tests.  Continuous compilation is designed to be a simple daemon which runs forever, quickly recompiling your project as soon as you save or delete a file.  We can terminate the continuous compilation task by pressing Ctrl-C.  Left to its own devices, the @cc@ task really will loop forever.
+
+There are several advantages to continuous compilation.  Number one is convenience.  Once you invoke the @cc@ task, you can focus exclusively on the code, editing and saving your files in an unbroken workflow.  There is no need to break your concentration to invoke Buildr manually unless you need to run the test suite, deploy the application or anything beyond compilation.  The second advantage is speed.  By using the continuous compilation process, you avoid repeatedly incurring Buildr's startup overhead.  While this startup time is kept to a minimum, it is still perceptable, particularly when running on JRuby.  Since the @cc@ task runs within a Buildr instance which has already been started, there is no need for repeated, inefficient load times.  Again, this allows you to focus more completely on what's really important: the code.
+
+By default, the @cc@ task will poll your sources once every 200 milliseconds.  We have found that this frequency strikes a nice balance between CPU load (which is insignificant) and nearly-instant detection.  However, you may wish to tune this value based on your own needs.  To do so, simply use the @cc.frequency@ property in your project definition:
+
+{% highlight ruby %}
+project 'foo' do
+  cc.frequency 1.5      # poll every one-and-a-half seconds
+end
+{% endhighlight %}
+
+If you find that the 200 ms default imposes too much overhead, try changing @cc.frequency@ to a higher value.  On the flip side, if you find that you're waiting too long for changes to be caught by the poll, tune the frequency lower.
+
 Now let's "talk about the artifacts":artifacts.html we mentioned before.
