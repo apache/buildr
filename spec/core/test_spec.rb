@@ -797,6 +797,13 @@ describe Rake::Task, 'test' do
     ENV['TEST'] = 'no'
     lambda { task('test').invoke rescue nil }.should_not run_tasks('foo:test', 'bar:test')
   end
+
+  it "should not compile tests if environment variable test is 'no'" do
+    write "src/test/java/HelloTest.java", "public class HelloTest { public void testTest() {}}"
+    define('foo') { test { fail } }
+    ENV['test'] = 'no'
+    lambda { task('test').invoke rescue nil }.should_not run_tasks('foo:test:compile')
+  end
 end
 
 describe 'test rule' do
