@@ -237,7 +237,7 @@ module Buildr
     
     def javadoc(*sources, &block)
       warn 'The javadoc method is deprecated and will be removed in a future release.'
-      doc(sources, block)
+      doc(*sources, &block)
     end
   end
   

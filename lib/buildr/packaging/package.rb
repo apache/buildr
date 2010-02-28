@@ -51,7 +51,7 @@ module Buildr
       project.group ||= project.parent && project.parent.group || project.name
       project.version ||= project.parent && project.parent.version
     end
-    
+
     after_define(:package)
 
     # The project's identifier. Same as the project name, with colons replaced by dashes.
@@ -151,9 +151,9 @@ module Buildr
           spec = send("package_as_#{spec[:type]}_spec", spec) if respond_to?("package_as_#{spec[:type]}_spec")
           file_name = path_to(:target, Artifact.hash_to_file_name(spec))
         end
-        package = (no_options && packages.detect { |pkg| pkg.type == spec[:type] && 
-                  (spec[:classifier].nil? || pkg.classifier == spec[:classifier])}) ||
-          packages.find { |pkg| pkg.name == file_name }                             ||
+        package = (no_options && packages.detect { |pkg| pkg.type == spec[:type] &&
+          (pkg.respond_to?(:classifier) ? pkg.classifier : nil) == spec[:classifier]}) ||
+          packages.find { |pkg| pkg.name == file_name } ||
           packager.call(file_name)
       else
         Buildr.application.deprecated "We changed the way package_as methods are implemented.  See the package method documentation for more details."
