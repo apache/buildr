@@ -121,6 +121,23 @@ unless defined?(SpecHelpers)
     def show(message)
       MessageWithSeverityMatcher.new :puts, message
     end
+    
+    # Yields a block that should try exiting the application.
+    # Accepts 
+    #
+    # For example:
+    #   test_exit(1) {  puts "Hello" ; exit(1) }.should show("Hello")
+    #     
+    def test_exit(status = nil)
+      return lambda {
+        begin
+          yield
+          raise "Exit was not called!"
+        rescue SystemExit => e
+          raise "Exit status incorrect! Expected: #{status}, got #{e.status}" if status && (e.status != status) 
+        end
+      }
+    end
 
     class ::Rake::Task
       alias :execute_without_a_record :execute
