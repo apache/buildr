@@ -32,7 +32,19 @@ describe Buildr::ArtifactNamespace do
     end
 
     it 'should yield the namespace if a block is given' do
-      Buildr::ArtifactNamespace.root { |ns| ns.should be_root }
+      flag = false
+      Buildr::ArtifactNamespace.root { |ns| flag = true; ns.should be_root }
+      flag.should == true
+    end
+    
+    it 'should return the root when used outside of a project definition' do
+      artifact_ns.should be_root
+    end
+    
+    it 'should yield to a block when used outside of a project definition' do
+      flag = false
+      artifact_ns {|ns| flag = true; ns.should be_root}
+      flag.should == true
     end
   end
 
