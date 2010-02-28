@@ -148,7 +148,7 @@ module Buildr
       end
 
       def to_s
-        version = "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby '+JRUBY_VERSION+')'}"
+        version = "Buildr #{Buildr::VERSION} #{RUBY_PLATFORM[/java/] && '(JRuby '+ (Buildr.settings.build['jruby'] || JRUBY_VERSION) +')'}"
         self.class.name+'('+[version, @host, @port].join(', ')+')'
       end
     end # Server
