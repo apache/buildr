@@ -169,7 +169,7 @@ describe Project, '#package' do
   end
 
   it 'should call package_as_foo when using package(:foo)' do
-    class Buildr::Project  
+    class Buildr::Project
       def package_as_foo(file_name)
         file(file_name) do |t|
           mkdir_p File.dirname(t.to_s)
@@ -185,7 +185,7 @@ describe Project, '#package' do
   end
 
   it 'should allow to respec package(:sources) using package_as_sources_spec()' do
-    class Buildr::Project  
+    class Buildr::Project
       def package_as_sources_spec(spec)
         spec.merge({ :type=>:jar, :classifier=>'sources' })
       end
@@ -195,25 +195,25 @@ describe Project, '#package' do
       package(:sources).classifier.should eql('sources')
     end
   end
-  
+
   it 'should produce different packages for different specs' do
-    class Buildr::Project  
+    class Buildr::Project
       def package_as_foo(file_name)
-        file(file_name)  
+        file(file_name)
       end
-      
+
       def package_as_foo_spec(spec)
         spec.merge(:type => :zip)
       end
-      
+
       def package_as_bar(file_name)
         file(file_name)
       end
-      
+
       def package_as_bar_spec(spec)
         spec.merge(:type => :zip, :classifier => "foobar")
       end
-      
+
     end
     define('foo', :version => '1.0') do
       package(:foo).type.should eql(:zip)
@@ -244,7 +244,7 @@ describe Project, '#package' do
 
   it 'should return a file task' do
     define('foo', :version=>'1.0') { package(:jar) }
-    project('foo').package(:jar).should be_kind_of(Rake::FileTask) 
+    project('foo').package(:jar).should be_kind_of(Rake::FileTask)
   end
 
   it 'should return a task that acts as artifact' do
@@ -281,6 +281,15 @@ describe Project, '#package' do
       package(:jar, :id=>'baz')
     end
     project('foo').packages.uniq.size.should be(3)
+  end
+
+  it 'should create different tasks for specs with matching type' do
+    define 'foo', :version=>'1.0' do
+      javadoc("foo").into( "foo" )
+      package(:javadoc)
+      package(:zip)
+    end
+    project('foo').packages.uniq.size.should be(2)
   end
 
   it 'should return the same task for subsequent calls' do
@@ -618,7 +627,7 @@ describe Rake::Task, ' upload' do
   before do
     repositories.release_to = "file://#{File.expand_path('remote')}"
   end
-  
+
   it 'should be local task' do
     define 'foo', :version=>'1.0' do
       package
