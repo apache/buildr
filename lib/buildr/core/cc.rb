@@ -95,13 +95,13 @@ module Buildr
           end
           
           project.task(:compile).reenable if in_main
-          project.task('test:compile').reenable if in_test
+          project.task('test:compile').reenable if in_test || in_main
           
           successful = true
           begin
             project.task(:resources).filter.run if in_res
             project.task(:compile).invoke if in_main
-            project.task('test:compile').invoke if in_test
+            project.task('test:compile').invoke if in_test || in_main
           rescue Exception => ex
             $stderr.puts $terminal.color(ex.message, :red)
             successful = false
