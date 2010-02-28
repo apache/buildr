@@ -54,6 +54,8 @@
 * Fixed:  BUILDR-379 Ant sql task abruptly terminates buildr
 * Fixed:  BUILDR-380 GitRelease: recursive search for root '/' does not work
           under Windows (Antoine Toulme)
+* Fixed:  BUILDR-381 JUnit tests on Groovy project fail with
+          NoClassDefFoundError: junit/framework/TestCase
 * Fixed:  BUILDR-382 Packages with default spec are not always created correctly
 * Fixed:  BUILDR-383 artifact().from(task_dependency) should not trigger 
           task_dependency if artifact exists

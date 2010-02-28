@@ -81,7 +81,11 @@ module Buildr::Groovy
       end
     end
 
-    Java.classpath << lambda { dependencies }
+    # Groovy dependencies don't need to go into JVM's system classpath.
+    # In fact, if they end up there it causes trouble because Groovy has issues
+    # loading other classes such as test frameworks (e.g. JUnit).
+    #
+    # Java.classpath << lambda { dependencies }
 
     specify :language => :groovy, :sources => [:groovy, :java], :source_ext => [:groovy, :java],
             :target => 'classes', :target_ext => 'class', :packaging => :jar

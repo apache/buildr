@@ -166,7 +166,7 @@ module Buildr
             @prerequisites << manifest if String === manifest || Rake::Task === manifest
             [meta_inf].flatten.map { |file| file.to_s }.uniq.each { |file| path('META-INF').include file }
           end
-        
+
           enhance do
             if manifest
               # Tempfiles gets deleted on garbage collection, so we're going to hold on to it
@@ -217,7 +217,7 @@ module Buildr
         # :call-seq:
         #   with(options) => self
         #
-        # Additional 
+        # Additional
         # Pass options to the task. Returns self. ZipTask itself does not support any options,
         # but other tasks (e.g. JarTask, WarTask) do.
         #
@@ -268,7 +268,7 @@ module Buildr
         def classes=(value) #:nodoc:
           @classes = [value].flatten.map { |dir| file(dir.to_s) }
         end
-  
+
       end
 
 
@@ -341,18 +341,18 @@ module Buildr
       # * :map -- A Hash used to map component type to paths within the EAR.
       #     By default each component type is mapped to a directory with the same name,
       #     for example, EJBs are stored in the /ejb path.  To customize:
-      #                       package(:ear).map[:war] = 'web-applications' 
+      #                       package(:ear).map[:war] = 'web-applications'
       #                       package(:ear).map[:lib] = nil # store shared libraries on root of archive
       #
       # EAR components are added by means of the EarTask#add, EarTask#<<, EarTask#push methods
-      # Component type is determined from the artifact's type. 
+      # Component type is determined from the artifact's type.
       #
       #      package(:ear) << project('coolWebService').package(:war)
       #
       # The << method is just an alias for push, with the later you can add multiple components
-      # at the same time. For example.. 
+      # at the same time. For example..
       #
-      #      package(:ear).push 'org.springframework:spring:jar:2.6', 
+      #      package(:ear).push 'org.springframework:spring:jar:2.6',
       #                                   projects('reflectUtils', 'springUtils'),
       #                                   project('coolerWebService').package(:war)
       #
@@ -364,7 +364,7 @@ module Buildr
       #
       #      # will add an ejb entry for the-cool-ejb-2.5.jar in application.xml
       #      package(:ear).add 'org.coolguys:the-cool-ejb:jar:2.5', :type=>:ejb
-      #      # A better syntax for this is: 
+      #      # A better syntax for this is:
       #      package(:ear).add :ejb=>'org.coolguys:the-cool-ejb:jar:2.5'
       #
       # By default, every JAR package is assumed to be a library component, so you need to specify
@@ -373,13 +373,13 @@ module Buildr
       # For WebApplications (:war)s, you can customize the context-root that appears in application.xml.
       # The following example also specifies a different directory inside the EAR where to store the webapp.
       #
-      #      package(:ear).add project(:remoteService).package(:war), 
+      #      package(:ear).add project(:remoteService).package(:war),
       #                                 :path=>'web-services', :context_root=>'/Some/URL/Path'
       #
       # [1] http://java.sun.com/j2ee/sdk_1.2.1/techdocs/guides/ejb/html/Overview5.html#10106
       # [2] http://java.sun.com/j2ee/verified/packaging.html
       class EarTask < JarTask
-        
+
         SUPPORTED_TYPES = [:war, :ejb, :jar, :rar, :lib]
 
         # The display-name entry for application.xml
@@ -417,7 +417,7 @@ module Buildr
               rescue # not an artifact spec, it must me a filename
                 file(pkg)
               end
-            else 
+            else
               raise "Invalid EAR component #{pkg.class}: #{pkg}"
             end
           end
@@ -439,7 +439,7 @@ module Buildr
               end
               raise "Unknown EAR component type: #{type}. Perhaps you may explicity tell what component type to use." unless
                 SUPPORTED_TYPES.include?(type)
-              component = options.merge(:artifact => artifact, :type => type, 
+              component = options.merge(:artifact => artifact, :type => type,
                 :id=>artifact.respond_to?(:to_spec) ? artifact.id : artifact.to_s.pathmap('%n'),
                 :path=>options[:path] || dirs[type].to_s)
               component[:clone] = component_clone(component) unless :lib == type
@@ -449,7 +449,7 @@ module Buildr
           end
           self
         end
-        
+
         alias_method :push, :add
         alias_method :<<, :push
 
@@ -483,7 +483,7 @@ module Buildr
 
         def update_classpath(component)
           package = file(component[:artifact].to_s)
-          package.manifest = (package.manifest || {}).dup # avoid mofifying parent projects manifest  
+          package.manifest = (package.manifest || {}).dup # avoid mofifying parent projects manifest
           package.prepare do
             header = case package.manifest
               when Hash then package.manifest
@@ -507,7 +507,7 @@ module Buildr
         def libs_classpath(component)
           from = component[:path]
           @classpath = @components.select { |comp| comp[:type] == :lib }.
-            map do |lib| 
+            map do |lib|
             basename = lib[:artifact].to_s.pathmap('%f')
             full_path = lib[:path].empty? ? basename : File.join(lib[:path], basename)
             Util.relative_path(full_path, from)
@@ -517,7 +517,7 @@ module Buildr
         def descriptor_xml
           buffer = ""
           xml = Builder::XmlMarkup.new(:target=>buffer, :indent => 2)
-          xml.declare! :DOCTYPE, :application, :PUBLIC, 
+          xml.declare! :DOCTYPE, :application, :PUBLIC,
           "-//Sun Microsystems, Inc.//DTD J2EE Application 1.2//EN",
           "http://java.sun.com/j2ee/dtds/application_1_2.dtd"
           xml.application do
@@ -528,7 +528,7 @@ module Buildr
               case comp[:type]
               when :war
                 xml.module :id=>comp[:id] do
-                  xml.web do 
+                  xml.web do
                     xml.tag! 'web-uri', uri
                     xml.tag! 'context-root', File.join('', (comp[:context_root] || comp[:id])) unless comp[:context_root] == false
                   end
@@ -544,7 +544,7 @@ module Buildr
           end
           buffer
         end
-        
+
         # return a FileTask to build the ear application.xml file
         def descriptor
           return @descriptor if @descriptor
@@ -560,7 +560,7 @@ module Buildr
             def xml
               @xml ||= ear.send :descriptor_xml
             end
-            
+
             def needed?
               super || xml != File.read(self.to_s) rescue true
             end
@@ -568,18 +568,17 @@ module Buildr
           @descriptor.ear = self
           @descriptor
         end
-        
+
       end
 
 
       include Extension
 
       before_define(:package => :build) do |project|
-        ::Java.load
-        if project.parent && project.parent.manifest 
+        if project.parent && project.parent.manifest
           project.manifest = project.parent.manifest.dup
         else
-          project.manifest = { 
+          project.manifest = {
             'Build-By'=>ENV['USER'], 'Build-Jdk'=>ENV_JAVA['java.version'],
             'Implementation-Title'=>project.comment || project.name,
             'Implementation-Version'=>project.version }
@@ -682,7 +681,7 @@ module Buildr
         Java::AarTask.define_task(file_name).tap do |aar|
           aar.with :manifest=>manifest, :meta_inf=>meta_inf
           aar.with :wsdls=>path_to(:source, :main, :axis2, '*.wsdl')
-          aar.with :services_xml=>path_to(:source, :main, :axis2, 'services.xml') 
+          aar.with :services_xml=>path_to(:source, :main, :axis2, 'services.xml')
           aar.with [compile.target, resources.target].compact
           aar.with :libs=>compile.dependencies
         end

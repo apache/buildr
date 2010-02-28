@@ -26,7 +26,7 @@ require 'buildr/groovy'
 require 'buildr/scala'
 
 Java.load # Anything added to the classpath.
-artifacts(TestFramework.frameworks.map(&:dependencies).flatten, JUnit.ant_taskdef).each do |path|
+artifacts(TestFramework.frameworks.map(&:dependencies).flatten, JUnit.ant_taskdef, Buildr::Groovy::Groovyc.dependencies).each do |path|
   file(path).invoke
 end
 
