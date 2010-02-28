@@ -70,6 +70,8 @@ h2(#osx).  Installing on OS X
 
 *The easy way:* Use this script to "install Buildr on OS X":scripts/install-osx.sh.  This script will install the most recent version of Buildr, or if already installed, upgrade to the most recent version.  It will also install Ruby 1.8.6 if not already installed (using MacPorts/Fink) and upgrage RubyGems to 1.3.1 or later.
 
+You need to have the Apple Development Tools installed.  They are available on the Mac OSX installation CD.
+
 <br>
 
 *In details:* OS X 10.5 (Leopard) comes with a recent version of Ruby 1.8.6.  You do not need to install a different version of Ruby when running OS X 10.5.
