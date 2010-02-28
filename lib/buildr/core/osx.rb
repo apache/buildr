@@ -16,7 +16,7 @@
 
 # Let's see if we can use Growl.  Must be running from console in verbose mode.
 if $stdout.isatty && verbose
-  notify = lambda do |type, title, message|
+  def growl_notify(type, title, message)
     begin
       # Loading Ruby Cocoa can slow the build down (hooks on Object class), so we're
       # saving the best for last and only requiring it at the very end.
@@ -39,8 +39,8 @@ if $stdout.isatty && verbose
       # calls raises an exception; system doesn't have osx/cocoa, e.g. MacPorts Ruby 1.9,
       # so we also need to rescue LoadError.
     end
-  end  
+  end
   
-  Buildr.application.on_completion { |title, message| notify['Completed', title, message] if verbose }
-  Buildr.application.on_failure { |title, message, ex| notify['Failed', title, message] if verbose }
+  Buildr.application.on_completion { |title, message| growl_notify('Completed', title, message) if verbose }
+  Buildr.application.on_failure { |title, message, ex| growl_notify('Failed', title, message) if verbose }
 end
