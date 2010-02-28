@@ -101,12 +101,10 @@ module Buildr
               changed.any? { |file| file.index(dir) == 0 }
             end
             
-            # TODO  for some reason, resources task doesn't run like this
-            project.task(:resources).reenable if in_res
             project.task(:compile).reenable if in_main
             project.task('test:compile').reenable if in_test
             
-            project.task(:resources).invoke
+            project.task(:resources).filter.run if in_res
             project.task(:compile).invoke
             project.task('test:compile').invoke
           end
