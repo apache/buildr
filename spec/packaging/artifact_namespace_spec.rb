@@ -308,7 +308,6 @@ describe Buildr::ArtifactNamespace do
       foo.use :bar => '2.0'
       foo.bar.version.should == '2.0'
     end
-
   end
 
   describe '#values' do
@@ -525,21 +524,31 @@ describe Buildr::ArtifactNamespace do
 
 end # ArtifactNamespace
 
-describe Buildr::ArtifactNamespace do
+describe Buildr::ArtifactNamespace::ArtifactRequirement do
+  before(:each) { Buildr::ArtifactNamespace.clear }
   it 'should be created from artifact_ns' do
     foo = artifact_ns do |ns|
-      ns.bar = 'a:b:jar:1.0'
+      ns.bar = 'a:b:c:1.0'
     end
     foo.bar.should be_kind_of(ArtifactNamespace::ArtifactRequirement)
   end
 
   it 'should handle version as string' do
     foo = artifact_ns do |ns|
-      ns.bar = 'a:b:jar:1.0'
+      ns.bar = 'a:b:c:1.0'
     end
     foo.bar.version = '2.0'
     foo.bar.version.should == '2.0'
   end
+
+  it 'should handle version string directly' do
+    foo = artifact_ns do |ns|
+      ns.bar = 'a:b:c:1.0'
+    end
+    foo.bar = '2.0'
+    foo.bar.version.should == '2.0'
+  end
+
 end # ArtifactRequirement
 
 describe Buildr do
