@@ -43,7 +43,7 @@ module Buildr
         trace "Monitoring extensions: [#{ext.join ', '}]"
         
         while true
-          sleep 0.2
+          sleep project.cc.frequency
           
           times, changed = Buildr::CC.check_mtime dirs, ext, times
           unless changed.empty?
@@ -57,6 +57,18 @@ module Buildr
             project.task(:compile).invoke
           end
         end
+      end
+    end
+    
+    def cc
+      @cc ||= CCOptions.new
+    end
+    
+    class CCOptions
+      attr_writer :frequency
+      
+      def frequency
+        @frequency ||= 0.2
       end
     end
   end
