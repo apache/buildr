@@ -57,7 +57,7 @@ module Java
         cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
         cmd_args += args.flatten.compact
         unless Buildr.application.options.dryrun
-          info "Running #{name}" if name
+          info "Running #{name}" if name && options[:verbose]
           block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
           cmd_args = cmd_args.map(&:inspect).join(' ') if Util.win_os?
           sh(*cmd_args) do |ok, ps|
