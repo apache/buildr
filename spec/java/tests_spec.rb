@@ -54,8 +54,10 @@ describe Buildr::JUnit do
   
   it 'should include JMock dependencies' do
     define('foo') { test.using(:junit) }
-    project('foo').test.compile.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
-    project('foo').test.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
+    two_or_later = JMock.version[0,1].to_i >= 2
+    group = two_or_later ? "org.jmock" : "jmock"
+    project('foo').test.compile.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
+    project('foo').test.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
   end
 
   it 'should pick JUnit version from junit build settings' do
@@ -374,8 +376,10 @@ describe Buildr::TestNG do
 
   it 'should include TestNG dependencies' do
     define('foo') { test.using :testng }
-    project('foo').test.compile.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
-    project('foo').test.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
+    two_or_later = JMock.version[0,1].to_i >= 2
+    group = two_or_later ? "org.jmock" : "jmock"
+    project('foo').test.compile.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
+    project('foo').test.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
   end
 
   it 'should include classes using TestNG annotations' do

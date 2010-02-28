@@ -94,7 +94,7 @@ module Buildr
   # JMock is available when using JUnit and TestNG, JBehave.
   module JMock
 
-    VERSION = '1.2.0'
+    VERSION = '2.5.1'
 
     class << self
       def version
@@ -102,7 +102,16 @@ module Buildr
       end
 
       def dependencies
-        @dependencies ||= ["jmock:jmock:jar:#{version}"]
+        two_or_later = version[0,1].to_i >= 2
+        group = two_or_later ? "org.jmock" : "jmock"
+        
+        @dependencies ||= ["#{group}:jmock:jar:#{version}"]
+        if two_or_later
+          @dependencies << "org.jmock:jmock-junit#{Buildr::JUnit.version[0,1]}:jar:#{version}"
+          @dependencies << "org.hamcrest:hamcrest-core:jar:1.1"
+          @dependencies << "org.hamcrest:hamcrest-library:jar:1.1"
+        end
+        @dependencies
       end
 
     private

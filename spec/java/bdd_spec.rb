@@ -327,8 +327,10 @@ describe Buildr::JBehave do
 
   it 'should include JMock dependencies' do
     foo do
-      test.compile.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
-      test.dependencies.should include(artifact("jmock:jmock:jar:#{JMock.version}"))
+      two_or_later = JMock.version[0,1].to_i >= 2
+      group = two_or_later ? "org.jmock" : "jmock"
+      test.compile.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
+      test.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
     end
   end
 
