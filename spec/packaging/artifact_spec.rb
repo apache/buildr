@@ -74,11 +74,11 @@ describe Artifact do
   it 'should have one POM artifact for all classifiers' do
     @classified.pom.to_hash.should == @classified.to_hash.merge(:type=>:pom).except(:classifier)
   end
-  
+
   it 'should have associated sources artifact' do
     @artifact.sources_artifact.to_hash.should == @artifact.to_hash.merge(:classifier=>'sources')
   end
-  
+
   it 'should download file if file does not exist' do
     lambda { @artifact.invoke }.should raise_error(Exception, /No remote repositories/)
     lambda { @classified.invoke }.should raise_error(Exception, /No remote repositories/)
@@ -112,7 +112,7 @@ describe Artifact do
   end
 
   it 'should not download file if dry-run' do
-    dryrun do 
+    dryrun do
       lambda { @artifact.invoke }.should_not raise_error
       lambda { @classified.invoke }.should_not raise_error
     end
@@ -243,7 +243,7 @@ describe Repositories, 'remote' do
     artifact('group:id:jar:1.0').invoke
     uri.to_s.should eql('http://example.com/base/group/id/1.0/id-1.0.pom')
   end
-  
+
   it 'should resolve m2-style deployed snapshots' do
     metadata = <<-XML
     <?xml version='1.0' encoding='UTF-8'?>
@@ -270,7 +270,7 @@ describe Repositories, 'remote' do
     lambda { artifact('com.example:library:jar:2.1-SNAPSHOT').invoke }.
       should change { File.exist?(File.join(repositories.local, 'com/example/library/2.1-SNAPSHOT/library-2.1-SNAPSHOT.jar')) }.to(true)
   end
-  
+
   it 'should handle missing maven metadata by reporting the artifact unavailable' do
     repositories.remote = 'http://example.com'
     URI.should_receive(:download).with(uri(/2.1-SNAPSHOT\/library-2.1-SNAPSHOT.jar$/), anything()).
@@ -280,7 +280,7 @@ describe Repositories, 'remote' do
     lambda { artifact('com.example:library:jar:2.1-SNAPSHOT').invoke }.should raise_error(RuntimeError, /Failed to download/)
     File.exist?(File.join(repositories.local, 'com/example/library/2.1-SNAPSHOT/library-2.1-SNAPSHOT.jar')).should be_false
   end
-  
+
   it 'should handle missing m2 snapshots by reporting the artifact unavailable' do
     metadata = <<-XML
     <?xml version='1.0' encoding='UTF-8'?>
@@ -399,7 +399,7 @@ describe Buildr, '#artifact' do
   it 'should complain about invalid key' do
     lambda { artifact(@spec.merge(:error=>true)) }.should raise_error(ArgumentError, /no such option/i)
   end
-  
+
   it 'should use JAR type by default' do
     artifact(@spec.merge(:type=>nil)).should respond_to(:invoke)
   end
@@ -409,7 +409,7 @@ describe Buildr, '#artifact' do
   end
 
   it 'should reject partial string specifier' do
-    artifact('com.example:library::2.0') 
+    artifact('com.example:library::2.0')
     lambda { artifact('com.example:library:jar') }.should raise_error
     lambda { artifact('com.example:library:jar:') }.should raise_error
     lambda { artifact('com.example:library::2.0') }.should_not raise_error
@@ -428,7 +428,7 @@ describe Buildr, '#artifact' do
     artifact = artifact('group:id:jar:1.0').from('test.jar')
     lambda { artifact.invoke }.should change { File.exist?(artifact.to_s) }.to(true)
   end
-  
+
   it 'should use from method to install artifact from a file task' do
     test_jar = file('test.jar')
     test_jar.enhance do
@@ -438,7 +438,7 @@ describe Buildr, '#artifact' do
     artifact = artifact('group:id:jar:1.0').from(test_jar)
     lambda { artifact.invoke }.should change { File.exist?(artifact.to_s) }.to(true)
   end
-  
+
   it 'should invoke the artifact associated file task if the file doesnt exist' do
     test_jar = file('test.jar')
     called = false
@@ -448,11 +448,11 @@ describe Buildr, '#artifact' do
     end
     artifact = artifact('group:id:jar:1.0').from(test_jar)
     artifact.invoke
-    unless called 
+    unless called
       raise "The file task was not called."
     end
   end
-  
+
   it 'should not invoke the artifact associated file task if the file already exists' do
     test_jar = file('test.jar')
     test_jar.enhance do
@@ -465,7 +465,7 @@ describe Buildr, '#artifact' do
 
   it 'should reference artifacts defined on build.yaml by using ruby symbols' do
     write 'build.yaml', <<-YAML
-      artifacts: 
+      artifacts:
         j2ee: geronimo-spec:geronimo-spec-j2ee:jar:1.4-rc4
     YAML
     Buildr.application.send(:load_artifact_ns)
@@ -541,14 +541,20 @@ describe Buildr, '#group' do
     list.should include(artifact('saxon:saxon-xpath:jar:8.4'))
     list.size.should be(3)
   end
-  
+
   it 'should accept a type' do
     list = group('struts-bean', 'struts-html', :under=>'struts', :type=>'tld', :version=>'1.1')
     list.should include(artifact('struts:struts-bean:tld:1.1'))
     list.should include(artifact('struts:struts-html:tld:1.1'))
     list.size.should be(2)
   end
-  
+
+  it 'should accept a classifier' do
+    list = group('camel-core', :under=>'org.apache.camel', :version=>'2.2.0', :classifier=>'spring3')
+    list.should include(artifact('org.apache.camel:camel-core:jar:spring3:2.2.0'))
+    list.size.should be(1)
+  end
+
 end
 
 describe Buildr, '#install' do
@@ -575,7 +581,7 @@ describe Buildr, '#install' do
   it 'should re-install artifact when "from" is newer' do
     install artifact(@spec).from(@file)
     write artifact(@spec).to_s # install a version of the artifact
-    sleep 1; write @file       # make sure the "from" file has newer modification time 
+    sleep 1; write @file       # make sure the "from" file has newer modification time
     lambda { install.invoke }.should change { File.exist?(artifact(@spec).to_s) and File.mtime(@file) == File.mtime(artifact(@spec).to_s) }.to(true)
   end
 
@@ -689,30 +695,30 @@ describe Rake::Task, ' artifacts:sources' do
     task('artifacts:sources').clear
     repositories.remote = 'http://example.com'
   end
-  
+
   it 'should download sources for all specified artifacts' do
     artifact 'group:id:jar:1.0'
     URI.should_receive(:download).any_number_of_times.and_return { |uri, target| write target }
     lambda { task('artifacts:sources').invoke }.should change { File.exist?('home/.m2/repository/group/id/1.0/id-1.0-sources.jar') }.to(true)
   end
-  
+
   it "should not try to download sources for the project's artifacts" do
     define('foo', :version=>'1.0') { package(:jar) }
     URI.should_not_receive(:download)
     task('artifacts:sources').invoke
   end
-  
+
   describe 'when the source artifact does not exist' do
-    
+
     before do
       artifact 'group:id:jar:1.0'
       URI.should_receive(:download).any_number_of_times.and_raise(URI::NotFoundError)
     end
-    
+
     it 'should not fail' do
       lambda { task('artifacts:sources').invoke }.should_not raise_error
     end
-    
+
     it 'should inform the user' do
       lambda { task('artifacts:sources').invoke }.should show_info('Failed to download group:id:jar:sources:1.0. Skipping it.')
     end
