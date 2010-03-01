@@ -26,6 +26,7 @@
 * Change: Updated to JtestR 0.5
 * Change: Updated to JUnit 4.7
 * Change: Updated to JMock 2.5.1 (Antoine Toulme)
+* Change: Updated to RJB 1.2.0
 * Change: Load buildr.rb from $HOME/.buildr instead of $HOME
           ($HOME/buildr.rb is still loaded with deprecation warning)
 * Fixed:  BUILDR-348 Buildr fails on windows with jruby and ODE 1.X
