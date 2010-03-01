@@ -406,6 +406,9 @@ if Buildr::Util.java_platform?
 
   module FileUtils
     extend FFI::Library
+    
+    ffi_lib 'c' if Buildr::Util::win_os?
+    
     alias_method :__jruby_system__, :system
     attach_function :system, [:string], :int
     alias_method :__native_system__, :system
