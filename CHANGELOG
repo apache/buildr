@@ -21,6 +21,7 @@
 * Added:  BUILDR-326 Support unzipping tar.gz files (Antoine Toulme)
 * Added:  BUILDR-375 Buildr now recognizes buildfile.rb and Buildfile.rb
           (Kerry Wilson)
+* Added:  BUILDR-390 Buildr::group() should accept :classifier argument
 * Change: Updated to Ant 1.8.0
 * Change: Updated to JRuby 1.4.0
 * Change: Updated to JtestR 0.5
