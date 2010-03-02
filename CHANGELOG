@@ -34,6 +34,8 @@
 * Fixed:  BUILDR-183 Can't define root artifact namespace outside of project
           (Ittay Dror)
 * Fixed:  BUILDR-223 Release Task: customizable commit message (Alexis Midon)
+* Fixed:  BUILDR-232 buildr should print the class of an exception, not just
+          its message (Antoine Toulme)
 * Fixed:  BUILDR-233 Can't specify version in artifact namespace
 * Fixed:  BUILDR-267 Skipping tests is only done after they are compiled
           (Antoine Toulme)
