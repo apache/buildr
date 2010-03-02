@@ -326,6 +326,60 @@ describe Buildr::Application do
       loaded_tasks.first.should =~ %r{tasks/new_one\.rake$}
     end
   end
+  
+  describe 'exception handling' do
+    
+    it 'should exit when given a SystemExit exception' do
+      test_exit(3) { Buildr.application.standard_exception_handling { raise SystemExit.new(3) } }
+    end
+    
+    it 'should exit with status 1 when given an OptionParser::ParseError exception' do
+      test_exit(1) { Buildr.application.standard_exception_handling { raise OptionParser::ParseError.new() } }
+    end
+    
+    it 'should exit with status 1 when given any other type of exception exception' do
+      test_exit(1) { Buildr.application.standard_exception_handling { raise Exception.new() } }
+    end
+    
+    it 'should print the class name and the message when receiving an exception (except when the exception is named Exception)' do
+      
+      # Our fake $stderr for the exercise. We could start it with a matcher instead
+      class FakeStdErr
+        
+        attr_accessor :messages
+        
+        def puts(*args)
+          @messages ||= []
+          @messages += args
+        end
+        
+        alias :write :puts
+      end
+      
+      # Save the old $stderr and make sure to restore it in the end.
+      old_stderr = $stderr 
+      begin
+        
+        $stderr = FakeStdErr.new
+        test_exit(1) { 
+          Buildr.application.send :standard_exception_handling do
+            class MyOwnNicelyNamedException < Exception
+            end
+            raise MyOwnNicelyNamedException.new('My message') 
+          end
+        }.call
+        $stderr.messages.select {|msg| msg =~ /.*MyOwnNicelyNamedException : My message.*/}.size.should == 1
+        $stderr.messages.clear
+        test_exit(1) { 
+          Buildr.application.send :standard_exception_handling do
+            raise Exception.new('My message') 
+          end
+        }.call
+        $stderr.messages.select {|msg| msg =~ /.*My message.*/ && !(msg =~ /Exception/)}.size.should == 1
+      end
+      $stderr = old_stderr
+    end
+  end
 
 end
 

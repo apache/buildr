@@ -507,13 +507,14 @@ module Buildr
         $stderr.puts $terminal.color(ex.message, :red)
         exit(1)
       rescue Exception => ex
-        title, message = "Your build failed with an error", "#{Dir.pwd}:\n#{ex.message}"
+        ex_msg = ex.class.name == "Exception" ? ex.message : "#{ex.class.name} : #{ex.message}"
+        title, message = "Your build failed with an error", "#{Dir.pwd}:\n#{ex_msg}"
         @on_failure.each do |block|
           block.call(title, message, ex) rescue nil
         end
         # Exit with error message
         $stderr.puts "Buildr aborted!"
-        $stderr.puts $terminal.color(ex.message, :red)
+        $stderr.puts $terminal.color(ex_msg, :red)
         if options.trace
           $stderr.puts ex.backtrace.join("\n")
         else
