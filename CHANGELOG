@@ -65,6 +65,8 @@
 * Fixed:  BUILDR-365 test task should use test compile dependencies
 * Fixed:  BUILDR-366 Scala dependencies should be lazily loaded into
           Java.classpath
+* Fixed:  BUILDR-373 Package type specific implementations of install, 
+          uninstall and upload are not invoked (Antoine Toulme)
 * Fixed:  BUILDR-379 Ant sql task abruptly terminates buildr
 * Fixed:  BUILDR-380 GitRelease: recursive search for root '/' does not work
           under Windows (Antoine Toulme)
