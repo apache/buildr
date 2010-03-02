@@ -169,7 +169,24 @@ describe Repositories, 'local' do
     YAML
     repositories.local.should eql(File.expand_path('my_repo'))
   end
-end
+  
+  it 'should not override custom install methods defined when extending an object' do
+    class MyOwnInstallTask
+      
+      attr_accessor :result
+      
+      def install
+        result = true
+      end
+      
+    end
+    task = MyOwnInstallTask.new
+    task.result = "maybe"
+    task.extend ActsAsArtifact
+    task.install
+    task.result.should be_true
+  end
+end 
 
 
 describe Repositories, 'remote' do
