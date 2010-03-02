@@ -47,6 +47,8 @@
           entries (Stefan Wasilewski)
 * Fixed:  BUILDR-336 Java::Commands.java Prints Command Without --trace
           (Antoine Toulme)
+* Fixed:  BUILDR-341 jruby -S extract is no longer supported by jruby
+          (Antoine Toulme)
 * Fixed:  BUILDR-344 Buildr::TestFramework::TestResult::YamlFormatter uses 
           deprecated form of example_pending (Rhett Sutphin)
 * Fixed:  BUILDR-345 Improve project documentation (Peter Schröder)
