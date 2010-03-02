@@ -21,11 +21,11 @@ module CompilerHelper
   def compile_task
     @compile_task ||= define('foo').compile.using(:javac)
   end
-  
+
   def compile_task_without_compiler
     @compile_task ||= define('foo').compile
   end
-  
+
   def file_task
     @file_taks ||= define('bar').file('src')
   end
@@ -112,7 +112,7 @@ describe Buildr::CompileTask, '#compiler' do
   it 'should be nil if no compiler identifier' do
     define('foo').compile.compiler.should be_nil
   end
-  
+
   it 'should return the selected compiler' do
     define('foo') { compile.using(:javac) }
     project('foo').compile.compiler.should eql(:javac)
@@ -140,7 +140,7 @@ describe Buildr::CompileTask, '#language' do
   it 'should be nil if no compiler identifier' do
     define('foo').compile.language.should be_nil
   end
-  
+
   it 'should return the appropriate language' do
     define('foo') { compile.using(:javac) }
     project('foo').compile.language.should eql(:java)
@@ -254,7 +254,7 @@ describe Buildr::CompileTask, '#options' do
     compile_task.options.foo = 'bar'
     compile_task.options.foo.should eql('bar')
   end
-  
+
   it 'should have bracket accessors' do
     compile_task.options[:foo] = 'bar'
     compile_task.options[:foo].should eql('bar')
@@ -561,6 +561,31 @@ describe Project, '#resources' do
     write 'src/main/resources/foo', 'Foo'
     define('foo').compile.invoke
     file('target/resources/foo').should contain('Foo')
+  end
+
+  it 'should copy new resources to target directory' do
+    time = Time.now
+    mkdir_p 'target/resources'
+    File.utime(time-1, time-1, 'target/resources')
+
+    write 'src/main/resources/foo', 'Foo'
+
+    define('foo')
+    project('foo').file('target/resources').invoke
+    file('target/resources/foo').should exist
+  end
+
+  it 'should copy updated resources to target directory' do
+    time = Time.now
+    mkdir_p 'target/resources'
+    write 'target/resources/foo', 'Foo'
+    File.utime(time-1, time-1, 'target/resources')
+    File.utime(time-1, time-1, 'target/resources/foo')
+
+    write 'src/main/resources/foo', 'Foo2'
+    define('foo')
+    project('foo').file('target/resources').invoke
+    file('target/resources/foo').should contain('Foo2')
   end
 
   it 'should not create target directory unless there are resources' do
