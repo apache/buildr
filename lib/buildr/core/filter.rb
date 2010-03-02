@@ -52,9 +52,9 @@ module Buildr
     # Returns the list of source directories (each being a file task).
     attr_reader :sources
 
-    # :call-seq: 
+    # :call-seq:
     #   clear => self
-    # 
+    #
     # Clear filter sources and include/exclude patterns
     def clear
       @include = []
@@ -77,7 +77,14 @@ module Buildr
     end
 
     # The target directory as a file task.
-    attr_reader :target
+    def target
+      return nil unless @target_dir
+      unless @target
+        @target = file(File.expand_path(@target_dir)) { |task| run if @target == task }
+        @target.enhance copy_map.values
+      end
+      @target
+    end
 
     # :call-seq:
     #   into(dir) => self
@@ -87,7 +94,8 @@ module Buildr
     # For example:
     #   filter.from('src').into('target').using('build'=>Time.now)
     def into(dir)
-      @target = file(File.expand_path(dir.to_s)) { |task| run if target == task }
+      @target_dir = dir.to_s
+      @target = nil
       self
     end
 
@@ -99,17 +107,17 @@ module Buildr
     # By default all files are included. You can use this method to only include specific
     # files from the source directory.
     def include(*files)
-      @include += files
+      @include += files.flatten
       self
     end
-    alias :add :include 
+    alias :add :include
 
     # :call-seq:
     #   exclude(*files) => self
     #
     # Specifies files to exclude and returns self. See FileList#exclude.
     def exclude(*files)
-      @exclude += files
+      @exclude += files.flatten
       self
     end
 
@@ -159,21 +167,8 @@ module Buildr
     #
     # Runs the filter.
     def run
-      sources.each { |source| raise "Source directory #{source} doesn't exist" unless File.exist?(source.to_s) }
-      raise 'No target directory specified, where am I going to copy the files to?' if target.nil?
+      copy_map = copy_map()
 
-      copy_map = sources.flatten.map(&:to_s).inject({}) do |map, source|
-        files = Util.recursive_with_dot_files(source).
-          map { |file| Util.relative_path(file, source) }.
-          select { |file| @include.empty? || @include.any? { |pattern| File.fnmatch(pattern, file) } }.
-          reject { |file| @exclude.any? { |pattern| File.fnmatch(pattern, file) } }
-        files.each do |file|
-          src, dest = File.expand_path(file, source), File.expand_path(file, target.to_s)
-          map[file] = src if !File.exist?(dest) || File.stat(src).mtime >= File.stat(dest).mtime
-        end
-        map
-      end
-        
       mkpath target.to_s
       return false if copy_map.empty?
 
@@ -196,30 +191,48 @@ module Buildr
       true
     end
 
-    # Returns the target directory. 
+    # Returns the target directory.
     def to_s
-      @target.to_s
+      target.to_s
+    end
+
+  private
+    def copy_map
+      sources.each { |source| raise "Source directory #{source} doesn't exist" unless File.exist?(source.to_s) }
+      raise 'No target directory specified, where am I going to copy the files to?' if target.nil?
+
+      sources.flatten.map(&:to_s).inject({}) do |map, source|
+        files = Util.recursive_with_dot_files(source).
+          map { |file| Util.relative_path(file, source) }.
+          select { |file| @include.empty? || @include.any? { |pattern| File.fnmatch(pattern, file) } }.
+          reject { |file| @exclude.any? { |pattern| File.fnmatch(pattern, file) } }
+        files.each do |file|
+          src, dest = File.expand_path(file, source), File.expand_path(file, target.to_s)
+          map[file] = src if !File.exist?(dest) || File.stat(src).mtime >= File.stat(dest).mtime
+        end
+        map
+      end
     end
 
     # This class implements content replacement logic for Filter.
     #
-    # To register a new template engine @:foo@, extend this class with a method like: 
-    # 
+    # To register a new template engine @:foo@, extend this class with a method like:
+    #
     #   def foo_transform(content, path = nil)
     #      # if this method yields a key, the value comes from the mapping hash
     #      content.gsub(/world/) { |str| yield :bar }
     #   end
     #
     # Then you can use :foo mapping type on a Filter
-    #   
+    #
     #   filter.using :foo, :bar => :baz
     #
     # Or all by your own, simply
     #
     #   Mapper.new(:foo, :bar => :baz).transform("Hello world") # => "Hello baz"
-    # 
+    #
     # You can handle configuration arguments by providing a @*_config@ method like:
-    # 
+    #
     #   # The return value of this method is available with the :config accessor.
     #   def moo_config(*args, &block)
     #      raise ArgumentError, "Expected moo block" unless block_given?
@@ -235,7 +248,7 @@ module Buildr
     #   end
     #
     # Usage for the @:moo@ mapper would be something like:
-    # 
+    #
     #   mapper = Mapper.new(:moo, 'ooone', 'twoo') do |str|
     #     i = nil; str.capitalize.gsub(/\w/) { |s| s.send( (i = !i) ? 'upcase' : 'downcase' ) }
     #   end
@@ -247,7 +260,7 @@ module Buildr
       def initialize(*args, &block) #:nodoc:
         using(*args, &block)
       end
-      
+
       def using(*args, &block)
         case args.first
         when Hash # Maven hash mapping
@@ -294,15 +307,15 @@ module Buildr
       def maven_transform(content, path = nil)
         content.gsub(/\$\{.*?\}/) { |str| yield(str[2..-2]) || str }
       end
-      
+
       def ant_transform(content, path = nil)
         content.gsub(/@.*?@/) { |str| yield(str[1..-2]) || str }
       end
-      
+
       def ruby_transform(content, path = nil)
         content.gsub(/#\{.*?\}/) { |str| yield(str[2..-2]) || str }
       end
-      
+
       def regexp_transform(content, path = nil)
         content.gsub(mapper_type) { |str| yield(str.scan(mapper_type).join) || str }
       end
@@ -310,7 +323,7 @@ module Buildr
       def callback_transform(content, path = nil)
         config.call(path, content)
       end
-      
+
       def erb_transform(content, path = nil)
         case config
         when Binding
