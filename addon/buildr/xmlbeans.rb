@@ -23,12 +23,12 @@ module Buildr
   # Provides XMLBeans schema compiler. Require explicitly using <code>require "buildr/xmlbeans"</code>.
   #
   #   require 'buildr/xmlbeans'
-  #   define 'some_proj' do 
+  #   define 'some_proj' do
   #      compile_xml_beans _(:source, :main, :xsd) # the directory with *.xsd
   #   end
   module XMLBeans
 
-    # You can use ArtifactNamespace to customize the versions of 
+    # You can use ArtifactNamespace to customize the versions of
     # <code>:xmlbeans</code> or <code>:stax</code> used by this module:
     #
     #   require 'buildr/xmlbeans'
@@ -37,7 +37,7 @@ module Buildr
       ns.xmlbeans! 'org.apache.xmlbeans:xmlbeans:jar:2.3.0', '>2'
       ns.stax_api! 'stax:stax-api:jar:>=1.0.1'
     end
-    
+
     class << self
 
       def compile(*args)
@@ -48,7 +48,7 @@ module Buildr
         Buildr.ant "xmlbeans" do |ant|
           ant.taskdef :name=>"xmlbeans", :classname=>"org.apache.xmlbeans.impl.tool.XMLBean",
             :classpath=>requires.join(File::PATH_SEPARATOR)
-          ant.xmlbeans :srconly=>"true", :srcgendir=>options[:output].to_s, :classgendir=>options[:output].to_s, 
+          ant.xmlbeans :srconly=>"true", :srcgendir=>options[:output].to_s, :classgendir=>options[:output].to_s,
             :javasource=>options[:javasource] do
             args.flatten.each { |file| ant.fileset File.directory?(file) ? { :dir=>file } : { :file=>file } }
           end
@@ -58,7 +58,7 @@ module Buildr
       end
 
       def requires()
-        @requires ||= REQUIRES.artifacts.each(&:invoke).map(&:to_s)
+        @requires ||= REQUIRES.artifacts
       end
     end
 
