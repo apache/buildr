@@ -22,16 +22,16 @@ module Buildr
   # Provides the <code>cobertura:html</code>, <code>cobertura:xml</code> and <code>cobertura:check</code> tasks.
   # Require explicitly using <code>require "buildr/cobertura"</code>.
   #
-  # You can generate cobertura reports for a single project 
+  # You can generate cobertura reports for a single project
   # using the project name as prefix:
   #
   #   project_name:cobertura:html
   #
-  # You can also specify which classes to include/exclude from instrumentation by 
-  # passing a class name regexp to the <code>cobertura.include</code> or 
-  # <code>cobertura.exclude</code> methods. 
-  # 
-  #   define 'someModule' do 
+  # You can also specify which classes to include/exclude from instrumentation by
+  # passing a class name regexp to the <code>cobertura.include</code> or
+  # <code>cobertura.exclude</code> methods.
+  #
+  #   define 'someModule' do
   #      cobertura.include 'some.package.*'
   #      cobertura.include /some.(foo|bar).*/
   #      cobertura.exclude 'some.foo.util.SimpleUtil'
@@ -43,14 +43,27 @@ module Buildr
     VERSION = '1.9'
 
     class << self
-
       def version
         Buildr.settings.build['cobertura'] || VERSION
       end
+    end
 
+    REQUIRES = ArtifactNamespace.for(self).tap do |ns|
+      ns.cobertura! "net.sourceforge.cobertura:cobertura:jar:#{version}", '>=1.9'
+      ns.log4j! 'log4j:log4j:jar:1.2.9', ">=1.2.9"
+      ns.asm! 'asm:asm:jar:2.2.1', '>=2.2.1'
+      ns.asm_tree! 'asm:asm-tree:jar:2.2.1', '>=2.2.1'
+      ns.oro! 'oro:oro:jar:2.0.8', '>=2.0.8'
+    end
+
+    class << self
       def dependencies
-        @dependencies ||= [ "net.sourceforge.cobertura:cobertura:jar:#{version}", "log4j:log4j:jar:1.2.9",
-                            "asm:asm:jar:2.2.1", "asm:asm-tree:jar:2.2.1", "oro:oro:jar:2.0.8"]
+        if (VersionRequirement.create('>=1.9.1').satisfied_by?(REQUIRES.cobertura.version))
+          REQUIRES.asm = '3.0' unless REQUIRES.asm.selected?
+          REQUIRES.asm_tree = '3.0' unless REQUIRES.asm.selected?
+        end
+
+        REQUIRES.artifacts
       end
 
       def report_to(file = nil)
@@ -62,18 +75,18 @@ module Buildr
       end
 
     end
-    
+
     class CoberturaConfig # :nodoc:
-      
+
       def initialize(project)
         @project = project
       end
-      
+
       attr_reader :project
       private :project
-      
+
       attr_writer :data_file, :instrumented_dir, :report_dir
-      
+
       def data_file
         @data_file ||= project.path_to(:reports, 'cobertura.ser')
       end
@@ -97,7 +110,7 @@ module Buildr
         includes.push(*classPatterns.map { |p| String === p ? Regexp.new(p) : p })
         self
       end
-      
+
       def includes
         @includeClasses ||= []
       end
@@ -114,15 +127,23 @@ module Buildr
         @excludeClasses ||= []
       end
 
+      def ignore(*regexps)
+        ignores.push(*regexps)
+      end
+
+      def ignores
+        @ignores ||= []
+      end
+
       def sources
         project.compile.sources
       end
-      
+
       def check
         @check ||= CoberturaCheck.new
       end
     end
-    
+
     class CoberturaCheck
       attr_writer :branch_rate, :line_rate, :total_branch_rate, :total_line_rate, :package_line_rate, :package_branch_rate
       attr_reader :branch_rate, :line_rate, :total_branch_rate, :total_line_rate, :package_line_rate, :package_branch_rate
@@ -137,7 +158,7 @@ module Buildr
 
       after_define do |project|
         cobertura = project.cobertura
-        
+
         namespace 'cobertura' do
           unless project.compile.target.nil?
             # Instrumented bytecode goes in a different directory. This task creates before running the test
@@ -151,10 +172,10 @@ module Buildr
                     :classpath=>Buildr.artifacts(Cobertura.dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
                   ant.send "cobertura-instrument", :todir=>task.to_s, :datafile=>cobertura.data_file do
                     includes, excludes = cobertura.includes, cobertura.excludes
-                    
+
                     classes_dir = project.compile.target.to_s
-                    if includes.empty? && excludes.empty? 
-                      ant.fileset :dir => classes_dir do 
+                    if includes.empty? && excludes.empty?
+                      ant.fileset :dir => classes_dir do
                         ant.include :name => "**/*.class"
                       end
                     else
@@ -166,29 +187,31 @@ module Buildr
                         end
                       end
                     end
+
+                    cobertura.ignores.each { |r| ant.ignore :regex => r }
                   end
                 end
               end
               touch task.to_s
             end
-            
+
             task 'instrument' => instrumented
-            
+
             # We now have two target directories with bytecode. It would make sense to remove compile.target
             # and add instrumented instead, but apparently Cobertura only creates some of the classes, so
             # we need both directories and instrumented must come first.
             project.test.dependencies.unshift cobertura.instrumented_dir
             project.test.with Cobertura.dependencies
             project.test.options[:properties]["net.sourceforge.cobertura.datafile"] = cobertura.data_file
-            
+
             unless project.compile.sources.empty?
               [:xml, :html].each do |format|
-                task format => ['instrument', 'test'] do 
+                task format => ['instrument', 'test'] do
                   info "Creating test coverage reports in #{cobertura.report_to(format)}"
                   Buildr.ant "cobertura" do |ant|
                     ant.taskdef :resource=>"tasks.properties",
                       :classpath=>Buildr.artifacts(Cobertura.dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
-                    ant.send "cobertura-report", :format=>format, 
+                    ant.send "cobertura-report", :format=>format,
                       :destdir=>cobertura.report_to(format), :datafile=>cobertura.data_file do
                       cobertura.sources.flatten.each do |src|
                         ant.fileset(:dir=>src.to_s) if File.exist?(src.to_s)
@@ -202,9 +225,9 @@ module Buildr
             task :check => [:instrument, :test] do
               Buildr.ant "cobertura" do |ant|
                 ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
-                
+
                 params = { :datafile => Cobertura.data_file }
-                
+
                 # oh so ugly...
                 params[:branchrate] = cobertura.check.branch_rate if cobertura.check.branch_rate
                 params[:linerate] = cobertura.check.line_rate if cobertura.check.line_rate
@@ -212,21 +235,21 @@ module Buildr
                 params[:totallinerate] = cobertura.check.total_line_rate if cobertura.check.total_line_rate
                 params[:packagebranchrate] = cobertura.check.package_branch_rate if cobertura.check.package_branch_rate
                 params[:packagelinerate] = cobertura.check.package_line_rate if cobertura.check.package_line_rate
-                
+
                 ant.send("cobertura-check", params) do
                 end
               end
             end
-            
+
           end
         end
 
         project.clean do
           rm_rf [cobertura.report_to, cobertura.data_file, cobertura.instrumented_dir]
         end
-        
+
       end
-      
+
     end
 
     class Buildr::Project
@@ -243,7 +266,7 @@ module Buildr
           task(instrument_task).invoke if Rake::Task.task_defined?(instrument_task)
         end
       end
-      
+
       [:xml, :html].each do |format|
         report_target = report_to(format)
         desc "Run the test cases and produce code coverage reports in #{report_target}"
@@ -260,7 +283,7 @@ module Buildr
           end
         end
       end
-      
+
       task "clean" do
         rm_rf [report_to, data_file]
       end

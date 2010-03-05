@@ -80,6 +80,8 @@
 * Fixed:  BUILDR-384 Buildr fails with rubygems 1.3.6
 * Fixed:  BUILDR-386 Display JRuby version in buildr -V (Antoine Toulme)
 * Fixed:  BUILDR-391 resources task does not detect changes
+* Fixed:  BUILDR-306 Cobertura extension does not handle dependencies
+          correctly (Pepijn Van Eeckhoudt)
 * Fixed:  buildr test=all didn't run all tests as expected
 * Fixed:  Fail-fast if package.with() or include() called with nil values
 * Fixed:  Failures not reported correctly for ScalaTest (Alex Eagle)
