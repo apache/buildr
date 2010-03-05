@@ -612,7 +612,9 @@ describe Buildr::Project, '#test.resources' do
   end
 
   it 'should create target directory even if no files to copy' do
-    define('foo').test.resources.filter.into('resources')
+    define('foo') do
+      test.resources.filter.into('resources')
+    end
     lambda { file(File.expand_path('resources')).invoke }.should change { File.exist?('resources') }.to(true)
   end
 
