@@ -573,6 +573,13 @@ MANIFEST
       project('foo:bar').eclipse.natures.should include('foo_nature')
       project('foo:bar2').eclipse.natures.should include('bar2_nature')
     end
+    
+    it 'should handle arrays correctly' do
+      define('foo') do
+        eclipse.natures ['foo_nature', 'bar_nature']
+      end
+      project('foo').eclipse.natures.should == ['foo_nature', 'bar_nature']
+    end
   end
 
   describe 'builders variable' do
@@ -597,7 +604,14 @@ MANIFEST
       project('foo:bar').eclipse.builders.should include('foo_builder')
       project('foo:bar2').eclipse.builders.should include('bar2_builder')
     end
-  end
+    
+    it 'should handle arrays correctly' do
+      define('foo') do
+        eclipse.builders ['foo_builder', 'bar_builder']
+      end
+      project('foo').eclipse.builders.should == ['foo_builder', 'bar_builder']
+    end
+  end 
 
   describe 'classpath_containers variable' do
     it 'should be configurable' do
@@ -620,6 +634,13 @@ MANIFEST
       end
       project('foo:bar').eclipse.classpath_containers.should include('foo_classpath_containers')
       project('foo:bar2').eclipse.classpath_containers.should include('bar2_classpath_containers')
+    end
+    
+    it 'should handle arrays correctly' do
+      define('foo') do
+        eclipse.classpath_containers ['foo_cc', 'bar_cc']
+      end
+      project('foo').eclipse.classpath_containers.should == ['foo_cc', 'bar_cc']
     end
   end
 
