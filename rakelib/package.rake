@@ -67,7 +67,7 @@ task :snapshot=>[:package] do
   cp FileList['pkg/{*.gem,*.tgz,*.zip}'], '_snapshot/gems'
   puts "Generating gem index ..."
   sh 'gem', 'generate_index', '--directory', '_snapshot'
-  puts "Copying gem and index back to Apache" 
+  puts "Copying gem and index back to Apache"
   sh 'rsync', '--progress', '--recursive', '_snapshot/', 'people.apache.org:public_html/buildr/snapshot/'
 end
 task(:clobber) { rm_rf '_snapshot' }

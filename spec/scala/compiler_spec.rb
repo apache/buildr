@@ -20,7 +20,7 @@ require 'buildr/scala'
 # need to test both with and without SCALA_HOME
 share_as :ScalacCompiler do
   it 'should identify itself from source directories' do
-    write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }' 
+    write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }'
     define('foo').compile.compiler.should eql(:scalac)
   end
 
@@ -65,7 +65,7 @@ share_as :ScalacCompiler do
       package(:jar)
     end
   end
-  
+
   it 'should compile a simple .scala file into a .class file' do
     define_test1_project
     task('test1:compile').invoke
@@ -115,24 +115,24 @@ describe 'scala compiler (installed in SCALA_HOME)' do
   it 'requires present SCALA_HOME' do
     ENV['SCALA_HOME'].should_not be_nil
   end
-  
+
   it_should_behave_like ScalacCompiler
 end
 
 
 describe 'scala compiler (downloaded from repository)' do
   old_home = ENV['SCALA_HOME']
-  
+
   before :all do
     ENV['SCALA_HOME'] = nil
   end
-  
+
   it 'requires absent SCALA_HOME' do
     ENV['SCALA_HOME'].should be_nil
   end
-  
+
   it_should_behave_like ScalacCompiler
-  
+
   after :all do
     ENV['SCALA_HOME'] = old_home
   end
@@ -159,21 +159,21 @@ describe 'scalac compiler options' do
 
   it 'should use -nowarn argument when warnings is false' do
     compile_task.using(:warnings=>false)
-    scalac_args.should include('-nowarn') 
+    scalac_args.should include('-nowarn')
   end
 
   it 'should not use -nowarn argument when warnings is true' do
     compile_task.using(:warnings=>true)
-    scalac_args.should_not include('-nowarn') 
+    scalac_args.should_not include('-nowarn')
   end
 
   it 'should not use -verbose argument by default' do
-    scalac_args.should_not include('-verbose') 
+    scalac_args.should_not include('-verbose')
   end
 
   it 'should use -verbose argument when running with --trace option' do
     trace true
-    scalac_args.should include('-verbose') 
+    scalac_args.should include('-verbose')
   end
 
   it 'should set debug option to true by default' do

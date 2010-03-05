@@ -39,19 +39,19 @@ describe Buildr::JUnit do
     project('foo').test.compile.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
     project('foo').test.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
   end
-  
+
   it 'should have REQUIRES up to version 1.5 since it was deprecated in 1.3.3' do
     Buildr::VERSION.should < '1.5'
     lambda { JUnit::REQUIRES }.should_not raise_error
   end
-  
+
   it 'should pick JUnit version from junit build settings' do
     Buildr::JUnit.instance_eval { @dependencies = nil }
     write 'build.yaml', 'junit: 1.2.3'
     define('foo') { test.using(:junit) }
     project('foo').test.compile.dependencies.should include(artifact("junit:junit:jar:1.2.3"))
   end
-  
+
   it 'should include JMock dependencies' do
     define('foo') { test.using(:junit) }
     two_or_later = JMock.version[0,1].to_i >= 2
@@ -67,7 +67,7 @@ describe Buildr::JUnit do
     define('foo') { test.using(:junit) }
     project('foo').test.compile.dependencies.should include(artifact("jmock:jmock:jar:1.2.3"))
   end
-  
+
   it 'should include public classes extending junit.framework.TestCase' do
     write 'src/test/java/com/example/FirstTest.java', <<-JAVA
       package com.example;
@@ -289,7 +289,7 @@ describe Buildr::JUnit do
     fork_tests :each
     project('foo').test.failed_tests.should be_empty
   end
-  
+
   after do
     # Yes, this is ugly.  Better solution?
     Buildr::JUnit.instance_eval { @dependencies = nil }

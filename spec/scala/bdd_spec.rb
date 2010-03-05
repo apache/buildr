@@ -33,13 +33,13 @@ describe Buildr::Scala::Specs do
     define 'foo'
     project('foo').test.framework.should eql(:specs)
   end
-  
+
   it 'should include Specs dependencies' do
     define('foo') { test.using(:specs) }
     project('foo').test.compile.dependencies.should include(*artifacts(Scala::Specs.dependencies))
     project('foo').test.dependencies.should include(*artifacts(Scala::Specs.dependencies))
   end
-  
+
   it 'should include ScalaCheck dependencies' do
     define('foo') { test.using(:specs) }
     project('foo').test.compile.dependencies.should include(*artifacts(Scala::Check.dependencies))
@@ -98,12 +98,12 @@ describe Buildr::Scala::Specs do
     SCALA
     lambda { define('foo').test.invoke }.should_not raise_error
   end
-  
+
   it 'should fail when spec fails' do
     write 'src/spec/scala/StringSpecs.scala', <<-SCALA
       import org.specs._
       import org.specs.runner._
-      
+
       object StringSpecs extends Specification {
         "empty string" should {
           "have a zero length" in {

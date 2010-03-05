@@ -29,7 +29,7 @@
 #    git apache setup svn --help
 #    git apache sync --help
 #
-# To configure your local repo for svn synchronization, 
+# To configure your local repo for svn synchronization,
 #
 #    git apache update-authors
 #    git remote add upstream git@github.com:buildr/buildr.git
@@ -77,11 +77,11 @@ module BuildrGit
     def options(opts)
       opts.url = @@url
       opts.file = self.class.authors_file
-      [['-u', '--url URL', 
+      [['-u', '--url URL',
         "From URL. defaults to: #{opts.url}", lambda { |url|
           opts.url = url
        }],
-       ['-f', '--file FILE', 
+       ['-f', '--file FILE',
         "Write to FILE, defaults to #{opts.file}", lambda { |path|
           opts.file = path
         }]
@@ -97,7 +97,7 @@ module BuildrGit
 
   class CloneCommand < GitFlow/:clone
     @help = "Create a clone from github.com/buildr repository."
-    
+
     def options(opts)
       opts.origin = 'git://github.com/buildr/buildr.git'
       opts.svn_prefix = 'apache'
@@ -113,7 +113,7 @@ module BuildrGit
 
     def execute(opts, argv)
       git 'clone', opts.origin, opts.local
-      Dir.chdir(opts.local) do 
+      Dir.chdir(opts.local) do
         run 'update-users'
         run 'setup'
       end
@@ -125,7 +125,7 @@ module BuildrGit
     def options(opt)
       []
     end
-    
+
     def execute(opt, argv)
       run 'setup', 'alias'
       run 'setup', 'svn'
@@ -146,10 +146,10 @@ module BuildrGit
       opt.svn_prefix = 'apache'
       opt.svn_path = 'buildr'
       opt.townhall = 'origin'
-      [['--username SVN_USER', 'Use Apache svn username for this svn remote', 
+      [['--username SVN_USER', 'Use Apache svn username for this svn remote',
         lambda { |e| opt.apache_login = e  }],
        ['--svn-prefix PREFIX', 'The name of svn remote to use for project.',
-        "Defaults to #{opt.svn_prefix}", 
+        "Defaults to #{opt.svn_prefix}",
         lambda{|p| opt.svn_prefix = p }],
        ['--svn-uri URI', lambda {|p| opt.svn_uri = p  }],
        ['--svn-rev REVISION', lambda {|p| opt.svn_rev = p  }],
@@ -166,21 +166,21 @@ module BuildrGit
       git 'config', 'svn.authorsfile', authors_file
       git 'config', 'apache.svn', opt.svn_prefix
       git 'config', 'apache.git', opt.townhall
-      
+
       if opt.apache_login
         user, email = UpdateUsersCommand.user_email(opt.apache_login, authors_file)
         puts "You claim to be #{user} <#{email}> with apache login: #{opt.apache_login}"
         git('config', 'user.name', user)
         git('config', 'user.email', email)
       end
-      
+
       if opt.svn_rev
         revision = opt.svn_rev
       else
         location, revision = svn_loc_rev
         revision = opt.svn_rev || revision
       end
-      
+
       if opt.svn_uri
         repo = opt.svn_uri
       else
@@ -189,13 +189,13 @@ module BuildrGit
         repo = $`
       end
 
-      # Tell git where the svn repository is 
+      # Tell git where the svn repository is
       git('config', "svn-remote.#{opt.svn_prefix}.url", repo)
       git('config', "svn-remote.#{opt.svn_prefix}.fetch",
           "#{opt.svn_path}/trunk:refs/remotes/#{opt.svn_prefix}/trunk")
-      git('config', "svn-remote.#{opt.svn_prefix}.branches", 
+      git('config', "svn-remote.#{opt.svn_prefix}.branches",
           "#{opt.svn_path}/branches/*:refs/remotes/#{opt.svn_prefix}/*")
-      git('config', "svn-remote.#{opt.svn_prefix}.tags", 
+      git('config', "svn-remote.#{opt.svn_prefix}.tags",
           "#{opt.svn_path}/tags/*:refs/remotes/#{opt.svn_prefix}/tags/*")
 
       # Store the user for svn dcommit
@@ -214,9 +214,9 @@ module BuildrGit
       # update svn metadata
       mkdir_p(expand_path('.git/svn'))
       svn_meta = expand_path('.git/svn/.metadata')
-      git('config', '--file', svn_meta, 
+      git('config', '--file', svn_meta,
           "svn-remote.#{opt.svn_prefix}.branches-maxRev", revision)
-      git('config', '--file', svn_meta, 
+      git('config', '--file', svn_meta,
           "svn-remote.#{opt.svn_prefix}.tags-maxRev", revision)
     end
 
@@ -255,18 +255,18 @@ apache.svn  - The svn remote using to get changes from Apache SVN.
   class SyncCommand < GitFlow/:sync
     @help = "Synchronizes between Apache svn and git townhall."
     @documentation = <<-DOC
-This command will perform the following actions: 
+This command will perform the following actions:
   * fetch changes from apache svn.
   * rebase them on the current branch or on the one specified with --onto
   * dcommit (this will push your changes to Apache trunk)
 
 GIT CONFIG VALUES:
 
-apache.svn  
+apache.svn
   The svn remote using to get changes from Apache SVN.
   Set by setup-svn --svn-prefix.
 
-apache.git 
+apache.git
   The git remote used as townhall repository.
   Set by setup-svn --townhall.
 
@@ -281,7 +281,7 @@ DOC
       opt.git_branch = 'master'
       opt.apache_git = git('config', '--get', 'apache.git').chomp rescue nil
       opt.apache_svn = git('config', '--get', 'apache.svn').chomp rescue nil
-      opt.svn_username = git('config', '--get', 
+      opt.svn_username = git('config', '--get',
                              "svn-remote.#{opt.apache_svn}.username").chomp rescue nil
       [['--apache-svn SVN_REMOTE', 'The SVN remote used to get changes from Apache',
         "Current value: #{opt.apache_svn}",
@@ -289,15 +289,15 @@ DOC
        ['--apache-git REMOTE', 'The git remote used as town-hall repository.',
         "Current value: #{opt.apache_git}",
         lambda { |r| opt.apache_git = r }],
-       ['--username SVN_USER', 
+       ['--username SVN_USER',
         'Specify the SVN username for dcommit',
         "Defaults to: #{opt.svn_username}",
         lambda { |b| opt.svn_username = b }],
        ['--svn-branch SVN_BRANCH',
-        'Specify the SVN branch to rebase changes from, and where to dcommit', 
+        'Specify the SVN branch to rebase changes from, and where to dcommit',
         "Defaults to: #{opt.svn_branch}",
         lambda { |b| opt.svn_branch = b }],
-       ['--git-branch REMOTE_BRANCH', 
+       ['--git-branch REMOTE_BRANCH',
         'Specify the remote town-hall branch (on apache.git) to update',
         "Defaults to: #{opt.git_branch}",
         lambda { |b| opt.git_branch = b }],
@@ -318,29 +318,29 @@ DOC
       # obtain latest changes from svn
       git('svn', 'fetch', '--svn-remote', opt.apache_svn)
       # obtain latest changes from git
-      git('fetch', opt.apache_git, 
+      git('fetch', opt.apache_git,
           "#{opt.git_branch}:refs/remotes/#{opt.apache_git}/#{opt.git_branch}")
 
       # rebase svn changes in the desired branch
       git('rebase', "#{opt.apache_svn}/#{opt.svn_branch}", opt.branch)
       git('rebase', "#{opt.apache_git}/#{opt.git_branch}", opt.branch)
-      
+
       # dcommit to the specific svn branch
-      ['svn', 'dcommit', 
+      ['svn', 'dcommit',
        '--svn-remote', opt.apache_svn, '--commit-url', commit_url].tap do |cmd|
         if opt.svn_username
           cmd << '--username' << opt.svn_username
         end
         git(*cmd)
       end
-      
+
       # update townhall remote ref
-      git('update-ref', 
+      git('update-ref',
           "refs/remotes/#{opt.apache_git}/#{opt.git_branch}",
           "refs/remotes/#{opt.apache_svn}/#{opt.svn_branch}")
 
       # forward the remote townhall/master to apache/trunk
-      git('push', opt.apache_git, 
+      git('push', opt.apache_git,
           "refs/remotes/#{opt.apache_git}/#{opt.git_branch}:#{opt.git_branch}")
 
       # get back to the original branch
@@ -349,7 +349,7 @@ DOC
   end
 
 
-  # This one is displayed when the user executes this script using 
+  # This one is displayed when the user executes this script using
   # open-uri -e
   HEADER = <<HEADER
 
@@ -364,8 +364,8 @@ and recommended workflow, or any other option.
 
 Ctrl+D or an invalid option to abort
 HEADER
-  
-  # When fork is completed, we display the following notice on a 
+
+  # When fork is completed, we display the following notice on a
   # pager, giving the user a brief overview of git aliases used
   # to keep the mirror in sync.
   NOTICE = <<NOTICE
@@ -381,27 +381,27 @@ ALIASES:
 
     git apache merge    # Merge already fetched changes on the current branch
                         # Use this command to get up to date with trunk changes
-                        # you can always cherry-pick from the apache/trunk 
+                        # you can always cherry-pick from the apache/trunk
                         # branch.
 
     git apache pull     # get apache-fetch && git apache-merge
-   
-    git apache push     # Push to Apache's SVN. Only staged changes (those 
-                        # recorded using `git commit`) will be sent to SVN. 
+
+    git apache push     # Push to Apache's SVN. Only staged changes (those
+                        # recorded using `git commit`) will be sent to SVN.
                         # You need not to be on the master branch.
                         # Actually you can work on a tiny-feature branch and
-                        # commit directly from it. 
+                        # commit directly from it.
                         #
-                        # VERY IMPORTANT: 
+                        # VERY IMPORTANT:
                         #
                         # Missing commits on Apache's SVN will be sent using
                         # your apache svn account. This means that you can
                         # make some commits on behalf of others (like patches
                         # comming from JIRA issues or casual contributors)
-                        # Review the apache-push alias on .git/config if you 
+                        # Review the apache-push alias on .git/config if you
                         # want to change login-name used for commit to SVN.
-                        # 
-                        # See the recommended workflow to avoid commiting 
+                        #
+                        # See the recommended workflow to avoid commiting
                         # other developers' changes and the following section.
 
 THE GITHUB MIRROR:
@@ -410,11 +410,11 @@ THE GITHUB MIRROR:
 
      http://github.com/buildr/buildr
 
-   This mirror DOES NOT replace Apache's SVN repository. We really care about 
-   using Apache infrastructure and following Apache project guidelines for 
+   This mirror DOES NOT replace Apache's SVN repository. We really care about
+   using Apache infrastructure and following Apache project guidelines for
    contributions. This git mirror is provided only for developers convenience,
    allowing them to easily create experimental branches or review code from
-   other committers. 
+   other committers.
 
    All code that wants to make it to the official Apache Buildr repository needs
    to be committed to the Apache SVN repository by using the command:
@@ -423,39 +423,39 @@ THE GITHUB MIRROR:
 
    This command will synchronize both ways svn<->git to keep trunk upto date.
    You need to be an Apache committer and have permissions on the SVN repo.
-   
+
    It's VERY IMPORTANT for Buildr committers to remember that contributions from
    external entities wanting to be accepted will require them to sign the Apache ICLA.
-   We provide the git mirror to make it easier for people to experiment and 
+   We provide the git mirror to make it easier for people to experiment and
    contribute back to Buildr, before merging their code in, please remember they
-   have to create create a JIRA issue granting ASF permission to include their code, 
+   have to create create a JIRA issue granting ASF permission to include their code,
    just like any other contribution following Apache's guidelines.
 
-   So, it's very important - if you care about meritocracy - to follow or at 
+   So, it's very important - if you care about meritocracy - to follow or at
    least that you get an idea of the recommended workflow.
 
 RECOMMENDED WORKFLOW:
-   
-   So now that you have your local buildr copy you can create topic branches 
-   to work on independent features, and still merge easily with head changes. 
+
+   So now that you have your local buildr copy you can create topic branches
+   to work on independent features, and still merge easily with head changes.
 
    They may seem lots of things to consider, but it's all for Buildr's healt.
    As all things git, you can always follow your own workflow and even create
    aliases on you .git/config file to avoid typing much. So, here they are:
 
-   1) get your gitflow configured 
+   1) get your gitflow configured
      (you have already do so, this was the most difficult part)
 
    2) create a topic branch to work on, say.. you want to add cool-feature:
 
-        git checkout -b cool-feature master 
+        git checkout -b cool-feature master
         # now on branch cool-feature
 
    3) hack hack hack.. use the source luke.
-      every time you feel you have something important like added failing 
+      every time you feel you have something important like added failing
       spec, added part of feature, or resolved some conflict from merges,
-      you can commit your current progress. If you want to be selective, use: 
-      
+      you can commit your current progress. If you want to be selective, use:
+
         git commit --interactive
 
    3) review your changes, get ALL specs passing, repeat step 3 as needed
@@ -465,12 +465,12 @@ RECOMMENDED WORKFLOW:
         git apache-fetch
         # You can inspect the upstream changes without having to merge them
         git log apache/trunk # what are they doing!!
-      
+
    5) integrate mainstream changes to your cool-feature branch, you can always
       use `git cherry-pick` to select only some commits.
 
         git merge apache/trunk cool-feature
-   
+
    6) Go to 3 unless ALL specs are passing.
 
    7.a) (Skip to 7.b you have commit bit on Apache's SVN)
@@ -481,19 +481,19 @@ RECOMMENDED WORKFLOW:
         https://issues.apache.org/jira/browse/BUILDR
         dev@buildr.apache.org
 
-   7.b) Now you have everyhing on staging area and merged important changes 
+   7.b) Now you have everyhing on staging area and merged important changes
       from apache/trunk, it's time to commit them to Apache's SVN.
 
-        git apache-push 
+        git apache-push
 
    8) Optional. If you are a buildr committer you may want to synchronize
-     the github mirror for helping others to get changes without having to 
+     the github mirror for helping others to get changes without having to
      wait on Victor's cronjob to run every hour (useful for urgent changes).
 
         git synchronize
 
    9) Pull changes from origin frequently.
-        
+
         git fetch origin
         git rebase --onto origin/master master master
 
@@ -508,5 +508,5 @@ RESOURCES:
 
 NOTICE
   #' for emacs
-  
+
 end

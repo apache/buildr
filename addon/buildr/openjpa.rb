@@ -26,7 +26,7 @@ module Buildr
 
     REQUIRES = [ "org.apache.openjpa:openjpa:jar:#{VERSION}",
       "commons-collections:commons-collections:jar:3.1",
-      "commons-dbcp:commons-dbcp:jar:1.2.1", 
+      "commons-dbcp:commons-dbcp:jar:1.2.1",
       "commons-lang:commons-lang:jar:2.1",
       "commons-pool:commons-pool:jar:1.2",
       "javax.persistence:persistence-api:jar:1.0",

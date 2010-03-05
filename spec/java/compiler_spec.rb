@@ -19,13 +19,13 @@ require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 describe 'javac compiler' do
   it 'should identify itself from source directories' do
-    write 'src/main/java/com/example/Test.java', 'package com.example; class Test {}' 
+    write 'src/main/java/com/example/Test.java', 'package com.example; class Test {}'
     define('foo').compile.compiler.should eql(:javac)
   end
 
   it 'should identify from source directories using custom layout' do
-    write 'src/com/example/Code.java', 'package com.example; class Code {}' 
-    write 'testing/com/example/Test.java', 'package com.example; class Test {}' 
+    write 'src/com/example/Code.java', 'package com.example; class Code {}'
+    write 'testing/com/example/Test.java', 'package com.example; class Test {}'
     custom = Layout.new
     custom[:source, :main, :java] = 'src'
     custom[:source, :test, :java] = 'testing'
@@ -36,8 +36,8 @@ describe 'javac compiler' do
   end
 
   it 'should identify from compile source directories' do
-    write 'src/com/example/Code.java', 'package com.example; class Code {}' 
-    write 'testing/com/example/Test.java', 'package com.example; class Test {}' 
+    write 'src/com/example/Code.java', 'package com.example; class Code {}'
+    write 'testing/com/example/Test.java', 'package com.example; class Test {}'
     define 'foo' do
       lambda { compile.from 'src' }.should change { compile.compiler }.to(:javac)
       lambda { test.compile.from 'testing' }.should change { test.compile.compiler }.to(:javac)
@@ -110,21 +110,21 @@ describe 'javac compiler options' do
 
   it 'should use -nowarn argument when warnings is false' do
     compile_task.using(:warnings=>false)
-    javac_args.should include('-nowarn') 
+    javac_args.should include('-nowarn')
   end
 
   it 'should not use -nowarn argument when warnings is true' do
     compile_task.using(:warnings=>true)
-    javac_args.should_not include('-nowarn') 
+    javac_args.should_not include('-nowarn')
   end
 
   it 'should not use -verbose argument by default' do
-    javac_args.should_not include('-verbose') 
+    javac_args.should_not include('-verbose')
   end
 
   it 'should use -verbose argument when running with --trace option' do
     trace true
-    javac_args.should include('-verbose') 
+    javac_args.should include('-verbose')
   end
 
   it 'should set debug option to true by default' do

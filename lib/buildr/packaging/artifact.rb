@@ -44,14 +44,14 @@ module Buildr
       def included(mod)
         mod.extend self
       end
-      
+
       def extend_object(base)
         base.instance_eval { alias :install_old :install     } if base.respond_to? :install
         base.instance_eval { alias :uninstall_old :uninstall } if base.respond_to? :uninstall
         base.instance_eval { alias :upload_old :upload       } if base.respond_to? :upload
         super
       end
-      
+
       def extended(base)
         #We try to keep the previous instance methods defined on the base instance if there were ones.
         base.instance_eval { alias :install :install_old     } if base.respond_to? :install_old

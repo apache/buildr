@@ -66,7 +66,7 @@ class ProgressBar
   end
 
   def title
-    @title.size > ProgressBar.width / 5 ? (@title[0, ProgressBar.width / 5 - 2] + '..') : @title 
+    @title.size > ProgressBar.width / 5 ? (@title[0, ProgressBar.width / 5 - 2] + '..') : @title
   end
 
   def count
@@ -93,7 +93,7 @@ class ProgressBar
   end
 
   def elapsed
-    'Time: %s' % duration(Time.now - @start) 
+    'Time: %s' % duration(Time.now - @start)
   end
 
   def rate
@@ -130,7 +130,7 @@ protected
     @output.print "\r", " " * (ProgressBar.width - 1), "\r"
     @output.flush
   end
-    
+
   def render
     return unless @output
     format, *args = @format
@@ -143,7 +143,7 @@ protected
   end
 
   def changed?
-    return false unless @output && Time.now - @last_time > 0.1 
+    return false unless @output && Time.now - @last_time > 0.1
     return human(@count) != human(@previous) if @total == 0
     return true if (@count - @previous) >= @total / 100
     return Time.now - @last_time > 1

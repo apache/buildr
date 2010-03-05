@@ -54,19 +54,19 @@ module Buildr
 
     def javacc(*args)
       if Hash === args.last
-        options = args.pop 
+        options = args.pop
         in_package = options[:in_package].split(".")
       else
         in_package = []
       end
       file(path_to(:target, :generated, :javacc)=>args.flatten) do |task|
         JavaCC.javacc task.prerequisites, :output=>File.join(task.name, in_package)
-      end         
+      end
     end
 
     def jjtree(*args)
       if Hash === args.last
-        options = args.pop 
+        options = args.pop
         in_package = options[:in_package].split(".")
         build_node_files = options[:build_node_files]
       else
@@ -74,7 +74,7 @@ module Buildr
       end
       file(path_to(:target, :generated, :jjtree)=>args.flatten) do |task|
         JavaCC.jjtree task.prerequisites, :output=>File.join(task.name, in_package), :build_node_files=>build_node_files
-      end         
+      end
     end
 
   end

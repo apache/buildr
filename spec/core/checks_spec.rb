@@ -31,7 +31,7 @@ describe Project, 'check task' do
   it "should execute all project's expectations" do
     task 'expectation'
     define 'foo', :version=>'1.0' do
-      check  { task('expectation').invoke } 
+      check  { task('expectation').invoke }
     end
     lambda { project('foo').task('package').invoke }.should run_task('expectation')
   end
@@ -52,7 +52,7 @@ describe Project, 'check task' do
   it "should fail if any expectation failed" do
     define 'foo', :version=>'1.0' do
       check
-      check { fail 'sorry' } 
+      check { fail 'sorry' }
       check
     end
     lambda { project('foo').task('package').invoke }.should raise_error(RuntimeError, /Checks failed/)
@@ -342,132 +342,132 @@ end
 
 
 describe Buildr::Checks::Expectation do
-  
+
   shared_examples_for 'all archive types' do
-    
+
     before do
       archive = @archive
       define 'foo', :version=>'1.0' do
         package(archive).include('resources')
       end
     end
-    
+
     def check *args, &block
       project('foo').check *args, &block
     end
-    
+
     def package
       project('foo').package(@archive)
     end
-    
+
     describe '#exist' do
-      
+
       it "should pass if archive path exists" do
         write 'resources/test'
         check(package.path('resources')) { it.should exist }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should fail if archive path does not exist" do
         mkpath 'resources'
         check(package) { it.path('not-resources').should exist }
         lambda { project('foo').task('package').invoke }.should raise_error(RuntimeError, /Checks failed/)
       end
-      
+
       it "should pass if archive entry exists" do
         write 'resources/test'
         check(package.entry('resources/test')) { it.should exist }
         check(package.path('resources').entry('test')) { it.should exist }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should fail if archive path does not exist" do
         mkpath 'resources'
         check(package.entry('resources/test')) { it.should exist }
         lambda { project('foo').task('package').invoke }.should raise_error(RuntimeError, /Checks failed/)
-      end      
+      end
     end
-    
+
     describe '#be_empty' do
       it "should pass if archive path is empty" do
         mkpath 'resources'
         check(package.path('resources')) { it.should be_empty }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should fail if archive path has any entries" do
         write 'resources/test'
         check(package.path('resources')) { it.should be_empty }
         lambda { project('foo').task('package').invoke }.should raise_error(RuntimeError, /Checks failed/)
       end
-      
+
       it "should pass if archive entry has no content" do
         write 'resources/test'
         check(package.entry('resources/test')) { it.should be_empty }
         check(package.path('resources').entry('test')) { it.should be_empty }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should fail if archive entry has content" do
         write 'resources/test', 'something'
         check(package.entry('resources/test')) { it.should be_empty }
         lambda { project('foo').task('package').invoke }.should raise_error(RuntimeError, /Checks failed/)
       end
-      
+
       it "should fail if archive entry does not exist" do
         mkpath 'resources'
         check(package.entry('resources/test')) { it.should be_empty }
         lambda { project('foo').task('package').invoke }.should raise_error(RuntimeError, /Checks failed/)
       end
     end
-    
+
     describe '#contain(entry)' do
-      
+
       it "should pass if archive entry content matches string" do
         write 'resources/test', 'something'
         check(package.entry('resources/test')) { it.should contain('thing') }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should pass if archive entry content matches pattern" do
         write 'resources/test', "something\nor\another"
         check(package.entry('resources/test')) { it.should contain(/or/) }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should pass if archive entry content matches all arguments" do
         write 'resources/test', "something\nor\nanother"
         check(package.entry('resources/test')) { it.should contain(/or/, /other/) }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should fail unless archive path contains all arguments" do
         write 'resources/test', 'something'
         check(package.entry('resources/test')) { it.should contain(/some/, /other/) }
         lambda { project('foo').task('package').invoke }.should raise_error(RuntimeError, /Checks failed/)
       end
-      
+
       it "should fail if archive entry content does not match" do
         write 'resources/test', 'something'
         check(package.entry('resources/test')) { it.should contain(/other/) }
         lambda { project('foo').task('package').invoke }.should raise_error(RuntimeError, /Checks failed/)
       end
-      
+
       it "should fail if archive entry does not exist" do
         mkpath 'resources'
         check(package.entry('resources/test')) { it.should contain(/anything/) }
         lambda { project('foo').task('package').invoke }.should raise_error(RuntimeError, /Checks failed/)
       end
     end
-    
+
     describe '#contain(path)' do
-      
+
       it "should pass if archive path contains file" do
         write 'resources/test'
         check(package.path('resources')) { it.should contain('test') }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should handle deep nesting" do
         write 'resources/test/test2.efx'
         check(package) { it.should contain('resources/test/test2.efx') }
@@ -475,25 +475,25 @@ describe Buildr::Checks::Expectation do
         check(package.path('resources/test')) { it.should contain('test2.efx') }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should pass if archive path contains pattern" do
         write 'resources/with/test'
         check(package.path('resources')) { it.should contain('**/t*st') }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should pass if archive path contains all arguments" do
         write 'resources/with/test'
         check(package.path('resources')) { it.should contain('**/test', '**/*') }
         lambda { project('foo').task('package').invoke }.should_not raise_error
       end
-      
+
       it "should fail unless archive path contains all arguments" do
         write 'resources/test'
         check(package.path('resources')) { it.should contain('test', 'or-not') }
         lambda { project('foo').task('package').invoke }.should raise_error(RuntimeError, /Checks failed/)
       end
-      
+
       it "should fail if archive path is empty" do
         mkpath 'resources'
         check(package.path('resources')) { it.should contain('test') }
@@ -501,17 +501,17 @@ describe Buildr::Checks::Expectation do
       end
     end
   end
-  
+
   describe 'ZIP' do
     before { @archive = :jar }
     it_should_behave_like 'all archive types'
   end
-  
+
   describe 'tar' do
     before { @archive = :tar }
     it_should_behave_like 'all archive types'
   end
-  
+
   describe 'tgz' do
     before { @archive = :tgz }
     it_should_behave_like 'all archive types'

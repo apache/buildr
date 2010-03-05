@@ -169,7 +169,7 @@ describe Project, '#target' do
     @project.layout[:target] = 'baz'
     @project.target.should eql('baz')
   end
-  
+
   it 'should be removed in version 1.5 since it was deprecated in version 1.3' do
     Buildr::VERSION.should < '1.5'
   end
@@ -194,7 +194,7 @@ describe Project, '#reports' do
     @project.layout[:reports] = 'baz'
     @project.reports.should eql('baz')
   end
-  
+
   it 'should be removed in version 1.5 since it was deprecated in version 1.3' do
     Buildr::VERSION.should < '1.5'
   end
@@ -221,7 +221,7 @@ nothing to commit (working directory clean)
 #
 #       modified:   lib/buildr.rb
 #       modified:   spec/buildr_spec.rb
-# 
+#
 # Untracked files:
 #   (use "git add <file>..." to include in what will be committed)
 #
@@ -232,7 +232,7 @@ nothing to commit (working directory clean)
 
     it 'should reject a dirty repository, Git 1.4.3 or higher' do
       Git.should_receive(:`).with('git status').and_return <<-EOF
-# On branch master 
+# On branch master
 # Changed but not updated:
 #   (use "git add <file>..." to update what will be committed)
 #
@@ -381,7 +381,7 @@ describe 'a release process', :shared=>true do
       @release.should_receive(:ruby).with('-S', 'buildr', "_#{Buildr::VERSION}_", '--buildfile', File.expand_path('buildfile.next'),
                                           '--environment', 'development', 'clean', 'upload', 'DEBUG=no')
     end
-    
+
     it 'should tag a release with the release version' do
       @release.stub!(:update_version_to_next)
       @release.should_receive(:tag_release).with('1.0.0')
@@ -412,7 +412,7 @@ describe 'a release process', :shared=>true do
       @release.stub!(:tag_release)
       @release.make
       file('buildfile').should contain('VERSION_NUMBER = "1.0.1-SNAPSHOT"')
-    end    
+    end
   end
 
   describe '#resolve_tag' do
@@ -424,7 +424,7 @@ describe 'a release process', :shared=>true do
       Release.tag_name  = 'first'
       @release.send(:resolve_tag).should == 'first'
     end
-    
+
     it 'should use tag returned by tag_name if tag_name is a proc' do
       Release.tag_name  = lambda { |version| "buildr-#{version}" }
       @release.send(:resolve_tag).should == 'buildr-1.0.0'
@@ -505,9 +505,9 @@ describe 'a release process', :shared=>true do
       @release.should_receive(:message).and_return('Here is my custom message')
       @release.update_version_to_next
     end
-    
+
     it 'should use the commit message returned by commit_message if commit_message is a proc' do
-      Release.commit_message  = lambda { |new_version| 
+      Release.commit_message  = lambda { |new_version|
         new_version.should == '1.0.1-SNAPSHOT'
         "increment version number to #{new_version}"
       }
@@ -543,7 +543,7 @@ describe GitRelease do
     it 'should accept a git repo' do
       FileUtils.mkdir '.git'
       FileUtils.touch File.join('.git', 'config')
-      GitRelease.applies_to?.should be_true 
+      GitRelease.applies_to?.should be_true
     end
   end
 
@@ -637,7 +637,7 @@ describe SvnRelease do
 
     it 'should accept a git repo' do
       FileUtils.touch '.svn'
-      SvnRelease.applies_to?.should be_true 
+      SvnRelease.applies_to?.should be_true
     end
   end
 

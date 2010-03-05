@@ -626,21 +626,21 @@ module Buildr
 
       # We define a module inline that will inject cancelling the task if tests are skipped.
       module SkipIfNoTest
-        
+
         def self.extended(base)
           base.instance_eval {alias :execute_before_skip_if_no_test :execute}
           base.instance_eval {alias :execute :execute_after_skip_if_no_test}
         end
-        
+
         def execute_after_skip_if_no_test(args) #:nodoc:
           if Buildr.options.test == false
-            trace "Skipping #{to_s} for #{project.name} as tests are skipped" 
+            trace "Skipping #{to_s} for #{project.name} as tests are skipped"
             return
           end
           execute_before_skip_if_no_test(args)
         end
       end
-      
+
       # Similar to the regular compile task but using different paths.
       compile = CompileTask.define_task('test:compile'=>[project.compile, resources])
       compile.extend SkipIfNoTest

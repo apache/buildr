@@ -16,12 +16,12 @@
 
 require File.join(File.dirname(__FILE__), '../spec_helpers')
 
-describe 'groovyc compiler' do 
-  
+describe 'groovyc compiler' do
+
   it 'should identify itself from groovy source directories' do
     write 'src/main/groovy/some/Hello.groovy', 'println "Hello Groovy"'
     write 'src/test/groovy/some/Hello.groovy', 'println "Hello Groovy"'
-    define('foo') do 
+    define('foo') do
       compile.compiler.should eql(:groovyc)
       test.compile.compiler.should eql(:groovyc)
     end
@@ -30,7 +30,7 @@ describe 'groovyc compiler' do
   it 'should identify if groovy sources are found on java directories' do
     write 'src/main/java/some/Hello.groovy', 'println "Hello Groovy"'
     write 'src/test/java/some/Hello.groovy', 'println "Hello Groovy"'
-    define('foo') do 
+    define('foo') do
       compile.compiler.should eql(:groovyc)
       test.compile.compiler.should eql(:groovyc)
     end
@@ -41,13 +41,13 @@ describe 'groovyc compiler' do
     write 'src/main/groovy/some/Hello.groovy', 'println "Hello Groovy"'
     write 'src/test/java/some/Empty.java', 'package some; public interface Empty {}'
     write 'src/test/groovy/some/Hello.groovy', 'println "Hello Groovy"'
-    define('foo') do 
+    define('foo') do
       compile.compiler.should eql(:groovyc)
       test.compile.compiler.should eql(:groovyc)
     end
   end
 
-  it 'should identify from custom layout' do 
+  it 'should identify from custom layout' do
     write 'groovy/Hello.groovy', 'println "Hello world"'
     write 'testing/Hello.groovy', 'println "Hello world"'
     custom = Layout.new
@@ -58,10 +58,10 @@ describe 'groovyc compiler' do
       test.compile.compiler.should eql(:groovyc)
     end
   end
-  
+
   it 'should identify from compile source directories' do
-    write 'src/com/example/Code.groovy', 'println "monkey code"' 
-    write 'testing/com/example/Test.groovy', 'println "some test"' 
+    write 'src/com/example/Code.groovy', 'println "monkey code"'
+    write 'testing/com/example/Test.groovy', 'println "some test"'
     define 'foo' do
       lambda { compile.from 'src' }.should change { compile.compiler }.to(:groovyc)
       lambda { test.compile.from 'testing' }.should change { test.compile.compiler }.to(:groovyc)
@@ -91,13 +91,13 @@ describe 'groovyc compiler' do
       lambda { compile.using(:groovyc) }.should_not change { compile.sources }
     end
   end
-  
+
   it 'should compile groovy sources' do
     write 'src/main/groovy/some/Example.groovy', 'package some; class Example { static main(args) { println "Hello" } }'
     define('foo').compile.invoke
     file('target/classes/some/Example.class').should exist
   end
-  
+
   it 'should compile test groovy sources that rely on junit' do
     write 'src/main/groovy/some/Example.groovy', 'package some; class Example { static main(args) { println "Hello" } }'
     write 'src/test/groovy/some/ExampleTest.groovy', "package some\n import junit.framework.TestCase\n class ExampleTest extends TestCase { public testHello() { println \"Hello\" } }"
@@ -112,15 +112,15 @@ describe 'groovyc compiler' do
   it 'should include as classpath dependency' do
     write 'src/bar/groovy/some/Foo.groovy', 'package some; interface Foo {}'
     write 'src/main/groovy/some/Example.groovy', 'package some; class Example implements Foo { }'
-    define('bar', :version => '1.0') do 
+    define('bar', :version => '1.0') do
       compile.from('src/bar/groovy').into('target/bar')
       package(:jar)
     end
     lambda { define('foo').compile.with(project('bar').package(:jar)).invoke }.should run_task('foo:compile')
     file('target/classes/some/Example.class').should exist
   end
-     
-  it 'should cross compile java sources' do 
+
+  it 'should cross compile java sources' do
     write 'src/main/java/some/Foo.java', 'package some; public interface Foo { public void hello(); }'
     write 'src/main/java/some/Baz.java', 'package some; public class Baz extends Bar { }'
     write 'src/main/groovy/some/Bar.groovy', 'package some; class Bar implements Foo { def void hello() { } }'
@@ -128,7 +128,7 @@ describe 'groovyc compiler' do
     %w{Foo Bar Baz}.each { |f| file("target/classes/some/#{f}.class").should exist }
   end
 
-  it 'should cross compile test java sources' do 
+  it 'should cross compile test java sources' do
     write 'src/test/java/some/Foo.java', 'package some; public interface Foo { public void hello(); }'
     write 'src/test/java/some/Baz.java', 'package some; public class Baz extends Bar { }'
     write 'src/test/groovy/some/Bar.groovy', 'package some; class Bar implements Foo { def void hello() { } }'
@@ -148,7 +148,7 @@ describe 'groovyc compiler' do
 end
 
 describe 'groovyc compiler options' do
-  
+
   def groovyc(&prc)
     define('foo') do
       compile.using(:groovyc)
@@ -164,8 +164,8 @@ describe 'groovyc compiler options' do
     end
     project('foo').compile
   end
-  
-  it 'should set warning option to false by default' do 
+
+  it 'should set warning option to false by default' do
     groovyc do
       compile.options.warnings.should be_false
       @compiler.javac_options[:nowarn].should be_true
@@ -188,7 +188,7 @@ describe 'groovyc compiler options' do
     trace true
     groovyc.options.verbose.should be_true
   end
-  
+
   it 'should set debug option to false based on Buildr.options' do
     Buildr.options.debug = false
     groovyc.options.debug.should be_false

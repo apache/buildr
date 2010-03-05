@@ -18,7 +18,7 @@ require File.join(File.dirname(__FILE__), '../spec_helpers')
 describe Buildr::RSpec do
 
   def foo(*args, &prc)
-    define('foo', *args) do 
+    define('foo', *args) do
       test.using :rspec, :output => false
       if prc
         instance_eval(&prc)
@@ -128,7 +128,7 @@ describe Buildr::JtestR do
     define('one', :base_dir => 'one') do
       write _('src/test/java/example/OneTest.java', <<-JAVA)
         package example;
-        public class OneTest { 
+        public class OneTest {
            @org.testng.annotations.Test
            public void testNothing() {}
         }
@@ -145,7 +145,7 @@ describe Buildr::JtestR do
   end
 
   it 'should load user jtestr_config.rb' do
-    foo do 
+    foo do
       hello = _('hello')
       write('src/spec/ruby/jtestr_config.rb', "File.open('#{hello}', 'w') { |f| f.write 'HELLO' }")
       write('src/spec/ruby/some_spec.rb')
@@ -158,13 +158,13 @@ describe Buildr::JtestR do
   it 'should run junit tests' do
     write('src/test/java/example/SuccessTest.java', <<-JAVA)
         package example;
-        public class SuccessTest extends junit.framework.TestCase { 
+        public class SuccessTest extends junit.framework.TestCase {
            public void testSuccess() { assertTrue(true); }
         }
     JAVA
     write('src/test/java/example/FailureTest.java', <<-JAVA)
         package example;
-        public class FailureTest extends junit.framework.TestCase { 
+        public class FailureTest extends junit.framework.TestCase {
            public void testFailure() { assertTrue(false); }
         }
     JAVA
@@ -176,7 +176,7 @@ describe Buildr::JtestR do
     end
   end
 
-  it 'should run testng tests' do 
+  it 'should run testng tests' do
     write('src/test/java/example/Success.java', <<-JAVA)
         package example;
         public class Success {
@@ -199,7 +199,7 @@ describe Buildr::JtestR do
     end
   end
 
-  it 'should run test_unit' do 
+  it 'should run test_unit' do
     success = File.expand_path('src/spec/ruby/success_test.rb')
     write(success, <<-TESTUNIT)
       require 'test/unit'
@@ -278,7 +278,7 @@ end if RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME'] # JtestR
 
 describe Buildr::JBehave do
   def foo(*args, &prc)
-    define('foo', *args) do 
+    define('foo', *args) do
       test.using :jbehave
       if prc
         instance_eval(&prc)
@@ -311,7 +311,7 @@ describe Buildr::JBehave do
     foo { test.framework.should eql(:jbehave) }
   end
 
-  it 'should select a java compiler for its sources' do 
+  it 'should select a java compiler for its sources' do
     write 'src/test/java/SomeBehavior.java', 'public class SomeBehavior {}'
     foo do
       test.compile.language.should eql(:java)
@@ -355,7 +355,7 @@ describe Buildr::JBehave do
   it 'should include classes implementing Behaviours' do
     write 'src/spec/java/some/MyBehaviours.java',  <<-JAVA
       package some;
-      public class MyBehaviours implements 
+      public class MyBehaviours implements
       org.jbehave.core.behaviour.Behaviours {
         public Class[] getBehaviours() {
            return new Class[] { some.FooBehave.class };

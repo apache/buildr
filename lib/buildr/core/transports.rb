@@ -76,7 +76,7 @@ module URI
       uri = URI.parse(uri.to_s) unless URI === uri
       uri.download target, options
     end
-      
+
     # :call-seq:
     #   write(uri, content, options?)
     #   write(uri, options?) { |bytes| .. }
@@ -98,7 +98,7 @@ module URI
       uri = URI.parse(uri.to_s) unless URI === uri
       uri.write *args, &block
     end
-      
+
     # :call-seq:
     #   upload(uri, source, options?)
     #
@@ -162,7 +162,7 @@ module URI
         target.flush
       end
     end
-    
+
     # :call-seq:
     #   write(content, options?)
     #   write(options?) { |bytes| .. }

@@ -188,7 +188,7 @@ module Buildr
     def commit(file, message)
       svn 'commit', '-m', message, file
     end
-    
+
     # :call-seq:
     #   tag_url(svn_url, version) => tag_url
     #
@@ -209,24 +209,24 @@ module Buildr
     def repo_url
       svn('info', '--xml')[/<url>(.*?)<\/url>/, 1].strip
     end
-    
+
     def copy(dir, url, message)
       svn 'copy', dir, url, '-m', message
     end
-    
+
     def remove(url, message)
       svn 'remove', url, '-m', message
     end
 
   end
-  
+
 
   class Release #:nodoc:
 
     THIS_VERSION_PATTERN  = /(THIS_VERSION|VERSION_NUMBER)\s*=\s*(["'])(.*)\2/
 
     class << self
- 
+
       # Use this to specify a different tag name for tagging the release in source control.
       # You can set the tag name or a proc that will be called with the version number,
       # for example:
@@ -275,12 +275,12 @@ module Buildr
         args = '-S', 'buildr', "_#{Buildr::VERSION}_", '--buildfile', release_candidate_buildfile
         args << '--environment' << Buildr.environment unless Buildr.environment.to_s.empty?
         args << 'clean' << 'upload' << 'DEBUG=no'
-        ruby *args 
+        ruby *args
       end
       tag_release resolve_tag
       update_version_to_next
     end
-    
+
     # :call-seq:
     #   extract_version() => this_versin
     #
@@ -292,19 +292,19 @@ module Buildr
     rescue
       fail 'Looking for THIS_VERSION = "..." in your Buildfile, none found'
     end
-    
+
     # Use this to specify a different tag name for tagging the release in source control.
     # You can set the tag name or a proc that will be called with the version number,
     # for example:
-    #   Release.find.tag_name = lambda { |ver| "foo-#{ver}" } 
+    #   Release.find.tag_name = lambda { |ver| "foo-#{ver}" }
     # Deprecated: you should use Release.tag_name instead
     def tag_name(tag_proc)
       warn("Release.find.tag_name is deprecated. You should use Release.tag_name instead")
       Release.tag_name(tag_proc)
     end
-    
+
   protected
-    
+
     # :call-seq:
     #   with_release_candidate_version() { |filename| ... }
     #
@@ -421,7 +421,7 @@ module Buildr
       Git.push if Git.remote
     end
   end
-  
+
 
   class SvnRelease < Release
     class << self
@@ -429,7 +429,7 @@ module Buildr
         File.exist?('.svn')
       end
     end
-    
+
     def check
       fail "Uncommitted files violate the First Principle Of Release!\n"+Svn.uncommitted_files.join("\n") unless Svn.uncommitted_files.empty?
       fail "SVN URL must contain 'trunk' or 'branches/...'" unless Svn.repo_url =~ /(trunk)|(branches.*)$/
@@ -446,7 +446,7 @@ module Buildr
       Svn.commit Buildr.application.buildfile.to_s, message
     end
   end
-  
+
   Release.add SvnRelease
   Release.add GitRelease
 

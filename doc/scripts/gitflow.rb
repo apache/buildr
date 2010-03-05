@@ -20,7 +20,7 @@ require 'fileutils'
 
 module GitFlow
   extend self
-  
+
   attr_accessor :should_run, :trace, :program
 
   self.program = 'gitflow'
@@ -34,7 +34,7 @@ It is generic enougth to be used on any git based project besides Apache Buildr.
 OVERVIEW:
 
 gitflow is intended to help developers with their daily git workflow,
-performing repetitive git commands for them. It is implemented in 
+performing repetitive git commands for them. It is implemented in
 ruby so you can do anything, from invoking rake tasks to telling
 people on twitter you are having trouble with their code :P.
 
@@ -53,7 +53,7 @@ After that you can use
 
 EXTENDING YOUR WORKFLOW:
 
-You can create your own gitflow commands, to adapt your development 
+You can create your own gitflow commands, to adapt your development
 workflow.
 
 Simply create a ruby script somewhere say ~/.buildr/gitflow.rb
@@ -66,17 +66,17 @@ A sample command would look like this.. (you may want to look at buildr-git.rb)
 
     #!/usr/bin/env ruby
     require /path/to/gitflow.rb
-    
+
     class MyCommand < GitFlow/'my-flow'
-      
+
       @help = "Summary to be displayed when listing commands"
       @documentation = "Very long help that will be paged if necessary. (for --help)"
-      
+
       # takes an openstruct to place default values and option values.
       # returns an array of arguments given to optparse.on
       def options(opts)
         opts.something = 'default'
-        [ 
+        [
          ['--name NAME', lambda { |n| opts.name = n }],
          ['--yes', lambda { |n| opts.yes = true }]
         ]
@@ -94,7 +94,7 @@ A sample command would look like this.. (you may want to look at buildr-git.rb)
       class SubCommand < MyCommand/'sub-work'
         ... # implement a subcommand
       end
-      
+
     end
 
 You would then get help for your command with
@@ -203,26 +203,26 @@ HELP
 
     # Override this method in your command class if it
     # needs to parse command line options.
-    # 
+    #
     # This method takes an openstruct object as argument
-    # allowing you to store default values on it, and 
+    # allowing you to store default values on it, and
     # set option values.
     #
-    # The return value must be an array of arguments 
+    # The return value must be an array of arguments
     # given to optparse.on
     def options(opt)
       []
     end
-    
+
     # Override this method in your command class to implement
     # the command.
     # First argument is the openstruct object after
-    # it has been populated by the option parser. 
+    # it has been populated by the option parser.
     # Second argument is the array of non-option arguments.
     def execute(opt, argv)
       fail "#{self.class.command} not implemented"
     end
-    
+
     # Run the command line given on argv
     def run(*argv, &block)
       GitFlow.run(*argv, &block)
@@ -233,11 +233,11 @@ HELP
       GitFlow.pager
       yield
     end
-  
+
     def trace(*str)
       STDERR.puts(*str) if GitFlow.trace
     end
-    
+
     def git(*args)
       cmd = 'git ' + args.map { |arg| arg[' '] ? %Q{"#{arg}"} : arg }.join(' ')
       trace cmd
@@ -245,13 +245,13 @@ HELP
         fail "GIT command `#{cmd}` failed with status #{$?.exitstatus}" unless $?.exitstatus == 0
       }
     end
-    
+
     def sh(*args)
       `#{args.join(' ')}`.tap {
         fail "Shell command `#{args.join(' ')}` failed with status #{$?.exitstatus}" unless $?.exitstatus == 0
       }
     end
-    
+
     def expand_path(path, dir=Dir.pwd)
       File.expand_path(path, dir)
     end
@@ -259,7 +259,7 @@ HELP
 
   class NoSuchCommand < GitFlow/nil
     @documentation = HELP
-    
+
     def execute(opts, argv)
       page do
         puts "Command not found: #{argv.join(' ').inspect}"
@@ -271,7 +271,7 @@ HELP
   class HelpCommand < GitFlow/:help
     @help = "Display help for a command or show command list"
     @documentation = "Displays help for the command given as argument"
-    
+
     def execute(opts, argv)
       if argv.empty?
         opt = GitFlow.optparse
@@ -290,7 +290,7 @@ HELP
       end
     end
   end
-    
+
 end
 
 at_exit { GitFlow.run(*ARGV) if GitFlow.should_run }

@@ -12,16 +12,16 @@
 # WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
 # License for the specific language governing permissions and limitations under
 # the License.
- 
- 
+
+
 require File.expand_path('../spec_helpers', File.dirname(__FILE__))
 require 'stringio'
 Sandbox.require_optional_extension 'buildr/drb'
 
 
-describe Buildr::DRbApplication do 
+describe Buildr::DRbApplication do
 
-  module DRbHelper 
+  module DRbHelper
     attr_accessor :app, :drb, :cfg
 
     def use_stdio(stdin = nil, stdout = nil, stderr = nil)
@@ -30,7 +30,7 @@ describe Buildr::DRbApplication do
       stderr ||= StringIO.new
       cfg.update :in => stdin, :out => stdout, :err => stderr
     end
-    
+
     def remote_run(*argv)
       cfg.update :argv => argv
       drb.remote_run(cfg)
@@ -48,7 +48,7 @@ describe Buildr::DRbApplication do
             $stdout.puts "#{t.name} from #{t.source}"
           end
 
-          task('hello') do 
+          task('hello') do
             $stdout.puts 'hi'
           end
 
@@ -81,7 +81,7 @@ describe Buildr::DRbApplication do
   end
 
   include DRbHelper
-  
+
   before(:each) do
     @in, @out, @err = $stdin, $stdout, $stderr
     @cfg = {
@@ -96,7 +96,7 @@ describe Buildr::DRbApplication do
   after(:each) do
     $stdin, $stdout, $stderr = @in, @out, @err
   end
-  
+
   describe '.run' do
     it 'starts server if no server is running' do
       drb.should_receive(:connect).and_raise DRb::DRbConnError
@@ -114,11 +114,11 @@ describe Buildr::DRbApplication do
   end
 
   describe '.remote_run' do
-    
+
     describe 'stdout' do
-      it 'is redirected to client' do 
+      it 'is redirected to client' do
         use_stdio
-        Buildr.application.should_receive(:remote_run) do 
+        Buildr.application.should_receive(:remote_run) do
           $stdout.puts "HELLO"
         end
         remote_run
@@ -126,10 +126,10 @@ describe Buildr::DRbApplication do
       end
     end
 
-    describe 'stderr' do 
+    describe 'stderr' do
       it 'is redirected to client' do
         use_stdio
-        Buildr.application.should_receive(:remote_run) do 
+        Buildr.application.should_receive(:remote_run) do
           $stderr.puts "HELLO"
         end
         remote_run
@@ -142,7 +142,7 @@ describe Buildr::DRbApplication do
         use_stdio
         cfg[:in].should_receive(:gets).and_return("HELLO\n")
         result = nil
-        Buildr.application.should_receive(:remote_run) do 
+        Buildr.application.should_receive(:remote_run) do
           result = $stdin.gets
         end
         remote_run
@@ -152,7 +152,7 @@ describe Buildr::DRbApplication do
 
     describe 'server ARGV' do
       it 'is replaced with client argv' do
-        Buildr.application.should_receive(:remote_run) do 
+        Buildr.application.should_receive(:remote_run) do
           ARGV.should eql(['hello'])
         end
         remote_run 'hello'
@@ -164,7 +164,7 @@ describe Buildr::DRbApplication do
         app.instance_eval { @rakefile = nil }
         write_buildfile
       end
-      
+
       it 'should load the buildfile' do
         app.should_receive(:top_level)
         lambda { remote_run }.should run_task('foo')
@@ -172,14 +172,14 @@ describe Buildr::DRbApplication do
     end
 
     describe 'with unmodified buildfile' do
-      
-      before(:each) do 
+
+      before(:each) do
         write_buildfile
         app.options.rakelib = []
         app.send :load_buildfile
         drb.save_snapshot(app)
       end
-      
+
       it 'should not reload the buildfile' do
         app.should_not_receive(:reload_buildfile)
         app.should_receive(:top_level)
@@ -235,12 +235,12 @@ describe Buildr::DRbApplication do
         remote_run 'foo:empty'
         app.instance_eval { @rules.size }.should eql(orig)
       end
-            
+
     end
 
     describe 'with modified buildfile' do
-      
-      before(:each) do 
+
+      before(:each) do
         write_buildfile
         app.options.rakelib = []
         app.send :load_buildfile
@@ -251,12 +251,12 @@ describe Buildr::DRbApplication do
             $stdout.puts "#{t.name} from #{t.source}"
           end
           define('foo') do
-            task('hello') do 
+            task('hello') do
               $stdout.puts 'bye'
             end
             task('empty')
             define('bar') do
-              
+
             end
           end
         }
@@ -277,7 +277,7 @@ describe Buildr::DRbApplication do
         remote_run
         app.lookup('foo:delete_me').should be_nil
       end
-      
+
       it 'should redefine tasks actions' do
         actions = app.lookup('foo:empty').instance_eval { @actions }
         actions.should be_empty # no action

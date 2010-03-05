@@ -240,7 +240,7 @@ describe URI::HTTP, '#read' do
     @http.should_receive(:use_ssl=).with(true)
     URI(@uri.to_s.sub(/http/, 'https')).read
   end
-  
+
   it 'should use proxy from environment variable HTTP_PROXY when using http' do
     ENV['HTTP_PROXY'] = @proxy
     Net::HTTP.should_receive(:new).with(*@proxy_args).and_return(@http)
@@ -312,7 +312,7 @@ describe URI::HTTP, '#read' do
     request.should_receive(:basic_auth).with('john', 'secret')
     URI("http://john:secret@#{@host_domain}").read
   end
- 
+
   it 'should preseve authentication information during a redirect' do
     Net::HTTP.should_receive(:new).twice.and_return(@http)
 
@@ -324,7 +324,7 @@ describe URI::HTTP, '#read' do
     Net::HTTP::Get.should_receive(:new).once.with('/', nil).and_return(request1)
     request1.should_receive(:basic_auth).with('john', 'secret')
     @http.should_receive(:request).with(request1).and_yield(redirect)
- 
+
     # The second request will be ok
     ok = Net::HTTPOK.new(nil, nil, nil)
     ok.stub!(:read_body)
@@ -503,7 +503,7 @@ describe URI::SFTP, '#write' do
   end
 
   it 'should close all opened directories' do
-    @sftp_session.should_receive(:opendir!).with(anything()).twice do |path| 
+    @sftp_session.should_receive(:opendir!).with(anything()).twice do |path|
       @sftp_session.should_receive(:close).with(handle = Object.new)
       handle
     end

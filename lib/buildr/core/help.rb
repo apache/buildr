@@ -24,7 +24,7 @@ module Buildr
     class << self
 
       def <<(arg)
-        if arg.respond_to?(:call) 
+        if arg.respond_to?(:call)
           texters << arg
         else
           texters << lambda { arg }

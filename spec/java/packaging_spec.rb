@@ -241,7 +241,7 @@ shared_examples_for 'package with manifest' do
     define('foo', :version => '1.0') do
       manifest['Foo'] = '1'
       package(packaging)
-      define('bar', :version => '1.0') do 
+      define('bar', :version => '1.0') do
         manifest['bar'] = 'Bar'
         package(:jar)
         package = packages.first
@@ -261,11 +261,11 @@ shared_examples_for 'package with manifest' do
     define('foo', :version => '1.0') do
       manifest['Foo'] = '1'
       package(packaging)
-      define('bar', :version => '1.0') do 
+      define('bar', :version => '1.0') do
         manifest['bar'] = 'Bar'
         package(:jar)
       end
-      define('baz', :version => '1.0') do 
+      define('baz', :version => '1.0') do
         manifest['baz'] = 'Baz'
         package(:jar)
       end
@@ -454,7 +454,7 @@ describe Packaging, 'jar' do
       jar.entries.map(&:to_s).sort.should include('empty/')
     end
   end
-  
+
   it 'should raise error when calling with() with nil value' do
     lambda {
       define('foo', :version=>'1.0') { package(:jar).with(nil) }
@@ -707,31 +707,31 @@ describe Packaging, 'ear' do
   end
 
   it 'should not modify original artifact for its components' do
-    define 'one', :version => '1.0' do 
+    define 'one', :version => '1.0' do
       write 'src/main/resources/one.txt', '1'
       package(:jar)
     end
-    
-    define 'two', :version => '1.0' do 
+
+    define 'two', :version => '1.0' do
       write 'src/main/resources/two.txt', '2'
       package(:jar)
     end
-    
-    define 'foo', :version => '1.0' do 
+
+    define 'foo', :version => '1.0' do
       package(:ear).add project(:one).package(:jar)
       package(:ear).add :ejb => project(:two).package(:jar)
     end
 
     inspect_ear { |files| files.should include('lib/one-1.0.jar', 'ejb/two-1.0.jar') }
-    
+
     Buildr::Packaging::Java::Manifest.from_zip(project('one').package(:jar)).main['Class-Path'].should be_nil
     Buildr::Packaging::Java::Manifest.from_zip(project('two').package(:jar)).main['Class-Path'].should be_nil
-    
+
     inspect_classpath 'ejb/two-1.0.jar' do |classpath|
       classpath.should include('../lib/one-1.0.jar')
     end
   end
-  
+
   it 'should map JARs to /lib directory' do
     define 'foo', :version=>'1.0' do
       package(:ear) << package(:jar)
@@ -770,12 +770,12 @@ describe Packaging, 'ear' do
       package(:jar, :id => 'one')
       package(:jar, :id => 'two')
     end
-    define 'foo', :version => '1.0' do 
+    define 'foo', :version => '1.0' do
       package(:ear).add :lib => project('baz'),
                         :war => project('bar').package(:war),
                         :ejb => project('bar').package(:jar)
     end
-    inspect_ear do |files| 
+    inspect_ear do |files|
       files.should include(*%w{ lib/one-1.5.jar lib/two-1.5.jar war/bar-1.5.war ejb/bar-1.5.jar  })
       files.should_not satisfy { files.any? { |f| f =~ /\.zip$/ } }
     end
@@ -791,10 +791,10 @@ describe Packaging, 'ear' do
       package(:war)
       package(:jar)
     end
-    define 'foo', :version => '1.0' do 
+    define 'foo', :version => '1.0' do
       package(:ear).add projects(:bar, :baz)
     end
-    inspect_ear do |files| 
+    inspect_ear do |files|
       files.should include('war/bar-1.5.war', 'lib/bar-1.5.jar', 'lib/baz-1.5.jar', 'war/baz-1.5.war')
       files.should_not satisfy { files.any? { |f| f =~ /\.zip$/ } }
     end
@@ -975,7 +975,7 @@ describe Packaging, 'ear' do
   end
 
 
-  it 'should generate relative classpaths for top level EJB' do 
+  it 'should generate relative classpaths for top level EJB' do
     define 'foo', :version => '1.0' do
       package(:ear).add package(:jar, :id => 'one'), :path => '.'
       package(:ear).add package(:jar, :id => 'two'), :path => 'dos'
@@ -987,7 +987,7 @@ describe Packaging, 'ear' do
     end
   end
 
-  it 'should generate relative classpaths for second level EJB' do 
+  it 'should generate relative classpaths for second level EJB' do
     define 'foo', :version => '1.0' do
       package(:ear).add package(:jar, :id => 'one'), :path => '.'
       package(:ear).add package(:jar, :id => 'two'), :path => 'dos'
@@ -999,7 +999,7 @@ describe Packaging, 'ear' do
     end
   end
 
-  it 'should generate relative classpaths for nested EJB' do 
+  it 'should generate relative classpaths for nested EJB' do
     define 'foo', :version => '1.0' do
       package(:ear).add package(:jar, :id => 'one'), :path => '.'
       package(:ear).add package(:jar, :id => 'two'), :path => 'dos'
@@ -1080,7 +1080,7 @@ end
 shared_examples_for 'package_with_' do
 
   def prepare(options = {})
-    packager = "package_with_#{@packaging}" 
+    packager = "package_with_#{@packaging}"
     write 'src/main/java/Source.java'
     write 'baz/src/main/java/Source.java'
     define 'foo', :version=>'1.0' do

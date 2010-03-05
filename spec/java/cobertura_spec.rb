@@ -24,54 +24,54 @@ describe Buildr::Cobertura do
     # Reloading the extension because the sandbox removes all its actions
     Buildr.module_eval { remove_const :Cobertura }
     load File.expand_path('../lib/buildr/java/cobertura.rb')
-    @tool_module = Buildr::Cobertura 
+    @tool_module = Buildr::Cobertura
   end
-  
+
   it_should_behave_like 'test coverage tool'
-  
+
   describe 'project-specific' do
-    
+
     describe 'data file' do
       it 'should have a default value' do
         define('foo').cobertura.data_file.should point_to_path('reports/cobertura.ser')
       end
-      
+
       it 'should be overridable' do
         define('foo') { cobertura.data_file = path_to('target/data.cobertura') }
         project('foo').cobertura.data_file.should point_to_path('target/data.cobertura')
       end
-      
+
       it 'should be created during instrumentation' do
         write 'src/main/java/Foo.java', 'public class Foo {}'
         define('foo')
         task('foo:cobertura:instrument').invoke
         file(project('foo').cobertura.data_file).should exist
       end
-      
+
       it 'should not instrument projects which have no sources' do
         write 'bar/src/main/java/Baz.java', 'public class Baz {}'
         define('foo') { define('bar') }
         task('foo:bar:cobertura:instrument').invoke
       end
     end
-      
+
     describe 'instrumentation' do
       before do
         ['Foo', 'Bar'].each { |cls| write File.join('src/main/java', "#{cls}.java"), "public class #{cls} {}" }
       end
-      
+
       it 'should instrument only included classes' do
         define('foo') { cobertura.include 'Foo' }
         task("foo:cobertura:instrument").invoke
         Dir.chdir('target/instrumented/classes') { Dir.glob('*').sort.should == ['Foo.class'] }
       end
-      
+
       it 'should not instrument excluded classes' do
         define('foo') { cobertura.exclude 'Foo' }
         task("foo:cobertura:instrument").invoke
         Dir.chdir('target/instrumented/classes') { Dir.glob('*').sort.should == ['Bar.class'] }
       end
-      
+
       it 'should instrument classes that are included but not excluded' do
         write 'src/main/java/Baz.java', 'public class Baz {}'
         define('foo') { cobertura.include('Ba').exclude('ar') }
@@ -79,7 +79,7 @@ describe Buildr::Cobertura do
         Dir.chdir('target/instrumented/classes') { Dir.glob('*').sort.should == ['Baz.class'] }
       end
     end
-    
+
     # TODO add specs for cobertura:check...somehow
   end
 end

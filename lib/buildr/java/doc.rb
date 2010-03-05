@@ -15,9 +15,9 @@ module Buildr
     #     doc projects('myapp:foo', 'myapp:bar')
     #   end
     class Javadoc < Base
-      
+
       specify :language => :java, :source_ext => 'java'
-      
+
       def generate(sources, target, options = {})
         cmd_args = [ '-d', target, Buildr.application.options.trace ? '-verbose' : '-quiet' ]
         options.reject { |key, value| [:sourcepath, :classpath].include?(key) }.

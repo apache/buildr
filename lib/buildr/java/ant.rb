@@ -26,7 +26,7 @@ module Buildr
 
     # Which version of Ant we're using by default.
     VERSION = '1.8.0'
-    
+
     class << self
       # Current version of Ant being used.
       def version
@@ -40,14 +40,14 @@ module Buildr
         @dependencies ||= ["org.apache.ant:ant:jar:#{version}", "org.apache.ant:ant-launcher:jar:#{version}",
                            "org.apache.ant:ant-trax:jar:#{version}"]
       end
-      
+
     private
       def const_missing(const)
         return super unless const == :REQUIRES # TODO: remove in 1.5
         Buildr.application.deprecated "Please use Ant.dependencies/.version instead of Ant::REQUIRES/VERSION"
         dependencies
       end
-    end    
+    end
 
 
     Java.classpath << lambda { Ant.dependencies }

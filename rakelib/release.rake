@@ -66,7 +66,7 @@ task :release do
   # Create an SVN tag for this release.
   lambda do
     info = `svn info` + `git svn info` # Using either svn or git-svn
-    if url = info[/^URL:/] && info.scan(/^URL: (.*)/)[0][0] 
+    if url = info[/^URL:/] && info.scan(/^URL: (.*)/)[0][0]
       new_url = url.sub(/(trunk$)|(branches\/\w*)$/, "tags/#{spec.version}")
       unless url == new_url
         sh 'svn', 'copy', url, new_url, '-m', "Release #{spec.version}" do |ok, res|
@@ -83,7 +83,7 @@ task :release do
 
 
   # Update CHANGELOG to next release number.
-  lambda do 
+  lambda do
     next_version = spec.version.to_s.split('.').map { |v| v.to_i }.
       zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
     modified = "#{next_version} (Pending)\n\n" + File.read('CHANGELOG')
@@ -92,7 +92,7 @@ task :release do
     end
     puts "[X] Updated CHANGELOG and added entry for next release"
   end.call
- 
+
 
   # Update source files to next release number.
   lambda do
@@ -101,7 +101,7 @@ task :release do
 
     ver_file = "lib/#{spec.name}.rb"
     if File.exist?(ver_file)
-      modified = File.read(ver_file).sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" } 
+      modified = File.read(ver_file).sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" }
       File.open ver_file, 'w' do |file|
         file.write modified
       end
@@ -110,7 +110,7 @@ task :release do
 
     spec_file = "#{spec.name}.gemspec"
     if File.exist?(spec_file)
-      modified = File.read(spec_file).sub(/(s(?:pec)?\.version\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" } 
+      modified = File.read(spec_file).sub(/(s(?:pec)?\.version\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" }
       File.open spec_file, 'w' do |file|
         file.write modified
       end
@@ -118,7 +118,7 @@ task :release do
     end
   end.call
 
- 
+
   # Prepare release announcement email.
   lambda do
     changes = File.read("_release/#{spec.version}/CHANGES")[/.*?\n(.*)/m, 1]

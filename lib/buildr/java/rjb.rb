@@ -71,13 +71,13 @@ module Java
     end
 
   end
-  
+
   # On OS X we know where the default JDK is. We can try to guess for other OS.
   # We set JAVA_HOME early so we can use it without calling Java.load first.
   ENV['JAVA_HOME'] ||= '/System/Library/Frameworks/JavaVM.framework/Home' if Config::CONFIG['host_os'] =~ /darwin/i
 
   class << self
-    
+
     # Returns the classpath, an array listing directories, JAR files and
     # artifacts.  Use when loading the extension to add any additional
     # libraries used by that extension.
@@ -87,7 +87,7 @@ module Java
     def classpath
       @classpath ||= []
     end
-    
+
     # Most platforms requires tools.jar to be on the classpath, tools.jar contains the
     # Java compiler (OS X and AIX are two exceptions we know about, may be more).
     # Guess where tools.jar is from JAVA_HOME, which hopefully points to the JDK,
@@ -99,7 +99,7 @@ module Java
           find { |path| File.exist?(path) }
       end
     end
-    
+
     # Loads the JVM and all the libraries listed on the classpath.  Call this
     # method before accessing any Java class, but only call it from methods
     # used in the build, giving the Buildfile a chance to load all extensions
@@ -107,14 +107,14 @@ module Java
     def load
       return self if @loaded
       classpath << tools_jar if tools_jar
-      
+
       classpath.map! { |path| Proc === path ? path.call : path }
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
       java_opts = (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split
       ::Rjb.load cp.join(File::PATH_SEPARATOR), java_opts
 
       props = ::Rjb.import('java.lang.System').getProperties
-      enum = props.propertyNames 
+      enum = props.propertyNames
       while enum.hasMoreElements
         name = enum.nextElement.toString
         ENV_JAVA[name] = props.getProperty(name)

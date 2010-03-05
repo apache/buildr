@@ -17,7 +17,7 @@ require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 
 describe Buildr::Groovy::EasyB do
-  
+
   def foo(*args, &prc)
     define('foo', *args) do
       test.using :easyb
@@ -58,9 +58,9 @@ describe Buildr::Groovy::EasyB do
       test.compile.language.should eql(:java)
     end
   end
-  
+
   it 'should include src/spec/groovy/*Specification.groovy' do
-    foo do 
+    foo do
       spec = _('src/spec/groovy/SomeSpecification.groovy')
       write spec, 'true'
       test.invoke
@@ -69,12 +69,12 @@ describe Buildr::Groovy::EasyB do
   end
 
   it 'should include src/spec/groovy/*Story.groovy' do
-    foo do 
+    foo do
       spec = _('src/spec/groovy/SomeStory.groovy')
       write spec, 'true'
       test.invoke
       test.tests.should include(spec)
     end
   end
-  
+
 end # EasyB

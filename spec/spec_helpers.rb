@@ -44,7 +44,7 @@ unless defined?(SpecHelpers)
 
   # Give a chance for plugins to do a few things before requiring the sandbox.
   include SandboxHook if defined?(SandboxHook)
-  
+
   require File.expand_path('sandbox', File.dirname(__FILE__))
 
   module SpecHelpers
@@ -60,7 +60,7 @@ unless defined?(SpecHelpers)
         end
       end
     end
-    
+
     class << Buildr.application
       alias :deprecated_without_capture :deprecated
       def deprecated(message)
@@ -121,20 +121,20 @@ unless defined?(SpecHelpers)
     def show(message)
       MessageWithSeverityMatcher.new :puts, message
     end
-    
+
     # Yields a block that should try exiting the application.
-    # Accepts 
+    # Accepts
     #
     # For example:
     #   test_exit(1) {  puts "Hello" ; exit(1) }.should show("Hello")
-    #     
+    #
     def test_exit(status = nil)
       return lambda {
         begin
           yield
           raise "Exit was not called!"
         rescue SystemExit => e
-          raise "Exit status incorrect! Expected: #{status}, got #{e.status}" if status && (e.status != status) 
+          raise "Exit status incorrect! Expected: #{status}, got #{e.status}" if status && (e.status != status)
         end
       }
     end
@@ -172,7 +172,7 @@ unless defined?(SpecHelpers)
           "Expected the tasks #{expected} to not run, but they all ran."
         else
           "Expected the tasks #{expected} to not run, and all but #{remaining} ran."
-        end 
+        end
       end
 
       def but_not(*tasks)
@@ -247,7 +247,7 @@ unless defined?(SpecHelpers)
         "URI with path matching #{@expression}"
       end
     end
-    
+
     # Matches a parsed URI's path against the given regular expression
     def uri(re)
       UriPathMatcher.new(re)
@@ -277,16 +277,16 @@ unless defined?(SpecHelpers)
       AbsolutePathMatcher.new(path)
     end
 
-    
+
     # Value covered by range. For example:
     #   (1..5).should cover(3)
     def cover(value)
       simple_matcher :cover do |given|
-        value >= given.min && value <= given.max 
+        value >= given.min && value <= given.max
       end
     end
 
-  
+
     def suppress_stdout
       stdout = $stdout
       $stdout = StringIO.new
@@ -329,7 +329,7 @@ unless defined?(SpecHelpers)
         yield
       ensure
         Buildr.application.instance_eval { @original_dir = original_dir }
-      end 
+      end
     end
 
 

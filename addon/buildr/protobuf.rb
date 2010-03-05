@@ -29,7 +29,7 @@ module Buildr
         command_line = []
 
         command_line << "--#{options[:lang]}_out=#{options[:output]}" if options[:output]
-        
+
         (paths_from_sources(*args) + options[:include]).each { |i| command_line << "-I#{i}" }
 
         command_line += files_from_sources(*args)
@@ -54,7 +54,7 @@ module Buildr
 
     def protoc(*args)
       if Hash === args.last
-        options = args.pop 
+        options = args.pop
       else
         options = {}
       end
@@ -64,11 +64,11 @@ module Buildr
 
       file(options[:output]=>Protobuf.files_from_sources(*args)) do |task|
         Protobuf.protoc task.prerequisites, options
-      end         
+      end
     end
 
   end
-  
+
   class Project
     include Protobuf
   end

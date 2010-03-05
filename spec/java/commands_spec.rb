@@ -17,7 +17,7 @@ require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 
 describe Java::Commands do
-  
+
   it "should not be verbose by default" do
     write "build.xml", <<-BUILD
     <project name="MyProject" default="dist" basedir=".">
@@ -30,5 +30,5 @@ BUILD
     lambda { Java::Commands.java("org.apache.tools.ant.Main", :classpath => Buildr::Ant.dependencies) }.should_not show_info(/java/)
     lambda { Java::Commands.java("org.apache.tools.ant.Main", :classpath => Buildr::Ant.dependencies, :verbose => true) }.should show_info(/java/)
   end
-  
+
 end

@@ -36,7 +36,7 @@ module Buildr
     # * :source      -- Source code compatibility.
     # * :target      -- Bytecode compatibility.
     # * :lint        -- Lint option is one of true, false (default), name (e.g. 'cast') or array.
-    # * :other       -- Array of options passed to the compiler 
+    # * :other       -- Array of options passed to the compiler
     # (e.g. ['-implicit:none', '-encoding', 'iso-8859-1'])
     class Javac < Base
 
@@ -74,7 +74,7 @@ module Buildr
     private
 
       def javac_args #:nodoc:
-        args = []  
+        args = []
         args << '-nowarn' unless options[:warnings]
         args << '-verbose' if Buildr.application.options.trace
         args << '-g' if options[:debug]
@@ -90,7 +90,7 @@ module Buildr
       end
 
     end
-    
+
   end
 
 

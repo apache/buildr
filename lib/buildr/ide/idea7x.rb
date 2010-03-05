@@ -90,7 +90,7 @@ module Buildr
                 ext_libs = m2_libs.map { |path| "jar://#{path.to_s.sub(m2repo, "$M2_REPO$")}!/" }
                 ext_libs << "#{MODULE_DIR_URL}/#{relative[project.test.resources.target.to_s]}" if project.test.resources.target
                 ext_libs << "#{MODULE_DIR_URL}/#{relative[project.resources.target.to_s]}" if project.resources.target
-                
+
                 Buildr::Idea7x.generate_module_libs(xml, ext_libs)
                 xml.orderEntryProperties
               end
