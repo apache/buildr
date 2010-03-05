@@ -135,6 +135,7 @@ module Sandbox
 
     $LOAD_PATH.replace @_sandbox[:load_path]
     FileUtils.rm_rf @temp
+    mkpath ENV['HOME']
 
     # Get rid of all artifacts.
     @_sandbox[:artifacts].tap { |artifacts| Artifact.class_eval { @artifacts = artifacts } }
