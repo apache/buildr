@@ -19,6 +19,8 @@
           command line (and ignore transitive test dependencies)
 * Added:  ArtifactNamespace.{keys,clear} methods
 * Added:  BUILDR-326 Support unzipping tar.gz files (Antoine Toulme)
+* Added:  BUILDR-368 Support protocol buffer code generation 
+          (Pepijn Van Eeckhoudt)
 * Added:  BUILDR-375 Buildr now recognizes buildfile.rb and Buildfile.rb
           (Kerry Wilson)
 * Added:  BUILDR-390 Buildr::group() should accept :classifier argument
