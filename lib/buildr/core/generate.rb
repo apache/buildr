@@ -21,7 +21,7 @@ module Buildr
   module Generate #:nodoc:
 
     task 'generate' do
-      script = nil 
+      script = nil
       choose do |menu|
         menu.header = "To use Buildr you need a buildfile. Do you want me to create one?"
 
@@ -29,12 +29,12 @@ module Buildr
         menu.choice("From directory structure") { script = Generate.from_directory(Dir.pwd).join("\n") }
         menu.choice("Skip") { }
       end
-       
-      if script    
+
+      if script
         buildfile = File.expand_path(Buildr::Application::DEFAULT_BUILDFILES.first)
         File.open(buildfile, "w") { |file| file.write script }
         puts "Created #{buildfile}"
-      end        
+      end
     end
 
     class << self
@@ -107,7 +107,7 @@ define "#{name}" do
             proxy = settings['proxies'].first['proxy'].find { |proxy|
               proxy["active"].nil? || proxy["active"].to_s =~ /true/
             } rescue nil
-            
+
             if proxy
               url = %{#{proxy["protocol"].first}://#{proxy["host"].first}:#{proxy["port"].first}}
               exclude = proxy["nonProxyHosts"].to_s.gsub("|", ",") if proxy["nonProxyHosts"]
@@ -189,7 +189,7 @@ define "#{name}" do
         script << "end"
         script.flatten
       end
-       
+
     end
   end
-end 
+end

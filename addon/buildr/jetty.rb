@@ -46,15 +46,15 @@ module Buildr
     # Which version of Jetty we're using by default (change with options.jetty.version).
     VERSION = "6.1.3"
     SLF4J_VERSION = "1.4.3"
-    
+
     # Libraries used by Jetty.
     REQUIRES = [ "org.mortbay.jetty:jetty:jar:#{VERSION}", "org.mortbay.jetty:jetty-util:jar:#{VERSION}",
-      "org.mortbay.jetty:servlet-api-2.5:jar:#{VERSION}", "org.slf4j:slf4j-api:jar:#{SLF4J_VERSION}", 
+      "org.mortbay.jetty:servlet-api-2.5:jar:#{VERSION}", "org.slf4j:slf4j-api:jar:#{SLF4J_VERSION}",
       "org.slf4j:slf4j-simple:jar:#{SLF4J_VERSION}", "org.slf4j:jcl104-over-slf4j:jar:#{SLF4J_VERSION}" ]
-     
+
     Java.classpath <<  REQUIRES
     Java.classpath << File.dirname(__FILE__)
-    
+
     # Default URL for Jetty (change with options.jetty.url).
     URL = "http://localhost:8080"
 
@@ -135,7 +135,7 @@ module Buildr
           response = http.request_get("/buildr/")
           response.is_a?(Net::HTTPSuccess) && response.body =~ /Alive/
         end
-      rescue Errno::ECONNREFUSED, Errno::EBADF 
+      rescue Errno::ECONNREFUSED, Errno::EBADF
         false
       end
     end

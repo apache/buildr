@@ -55,7 +55,7 @@ task "all-in-one" => :gem do
   # Install Buildr gem and dependencies
   lambda do
     puts "Install Buildr gem ..."
-    sh "bin/jruby", '-S', 'gem', 'install', FileList['../../pkg/*-java.gem'].first, 
+    sh "bin/jruby", '-S', 'gem', 'install', FileList['../../pkg/*-java.gem'].first,
        '--no-rdoc', '--no-ri'
     puts "[X] Install Buildr gem"
   end.call

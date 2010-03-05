@@ -25,7 +25,7 @@ module Buildr
 
       # Returns the archive from this path.
       attr_reader :root
-      
+
       def initialize(root, path)
         @root = root
         @path = path.empty? ? path : "#{path}/"
@@ -62,7 +62,7 @@ module Buildr
       def include(*args)
         options = args.pop if Hash === args.last
         files = args.flatten
-        raise 'AchiveTask.include() values should not include nil' if files.include? nil 
+        raise 'AchiveTask.include() values should not include nil' if files.include? nil
 
         if options.nil? || options.empty?
           @includes.include *files.flatten
@@ -76,7 +76,7 @@ module Buildr
         elsif options[:from]
           raise 'You can only use the :from option in combination with the :path option' unless options.size == 1
           raise 'You cannot use the :from option with file names' unless files.empty?
-          fail 'AchiveTask.include() :from value should not be nil' if [options[:from]].flatten.include? nil 
+          fail 'AchiveTask.include() :from value should not be nil' if [options[:from]].flatten.include? nil
           [options[:from]].flatten.each { |path| include_as path.to_s, '.' }
         elsif options[:merge]
           raise 'You can only use the :merge option in combination with the :path option' unless options.size == 1
@@ -92,7 +92,7 @@ module Buildr
       # :call-seq:
       #   exclude(*files) => self
       def exclude(*files)
-        files = files.flatten.map(&:to_s) 
+        files = files.flatten.map(&:to_s)
         @excludes |= files
         @excludes |= files.reject { |f| f =~ /\*$/ }.map { |f| "#{f}/*" }
         self
@@ -301,13 +301,13 @@ module Buildr
 
     # :call-seq:
     #   clean => self
-    # 
-    # Removes all previously added content from this archive. 
+    #
+    # Removes all previously added content from this archive.
     # Use this method if you want to remove default content from a package.
     # For example, package(:jar) by default includes compiled classes and resources,
     # using this method, you can create an empty jar and afterwards add the
     # desired content to it.
-    # 
+    #
     #    package(:jar).clean.include path_to('desired/content')
     def clean
       @paths = { '' => Path.new(self, '') }
@@ -351,18 +351,18 @@ module Buildr
       fail "AchiveTask.include() called with nil values" if files.include? nil
       @paths[''].include *files if files.compact.size > 0
       self
-    end 
+    end
     alias :add :include
     alias :<< :include
-   
+
     # :call-seq:
     #   exclude(*files) => self
-    # 
+    #
     # Excludes files and returns self. Can be used in combination with include to prevent some files from being included.
     def exclude(*files)
       @paths[''].exclude *files
       self
-    end 
+    end
 
     # :call-seq:
     #   merge(*files) => Merge
@@ -375,7 +375,7 @@ module Buildr
     #   zip(..).merge('src.zip').include('module1/*')
     def merge(*files)
       @paths[''].merge *files
-    end 
+    end
 
     # :call-seq:
     #   path(name) => Path
@@ -436,7 +436,7 @@ module Buildr
       @prerequisites |= @paths.collect { |name, path| path.sources }.flatten
       super
     end
-    
+
     def needed? #:nodoc:
       return true unless File.exist?(name)
       # You can do something like:

@@ -22,7 +22,7 @@ module Buildr
   # Search best artifact version from remote repositories
   module ArtifactSearch
     extend self
-    
+
     def include(method = nil)
       (@includes ||= []).tap { push method if method }
     end
@@ -61,11 +61,11 @@ module Buildr
         "\n You may need to use an specific version instead of a requirement" unless result
       spec.merge :version => result
     end
-    
+
     def requirement?(spec)
       VersionRequirement.requirement?(spec[:version])
     end
-    
+
     private
     def search_methods
       [].tap do
@@ -90,7 +90,7 @@ module Buildr
         in_memory
       end
     end
-    
+
     def local_versions(spec, repo)
       path = (spec[:group].split(/\./) + [spec[:id]]).flatten.join('/')
       Dir[File.expand_path(path + "/*", repo)].map { |d| d.pathmap("%f") }.sort.reverse
@@ -119,7 +119,7 @@ module Buildr
           vers << a.innerHTML.chop if a.innerHTML[-1..-1] == '/'
           vers
         }.sort.reverse
-      else 
+      else
         fail "Don't know how to parse #{from}: \n#{xml.inspect}"
       end
     end

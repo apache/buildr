@@ -20,7 +20,7 @@ describe 'scala' do
   # Specific version of Scala required for specs
   required_version = '2.7.3'
   scala_version_str = "version 2.7.3.final"
-  
+
   it 'should automatically add the remote scala-tools.org repository' do
     # NOTE: the sandbox environment clears "repositories.remote" so we can't
     #       test for this spec right now.

@@ -29,21 +29,21 @@ module TestCoverageHelper
       @expected_pattern = pattern
       @pattern_matcher = lambda { |filename| File.fnmatch? pattern, filename }
     end
-    
+
     def matches?(directory)
       @actual_filenames = Dir[File.join(directory,'*')]
       @actual_filenames.any? &@pattern_matcher
     end
-    
+
     def failure_message
       "Expected to find at least one element matching '#{@expected_pattern}' among #{@actual_filenames.inspect}, but found none"
     end
-    
+
     def negative_failure_message
       "Expected to find no element matching '#{@expected_pattern}' among #{@actual_filenames.inspect}, but found matching element(s) #{@actual_filenames.select(&@pattern_matcher).inspect}"
     end
   end
-  
+
   # Test if a directory contains at least one file matching a given glob pattern.
   #
   # For example, to check that a directory contains at least one HTML file:
@@ -63,7 +63,7 @@ describe 'test coverage tool', :shared=>true do
   def test_coverage_config
     project('foo').send(toolname)
   end
-  
+
   describe 'project-specific' do
 
     before do
@@ -73,20 +73,20 @@ describe 'test coverage tool', :shared=>true do
 
     describe 'clean' do
       before { define('foo') }
-      
+
       it 'should remove the instrumented directory' do
         mkdir_p test_coverage_config.instrumented_dir.to_s
         task('foo:clean').invoke
         file(test_coverage_config.instrumented_dir).should_not exist
       end
-      
+
       it 'should remove the reporting directory' do
         mkdir_p test_coverage_config.report_dir
         task('foo:clean').invoke
         file(test_coverage_config.report_dir).should_not exist
       end
     end
-    
+
     describe 'instrumented directory' do
       it 'should have a default value' do
         define('foo')
@@ -98,7 +98,7 @@ describe 'test coverage tool', :shared=>true do
         define('foo') { send(toolname).instrumented_dir = path_to('target/coverage/classes') }
         test_coverage_config.instrumented_dir.should point_to_path('target/coverage/classes')
       end
-      
+
       it 'should be created during instrumentation' do
         define('foo')
         task("foo:#{toolname}:instrument").invoke
@@ -160,7 +160,7 @@ describe 'test coverage tool', :shared=>true do
         task("foo:#{toolname}:html").invoke
         test_coverage_config.report_to(:html).should have_files_matching('*.html')
       end
-      
+
       it 'should contain full source code, including comments' do
         write 'src/main/java/Foo.java',
           'public class Foo { /* This comment is a TOKEN to check that test coverage reports include the source code */ }'
@@ -199,7 +199,7 @@ describe 'test coverage tool', :shared=>true do
           task("#{toolname}:html").invoke
           @tool_module.report_to(:html).should have_files_matching('*.html')
         end
-        
+
         it 'should contain full source code, including comments' do
           write 'bar/src/main/java/Bar.java',
             'public class Bar { /* This comment is a TOKEN to check that test coverage reports include the source code */ }'
@@ -208,7 +208,7 @@ describe 'test coverage tool', :shared=>true do
           html_report_contents.force_encoding('ascii-8bit') if RUBY_VERSION >= '1.9'
           html_report_contents.should =~ /TOKEN/
         end
-        
+
         it 'should handle gracefully a project with no source' do
           define 'baz', :base_dir=>'baz'
           task("#{toolname}:html").invoke
@@ -216,7 +216,7 @@ describe 'test coverage tool', :shared=>true do
         end
       end
     end
-    
+
     describe 'clean' do
       it 'should remove the report directory' do
         define('foo')
@@ -224,31 +224,31 @@ describe 'test coverage tool', :shared=>true do
         task("#{toolname}:clean").invoke
         file(@tool_module.report_to).should_not exist
       end
-      
+
       it 'should be called when calling global clean' do
         define('foo')
         lambda { task('clean').invoke }.should run_task("#{toolname}:clean")
       end
     end
   end
-  
+
   describe 'project with no source' do
     it 'should not define an html report task' do
       define 'foo'
       Rake::Task.task_defined?("foo:#{toolname}:html").should be(false)
     end
-    
+
     it 'should not raise an error when instrumenting' do
       define('foo')
       lambda { task("foo:#{toolname}:instrument").invoke }.should_not raise_error
     end
-    
+
     it 'should not add the instrumented directory to the testing classpath' do
       define 'foo'
       depends = project('foo').test.dependencies
       depends.should_not include(test_coverage_config.instrumented_dir)
     end
-    
+
     it 'should not add the test coverage tools artifacts to the testing classpath' do
       define('foo')
       @tool_module.dependencies.each { |artifact| project('foo').test.dependencies.should_not include(artifact) }

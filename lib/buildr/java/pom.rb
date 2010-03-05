@@ -28,7 +28,7 @@ module Buildr
     attr_reader :parent
 
     class << self
-      
+
       # :call-seq:
       #   POM.load(arg)
       #
@@ -82,8 +82,8 @@ module Buildr
       unless depends = @depends_for_scopes[scopes]
         declared = project["dependencies"].first["dependency"] rescue nil
         depends = (declared || []).reject { |dep| value_of(dep["optional"]) =~ /true/ }.
-          map { |dep| 
-            spec = pom_to_hash(dep, properties) 
+          map { |dep|
+            spec = pom_to_hash(dep, properties)
             apply = managed(spec)
             spec = apply.merge(spec) if apply
 
@@ -93,7 +93,7 @@ module Buildr
 
               exclusions = dep["exclusions"]["exclusion"] rescue nil
               transitive_deps = POM.load(spec).dependencies(SCOPES_TRANSITIVE)
-              transitive_deps = transitive_deps.reject{|dep| 
+              transitive_deps = transitive_deps.reject{|dep|
                 exclusions.find {|ex| dep.index("#{dep['groupdId'].first}:#{dep['artifactId'].first}:") == 0}
               } if exclusions
 

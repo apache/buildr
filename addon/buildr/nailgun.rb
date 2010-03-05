@@ -21,18 +21,18 @@ require 'buildr/drb'
 
 
 module Buildr
-  
+
   # This addon is provided for fast interaction with a DRb BuildrServer (buildr/drb).
-  # 
+  #
   # This module delegates task invocation to the BuildrServer, it only implements
   # nailgun required logic (server/client).
   #
   # Usage:
   #
   #   buildr -r buildr/nailgun nailgun:start
-  # 
+  #
   # Once the server has been started you can invoke tasks using the nailgun client
-  # installed on $JRUBY_HOME/tool/nailgun. It's recommended to add this path to 
+  # installed on $JRUBY_HOME/tool/nailgun. It's recommended to add this path to
   # your PATH environment variable, so that the ng command is available at any dir.
   #
   #   ng build # invoke the build task
@@ -46,12 +46,12 @@ module Buildr
     ARTIFACT_SPEC = "com.martiansoftware:nailgun:jar:#{VERSION}"
     PORT = DRbApplication::PORT + 2
     ADDON_BIN = File.dirname(__FILE__)
-    
+
     # Returns the path to JRUBY_HOME.
     def jruby_home
       ENV['JRUBY_HOME'] || Config::CONFIG['prefix']
     end
-    
+
     # Returns the path to NAILGUN_HOME.
     def nailgun_home
       ENV['NAILGUN_HOME'] || File.expand_path('tool/nailgun', jruby_home)
@@ -109,17 +109,17 @@ module Buildr
         stdout = Util.ctor(org.jruby.RubyIO, runtime, java.io.OutputStream => nail.out)
         stderr = Util.ctor(org.jruby.RubyIO, runtime, java.io.OutputStream => nail.err)
         stdin = Util.ctor(org.jruby.RubyIO, runtime, java.io.InputStream => nail.in)
-        
+
         dir = nail.getWorkingDirectory
         argv = [nail.command] + nail.args
-        
+
         DRbApplication.remote_run :dir => dir, :argv => argv,
                                   :in => stdin, :out => stdout, :err => stderr
       rescue => e
         nail.err.println e unless SystemExit === e
         nail.exit 1
       end
-      
+
     end # Client
 
     module Server
@@ -131,18 +131,18 @@ module Buildr
 
       def start
         self.allow_nails_by_class_name = false
-        
+
         NGClient::Main.nail = NGClient.new
         self.default_nail_class = NGClient::Main
-        
+
         @thread = java.lang.Thread.new(self)
         @thread.setName(to_s)
         @thread.start
-        
+
         sleep 1 while getPort == 0
         info "#{self} Started."
       end
-      
+
       def stop
         @thread.kill
       end
@@ -157,13 +157,13 @@ module Buildr
 
       dist_zip = Buildr.download(tmp_path(NAME + '.zip') => URL)
       dist_dir = Buildr.unzip(tmp_path(NAME) => dist_zip)
-      
+
       nailgun_jar = file(tmp_path(NAME, NAME, NAME + '.jar'))
       nailgun_jar.enhance [dist_dir] unless File.exist?(nailgun_jar.to_s)
 
       attr_reader :artifact
       @artifact = Buildr.artifact(ARTIFACT_SPEC).from(nailgun_jar)
-      
+
       compiled_bin = file(tmp_path(NAME, NAME, 'ng' + Config::CONFIG['EXEEXT']) => dist_dir.target) do |task|
         unless task.to_s.pathmap('%x') == '.exe'
           Dir.chdir(task.to_s.pathmap('%d')) do
@@ -197,25 +197,25 @@ module Buildr
         server.start
       end
 
-      task('setup' => artifact) do 
+      task('setup' => artifact) do
         module Util
           include Buildr::Util
         end
-        
+
         Util.add_to_sysloader artifact.to_s
         Util.add_to_sysloader ADDON_BIN
-        
+
         class NGClient
           include org.apache.buildr.BuildrNail
           include Client
         end
-        
+
         class NGServer < com.martiansoftware.nailgun.NGServer
           include Server
-        end      
+        end
       end
-      
+
     end # ng_tasks
-      
+
   end # module Nailgun
 end

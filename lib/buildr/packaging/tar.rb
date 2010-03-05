@@ -54,13 +54,13 @@ module Buildr
     def entry(entry_name)
       Buildr::TarEntry.new(self, entry_name)
     end
-    
+
     def entries() #:nodoc:
       tar_entries = nil
       with_uncompressed_tar { |tar| tar_entries = tar.entries }
       tar_entries
     end
-    
+
     # :call-seq:
     #   with_uncompressed_tar { |tar_entries| ... }
     #
@@ -73,7 +73,7 @@ module Buildr
         Archive::Tar::Minitar.open(name, &block)
       end
     end
-    
+
   private
 
     def create_from(file_map)
@@ -110,15 +110,15 @@ module Buildr
     end
 
   end
-  
-  
+
+
   class TarEntry #:nodoc:
-    
+
     def initialize(tar_task, entry_name)
       @tar_task = tar_task
       @entry_name = entry_name
     end
-    
+
     # :call-seq:
     #   contain?(*patterns) => boolean
     #
@@ -129,7 +129,7 @@ module Buildr
       patterns.map { |pattern| Regexp === pattern ? pattern : Regexp.new(Regexp.escape(pattern.to_s)) }.
         all? { |pattern| content =~ pattern }
     end
-    
+
     # :call-seq:
     #   empty?() => boolean
     #
@@ -137,7 +137,7 @@ module Buildr
     def empty?()
       read_content_from_tar.nil?
     end
-    
+
     # :call-seq:
     #   exist() => boolean
     #
@@ -147,13 +147,13 @@ module Buildr
       @tar_task.with_uncompressed_tar { |tar| exist = tar.any? { |entry| entry.name == @entry_name } }
       exist
     end
-    
+
     def to_s #:nodoc:
       @entry_name
     end
-    
+
     private
-    
+
     def read_content_from_tar
       content = Errno::ENOENT.new("No such file or directory - #{@entry_name}")
       @tar_task.with_uncompressed_tar do |tar|
@@ -163,7 +163,7 @@ module Buildr
       content
     end
   end
-  
+
 end
 
 

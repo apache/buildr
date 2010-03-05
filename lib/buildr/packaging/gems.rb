@@ -59,7 +59,7 @@ module Buildr
     def create_from(file_map)
       spec.mark_version
       spec.validate
-      
+
       File.open(name, 'w') do |io|
         Gem::Package.open(io, 'w', nil) do |pkg|
           pkg.metadata = spec.to_yaml

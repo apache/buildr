@@ -5,7 +5,7 @@ module Buildr
   module Doc
     class Scaladoc < Base
       specify :language => :scala, :source_ext => 'scala'
-      
+
       def generate(sources, target, options = {})
         cmd_args = [ '-d', target, Buildr.application.options.trace ? '-verbose' : '' ]
         options.reject { |key, value| [:sourcepath, :classpath].include?(key) }.
@@ -37,21 +37,21 @@ module Buildr
         end
       end
     end
-    
+
     class VScaladoc < Base
       VERSION = '1.2-SNAPSHOT'
       Buildr.repositories.remote << 'http://scala-tools.org/repo-snapshots'
-      
+
       class << self
         def dependencies
           [ "org.scala-tools:vscaladoc:jar:#{VERSION}" ]
         end
       end
-      
+
       Java.classpath << dependencies
-      
+
       specify :language => :scala, :source_ext => 'scala'
-      
+
       def generate(sources, target, options = {})
         cmd_args = [ '-d', target, (Buildr.application.options.trace ? '-verbose' : ''),
           '-sourcepath', project.compile.sources.join(File::PATH_SEPARATOR) ]

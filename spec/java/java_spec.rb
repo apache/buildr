@@ -48,42 +48,42 @@ describe Java, '#tools_jar' do
   before do
     @old_home = ENV['JAVA_HOME']
   end
-  
+
   describe 'when JAVA_HOME points to a JDK' do
     before do
       Java.instance_eval { @tools_jar = nil }
       write 'jdk/lib/tools.jar'
       ENV['JAVA_HOME'] = File.expand_path('jdk')
     end
-  
+
     it 'should return the path to tools.jar' do
       Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
     end
   end
-  
+
   describe 'when JAVA_HOME points to a JRE inside a JDK' do
     before do
       Java.instance_eval { @tools_jar = nil }
       write 'jdk/lib/tools.jar'
       ENV['JAVA_HOME'] = File.expand_path('jdk/jre')
     end
-    
+
     it 'should return the path to tools.jar' do
       Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
     end
   end
-  
+
   describe 'when there is no tools.jar' do
     before do
       Java.instance_eval { @tools_jar = nil }
       ENV['JAVA_HOME'] = File.expand_path('jdk')
     end
-    
+
     it 'should return nil' do
       Java.tools_jar.should be_nil
     end
   end
-  
+
   after do
     ENV['JAVA_HOME'] = @old_home
   end
@@ -93,13 +93,13 @@ describe Java, '#java' do
   before do
     @old_home = ENV['JAVA_HOME']
   end
-  
+
   describe 'when JAVA_HOME points to an invalid JRE/JDK installation' do
     before do
       write 'jdk'
       ENV['JAVA_HOME'] = File.expand_path('jdk')
     end
-  
+
     it 'should fail with an error message mentioning JAVA_HOME' do
       begin
         Java.java ['-version']
@@ -109,7 +109,7 @@ describe Java, '#java' do
       end
     end
   end
-  
+
   after do
     ENV['JAVA_HOME'] = @old_home
   end

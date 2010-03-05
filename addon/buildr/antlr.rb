@@ -33,8 +33,8 @@ module Buildr
         args = ["-o",  options[:output]] + args if options[:output]
         if options[:token]
           # antlr expects the token directory to exist when it starts
-          mkdir_p options[:token] 
-          args = ["-lib",  options[:token]] + args 
+          mkdir_p options[:token]
+          args = ["-lib",  options[:token]] + args
         end
         Java.load
         #Java.org.antlr.Tool.new_with_sig("[Ljava.lang.String;", args).process
@@ -44,7 +44,7 @@ module Buildr
 
     def antlr(*args)
       if Hash === args.last
-        options = args.pop 
+        options = args.pop
         in_package = options[:in_package].split(".")
         token = options[:token].split(".") if options[:token]
       else
@@ -54,11 +54,11 @@ module Buildr
         args = {:output=>File.join(task.name, in_package)}
         args.merge!({:token=>File.join(task.name, token)}) if token
         ANTLR.antlr task.prerequisites, args
-      end         
+      end
     end
 
   end
-  
+
   class Project
     include ANTLR
   end

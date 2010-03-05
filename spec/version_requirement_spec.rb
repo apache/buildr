@@ -20,8 +20,8 @@ describe Buildr::VersionRequirement, '.create' do
   def create(str)
     Buildr::VersionRequirement.create(str)
   end
-  
-  it 'should complain on invalid input' do 
+
+  it 'should complain on invalid input' do
     lambda { create }.should raise_error(Exception)
     lambda { create('%') }.should raise_error(Exception, /invalid character/)
     lambda { create('1#{0}') }.should raise_error(Exception, /invalid character/)
@@ -30,16 +30,16 @@ describe Buildr::VersionRequirement, '.create' do
     lambda { create('1.0') }.should_not raise_error(Exception)
     lambda { create('1.0rc3') }.should_not raise_error(Exception)
   end
-  
+
   it 'should allow versions using hyphen' do
     lambda { create('1.0-rc3') }.should_not raise_error(Exception)
   end
 
-  it 'should create a single version requirement' do 
+  it 'should create a single version requirement' do
     create('1.0').should_not be_composed
   end
 
-  it 'should create a composed version requirement' do 
+  it 'should create a composed version requirement' do
     create('1.0 | 2.1').should be_composed
   end
 end
@@ -61,13 +61,13 @@ describe Buildr::VersionRequirement, '#satisfied_by?' do
     should_satisfy '=1.0', %w(1 1.0), %w(1.1 0.1)
     should_satisfy '= 1.0', %w(1 1.0), %w(1.1 0.1)
     should_satisfy '!= 1.0', %w(0.9 1.1 2), %w(1 1.0 1.0.0)
-    
+
     should_satisfy '>1.0', %w(1.0.1), %w(1 1.0 0.1)
     should_satisfy '>=1.0', %w(1.0.1 1 1.0), %w(0.9)
 
     should_satisfy '<1.0', %w(0.9 0.9.9), %w(1 1.0 1.1 2)
     should_satisfy '<=1.0', %w(0.9 0.9.9 1 1.0), %w(1.1 2)
-    
+
     should_satisfy '~> 1.2.3', %w(1.2.3 1.2.3.4 1.2.4), %w(1.2.1 0.9 1.4 2)
   end
 
@@ -91,7 +91,7 @@ describe Buildr::VersionRequirement, '#satisfied_by?' do
   it 'should assume logic and if missing operator between expressions' do
     should_satisfy '>1.5 <2.0', %w(1.6 1.9), %w(1.5 2 2.0)
   end
-  
+
   it 'should allow combining logic operators' do
     should_satisfy '>1.0 | <2.0 | =3.0', %w(1.5 3.0 1 2 4)
     should_satisfy '>1.0 & <2.0 | =3.0', %w(1.3 3.0), %w(1 2)
@@ -99,7 +99,7 @@ describe Buildr::VersionRequirement, '#satisfied_by?' do
     should_satisfy '~>1.1 | ~>1.3 | ~>1.5 | 2.0', %w(2 1.5.6 1.1.2 1.1.3), %w(1.0.9 0.5 2.2.1)
     should_satisfy 'not(2) | 1', %w(1 3), %w(2)
   end
-  
+
   it 'should allow using parens to group logic expressions' do
     should_satisfy '(1.0)', %w(1 1.0), %w(0.9 1.1)
     should_satisfy '!( !(1.0) )', %w(1 1.0), %w(0.9 1.1)
@@ -110,13 +110,13 @@ end
 =end
 
 describe Buildr::VersionRequirement, '#default' do
-  it 'should return nil if missing default requirement' do 
+  it 'should return nil if missing default requirement' do
     Buildr::VersionRequirement.create('>1').default.should be_nil
     Buildr::VersionRequirement.create('<1').default.should be_nil
     Buildr::VersionRequirement.create('!1').default.should be_nil
     Buildr::VersionRequirement.create('!<=1').default.should be_nil
   end
-  
+
   it 'should return the last version with a = requirement' do
     Buildr::VersionRequirement.create('1').default.should == '1'
     Buildr::VersionRequirement.create('=1').default.should == '1'
@@ -129,14 +129,14 @@ describe Buildr::VersionRequirement, '#default' do
 end
 
 describe Buildr::VersionRequirement, '#version?' do
-  it 'should identify valid versions' do 
+  it 'should identify valid versions' do
     Buildr::VersionRequirement.version?('1').should be_true
     Buildr::VersionRequirement.version?('1a').should be_true
     Buildr::VersionRequirement.version?('1.0').should be_true
     Buildr::VersionRequirement.version?('11.0').should be_true
     Buildr::VersionRequirement.version?(' 11.0 ').should be_true
     Buildr::VersionRequirement.version?('11.0-alpha').should be_true
-    
+
     Buildr::VersionRequirement.version?('a').should be_false
     Buildr::VersionRequirement.version?('a1').should be_false
   end

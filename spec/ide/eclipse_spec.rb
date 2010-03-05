@@ -90,7 +90,7 @@ describe Buildr::Eclipse do
         write 'buildfile'
         write 'src/main/nono/Main.nono'
       end
-      
+
       it 'should not have natures' do
         define('foo')
         project_natures.should be_empty
@@ -100,21 +100,21 @@ describe Buildr::Eclipse do
         define('foo')
         build_commands.should be_empty
       end
-      
+
       it 'should generate a .project file' do
         define('foo')
         task('eclipse').invoke
         REXML::Document.new(File.open('.project')).root.
           elements.collect("name") { |e| e.text }.should == ['foo']
       end
-      
+
       it 'should not generate a .classpath file' do
         define('foo')
         task('eclipse').invoke
         File.exists?('.classpath').should be_false
       end
     end
-    
+
     describe 'parent project' do
       before do
         write 'buildfile'
@@ -130,7 +130,7 @@ describe Buildr::Eclipse do
         File.exists?(File.join('bar','.project')).should be_true
       end
     end
-    
+
     describe 'java project' do
       before do
         write 'buildfile'
@@ -573,7 +573,7 @@ MANIFEST
       project('foo:bar').eclipse.natures.should include('foo_nature')
       project('foo:bar2').eclipse.natures.should include('bar2_nature')
     end
-    
+
     it 'should handle arrays correctly' do
       define('foo') do
         eclipse.natures ['foo_nature', 'bar_nature']
@@ -604,14 +604,14 @@ MANIFEST
       project('foo:bar').eclipse.builders.should include('foo_builder')
       project('foo:bar2').eclipse.builders.should include('bar2_builder')
     end
-    
+
     it 'should handle arrays correctly' do
       define('foo') do
         eclipse.builders ['foo_builder', 'bar_builder']
       end
       project('foo').eclipse.builders.should == ['foo_builder', 'bar_builder']
     end
-  end 
+  end
 
   describe 'classpath_containers variable' do
     it 'should be configurable' do
@@ -635,7 +635,7 @@ MANIFEST
       project('foo:bar').eclipse.classpath_containers.should include('foo_classpath_containers')
       project('foo:bar2').eclipse.classpath_containers.should include('bar2_classpath_containers')
     end
-    
+
     it 'should handle arrays correctly' do
       define('foo') do
         eclipse.classpath_containers ['foo_cc', 'bar_cc']

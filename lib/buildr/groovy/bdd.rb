@@ -20,7 +20,7 @@ module Buildr::Groovy
   # To use in your project:
   #
   #   test.using :easyb
-  # 
+  #
   # This framework will search in your project for:
   #   src/spec/groovy/**/*Story.groovy
   #   src/spec/groovy/**/*Specification.groovy
@@ -69,7 +69,7 @@ module Buildr::Groovy
 
     def run(tests, dependencies) #:nodoc:
       options = { :format => :txt }.merge(self.options).only(*OPTIONS)
-    
+
       if :txt == options[:format]
         easyb_format, ext = 'txtstory', '.txt'
       elsif :xml == options[:format]
@@ -77,7 +77,7 @@ module Buildr::Groovy
       else
         raise "Invalid format #{options[:format]} expected one of :txt :xml"
       end
-    
+
       cmd_args = [ 'org.disco.easyb.BehaviorRunner' ]
       cmd_options = { :properties => options[:properties],
                       :java_args => options[:java_args],
@@ -98,9 +98,9 @@ module Buildr::Groovy
         end
       end
     end
-  
+
   end # EasyB
-  
+
 end
 
 Buildr::TestFramework << Buildr::Groovy::EasyB

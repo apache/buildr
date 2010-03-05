@@ -218,7 +218,7 @@ describe Buildr.method(:filter) do
   def source
     File.expand_path('src')
   end
-  
+
   it 'should return a Filter for the source' do
     filter(source).should be_kind_of(Filter)
   end
@@ -495,14 +495,14 @@ describe Buildr::Filter do
   end
 end
 
-describe Filter::Mapper do 
-  
+describe Filter::Mapper do
+
   module MooMapper
     def moo_config(*args, &block)
       raise ArgumentError, "Expected moo block" unless block_given?
       { :moos => args, :callback => block }
     end
-    
+
     def moo_transform(content, path = nil)
       content.gsub(/moo+/i) do |str|
         moos = yield :moos # same than config[:moos]
@@ -645,7 +645,7 @@ name3=double\\\\hash
 PROPS
     hash.should == {'name1'=>"with\tand", 'name2'=>"with\nand\f", 'name3'=>'double\hash'}
   end
-  
+
   it 'should ignore whitespace' do
     hash = Hash.from_java_properties('name1 = value1')
     hash.should == {'name1'=>'value1'}

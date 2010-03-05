@@ -45,7 +45,7 @@ describe Project do
     foo.should be(project('foo'))
     bar.should be(project('bar'))
   end
-    
+
   it 'should show up in projects list if defined' do
     define('foo')
     projects.map(&:name).should include('foo')
@@ -206,7 +206,7 @@ describe Layout do
     @layout.expand(:foo, nil, :bar).should eql('none')
     @layout.expand(nil, :foo).should eql('foo')
   end
-  
+
   it 'should return nil if path not mapped' do
     @layout[:foo].should be_nil
   end
@@ -368,7 +368,7 @@ describe Project, '#on_define' do
     define('foo') { define 'bar' }
     scopes.should eql([['foo'], ['foo', 'bar']])
   end
-  
+
   it 'should be removed in version 1.5 since it was deprecated in version 1.3' do
     Buildr::VERSION.should < '1.5'
   end
@@ -418,7 +418,7 @@ describe 'Sub-project' do
       define 'foo' do
         define 'bar'
         define 'bar'
-      end 
+      end
     end.should raise_error
   end
 
@@ -456,7 +456,7 @@ describe 'Sub-project' do
       ordered << self.name
       define('bar') { ordered << self.name }
       define('baz') { ordered << self.name }
-    end 
+    end
     ordered.should eql(['foo', 'foo:bar', 'foo:baz'])
   end
 
@@ -466,7 +466,7 @@ describe 'Sub-project' do
       ordered << self.name
       define('bar') { project('foo:baz') ; ordered << self.name }
       define('baz') { ordered << self.name }
-    end 
+    end
     ordered.should eql(['foo', 'foo:baz', 'foo:bar'])
   end
 
@@ -475,7 +475,7 @@ describe 'Sub-project' do
       define 'foo' do
         define('bar') { project('foo:baz') }
         define('baz') { project('foo:bar') }
-      end 
+      end
     end.should raise_error(RuntimeError, /Circular dependency/)
   end
 end
@@ -645,7 +645,7 @@ describe Project, '#task' do
   it 'should create a regular task' do
     define('foo') { task('bar') }
     Buildr.application.lookup('foo:bar').should_not be_nil
-  end 
+  end
 
   it 'should return a task defined in the project' do
     define('foo') { task('bar') }
@@ -661,7 +661,7 @@ describe Project, '#task' do
     define('foo') { task('bar') }
     project('foo').task('bar').name.should eql('foo:bar')
   end
-  
+
   it 'should ignore namespace if starting with color' do
     define 'foo' do
       task(':bar').name.should == 'bar'
@@ -744,7 +744,7 @@ end
 
 
 =begin
-describe Buildr::Generate do 
+describe Buildr::Generate do
   it 'should be able to create buildfile from directory structure' do
     write 'src/main/java/Foo.java', ''
     write 'one/two/src/main/java/Foo.java', ''

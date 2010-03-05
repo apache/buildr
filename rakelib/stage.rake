@@ -73,7 +73,7 @@ task :prepare do |task, args|
   lambda do
     puts "[!] Make sure you have admin privileges to make a release on RubyForge"
     rubyforge = RubyForge.new.configure
-    rubyforge.login 
+    rubyforge.login
     rubyforge.scrape_project(spec.name)
   end.call
 
@@ -106,7 +106,7 @@ task :stage=>['setup', 'doc:setup', :clobber, :prepare] do |task, args|
     task(:package).invoke
     mkpath '_staged/dist'
     FileList['pkg/*.{gem,zip,tgz}'].each do |source|
-      pkg = source.pathmap('_staged/dist/%n%x') 
+      pkg = source.pathmap('_staged/dist/%n%x')
       cp source, pkg
       bytes = File.open(pkg, 'rb') { |file| file.read }
       File.open(pkg + '.md5', 'w') { |file| file.write Digest::MD5.hexdigest(bytes) << ' ' << File.basename(pkg) }
@@ -162,7 +162,7 @@ p>. ("Release signing keys":#{official}/KEYS)
     sh 'rsync', '--progress', '--recursive', '_staged/', url
     puts "[X] Uploaded _staged directory to #{url}"
   end.call
-  
+
 
   # Prepare a release vote email. In the distant future this will also send the
   # email for you and vote on it.

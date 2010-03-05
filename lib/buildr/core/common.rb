@@ -34,7 +34,7 @@ module Buildr
   #
   #   compile.with COMMONS.logging
   def struct(hash)
-    Struct.new(nil, *hash.keys).new(*hash.values)  
+    Struct.new(nil, *hash.keys).new(*hash.values)
   end
 
   # :call-seq:

@@ -23,13 +23,13 @@ module Buildr
   # This addon allows you start a DRb server hosting a buildfile, so that
   # you can later invoke tasks on it without having to load
   # the complete buildr runtime again.
-  # 
+  #
   # Usage:
-  #   
+  #
   #   buildr -r buildr/drb drb:start
   #
   # Once the server has been started you can invoke tasks using a simple script:
-  # 
+  #
   #   #!/usr/bin/env ruby
   #   require 'rubygems'
   #   require 'buildr/drb'
@@ -48,18 +48,18 @@ module Buildr
   # without having to incur JVM startup time.
   # See the documentation for buildr/nailgun.
   module DRbApplication
-    
+
     port = ENV['DRB_PORT'] || 2111
     PORT = port.to_i
 
     class SavedTask #:nodoc:
-      
+
       def initialize(original)
         @original = original.clone
         @prerequisites = original.prerequisites.clone if original.respond_to?(:prerequisites)
         @actions = original.actions.clone if original.respond_to?(:actions)
       end
-      
+
       def name
         @original.name
       end
@@ -71,7 +71,7 @@ module Buildr
       def prerequisites
         @prerequisites ||= []
       end
-      
+
       def define!
         @original.class.send(:define_task, @original.name => prerequisites).tap do |task|
           task.comment = @original.comment
@@ -81,9 +81,9 @@ module Buildr
     end # SavedTask
 
     class Snapshot #:nodoc:
-      
+
       attr_accessor :projects, :tasks, :rules, :layout, :options
-      
+
       # save the tasks,rules,layout defined by buildr
       def initialize
         @rules = Buildr.application.instance_eval { @rules || [] }.clone
@@ -98,11 +98,11 @@ module Buildr
           hash
         end
       end
-      
+
     end # Snapshot
 
     class << self
-      
+
       attr_accessor :original, :snapshot
 
       def run
@@ -139,7 +139,7 @@ module Buildr
       def server_uri
         "druby://:#{PORT}"
       end
-      
+
       def connect
         buildr = DRbObject.new(nil, server_uri)
         uri = buildr.client_uri # obtain our uri from the server
@@ -159,7 +159,7 @@ module Buildr
 
           # Lazily load buildr the first time it's needed
           require 'buildr'
-          
+
           # Save the tasks,rules,layout defined by buildr
           # before loading any project
           @original = self::Snapshot.new
@@ -191,7 +191,7 @@ module Buildr
         $stdout = SimpleDelegator.new($stdout)
         $stderr = SimpleDelegator.new($stderr)
       end
-      
+
       def with_config(remote)
         @invoked = true
         set = lambda do |env|
@@ -201,8 +201,8 @@ module Buildr
           $stderr.__setobj__(env[:err])
           Buildr.application.instance_variable_set :@original_dir, env[:dir]
         end
-        original = { 
-          :dir => Buildr.application.instance_variable_get(:@original_dir), 
+        original = {
+          :dir => Buildr.application.instance_variable_get(:@original_dir),
           :argv => ARGV,
           :in => $stdin.__getobj__,
           :out => $stdout.__getobj__,
@@ -238,7 +238,7 @@ module Buildr
     end
 
   private
-    
+
     def buildfile_needs_reload?
       !@last_loaded || @last_loaded < buildfile.timestamp
     end
@@ -274,7 +274,7 @@ module Buildr
     end
 
     task('drb:start') { run_server! } if Buildr.respond_to?(:application)
-    
+
   end # DRbApplication
 
 end

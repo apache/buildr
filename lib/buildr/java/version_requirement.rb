@@ -15,11 +15,11 @@
 
 
 module Buildr
-  
+
   #
   # See ArtifactNamespace#need
   class VersionRequirement
-    
+
     CMP_PROCS = Gem::Requirement::OPS.dup
     CMP_REGEX = Gem::Requirement::OP_RE.dup
     CMP_CHARS = CMP_PROCS.keys.join
@@ -31,16 +31,16 @@ module Buildr
       def version?(str)
         /^\s*[#{VER_CHARS}]+\s*$/ === str
       end
-      
+
       # is +str+ a version requirement?
       def requirement?(str)
         /[#{BOOL_CHARS}#{CMP_CHARS}\(\)]/ === str
       end
-      
+
       # :call-seq:
       #    VersionRequirement.create(" >1 <2 !(1.5) ") -> requirement
       #
-      # parse the +str+ requirement 
+      # parse the +str+ requirement
       def create(str)
         instance_eval normalize(str)
       rescue StandardError => e
@@ -61,7 +61,7 @@ module Buildr
         vreq.negative = !vreq.negative
         vreq
       end
-      
+
       def normalize(str)
         str = str.strip
         if str[/[^\s\(\)#{BOOL_CHARS + VER_CHARS + CMP_CHARS}]/]
@@ -147,7 +147,7 @@ module Buildr
     def &(other)
       operation(:&, other)
     end
-    
+
     # return the parsed expression
     def to_s
       str = requirements.map(&:to_s).join(" " + @op.to_s + " ").to_s
@@ -160,7 +160,7 @@ module Buildr
     protected
     attr_reader :requirements, :op
     def operation(op, other)
-      @op ||= op 
+      @op ||= op
       if negative == other.negative && @op == op && other.requirements.size == 1
         @requirements << other.requirements.first
         self

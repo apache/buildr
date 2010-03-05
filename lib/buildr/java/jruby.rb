@@ -71,7 +71,7 @@ module Java
     def classpath
       @classpath ||= []
     end
-    
+
     # Most platforms requires tools.jar to be on the classpath, tools.jar contains the
     # Java compiler (OS X and AIX are two exceptions we know about, may be more).
     # Guess where tools.jar is from JAVA_HOME, which hopefully points to the JDK,
@@ -101,13 +101,13 @@ module Java
 
       # Most platforms requires tools.jar to be on the classpath.
       add_path[tools_jar] if tools_jar
-      
-      classpath.map! { |path| Proc === path ? path.call : path }      
+
+      classpath.map! { |path| Proc === path ? path.call : path }
       Buildr.artifacts(classpath).map(&:to_s).each do |path|
         file(path).invoke
         add_path[path]
       end
-      
+
       @loaded = true
       self
     end
