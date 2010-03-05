@@ -24,8 +24,7 @@ module Buildr::Scala
   class << self
 
     # Retrieves the Scala version string from the
-    # standard library or nil if Scala is not
-    # available.
+    # standard library or nil if Scala is not available.
     def version_str
       begin
         # Scala version string normally looks like "version 2.7.3.final"
@@ -36,7 +35,9 @@ module Buildr::Scala
     end
 
     def version
-      if version_str
+      if Buildr.settings.build['scala.version']
+        Buildr.settings.build['scala.version']
+      elsif version_str
         # any consecutive sequence of numbers followed by dots
         match = version_str.match(/\d+\.\d[\d\.]*/) or
           fail "Unable to parse Scala version: #{version_str} "
@@ -69,8 +70,9 @@ module Buildr::Scala
     # namespace before this file is required.  This is of course, only
     # if SCALA_HOME is not set or invalid.
     REQUIRES = ArtifactNamespace.for(self) do |ns|
-      ns.library!      'org.scala-lang:scala-library:jar:>=' + DEFAULT_VERSION
-      ns.compiler!     'org.scala-lang:scala-compiler:jar:>=' + DEFAULT_VERSION
+      version = Buildr.settings.build['scala.check'] || DEFAULT_VERSION
+      ns.library!      'org.scala-lang:scala-library:jar:>=' + version
+      ns.compiler!     'org.scala-lang:scala-compiler:jar:>=' + version
     end
 
     class << self

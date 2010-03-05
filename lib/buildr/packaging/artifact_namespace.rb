@@ -31,13 +31,13 @@ module Buildr
   # The method_missing method for instances provides some syntactic sugar to these.
   # See the following examples, and the methods for ArtifactRequirement.
   #
-  # = Avoiding constant polution on buildfile
+  # = Avoiding constant pollution on buildfile
   #
   # Each project has its own ArtifactNamespace inheriting the one from the
   # parent project up to the root namespace.
   #
   # Consider the following snippet, as project grows, each subproject
-  # may need diferent artifact combinations and/or versions. Asigning
+  # may need different artifact combinations and/or versions. Assigning
   # artifact specifications to constants can make it painful to maintain
   # their references even if using structs/hashes.
   #
@@ -67,7 +67,7 @@ module Buildr
   #
   # With ArtifactNamespace you can do some more advanced stuff, the following
   # annotated snipped could still be reduced if default artifact definitions were
-  # loaded from yaml file (see section bellow and ArtifactNamespace.load).
+  # loaded from yaml file (see section below and ArtifactNamespace.load).
   #
   #   -- buildfile --
   #   artifact_ns do |ns| # the current namespace (root if called outside a project)
@@ -136,8 +136,8 @@ module Buildr
   # issues. Another example would be to select the groovy version to use on all our
   # projects so that Buildr modules requiring groovy jars can use user prefered versions.
   #
-  # To meet this goal, an ArtifactNamespace allows to specify ArgumentRequirement objects.
-  # In fact the only diference with the examples you have already seen is that requirements
+  # To meet this goal, an ArtifactNamespace allows to specify ArtifactRequirement objects.
+  # In fact the only difference with the examples you have already seen is that requirements
   # have an associated VersionRequirement, so that each time a user tries to select a version,
   # buildr checks if it satisfies the requirements.
   #
