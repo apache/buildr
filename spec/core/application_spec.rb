@@ -72,7 +72,7 @@ describe Buildr::Application do
       Buildr.application.environment.should eql('test')
       ENV['BUILDR_ENV'].should eql('test')
     end
-    
+
     it 'should be echoed to user' do
       write 'buildfile'
       ENV['BUILDR_ENV'] = 'spec'
@@ -80,18 +80,18 @@ describe Buildr::Application do
       lambda { Buildr.application.send :load_buildfile }.should show(%r{(in .*, spec)})
     end
   end
-  
+
   describe 'options' do
     it "should have 'tasks' as the sole default rakelib" do
       Buildr.application.send(:handle_options)
       Buildr.application.options.rakelib.should == ['tasks']
     end
-    
+
     it 'should show the version when prompted with -V' do
       ARGV.push('-V')
       test_exit(0) { Buildr.application.send(:handle_options) }.should show(/Buildr #{Buildr::VERSION}.*/)
     end
-    
+
     it 'should show the version when prompted with --version' do
       ARGV.push('--version')
       test_exit(0) { Buildr.application.send(:handle_options) }.should show(/Buildr #{Buildr::VERSION}.*/)
@@ -258,45 +258,45 @@ describe Buildr::Application do
       @original_loaded_features = $LOADED_FEATURES.dup
       Buildr.application.options.rakelib = ["tasks"]
     end
-    
+
     after do
       $taskfiles = nil
       ($LOADED_FEATURES - @original_loaded_features).each do |new_load|
         $LOADED_FEATURES.delete(new_load)
       end
     end
-    
+
     def write_task(filename)
       write filename, <<-RUBY
         $taskfiles ||= []
         $taskfiles << __FILE__
       RUBY
     end
-    
+
     def loaded_tasks
       @loaded ||= Buildr.application.load_tasks
       $taskfiles
     end
-    
+
     it "should load {options.rakelib}/foo.rake" do
       write_task 'tasks/foo.rake'
       loaded_tasks.should have(1).task
       loaded_tasks.first.should =~ %r{tasks/foo\.rake$}
     end
-    
+
     it 'should load all *.rake files from the rakelib' do
       write_task 'tasks/bar.rake'
       write_task 'tasks/quux.rake'
       loaded_tasks.should have(2).tasks
     end
-    
+
     it 'should not load files which do not have the .rake extension' do
       write_task 'tasks/foo.rb'
       write_task 'tasks/bar.rake'
       loaded_tasks.should have(1).task
       loaded_tasks.first.should =~ %r{tasks/bar\.rake$}
     end
-    
+
     it 'should load files only from the directory specified in the rakelib option' do
       Buildr.application.options.rakelib = ['extensions']
       write_task 'extensions/amp.rake'
@@ -307,7 +307,7 @@ describe Buildr::Application do
         loaded_tasks.select{|x| x =~ %r{extensions/#{filename}\.rake}}.should have(1).entry
       end
     end
-    
+
     it 'should load files from all the directories specified in the rakelib option' do
       Buildr.application.options.rakelib = ['ext', 'more', 'tasks']
       write_task 'ext/foo.rake'
@@ -316,63 +316,63 @@ describe Buildr::Application do
       write_task 'more/baz.rake'
       loaded_tasks.should have(4).tasks
     end
-    
+
     it 'should not load files from the rakelib more than once' do
       write_task 'tasks/new_one.rake'
       write_task 'tasks/already.rake'
       $LOADED_FEATURES << 'tasks/already.rake'
-      
+
       loaded_tasks.should have(1).task
       loaded_tasks.first.should =~ %r{tasks/new_one\.rake$}
     end
   end
-  
+
   describe 'exception handling' do
-    
+
     it 'should exit when given a SystemExit exception' do
       test_exit(3) { Buildr.application.standard_exception_handling { raise SystemExit.new(3) } }
     end
-    
+
     it 'should exit with status 1 when given an OptionParser::ParseError exception' do
       test_exit(1) { Buildr.application.standard_exception_handling { raise OptionParser::ParseError.new() } }
     end
-    
+
     it 'should exit with status 1 when given any other type of exception exception' do
       test_exit(1) { Buildr.application.standard_exception_handling { raise Exception.new() } }
     end
-    
+
     it 'should print the class name and the message when receiving an exception (except when the exception is named Exception)' do
-      
+
       # Our fake $stderr for the exercise. We could start it with a matcher instead
       class FakeStdErr
-        
+
         attr_accessor :messages
-        
+
         def puts(*args)
           @messages ||= []
           @messages += args
         end
-        
+
         alias :write :puts
       end
-      
+
       # Save the old $stderr and make sure to restore it in the end.
-      old_stderr = $stderr 
+      old_stderr = $stderr
       begin
-        
+
         $stderr = FakeStdErr.new
-        test_exit(1) { 
+        test_exit(1) {
           Buildr.application.send :standard_exception_handling do
             class MyOwnNicelyNamedException < Exception
             end
-            raise MyOwnNicelyNamedException.new('My message') 
+            raise MyOwnNicelyNamedException.new('My message')
           end
         }.call
         $stderr.messages.select {|msg| msg =~ /.*MyOwnNicelyNamedException : My message.*/}.size.should == 1
         $stderr.messages.clear
-        test_exit(1) { 
+        test_exit(1) {
           Buildr.application.send :standard_exception_handling do
-            raise Exception.new('My message') 
+            raise Exception.new('My message')
           end
         }.call
         $stderr.messages.select {|msg| msg =~ /.*My message.*/ && !(msg =~ /Exception/)}.size.should == 1
@@ -503,37 +503,37 @@ describe Buildr, 'settings' do
       @buildfile_time = Time.now - 10
       write 'buildfile'; File.utime(@buildfile_time, @buildfile_time, 'buildfile')
     end
-    
+
     it 'should point to the buildfile' do
       Buildr.application.buildfile.should point_to_path('buildfile')
     end
-    
+
     it 'should be a defined task' do
       Buildr.application.buildfile.should == file(File.expand_path('buildfile'))
     end
-    
+
     it 'should ignore any rake namespace' do
       namespace 'dummy_ns' do
         Buildr.application.buildfile.should point_to_path('buildfile')
       end
     end
-    
+
     it 'should have the same timestamp as the buildfile' do
       Buildr.application.buildfile.timestamp.should be_close(@buildfile_time, 1)
     end
-    
+
     it 'should have the same timestamp as build.yaml if the latter is newer' do
       write 'build.yaml'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'build.yaml')
       Buildr.application.run
       Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
     end
-    
+
     it 'should have the same timestamp as the buildfile if build.yaml is older' do
       write 'build.yaml'; File.utime(@buildfile_time - 5, @buildfile_time - 5, 'build.yaml')
       Buildr.application.run
       Buildr.application.buildfile.timestamp.should be_close(@buildfile_time, 1)
     end
-    
+
     it 'should have the same timestamp as build.rb in home dir if the latter is newer (until version 1.6)' do
       Buildr::VERSION.should < '1.6'
       write 'home/buildr.rb'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'home/buildr.rb')
@@ -551,7 +551,7 @@ end
 
 
 describe Buildr do
-  
+
   describe 'environment' do
     it 'should be same as Buildr.application.environment' do
       Buildr.environment.should eql(Buildr.application.environment)
