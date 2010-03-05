@@ -72,7 +72,7 @@ module Buildr
       def natures(*values)
         if values.size > 0
           @natures ||= []
-          @natures += values
+          @natures += values.flatten
         else
           @natures || (@project.parent ? @project.parent.eclipse.natures : [])
         end
@@ -97,7 +97,7 @@ module Buildr
       def classpath_containers(*values)
         if values.size > 0
           @classpath_containers ||= []
-          @classpath_containers += values
+          @classpath_containers += values.flatten
         else
           @classpath_containers || (@project.parent ? @project.parent.eclipse.classpath_containers : [])
         end
@@ -109,7 +109,7 @@ module Buildr
       def exclude_libs(*values)
         if values.size > 0
           @exclude_libs ||= []
-          @exclude_libs += values
+          @exclude_libs += values.flatten
         else
           @exclude_libs || (@project.parent ? @project.parent.eclipse.exclude_libs : [])
         end
@@ -141,7 +141,7 @@ module Buildr
       def builders(*values)
         if values.size > 0
           @builders ||= []
-          @builders += values
+          @builders += values.flatten
         else
           @builders || (@project.parent ? @project.parent.eclipse.builders : [])
         end
