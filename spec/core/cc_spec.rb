@@ -84,7 +84,9 @@ describe Buildr::CCTask do
     thread.exit
   end
 
-  it 'should detect change to a file' do
+  it 'should detect change to a file (pending)' do
+    pending
+
     project, compile, test_compile, filter = setup_cc
 
     thread = Thread.new do
