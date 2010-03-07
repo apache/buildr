@@ -22,14 +22,14 @@ repositories.remote << 'http://scala-tools.org/repo-releases/'
 
 
 define 'buildr' do
-  compile.using :source=>'1.4', :target=>'1.4', :debug=>false
+  compile.using :source=>'1.5', :target=>'1.5', :debug=>false
 
   define 'java' do
     compile.using(:javac).from(FileList['lib/buildr/java/**/*.java']).into('lib/buildr/java')
   end
 
   define 'scala' do
-    compile.using(:scalac).from(FileList['lib/buildr/scala/**/*.scala']).into('lib/buildr/scala')
+    compile.using(:javac).from(FileList['lib/buildr/scala/**/*.java']).into('lib/buildr/scala')
   end
 
   desc 'Buildr extra packages (Antlr, Cobertura, Hibernate, Javacc, JDepend, Jetty, OpenJPA, XmlBeans)'
