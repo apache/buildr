@@ -27,13 +27,13 @@ module Buildr
         replace((ENV[@name] || ENV[@name.downcase] || '').split(/\s*,\s*/).reject(&:empty?))
       end
 
-      (Array.instance_methods - Object.instance_methods - Enumerable.instance_methods).sort.each do |method|
-        class_eval %{def #{method}(*args, &block) ; result = super ; write ; result ; end}
+      (Array.instance_methods - Object.instance_methods - Enumerable.instance_methods - ['each']).sort.each do |method|
+        class_eval %{def #{method}(*args, &block) ; result = super ; write_envarray ; result ; end}
       end
 
     private
 
-      def write
+      def write_envarray
         ENV[@name.downcase] = nil
         ENV[@name] = map(&:to_s).join(',')
       end
