@@ -373,7 +373,7 @@ module Buildr
       trace "Downloading #{to_spec}"
       remote = Buildr.repositories.remote.map { |repo_url| URI === repo_url ? repo_url : URI.parse(repo_url) }
       remote = remote.each { |repo_url| repo_url.path += '/' unless repo_url.path[-1] == '/' }
-      fail 'No remote repositories defined!' if remote.empty?
+      fail "Unable to download #{to_spec}. No remote repositories defined." if remote.empty?
       exact_success = remote.find do |repo_url|
         begin
           path = "#{group_path}/#{id}/#{version}/#{File.basename(name)}"
