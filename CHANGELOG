@@ -25,6 +25,7 @@
           (Kerry Wilson)
 * Added:  BUILDR-390 Buildr::group() should accept :classifier argument
 * Change: Updated to Ant 1.8.0
+* Change: Updated to Groovy 1.7.1
 * Change: Updated to JRuby 1.4.0
 * Change: Updated to JtestR 0.5
 * Change: Updated to JUnit 4.7

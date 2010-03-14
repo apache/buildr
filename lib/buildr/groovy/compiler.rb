@@ -53,13 +53,13 @@ module Buildr::Groovy
     # The groovyc compiler jars are added to classpath at load time,
     # if you want to customize artifact versions, you must set them on the
     #
-    #      artifact_ns['Buildr::Compiler::Groovyc'].groovy = '1.5.4'
+    #      artifact_ns['Buildr::Compiler::Groovyc'].groovy = '1.7.1'
     #
     # namespace before this file is required.
     REQUIRES = ArtifactNamespace.for(self) do |ns|
-      ns.groovy!       'org.codehaus.groovy:groovy:jar:>=1.5.3'
-      ns.commons_cli!  'commons-cli:commons-cli:jar:>=1.0'
-      ns.asm!          'asm:asm:jar:>=2.2'
+      ns.groovy!       'org.codehaus.groovy:groovy:jar:>=1.7.1'
+      ns.commons_cli!  'commons-cli:commons-cli:jar:>=1.2'
+      ns.asm!          'asm:asm:jar:>=3.2'
       ns.antlr!        'antlr:antlr:jar:>=2.7.7'
     end
 
