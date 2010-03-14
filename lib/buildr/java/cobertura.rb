@@ -59,8 +59,7 @@ module Buildr
     class << self
       def dependencies
         if (VersionRequirement.create('>=1.9.1').satisfied_by?(REQUIRES.cobertura.version))
-          REQUIRES.asm = '3.0' unless REQUIRES.asm.selected?
-          REQUIRES.asm_tree = '3.0' unless REQUIRES.asm.selected?
+          [:asm, :asm_tree].each { |s| REQUIRES[s] = '3.0' unless REQUIRES[s].selected? }
         end
 
         REQUIRES.artifacts
