@@ -88,6 +88,8 @@
           task properties (Antoine Toulme, Peter Dettman)
 * Fixed:  BUILDR-306 Cobertura extension does not handle dependencies
           correctly (Pepijn Van Eeckhoudt)
+* Fixed:  BUILDR-398 FileUtils#sh does not work correctly on Windows 
+          (Pepijn Van Eeckhoudt)
 * Fixed:  buildr test=all didn't run all tests as expected
 * Fixed:  Fail-fast if package.with() or include() called with nil values
 * Fixed:  Failures not reported correctly for ScalaTest (Alex Eagle)
