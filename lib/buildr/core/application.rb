@@ -636,7 +636,7 @@ module Rake #:nodoc
           old_chain, Thread.current[:rake_chain] = Thread.current[:rake_chain], new_chain
           execute(task_args) if needed?
         ensure
-          Thread.current[:rake_chain] = nil
+          Thread.current[:rake_chain] = old_chain
         end
       end
     end
