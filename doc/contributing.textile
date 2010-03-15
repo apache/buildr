@@ -250,3 +250,8 @@ A test-infected developer since 2001, Lacton yearns for a development infrastruc
 *"Daniel Spiewak":http://www.codecommit.com/blog* (djspiewak at apache.org)
 
 Daniel originally came to Buildr in search of a Scala build tool which was better than Ant.  He got more than he bargained for.  Now, he works to advance Buildr as the absolute best tool for supporting Scala development.
+
+*"Antoine Toulme":http://www.lunar-ocean.com/* (toulmean at apache.org)
+
+Antoine used Buildr first as an excuse to evade in Ruby land, creating plugins for Debian packaging, GWT compilation, or the NSIS installer. His main area of interest is the resolving of dependencies in the OSGi world. He works on making Buildr a standalone rock solid tool.
+
