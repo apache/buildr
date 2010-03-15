@@ -569,5 +569,24 @@ describe Buildr do
       Buildr.settings.should == Buildr.application.settings
     end
   end
+
+end
+
+describe Rake do
+  describe 'define_task' do
+   it 'should restore call chain when invoke is called' do
+     task1 = Rake::Task.define_task('task1') do
+     end
+
+     task2 = Rake::Task.define_task('task2') do
+       chain1 = Thread.current[:rake_chain]
+       task1.invoke
+       chain2 = Thread.current[:rake_chain]
+       chain2.should == chain1
+     end
+
+     task2.invoke
+   end
+ end
 end
 
