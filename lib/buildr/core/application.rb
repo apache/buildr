@@ -568,14 +568,13 @@ end
 
 
 # Add a touch of color when available and running in terminal.
+HighLine.use_color = false
 if $stdout.isatty
   begin
     require 'Win32/Console/ANSI' if Config::CONFIG['host_os'] =~ /mswin/
     HighLine.use_color = true
   rescue LoadError
   end
-else
-  HighLine.use_color = false
 end
 
 
