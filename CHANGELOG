@@ -1,4 +1,6 @@
 1.4.0 (Pending)
+* Added:  Support for Scala 2.8 compiler-level change detection and dependency
+          tracking
 * Added:  Continuous compilation
 * Added:  Generic documentation framework (using the `doc` task).  Replaces 
           `javadoc` task
