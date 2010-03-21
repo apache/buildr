@@ -27,6 +27,7 @@ module Buildr::Scala
     # standard library or nil if Scala is not available.
     def version_str
       begin
+        Java.load
         # Scala version string normally looks like "version 2.7.3.final"
         Java.scala.util.Properties.versionString.sub 'version ', ''
       rescue
