@@ -47,6 +47,19 @@ module Buildr::Scala
         DEFAULT_VERSION       # TODO return the version installed from Maven repo
       end
     end
+
+    def compatible_28?
+      md = version.match /^(\d)\.(\d)/
+      unless md.nil?
+        if md[1].to_i == 2
+          md[2].to_i >= 8
+        else
+          md[1].to_i > 2
+        end
+      else
+        false
+      end
+    end
   end
 
   # Scalac compiler:
@@ -136,12 +149,27 @@ module Buildr::Scala
     def compile(sources, target, dependencies) #:nodoc:
       check_options options, OPTIONS
 
+      java_sources = java_sources(sources)
+      enable_dep_tracing = Scala.compatible_28? && java_sources.empty?
+
+      dependencies.unshift target if enable_dep_tracing
+
       cmd_args = []
       cmd_args << '-classpath' << dependencies.join(File::PATH_SEPARATOR)
       source_paths = sources.select { |source| File.directory?(source) }
       cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
       cmd_args << '-d' << File.expand_path(target)
       cmd_args += scalac_args
+
+      if enable_dep_tracing
+        dep_dir = File.expand_path(target)
+        Dir.mkdir dep_dir unless File.exists? dep_dir
+
+        cmd_args << '-make:transitivenocp'
+        cmd_args << '-dependencyfile'
+        cmd_args << File.expand_path('.scala-deps', dep_dir)
+      end
+
       cmd_args += files_from_sources(sources)
 
       unless Buildr.application.options.dryrun
@@ -160,7 +188,6 @@ module Buildr::Scala
           fail 'Failed to compile, see errors above' if Java.scala.tools.nsc.Main.reporter.hasErrors
         end
 
-        java_sources = java_sources(sources)
         unless java_sources.empty?
           trace 'Compiling mixed Java/Scala sources'
 
