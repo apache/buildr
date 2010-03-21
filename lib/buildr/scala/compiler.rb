@@ -141,13 +141,14 @@ module Buildr::Scala
       options[:warnings] = verbose if options[:warnings].nil?
       options[:deprecation] ||= false
       options[:optimise] ||= false
+      options[:make] ||= :transitivenocp if Scala.compatible_28?
       options[:javac] ||= {}
 
       @java = Javac.new(project, options[:javac])
     end
 
     def compile(sources, target, dependencies) #:nodoc:
-      check_options options, OPTIONS
+      check_options(options, OPTIONS + (Scala.compatible_28? ? [:make] : []))
 
       java_sources = java_sources(sources)
       enable_dep_tracing = Scala.compatible_28? && java_sources.empty?
@@ -165,7 +166,7 @@ module Buildr::Scala
         dep_dir = File.expand_path(target)
         Dir.mkdir dep_dir unless File.exists? dep_dir
 
-        cmd_args << '-make:transitivenocp'
+        cmd_args << '-make:' + options[:make].to_s
         cmd_args << '-dependencyfile'
         cmd_args << File.expand_path('.scala-deps', dep_dir)
       end
