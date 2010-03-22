@@ -161,6 +161,21 @@ describe Buildr::Scala::ScalaTest do
     project('foo').test.failed_tests.should include('FailingSuite')
   end
 
+  it 'should report to reports/scalatest/TEST-TestSuiteName.xml' do
+    write 'src/test/scala/PassingSuite.scala', <<-SCALA
+      class PassingSuite extends org.scalatest.FunSuite {
+        test("passing") {
+          assert(true)
+        }
+      }
+    SCALA
+    define 'foo' do
+      test.report_to.should be(file('reports/scalatest'))
+    end
+    project('foo').test.invoke
+    project('foo').file('reports/scalatest/TEST-PassingSuite.xml').should exist
+  end
+
   it 'should report to reports/scalatest/TEST-TestSuiteName.txt' do
     write 'src/test/scala/PassingSuite.scala', <<-SCALA
       class PassingSuite extends org.scalatest.FunSuite {

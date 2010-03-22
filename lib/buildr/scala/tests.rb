@@ -104,7 +104,8 @@ module Buildr::Scala
       scalatest.each do |suite|
         info "ScalaTest #{suite.inspect}"
         # Use Ant to execute the ScalaTest task, gives us performance and reporting.
-        reportFile = File.join(task.report_to.to_s, "TEST-#{suite}.txt")
+        reportDir = task.report_to.to_s
+        reportFile = File.join(reportDir, "TEST-#{suite}.txt")
         taskdef = Buildr.artifacts(self.class.dependencies).each(&:invoke).map(&:to_s)
         Buildr.ant('scalatest') do |ant|
           ant.taskdef :name=>'scalatest', :classname=>'org.scalatest.tools.ScalaTestTask',
@@ -113,6 +114,8 @@ module Buildr::Scala
             ant.suite    :classname=>suite
             ant.reporter :type=>'stdout', :config=>reporter_options
             ant.reporter :type=>'file', :filename=> reportFile, :config=>reporter_options
+            ant.reporter :type=>(ScalaTest.version == "1.0") ? "xml" : "junitxml",
+                         :directory=> reportDir, :config=>reporter_options
             # TODO: This should be name=>value pairs!
             #ant.includes group_includes.join(" ") if group_includes
             #ant.excludes group_excludes.join(" ") if group_excludes
