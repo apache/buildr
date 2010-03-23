@@ -419,6 +419,12 @@ describe Buildr::Filter do
     @filter.using('key1'=>'value1', 'key2'=>'value2').mapper.should eql(:maven)
   end
 
+  it 'should apply hash mapping with boolean values' do
+    write "src/file", "${key1} and ${key2}"
+    @filter.from('src').into('target').using(:key1=>true, :key2=>false).run
+    read("target/file").should eql("true and false")
+  end
+
   it 'should apply hash mapping using regular expression' do
     1.upto(4) { |i| write "src/file#{i}", "file#{i} with #key1# and #key2#" }
     @filter.from('src').into('target').using(/#(.*?)#/, 'key1'=>'value1', 'key2'=>'value2').run
