@@ -41,6 +41,9 @@ module Buildr
   # relative to the source directories, so:
   #   filter.include '*.png'
   # will only include PNG files from any of the source directories.
+  # In the same way, you can use regular expressions, so:
+  #   filter.include /picture_.*\.png/
+  # will only include PNG files starting with picture_ from any of the sources directories.
   #
   # See Buildr#filter.
   class Filter
@@ -204,8 +207,8 @@ module Buildr
       sources.flatten.map(&:to_s).inject({}) do |map, source|
         files = Util.recursive_with_dot_files(source).
           map { |file| Util.relative_path(file, source) }.
-          select { |file| @include.empty? || @include.any? { |pattern| File.fnmatch(pattern, file) } }.
-          reject { |file| @exclude.any? { |pattern| File.fnmatch(pattern, file) } }
+          select { |file| @include.empty? || @include.any? { |pattern| pattern.is_a?(Regexp) ? file.match(pattern) : File.fnmatch(pattern, file) } }.
+          reject { |file| @exclude.any? { |pattern| pattern.is_a?(Regexp) ? file.match(pattern) : File.fnmatch(pattern, file) } }
         files.each do |file|
           src, dest = File.expand_path(file, source), File.expand_path(file, target.to_s)
           map[file] = src if !File.exist?(dest) || File.stat(src).mtime >= File.stat(dest).mtime
