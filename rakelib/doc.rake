@@ -71,6 +71,13 @@ task :site=>['_site', :rdoc, '_reports/specs.html', '_reports/coverage', 'buildr
   cp_r '_reports/coverage', '_site'
   fail 'No coverage report in site directory' unless File.exist?('_site/coverage/index.html')
   cp 'CHANGELOG', '_site'
+  open("_site/.htaccess", "w") do |htaccess|
+    htacess << %Q{
+<FilesMatch "CHANGELOG">
+ForceType 'text/plain; charset=UTF-8'
+</FilesMatch>
+}
+  end
   cp 'buildr.pdf', '_site'
   fail 'No PDF in site directory' unless File.exist?('_site/buildr.pdf')
   puts 'OK'
