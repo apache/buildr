@@ -1,4 +1,5 @@
 1.4.0 (Pending)
+* Added:  Support for regexps in include and exclude patterns (BUILDR-406)
 * Added:  Support for Scala 2.8 compiler-level change detection and dependency
           tracking
 * Added:  Continuous compilation

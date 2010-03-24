@@ -308,6 +308,11 @@ describe Buildr::Filter do
     @filter.from('src').into('target').include('file2', 'file3').run
     Dir['target/*'].sort.should eql(['target/file2', 'target/file3'])
   end
+  
+  it 'should respond to :include with regular expressions and use these inclusion patterns' do
+    @filter.from('src').into('target').include(/file[2|3]/).run
+    Dir['target/*'].sort.should eql(['target/file2', 'target/file3'])
+  end
 
   it 'should respond to :exclude and return self' do
     @filter.exclude('file').should be(@filter)
@@ -315,6 +320,11 @@ describe Buildr::Filter do
 
   it 'should respond to :exclude and use these exclusion patterns' do
     @filter.from('src').into('target').exclude('file2', 'file3').run
+    Dir['target/*'].sort.should eql(['target/file1', 'target/file4'])
+  end
+  
+  it 'should respond to :exclude  with regular expressions and use these exclusion patterns' do
+    @filter.from('src').into('target').exclude(/file[2|3]/).run
     Dir['target/*'].sort.should eql(['target/file1', 'target/file4'])
   end
 
