@@ -103,6 +103,8 @@
 * Fixed:  Test dependencies should include test compile dependencies
 * Fixed:  Classpath correctly passed to Scala shell
 * Fixed:  Removed redundant tracing of command arguments
+* Fixed:  filter.using(hash) now correctly substitutes mappings with boolean
+          "false" value
 
 1.3.5 (2009-10-05)
 * Added:  Interactive shell (REPL) support
