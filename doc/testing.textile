@@ -4,7 +4,7 @@ title: Testing
 ---
 
 
-Untested code is broken code, so we take testing seriously.  Off the bat you get to use either JUnit or TestNG for writing unit tests and integration tests. And you can also add your own framework, or even script tests using Ruby.  But= first, let's start with the basics.
+Untested code is broken code, so we take testing seriously.  Off the bat you get to use either JUnit or TestNG for writing unit tests and integration tests. And you can also add your own framework, or even script tests using Ruby.  But first, let's start with the basics.
 
 
 h2(#writing). Writing Tests
