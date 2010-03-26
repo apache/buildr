@@ -199,6 +199,27 @@ module Buildr
       target.to_s
     end
 
+  protected
+  
+    # :call-seq:
+    #   pattern_match(file, pattern) => boolean
+    # 
+    # This method returns true if the file name matches the pattern.
+    # The pattern may be a String, a Regexp or a Proc.
+    #
+    def pattern_match(file, pattern)
+      case
+      when pattern.is_a?(Regexp)
+        return file.match(pattern)
+      when pattern.is_a?(String)
+        return File.fnmatch(pattern, file)
+      when pattern.is_a?(Proc)
+        return pattern.call(file)
+      else
+        raise "Cannot interpret pattern #{pattern}"
+      end
+    end
+    
   private
     def copy_map
       sources.each { |source| raise "Source directory #{source} doesn't exist" unless File.exist?(source.to_s) }
@@ -207,8 +228,8 @@ module Buildr
       sources.flatten.map(&:to_s).inject({}) do |map, source|
         files = Util.recursive_with_dot_files(source).
           map { |file| Util.relative_path(file, source) }.
-          select { |file| @include.empty? || @include.any? { |pattern| pattern.is_a?(Regexp) ? file.match(pattern) : File.fnmatch(pattern, file) } }.
-          reject { |file| @exclude.any? { |pattern| pattern.is_a?(Regexp) ? file.match(pattern) : File.fnmatch(pattern, file) } }
+          select { |file| @include.empty? || @include.any? { |pattern| pattern_match(file, pattern) } }.
+          reject { |file| @exclude.any? { |pattern| pattern_match(file, pattern) } }
         files.each do |file|
           src, dest = File.expand_path(file, source), File.expand_path(file, target.to_s)
           map[file] = src if !File.exist?(dest) || File.stat(src).mtime >= File.stat(dest).mtime
