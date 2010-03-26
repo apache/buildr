@@ -44,15 +44,15 @@ When tests fail, Buildr fails the @test@ task.  This is usually a good thing, bu
 test.using :fail_on_failure=>false
 {% endhighlight %}
 
-Besides giving you a free pass to ignore failures, you can use it for other causes, for example, to be somewhat forgiving:
+Besides giving you a free pass to ignore failures, you can use it for other causes, for example, as a gentle reminder:
 
 {% highlight ruby %}
 test do
-  fail 'More than 3 tests failed!' if test.failed_tests.size > 3
+  warn "Did you forget something?" if test.tests.nil? || test.tests.empty?
 end
 {% endhighlight %}
 
-The @failed_tests@ collection holds the names of all classes with failed tests. And there's @classes@, which holds the names of all test classes.  Ruby arithmetic allows you to get the name of all passed test classes with a simple @test.classes – test.failed_tests@.  We'll let you imagine creative use for these two.
+The @tests@ collection holds the names of all classes with tests, if any. And there's @classes@, which holds the names of all test classes.  We'll let you imagine creative use for these two.
 
 
 h2(#running). Running Tests
