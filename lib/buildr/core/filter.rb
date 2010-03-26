@@ -84,6 +84,8 @@ module Buildr
       return nil unless @target_dir
       unless @target
         @target = file(File.expand_path(@target_dir)) { |task| run if @target == task }
+        @target.enhance @include.select {|f| f.is_a?(Rake::FileTask)}
+        @target.enhance @exclude.select {|f| f.is_a?(Rake::FileTask)}
         @target.enhance copy_map.values
       end
       @target
@@ -215,6 +217,8 @@ module Buildr
         return File.fnmatch(pattern, file)
       when pattern.is_a?(Proc)
         return pattern.call(file)
+      when pattern.is_a?(Rake::FileTask)
+        return pattern.to_s.match(file)
       else
         raise "Cannot interpret pattern #{pattern}"
       end
