@@ -27,8 +27,10 @@
 * Added:  BUILDR-375 Buildr now recognizes buildfile.rb and Buildfile.rb
           (Kerry Wilson)
 * Added:  BUILDR-390 Buildr::group() should accept :classifier argument
-* Added:  BUILDR-407: Exclude and include patterns should support lambdas or procs
-* Added:  BUILDR-408: Filter include() and exclude() should accept Rake tasks
+* Added:  BUILDR-407 Exclude and include patterns should support lambdas or procs
+* Added:  BUILDR-408 Filter include() and exclude() should accept Rake tasks
+* Added:  BUILDR-409 archive.include() should convert arguments to artifact
+          if applicable
 * Added:  ScalaTest now generates JUnit XML reports in addition to text files.
 * Change: Updated to Ant 1.8.0
 * Change: Updated to Groovy 1.7.1

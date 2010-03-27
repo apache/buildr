@@ -61,7 +61,7 @@ module Buildr
       #   include(*files, :merge=>true) => self
       def include(*args)
         options = args.pop if Hash === args.last
-        files = args.flatten
+        files = to_artifacts(args)
         raise 'AchiveTask.include() values should not include nil' if files.include? nil
 
         if options.nil? || options.empty?
@@ -92,7 +92,7 @@ module Buildr
       # :call-seq:
       #   exclude(*files) => self
       def exclude(*files)
-        files = files.flatten.map(&:to_s)
+        files = to_artifacts(files)
         @excludes |= files
         @excludes |= files.reject { |f| f =~ /\*$/ }.map { |f| "#{f}/*" }
         self
@@ -103,7 +103,7 @@ module Buildr
       #   merge(*files, :path=>name) => Merge
       def merge(*args)
         options = Hash === args.last ? args.pop : {}
-        files = args.flatten
+        files = to_artifacts(args)
         rake_check_options options, :path
         raise ArgumentError, "Expected at least one file to merge" if files.empty?
         path = options[:path] || @path
@@ -173,6 +173,30 @@ module Buildr
       end
 
     protected
+
+    # Convert objects to artifacts, where applicable
+    def to_artifacts(files)
+      files.flatten.inject([]) do |set, file|
+        case file
+        when ArtifactNamespace
+          set |= file.artifacts
+        when Symbol, Hash
+          set |= [artifact(file)]
+        when /([^:]+:){2,4}/ # A spec as opposed to a file name.
+          set |= [Buildr.artifact(file)]
+        when Project
+          set |= Buildr.artifacts(file.packages)
+        when Rake::Task
+          set |= [file]
+        when Struct
+          set |= Buildr.artifacts(file.values)
+        else
+          # non-artifacts passed as-is; in particular, String paths are
+          # unmodified since Rake FileTasks don't use absolute paths
+          set |= [file]
+        end
+      end
+    end
 
     def include_as(source, as)
         @sources << proc { source }
