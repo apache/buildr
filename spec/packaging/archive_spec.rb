@@ -88,6 +88,22 @@ describe 'ArchiveTask', :shared=>true do
     inspect_archive.keys.should include('included')
   end
 
+  it 'should archive artifacts' do
+    write 'library-1.0.txt', 'library-1.0'
+    artifact("org.example:library:txt:1.0").from 'library-1.0.txt'
+    archive(@archive).include("org.example:library:txt:1.0").invoke
+    inspect_archive.keys.should include('library-1.0.txt')
+  end
+
+  it 'should archive project artifacts' do
+    define 'p1' do
+      project.version = '1.0'
+      package(:zip)
+    end
+    archive(@archive).include(project('p1')).invoke
+    inspect_archive.keys.should include('p1-1.0.zip')
+  end
+
   it 'should include entry for directory' do
     archive(@archive).include(@dir).invoke
     inspect_archive { |archive| @files.each { |f| archive['test/' + File.basename(f)].should eql(content_for(f)) } }
