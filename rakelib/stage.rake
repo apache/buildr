@@ -47,7 +47,9 @@ task :prepare do |task, args|
   # Need GPG to sign the packages.
   lambda do
     args.gpg or fail "Please run with gpg=<argument for gpg --local-user>"
-    fail "No GPG user #{args.gpg}" if `gpg2 --list-keys #{args.gpg}`.empty?
+    gpg_ok = `gpg2 --list-keys #{args.gpg}`
+    gpg_ok = `gpg --list-keys #{args.gpg}` if !$?.success?
+    fail "No GPG user #{args.gpg}" if gpg_ok.empty?
   end.call
 
   task(:license).invoke
