@@ -41,6 +41,8 @@ module Buildr
 
     class << self
     private
+    
+      # :stopdoc:
       def included(mod)
         mod.extend self
       end
@@ -58,6 +60,8 @@ module Buildr
         base.instance_eval { alias :uninstall :uninstall_old } if base.respond_to? :uninstall_old
         base.instance_eval { alias :upload :upload_old       } if base.respond_to? :upload_old
       end
+      
+      # :startdoc:
     end
 
     # The artifact identifier.

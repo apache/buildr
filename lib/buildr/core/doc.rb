@@ -74,8 +74,8 @@ module Buildr
       # Returns the documentation tool options.
       attr_reader :options
 
-      # :nodoc:
-      attr_reader :project
+      
+      attr_reader :project # :nodoc:
 
       def initialize(*args) #:nodoc:
         super
