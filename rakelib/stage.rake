@@ -23,6 +23,7 @@ rescue LoadError
   task(:setup) { install_gem 'rubyforge' }
 end
 
+gpg_cmd = 'gpg2'
 
 task :prepare do |task, args|
   # Make sure we're doing a release from checked code.
@@ -48,7 +49,10 @@ task :prepare do |task, args|
   lambda do
     args.gpg or fail "Please run with gpg=<argument for gpg --local-user>"
     gpg_ok = `gpg2 --list-keys #{args.gpg}`
-    gpg_ok = `gpg --list-keys #{args.gpg}` if !$?.success?
+    if !$?.success?
+      gpg_ok = `gpg --list-keys #{args.gpg}` 
+      gpg_cmd = 'gpg'
+    end
     fail "No GPG user #{args.gpg}" if gpg_ok.empty?
   end.call
 
@@ -113,7 +117,7 @@ task :stage=>['setup', 'doc:setup', :clobber, :prepare] do |task, args|
       bytes = File.open(pkg, 'rb') { |file| file.read }
       File.open(pkg + '.md5', 'w') { |file| file.write Digest::MD5.hexdigest(bytes) << ' ' << File.basename(pkg) }
       File.open(pkg + '.sha1', 'w') { |file| file.write Digest::SHA1.hexdigest(bytes) << ' ' << File.basename(pkg) }
-      sh 'gpg2', '--local-user', args.gpg, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
+      sh gpg_cmd, '--local-user', args.gpg, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
     end
     cp 'etc/KEYS', '_staged/dist'
     puts "[X] Created and signed release packages in _staged/dist"
