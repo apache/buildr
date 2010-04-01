@@ -72,7 +72,7 @@ task :site=>['_site', :rdoc, '_reports/specs.html', '_reports/coverage', 'buildr
   fail 'No coverage report in site directory' unless File.exist?('_site/coverage/index.html')
   cp 'CHANGELOG', '_site'
   open("_site/.htaccess", "w") do |htaccess|
-    htacess << %Q{
+    htaccess << %Q{
 <FilesMatch "CHANGELOG">
 ForceType 'text/plain; charset=UTF-8'
 </FilesMatch>
