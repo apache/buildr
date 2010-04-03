@@ -757,6 +757,28 @@ describe Rake::Task, 'test' do
     options.test = :all
     lambda { task('test').invoke rescue nil }.should run_tasks('foo:test', 'bar:test')
   end
+  
+  it 'should ignore failure in subprojects if options.test is :all' do
+    define('foo') {
+      define('p1') { test { fail } } 
+      define('p2') { test {  } } 
+      define('p3') { test { fail } } 
+    }
+    define('bar') { test { fail } } 
+    options.test = :all
+    lambda { task('test').invoke rescue nil }.should run_tasks('foo:p1:test', 'foo:p2:test', 'foo:p3:test', 'bar:test')
+  end
+  
+  it 'should ignore failure in subprojects if environment variable test is \'all\'' do
+    define('foo') {
+      define('p1') { test { fail } } 
+      define('p2') { test {  } } 
+      define('p3') { test { fail } } 
+    }
+    define('bar') { test { fail } } 
+    ENV['test'] = 'all'
+    lambda { task('test').invoke rescue nil }.should run_tasks('foo:p1:test', 'foo:p2:test', 'foo:p3:test', 'bar:test')
+  end
 
   it 'should ignore failure if options.test is :all and target is build task ' do
     define('foo') { test { fail } }
