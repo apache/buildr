@@ -81,4 +81,16 @@ describe Idea7x do
       ipr_module_fileurls.should include("file://$PROJECT_DIR$/aitch/alphabet-h-7x.iml")
     end
   end
+  
+  describe "idea7x:clean" do
+    
+    it "should remove the idea7x project" do
+      write "src/main/java/com/example/Hello.java", ""
+      write "foo-7x.iml", ""
+      foo = define("foo")
+      foo.task("idea7x:clean").invoke
+      File.exists?("foo-7x.iml").should be_false
+    end
+    
+  end
 end

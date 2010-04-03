@@ -37,10 +37,14 @@ module Buildr
       # Global task "idea" generates artifacts for all projects.
       desc "Generate Idea 7.x artifacts for all projects"
       Project.local_task "idea7x"=>"artifacts"
+
+      desc "Delete the generated  Idea 7.x artifacts for all projects"
+      Project.local_task "idea7x:clean"
     end
 
     before_define(:idea7x) do |project|
       project.recursive_task("idea7x")
+      project.recursive_task("idea7x:clean")
     end
 
     after_define(:idea7x => :package) do |project|
@@ -99,11 +103,18 @@ module Buildr
         end
       end
 
+      # Add task to remove generated module
+      project.task("idea7x:clean") do
+        if File.exist?(task_name)
+          info "Removing #{task_name}"
+          rm_rf task_name 
+        end
+      end
+
       # Root project aggregates all the subprojects.
       if project.parent == nil
         Buildr::Idea7x.generate_ipr(project, idea7x, Buildr.application.buildfile)
       end
-
     end # after_define
 
     class << self
@@ -198,6 +209,14 @@ module Buildr
           template_xml.root.add_element(include_xml.root)
           File.open task.name, 'w' do |file|
             template_xml.write file
+          end
+        end
+
+        # Add task to remove generated project file
+        project.task("idea7x:clean") do
+          if File.exist?(task_name)
+            info "Removing #{task_name}" 
+            rm_rf task_name 
           end
         end
       end
