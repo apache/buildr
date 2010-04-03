@@ -369,7 +369,6 @@ module Buildr
     def compiler=(name) #:nodoc:
       cls = Compiler.select(name) or raise ArgumentError, "No #{name} compiler available. Did you install it?"
       return self if cls === @compiler
-      raise "#{compiler} compiler already selected for this project" if @compiler
       @compiler = cls.new(project, options)
       from Array(cls.sources).map { |path| project.path_to(:source, usage, path) }.
         select { |path| File.exist?(path) } if sources.empty?
