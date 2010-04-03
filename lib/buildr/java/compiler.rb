@@ -47,7 +47,7 @@ module Buildr
       def initialize(project, options) #:nodoc:
         super
         options[:debug] = Buildr.options.debug if options[:debug].nil?
-        options[:warnings] = verbose if options[:warnings].nil?
+        options[:warnings] ||= false
         options[:deprecation] ||= false
         options[:lint] ||= false
       end
