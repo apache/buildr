@@ -42,6 +42,8 @@
 * Change: Updated to Scala Specs 1.6.2
 * Change: Load buildr.rb from $HOME/.buildr instead of $HOME
           ($HOME/buildr.rb is still loaded with deprecation warning)
+* Change: BUILDR-400 Don't forbid projects to use their own compiler after one has been guessed
+* Change: BUILDR-401 Don't set compiler to output warnings if verbose
 * Fixed:  BUILDR-208 ansi control characters are printed on Windows (Pepjin Van Eeckhoudt)
 * Fixed:  BUILDR-348 Buildr fails on windows with jruby and ODE 1.X
 * Fixed:  BUILDR-183 Can't define root artifact namespace outside of project
