@@ -28,9 +28,23 @@ module Buildr::Scala
     def version_str
       begin
         # Scala version string normally looks like "version 2.7.3.final"
-        Java.scala.util.Properties.versionString.sub 'version ', ''
+        Java.scala.util.Properties.versionString.sub 'version ', ''         # first try to read it via the internal API
       rescue
-        nil
+        unless Scalac.scala_home.nil?
+          begin
+            # ...then try to read the value from the properties file
+            props = Zip::ZipFile.open(File.expand_path('lib/scala-library.jar', Scalac.scala_home)) do |zipfile|
+              zipfile.read 'library.properties'
+            end
+
+            md = props.match /version\.number\s*=\s*([^\s]+)/
+            if md.nil? then nil else md[1] end
+          rescue
+            nil
+          end
+        else
+          nil
+        end
       end
     end
 
