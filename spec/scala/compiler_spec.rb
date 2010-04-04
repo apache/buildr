@@ -152,7 +152,7 @@ describe 'scalac compiler options' do
     compile_task.options.warnings.should be_false
   end
 
-  it 'should set wranings option to true when running with --verbose option' do
+  it 'should set warnings option to true when running with --verbose option' do
     verbose true
     compile_task.options.warnings.should be_true
   end
