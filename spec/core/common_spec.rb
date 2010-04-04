@@ -308,17 +308,17 @@ describe Buildr::Filter do
     @filter.from('src').into('target').include('file2', 'file3').run
     Dir['target/*'].sort.should eql(['target/file2', 'target/file3'])
   end
-  
+
   it 'should respond to :include with regular expressions and use these inclusion patterns' do
     @filter.from('src').into('target').include(/file[2|3]/).run
     Dir['target/*'].sort.should eql(['target/file2', 'target/file3'])
   end
-  
+
   it 'should respond to :include with a Proc and use these inclusion patterns' do
     @filter.from('src').into('target').include(lambda {|file| file[-1, 1].to_i%2 == 0}).run
     Dir['target/*'].sort.should eql(['target/file2', 'target/file4'])
   end
-  
+
   it 'should respond to :include with a FileTask and use these inclusion patterns' do
     @filter.from('src').into('target').include(file('target/file2'), file('target/file4')).run
     Dir['target/*'].sort.should eql(['target/file2', 'target/file4'])
@@ -332,22 +332,22 @@ describe Buildr::Filter do
     @filter.from('src').into('target').exclude('file2', 'file3').run
     Dir['target/*'].sort.should eql(['target/file1', 'target/file4'])
   end
-  
+
   it 'should respond to :exclude with regular expressions and use these exclusion patterns' do
     @filter.from('src').into('target').exclude(/file[2|3]/).run
     Dir['target/*'].sort.should eql(['target/file1', 'target/file4'])
   end
-  
+
   it 'should respond to :exclude with a Proc and use these exclusion patterns' do
     @filter.from('src').into('target').exclude(lambda {|file| file[-1, 1].to_i%2 == 0}).run
     Dir['target/*'].sort.should eql(['target/file1', 'target/file3'])
   end
-  
+
   it 'should respond to :exclude with a FileTask and use these exclusion patterns' do
     @filter.from('src').into('target').exclude(file('target/file1'), file('target/file3')).run
     Dir['target/*'].sort.should eql(['target/file2', 'target/file4'])
   end
-  
+
   it 'should respond to :exclude with a FileTask, use these exclusion patterns and depend on those tasks' do
     file1 = false
     file2 = false
