@@ -23,16 +23,16 @@ module Buildr::Scala
 
   class << self
 
-    # Retrieves the Scala version string from the
-    # standard library or nil if Scala is not available.
     def version_str
-      begin
-        # Scala version string normally looks like "version 2.7.3.final"
-        Java.scala.util.Properties.versionString.sub 'version ', ''         # first try to read it via the internal API
-      rescue
-        unless Scalac.scala_home.nil?
-          begin
-            # ...then try to read the value from the properties file
+      warn "Use of Scala.version_str is deprecated.  Use Scala.version instead"
+      version
+    end
+
+    def installed_version
+      unless @installed_version
+        @installed_version = if Scalac.installed?
+          version_str = begin
+            # try to read the value from the properties file
             props = Zip::ZipFile.open(File.expand_path('lib/scala-library.jar', Scalac.scala_home)) do |zipfile|
               zipfile.read 'library.properties'
             end
@@ -42,22 +42,30 @@ module Buildr::Scala
           rescue
             nil
           end
+
+          unless version_str.nil?
+            md = version_str.match(/\d+\.\d[\d\.]*/) or
+              fail "Unable to parse Scala version: #{version_str}"
+
+            md[0].sub(/.$/, "") # remove trailing dot, if any
+          else
+            nil
+          end
         else
           nil
         end
       end
+
+      @installed_version
     end
 
     def version
       if Buildr.settings.build['scala.version']
         Buildr.settings.build['scala.version']
-      elsif version_str
-        # any consecutive sequence of numbers followed by dots
-        match = version_str.match(/\d+\.\d[\d\.]*/) or
-          fail "Unable to parse Scala version: #{version_str} "
-        match[0].sub(/.$/, "") # remove trailing dot, if any
+      elsif installed_version
+        installed_version
       else
-        DEFAULT_VERSION       # TODO return the version installed from Maven repo
+        DEFAULT_VERSION
       end
     end
 
@@ -117,8 +125,16 @@ module Buildr::Scala
         !scala_home.nil?
       end
 
+      def use_installed?
+        if installed? && Buildr.settings.build['scala.version']
+          Buildr.settings.build['scala.version'] == Scala.installed_version
+        else
+          !Buildr.settings.build['scala.version'] && installed?
+        end
+      end
+
       def dependencies
-        if installed?
+        if use_installed?
           ['scala-library', 'scala-compiler'].map { |s| File.expand_path("lib/#{s}.jar", scala_home) }
         else
           REQUIRES.artifacts.map(&:to_s)
@@ -126,7 +142,7 @@ module Buildr::Scala
       end
 
       def use_fsc
-        installed? && ENV["USE_FSC"] =~ /^(yes|on|true)$/i
+        use_installed? && ENV["USE_FSC"] =~ /^(yes|on|true)$/i
       end
 
       def applies_to?(project, task) #:nodoc:
