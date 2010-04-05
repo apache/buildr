@@ -40,7 +40,7 @@ module Buildr
   #
   module Cobertura
 
-    VERSION = '1.9'
+    VERSION = '1.9.4.1'
 
     class << self
       def version

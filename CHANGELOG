@@ -35,6 +35,7 @@
           if applicable
 * Added:  ScalaTest now generates JUnit XML reports in addition to text files.
 * Change: Updated to Ant 1.8.0
+* Change: Updated to Cobertura 1.9.4.1
 * Change: Updated to Groovy 1.7.1
 * Change: Updated to JRuby 1.4.0
 * Change: Updated to JtestR 0.5
