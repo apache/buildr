@@ -32,7 +32,7 @@ module Buildr::Scala
     @lang = :scala
     @bdd_dir = :spec
 
-    VERSION = '1.6.2'
+    VERSION = '1.6.2.1'
 
     class << self
       def version
