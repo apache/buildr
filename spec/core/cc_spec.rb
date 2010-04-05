@@ -51,12 +51,12 @@ module CCHelper
   end
 
   def tests
-    @sources ||= ['Test1.java', 'Test2.java'].map { |f| File.join('src/test/java/thepackage', f) }.
+    @tests ||= ['Test1.java', 'Test2.java'].map { |f| File.join('src/test/java/thepackage', f) }.
       each { |src| write src, "package thepackage; class #{src.pathmap('%n')} {}" }
   end
 
   def resources
-    @sources ||= ['Test1.html', 'Test2.html'].map { |f| File.join('src/main/resources', f) }.
+    @resources ||= ['Test1.html', 'Test2.html'].map { |f| File.join('src/main/resources', f) }.
       each { |src| write src, '<html></html>' }
   end
 end
@@ -84,28 +84,91 @@ describe Buildr::CCTask do
     thread.exit
   end
 
-  it 'should detect change to a file (pending)' do
-    pending
+  it 'should detect a file change' do |spec|
+    
+    write 'src/main/java/Example.java', "public class Example {}"
+    write 'src/test/java/ExampleTest.java', "public class ExampleTest {}"
+    
+    project = define("foo")
+    cc = project.cc
+    
+    compile = project.compile
+    
 
-    project, compile, test_compile, filter = setup_cc
+    test_compile = project.test.compile
 
+    filter = project.resources
+    
+    # After first period:
+    compile.should_receive :invoke
+    test_compile.should_receive :invoke
+    filter.should_not_receive :run
+    
     thread = Thread.new do
       project.cc.invoke
     end
-
+    
     sleep 0.5
-
+    
     compile.should_receive :reenable
     compile.should_receive :invoke
 
-    test_compile.should_not_receive :reenable
-    test_compile.should_not_receive :invoke
+    test_compile.should_receive :reenable
+    test_compile.should_receive :invoke
 
     filter.should_not_receive :run
+    
+    sleep 1 # Wait one sec as the timestamp needs to be different.
+    touch File.join(Dir.pwd, 'src/main/java/Example.java')
+    sleep 0.2# Wait one standard delay
+    
+    thread.exit
+  end
+  
+  
+  it 'should support subprojects' do |spec|
+    
+    write 'foo/src/main/java/Example.java', "public class Example {}"
+    write 'foo/src/test/java/ExampleTest.java', "public class ExampleTest {}"
+    
+    define 'container' do
+      define('foo')
+    end
+    
+    project = project("container:foo")
+    cc = project.cc
+    
+    compile = project.compile
 
-    touch sources.first
-    sleep(project.cc.delay * 5)
+    test_compile = project.test.compile
 
+    filter = project.resources
+    
+    
+    # After first period:
+    compile.should_receive :invoke
+    test_compile.should_receive :invoke
+    filter.should_not_receive :run
+    
+    thread = Thread.new do
+      project("container").cc.invoke
+    end
+    
+    sleep 0.5
+    
+    # After we changed the file:
+    compile.should_receive :reenable
+    compile.should_receive :invoke
+
+    test_compile.should_receive :reenable
+    test_compile.should_receive :invoke
+    
+    filter.should_not_receive :run
+    
+    sleep 1 # Wait one sec as the timestamp needs to be different.
+    touch File.join(Dir.pwd, 'foo/src/main/java/Example.java')
+    sleep 0.2 # Wait one standard delay
+    
     thread.exit
   end
 end

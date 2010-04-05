@@ -52,9 +52,9 @@ module Buildr
       main_dirs = project.compile.sources.map(&:to_s)
       test_dirs = project.task('test:compile').sources.map(&:to_s)
       res_dirs = project.resources.sources.map(&:to_s)
-
-      main_ext = Buildr::Compiler.select(project.compile.compiler).source_ext.map(&:to_s)
-      test_ext = Buildr::Compiler.select(project.task('test:compile').compiler).source_ext.map(&:to_s)
+      
+      main_ext = Buildr::Compiler.select(project.compile.compiler).source_ext.map(&:to_s) unless project.compile.compiler.nil?
+      test_ext = Buildr::Compiler.select(project.task('test:compile').compiler).source_ext.map(&:to_s) unless project.task('test:compile').compiler.nil?
 
       test_tail = if test_dirs.empty? then '' else ",{#{test_dirs.join ','}}/**/*.{#{test_ext.join ','}}" end
       res_tail = if res_dirs.empty? then '' else ",{#{res_dirs.join ','}}/**/*" end
@@ -151,12 +151,14 @@ module Buildr
     include Extension
 
     first_time do
-      Project.local_task :cc
+      desc 'Execute continuous compilation, listening to changes'
+      Project.local_task('cc') { |name|  "Executing continuous compilation for #{name}" }
     end
 
     before_define do |project|
       cc = CCTask.define_task :cc
       cc.send :associate_with, project
+      project.recursive_task(:cc)
     end
 
     def cc
