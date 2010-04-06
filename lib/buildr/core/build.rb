@@ -400,6 +400,16 @@ module Buildr
       fail "Uncommitted files violate the First Principle Of Release!\n#{uncommitted.join("\n")}" unless uncommitted.empty?
       fail "You are releasing from a local branch that does not track a remote!" unless Git.remote
     end
+    
+    # Use this to specify a different tag name for tagging the release in source control.
+    # You can set the tag name or a proc that will be called with the version number,
+    # for example:
+    #   Release.find.tag_name = lambda { |ver| "foo-#{ver}" }
+    # Deprecated: you should use Release.tag_name instead
+    def tag_name(tag_proc)
+      warn("Release.find.tag_name is deprecated. You should use Release.tag_name instead")
+      Release.tag_name(tag_proc)
+    end
 
     # Add a tag reference in .git/refs/tags and push it to the remote if any.
     # If a tag with the same name already exists it will get deleted (in both local and remote repositories).
