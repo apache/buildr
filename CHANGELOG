@@ -120,7 +120,10 @@
 * Fixed:  filter.using(hash) now correctly substitutes mappings with boolean
           "false" value
 * Fixed:  BUILDR-404 buildr -V causes exception on JRuby
-* Fixed:  BUILDR-411: fix for RDoc generation
+* Fixed:  BUILDR-411 fix for RDoc generation
+* Fixed:  BUILDR-417 package_as_javadoc calls deprecated method  
+          (Pepijn Van Eeckhoudt)
+
 * Fixed:  BUILDR-414: Provide tag_name method on GitRelease as part of API
 1.3.5 (2009-10-05)
 * Added:  Interactive shell (REPL) support
