@@ -700,8 +700,8 @@ module Buildr
 
       def package_as_javadoc(file_name) #:nodoc:
         ZipTask.define_task(file_name).tap do |zip|
-          zip.include :from=>javadoc.target
-          javadoc.options[:windowtitle] ||= project.comment || project.name
+          zip.include :from=>doc.target
+          doc.options[:windowtitle] ||= project.comment || project.name
         end
       end
 
