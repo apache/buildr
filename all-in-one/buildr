@@ -260,6 +260,12 @@ if [[ $darwin && -z "$JAVA_ENCODING" ]]; then
   java_args=("${java_args[@]}" "-Dfile.encoding=UTF-8")
 fi
 
+# Force -client mode for Buildr
+JAVA_VM=-client
+
+# Add unsafe optimizations known to be sound for Buildr
+JAVA_OPTS="$JAVA_OPTS -Djruby.compile.frameless=true -Djruby.compile.positionless=true -Djruby.compile.threadless=true -Djruby.compile.fastops=true"
+
 # Add a property to report memory max
 JAVA_OPTS="$JAVA_OPTS $JAVA_VM -Djruby.memory.max=${JAVA_MEM:4} -Djruby.stack.max=${JAVA_STACK:4}"
 
