@@ -76,6 +76,13 @@ task "all-in-one" => :gem do
     rm zip if File.exist? zip
     sh 'zip', '-q', '-r', zip, new_dir
     puts "[X] Zipped distribution"
+   
+    puts "Tarring distribution ..."
+    tar = "#{new_dir}.tar.gz"
+    rm tar if File.exist? tar
+    sh 'tar', 'czf', tar, new_dir
+    puts "[X] Tarred distribution"
+    
     rm_rf new_dir
   end.call
 
