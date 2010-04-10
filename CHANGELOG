@@ -123,6 +123,7 @@
 * Fixed:  BUILDR-411 fix for RDoc generation
 * Fixed:  BUILDR-417 package_as_javadoc calls deprecated method  
           (Pepijn Van Eeckhoudt)
+* Fixed:  BUILDR-412 Gemspec dependencies don't add up - to the point it's not possible to release
 * Fixed:  BUILDR-414 Provide tag_name method on GitRelease as part of API
 * Fixed:  BUILDR-419 Exclusion patterns only work if they contain a wildcard
 * Fixed:  BUILDR-421 The MANIFEST.MF file packaged by Buildr as permissions set to 600
