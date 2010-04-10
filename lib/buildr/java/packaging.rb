@@ -172,6 +172,7 @@ module Buildr
               # Tempfiles gets deleted on garbage collection, so we're going to hold on to it
               # through instance variable not closure variable.
               @manifest_tmp = Tempfile.new('MANIFEST.MF')
+              File.chmod 0644, @manifest_tmp.path
               self.manifest = File.read(manifest.to_s) if String === manifest || Rake::Task === manifest
               self.manifest = Manifest.new(manifest) unless Manifest === manifest
               #@manifest_tmp.write Manifest::STANDARD_HEADER
