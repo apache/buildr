@@ -187,6 +187,16 @@ shared_examples_for 'package with manifest' do
       manifest.main['Meta'].should eql('data')
     end
   end
+  
+  it 'should give 644 permissions to the manifest' do
+    package_with_manifest  [ {}, { 'Name'=>'first', :Foo=>'first', :bar=>'second' } ]
+    package ||= project('foo').package(@packaging)
+    package.invoke
+    Zip::ZipFile.open(package.to_s) do |zip|
+      permissions = format("%o", zip.file.stat('META-INF/MANIFEST.MF').mode)
+      permissions.should match /644$/
+    end
+  end
 
   it 'should not add manifest version twice' do
     write 'MANIFEST.MF', 'Manifest-Version: 1.9'
