@@ -410,6 +410,15 @@ describe Packaging, 'jar' do
   it_should_behave_like 'package with meta_inf'
   before { @meta_inf_ignore = 'MANIFEST.MF' }
 
+  it 'should place the manifest as the first entry of the file' do
+    write 'src/main/java/Test.java', 'class Test {}'
+    define('foo', :version=>'1.0') { package(:jar) }
+    project('foo').package(:jar).invoke
+    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+      jar.entries.map(&:to_s).first.should == 'META-INF/MANIFEST.MF'
+    end
+  end
+  
   it 'should use files from compile directory if nothing included' do
     write 'src/main/java/Test.java', 'class Test {}'
     define('foo', :version=>'1.0') { package(:jar) }
