@@ -41,8 +41,10 @@ module Buildr
               if File.directory?(path)
                 in_directory path do |file, rel_path|
                   dest = "#{@path}#{rel_path}"
-                  trace "Adding #{dest}"
-                  file_map[dest] = file
+                  unless excluded?(dest)
+                    trace "Adding #{dest}"
+                    file_map[dest] = file
+                  end
                 end
               else
                 trace "Adding #{@path}#{File.basename(path)}"
@@ -208,8 +210,10 @@ module Buildr
                 path = rel_path.split('/')[1..-1]
                 path.unshift as unless as == '.'
                 dest = "#{@path}#{path.join('/')}"
-                trace "Adding #{dest}"
-                file_map[dest] = file
+                unless excluded?(dest) 
+                  trace "Adding #{dest}"
+                  file_map[dest] = file
+                end
               end
             else
               trace "Adding #{@path}#{as}"

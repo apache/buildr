@@ -479,6 +479,16 @@ describe Packaging, 'jar' do
       define('foo', :version=>'1.0') { package(:jar).with(nil) }
     }.should raise_error
   end
+  
+  it 'should exclude resources when ordered to do so' do
+    write 'src/main/resources/foo.xml', ''
+    foo = define('foo', :version => '1.0') { package(:jar).exclude('foo.xml')}
+    foo.package(:jar).invoke
+    Zip::ZipFile.open(foo.package(:jar).to_s) do |jar|
+      jar.entries.map(&:to_s).sort.should_not include('foo.xml')
+    end
+  end
+    
 end
 
 
