@@ -178,7 +178,7 @@ module Buildr
               #@manifest_tmp.write Manifest::STANDARD_HEADER
               @manifest_tmp.write manifest.to_s
               @manifest_tmp.write "\n"
-              @manifest_tmp.rewind
+              @manifest_tmp.close
               path('META-INF').include @manifest_tmp.path, :as=>'MANIFEST.MF'
             end
           end

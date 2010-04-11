@@ -120,6 +120,16 @@ shared_examples_for 'package with manifest' do
       manifest.main['bar'].should eql('Bar')
     end
   end
+  
+  it 'should close the temporary file used for packaging the MANIFEST.MF file' do
+    package_with_manifest 'Foo'=>1, :bar=>'Bar'
+    package = project('foo').package(@packaging)
+    package.invoke
+    module AccessManifestTMP
+      attr_reader :manifest_tmp
+    end
+    (package.dup.extend(AccessManifestTMP).manifest_tmp.closed?).should be_true
+  end
 
   it 'should end hash manifest with EOL' do
     package_with_manifest 'Foo'=>1, :bar=>'Bar'
