@@ -114,9 +114,6 @@ module Sandbox
     end
     Buildr.options.proxy.http = nil
 
-    # Force Scala 2.7.7 for specs; don't want to rely on SCALA_HOME
-    Buildr.settings.build['scala.version'] = "2.7.7"
-
     # Don't output crap to the console.
     trace false
     verbose false

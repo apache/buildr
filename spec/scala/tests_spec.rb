@@ -25,6 +25,12 @@ require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 
 describe Buildr::Scala::ScalaTest do
+  
+  before(:each) do
+    # Force Scala 2.7.7 for specs; don't want to rely on SCALA_HOME
+    Buildr.settings.build['scala.version'] = "2.7.7"
+  end
+    
   it 'should be the default test framework when test cases are in Scala' do
     write 'src/test/scala/com/example/MySuite.scala', <<-SCALA
       package com.example
