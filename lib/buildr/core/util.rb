@@ -478,7 +478,15 @@ else
       rake_check_options options, :noop, :verbose
       rake_output_message cmd.join(" ") if options[:verbose]
       unless options[:noop]
-        cd = "cd '#{Dir.pwd}' && "
+        if Buildr::Util.win_os?
+          # Ruby uses forward slashes regardless of platform,
+          # unfortunately cd c:/some/path fails on Windows
+          pwd = Dir.pwd.gsub(%r{/}, '\\')
+          cd = "cd /d \"#{pwd}\" && "
+        else
+          cd = "cd '#{Dir.pwd}' && "
+        end
+
         args = if cmd.size > 1 then cmd[1..cmd.size] else [] end
 
         res = if Buildr::Util.win_os? && cmd.size == 1
