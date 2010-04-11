@@ -17,6 +17,12 @@
 require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 describe Buildr::Scala::Specs do
+  
+  before(:each) do
+    # Force Scala 2.7.7 for specs; don't want to rely on SCALA_HOME
+    Buildr.settings.build['scala.version'] = "2.7.7"
+  end
+    
   it 'should be the default when tests in src/spec/scala' do
     write 'src/spec/scala/com/example/MySpecs.scala', <<-SCALA
       package com.example
