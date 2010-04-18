@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
   spec.author         = 'Apache Buildr'
   spec.email          = "users@buildr.apache.org"
   spec.homepage       = "http://buildr.apache.org/"
-  spec.summary        = "A build system that doesn't suck"
+  spec.summary        = "Build like you code"
   spec.description    = <<-TEXT
 Apache Buildr is a build system for Java-based applications, including support
 for Scala, Groovy and a growing number of JVM languages and tools.  We wanted
