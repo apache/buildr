@@ -1,6 +1,6 @@
 = Buildr
 
-This is Buildr, the build system that doesn't suck.
+This is Buildr, the build system that lets you build like you code.
 
 http://buildr.apache.org/
 

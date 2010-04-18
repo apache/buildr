@@ -51,6 +51,7 @@
           determine which Scala libraries used for compiling.  If both are
           are provided and reference the same Scala version, then local
           jars from SCALA_HOME are used.
+* Change: Tagline changed from "The build system that doesn't suck" to "Build like you code"
 * Fixed:  BUILDR-208 ansi control characters are printed on Windows (Pepjin Van Eeckhoudt)
 * Fixed:  BUILDR-348 Buildr fails on windows with jruby and ODE 1.X
 * Fixed:  BUILDR-183 Can't define root artifact namespace outside of project
