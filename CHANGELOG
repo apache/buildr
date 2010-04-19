@@ -43,6 +43,8 @@
 * Change: Updated to JMock 2.5.1 (Antoine Toulme)
 * Change: Updated to RJB 1.2.0
 * Change: Updated to Scala Specs 1.6.2.1
+* Change: Updated to ScalaCheck 1.6
+* Change: Updated to ScalaTest 1.0.1
 * Change: Load buildr.rb from $HOME/.buildr instead of $HOME
           ($HOME/buildr.rb is still loaded with deprecation warning)
 * Change: BUILDR-400 Don't forbid projects to use their own compiler after one has been guessed
