@@ -45,6 +45,7 @@
 * Change: Updated to Scala Specs 1.6.2.1
 * Change: Updated to ScalaCheck 1.6
 * Change: Updated to ScalaTest 1.0.1
+* Change: Updated to json_pure 1.4.0
 * Change: Load buildr.rb from $HOME/.buildr instead of $HOME
           ($HOME/buildr.rb is still loaded with deprecation warning)
 * Change: BUILDR-400 Don't forbid projects to use their own compiler after one has been guessed
