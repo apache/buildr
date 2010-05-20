@@ -22,12 +22,9 @@ unless defined?(SpecHelpers)
 
   # For testing we use the gem requirements specified on the buildr.gemspec
   spec = Gem::Specification.load(File.expand_path('../buildr.gemspec', File.dirname(__FILE__)))
-  if (spec.respond_to? :requirement)
-    spec.dependencies.each { |dep| gem dep.name, dep.requirement.to_s }
-  else
-    # Dependency.version_requirements deprecated in rubygems 1.3.6
-    spec.dependencies.each { |dep| gem dep.name, dep.version_requirements.to_s }
-  end
+  # Dependency.version_requirements deprecated in rubygems 1.3.6
+  spec.dependencies.each { |dep| gem dep.name, (dep.respond_to?(:requirement) ? dep.requirement.to_s : dep.version_requirements.to_s) }
+  
   # Make sure to load from these paths first, we don't want to load any
   # code from Gem library.
   $LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__)),
