@@ -115,6 +115,7 @@
           (Pepijn Van Eeckhoudt)
 * Fixed:  BUILDR-399 invoke_with_call_chain does not restore call chain
           correctly (Pepijn Van Eeckhoudt)
+* Fixed:  BUILDR-442 Errors while running the specs with jruby 1.5
 * Fixed:  buildr test=all didn't run all tests as expected
 * Fixed:  Fail-fast if package.with() or include() called with nil values
 * Fixed:  Failures not reported correctly for ScalaTest (Alex Eagle)

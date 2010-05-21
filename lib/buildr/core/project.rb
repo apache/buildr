@@ -641,28 +641,31 @@ module Buildr
     def call_callbacks(phase) #:nodoc:
       remaining = @callbacks.select { |cb| cb.phase == phase }
       known_callbacks = remaining.map { |cb| cb.name }
-
-      # find first callback with satisfied dependencies
-      first_satisfied = lambda do
-        remaining_names = remaining.map { |cb| cb.name }
-        remaining.find do |cb|
-          cb.dependencies.each do |dep|
-            fail "Unknown #{phase.inspect} extension dependency: #{dep.inspect}" unless known_callbacks.index(dep)
-          end
-          satisfied = cb.dependencies.find { |dep| remaining_names.index(dep) } == nil
-          remaining.delete cb if satisfied
-        end
-      end
-
+      
       # call each extension in order
       until remaining.empty?
-        callback = first_satisfied.call
+        callback = first_satisfied(remaining, known_callbacks)
         if callback.nil?
           hash = remaining.map { |cb| { cb.name => cb.dependencies} }
           fail "Unsatisfied dependencies in extensions for #{phase}: #{hash.inspect}"
         end
         callback.blocks.each { |b| b.call(self) }
       end
+    end
+    
+    private
+    
+    # find first callback with satisfied dependencies
+    def first_satisfied(r, known_callbacks)
+      remaining_names = r.map { |cb| cb.name }
+      res = r.find do |cb|
+        cb.dependencies.each do |dep|
+          fail "Unknown #{phase.inspect} extension dependency: #{dep.inspect}" unless known_callbacks.index(dep)
+        end
+        satisfied = cb.dependencies.find { |dep| remaining_names.index(dep) } == nil
+        cb if satisfied
+      end
+      r.delete res
     end
 
   end
