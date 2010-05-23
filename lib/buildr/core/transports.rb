@@ -531,7 +531,7 @@ module URI
     # to the absolute path on the file system. But on Windows, it comes before the drive letter, creating an
     # unusable path, so real_path fixes that. Ugly but necessary hack.
     def real_path #:nodoc:
-      RUBY_PLATFORM =~ /win32/ && path =~ /^\/[a-zA-Z]:\// ? path[1..-1] : path
+      Buildr::Util.win_os? && path =~ /^\/[a-zA-Z]:\// ? path[1..-1] : path
     end
 
   protected
