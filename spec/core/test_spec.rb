@@ -665,7 +665,8 @@ describe Buildr::TestTask, '#invoke' do
       target = ['classes/Foo.class', 'resources/config.xml', 'test/classes/FooTest.class', 'test/resources/config-test.xml'].map { |f| File.join('target', f) }
       files = ['buildfile'] + src + target
       files.each { |file| write file }
-      (files + files.map { |file| file.pathmap('%d') }).each { |file| File.utime(@a_second_ago, @a_second_ago, file) }
+      dirs = (src + target).map { |file| file.pathmap('%d') }
+      (files + dirs ).each { |path| File.utime(@a_second_ago, @a_second_ago, path) }
       touch_last_successful_test_run test_task, @a_second_ago
     end
 
