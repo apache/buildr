@@ -358,6 +358,15 @@ describe Buildr::CompileTask, '#invoke' do
     lambda { compile_task.from(sources).invoke }.should_not run_task('foo:compile')
   end
 
+  it 'should not force compilation if dependencies older than compiled' do
+    jars; project('jars').task("package").invoke
+    time = Time.now
+    jars.each { |jar| File.utime(time - 1 , time - 1, jar) }
+    sources.map { |src| File.utime(time, time, src); src.pathmap("#{compile_task.target}/thepackage/%n.class") }.
+      each { |kls| write kls ; File.utime(time, time, kls) }
+    lambda { compile_task.from(sources).with(jars).invoke }.should_not run_task('foo:compile')
+  end
+
   it 'should force compilation if dependencies newer than compiled' do
     jars; project('jars').task("package").invoke
     # On my machine the times end up the same, so need to push dependencies in the past.
@@ -367,15 +376,6 @@ describe Buildr::CompileTask, '#invoke' do
     File.utime(time - 1, time - 1, project('foo').compile.target.to_s)
     jars.each { |jar| File.utime(time + 1, time + 1, jar) }
     lambda { compile_task.from(sources).with(jars).invoke }.should run_task('foo:compile')
-  end
-
-  it 'should not force compilation if dependencies older than compiled' do
-    jars; project('jars').task("package").invoke
-    time = Time.now
-    jars.each { |jar| File.utime(time - 1 , time - 1, jar) }
-    sources.map { |src| File.utime(time, time, src); src.pathmap("#{compile_task.target}/thepackage/%n.class") }.
-      each { |kls| write kls ; File.utime(time, time, kls) }
-    lambda { compile_task.from(sources).with(jars).invoke }.should_not run_task('foo:compile')
   end
 
   it 'should timestamp target directory if specified' do
