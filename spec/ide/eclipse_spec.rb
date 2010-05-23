@@ -33,7 +33,7 @@ PLUGIN_BUILDERS = Buildr::Eclipse::Plugin::BUILDERS
 module EclipseHelper
   def classpath_xml_elements
     task('eclipse').invoke
-    REXML::Document.new(File.open('.classpath')).root.elements
+    File.open('.classpath') { |f| REXML::Document.new(f).root.elements }
   end
 
   def classpath_sources(attribute='path')
@@ -63,7 +63,7 @@ module EclipseHelper
 
   def project_xml_elements
     task('eclipse').invoke
-    REXML::Document.new(File.open('.project')).root.elements
+    File.open('.project') { |f| REXML::Document.new(f).root.elements }
   end
 
   def project_natures
@@ -104,8 +104,10 @@ describe Buildr::Eclipse do
       it 'should generate a .project file' do
         define('foo')
         task('eclipse').invoke
-        REXML::Document.new(File.open('.project')).root.
-          elements.collect("name") { |e| e.text }.should == ['foo']
+        File.open('.project') do |f|
+          REXML::Document.new(f).root.
+            elements.collect("name") { |e| e.text }.should == ['foo']
+        end
       end
 
       it 'should not generate a .classpath file' do
@@ -157,8 +159,10 @@ describe Buildr::Eclipse do
           define('foo') { compile.using(:javac); package :jar }
         }
         task('eclipse').invoke
-        REXML::Document.new(File.open(File.join('foo', '.project'))).root.
-          elements.collect("name") { |e| e.text }.should == ['myproject-foo']
+        File.open(File.join('foo', '.project')) do |f|
+          REXML::Document.new(f).root.
+            elements.collect("name") { |e| e.text }.should == ['myproject-foo']
+        end
       end
 
     end
@@ -456,8 +460,10 @@ MANIFEST
           define('bar') { compile.using(:javac).with project('foo'); }
         }
         task('eclipse').invoke
-        REXML::Document.new(File.open(File.join('bar', '.classpath'))).root.
-          elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.should include('/myproject-foo')
+        File.open(File.join('bar', '.classpath')) do |f|
+          REXML::Document.new(f).root.
+            elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.should include('/myproject-foo')
+        end
       end
     end
   end
