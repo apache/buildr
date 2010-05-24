@@ -598,8 +598,9 @@ describe Buildr, '#install' do
   it 'should re-install artifact when "from" is newer' do
     install artifact(@spec).from(@file)
     write artifact(@spec).to_s # install a version of the artifact
+    old_mtime = File.mtime(artifact(@spec).to_s)
     sleep 1; write @file       # make sure the "from" file has newer modification time
-    lambda { install.invoke }.should change { File.exist?(artifact(@spec).to_s) and File.mtime(@file) == File.mtime(artifact(@spec).to_s) }.to(true)
+    lambda { install.invoke }.should change { File.exist?(artifact(@spec).to_s) and old_mtime < File.mtime(artifact(@spec).to_s) }.to(true)
   end
 
   it 'should install POM alongside artifact' do
