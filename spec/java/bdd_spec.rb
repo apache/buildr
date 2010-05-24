@@ -126,7 +126,7 @@ describe Buildr::JtestR do
 
   it 'should apply to projects having testng sources' do
     define('one', :base_dir => 'one') do
-      write _('src/test/java/example/OneTest.java', <<-JAVA)
+      write _('src/test/java/example/OneTest.java'), <<-JAVA
         package example;
         public class OneTest {
            @org.testng.annotations.Test
