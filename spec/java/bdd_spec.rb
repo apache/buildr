@@ -116,7 +116,7 @@ describe Buildr::JtestR do
 
   it 'should apply to projects having junit sources' do
     define('one', :base_dir => 'one') do
-      write _('src/test/java/example/OneTest.java', <<-JAVA)
+      write _('src/test/java/example/OneTest.java'), <<-JAVA
         package example;
         public class OneTest extends junit.framework.TestCase { }
       JAVA
