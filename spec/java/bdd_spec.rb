@@ -17,28 +17,21 @@ require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 describe Buildr::RSpec do
 
-  def foo(*args, &prc)
-    define('foo', *args) do
+  before(:each) do
+    define('foo') do
       test.using :rspec, :output => false
-      if prc
-        instance_eval(&prc)
-      else
-        self
-      end
     end
   end
 
   it 'should be selected by :rspec name' do
-    foo { test.framework.should eql(:rspec) }
+    project('foo').test.framework.should eql(:rspec)
   end
 
   it 'should read passed specs from result yaml' do
-    success = File.expand_path('src/spec/ruby/success_spec.rb')
-    write(success, 'describe("success") { it("is true") { nil.should be_nil } }')
-    foo do
-      test.invoke
-      test.passed_tests.should eql([success])
-    end
+    write('src/spec/ruby/success_spec.rb', 'describe("success") { it("is true") { nil.should be_nil } }')
+    
+    project('foo').test.invoke
+    project('foo').test.passed_tests.should eql([File.expand_path('src/spec/ruby/success_spec.rb')])
   end
 
   it 'should read result yaml to obtain the list of failed specs' do
@@ -48,12 +41,12 @@ describe Buildr::RSpec do
     write(failure, 'describe("failure") { it("is false") { true.should == false } }')
     error = File.expand_path('src/spec/ruby/error_spec.rb')
     write(error, 'describe("error") { it("raises") { lambda; } }')
-    foo do
-      lambda { test.invoke }.should raise_error(/Tests failed/)
-      test.tests.should include(success, failure, error)
-      test.failed_tests.sort.should eql([failure, error].sort)
-      test.passed_tests.should eql([success])
-    end
+    
+    lambda { project('foo').test.invoke }.should raise_error(/Tests failed/)
+    project('foo').test.tests.should include(success, failure, error)
+    project('foo').test.failed_tests.sort.should eql([failure, error].sort)
+    project('foo').test.passed_tests.should eql([success])
+
   end
 
 end if RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME'] # RSpec
