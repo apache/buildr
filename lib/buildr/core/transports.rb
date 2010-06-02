@@ -527,11 +527,12 @@ module URI
       "file://#{host}#{path}"
     end
 
-    # The URL path always starts with a backslash. On most operating systems (Linux, Darwin, BSD) it points
-    # to the absolute path on the file system. But on Windows, it comes before the drive letter, creating an
-    # unusable path, so real_path fixes that. Ugly but necessary hack.
+    # Returns the file system path based that corresponds to the URL path.
+    # On windows this method strips the leading slash off of the path.
+    # On all platforms this method unescapes the URL path.
     def real_path #:nodoc:
-      Buildr::Util.win_os? && path =~ /^\/[a-zA-Z]:\// ? path[1..-1] : path
+      real_path = Buildr::Util.win_os? && path =~ /^\/[a-zA-Z]:\// ? path[1..-1] : path
+      URI.unescape(real_path)
     end
 
   protected
