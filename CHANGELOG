@@ -117,6 +117,7 @@
           correctly (Pepijn Van Eeckhoudt)
 * Fixed:  BUILDR-418 jruby exception: `ffi_libraries': no library specified
 * Fixed:  BUILDR-442 Errors while running the specs with jruby 1.5
+* Fixed:  BUILDR-449 Fix failing specs on Windows (Pepijn Van Eeckhoudt)
 * Fixed:  buildr test=all didn't run all tests as expected
 * Fixed:  Fail-fast if package.with() or include() called with nil values
 * Fixed:  Failures not reported correctly for ScalaTest (Alex Eagle)

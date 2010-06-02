@@ -625,7 +625,7 @@ end
 
 describe Rake::Task, ' upload' do
   before do
-    repositories.release_to = "file://#{File.expand_path('remote')}"
+    repositories.release_to = URI.escape("file://#{File.expand_path('remote')}")
   end
 
   it 'should be local task' do
@@ -660,8 +660,8 @@ describe Rake::Task, ' upload' do
     task('upload').invoke
     { 'remote/foo/foo/1.0/foo-1.0.jar'=>project('foo').package(:jar),
       'remote/foo/foo/1.0/foo-1.0.pom'=>project('foo').package(:jar).pom }.each do |upload, package|
-      read("#{upload}.md5").split.first.should eql(Digest::MD5.hexdigest(read(package)))
-      read("#{upload}.sha1").split.first.should eql(Digest::SHA1.hexdigest(read(package)))
+      read("#{upload}.md5").split.first.should eql(Digest::MD5.hexdigest(read(package, "rb")))
+      read("#{upload}.sha1").split.first.should eql(Digest::SHA1.hexdigest(read(package, "rb")))
     end
   end
 end

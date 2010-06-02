@@ -360,12 +360,19 @@ module Buildr
 
       private
 
-      # Find a path relative to the project's root directory.
+      # Find a path relative to the project's root directory if possible. If the
+      # two paths do not share the same root the absolute path is returned. This
+      # can happen on Windows, for instance, when the two paths are not on the
+      # same drive.
       def relative path
         path or raise "Invalid path '#{path.inspect}'"
         msg = [:to_path, :to_str, :to_s].find { |msg| path.respond_to? msg }
         path = path.__send__(msg)
-        Util.relative_path(File.expand_path(path), @project.path_to)
+        begin
+          Util.relative_path(File.expand_path(path), @project.path_to)
+        rescue ArgumentError
+          File.expand_path(path)
+        end
       end
 
       def src_from_task task
