@@ -435,7 +435,7 @@ describe Packaging, 'jar' do
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
     Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
-      entries_to_s = jar.entries.map(&:to_s)
+      entries_to_s = jar.entries.map(&:to_s).delete_if {|entry| entry[-1,1] == "/"}
       # Sometimes META-INF/ is counted as first entry, which is fair game.
       (entries_to_s.first == 'META-INF/MANIFEST.MF' || entries_to_s[1] == 'META-INF/MANIFEST.MF').should be_true
     end

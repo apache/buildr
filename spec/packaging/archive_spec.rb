@@ -22,6 +22,8 @@ describe 'ArchiveTask', :shared=>true do
     @dir = File.expand_path('test')
     @files = %w{Test1.txt Text2.html}.map { |file| File.expand_path(file, @dir) }.
       each { |file| write file, content_for(file) }
+    @empty_dirs = %w{EmptyDir1 EmptyDir2}.map { |file| File.expand_path(file, @dir) }.
+      each { |file| mkdir file }
   end
 
   # Not too smart, we just create some content based on file name to make sure you read what you write.
@@ -395,6 +397,22 @@ describe ZipTask do
     end
     yield entries if block_given?
     entries
+  end
+
+  it 'should include empty dirs' do
+    archive(@archive).include(@dir)
+    archive(@archive).invoke
+    inspect_archive do |archive|
+      archive.keys.should include('test/EmptyDir1/')
+    end
+  end
+
+  it 'should include empty dirs from Dir' do
+    archive(@archive).include(Dir["#{@dir}/*"])
+    archive(@archive).invoke
+    inspect_archive do |archive|
+      archive.keys.should include('EmptyDir1/')
+    end
   end
 
   it 'should work with path object' do

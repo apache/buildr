@@ -46,10 +46,9 @@ module Buildr
                     file_map[dest] = file
                   end
                 end
-              else
-                trace "Adding #{@path}#{File.basename(path)}"
-                file_map["#{@path}#{File.basename(path)}"] = path
               end
+              trace "Adding #{@path}#{File.basename(path)}"
+              file_map["#{@path}#{File.basename(path)}"] = path
             end
           end
         end
@@ -215,10 +214,9 @@ module Buildr
                   file_map[dest] = file
                 end
               end
-            else
-              trace "Adding #{@path}#{as}"
-              file_map["#{@path}#{as}"] = file
             end
+            trace "Adding #{@path}#{as}"
+            file_map["#{@path}#{as}"] = file
           end
         end
       end
