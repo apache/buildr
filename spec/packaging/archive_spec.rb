@@ -420,6 +420,14 @@ describe ZipTask do
     archive(@archive).invoke
     inspect_archive { |archive| archive.keys.should include('code/') }
   end
+  
+  it 'should have path object that includes empty dirs' do
+    archive(@archive).path('code').include(Dir["#{@dir}/*"])
+    archive(@archive).invoke
+    inspect_archive do |archive|
+      archive.keys.should include('code/EmptyDir1/')
+    end
+  end
 
   # chmod is not reliable on Windows
   unless Buildr::Util.win_os?
