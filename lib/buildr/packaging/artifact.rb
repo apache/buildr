@@ -171,14 +171,13 @@ module Buildr
     # In the third form, uses a hash with the options :url, :username, :password,
     # and :permissions. All but :url are optional.
     def upload(upload_to = nil)
-      # Where do we release to?
+      upload_task(upload_to).invoke
+    end
+
+    def upload_task(upload_to = nil)
       upload_to ||= Buildr.repositories.release_to
       upload_to = { :url=>upload_to } unless Hash === upload_to
       raise ArgumentError, 'Don\'t know where to upload, perhaps you forgot to set repositories.release_to' unless upload_to[:url]
-      invoke # Make sure we exist.
-
-      # Upload POM ahead of package, so we don't fail and find POM-less package (the horror!)
-      pom.upload(upload_to) if pom && pom != self
 
       # Set the upload URI, including mandatory slash (we expect it to be the base directory).
       # Username/password may be part of URI, or separate entities.
@@ -187,10 +186,19 @@ module Buildr
       uri.user = upload_to[:username] if upload_to[:username]
       uri.password = upload_to[:password] if upload_to[:password]
 
-      # Upload artifact relative to base URL, need to create path before uploading.
-      info "Deploying #{to_spec}"
       path = group.gsub('.', '/') + "/#{id}/#{version}/#{File.basename(name)}"
-      URI.upload uri + path, name, :permissions=>upload_to[:permissions]
+
+      unless task = Buildr.application.lookup(uri+path)
+        deps = [self]
+        deps << pom.upload_task( upload_to ) if pom && pom != self
+
+        task = Rake::Task.define_task uri + path => deps do
+          # Upload artifact relative to base URL, need to create path before uploading.
+          info "Deploying #{to_spec}"
+          URI.upload uri + path, name, :permissions=>upload_to[:permissions]
+        end
+      end
+      task
     end
 
   protected
@@ -770,11 +778,10 @@ module Buildr
   def upload(*args, &block)
     artifacts = artifacts(args)
     raise ArgumentError, 'This method can only upload artifacts' unless artifacts.all? { |f| f.respond_to?(:to_spec) }
+    upload_artifacts_tasks = artifacts.map { |artifact| artifact.upload_task }
     task('upload').tap do |task|
       task.enhance &block if block
-      task.enhance artifacts do
-        artifacts.each { |artifact| artifact.upload }
-      end
+      task.enhance upload_artifacts_tasks
     end
   end
 

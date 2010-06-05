@@ -654,6 +654,24 @@ describe Rake::Task, ' upload' do
       read(upload).should eql(read(package))
     end
   end
+  
+  it 'should not upload twice the pom when artifacts are uploaded from a project' do
+    write 'src/main/java/Foo.java', 'public class Foo {}'
+    repositories.release_to = 'sftp://example.com/base'
+    define 'foo' do 
+      project.group = "attached" 
+      project.version = "1.0" 
+      package(:jar) 
+      package(:sources) 
+    end
+     URI.should_receive(:upload).exactly(:once).
+         with(URI.parse('sftp://example.com/base/attached/foo/1.0/foo-1.0-sources.jar'), project("foo").package(:sources).to_s, anything)
+     URI.should_receive(:upload).exactly(:once).
+         with(URI.parse('sftp://example.com/base/attached/foo/1.0/foo-1.0.jar'), project("foo").package(:jar).to_s, anything)
+     URI.should_receive(:upload).exactly(:once).
+        with(URI.parse('sftp://example.com/base/attached/foo/1.0/foo-1.0.pom'), project("foo").package(:jar).pom.to_s, anything)
+     verbose(false) { project("foo").upload.invoke }
+  end
 
   it 'should upload signatures for artifact and POM' do
     define('foo', :version=>'1.0') { package :jar }
