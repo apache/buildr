@@ -55,6 +55,7 @@
           are provided and reference the same Scala version, then local
           jars from SCALA_HOME are used.
 * Change: Tagline changed from "The build system that doesn't suck" to "Build like you code"
+* Change: BUILDR-448 Don't use sudo by default for rake setup
 * Change: BUILDR-450 Update .gitignore to exclude idea project files and files generated during spec tests (Peter Donald)
 * Fixed:  BUILDR-208 ansi control characters are printed on Windows (Pepjin Van Eeckhoudt)
 * Fixed:  BUILDR-348 Buildr fails on windows with jruby and ODE 1.X
