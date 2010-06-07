@@ -17,7 +17,7 @@
 require 'jruby' if RUBY_PLATFORM[/java/]
 require 'rubygems/source_info_cache'
 
-RAKE_SUDO = case (ENV['RAKE_SUDO']).strip.downcase
+RAKE_SUDO = case (ENV['RAKE_SUDO'] or 'false').strip.downcase
   when 'yes', 'true'
     true
   else
