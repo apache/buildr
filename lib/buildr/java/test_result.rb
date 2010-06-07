@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# necessary to require YAML even if it is mentioned by autoload as it fails on some platforms.
+require 'yaml' 
 require 'fileutils'
 module Buildr #:nodoc:
   module TestFramework
