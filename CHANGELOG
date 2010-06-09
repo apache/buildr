@@ -33,6 +33,7 @@
 * Added:  BUILDR-408 Filter include() and exclude() should accept Rake tasks
 * Added:  BUILDR-409 archive.include() should convert arguments to artifact
           if applicable
+* Added:  BUILDR-453 Provide a ci task that uses the ci_reporter gem
 * Added:  ScalaTest now generates JUnit XML reports in addition to text files.
 * Change: Updated to Ant 1.8.0
 * Change: Updated to Cobertura 1.9.4.1
