@@ -33,7 +33,7 @@
 * Added:  BUILDR-408 Filter include() and exclude() should accept Rake tasks
 * Added:  BUILDR-409 archive.include() should convert arguments to artifact
           if applicable
-* Added:  BUILDR-453 Provide a ci task that uses the ci_reporter gem
+* Added:  BUILDR-453 Provide a ci task that uses the ci_reporter gem (Pepijn Van Eeckhoudt)
 * Added:  ScalaTest now generates JUnit XML reports in addition to text files.
 * Change: Updated to Ant 1.8.0
 * Change: Updated to Cobertura 1.9.4.1
@@ -58,7 +58,7 @@
 * Change: Tagline changed from "The build system that doesn't suck" to "Build like you code"
 * Change: BUILDR-448 Don't use sudo by default for rake setup
 * Change: BUILDR-450 Update .gitignore to exclude idea project files and files generated during spec tests (Peter Donald)
-* Fixed:  BUILDR-208 ansi control characters are printed on Windows (Pepjin Van Eeckhoudt)
+* Fixed:  BUILDR-208 ansi control characters are printed on Windows (Pepijn Van Eeckhoudt)
 * Fixed:  BUILDR-348 Buildr fails on windows with jruby and ODE 1.X
 * Fixed:  BUILDR-183 Can't define root artifact namespace outside of project
           (Ittay Dror)
