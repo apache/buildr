@@ -80,7 +80,7 @@ describe File do
 
         File.mtime('tmp').should > creation_time
       ensure
-        File.delete 'tmp'
+        Dir.rmdir 'tmp'
       end
     end
 
