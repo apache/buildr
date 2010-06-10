@@ -38,11 +38,11 @@
 * Change: Updated to Ant 1.8.0
 * Change: Updated to Cobertura 1.9.4.1
 * Change: Updated to Groovy 1.7.1
-* Change: Updated to JRuby 1.4.0
+* Change: Updated to JRuby 1.5.1
 * Change: Updated to JtestR 0.5
 * Change: Updated to JUnit 4.7
 * Change: Updated to JMock 2.5.1 (Antoine Toulme)
-* Change: Updated to RJB 1.2.0
+* Change: Updated to RJB 1.2.5
 * Change: Updated to Scala Specs 1.6.2.1
 * Change: Updated to ScalaCheck 1.6
 * Change: Updated to ScalaTest 1.0.1
