@@ -108,7 +108,7 @@ describe Buildr::CCTask do
       project.cc.invoke
     end
     
-    sleep 0.5
+    sleep 1
     
     compile.should_receive :reenable
     compile.should_receive :invoke
