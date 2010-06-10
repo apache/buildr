@@ -21,6 +21,7 @@ begin
   def default_spec_opts
     default = %w{--format failing_examples:failed --format html:_reports/specs.html --backtrace}
     default << '--colour' if $stdout.isatty
+    default
   end
   
   desc "Run all specs"
