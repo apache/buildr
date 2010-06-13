@@ -21,7 +21,7 @@ module Buildr
 
   # Provides Hibernate Doclet and schema export tasks. Require explicitly using <code>require "buildr/hibernate"</code>.
   module Hibernate
-
+    
     REQUIRES = Buildr.struct(
       :collections  => "commons-collections:commons-collections:jar:3.1",
       :logging      => "commons-logging:commons-logging:jar:1.0.3",
@@ -49,7 +49,7 @@ module Buildr
       def doclet(options)
         options[:sources].each { |src| file(src).invoke }
         ant "hibernatedoclet" do |ant|
-          ant.taskdef :name=>"hibernatedoclet", :classname=>"xdoclet.modules.hibernate.HibernateDocletTask", :classpath=>requires
+          ant.taskdef :name=>"hibernatedoclet", :classname=>"xdoclet.modules.hibernate.HibernateDocletTask", :classpath=>options[:classpath]
           ant.hibernatedoclet :destdir=>options[:target].to_s, :excludedtags=>options[:excludedtags], :force=>"true" do
             ant.hibernate :version=>"3.0"
             options[:sources].map(&:to_s).each do |source|
@@ -67,22 +67,19 @@ module Buildr
       #     :drop=>"no", :create=>"yes", :output=>target) do
       #     fileset :dir=>source.to_s, :includes=>"**/*.hbm.xml"
       #   end
-      def schemaexport(options = nil)
+      def schemaexport(classpath, options = nil)
         ant "schemaexport" do |ant|
-          ant.taskdef :name=>"schemaexport", :classname=>"org.hibernate.tool.hbm2ddl.SchemaExportTask", :classpath=>requires
+          ant.taskdef :name=>"schemaexport", :classname=>"org.hibernate.tool.hbm2ddl.SchemaExportTask", :classpath=>classpath
           ant.schemaexport(options) { yield ant if block_given? } if options
         end
       end
 
-    protected
-
-      # This will download all the required artifacts before returning a classpath, and we want to do this only once.
-      def requires()
-        @requires ||= Buildr.artifacts(REQUIRES.to_a).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
-      end
-
     end
 
+    def hibernate_requires()
+      @requires ||= REQUIRES.dup
+    end
+    
     # :call-seq:
     #   hibernate_doclet(options?) => task
     #
@@ -99,7 +96,7 @@ module Buildr
         depends = compile.sources.map { |src| FileList[File.join(src.to_s, "**/*.java")] }.flatten
       end
       file("target/hbm.timestamp"=>depends) do |task|
-        Hibernate.doclet({ :sources=>compile.sources, :target=>compile.target }.merge(options))
+        Hibernate.doclet({ :sources=>compile.sources, :target=>compile.target, :classpath => hib_resolve_classpath }.merge(options))
         write task.name
       end
     end
@@ -120,17 +117,24 @@ module Buildr
     #       fileset(:dir=>compile.sources.first) { include :name=>"**/*.hbm.xml" } }
     #     end
     #   end
-    def hibernate_schemaexport(args, &block)
+    def hibernate_schemaexport(args)
       path, arg_names, deps = Rake.application.resolve_args([args])
       unless Rake::Task.task_defined?(path)
         class << file(path) ; attr_accessor :ant ; end
-        file(path).enhance { |task| task.ant = Hibernate.schemaexport }
+        file(path).enhance { |task| task.ant = Hibernate.schemaexport(hib_resolve_classpath) }
       end
       if block
         file(path).enhance(deps) { |task| block.call task, task.ant }
       else
         file(path).enhance deps
       end
+    end
+    
+    protected
+    
+    # This will download all the required artifacts before returning a classpath, and we want to do this only once.
+    def hib_resolve_classpath
+      Buildr.artifacts(hibernate_requires.to_a).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
     end
 
   end
