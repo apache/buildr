@@ -200,6 +200,11 @@ describe 'ArchiveTask', :shared=>true do
     archive(@archive).include(@files.first, :as=>'test/sample').invoke
     inspect_archive { |archive| @files.each { |f| archive['test/sample'].should eql(content_for(@files.first)) } }
   end
+  
+  it 'should archive directory into specified alias, without using "."' do
+    archive(@archive).include(@dir, :as=>'.').invoke
+    inspect_archive { |archive| archive.keys.should_not include(".") }
+  end
 
   it 'should archive file into specified name/path' do
     archive(@archive).include(@files.first, :as=>'test/sample', :path=>'path').invoke
