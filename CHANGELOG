@@ -1,4 +1,4 @@
-1.4.0 (Pending)
+1.4.0 (2010-06-19)
 * Added:  BUILDR-405 Enhance the idea7x extension to supply a task to delete generated files
           (Peter Donald)
 * Added:  Support for regexps in include and exclude patterns (BUILDR-406)
