@@ -46,14 +46,21 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-New in Buildr 1.3.5:
+New in Buildr 1.4.0:
 
-* Interactive shell (REPL) support, including BeanShell for Java projects
-* Scala libraries are automatically downloaded if not availabe locally
-* New 'cobertura:check' allows you to check for code coverage levels in your projects
-* Eclipse task is configurable to support various types of natures, builders, etc.
-* Dependency upgrades such as Net-SSH 2.0.15, JRuby 1.3.1, Rake 0.8.7, RSpec 1.2.8, easyb 0.9, TestNG 5.10
-* And 15+ bug fixes.
+* Support for Scala 2.8 compiler-level change detection and dependency tracking
+* Continuous compilation
+* Support for Eclipse classpath variables to avoid absolute pathnames in generated .classpath
+* "buildr test=only" will only run tests explicitly specified on the command line (and ignore transitive test dependencies)
+* Generic documentation framework (we do doc, not just javadoc)
+* New "test:failed" task to execute only tests that failed during last run
+* Project extensions (before/after_define) now support dependency ordering similar to Rake
+* Support unzipping tar.gz files
+* ScalaTest now generates JUnit XML reports in addition to text files.
+* Support protocol buffer code generation
+* Tested against Windows and Ubuntu on JRuby and MRI (and experimenting with Rubinius)
+* Dependency upgrades such as Ant 1.8.0, JUnit 4.7, JMock 2.5.1, Cobertura 1.9.4.1, Scala Specs 1.6.2.1, ScalaCheck 1.6, ScalaTest 1.0.1
+* And 60+ bug fixes !
 
 See the "CHANGELOG":CHANGELOG for full details.
 
