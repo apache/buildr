@@ -1,3 +1,7 @@
+1.4.1 (pending)
+* Changed: BUILDR-459 Update gemspec to accept json_pure ~> 1.4.3
+
+
 1.4.0 (2010-06-18)
 * Added:  BUILDR-405 Enhance the idea7x extension to supply a task to delete generated files
           (Peter Donald)

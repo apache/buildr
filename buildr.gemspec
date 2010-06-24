@@ -16,7 +16,7 @@
 
 Gem::Specification.new do |spec|
   spec.name           = 'buildr'
-  spec.version        = '1.4.0'
+  spec.version        = '1.4.1'
   spec.author         = 'Apache Buildr'
   spec.email          = "users@buildr.apache.org"
   spec.homepage       = "http://buildr.apache.org/"
@@ -53,7 +53,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'net-sftp',             '2.0.2'
   spec.add_dependency 'rubyzip',              '0.9.1'
   spec.add_dependency 'highline',             '1.5.1'
-  spec.add_dependency 'json_pure',            '1.4.0'
+  spec.add_dependency 'json_pure',            '1.4.3'
   spec.add_dependency 'rubyforge',            '2.0.3'
   spec.add_dependency 'hoe',                  '2.3.3'
   spec.add_dependency 'rjb',                  '1.2.5' if spec.platform.to_s == 'ruby'
