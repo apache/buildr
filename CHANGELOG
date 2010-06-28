@@ -1,5 +1,6 @@
 1.4.1 (pending)
 * Added:  BUILDR-420 Support external compiler
+* Added:  BUILDR-425 Specify dev dependencies in .gemspec
 * Change: BUILDR-459 Update gemspec to accept json_pure ~> 1.4.3
 * Change: Updated to Ant 1.8.1
 
