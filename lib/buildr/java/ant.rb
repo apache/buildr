@@ -37,8 +37,7 @@ module Buildr
       def dependencies
         # Ant-Trax required for running the JUnitReport task, and there's no other place
         # to put it but the root classpath.
-        @dependencies ||= ["org.apache.ant:ant:jar:#{version}", "org.apache.ant:ant-launcher:jar:#{version}",
-                           "org.apache.ant:ant-trax:jar:#{version}"]
+        @dependencies ||= ["org.apache.ant:ant:jar:#{version}", "org.apache.ant:ant-launcher:jar:#{version}"]
       end
 
     private
