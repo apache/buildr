@@ -299,7 +299,7 @@ module Buildr
     #   Release.find.tag_name = lambda { |ver| "foo-#{ver}" }
     # Deprecated: you should use Release.tag_name instead
     def tag_name=(tag_proc)
-      warn("Release.find.tag_name is deprecated. You should use Release.tag_name instead")
+      Buildr.application.deprecated "Release.find.tag_name is deprecated. You should use Release.tag_name instead"
       Release.tag_name=(tag_proc)
     end
 
