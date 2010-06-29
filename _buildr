@@ -20,8 +20,12 @@
 require 'rubygems'
 $LOAD_PATH << File.join(File.dirname(__FILE__), 'lib') << File.join(File.dirname(__FILE__), 'addon')
 spec = Gem::Specification.load(File.join(File.dirname(__FILE__), 'buildr.gemspec'))
+# To avoid a warning about the version_requirements deprecation, we use this method inline.
+def version_required(gem_def)
+  return Gem::Dependency.instance_methods.include?("requirement") ? gem_def.requirement : gem_def.version_requirements
+end
 spec.dependencies.each do |dep|
-  gem dep.name, dep.version_requirements.to_s
+  gem dep.name, version_required(dep).to_s if dep.type == :runtime
 end
 Gem.loaded_specs['buildr'] = spec # Prevents RubyGem from loading files from installed Buildr gems
 
