@@ -42,7 +42,7 @@ describe Buildr::Compiler::ExternalJavac do
   end
   
   after :all do
-    Buildr::Compiler.compilers << Buildr::Compiler::Javac
+    Buildr::Compiler.compilers.unshift Buildr::Compiler::Javac
   end
   
 end
