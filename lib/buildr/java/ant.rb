@@ -25,7 +25,7 @@ module Buildr
   module Ant
 
     # Which version of Ant we're using by default.
-    VERSION = '1.8.1'
+    VERSION = '1.8.0'
 
     class << self
       # Current version of Ant being used.
