@@ -16,10 +16,14 @@
 
 require File.join(File.dirname(__FILE__), '../spec_helpers')
 
+COMPILERS = Buildr::Compiler.compilers.dup
+COMPILERS_WITHOUT_JAVAC = COMPILERS.dup
+COMPILERS_WITHOUT_JAVAC.delete Buildr::Compiler::Javac
+
 describe Buildr::Compiler::ExternalJavac do
   
-  before :all do
-    Buildr::Compiler.compilers.delete Buildr::Compiler::Javac
+  before(:all) do
+    Buildr::Compiler.send :compilers=, COMPILERS_WITHOUT_JAVAC
   end
   
   describe "should compile a Java project just in the same way javac does" do  
@@ -42,7 +46,7 @@ describe Buildr::Compiler::ExternalJavac do
   end
   
   after :all do
-    Buildr::Compiler.compilers.unshift Buildr::Compiler::Javac
+    Buildr::Compiler.send :compilers=, COMPILERS
   end
   
 end
