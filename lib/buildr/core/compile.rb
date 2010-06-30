@@ -50,7 +50,13 @@ module Buildr
       def compilers
         @compilers ||= []
       end
-
+      
+      private
+      
+      # Only used by our specs.
+      def compilers=(compilers)
+        @compilers = compilers
+      end
     end
 
     # Base class for all compilers, with common functionality.  Extend and over-ride as you see fit
