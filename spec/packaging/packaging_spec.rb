@@ -263,7 +263,15 @@ describe Project, '#package' do
     end
     project('foo').packages.uniq.size.should be(5)
   end
-
+  
+  it 'should create different tasks for package with different ids' do
+    define 'foo', :version=>'1.0' do
+      package(:jar, :id=>'bar')
+      package(:jar)
+    end
+    project('foo').packages.uniq.size.should be(2)
+  end
+    
   it 'should create different tasks for package with classifier' do
     define 'foo', :version=>'1.0' do
       package(:jar)
