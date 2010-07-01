@@ -321,15 +321,20 @@ module Buildr
     end
 
     def run(tests, dependencies) #:nodoc:
-      cmd_args = [ 'org.testng.TestNG', '-log', '2', '-sourcedir', task.compile.sources.join(';'), '-suitename', task.project.id ]
+      cmd_args = ['-log', '2', '-sourcedir', task.compile.sources.join(';'), '-suitename', task.project.id ]
       cmd_args << '-d' << task.report_to.to_s
       # run all tests in the same suite
       cmd_args << '-testclass' << tests
+      
       cmd_options = { :properties=>options[:properties], :java_args=>options[:java_args],
         :classpath=>dependencies, :name => "TestNG in #{task.send(:project).name}" }
-
+      
+      tmp = nil
       begin
-        Java::Commands.java cmd_args, cmd_options
+        tmp = Tempfile.open("testNG")
+        tmp.write cmd_args.join("\n")
+        tmp.close
+        Java::Commands.java ['org.testng.TestNG', "@#{tmp.path}"], cmd_options
         return tests
       rescue
         # testng-failed.xml contains the list of failed tests *only*
@@ -338,6 +343,8 @@ module Buildr
         error "TestNG regexp returned unexpected failed tests #{failed.inspect}" unless (failed - tests).empty?
         # return the list of passed tests
         return tests - failed
+      ensure
+        tmp.close unless tmp.nil?
       end
     end
 
