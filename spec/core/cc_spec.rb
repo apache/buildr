@@ -108,7 +108,7 @@ describe Buildr::CCTask do
       project.cc.invoke
     end
     
-    sleep 1
+    sleep 0.5
     
     compile.should_receive :reenable
     compile.should_receive :invoke
@@ -120,7 +120,7 @@ describe Buildr::CCTask do
     
     sleep 1 # Wait one sec as the timestamp needs to be different.
     touch File.join(Dir.pwd, 'src/main/java/Example.java')
-    sleep 0.2# Wait one standard delay
+    sleep 0.3# Wait one standard delay and half
     
     thread.exit
   end
@@ -167,7 +167,7 @@ describe Buildr::CCTask do
     
     sleep 1 # Wait one sec as the timestamp needs to be different.
     touch File.join(Dir.pwd, 'foo/src/main/java/Example.java')
-    sleep 0.2 # Wait one standard delay
+    sleep 0.3 # Wait one standard delay and half
     
     thread.exit
   end
