@@ -3,6 +3,7 @@
 * Added:  BUILDR-425 Specify dev dependencies in .gemspec
 * Change: BUILDR-459 Update gemspec to accept json_pure ~> 1.4.3
 * Fixed:  BUILDR-455 cc_spec.rb l 160 depends on time and thus fails intermittently
+* Fixed:  BUILDR-461 Packages with different ids collide
 
 1.4.0 (2010-06-18)
 * Added:  BUILDR-405 Enhance the idea7x extension to supply a task to delete generated files

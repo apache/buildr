@@ -151,7 +151,7 @@ module Buildr
           spec = send("package_as_#{spec[:type]}_spec", spec) if respond_to?("package_as_#{spec[:type]}_spec")
           file_name = path_to(:target, Artifact.hash_to_file_name(spec))
         end
-        package = (no_options && packages.detect { |pkg| pkg.type == spec[:type] &&
+        package = (no_options && packages.detect { |pkg| pkg.type == spec[:type] && pkg.id == spec[:id] &&
           (pkg.respond_to?(:classifier) ? pkg.classifier : nil) == spec[:classifier]}) ||
           packages.find { |pkg| pkg.name == file_name } ||
           packager.call(file_name)
