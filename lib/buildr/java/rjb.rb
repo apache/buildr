@@ -125,6 +125,7 @@ module Java
 
     def method_missing(sym, *args, &block) #:nodoc:
       raise ArgumentError, 'No arguments expected' unless args.empty?
+      Java.load # need to load RJB's classpath now!
       name = sym.to_s
       return ::Rjb.import(name) if name =~ /^[[:upper:]]/
       __package__ name
