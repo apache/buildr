@@ -45,7 +45,7 @@ task :dependency do
     dep_spec.runtime_dependencies.map { |trans| transitive[trans].push(trans) }.flatten.uniq }
   # For each dependency, make sure *all* its transitive dependencies are listed
   # as a Buildr dependency, and order is preserved.
-  spec.dependencies.each_with_index do |dep, index|
+  spec.dependencies.select {|dep| dep.type == :runtime }.each_with_index do |dep, index|
     puts "checking #{dep.name}"
     transitive[dep].each do |trans|
       matching = spec.dependencies.find { |existing| trans =~ existing }
