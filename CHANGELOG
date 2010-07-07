@@ -1,4 +1,4 @@
-1.4.1 (pending)
+1.4.1 (2010-07-07)
 * Added:  BUILDR-420 Support external compiler
 * Added:  BUILDR-425 Specify dev dependencies in .gemspec
 * Change: BUILDR-459 Update gemspec to accept json_pure ~> 1.4.3
