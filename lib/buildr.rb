@@ -13,7 +13,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'buildr/version'
+unless defined?(Buildr::VERSION)
+  require 'buildr/version'
+end
 
 require 'buildr/core'
 require 'buildr/packaging'

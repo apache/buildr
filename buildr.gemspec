@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require File.expand_path(__FILE__, '../lib/buildr/version.rb')
+require File.join(File.dirname(__FILE__), 'lib', 'buildr', 'version.rb')
 Gem::Specification.new do |spec|
   spec.name           = 'buildr'
   spec.version        = Buildr::VERSION
