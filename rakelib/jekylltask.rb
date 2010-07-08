@@ -14,7 +14,7 @@
 # the License.
 
 
-gem 'mojombo-jekyll', '~> 0.5.2' # skip past some buggy versions
+gem 'jekyll', '~> 0.6.2' # skip past some buggy versions
 require 'rake/tasklib'
 require 'jekyll'
 
