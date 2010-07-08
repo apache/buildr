@@ -13,10 +13,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
+require File.expand_path(__FILE__, '../lib/buildr/version.rb')
 Gem::Specification.new do |spec|
   spec.name           = 'buildr'
-  spec.version        = '1.4.1'
+  spec.version        = Buildr::VERSION
   spec.author         = 'Apache Buildr'
   spec.email          = "users@buildr.apache.org"
   spec.homepage       = "http://buildr.apache.org/"

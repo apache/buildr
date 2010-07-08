@@ -1,3 +1,6 @@
+1.4.2 (pending)
+* Fixed: BUILDR-464 Improve the versioning of Buildr
+
 1.4.1 (2010-07-07)
 * Added:  BUILDR-420 Support external compiler
 * Added:  BUILDR-425 Specify dev dependencies in .gemspec
