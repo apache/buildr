@@ -15,6 +15,7 @@
 
 
 require 'buildr/core/common'
+require 'find'
 
 
 module Buildr
