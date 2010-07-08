@@ -6,6 +6,7 @@
 * Fixed: BUILDR-256 Automatically installing gems aborts rspec test runner (Rhett Sutphin)
 * Fixed: BUILDR-342 The jruby gem installer invokes the removed Gem.manage_gems function (Rhett Sutphin)
 * Fixed: BUILDR-464 Improve the versioning of Buildr (Rhett Sutphin)
+* Fixed: BUILDR-466 Rendering issue with IE on the website (Shane Witbeck)
 
 1.4.1 (2010-07-07)
 * Added:  BUILDR-420 Support external compiler
