@@ -578,6 +578,10 @@ describe Unzip do
       Rake::Task.clear ; rm_rf @target
       unzip(@target=>@zip).include('test/**/*').target.invoke
       FileList[File.join(@target, 'test/path/*')].size.should be(2)
+      
+      Rake::Task.clear ; rm_rf @target
+      unzip(@target=>@zip).include('test/*').target.invoke
+      FileList[File.join(@target, 'test/path/*')].size.should be(2)
     end
   end
 
