@@ -63,7 +63,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'xml-simple',           '1.0.12'
   spec.add_dependency 'archive-tar-minitar',  '0.5.2'
   spec.add_dependency 'jruby-openssl',        '0.5.2' if spec.platform.to_s == 'java'
-  spec.add_development_dependency 'mojombo-jekyll', '~> 0.5.2'
+  spec.add_development_dependency 'jekyll', '~> 0.6.2'
   spec.add_development_dependency 'sdoc'
   spec.add_development_dependency 'rcov', '~>0.8'
   spec.add_development_dependency 'win32console' if spec.platform.to_s == 'x86-mswin32'
