@@ -177,7 +177,6 @@ module Buildr
             Kernel.send :gem, name, version
           rescue LoadError, Gem::LoadError => e
             require 'rubygems/gem_runner'
-            Gem.manage_gems
             args = ['install', name, '--version', version] + args
             Gem::GemRunner.new.run(args)
             Kernel.send :gem, name, version
