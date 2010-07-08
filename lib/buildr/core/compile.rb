@@ -91,7 +91,15 @@ module Buildr
           paths = task.sources + [sources].flatten.map { |src| Array(project.path_to(:source, task.usage, src.to_sym)) }
           paths.flatten!
           ext_glob = Array(source_ext).join(',')
-          paths.any? { |path| !Dir["#{path}/**/*.{#{ext_glob}}"].empty? }
+          
+          paths.each { |path| 
+            Find.find(path) {|found|
+              if (!File.directory?(found)) && found.match(/.*\.#{Array(source_ext).join('|')}/)
+                return true
+              end
+              } if File.exist? path
+            }
+          false
         end
 
         # Implementations can use this method to specify various compiler attributes.
