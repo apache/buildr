@@ -160,7 +160,7 @@ module Buildr
                   trace "Extracting #{dest}"
                   mkpath File.dirname(dest) rescue nil
                   #entry.restore_permissions = true
-                  File.open(dest, 'w') {|f| f.write entry.read}
+                  File.open(dest, 'wb') {|f| f.write entry.read}
                 end
               end
             end
