@@ -13,7 +13,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require File.join(File.dirname(__FILE__), 'lib', 'buildr', 'version.rb')
+unless defined?(Buildr::VERSION)
+  require File.join(File.dirname(__FILE__), 'lib', 'buildr', 'version.rb')
+end
+
 Gem::Specification.new do |spec|
   spec.name           = 'buildr'
   spec.version        = Buildr::VERSION
@@ -57,7 +60,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'rubyforge',            '2.0.3'
   spec.add_dependency 'hoe',                  '2.3.3'
   spec.add_dependency 'rjb',                  '1.2.5' if spec.platform.to_s == 'ruby'
-  spec.add_dependency 'rjb',                  '1.2.5' if spec.platform.to_s == 'x86-mswin32' 
+  spec.add_dependency 'rjb',                  '1.2.5' if spec.platform.to_s == 'x86-mswin32'
   spec.add_dependency 'Antwrap',              '0.7.0'
   spec.add_dependency 'rspec',                '>= 1.2.9'
   spec.add_dependency 'xml-simple',           '1.0.12'
