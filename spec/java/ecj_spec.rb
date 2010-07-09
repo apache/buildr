@@ -60,7 +60,7 @@ describe Buildr::Compiler::Ecj do
   # and returning the content of the error buffer.
   #
   def redirect_java_err
-    pending "RJB doesn't support well instantiating a class that has several constructors"  RUBY_PLATFORM =~ /java/
+    pending "RJB doesn't support well instantiating a class that has several constructors" unless RUBY_PLATFORM =~ /java/
     err = Java.java.io.ByteArrayOutputStream.new
     original_err = Java.java.lang.System.err
     begin
