@@ -5,6 +5,7 @@
 * Fixed: BUILDR-225 ArchiveTask#merge, not according to doc
 * Fixed: BUILDR-256 Automatically installing gems aborts rspec test runner (Rhett Sutphin)
 * Fixed: BUILDR-342 The jruby gem installer invokes the removed Gem.manage_gems function (Rhett Sutphin)
+* Fixed: BUILDR-436 release task should only replace "-SNAPSHOT" (spec from Jean-Philippe Caruana)
 * Fixed: BUILDR-464 Improve the versioning of Buildr (Rhett Sutphin)
 * Fixed: BUILDR-466 Rendering issue with IE on the website (Shane Witbeck)
 
