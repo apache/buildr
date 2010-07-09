@@ -408,6 +408,13 @@ describe 'a release process', :shared=>true do
       file('buildfile').should contain('VERSION_NUMBER = "1.0.002-SNAPSHOT"')
     end
 
+    it 'should not consider "-rc" as "-SNAPSHOT"' do
+      write 'buildfile', "VERSION_NUMBER = '1.0.0-rc1'"
+      @release.stub!(:tag_release)
+      @release.make
+      file('buildfile').should contain('VERSION_NUMBER = "1.0.0-rc1"')
+    end
+
     it 'should commit the updated buildfile' do
       @release.stub!(:tag_release)
       @release.make
