@@ -945,6 +945,20 @@ describe 'test failed' do
     project('foo').test.tests.should include('FailingTest')
     project('foo').test.tests.should_not include('PassingTest')
   end
+  
+  it 'should run failed tests, respecting excluded tests' do
+    define 'foo' do
+      test.using(:junit).exclude('ExcludedTest')
+      test.instance_eval do
+        @framework.stub!(:tests).and_return(['FailingTest', 'ExcludedTest'])
+        @framework.stub!(:run).and_return([])
+      end
+    end
+    write project('foo').path_to(:target, "junit-failed"), "FailingTest\nExcludedTest"
+    task('test:failed').invoke rescue nil
+    project('foo').test.tests.should include('FailingTest')
+    project('foo').test.tests.should_not include('ExcludedTest')
+  end
 
 end
 
