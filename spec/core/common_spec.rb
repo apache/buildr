@@ -541,6 +541,7 @@ describe Buildr::Filter do
   end
 
   it 'should preserve mode bits except readable' do
+    pending "Pending the release of the fix for JRUBY-4927" if RUBY_PLATFORM =~ /java/
     Dir['src/*'].each { |file| File.chmod(0o755, file) }
     @filter.from('src').into('target').run
     Dir['target/*'].sort.each do |file|
