@@ -423,7 +423,7 @@ module Buildr
     # We read the last test failures if any and return them.
     #
     def last_failures
-      @last_failures ||= failures_to.exist? ? File.read(failures_to.to_s).split('\n') : []
+      @last_failures ||= failures_to.exist? ? File.read(failures_to.to_s).split("\n") : []
     end
 
     # The path to the file that stores the time stamp of the last successful test run.
@@ -509,7 +509,6 @@ module Buildr
     # Limit running tests to those who failed the last time.
     def only_run_failed()
       @include = Array(last_failures)
-      @exclude.clear
       @forced_need = true
     end
 

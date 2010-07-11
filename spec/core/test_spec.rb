@@ -950,8 +950,8 @@ describe 'test failed' do
     define 'foo' do
       test.using(:junit).exclude('ExcludedTest')
       test.instance_eval do
-        @framework.stub!(:tests).and_return(['FailingTest', 'ExcludedTest'])
-        @framework.stub!(:run).and_return([])
+        @framework.stub!(:tests).and_return(['FailingTest', 'PassingTest', 'ExcludedTest'])
+        @framework.stub!(:run).and_return(['PassingTest'])
       end
     end
     write project('foo').path_to(:target, "junit-failed"), "FailingTest\nExcludedTest"

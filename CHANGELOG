@@ -10,6 +10,7 @@
 * Fixed: BUILDR-436 release task should only replace "-SNAPSHOT" (spec from Jean-Philippe Caruana)
 * Fixed: BUILDR-464 Improve the versioning of Buildr (Rhett Sutphin)
 * Fixed: BUILDR-466 Rendering issue with IE on the website (Shane Witbeck)
+* Fixed: BUILDR-468 test:failed does not respect test.exclude
 
 1.4.1 (2010-07-07)
 * Added:  BUILDR-420 Support external compiler
