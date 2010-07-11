@@ -1,16 +1,17 @@
 1.4.2 (pending)
-* Fixed: BUILDR-302 Move out-of-date Nailgun documentation to wiki (Shane Witbeck)
-* Fixed: BUILDR-144 Filter does not preserve file permissions
-* Fixed: BUILDR-203 Compiler guessing very inefficient
-* Fixed: BUILDR-225 ArchiveTask#merge, not according to doc
-* Fixed: BUILDR-256 Automatically installing gems aborts rspec test runner (Rhett Sutphin)
-* Fixed: BUILDR-317 ecj compiler
-* Fixed: BUILDR-326 follow up: binary safe untarring on Windows (Sam Hendley)
-* Fixed: BUILDR-342 The jruby gem installer invokes the removed Gem.manage_gems function (Rhett Sutphin)
-* Fixed: BUILDR-436 release task should only replace "-SNAPSHOT" (spec from Jean-Philippe Caruana)
-* Fixed: BUILDR-464 Improve the versioning of Buildr (Rhett Sutphin)
-* Fixed: BUILDR-466 Rendering issue with IE on the website (Shane Witbeck)
-* Fixed: BUILDR-468 test:failed does not respect test.exclude
+* Change: BUILDR-473 Update jruby-openssl dependency version or support a range of versions
+* Fixed:  BUILDR-302 Move out-of-date Nailgun documentation to wiki (Shane Witbeck)
+* Fixed:  BUILDR-144 Filter does not preserve file permissions
+* Fixed:  BUILDR-203 Compiler guessing very inefficient
+* Fixed:  BUILDR-225 ArchiveTask#merge, not according to doc
+* Fixed:  BUILDR-256 Automatically installing gems aborts rspec test runner (Rhett Sutphin)
+* Fixed:  BUILDR-317 ecj compiler
+* Fixed:  BUILDR-326 follow up: binary safe untarring on Windows (Sam Hendley)
+* Fixed:  BUILDR-342 The jruby gem installer invokes the removed Gem.manage_gems function (Rhett Sutphin)
+* Fixed:  BUILDR-436 release task should only replace "-SNAPSHOT" (spec from Jean-Philippe Caruana)
+* Fixed:  BUILDR-464 Improve the versioning of Buildr (Rhett Sutphin)
+* Fixed:  BUILDR-466 Rendering issue with IE on the website (Shane Witbeck)
+* Fixed:  BUILDR-468 test:failed does not respect test.exclude
 
 1.4.1 (2010-07-07)
 * Added:  BUILDR-420 Support external compiler
