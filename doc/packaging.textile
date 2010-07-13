@@ -242,7 +242,8 @@ Axis2 service archives are similar to JAR's (compiled classes go into the root o
 
 {% highlight ruby %}
 package(:aar).with(:libs=>'log4j:log4j:jar:1.1')
-package(:aar).with(:services_xml=>_('target/services.xml'), :wsdls=>_('target/*.wsdl'))
+package(:aar).with(:services_xml=>_('target/services.xml'),
+                   :wsdls=>_('target/*.wsdl'))
 {% endhighlight %}
 
 The @libs@ attribute is a list of .jar artifacts to be included in the archive under /lib.  The default is no artifacts; compile dependencies are not included by default.
@@ -257,9 +258,11 @@ If you already have WSDL files in the @src/main/axis2@ directory but would like 
 # Host name depends on environment.
 host = ENV['ENV'] == 'test' ? 'test.host' : 'ws.example.com'
 filter.from(_('src/main/axis2')).into(_(:target)).
-  include('services.xml', '==*==.wsdl').using('http_port'=>'8080', 'http_host'=>host)
+  include('services.xml', '==*==.wsdl').using('http_port'=>'8080',
+                                              'http_host'=>host)
 package(:aar).wsdls.clear
-package(:aar).with(:services_xml=>_('target/services.xml'), :wsdls=>_('target/==*==.wsdl'))
+package(:aar).with(:services_xml=>_('target/services.xml'),
+                   :wsdls=>_('target/==*==.wsdl'))
 {% endhighlight %}
 
 
