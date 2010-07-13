@@ -18,7 +18,7 @@
 body {
   background-color: #fff;
   color: #000;
-  font-family: "Helvetica Neue", "DejaVu Sans", "Verdana";
+  font-family: "Helvetica Neue", "DejaVu Sans", "Verdana", sans-serif;
   text-align: center;
   line-height: 150%;
 }
@@ -138,9 +138,8 @@ th, thead td {
 /*  display: inline; */ /* IE Hack */
   width: 12em;
   float: left;
-  text-align: left;
   margin-right: 2em;
-  font-family: "Gill Sans";
+  font-family: "Gill Sans",sans-serif;
   font-size: 11pt;
   text-align: right;
   border-right: 1px solid #ccc;
@@ -173,16 +172,17 @@ th, thead td {
 #pages ol li p  {
   font-weight: normal;
   color: #000;
-  vertical-align: center;
+  vertical-align: middle;
 }
 
 
 #content { /* Parent Wrapper for inside boxes */
 /*  display: inline; *//* IE Hack */
-  float: right;
+  float: left;
   width: 44em;
   margin-left: 0.3em;
   margin-bottom: 5em;
+  word-wrap: break-word; /* prevents container divs from wrapping */
 }
 
 ol.toc {
