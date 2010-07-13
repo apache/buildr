@@ -38,7 +38,17 @@ unless defined?(SpecHelpers)
     require path
   end
   require 'buildr'
-
+  # load ecj
+  require 'buildr/java/ecj'
+  #Make ecj appear as a compiler that doesn't apply:
+  class Buildr::Compiler::Ecj
+    class << self
+      def applies_to?(project, task)
+        false
+      end
+    end
+  end
+  
   # Give a chance for plugins to do a few things before requiring the sandbox.
   include SandboxHook if defined?(SandboxHook)
 

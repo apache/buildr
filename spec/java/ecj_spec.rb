@@ -94,7 +94,7 @@ describe Buildr::Compiler::Ecj do
   end
 
   after(:all) do
-    #Make ecj appear as a compiler that applies:
+    #Make ecj appear as a compiler that doesn't apply:
     module Buildr
       module Compiler
 
