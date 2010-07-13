@@ -20,14 +20,6 @@ module Buildr
       
       OPTIONS = Buildr::Compiler::Javac::OPTIONS
       
-      class << self
-        
-        def applies_to?(project, task)
-          return false
-        end
-        
-      end
-      
       specify :language=>:java, :sources => 'java', :source_ext => 'java',
       :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
