@@ -1,4 +1,5 @@
 1.4.2 (pending)
+* Added:  BUILDR-415 Ability to exclude tests from command line
 * Change: BUILDR-473 Update jruby-openssl dependency version or support a range of versions
 * Fixed:  BUILDR-302 Move out-of-date Nailgun documentation to wiki (Shane Witbeck)
 * Fixed:  BUILDR-144 Filter does not preserve file permissions

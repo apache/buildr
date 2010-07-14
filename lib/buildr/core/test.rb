@@ -171,7 +171,7 @@ module Buildr
 
       # Used by the test/integration rule to only run tests that match the specified names.
       def only_run(tests) #:nodoc:
-        tests = tests.map { |name| name =~ /\*/ ? name : "*#{name}*" }
+        tests = wildcardify(tests)
         # Since the tests may reside in a sub-project, we need to set the include/exclude pattern on
         # all sub-projects, but only invoke test on the local project.
         Project.projects.each { |project| project.test.send :only_run, tests }
@@ -182,6 +182,37 @@ module Buildr
         # Since the tests may reside in a sub-project, we need to set the include/exclude pattern on
         # all sub-projects, but only invoke test on the local project.
         Project.projects.each { |project| project.test.send :only_run_failed }
+      end
+
+      # Used by the test/integration rule to clear all previously included/excluded tests.
+      def clear()
+        Project.projects.each do |project|
+          project.test.send :clear
+        end
+      end
+
+      # Used by the test/integration to include specific tests
+      def include(includes)
+        Project.projects.each do |project|
+          includes = wildcardify(includes)
+          project.test.send :include, *includes if includes.size > 0
+          project.test.send :forced_need=, true
+        end
+      end
+
+      # Used by the test/integration to exclude specific tests
+      def exclude(excludes)
+        Project.projects.each do |project|
+          excludes = wildcardify(excludes)
+          project.test.send :exclude, *excludes if excludes.size > 0
+          project.test.send :forced_need=, true
+        end
+      end
+
+    private
+
+      def wildcardify(strings)
+        strings.map { |name| name =~ /\*/ ? name : "*#{name}*" }
       end
     end
 
@@ -367,6 +398,13 @@ module Buildr
       self
     end
 
+    # Clear all test includes and excludes and returns self
+    def clear
+      @include = []
+      @exclude = []
+      self
+    end
+
     # *Deprecated*: Use tests instead.
     def classes
       Buildr.application.deprecated 'Call tests instead of classes'
@@ -438,6 +476,9 @@ module Buildr
 
     # The project this task belongs to.
     attr_reader :project
+
+    # Whether the tests are forced
+    attr_accessor :forced_need
 
   protected
 
@@ -596,7 +637,16 @@ module Buildr
       # (* and ?) patterns to match multiple tests, see the TestTask#include method.
       rule /^test:.*$/ do |task|
         # The map works around a JRuby bug whereby the string looks fine, but fails in fnmatch.
-        TestTask.only_run task.name.scan(/test:(.*)/)[0][0].split(',').map { |t| "#{t}" }
+        tests = task.name.scan(/test:(.*)/)[0][0].split(',').map(&:to_s)
+        excludes, includes = tests.partition { |t| t =~ /^-/ }
+        if excludes.empty?
+          TestTask.only_run includes
+        else
+          excludes.map! { |t| t[1..-1] }
+          TestTask.clear
+          TestTask.include includes
+          TestTask.exclude excludes
+        end
         task('test').invoke
       end
 

@@ -758,25 +758,25 @@ describe Rake::Task, 'test' do
     options.test = :all
     lambda { task('test').invoke rescue nil }.should run_tasks('foo:test', 'bar:test')
   end
-  
+
   it 'should ignore failure in subprojects if options.test is :all' do
     define('foo') {
-      define('p1') { test { fail } } 
-      define('p2') { test {  } } 
-      define('p3') { test { fail } } 
+      define('p1') { test { fail } }
+      define('p2') { test {  } }
+      define('p3') { test { fail } }
     }
-    define('bar') { test { fail } } 
+    define('bar') { test { fail } }
     options.test = :all
     lambda { task('test').invoke rescue nil }.should run_tasks('foo:p1:test', 'foo:p2:test', 'foo:p3:test', 'bar:test')
   end
-  
+
   it 'should ignore failure in subprojects if environment variable test is \'all\'' do
     define('foo') {
-      define('p1') { test { fail } } 
-      define('p2') { test {  } } 
-      define('p3') { test { fail } } 
+      define('p1') { test { fail } }
+      define('p2') { test {  } }
+      define('p3') { test { fail } }
     }
-    define('bar') { test { fail } } 
+    define('bar') { test { fail } }
     ENV['test'] = 'all'
     lambda { task('test').invoke rescue nil }.should run_tasks('foo:p1:test', 'foo:p2:test', 'foo:p3:test', 'bar:test')
   end
@@ -904,6 +904,80 @@ describe 'test rule' do
     project('foo').test.tests.should include('something')
   end
 
+  it 'should not execute excluded tests' do
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+    end
+    task('test:*,-nothing').invoke
+    project('foo').test.tests.should include('something')
+    project('foo').test.tests.should_not include('nothing')
+  end
+
+  it 'should not execute tests in excluded package' do
+    write 'src/test/java/com/example/foo/TestSomething.java',
+      'package com.example.foo; public class TestSomething extends junit.framework.TestCase { public void testNothing() {} }'
+    write 'src/test/java/com/example/bar/TestFails.java',
+      'package com.example.bar; public class TestFails extends junit.framework.TestCase { public void testFailure() { fail(); } }'
+    define 'foo' do
+      test.using(:junit)
+    end
+    task('test:-com.example.bar').invoke
+    project('foo').test.tests.should include('com.example.foo.TestSomething')
+    project('foo').test.tests.should_not include('com.example.bar.TestFails')
+  end
+
+  it 'should not execute excluded tests with wildcards' do
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+    end
+    task('test:something,-s*,-n*').invoke
+    project('foo').test.tests.should_not include('something')
+    project('foo').test.tests.should_not include('nothing')
+  end
+
+  it 'should execute all tests except excluded tests' do
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'anything', 'nothing']) }
+    end
+    task('test:-nothing').invoke
+    project('foo').test.tests.should include('something', 'anything')
+    project('foo').test.tests.should_not include('nothing')
+  end
+
+  it 'should ignore exclusions in buildfile' do
+    define 'foo' do
+      test.using(:junit)
+      test.exclude 'something'
+      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'anything', 'nothing']) }
+    end
+    task('test:-nothing').invoke
+    project('foo').test.tests.should include('something', 'anything')
+    project('foo').test.tests.should_not include('nothing')
+  end
+
+  it 'should ignore inclusions in buildfile' do
+    define 'foo' do
+      test.using(:junit)
+      test.include 'something'
+      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+    end
+    task('test:nothing').invoke
+    project('foo').test.tests.should include('nothing')
+    project('foo').test.tests.should_not include('something')
+  end
+
+  it 'should not execute a test if it''s both included and excluded' do
+    define 'foo' do
+      test.using(:junit)
+      test.instance_eval { @framework.stub!(:tests).and_return(['nothing']) }
+    end
+    task('test:nothing,-nothing').invoke
+    project('foo').test.tests.should_not include('nothing')
+  end
+
   it 'should not update the last successful test run timestamp' do
     define 'foo' do
       test.using(:junit)
@@ -945,7 +1019,7 @@ describe 'test failed' do
     project('foo').test.tests.should include('FailingTest')
     project('foo').test.tests.should_not include('PassingTest')
   end
-  
+
   it 'should run failed tests, respecting excluded tests' do
     define 'foo' do
       test.using(:junit).exclude('ExcludedTest')
