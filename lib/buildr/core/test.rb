@@ -501,7 +501,7 @@ module Buildr
     # Returns true if the specified test name matches the inclusion/exclusion pattern. Used to determine
     # which tests to execute.
     def include?(name)
-      (@include.empty? || @include.any? { |pattern| File.fnmatch(pattern, name) }) &&
+      ((@include.empty? && !@forced_need)|| @include.any? { |pattern| File.fnmatch(pattern, name) }) &&
         !@exclude.any? { |pattern| File.fnmatch(pattern, name) }
     end
 
@@ -642,9 +642,11 @@ module Buildr
         if excludes.empty?
           TestTask.only_run includes
         else
+          # remove leading '-'
           excludes.map! { |t| t[1..-1] }
+
           TestTask.clear
-          TestTask.include includes
+          TestTask.include (includes.empty? ? '*' : includes)
           TestTask.exclude excludes
         end
         task('test').invoke

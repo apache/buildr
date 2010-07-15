@@ -1034,6 +1034,31 @@ describe 'test failed' do
     project('foo').test.tests.should_not include('ExcludedTest')
   end
 
+  it 'should run only the tests that failed the last time, even when failed tests have dependencies' do
+    define 'parent' do
+      define 'foo' do
+        test.using(:junit)
+        test.instance_eval do
+          @framework.stub!(:tests).and_return(['PassingTest'])
+          @framework.stub!(:run).and_return(['PassingTest'])
+        end
+      end
+      define 'bar' do
+        test.using(:junit)
+        test.enhance ["parent:foo:test"]
+        test.instance_eval do
+          @framework.stub!(:tests).and_return(['FailingTest', 'PassingTest'])
+          @framework.stub!(:run).and_return(['PassingTest'])
+        end
+      end
+    end
+    write project('parent:bar').path_to(:target, "junit-failed"), "FailingTest"
+    task('test:failed').invoke rescue nil
+    project('parent:foo').test.tests.should_not include('PassingTest')
+    project('parent:bar').test.tests.should include('FailingTest')
+    project('parent:bar').test.tests.should_not include('PassingTest')
+  end
+
 end
 
 
