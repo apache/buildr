@@ -52,8 +52,8 @@ for those one-off tasks, with a language that's a joy to use.
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.8.7'
   spec.add_dependency 'builder',              '2.1.2'
-  spec.add_dependency 'net-ssh',              '2.0.15'
-  spec.add_dependency 'net-sftp',             '2.0.2'
+  spec.add_dependency 'net-ssh',              '2.0.23'
+  spec.add_dependency 'net-sftp',             '2.0.4'
   spec.add_dependency 'rubyzip',              '0.9.1'
   spec.add_dependency 'highline',             '1.5.1'
   spec.add_dependency 'json_pure',            '1.4.3'
