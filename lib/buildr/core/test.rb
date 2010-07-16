@@ -646,7 +646,7 @@ module Buildr
           excludes.map! { |t| t[1..-1] }
 
           TestTask.clear
-          TestTask.include (includes.empty? ? '*' : includes)
+          TestTask.include(includes.empty? ? '*' : includes)
           TestTask.exclude excludes
         end
         task('test').invoke
