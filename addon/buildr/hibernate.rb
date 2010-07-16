@@ -117,12 +117,15 @@ module Buildr
     #       fileset(:dir=>compile.sources.first) { include :name=>"**/*.hbm.xml" } }
     #     end
     #   end
-    def hibernate_schemaexport(args)
+    def hibernate_schemaexport(args, &block)
       path, arg_names, deps = Rake.application.resolve_args([args])
-      unless Rake::Task.task_defined?(path)
-        class << file(path) ; attr_accessor :ant ; end
-        file(path).enhance { |task| task.ant = Hibernate.schemaexport(hib_resolve_classpath) }
-      end
+      file(path).enhance { |task| 
+        unless task.respond_to? :ant #this is a hack. A better way to do the job is to create a real task for all this.
+          class << task ; attr_accessor :ant ; end
+          task.ant = Hibernate.schemaexport(hib_resolve_classpath) 
+        end
+      }  
+      
       if block
         file(path).enhance(deps) { |task| block.call task, task.ant }
       else
