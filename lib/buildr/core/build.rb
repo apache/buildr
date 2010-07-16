@@ -278,7 +278,7 @@ module Buildr
         ruby *args
       end
       tag_release resolve_tag
-      update_version_to_next
+      update_version_to_next if @this_version != @new_version
     end
 
     # :call-seq:
@@ -346,12 +346,12 @@ module Buildr
     # This method yields to the block with the current (this) version number as an array and expects
     # the block to update it.
     def change_version
-      this_version = extract_version
-      new_version = this_version.split('.')
+      @this_version = extract_version
+      new_version = @this_version.split('.')
       yield(new_version)
-      new_version = new_version.join('.')
+      @new_version = new_version.join('.')
       buildfile = File.read(Buildr.application.buildfile.to_s)
-      buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{new_version}"}) }
+      buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{@new_version}"}) }
     end
 
     # Return the name of the tag to tag the release with.
