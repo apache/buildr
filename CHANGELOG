@@ -2,6 +2,7 @@
 * Added:  BUILDR-415 Ability to exclude tests from command line
 * Change: BUILDR-473 Update jruby-openssl dependency version or support a range of versions
 * Change: BUILDR-478 Upgrade to net-ssh 2.0.23 and net-sftp 2.0.4 (Shane Witbeck)
+* Change: BUILDR-475 Support for long names on tar.gz (updated to minitar 0.5.3)
 * Fixed:  BUILDR-302 Move out-of-date Nailgun documentation to wiki (Shane Witbeck)
 * Fixed:  BUILDR-144 Filter does not preserve file permissions
 * Fixed:  BUILDR-203 Compiler guessing very inefficient
