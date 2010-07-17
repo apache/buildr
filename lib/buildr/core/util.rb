@@ -54,7 +54,7 @@ module Buildr
     def ruby(*args)
       options = Hash === args.last ? args.pop : {}
       cmd = []
-      ruby_bin = File.expand_path(Config::CONFIG['ruby_install_name'], Config::CONFIG['bindir'])
+      ruby_bin = File.normalize_path(Config::CONFIG['ruby_install_name'], Config::CONFIG['bindir'])
       if options.delete(:sudo) && !(win_os? || Process.uid == File.stat(ruby_bin).uid)
         cmd << 'sudo' << '-u' << "##{File.stat(ruby_bin).uid}"
       end
