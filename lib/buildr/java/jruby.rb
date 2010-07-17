@@ -59,6 +59,11 @@ module Java
   # Since we already have a JVM loaded, we can use it to guess where JAVA_HOME is.
   # We set JAVA_HOME early so we can use it without calling Java.load first.
   ENV['JAVA_HOME'] ||= java.lang.System.getProperty("java.home")
+  
+  # This version is the minimal version Buildr will support.
+  # Any older version of JRuby will raise an exception.
+  JRUBY_MIN_VERSION = '1.5.1' 
+  raise "JRuby must be at least at version #{JRUBY_MIN_VERSION}" unless JRUBY_VERSION >= JRUBY_MIN_VERSION
 
   class << self
 
