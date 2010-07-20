@@ -223,8 +223,7 @@ module Buildr
 
             task :check => [:instrument, :test] do
               Buildr.ant "cobertura" do |ant|
-                ant.taskdef :classpath=>Cobertura.requires.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
-
+                ant.taskdef :classpath=>Cobertura.dependencies.join(File::PATH_SEPARATOR), :resource=>"tasks.properties"
                 params = { :datafile => Cobertura.data_file }
 
                 # oh so ugly...
