@@ -20,8 +20,8 @@ require File.join(File.dirname(__FILE__), '../spec_helpers')
 share_as :ScalacCompiler do
   
   before(:each) do
-    # Force Scala 2.7.7 for specs; don't want to rely on SCALA_HOME
-    Buildr.settings.build['scala.version'] = "2.7.7"
+    # Force Scala 2.8.0 for specs; don't want to rely on SCALA_HOME
+    Buildr.settings.build['scala.version'] = "2.8.0"
   end
     
   it 'should identify itself from source directories' do

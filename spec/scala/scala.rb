@@ -18,8 +18,8 @@ require File.join(File.dirname(__FILE__), '../spec_helpers')
 
 describe 'scala' do
   # Specific version of Scala required for specs
-  required_version = '2.7.7'
-  scala_version_str = "2.7.7.final"
+  required_version = '2.8.0'
+  scala_version_str = "2.8.0.final"
 
   it 'should automatically add the remote scala-tools.org repository' do
     # NOTE: the sandbox environment clears "repositories.remote" so we can't

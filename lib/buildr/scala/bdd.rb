@@ -32,19 +32,23 @@ module Buildr::Scala
     @lang = :scala
     @bdd_dir = :spec
 
-    VERSION = '1.6.2.1'
+    VERSION = '1.6.5'
 
     class << self
       def version
         Buildr.settings.build['scala.specs'] || VERSION
       end
 
+      def artifact
+        Buildr.settings.build['scala.specs.artifact'] || "specs_#{Buildr::Scala.version}"
+      end
+
       def dependencies
         unless @dependencies
           super
+          specs = (version =~ /:/) ? [version] : ["org.scala-tools.testing:#{artifact}:jar:#{version}"]
           # Add utility classes (e.g. SpecsSingletonRunner) and other dependencies
-          @dependencies |= [ File.join(File.dirname(__FILE__)) ] +
-                           ["org.scala-tools.testing:specs:jar:#{version}"] +
+          @dependencies |= [ File.join(File.dirname(__FILE__)) ] + specs +
                            Check.dependencies + JUnit.dependencies + Scalac.dependencies
         end
         @dependencies
