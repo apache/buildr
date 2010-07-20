@@ -52,6 +52,8 @@ module Java
 
         cmd_args = [path_to_bin('java')]
         classpath = classpath_from(options)
+        tools = Java.tools_jar
+        classpath << tools if tools
         cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
         options[:properties].each { |k, v| cmd_args << "-D#{k}=#{v}" } if options[:properties]
         cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
