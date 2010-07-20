@@ -98,6 +98,20 @@ Buildr forcefully runs all tests that match the pattern.  If you want to re-run 
 $ buildr test:*
 {% endhighlight %}
 
+You can exclude tests by preceeding them with a minus sign ('-'):
+
+{% highlight sh %}
+$ buildr test:-Bar
+{% endhighlight %}
+
+The above would run all tests except those with a name containing @Bar@.  Exclusions can be combined with inclusions:
+
+{% highlight sh %}
+$ buildr test:Foo,-Bar
+{% endhighlight %}
+
+Buildr would then run tests with names containing @Foo@ but not @Bar@.
+
 As you probably noticed, Buildr will stop your build at the first test that fails.  We think it's a good idea, except when it's not.  If you're using a continuous build system, you'll want a report of all the failed tests without stopping at the first failure.  To make that happen, set the environment variable @test@ to "all", or the Buildr @options.test@ option to @:all@.  For example:
 
 {% highlight sh %}
