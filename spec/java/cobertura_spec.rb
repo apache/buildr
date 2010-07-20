@@ -80,6 +80,28 @@ describe Buildr::Cobertura do
       end
     end
 
-    # TODO add specs for cobertura:check...somehow
+    describe 'check' do
+      before do
+        write 'src/main/java/Foo.java', 'public class Foo { public static boolean returnTrue() {return true;}}'
+        write 'src/test/java/FooTest.java', <<-JAVA
+import static junit.framework.Assert.assertTrue;
+import org.junit.Test;
+
+public class FooTest { 
+  
+  @Test
+  public void testReturnTrue() { 
+    assertTrue(Foo.returnTrue());
+  }
+}
+JAVA
+      end
+      
+      it 'should not raise errors during execution' do
+        define('foo')  { cobertura.include 'Foo' }
+        lambda {task("foo:cobertura:check").invoke}.should_not raise_error
+      end
+      
+    end
   end
 end
