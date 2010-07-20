@@ -3,6 +3,8 @@
 * Change: BUILDR-473 Update jruby-openssl dependency version or support a range of versions
 * Change: BUILDR-478 Upgrade to net-ssh 2.0.23 and net-sftp 2.0.4 (Shane Witbeck)
 * Change: BUILDR-475 Support for long names on tar.gz (updated to minitar 0.5.3)
+* Change: BUILDR-484 Upgrade to Scala 2.8.0 (final) and associated dependencies
+          (ScalaCheck 1.7, ScalaTest 1.2, Specs 1.6.5)
 * Fixed:  BUILDR-144 Filter does not preserve file permissions
 * Fixed:  BUILDR-163 cobertura-check
 * Fixed:  BUILDR-203 Compiler guessing very inefficient
