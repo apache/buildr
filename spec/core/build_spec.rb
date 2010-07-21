@@ -429,6 +429,138 @@ describe 'a release process', :shared=>true do
     end
   end
 
+  describe '#resolve_next_version' do
+
+    it 'should increment the version number if SNAPSHOT' do
+      @release.send(:resolve_next_version, "1.0.0-SNAPSHOT").should == '1.0.1-SNAPSHOT'
+    end
+
+    it 'should NOT increment the version number if no SNAPSHOT' do
+      @release.send(:resolve_next_version, "1.0.0").should == '1.0.0'
+    end
+
+    it 'should return the version specified by NEXT_VERSION env var' do
+      ENV['NEXT_VERSION'] = "version_from_env"
+      @release.send(:resolve_next_version, "1.0.0").should == 'version_from_env'
+    end
+
+    it 'should return the version specified by next_version' do
+      Release.next_version = "ze_next_version"
+      @release.send(:resolve_next_version, "1.0.0").should == 'ze_next_version'
+    end
+
+    it 'should return the version specified by next_version if next_version is a proc' do
+      Release.next_version = lambda {|version| "#{version}++"}
+      @release.send(:resolve_next_version, "1.0.0").should == '1.0.0++'
+    end
+
+    it "should return the version specified by 'NEXT_VERSION' env var even if next_version is non nil" do
+      ENV['NEXT_VERSION'] = "ze_version_from_env"
+      Release.next_version = lambda {|version| "#{version}++"}
+      @release.send(:resolve_next_version, "1.0.0").should == 'ze_version_from_env'
+    end
+
+    it "should return the version specified by 'next_version' env var even if next_version is non nil" do
+      ENV['NEXT_VERSION'] = nil
+      ENV['next_version'] = "ze_version_from_env_lowercase"
+      Release.next_version = lambda {|version| "#{version}++"}
+      @release.send(:resolve_next_version, "1.0.0").should == 'ze_version_from_env_lowercase'
+    end
+    after { 
+      Release.next_version = nil
+      ENV['NEXT_VERSION'] = nil
+      ENV['next_version'] = nil
+    }
+  end
+
+  describe '#resolve_next_version' do
+
+    it 'should increment the version number if SNAPSHOT' do
+      @release.send(:resolve_next_version, "1.0.0-SNAPSHOT").should == '1.0.1-SNAPSHOT'
+    end
+
+    it 'should NOT increment the version number if no SNAPSHOT' do
+      @release.send(:resolve_next_version, "1.0.0").should == '1.0.0'
+    end
+
+    it 'should return the version specified by NEXT_VERSION env var' do
+      ENV['NEXT_VERSION'] = "version_from_env"
+      @release.send(:resolve_next_version, "1.0.0").should == 'version_from_env'
+    end
+
+    it 'should return the version specified by next_version' do
+      Release.next_version = "ze_next_version"
+      @release.send(:resolve_next_version, "1.0.0").should == 'ze_next_version'
+    end
+
+    it 'should return the version specified by next_version if next_version is a proc' do
+      Release.next_version = lambda {|version| "#{version}++"}
+      @release.send(:resolve_next_version, "1.0.0").should == '1.0.0++'
+    end
+
+    it "should return the version specified by 'NEXT_VERSION' env var even if next_version is non nil" do
+      ENV['NEXT_VERSION'] = "ze_version_from_env"
+      Release.next_version = lambda {|version| "#{version}++"}
+      @release.send(:resolve_next_version, "1.0.0").should == 'ze_version_from_env'
+    end
+
+    it "should return the version specified by 'next_version' env var even if next_version is non nil" do
+      ENV['NEXT_VERSION'] = nil
+      ENV['next_version'] = "ze_version_from_env_lowercase"
+      Release.next_version = lambda {|version| "#{version}++"}
+      @release.send(:resolve_next_version, "1.0.0").should == 'ze_version_from_env_lowercase'
+    end
+    after { 
+      Release.next_version = nil
+      ENV['NEXT_VERSION'] = nil
+      ENV['next_version'] = nil
+    }
+  end
+
+  describe '#resolve_next_version' do
+
+    it 'should increment the version number if SNAPSHOT' do
+      @release.send(:resolve_next_version, "1.0.0-SNAPSHOT").should == '1.0.1-SNAPSHOT'
+    end
+
+    it 'should NOT increment the version number if no SNAPSHOT' do
+      @release.send(:resolve_next_version, "1.0.0").should == '1.0.0'
+    end
+
+    it 'should return the version specified by NEXT_VERSION env var' do
+      ENV['NEXT_VERSION'] = "version_from_env"
+      @release.send(:resolve_next_version, "1.0.0").should == 'version_from_env'
+    end
+
+    it 'should return the version specified by next_version' do
+      Release.next_version = "ze_next_version"
+      @release.send(:resolve_next_version, "1.0.0").should == 'ze_next_version'
+    end
+
+    it 'should return the version specified by next_version if next_version is a proc' do
+      Release.next_version = lambda {|version| "#{version}++"}
+      @release.send(:resolve_next_version, "1.0.0").should == '1.0.0++'
+    end
+
+    it "should return the version specified by 'NEXT_VERSION' env var even if next_version is non nil" do
+      ENV['NEXT_VERSION'] = "ze_version_from_env"
+      Release.next_version = lambda {|version| "#{version}++"}
+      @release.send(:resolve_next_version, "1.0.0").should == 'ze_version_from_env'
+    end
+
+    it "should return the version specified by 'next_version' env var even if next_version is non nil" do
+      ENV['NEXT_VERSION'] = nil
+      ENV['next_version'] = "ze_version_from_env_lowercase"
+      Release.next_version = lambda {|version| "#{version}++"}
+      @release.send(:resolve_next_version, "1.0.0").should == 'ze_version_from_env_lowercase'
+    end
+    after { 
+      Release.next_version = nil
+      ENV['NEXT_VERSION'] = nil
+      ENV['next_version'] = nil
+    }
+  end
+
   describe '#resolve_tag' do
     before do
       @release.stub!(:extract_version).and_return('1.0.0')
@@ -501,12 +633,14 @@ describe 'a release process', :shared=>true do
 
   describe '#update_version_to_next' do
     before do
-      write 'buildfile', 'THIS_VERSION = "1.0.0"'
+      write 'buildfile', "VERSION_NUMBER = '1.0.5-SNAPSHOT'"
+      @release.send(:this_version=, "1.0.5-SNAPSHOT")
     end
 
     it 'should update the buildfile with a new version number' do
       @release.send :update_version_to_next
-      file('buildfile').should contain('THIS_VERSION = "1.0.1-SNAPSHOT"')
+      `cp buildfile /tmp/out`
+      file('buildfile').should contain('VERSION_NUMBER = "1.0.6-SNAPSHOT"')
     end
 
     it 'should commit the new buildfile on the trunk' do
@@ -530,11 +664,19 @@ describe 'a release process', :shared=>true do
     end
 
     it 'should inform the user of the new version' do
-      lambda { @release.update_version_to_next }.should show_info('Current version is now 1.0.1-SNAPSHOT')
+      lambda { @release.update_version_to_next }.should show_info('Current version is now 1.0.6-SNAPSHOT')
     end
     after { Release.commit_message = nil }
   end
 
+
+  describe '#check' do
+    before { @release.send(:this_version=, "1.0.0-SNAPSHOT") }
+    it 'should fail if THIS_VERSION equals the next_version' do
+      @release.stub!(:resolve_next_version).and_return('1.0.0-SNAPSHOT')
+      lambda { @release.check }.should raise_error("The next version can't be equal to the current version 1.0.0-SNAPSHOT.\nUpdate THIS_VERSION/VERSION_NUMBER, specify Release.next_version or use NEXT_VERSION env var")
+    end
+  end
 end
 
 
@@ -542,6 +684,7 @@ describe GitRelease do
   it_should_behave_like 'a release process'
 
   before do
+    write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
     @release = GitRelease.new
     Git.stub!(:git)
     Git.stub!(:current_branch).and_return('master')
@@ -561,9 +704,10 @@ describe GitRelease do
     end
   end
 
-  describe '#release_check' do
+  describe '#check' do
     before do
       @release = GitRelease.new
+      @release.send(:this_version=, '1.0.0-SNAPSHOT')
     end
 
     it 'should accept a clean repository' do
@@ -638,6 +782,7 @@ describe SvnRelease do
   it_should_behave_like 'a release process'
 
   before do
+    write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
     @release = SvnRelease.new
     Svn.stub!(:svn)
     Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
@@ -659,6 +804,7 @@ describe SvnRelease do
     before do
       Svn.stub!(:uncommitted_files).and_return([])
       @release = SvnRelease.new
+      @release.send(:this_version=, "1.0.0-SNAPSHOT")
     end
 
     it 'should accept to release from the trunk' do

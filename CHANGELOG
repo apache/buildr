@@ -15,6 +15,7 @@
 * Fixed:  BUILDR-326 follow up: binary safe untarring on Windows (Sam Hendley)
 * Fixed:  BUILDR-342 The jruby gem installer invokes the removed Gem.manage_gems function (Rhett Sutphin)
 * Fixed:  BUILDR-436 release task should only replace "-SNAPSHOT" (spec from Jean-Philippe Caruana)
+* Fixed:  BUILDR-438 Release Task: customizable version numbers (Alexis Midon)
 * Fixed:  BUILDR-464 Improve the versioning of Buildr (Rhett Sutphin)
 * Fixed:  BUILDR-466 Rendering issue with IE on the website (Shane Witbeck)
 * Fixed:  BUILDR-468 test:failed does not respect test.exclude
