@@ -239,6 +239,19 @@ module Buildr
       #   Release.commit_message = lambda { |ver| "Changed version number to #{ver}" }
       attr_accessor :commit_message
 
+      # Use this to specify the next version number to replace VERSION_NUMBER with in the buildfile.
+      # You can set the next version or a proc that will be called with the current version number.
+      # For example, with the following buildfile:
+      #   THIS_VERSION = "1.0.0-rc1" 
+      #   Release.next_version = lambda { |version| 
+      #       version[-1] = version[-1].to_i + 1
+      #       version
+      #   } 
+      # 
+      # Release.next_version will return "1.0.0-rc2", so at the end of the release, the buildfile will contain VERSION_NUMBER = "1.0.0-rc2" 
+      #
+      attr_accessor :next_version
+
       # :call-seq:
       #     add(MyReleaseClass)
       #
@@ -270,6 +283,7 @@ module Buildr
     #
     # Make a release.
     def make
+      @this_version = extract_version
       check
       with_release_candidate_version do |release_candidate_buildfile|
         args = '-S', 'buildr', "_#{Buildr::VERSION}_", '--buildfile', release_candidate_buildfile
@@ -278,11 +292,17 @@ module Buildr
         ruby *args
       end
       tag_release resolve_tag
-      update_version_to_next if @this_version != @new_version
+      update_version_to_next if this_version != resolve_next_version(this_version)
+    end
+
+    def check
+      if this_version == resolve_next_version(this_version) && this_version.match(/-SNAPSHOT$/)
+        fail "The next version can't be equal to the current version #{this_version}.\nUpdate THIS_VERSION/VERSION_NUMBER, specify Release.next_version or use NEXT_VERSION env var" 
+      end
     end
 
     # :call-seq:
-    #   extract_version() => this_versin
+    #   extract_version() => this_version
     #
     # Extract the current version number from the buildfile.
     # Raise an error if not found.
@@ -304,8 +324,9 @@ module Buildr
     end
 
   protected
-  
-    attr_accessor :no_snapshot
+ 
+    # the initial value of THIS_VERSION
+    attr_accessor :this_version
 
     # :call-seq:
     #   with_release_candidate_version() { |filename| ... }
@@ -325,9 +346,9 @@ module Buildr
     def with_release_candidate_version
       release_candidate_buildfile = Buildr.application.buildfile.to_s + '.next'
     
-      release_candidate_buildfile_contents = change_version { |version| 
-        @no_snapshot = !version[-1].match(/-SNAPSHOT$/) 
-        version[-1] = version[-1].sub(/-SNAPSHOT$/, '') }
+      release_candidate_buildfile_contents = change_version { |version|
+        version.gsub(/-SNAPSHOT$/, "")
+      }
       File.open(release_candidate_buildfile, 'w') { |file| file.write release_candidate_buildfile_contents }
       begin
         yield release_candidate_buildfile
@@ -343,15 +364,13 @@ module Buildr
     # Change version number in the current Buildfile, but without writing a new file (yet).
     # Returns the contents of the Buildfile with the modified version number.
     #
-    # This method yields to the block with the current (this) version number as an array and expects
-    # the block to update it.
+    # This method yields to the block with the current (this) version number and expects
+    # the block to return the updated version.
     def change_version
-      @this_version = extract_version
-      new_version = @this_version.split('.')
-      yield(new_version)
-      @new_version = new_version.join('.')
+      current_version = extract_version
+      new_version = yield(current_version)
       buildfile = File.read(Buildr.application.buildfile.to_s)
-      buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{@new_version}"}) }
+      buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{new_version}"}) }
     end
 
     # Return the name of the tag to tag the release with.
@@ -362,17 +381,34 @@ module Buildr
       tag
     end
 
+    # Return the new value of THIS_VERSION based on the version passed.
+    #
+    # This method receives the existing value of THIS_VERSION
+    def resolve_next_version(current_version)
+        next_version = Release.next_version
+        next_version ||= lambda { |v|
+          snapshot = v.match(/-SNAPSHOT$/)
+          version = v.gsub(/-SNAPSHOT$/, "").split(/\./)
+          if snapshot 
+            version[-1] = sprintf("%0#{version[-1].size}d", version[-1].to_i + 1) + '-SNAPSHOT'
+          end 
+          version.join('.')
+        } 
+        next_version = ENV['NEXT_VERSION'] if ENV['NEXT_VERSION'] 
+        next_version = ENV['next_version'] if ENV['next_version'] 
+        next_version = next_version.call(current_version) if Proc === next_version
+        next_version
+    end
+
     # Move the version to next and save the updated buildfile
     def update_buildfile
-      buildfile = change_version { |version| 
-        unless no_snapshot
-          version[-1] = sprintf("%0#{version[-1].size}d", version[-1].to_i + 1) + '-SNAPSHOT'
-        end
+      buildfile = change_version { |version| # THIS_VERSION minus SNAPSHOT 
+        resolve_next_version(this_version) # THIS_VERSION
       }
       File.open(Buildr.application.buildfile.to_s, 'w') { |file| file.write buildfile }
     end
 
-    # Return the message to use to cimmit the buildfile with the next version
+    # Return the message to use to commit the buildfile with the next version
     def message
       version = extract_version
       msg = Release.commit_message || "Changed version number to #{version}"
@@ -405,6 +441,7 @@ module Buildr
     #    1. the repository is clean: no content staged or unstaged
     #    2. some remote repositories are defined but the current branch does not track any
     def check
+      super
       uncommitted = Git.uncommitted_files
       fail "Uncommitted files violate the First Principle Of Release!\n#{uncommitted.join("\n")}" unless uncommitted.empty?
       fail "You are releasing from a local branch that does not track a remote!" unless Git.remote
@@ -413,9 +450,11 @@ module Buildr
     # Add a tag reference in .git/refs/tags and push it to the remote if any.
     # If a tag with the same name already exists it will get deleted (in both local and remote repositories).
     def tag_release(tag)
-      info "Committing buildfile with version number #{extract_version}"
-      Git.commit File.basename(Buildr.application.buildfile.to_s), message
-      Git.push if Git.remote
+      unless this_version == extract_version
+        info "Committing buildfile with version number #{extract_version}"
+        Git.commit File.basename(Buildr.application.buildfile.to_s), message
+        Git.push if Git.remote
+      end
       info "Tagging release #{tag}"
       Git.git 'tag', '-d', tag rescue nil
       Git.git 'push', Git.remote, ":refs/tags/#{tag}" rescue nil if Git.remote
@@ -440,11 +479,14 @@ module Buildr
     end
 
     def check
+      super
       fail "Uncommitted files violate the First Principle Of Release!\n"+Svn.uncommitted_files.join("\n") unless Svn.uncommitted_files.empty?
       fail "SVN URL must contain 'trunk' or 'branches/...'" unless Svn.repo_url =~ /(trunk)|(branches.*)$/
     end
 
     def tag_release(tag)
+      # Unlike Git, committing the buildfile with the released version is not necessary.
+      # svn tag does commit & tag.
       info "Tagging release #{tag}"
       Svn.tag tag
     end
