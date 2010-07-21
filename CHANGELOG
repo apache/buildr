@@ -21,6 +21,7 @@
 * Fixed:  BUILDR-469 test:failed causes all transitive tests to run
 * Fixed:  BUILDR-472 ECJ dependency now required to build any java project
 * Fixed:  BUILDR-479 Enforce using a minimal version of jruby
+* Fixed:  BUILDR-481 Antwrap monkey-patching in core.rb
 
 1.4.1 (2010-07-07)
 * Added:  BUILDR-420 Support external compiler
