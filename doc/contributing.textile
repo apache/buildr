@@ -16,6 +16,14 @@ We run two mailing lists, the "users":http://buildr.markmail.org/search/list:use
 
 Check the "mailing lists":mailing_lists.html page for more information on subscribing, searching and posting to the mailing list.
 
+h2(#IRC). IRC
+
+We are live on IRC under the buildr channel on irc.freenode.net, with a broad coverage of the US timezone. We tend to idle there, so feel free to ping the channel owner (toulmean) to make noise.
+
+Our "conversations":http://echelog.matzon.dk/logs/browse/buildr/1279663200 are logged by the echelog bot. If you're really curious, we also have "activity statistics":http://echelog.matzon.dk/stats/buildr.html
+
+Sincere thanks to Matzon for the hosting!
+
 
 h2(#bugs).  Bugs (aka Issues)
 
