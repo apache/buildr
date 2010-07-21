@@ -170,7 +170,7 @@ Before using Scala, you must first @require@ the Scala compiler:
 require 'buildr/scala'
 {% endhighlight %}
 
-By default, Buildr will attempt to use the latest stable release of Scala, which is currently Scala 2.7.7 as of April 2010.  Of course you can configure a specific version of Scala for your project by adding the following entry in @build.yaml@:
+By default, Buildr will attempt to use the latest stable release of Scala, which is currently Scala 2.8.0 as of July 2010.  Of course you can configure a specific version of Scala for your project by adding the following entry in @build.yaml@:
 
 {% highlight yaml %}
 scala.version: 2.8.0.Beta1  # Pick your version
@@ -186,7 +186,7 @@ Buildr.settings.build['scala.version'] = "2.8.0.Beta1"
 You may also determine the version in use by querying the @Scala.version@ attribute:
 
 {% highlight ruby %}
-Scala.version       # => '2.7.7'
+Scala.version       # => '2.8.0'
 {% endhighlight %}
 
 Regardless of how the Scala version is determined, if you have the same Scala version installed on your system and the SCALA_HOME environment variable points to it, then your local installation will be used.   Otherwise, Buildr will download it from the "Scala Tools repository":http://scala-tools.org/ which is automatically enlisted when you @require@ Scala.  The only drawback if you don't have a local installation is the FSC compiler won't be available.
