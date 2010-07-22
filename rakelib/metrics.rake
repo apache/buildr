@@ -16,20 +16,8 @@
 namespace :metrics do
   desc 'run Saikuro reports'
   task :saikuro do
+    gem 'atoulme-Saikuro'
     require 'saikuro'
-    class SaikuroRake
-      include ResultIndexGenerator
-      
-      def run(files, output_dir)
-        state_filter = Filter.new(5)
-        token_filter = Filter.new(10, 25, 50)
-        state_formater = StateHTMLComplexityFormater.new(STDOUT,state_filter)
-        token_count_formater = HTMLTokenCounterFormater.new(STDOUT,token_filter)
-        idx_states, idx_tokens = Saikuro.analyze(files, state_formater, token_count_formater, output_dir)
-        write_cyclo_index(idx_states, output_dir)
-        write_token_index(idx_tokens, output_dir)
-      end
-    end
     output_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "_reports", "saikuro"))
     base_dir = Pathname.new(File.expand_path(File.join(File.dirname(__FILE__), "..")))
     rb_files = ["lib", "addon"].collect { |folder| 
@@ -37,7 +25,7 @@ namespace :metrics do
     }.flatten.collect {|path| 
       Pathname.new(path).relative_path_from(base_dir).to_s
     }
-    SaikuroRake.new.run(rb_files, output_dir)
+    SaikuroRunner.new.run(rb_files, output_dir)
   end
   
   desc 'generate ccn treemap'
