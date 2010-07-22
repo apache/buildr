@@ -24,6 +24,8 @@ namespace :metrics do
   task :ccn_treemap do
     require 'saikuro_treemap'
     SaikuroTreemap.generate_treemap :code_dirs => ['lib', 'addons'], :output_file => "_reports/saikuro_treemap.html"
-    `open reports/saikuro_treemap.html`
   end
 end
+
+desc 'Run all metrics tools'
+task :metrics => ["metrics:saikuro", "metrics:ccn_treemap"]
