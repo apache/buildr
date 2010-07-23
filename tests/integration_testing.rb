@@ -22,7 +22,7 @@ def test(folder, cmd)
 class #{folder.sub("-", "").capitalize} < Test::Unit::TestCase
 
   def test_#{folder.sub("-", "")}
-    result = %x[cd #{File.join(File.expand_path(File.dirname(__FILE__)), "#{folder}")} ; #{cmd}]
+    result = %x[cd #{File.join(File.expand_path(File.dirname(__FILE__)), "#{folder}")} ; #{cmd} ; buildr clean]
     assert($?.success?)
   end
 
