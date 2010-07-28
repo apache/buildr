@@ -20,9 +20,9 @@ h2(#IRC). IRC
 
 We are live on IRC under the buildr channel on irc.freenode.net, with a broad coverage of the US timezone. We tend to idle there, so feel free to ping the channel owner (toulmean) to make noise.
 
-Our "conversations":http://echelog.matzon.dk/logs/browse/buildr/1279663200 are logged by the echelog bot. If you're really curious, we also have "activity statistics":http://echelog.matzon.dk/stats/buildr.html
+Our "conversations": are logged by the "echelog":http://echelog.matzon.dk/logs/browse/buildr/1279663200 and "irclogger":http://irclogger.com/buildr/ bots. If you're really curious, we also have "activity statistics":http://echelog.matzon.dk/stats/buildr.html
 
-Sincere thanks to Matzon for the hosting!
+Sincere thanks to Matzon and Christopher Schneider for setting these up!
 
 
 h2(#bugs).  Bugs (aka Issues)
@@ -243,13 +243,13 @@ Started working on Buildr because Maven was too much pain and Rake wasn't enough
 
 *Alex Boisvert*
 
-Came to Buildr as a refuge from the Maven Uncertainty Principle.  Alex has been working mostly on the Scala integration and believes Ruby scripting is a great complement to statically typed languages. 
+Came to Buildr as a refuge from the Maven Uncertainty Principle.  Alex has been working mostly on the Scala integration and believes Ruby scripting is a great complement to statically typed languages.
 
 *"Matthieu Riou":http://offthelip.org*
 
 *Victor Hugo Borja* (vborja at apache.org)
 
-Currently a Java Developer at "http://jwmsolutions.com":http://jwmsolutions.com, Victor has been enjoying and using Apache's software since 1999 when he started with Java, now he prefers programming Ruby and is happy to help on Apache's first ruby project. 
+Currently a Java Developer at "http://jwmsolutions.com":http://jwmsolutions.com, Victor has been enjoying and using Apache's software since 1999 when he started with Java, now he prefers programming Ruby and is happy to help on Apache's first ruby project.
 
 *Lacton* (lacton at apache.org)
 
