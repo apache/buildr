@@ -24,15 +24,15 @@ if [ -z `which ruby` ] ; then
     echo "Installing Ruby using apt-get"
     # ruby package does not contain RDoc, IRB, etc; ruby-full is a meta-package.
     # build-essentials not installed by default in Ubuntu, required for C extensions.
-    sudo apt-get install ruby-full ruby1.8-dev libopenssl-ruby build-essential 
+    sudo apt-get install ruby-full ruby1.8-dev libopenssl-ruby build-essential
     # RubyGems broken on Ubuntu, installing directly from source.
     echo "Installing RubyGems from RubyForge"
-    wget http://rubyforge.org/frs/download.php/45905/rubygems-1.3.1.tgz
-    tar xzf rubygems-1.3.1.tgz
-    cd rubygems-1.3.1
+    wget http://production.cf.rubygems.org/rubygems/rubygems-1.3.7.tgz
+    tar xzf rubygems-1.3.7.tgz
+    cd rubygems-1.3.7
     sudo ruby setup.rb
     cd ..
-    rm -rf rubygems-1.3.1
+    rm -rf rubygems-1.3.7
     # ruby is same as ruby1.8, we need gem that is same as gem1.8
     sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
   elif [ `which urpmi` ] ; then
@@ -54,9 +54,10 @@ if [ -z $JAVA_HOME ] ; then
   exit 1
 fi
 
-if [ $(gem --version) \< '1.3.1' ] ; then
+if [ $(gem --version) \< '1.3.7' ] ; then
   echo "Upgrading to latest version of RubyGems"
   sudo gem update --system
+  sudo update_rubygems
   echo
 fi
 
