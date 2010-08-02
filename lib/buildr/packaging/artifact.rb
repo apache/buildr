@@ -41,7 +41,7 @@ module Buildr
 
     class << self
     private
-    
+
       # :stopdoc:
       def included(mod)
         mod.extend self
@@ -60,7 +60,7 @@ module Buildr
         base.instance_eval { alias :uninstall :uninstall_old } if base.respond_to? :uninstall_old
         base.instance_eval { alias :upload :upload_old       } if base.respond_to? :upload_old
       end
-      
+
       # :startdoc:
     end
 
@@ -363,10 +363,10 @@ module Buildr
       unless type == :pom
         pom.enhance do
           unless pom.exist?
-          mkpath File.dirname(pom.name)
-          File.open(pom.name, 'w') { |file| file.write pom.pom_xml }
+            mkpath File.dirname(pom.name)
+            File.open(pom.name, 'w') { |file| file.write pom.pom_xml }
+          end
         end
-      end
       end
       self
     end
