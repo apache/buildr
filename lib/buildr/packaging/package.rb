@@ -168,7 +168,6 @@ module Buildr
         task 'package'=>package
         package.enhance [task('build')]
         package.enhance { info "Packaging #{File.basename(file_name)}" }
-
         if spec[:file]
           class << package ; self ; end.send(:define_method, :type) { spec[:type] }
           class << package ; self ; end.send(:define_method, :id) { nil }
@@ -176,19 +175,27 @@ module Buildr
           # Make it an artifact using the specifications, and tell it how to create a POM.
           package.extend ActsAsArtifact
           package.send :apply_spec, spec.only(*Artifact::ARTIFACT_ATTRIBUTES)
-          # Another task to create the POM file.
-          pom = package.pom
-          pom.enhance do
-            mkpath File.dirname(pom.name)
-            File.open(pom.name, 'w') { |file| file.write pom.pom_xml }
+
+          # Create pom associated with package
+          class << package
+            def pom
+              unless @pom
+                pom_filename = Util.replace_extension(self.name, 'pom')
+                spec = {:group=>group, :id=>id, :version=>version, :type=>:pom}
+                @pom = Buildr.artifact(spec, pom_filename)
+                @pom.content @pom.pom_xml
+              end
+              @pom
+            end
           end
+
           file(Buildr.repositories.locate(package)=>package) { package.install }
 
           # Add the package to the list of packages created by this project, and
           # register it as an artifact. The later is required so if we look up the spec
           # we find the package in the project's target directory, instead of finding it
           # in the local repository and attempting to install it.
-          Artifact.register package, pom
+          Artifact.register package, package.pom
         end
 
         task('install')   { package.install if package.respond_to?(:install) }

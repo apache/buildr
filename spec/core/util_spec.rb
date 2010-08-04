@@ -16,6 +16,22 @@
 
 require File.join(File.dirname(__FILE__), '../spec_helpers')
 
+describe Buildr do
+  describe "#replace_extension" do
+    it "should replace filename extensions" do
+      replace = lambda { |filename, ext| Util.replace_extension(filename, ext) }
+
+      replace["foo.zip", "txt"].should eql("foo.txt")
+      replace["foo.", "txt"].should eql("foo.txt")
+      replace["foo", "txt"].should eql("foo.txt")
+
+      replace["bar/foo.zip", "txt"].should eql("bar/foo.txt")
+      replace["bar/foo.", "txt"].should eql("bar/foo.txt")
+      replace["bar/foo", "txt"].should eql("bar/foo.txt")
+    end
+  end
+end
+
 describe Hash do
   describe "#only" do
     it "should find value for one key" do
@@ -68,7 +84,7 @@ end
 
 describe File do
   # Quite a few of the other specs depend on File#utime working correctly.
-  # These specs validate that utime is working as expected. 
+  # These specs validate that utime is working as expected.
   describe "#utime" do
     it "should update mtime of directories" do
       mkpath 'tmp'

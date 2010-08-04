@@ -115,6 +115,22 @@ module Buildr
       FileList[dirs.map { |dir| File.join(dir, '/**/{*,.*}') }].reject { |file| File.basename(file) =~ /^[.]{1,2}$/ }
     end
 
+    # :call-seq:
+    #   replace_extension(filename) => filename_with_updated_extension
+    #
+    # Replace the file extension, e.g.,
+    #   replace_extension("foo.zip", "txt") => "foo.txt"
+    def replace_extension(filename, new_ext)
+      ext = File.extname(filename)
+      if filename =~ /\.$/
+        filename + new_ext
+      elsif ext == ""
+        filename + "." + new_ext
+      else
+        filename[0..-ext.length] + new_ext
+      end
+    end
+
     # Utility methods for running gem commands
     module Gems #:nodoc:
       extend self

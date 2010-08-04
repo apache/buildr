@@ -129,6 +129,14 @@ describe Artifact do
     Artifact.list.should include(@classified.to_spec)
     Artifact.list.should include('foo:foo:jar:1.0')
   end
+
+  it 'should accept user-defined string content' do
+    a = artifact(@spec)
+    a.content 'foo'
+    install a
+    lambda { install.invoke }.should change { File.exist?(a.to_s) && File.exist?(repositories.locate(a)) }.to(true)
+    read(repositories.locate(a)).should eql('foo')
+  end
 end
 
 
@@ -604,9 +612,20 @@ describe Buildr, '#install' do
   end
 
   it 'should install POM alongside artifact' do
+    pom = artifact(@spec).pom
     write @file
     install artifact(@spec).from(@file)
-    lambda { install.invoke }.should change { File.exist?(artifact(@spec).pom.to_s) }.to(true)
+    lambda { install.invoke }.should change { File.exist?(repositories.locate(pom)) }.to(true)
+  end
+
+  it 'should reinstall POM alongside artifact' do
+    pom = artifact(@spec).pom
+    write @file
+    write repositories.locate(pom)
+    sleep 1
+
+    install artifact(@spec).from(@file)
+    lambda { install.invoke }.should change { File.mtime(repositories.locate(pom)) }
   end
 end
 

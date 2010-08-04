@@ -143,13 +143,16 @@ module Buildr
     end
 
     def install
-      pom.install if pom && pom != self
       invoke
-      installed = Buildr.repositories.locate(self)
-      unless installed == name # If not already in local repository.
-        mkpath File.dirname(installed)
-        cp name, installed
-        info "Installed #{installed}"
+      in_local_repository = Buildr.repositories.locate(self)
+      if name != in_local_repository
+        if pom && pom != self
+          pom.invoke
+          pom.install
+        end
+        mkpath File.dirname(in_local_repository)
+        cp name, in_local_repository
+        info "Installed #{name} to #{in_local_repository}"
       end
     end
 
@@ -230,7 +233,7 @@ module Buildr
     # The default artifact type.
     DEFAULT_TYPE = :jar
 
-    include ActsAsArtifact
+    include ActsAsArtifact, Buildr
 
     class << self
 
@@ -332,7 +335,7 @@ module Buildr
         # if the artifact knows how to build itself (e.g. download from a different location),
         # so don't perform it if the task found a different way to create the artifact.
         task.enhance do
-          unless File.exist?(name)
+          if !File.exist?(name)
             info "Downloading #{to_spec}"
             download
             pom.invoke rescue nil if pom && pom != self
@@ -349,29 +352,51 @@ module Buildr
     #   install test
     # See also Buildr#install and Buildr#upload.
     def from(path)
-      path = path.is_a?(Rake::Task) ? path : File.expand_path(path.to_s)
-      unless exist?
-        enhance [path] do
-          path = File.expand_path(path.to_s)
-          mkpath File.dirname(name)
-          pom.invoke unless type == :pom
-
-          cp path, name
-          info "Installed #{path} as #{to_spec}"
-        end
+      @from = path.is_a?(Rake::Task) ? path : File.expand_path(path.to_s)
+      enhance [@from] do
+        mkpath File.dirname(name)
+        cp @from.to_s, name
       end
-      unless type == :pom
-        pom.enhance do
-          unless pom.exist?
-            mkpath File.dirname(pom.name)
-            File.open(pom.name, 'w') { |file| file.write pom.pom_xml }
+      pom.content pom_xml unless pom == self || pom.has_content?
+      self
+    end
+
+    # :call-seq:
+    #   content(string) => self
+    #
+    # Use this when you want to install or upload an artifact from a given content, for example:
+    #   readme = artifact('com.example:readme:txt:1.0').content(<<-EOF
+    #     Please visit our website at http://example.com/readme
+    #   <<EOF
+    #   install readme
+    #
+    # If the argument is not a string, it will be converted to a string using to_s
+    def content(string = nil)
+      return @content unless string
+
+      unless @content
+        enhance do
+          write name, @content
+        end
+
+        class << self
+          # Force overwriting target since we don't have source file
+          # to check for timestamp modification
+          def needed?
+            true
           end
         end
       end
+      @content = string
+      pom.content pom_xml unless pom == self || pom.has_content?
       self
     end
 
   protected
+
+    def has_content?
+      @from || @content
+    end
 
     # :call-seq:
     #   download
@@ -639,11 +664,11 @@ module Buildr
   # To specify an artifact and the means for creating it:
   #   download(artifact('dojo:dojo-widget:zip:2.0')=>
   #     'http://download.dojotoolkit.org/release-2.0/dojo-2.0-widget.zip')
-  def artifact(spec, &block) #:yields:task
+  def artifact(spec, path = nil, &block) #:yields:task
     spec = artifact_ns.fetch(spec) if spec.kind_of?(Symbol)
     spec = Artifact.to_hash(spec)
     unless task = Artifact.lookup(spec)
-      task = Artifact.define_task(repositories.locate(spec))
+      task = Artifact.define_task(path || repositories.locate(spec))
       task.send :apply_spec, spec
       Rake::Task['rake:artifacts'].enhance [task]
       Artifact.register(task)
@@ -748,7 +773,7 @@ module Buildr
   end
 
   # :call-seq:
-  #   install(artifacts)
+  #   install(artifacts) => install_task
   #
   # Installs the specified artifacts in the local repository as part of the install task.
   #
@@ -759,9 +784,12 @@ module Buildr
     artifacts = artifacts(args)
     raise ArgumentError, 'This method can only install artifacts' unless artifacts.all? { |f| f.respond_to?(:to_spec) }
     all = (artifacts + artifacts.map { |artifact| artifact.pom }).uniq
-    task('install').tap do |task|
-      task.enhance all, &block
-      task 'uninstall' do
+    task('install').tap do |install|
+      install.enhance(all) do
+        all.each(&:install)
+      end
+      install.enhance &block if block
+      task('uninstall') do
         all.map(&:to_s ).each { |file| rm file if File.exist?(file) }
       end
     end

@@ -263,7 +263,7 @@ describe Project, '#package' do
     end
     project('foo').packages.uniq.size.should be(5)
   end
-  
+
   it 'should create different tasks for package with different ids' do
     define 'foo', :version=>'1.0' do
       package(:jar, :id=>'bar')
@@ -271,7 +271,7 @@ describe Project, '#package' do
     end
     project('foo').packages.uniq.size.should be(2)
   end
-    
+
   it 'should create different tasks for package with classifier' do
     define 'foo', :version=>'1.0' do
       package(:jar)
@@ -347,10 +347,10 @@ describe Project, '#package' do
     end
   end
 
-  it 'should create a POM artifact in local repository' do
+  it 'should create a POM artifact in target directory' do
     define 'foo', :version=>'1.0' do
       package.pom.should be(artifact('foo:foo:pom:1.0'))
-      repositories.locate('foo:foo:pom:1.0').should eql(package.pom.to_s)
+      package.pom.to_s.should point_to_path('target/foo-1.0.pom')
     end
   end
 
@@ -662,15 +662,15 @@ describe Rake::Task, ' upload' do
       read(upload).should eql(read(package))
     end
   end
-  
+
   it 'should not upload twice the pom when artifacts are uploaded from a project' do
     write 'src/main/java/Foo.java', 'public class Foo {}'
     repositories.release_to = 'sftp://example.com/base'
-    define 'foo' do 
-      project.group = "attached" 
-      project.version = "1.0" 
-      package(:jar) 
-      package(:sources) 
+    define 'foo' do
+      project.group = "attached"
+      project.version = "1.0"
+      package(:jar)
+      package(:sources)
     end
      URI.should_receive(:upload).exactly(:once).
          with(URI.parse('sftp://example.com/base/attached/foo/1.0/foo-1.0-sources.jar'), project("foo").package(:sources).to_s, anything)
