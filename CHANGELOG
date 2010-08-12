@@ -5,6 +5,7 @@
 * Change: BUILDR-475 Support for long names on tar.gz (updated to minitar 0.5.3)
 * Change: BUILDR-484 Upgrade to Scala 2.8.0 (final) and associated dependencies
           (ScalaCheck 1.7, ScalaTest 1.2, Specs 1.6.5)
+* Change: BUILDR-487 package :sources should default to using .jar extension (instead of .zip)
 * Fixed:  BUILDR-144 Filter does not preserve file permissions
 * Fixed:  BUILDR-163 cobertura-check
 * Fixed:  BUILDR-203 Compiler guessing very inefficient

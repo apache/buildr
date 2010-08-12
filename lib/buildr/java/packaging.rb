@@ -607,7 +607,7 @@ module Buildr
       # Call this when you want the project (and all its sub-projects) to create a source distribution.
       # You can use the source distribution in an IDE when debugging.
       #
-      # A source distribution is a ZIP package with the classifier 'sources', which includes all the
+      # A source distribution is a jar package with the classifier 'sources', which includes all the
       # sources used by the compile task.
       #
       # Packages use the project's manifest and meta_inf properties, which you can override by passing

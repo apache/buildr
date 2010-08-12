@@ -106,7 +106,7 @@ module Buildr
     #  end
     #
     # Two other packaging types are:
-    # * package :sources -- Creates a ZIP file with the source code and classifier 'sources', for use by IDEs.
+    # * package :sources -- Creates a JAR file with the source code and classifier 'sources', for use by IDEs.
     # * package :javadoc -- Creates a ZIP file with the Javadocs and classifier 'javadoc'. You can use the
     #   javadoc method to further customize it.
     #
@@ -124,11 +124,11 @@ module Buildr
     #
     # The file name is determined from the specification passed to the package method, however, some
     # packagers need to override this.  For example, package(:sources) produces a file with the extension
-    # 'zip' and the classifier 'sources'.  If you need to overwrite the default implementation, you should
+    # 'jar' and the classifier 'sources'.  If you need to overwrite the default implementation, you should
     # also include a method named package_as_[type]_spec.  For example:
     #   def package_as_sources_spec(spec) #:nodoc:
-    #     # Change the source distribution to .jar extension
-    #     spec.merge({ :type=>:jar, :classifier=>'sources' })
+    #     # Change the source distribution to .zip extension
+    #     spec.merge({ :type=>:zip, :classifier=>'sources' })
     #   end
     def package(*args)
       spec = Hash === args.last ? args.pop.dup : {}
@@ -232,7 +232,7 @@ module Buildr
     alias :package_as_tgz :package_as_tar
 
     def package_as_sources_spec(spec) #:nodoc:
-      spec.merge(:type=>:zip, :classifier=>'sources')
+      spec.merge(:type=>:jar, :classifier=>'sources')
     end
 
     def package_as_sources(file_name) #:nodoc:
