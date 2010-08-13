@@ -455,10 +455,13 @@ module Buildr
         metadata_xml = StringIO.new
         URI.download repo_url + metadata_path, metadata_xml
         metadata = REXML::Document.new(metadata_xml.string).root
-        timestamp = REXML::XPath.first(metadata, '//timestamp').text
-        build_number = REXML::XPath.first(metadata, '//buildNumber').text
+        timestamp = REXML::XPath.first(metadata, '//timestamp')
+        build_number = REXML::XPath.first(metadata, '//buildNumber')
+        error "No timestamp provided for the snapshot #{to_spec}" if timestamp.nil?
+        error "No build number provided for the snapshot #{to_spec}" if build_number.nil?
+        return nil if timestamp.nil? || build_number.nil?
         snapshot_of = version[0, version.size - 9]
-        repo_url + "#{group_path}/#{id}/#{version}/#{id}-#{snapshot_of}-#{timestamp}-#{build_number}.#{type}"
+        repo_url + "#{group_path}/#{id}/#{version}/#{id}-#{snapshot_of}-#{timestamp.text}-#{build_number.text}.#{type}"
       rescue URI::NotFoundError
         nil
       end
