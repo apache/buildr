@@ -22,6 +22,7 @@
 * Fixed:  BUILDR-468 test:failed does not respect test.exclude
 * Fixed:  BUILDR-469 test:failed causes all transitive tests to run
 * Fixed:  BUILDR-472 ECJ dependency now required to build any java project
+* Fixed:  BUILDR-477 Error while parsing maven-metadata.xml
 * Fixed:  BUILDR-479 Enforce using a minimal version of jruby
 * Fixed:  BUILDR-481 Antwrap monkey-patching in core.rb
 * Fixed:  BUILDR-488 artifact poms not reinstalled
