@@ -26,6 +26,7 @@
 * Fixed:  BUILDR-479 Enforce using a minimal version of jruby
 * Fixed:  BUILDR-481 Antwrap monkey-patching in core.rb
 * Fixed:  BUILDR-488 artifact poms not reinstalled
+* Fixed:  BUILDR-491 sftp download goes into infinite loop
 
 1.4.1 (2010-07-07)
 * Added:  BUILDR-420 Support external compiler
