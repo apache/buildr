@@ -120,7 +120,7 @@ shared_examples_for 'package with manifest' do
       manifest.main['bar'].should eql('Bar')
     end
   end
-  
+
   it 'should close the temporary file used for packaging the MANIFEST.MF file' do
     package_with_manifest 'Foo'=>1, :bar=>'Bar'
     package = project('foo').package(@packaging)
@@ -197,7 +197,7 @@ shared_examples_for 'package with manifest' do
       manifest.main['Meta'].should eql('data')
     end
   end
-  
+
   it 'should give 644 permissions to the manifest' do
     package_with_manifest  [ {}, { 'Name'=>'first', :Foo=>'first', :bar=>'second' } ]
     package ||= project('foo').package(@packaging)
@@ -440,7 +440,7 @@ describe Packaging, 'jar' do
       (entries_to_s.first == 'META-INF/MANIFEST.MF' || entries_to_s[1] == 'META-INF/MANIFEST.MF').should be_true
     end
   end
-  
+
   it 'should use files from compile directory if nothing included' do
     write 'src/main/java/Test.java', 'class Test {}'
     define('foo', :version=>'1.0') { package(:jar) }
@@ -491,7 +491,7 @@ describe Packaging, 'jar' do
       define('foo', :version=>'1.0') { package(:jar).with(nil) }
     }.should raise_error
   end
-  
+
   it 'should exclude resources when ordered to do so' do
     write 'src/main/resources/foo.xml', ''
     foo = define('foo', :version => '1.0') { package(:jar).exclude('foo.xml')}
@@ -500,7 +500,7 @@ describe Packaging, 'jar' do
       jar.entries.map(&:to_s).sort.should_not include('foo.xml')
     end
   end
-    
+
 end
 
 
@@ -583,20 +583,24 @@ describe Packaging, 'war' do
     define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war) }
     inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar', 'WEB-INF/lib/id-2.0.jar') }
   end
-  
+
   it 'should use artifacts from compile classpath if no libs specified, leaving the user specify which to exclude as files' do
     make_jars
     define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war).path('WEB-INF/lib').exclude('id-2.0.jar')  }
     inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
   end
-  
+
   it 'should use artifacts from compile classpath if no libs specified, leaving the user specify which to exclude as files with glob expressions' do
     make_jars
     define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war).path('WEB-INF/lib').exclude('**/id-2.0.jar')   }
     inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
   end
-  
-  
+
+  it 'should exclude files regardless of the path where they are included' do
+    make_jars
+    define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war).exclude('**/id-2.0.jar')   }
+    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
+  end
 
   it 'should include only specified libraries' do
     define 'foo', :version=>'1.0' do
