@@ -402,18 +402,20 @@ module URI
           trace 'connected'
 
           with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
-            trace "Downloading to #{path}"
+            trace "Downloading from #{path}"
             sftp.file.open(path, 'r') do |file|
               if block
                 while chunk = file.read(RW_CHUNK_SIZE)
                   block.call chunk
                   progress << chunk
+                  break if chunk.size < RW_CHUNK_SIZE
                 end
               else
                 result = ''
                 while chunk = file.read(RW_CHUNK_SIZE)
                   result << chunk
                   progress << chunk
+                  break if chunk.size < RW_CHUNK_SIZE
                 end
               end
             end
