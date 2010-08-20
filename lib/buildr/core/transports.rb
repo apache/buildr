@@ -396,7 +396,12 @@ module URI
       ssh_options[:password] ||= SFTP.passwords[host]
       begin
         trace "Connecting to #{host}"
-        result = nil
+        if block
+          result = nil
+        else
+          result = ''
+          block = lambda { |chunk| result << chunk }
+        end
         Net::SFTP.start(host, user, ssh_options) do |sftp|
           SFTP.passwords[host] = ssh_options[:password]
           trace 'connected'
@@ -404,19 +409,10 @@ module URI
           with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
             trace "Downloading from #{path}"
             sftp.file.open(path, 'r') do |file|
-              if block
-                while chunk = file.read(RW_CHUNK_SIZE)
-                  block.call chunk
-                  progress << chunk
-                  break if chunk.size < RW_CHUNK_SIZE
-                end
-              else
-                result = ''
-                while chunk = file.read(RW_CHUNK_SIZE)
-                  result << chunk
-                  progress << chunk
-                  break if chunk.size < RW_CHUNK_SIZE
-                end
+              while chunk = file.read(RW_CHUNK_SIZE)
+                block.call chunk
+                progress << chunk
+                break if chunk.size < RW_CHUNK_SIZE
               end
             end
           end
