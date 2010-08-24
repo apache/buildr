@@ -63,6 +63,13 @@ describe URI, '#upload' do
     @uri = URI(URI.escape("file://#{File.expand_path(@target)}"))
   end
 
+  it 'should preserve file permissions if uploading to a file' do
+    File.chmod(0666, @source)
+    s = File.stat(@source).mode
+    @uri.upload @source
+    File.stat(@target).mode.should eql(s)
+  end
+
   it 'should upload file if found' do
     @uri.upload @source
     file(@target).should contain(@content)

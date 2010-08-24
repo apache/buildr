@@ -484,6 +484,13 @@ module URI
 
     COMPONENT = [ :host, :path ].freeze
 
+    def upload(source, options = nil)
+      super
+      if File === source then
+        File.chmod(source.stat.mode, real_path)
+      end
+    end
+
     def initialize(*args)
       super
       # file:something (opaque) becomes file:///something
