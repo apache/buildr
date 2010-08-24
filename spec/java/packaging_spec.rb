@@ -14,8 +14,8 @@
 # the License.
 
 
-require File.join(File.dirname(__FILE__), '../spec_helpers')
-require File.join(File.dirname(__FILE__), '../packaging/packaging_helper')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'packaging', 'packaging_helper'))
 
 
 describe Project, '#manifest' do
@@ -1076,13 +1076,13 @@ end
 
 describe Packaging, 'sources' do
   it_should_behave_like 'packaging'
-  before { @packaging, @package_type = :sources, :zip }
+  before { @packaging, @package_type = :sources, :jar }
 
-  it 'should create package of type :zip and classifier \'sources\'' do
+  it 'should create package of type :jar and classifier \'sources\'' do
     define 'foo', :version=>'1.0' do
-      package(:sources).type.should eql(:zip)
+      package(:sources).type.should eql(:jar)
       package(:sources).classifier.should eql('sources')
-      package(:sources).name.should match(/foo-1.0-sources.zip$/)
+      package(:sources).name.should match(/foo-1.0-sources.jar$/)
     end
   end
 
@@ -1152,9 +1152,11 @@ shared_examples_for 'package_with_' do
     projects.select { |project| project.packages.first }.map(&:name)
   end
 
-  it 'should create package of type zip with classifier' do
+  it 'should create package of the right packaging with classifier' do
     prepare
-    project('foo').packages.first.to_s.should =~ /foo-1.0-#{@packaging}.zip/
+    ext = "zip"
+    ext = "jar" if @packaging == :sources
+    project('foo').packages.first.to_s.should =~ /foo-1.0-#{@packaging}.#{ext}/
   end
 
   it 'should create package for projects that have source files' do

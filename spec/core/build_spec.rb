@@ -14,8 +14,7 @@
 # the License.
 
 
-require File.join(File.dirname(__FILE__), '../spec_helpers')
-
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 describe 'local task', :shared=>true do
   it "should execute task for project in current directory" do

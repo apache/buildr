@@ -14,7 +14,7 @@
 # the License.
 
 
-require File.join(File.dirname(__FILE__), '../spec_helpers')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 
 unless RUBY_PLATFORM =~ /java/
@@ -52,7 +52,7 @@ else
 end
 
 
-describe Java, '#tools_jar' do
+describe 'Java.tools_jar' do
   before do
     @old_home = ENV['JAVA_HOME']
   end
@@ -63,7 +63,7 @@ describe Java, '#tools_jar' do
       write 'jdk/lib/tools.jar'
       ENV['JAVA_HOME'] = File.expand_path('jdk')
     end
-
+  
     it 'should return the path to tools.jar' do
       Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
     end
@@ -75,7 +75,7 @@ describe Java, '#tools_jar' do
       write 'jdk/lib/tools.jar'
       ENV['JAVA_HOME'] = File.expand_path('jdk/jre')
     end
-
+  
     it 'should return the path to tools.jar' do
       Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
     end
@@ -86,7 +86,7 @@ describe Java, '#tools_jar' do
       Java.instance_eval { @tools_jar = nil }
       ENV['JAVA_HOME'] = File.expand_path('jdk')
     end
-
+  
     it 'should return nil' do
       Java.tools_jar.should be_nil
     end

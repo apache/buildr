@@ -14,7 +14,7 @@
 # the License.
 
 
-require File.join(File.dirname(__FILE__), '../spec_helpers')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 describe 'scala' do
   # Specific version of Scala required for specs
