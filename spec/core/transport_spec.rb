@@ -459,14 +459,14 @@ describe URI::SFTP, '#read' do
 
   it 'should read contents of file and return it' do
     file = mock('Net::SFTP::Operations::File')
-    file.should_receive(:read).with(URI::RW_CHUNK_SIZE).once.and_return(@content, nil)
+    file.should_receive(:read).with(URI::RW_CHUNK_SIZE).once.and_return(@content)
     @file_factory.should_receive(:open).with('/root/path/readme', 'r').and_yield(file)
     @uri.read.should eql(@content)
   end
 
   it 'should read contents of file and pass it to block' do
     file = mock('Net::SFTP::Operations::File')
-    file.should_receive(:read).with(URI::RW_CHUNK_SIZE).once.and_return(@content, nil)
+    file.should_receive(:read).with(URI::RW_CHUNK_SIZE).once.and_return(@content)
     @file_factory.should_receive(:open).with('/root/path/readme', 'r').and_yield(file)
     content = ''
     @uri.read do |chunk|
