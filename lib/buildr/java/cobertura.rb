@@ -269,13 +269,15 @@ module Buildr
         report_target = report_to(format)
         desc "Run the test cases and produce code coverage reports in #{report_target}"
         task format => ["instrument", "test"] do
-          info "Creating test coverage reports in #{report_target}"
-          Buildr.ant "cobertura" do |ant|
-            ant.taskdef :resource=>"tasks.properties",
-              :classpath=>Buildr.artifacts(Cobertura.dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
-            ant.send "cobertura-report", :destdir=>report_target, :format=>format, :datafile=>data_file do
-              Buildr.projects.map(&:cobertura).map(&:sources).flatten.each do |src|
-                ant.fileset :dir=>src.to_s if File.exist?(src.to_s)
+          if Buildr.projects.detect { |project| !project.compile.sources.empty? }
+            info "Creating test coverage reports in #{report_target}"
+            Buildr.ant "cobertura" do |ant|
+              ant.taskdef :resource=>"tasks.properties",
+                :classpath=>Buildr.artifacts(Cobertura.dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
+              ant.send "cobertura-report", :destdir=>report_target, :format=>format, :datafile=>data_file do
+                Buildr.projects.map(&:cobertura).map(&:sources).flatten.each do |src|
+                  ant.fileset :dir=>src.to_s if File.exist?(src.to_s)
+                end
               end
             end
           end

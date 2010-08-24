@@ -53,6 +53,11 @@ describe Buildr::Cobertura do
         define('foo') { define('bar') }
         task('foo:bar:cobertura:instrument').invoke
       end
+      
+      it 'should not generate html if projects have no sources' do
+        define('foo') { define('bar') }
+        task('cobertura:html').invoke
+      end
     end
 
     describe 'instrumentation' do

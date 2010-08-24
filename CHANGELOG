@@ -11,6 +11,7 @@
 * Fixed:  BUILDR-203 Compiler guessing very inefficient
 * Fixed:  BUILDR-225 ArchiveTask#merge, not according to doc
 * Fixed:  BUILDR-256 Automatically installing gems aborts rspec test runner (Rhett Sutphin)
+* Fixed:  BUILDR-285 Cobertura failing when running build
 * Fixed:  BUILDR-302 Move out-of-date Nailgun documentation to wiki (Shane Witbeck)
 * Fixed:  BUILDR-317 ecj compiler
 * Fixed:  BUILDR-326 follow up: binary safe untarring on Windows (Sam Hendley)
