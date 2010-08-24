@@ -14,7 +14,7 @@
 # the License.
 
 
-gem 'Antwrap'
+gem 'atoulme-Antwrap'
 autoload :Antwrap, 'antwrap'
 autoload :Logger, 'logger'
 require 'buildr/core/project'
