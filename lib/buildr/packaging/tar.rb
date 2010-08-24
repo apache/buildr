@@ -15,7 +15,7 @@
 
 
 require 'buildr/packaging/archive'
-gem 'archive-tar-minitar' ; autoload :Archive, 'archive/tar/minitar'
+gem 'minitar' ; autoload :Archive, 'archive/tar/minitar'
 
 
 module Buildr
