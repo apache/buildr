@@ -1,5 +1,6 @@
 1.4.2 (pending)
 * Added:  BUILDR-415 Ability to exclude tests from command line
+* Added:  BUILDR-495 Document twitter on Buildr's homepage
 * Change: BUILDR-473 Update jruby-openssl dependency version or support a range of versions
 * Change: BUILDR-478 Upgrade to net-ssh 2.0.23 and net-sftp 2.0.4 (Shane Witbeck)
 * Change: BUILDR-475 Support for long names on tar.gz (updated to minitar 0.5.3)
