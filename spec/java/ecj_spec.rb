@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require File.join(File.dirname(__FILE__), '../spec_helpers')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 
 
@@ -50,7 +50,7 @@ describe Buildr::Compiler::Ecj do
 
   describe "should compile a Java project just in the same way javac does" do  
     javac_spec = File.read(File.join(File.dirname(__FILE__), "compiler_spec.rb"))
-    javac_spec = javac_spec.match(Regexp.escape("require File.join(File.dirname(__FILE__), '../spec_helpers')\n")).post_match
+    javac_spec = javac_spec.match(Regexp.escape("require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))\n")).post_match
     javac_spec.gsub!("javac", "ecj")
     javac_spec.gsub!("nowarn", "warn:none")
     eval(javac_spec)

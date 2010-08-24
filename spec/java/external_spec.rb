@@ -14,7 +14,7 @@
 # the License.
 
 
-require File.join(File.dirname(__FILE__), '../spec_helpers')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 COMPILERS = Buildr::Compiler.compilers.dup
 COMPILERS_WITHOUT_JAVAC = COMPILERS.dup
@@ -28,7 +28,7 @@ describe Buildr::Compiler::ExternalJavac do
   
   describe "should compile a Java project just in the same way javac does" do  
     javac_spec = File.read(File.join(File.dirname(__FILE__), "compiler_spec.rb"))
-    javac_spec = javac_spec.match(Regexp.escape("require File.join(File.dirname(__FILE__), '../spec_helpers')\n")).post_match
+    javac_spec = javac_spec.match(Regexp.escape("require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))\n")).post_match
     javac_spec.gsub!("javac", "externaljavac")
     eval(javac_spec)
   end

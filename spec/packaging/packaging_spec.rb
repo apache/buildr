@@ -14,8 +14,8 @@
 # the License.
 
 
-require File.join(File.dirname(__FILE__), '../spec_helpers')
-require File.join(File.dirname(__FILE__), 'packaging_helper')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
+require File.expand_path(File.join(File.dirname(__FILE__), 'packaging_helper'))
 
 
 describe Project, '#group' do
