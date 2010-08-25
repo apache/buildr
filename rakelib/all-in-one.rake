@@ -18,7 +18,7 @@ task "all-in-one" => 'all-in-one:all-in-one'
 
 namespace :'all-in-one' do
   
-  version = "1.5.1"
+  version = "1.5.2"
   jruby_distro = "jruby-bin-#{version}.tar.gz"
   url = "http://jruby.org.s3.amazonaws.com/downloads/#{version}/#{jruby_distro}"
   dir = "jruby-#{version}"

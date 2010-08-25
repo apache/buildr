@@ -48,7 +48,7 @@ module Buildr
   module TestFramework::JRubyBased
     extend self
 
-    VERSION = '1.5.1'
+    VERSION = '1.5.2'
 
     class << self
       def version
