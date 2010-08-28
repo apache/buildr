@@ -23,7 +23,7 @@ class ProgressBar
     end
 
     def width
-      @width ||= $terminal.output_cols || 80
+      @width ||= $terminal.output_cols || 0
     end
 
   end
@@ -66,6 +66,7 @@ class ProgressBar
   end
 
   def title
+    return @title if ProgressBar.width <= 10
     @title.size > ProgressBar.width / 5 ? (@title[0, ProgressBar.width / 5 - 2] + '..') : @title
   end
 
@@ -126,7 +127,7 @@ class ProgressBar
 protected
 
   def clear
-    return unless @output
+    return if @output == nil || ProgressBar.width <= 0
     @output.print "\r", " " * (ProgressBar.width - 1), "\r"
     @output.flush
   end
@@ -135,7 +136,11 @@ protected
     return unless @output
     format, *args = @format
     line = format % args.map { |arg| send(arg) }
-    @output.print line.sub('|--|') { progress(ProgressBar.width - line.size + 3) }
+    if ProgressBar.width >= line.size
+      @output.print line.sub('|--|') { progress(ProgressBar.width - line.size + 3) }
+    else
+      @output.print line.sub('|--|', '')
+    end
     @output.print @finished ? "\n" : "\r"
     @output.flush
     @previous = @count
