@@ -1,0 +1,15 @@
+
+module PackageWarAsJar
+  
+  def package_as_war_spec(spec)
+    spec.merge(:type => "jar")
+  end
+end
+
+define "webapp", :version => "1.0", :group => "org.group" do
+  project.extend PackageWarAsJar
+  
+  package(:war)
+  
+end
+  
