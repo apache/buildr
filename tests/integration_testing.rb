@@ -43,3 +43,14 @@ test("JavaSystemProperty", "#{BUILDR} test")
 test("helloWorld", "#{BUILDR} package")
 test("compile_with_parent", "#{BUILDR} compile")
 test("junit3", "#{BUILDR} test")
+
+class Package_war_as_jar < Test::Unit::TestCase
+  
+  def test_war_extension_is_jar
+    result = %x[cd #{File.join(File.expand_path(File.dirname(__FILE__)), "package_war_as_jar")} ; #{BUILDR} package]
+    assert($?.success?)
+    assert(File.exist? File.join(File.expand_path(File.dirname(__FILE__)), "package_war_as_jar", "target", "webapp-1.0.jar")) 
+    %x[cd #{File.join(File.expand_path(File.dirname(__FILE__)), "package_war_as_jar")} ; #{BUILDR} clean]
+    assert($?.success?)
+  end
+end
