@@ -1,6 +1,7 @@
 1.4.2 (pending)
 * Added:  BUILDR-415 Ability to exclude tests from command line
 * Added:  BUILDR-495 Document twitter on Buildr's homepage
+* Added:  Integration test to show how to use junit 3.
 * Added:  Integration test to show how to get ahold of parent project
 * Change: BUILDR-473 Update jruby-openssl dependency version or support a range of versions
 * Change: BUILDR-478 Upgrade to net-ssh 2.0.23 and net-sftp 2.0.4 (Shane Witbeck)

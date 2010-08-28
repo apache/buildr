@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-BUILDR = ENV['BUILDR'] || File.join(File.expand_path(File.dirname(__FILE__)), "..", "bin", "buildr")
+BUILDR = ENV['BUILDR'] || File.join(File.expand_path(File.dirname(__FILE__)), "..", "_buildr")
 
 require 'test/unit'
 
@@ -22,7 +22,7 @@ def test(folder, cmd)
 class #{folder.sub("-", "").capitalize} < Test::Unit::TestCase
 
   def test_#{folder.sub("-", "")}
-    result = %x[cd #{File.join(File.expand_path(File.dirname(__FILE__)), "#{folder}")} ; #{cmd} ; buildr clean]
+    result = %x[cd #{File.join(File.expand_path(File.dirname(__FILE__)), "#{folder}")} ; #{cmd} ; #{BUILDR} clean]
     assert($?.success?)
   end
 
@@ -32,14 +32,14 @@ TEST
 end
 
 class Buildr320 < Test::Unit::TestCase
-  
-  def test_circular_dependency
-    result = %x[cd #{File.join(File.expand_path(File.dirname(__FILE__)), "BUILDR-320")} ; #{BUILDR} --trace -P]
-    assert($?.success?)
-  end
-  
+   
+   def test_circular_dependency
+     result = %x[cd #{File.join(File.expand_path(File.dirname(__FILE__)), "BUILDR-320")} ; #{BUILDR} --trace -P]
+     assert($?.success?)
+   end   
 end
 
 test("JavaSystemProperty", "#{BUILDR} test")
 test("helloWorld", "#{BUILDR} package")
 test("compile_with_parent", "#{BUILDR} compile")
+test("junit3", "#{BUILDR} test")
