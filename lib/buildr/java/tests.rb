@@ -219,10 +219,15 @@ module Buildr
     end
 
     def tests(dependencies) #:nodoc:
-      filter_classes(dependencies,
-                     :interfaces => %w{junit.framework.TestCase},
-                     :class_annotations => %w{org.junit.runner.RunWith},
-                     :method_annotations => %w{org.junit.Test})
+      if (self.class.version[0,1].to_i < 4)
+        filter_classes(dependencies, :interfaces => %w{junit.framework.TestCase})
+      else
+        filter_classes(dependencies,
+                       :interfaces => %w{junit.framework.TestCase},
+                       :class_annotations => %w{org.junit.runner.RunWith},
+                       :method_annotations => %w{org.junit.Test})
+      end
+      
     end
 
     def run(tests, dependencies) #:nodoc:
