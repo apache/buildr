@@ -1,0 +1,18 @@
+
+repositories.remote << "http://repo1.maven.org/maven2"
+
+LOG4J = artifact("log4j:log4j:jar:1.2.16")
+unless File.exist? File.join("lib", File.basename(LOG4J.to_s))
+  LOG4J.invoke
+  cp LOG4J.to_s, "lib"
+end
+
+define "parent" do
+  
+  define "child" do
+    
+    compile.with project.parent.path_to(File.join("lib", File.basename(LOG4J.to_s)))
+    
+  end
+end
+  

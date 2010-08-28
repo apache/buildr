@@ -42,3 +42,4 @@ end
 
 test("JavaSystemProperty", "#{BUILDR} test")
 test("helloWorld", "#{BUILDR} package")
+test("compile_with_parent", "#{BUILDR} compile")
