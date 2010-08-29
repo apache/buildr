@@ -128,11 +128,12 @@ module Java
         cmd_args = []
         classpath = classpath_from(options)
         cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
-        cmd_args << '-sourcepath' << options[:sourcepath].join(File::PATH_SEPARATOR) if options[:sourcepath]
+        cmd_args << '-sourcepath' << [options[:sourcepath]].flatten.join(File::PATH_SEPARATOR) if options[:sourcepath]
         cmd_args << '-d' << options[:output].to_s if options[:output]
         cmd_args += options[:javac_args].flatten if options[:javac_args]
         cmd_args += files
         unless Buildr.application.options.dryrun
+          mkdir_p options[:output] if options[:output]
           info "Compiling #{files.size} source files in #{name}"
           trace (['javac'] + cmd_args).join(' ')
           Java.load
