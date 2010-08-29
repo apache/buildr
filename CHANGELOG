@@ -36,6 +36,9 @@
 * Fixed:  BUILDR-491 sftp download goes into infinite loop
 * Fixed:  BUILDR-498 Artifact download fails with "negative argument" if 
           terminal capabilities are undefined
+* Fixed:  BUILDR-499 Java package caching through constants 
+          e.g. (Java.java.lang.String cached as Java::Lang::String) 
+          can shadow Ruby modules
 
 1.4.1 (2010-07-07)
 * Added:  BUILDR-420 Support external compiler
