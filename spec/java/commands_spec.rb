@@ -30,25 +30,35 @@ BUILD
     lambda { Java::Commands.java("org.apache.tools.ant.Main", :classpath => Buildr::Ant.dependencies) }.should_not show_info(/java/)
     lambda { Java::Commands.java("org.apache.tools.ant.Main", :classpath => Buildr::Ant.dependencies, :verbose => true) }.should show_info(/java/)
   end
-
+  
   describe "Java::Commands.javac" do
-
-    it 'should let the user specify an output directory' do
-      write "Foo.java", "public class Foo {}"
-      mkdir_p "classes"
-      lambda { Java::Commands.javac("Foo.java", :output => "classes") }.should change {File.exist?("classes/Foo.class")}.to(true)
-    end
-
-    it "should let the user specify a different name" do
-      write "Foo.java", "public class Foo {}"
-      lambda { Java::Commands.javac("Foo.java", :name => "bar") }.should show_info("Compiling 1 source files in bar")
-
-    end
-
+    
     it "should compile java" do
       write "Foo.java", "public class Foo {}"
       lambda { Java::Commands.javac("Foo.java") }.should change {File.exist?("Foo.class")}.to(true)
     end
+      
+    it 'should let the user specify an output directory' do
+      write "Foo.java", "public class Foo {}"
+      lambda { Java::Commands.javac("Foo.java", :output => "classes") }.should change {File.exist?("classes/Foo.class")}.to(true)
+    end
+    
+    it "should let the user specify a different name" do
+      write "Foo.java", "public class Foo {}"
+      lambda { Java::Commands.javac("Foo.java", :name => "bar") }.should show_info("Compiling 1 source files in bar")
+    end
+    
+    it "should let the user specify a source path" do
+      write "ext/org/Bar.java", "package org; public class Bar {}"
+      write "Foo.java", "import org.Bar;\n public class Foo {}"
+      lambda { Java::Commands.javac("Foo.java", :sourcepath => File.expand_path("ext")) }.should change {File.exist?("Foo.class")}.to(true)
+    end
+    
+    it "should let the user specify a classpath" do
+      write "ext/org/Bar.java", "package org; public class Bar {}"
+      Java::Commands.javac("ext/org/Bar.java", :output => "lib")
+      write "Foo.java", "import org.Bar;\n public class Foo {}"
+      lambda { Java::Commands.javac("Foo.java", :classpath => File.expand_path("lib")) }.should change {File.exist?("Foo.class")}.to(true)
+    end
   end
-
 end
