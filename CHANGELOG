@@ -39,6 +39,7 @@
 * Fixed:  BUILDR-499 Java package caching through constants 
           e.g. (Java.java.lang.String cached as Java::Lang::String) 
           can shadow Ruby modules
+* Fixed:  BUILDR-501 Fix buildr label when listing tasks (Peter Donald)
 
 1.4.1 (2010-07-07)
 * Added:  BUILDR-420 Support external compiler
