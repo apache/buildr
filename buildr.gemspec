@@ -19,7 +19,7 @@ end
 
 Gem::Specification.new do |spec|
   spec.name           = 'buildr'
-  spec.version        = Buildr::VERSION
+  spec.version        = Buildr::VERSION.dup
   spec.author         = 'Apache Buildr'
   spec.email          = "users@buildr.apache.org"
   spec.homepage       = "http://buildr.apache.org/"
