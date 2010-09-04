@@ -97,7 +97,7 @@ describe 'Java.tools_jar' do
   end
 end
 
-describe Java, '#java' do
+describe 'Java#java' do
   before do
     @old_home = ENV['JAVA_HOME']
   end
