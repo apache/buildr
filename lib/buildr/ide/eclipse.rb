@@ -32,7 +32,7 @@ module Buildr
       end
 
       # :call-seq:
-      #   classpath_variables { :VAR => '/path/to/location' }
+      #   classpath_variables :VAR => '/path/to/location'
       # Sets classpath variables to be used for library path substitution
       # on the project.
       #
