@@ -40,6 +40,7 @@
           e.g. (Java.java.lang.String cached as Java::Lang::String) 
           can shadow Ruby modules
 * Fixed:  BUILDR-501 Fix buildr label when listing tasks (Peter Donald)
+* Fixed:  BUILDR-506 Gem packaging does not work under windows (Peter Donald)
 * Fixed:  BUILDR-508 Remove unnecessary use of Java.classpath in OpenJPA
           extension (Peter Donald)
 
