@@ -164,34 +164,34 @@ describe Buildr::Application do
 
     it 'should fail if required gem not found in remote repository' do
       Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
-      Gem::SourceInfoCache.should_receive(:search).and_return([])
+      Gem.source_index.should_receive(:search).and_return([])
       lambda { Buildr.application.load_gems }.should raise_error(LoadError, /cannot be found/i)
     end
 
     it 'should fail if need to install gem and not running in interactive mode' do
       Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
-      Gem::SourceInfoCache.should_receive(:search).and_return([@spec])
+      Gem.source_index.should_receive(:search).and_return([@spec])
       $stdout.should_receive(:isatty).and_return(false)
       lambda { Buildr.application.load_gems }.should raise_error(LoadError, /this build requires the gems/i)
     end
 
     it 'should ask permission before installing required gems' do
       Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
-      Gem::SourceInfoCache.should_receive(:search).and_return([@spec])
+      Gem.source_index.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).with(/install/, true)
       lambda { Buildr.application.load_gems }.should raise_error
     end
 
     it 'should fail if permission not granted to install gem' do
       Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
-      Gem::SourceInfoCache.should_receive(:search).and_return([@spec])
+      Gem.source_index.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(false)
       lambda { Buildr.application.load_gems }.should raise_error(LoadError, /cannot build without/i)
     end
 
     it 'should install gem if permission granted' do
       Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
-      Gem::SourceInfoCache.should_receive(:search).and_return([@spec])
+      Gem.source_index.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(true)
       Util.should_receive(:ruby) do |*args|
         args.should include('install', 'foo', '-v', '1.2')
@@ -202,7 +202,7 @@ describe Buildr::Application do
 
     it 'should reload gem cache after installing required gems' do
       Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
-      Gem::SourceInfoCache.should_receive(:search).and_return([@spec])
+      Gem.source_index.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(true)
       Util.should_receive(:ruby)
       Gem.source_index.should_receive(:load_gems_in).with(Gem::SourceIndex.installed_spec_directories)
@@ -218,7 +218,7 @@ describe Buildr::Application do
 
     it 'should load newly installed gems' do
       Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
-      Gem::SourceInfoCache.should_receive(:search).and_return([@spec])
+      Gem.source_index.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(true)
       Util.should_receive(:ruby)
       Buildr.application.should_receive(:gem).with('foo', @spec.version.to_s)
@@ -227,25 +227,26 @@ describe Buildr::Application do
 
     it 'should default to >=0 version requirement if not specified' do
       write 'build.yaml', 'gems: foo'
-      Gem::SourceInfoCache.should_receive(:search).with(Gem::Dependency.new('foo', '>=0')).and_return([])
+      $terminal.should_receive(:agree).and_return(true)
+      Gem.source_index.should_receive(:search).with(Gem::Dependency.new('foo', '>=0')).and_return([])
       lambda { Buildr.application.load_gems }.should raise_error
     end
 
     it 'should parse exact version requirement' do
       write 'build.yaml', 'gems: foo 2.5'
-      Gem::SourceInfoCache.should_receive(:search).with(Gem::Dependency.new('foo', '=2.5')).and_return([])
+      Gem.source_index.should_receive(:search).with(Gem::Dependency.new('foo', '=2.5')).and_return([])
       lambda { Buildr.application.load_gems }.should raise_error
     end
 
     it 'should parse range version requirement' do
       write 'build.yaml', 'gems: foo ~>2.3'
-      Gem::SourceInfoCache.should_receive(:search).with(Gem::Dependency.new('foo', '~>2.3')).and_return([])
+     Gem.source_index.should_receive(:search).with(Gem::Dependency.new('foo', '~>2.3')).and_return([])
       lambda { Buildr.application.load_gems }.should raise_error
     end
 
     it 'should parse multiple version requirements' do
       write 'build.yaml', 'gems: foo >=2.0 !=2.1'
-      Gem::SourceInfoCache.should_receive(:search).with(Gem::Dependency.new('foo', ['>=2.0', '!=2.1'])).and_return([])
+      Gem.source_index.should_receive(:search).with(Gem::Dependency.new('foo', ['>=2.0', '!=2.1'])).and_return([])
       lambda { Buildr.application.load_gems }.should raise_error
     end
   end
