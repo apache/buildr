@@ -43,6 +43,8 @@
 * Fixed:  BUILDR-506 Gem packaging does not work under windows (Peter Donald)
 * Fixed:  BUILDR-508 Remove unnecessary use of Java.classpath in OpenJPA
           extension (Peter Donald)
+* Fixed:  BUILDR-507 Gem packaging should replace dashes with dots in
+          version number (Peter Donald)
 
 1.4.1 (2010-07-07)
 * Added:  BUILDR-420 Support external compiler
