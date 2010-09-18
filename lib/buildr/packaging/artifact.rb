@@ -28,6 +28,9 @@ module Buildr
   desc "Download all artifacts' sources"
   task 'artifacts:sources'
 
+  desc "Download all artifacts' javadoc"
+  task 'artifacts:javadoc'
+
   # Mixin with a task to make it behave like an artifact. Implemented by the packaging tasks.
   #
   # An artifact has an identifier, group identifier, type, version number and
@@ -125,6 +128,17 @@ module Buildr
       sources_task = OptionalArtifact.define_task(Buildr.repositories.locate(sources_spec))
       sources_task.send :apply_spec, sources_spec
       sources_task
+    end
+
+    # :call-seq:
+    #   javadoc_artifact => Artifact
+    #
+    # Convenience method that returns the associated javadoc artifact
+    def javadoc_artifact
+      javadoc_spec = to_spec_hash.merge(:classifier=>'javadoc')
+      javadoc_task = OptionalArtifact.define_task(Buildr.repositories.locate(javadoc_spec))
+      javadoc_task.send :apply_spec, javadoc_spec
+      javadoc_task
     end
 
     # :call-seq:
@@ -742,7 +756,10 @@ module Buildr
       task.send :apply_spec, spec
       Rake::Task['rake:artifacts'].enhance [task]
       Artifact.register(task)
-      Rake::Task['artifacts:sources'].enhance [task.sources_artifact] unless spec[:type] == :pom
+      unless spec[:type] == :pom
+        Rake::Task['artifacts:sources'].enhance [task.sources_artifact] 
+        Rake::Task['artifacts:javadoc'].enhance [task.javadoc_artifact]
+      end
     end
     task.enhance &block
   end

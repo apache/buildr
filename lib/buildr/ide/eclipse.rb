@@ -358,18 +358,27 @@ module Buildr
       def var(libs)
         libs.each do |lib_path, var_name, var_value|
           lib_artifact = file(lib_path)
-          relative_lib_path = lib_path.sub(var_value, var_name.to_s)
+          
+          attribs = { :kind => 'var', :path => lib_path }
+          
           if lib_artifact.respond_to? :sources_artifact
-            source_path = lib_artifact.sources_artifact.to_s
-            relative_source_path = source_path.sub(var_value, var_name)
-            @xml.classpathentry :kind=>'var', :path=>relative_lib_path, :sourcepath=>relative_source_path
-          else
-            @xml.classpathentry :kind=>'var', :path=>relative_lib_path
+            attribs[:sourcepath] = lib_artifact.sources_artifact
           end
+          
+          if lib_artifact.respond_to? :javadoc_artifact
+            attribs[:javadocpath] = lib_artifact.javadoc_artifact
+          end
+          
+          # make all paths relative
+          attribs.each_key do |k|
+            attribs[k] = attribs[k].to_s.sub(var_value, var_name.to_s) if k.to_s =~ /path/
+          end
+
+          @xml.classpathentry attribs
         end
       end
 
-      private
+    private
 
       # Find a path relative to the project's root directory if possible. If the
       # two paths do not share the same root the absolute path is returned. This
