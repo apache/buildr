@@ -181,8 +181,10 @@ module Java
             cmd_args << "-#{option}" << paths.flatten.map(&:to_s).join(File::PATH_SEPARATOR) unless paths.empty?
           end
         end
-        cmd_args += args.flatten.uniq
+        files = args.each {|arg| arg.invoke if arg.respond_to?(:invoke)}.collect {|arg| arg.is_a?(Project) ? Dir["#{arg.compile.sources}/**/*.java"] : arg }
+        cmd_args += files.flatten.uniq.map(&:to_s)
         name = options[:name] || Dir.pwd
+        fail "No output defined for javadoc" if options[:output].nil?
         unless Buildr.application.options.dryrun
           info "Generating Javadoc for #{name}"
           trace (['javadoc'] + cmd_args).join(' ')

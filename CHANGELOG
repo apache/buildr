@@ -33,6 +33,7 @@
 * Fixed:  BUILDR-477 Error while parsing maven-metadata.xml
 * Fixed:  BUILDR-479 Enforce using a minimal version of jruby
 * Fixed:  BUILDR-481 Antwrap monkey-patching in core.rb
+* Fixed:  BUILDR-482 Javadoc : cannot load class java.com.sun.tools.javadoc.Main
 * Fixed:  BUILDR-488 artifact poms not reinstalled
 * Fixed:  BUILDR-491 sftp download goes into infinite loop
 * Fixed:  BUILDR-498 Artifact download fails with "negative argument" if 

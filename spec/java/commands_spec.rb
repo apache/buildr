@@ -61,4 +61,33 @@ BUILD
       lambda { Java::Commands.javac("Foo.java", :classpath => File.expand_path("lib")) }.should change {File.exist?("Foo.class")}.to(true)
     end
   end
+  
+  describe "Java::Commands.javadoc" do
+    
+    it "should fail if no output is defined" do
+      lambda { Java::Commands.javadoc("Foo.java") }.should raise_error(/No output defined for javadoc/)
+    end
+    
+    it "should create javadoc" do
+      write "Foo.java", "public class Foo {}"
+      lambda { Java::Commands.javadoc("Foo.java", :output => "doc") }.should change {File.exist?("doc/Foo.html")}.to(true)
+    end
+    
+    it "should accept file tasks as arguments" do
+      foo = file("Foo.java") do |file|
+        file.enhance do
+          write file.to_s, "public class Foo {}"
+        end
+      end
+      lambda { Java::Commands.javadoc(foo, :output => "doc") }.should change {File.exist?("doc/Foo.html")}.to(true)
+    end
+      
+    it "should accept projects as arguments" do
+      write "src/main/java/Foo.java", "public class Foo {}"
+      write "src/main/java/bar/Foobar.java", "package bar; public class Foobar {}"
+      define "foo" do
+      end
+      lambda { Java::Commands.javadoc(project("foo"), :output => "doc") }.should change {File.exist?("doc/Foo.html") && File.exist?("doc/bar/Foobar.html")}.to(true)
+    end
+  end
 end
