@@ -98,7 +98,7 @@ module Java
           info 'Running apt'
           trace (['apt'] + cmd_args).join(' ')
           Java.load
-          Java.com.sun.tools.apt.Main.process(cmd_args.to_java(Java.java.lang.String)) == 0 or
+          ::Java::com.sun.tools.apt.Main.process(cmd_args.to_java(::Java::java.lang.String)) == 0 or
             fail 'Failed to process annotations, see errors above'
         end
       end
@@ -120,14 +120,14 @@ module Java
         rake_check_options options, :classpath, :sourcepath, :output, :javac_args, :name
 
         files = args.flatten.each { |f| f.invoke if f.respond_to?(:invoke) }.map(&:to_s).
-          collect { |arg| File.directory?(arg) ? FileList["#{arg}/**/*.java"] : arg }.flatten
+          collect { |arg| File.directory?(arg) ? FileList["#{File.expand_path(arg)}/**/*.java"] : File.expand_path(arg) }.flatten
         name = options[:name] || Dir.pwd
 
         cmd_args = []
         cp = classpath_from(options)
         cmd_args << '-classpath' << cp.join(File::PATH_SEPARATOR) unless cp.empty?
         cmd_args << '-sourcepath' << [options[:sourcepath]].flatten.join(File::PATH_SEPARATOR) if options[:sourcepath]
-        cmd_args << '-d' << options[:output].to_s if options[:output]
+        cmd_args << '-d' << File.expand_path(options[:output].to_s) if options[:output]
         cmd_args += options[:javac_args].flatten if options[:javac_args]
         cmd_args += files
         unless Buildr.application.options.dryrun
@@ -135,7 +135,7 @@ module Java
           info "Compiling #{files.size} source files in #{name}"
           trace (['javac'] + cmd_args).join(' ')
           Java.load
-          Java.com.sun.tools.javac.Main.compile(cmd_args.to_java(Java.java.lang.String)) == 0 or
+          ::Java::com.sun.tools.javac.Main.compile(cmd_args.to_java(::Java::java.lang.String)) == 0 or
             fail 'Failed to compile, see errors above'
         end
       end
@@ -158,7 +158,8 @@ module Java
       # * array -- Option with set of values separated by spaces.
       def javadoc(*args)
         options = Hash === args.last ? args.pop : {}
-
+        fail "No output defined for javadoc" if options[:output].nil?
+        options[:output] = File.expand_path(options[:output].to_s)
         cmd_args = [ '-d', options[:output], Buildr.application.options.trace ? '-verbose' : '-quiet' ]
         options.reject { |key, value| [:output, :name, :sourcepath, :classpath].include?(key) }.
           each { |key, value| value.invoke if value.respond_to?(:invoke) }.
@@ -179,15 +180,14 @@ module Java
             cmd_args << "-#{option}" << paths.flatten.map(&:to_s).join(File::PATH_SEPARATOR) unless paths.empty?
           end
         end
-        files = args.each {|arg| arg.invoke if arg.respond_to?(:invoke)}.collect {|arg| arg.is_a?(Project) ? Dir["#{arg.compile.sources}/**/*.java"] : arg }
+        files = args.each {|arg| arg.invoke if arg.respond_to?(:invoke)}.collect {|arg| arg.is_a?(Project) ? arg.compile.sources.collect{|dir| Dir["#{File.expand_path(dir.to_s)}/**/*.java"]} : File.expand_path(arg.to_s) }
         cmd_args += files.flatten.uniq.map(&:to_s)
         name = options[:name] || Dir.pwd
-        fail "No output defined for javadoc" if options[:output].nil?
         unless Buildr.application.options.dryrun
           info "Generating Javadoc for #{name}"
           trace (['javadoc'] + cmd_args).join(' ')
           Java.load
-          Java.com.sun.tools.javadoc.Main.execute(cmd_args.to_java(Java.java.lang.String)) == 0 or
+          ::Java::com.sun.tools.javadoc.Main.execute(cmd_args.to_java(::Java::java.lang.String)) == 0 or
             fail 'Failed to generate Javadocs, see errors above'
         end
       end
