@@ -184,8 +184,8 @@ describe 'groovyc compiler options' do
     groovyc.options.verbose.should be_false
   end
 
-  it 'should set verbose option when running with --trace option' do
-    trace true
+  it 'should set verbose option when running with --trace=groovyc option' do
+    Buildr.application.options.trace_categories = [:groovyc]
     groovyc.options.verbose.should be_true
   end
 
