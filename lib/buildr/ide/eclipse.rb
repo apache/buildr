@@ -31,7 +31,7 @@ module Buildr
         @project = project
         @options = Options.new(project)
       end
-      
+
       def name
         return @name if @name
         return @project.id.split('-').last if @options.short_names
@@ -180,7 +180,7 @@ module Buildr
           @m2_repo_var || (@project.parent ? @project.parent.eclipse.options.m2_repo_var : 'M2_REPO')
         end
       end
-      
+
       def short_names
         @short_names || (@project.parent ? @project.parent.eclipse.options.short_names : false)
       end
@@ -358,17 +358,17 @@ module Buildr
       def var(libs)
         libs.each do |lib_path, var_name, var_value|
           lib_artifact = file(lib_path)
-          
+
           attribs = { :kind => 'var', :path => lib_path }
-          
+
           if lib_artifact.respond_to? :sources_artifact
             attribs[:sourcepath] = lib_artifact.sources_artifact
           end
-          
+
           if lib_artifact.respond_to? :javadoc_artifact
             attribs[:javadocpath] = lib_artifact.javadoc_artifact
           end
-          
+
           # make all paths relative
           attribs.each_key do |k|
             attribs[k] = attribs[k].to_s.sub(var_value, var_name.to_s) if k.to_s =~ /path/
