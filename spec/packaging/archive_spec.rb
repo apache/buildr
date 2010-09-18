@@ -209,7 +209,7 @@ describe 'ArchiveTask', :shared=>true do
   it 'should archive directories into specified alias, even if it has the same name' do
     archive(@archive).include(@dir, :as=>File.basename(@dir)).invoke
     inspect_archive { |archive| 
-      archive.keys.should include "#{File.basename(@dir)}/"
+      archive.keys.should_not include "#{File.basename(@dir)}"
     }
   end
 
