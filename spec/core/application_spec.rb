@@ -164,7 +164,7 @@ describe Buildr::Application do
 
     it 'should fail if required gem not found in remote repository' do
       Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
-      Gem.source_index.stub!(:search).and_return([])
+      Gem.source_index.should_receive(:search).at_least(:once).and_return([])
       lambda { Buildr.application.load_gems }.should raise_error(LoadError, /cannot be found/i)
     end
 
