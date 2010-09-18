@@ -5,6 +5,7 @@
 * Added:  BUILDR-465 Eclipse project names should be customizable
 * Added:  BUILDR-493 Eclipse task should generate javadocpath
 * Added:  BUILDR-509 Option to generate non-prefixed Eclipse project names
+* Added:  BUILDR-510 Add support for trace categories: --trace=foo,bar
 * Added:  Integration test to show how to change the war packaging spec.
 * Added:  Integration test to show how to use junit 3.
 * Added:  Integration test to show how to get ahold of parent project

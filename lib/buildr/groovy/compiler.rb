@@ -95,7 +95,7 @@ module Buildr::Groovy
       options[:debug] = Buildr.options.debug if options[:debug].nil?
       options[:deprecation] ||= false
       options[:optimise] ||= false
-      options[:verbose] ||= Buildr.application.options.trace if options[:verbose].nil?
+      options[:verbose] ||= trace?(:groovyc) if options[:verbose].nil?
       options[:warnings] = verbose if options[:warnings].nil?
       options[:javac] = OpenObject.new if options[:javac].nil?
     end

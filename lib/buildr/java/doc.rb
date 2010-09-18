@@ -34,7 +34,7 @@ module Buildr
       specify :language => :java, :source_ext => 'java'
 
       def generate(sources, target, options = {})
-        cmd_args = [ '-d', target, Buildr.application.options.trace ? '-verbose' : '-quiet' ]
+        cmd_args = [ '-d', target, trace?(:javadoc) ? '-verbose' : '-quiet' ]
         options.reject { |key, value| [:sourcepath, :classpath].include?(key) }.
           each { |key, value| value.invoke if value.respond_to?(:invoke) }.
           each do |key, value|

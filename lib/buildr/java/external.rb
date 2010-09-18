@@ -16,13 +16,13 @@
 module Buildr
   module Compiler
     class ExternalJavac< Buildr::Compiler::Javac
-      
+
       OPTIONS = [:jvm, :warnings, :debug, :deprecation, :source, :target, :lint, :other]
-    
+
       specify :language=>:java, :sources => 'java', :source_ext => 'java',
               :target=>'classes', :target_ext=>'class', :packaging=>:jar
-              
-              
+
+
       def compile(sources, target, dependencies) #:nodoc:
         check_options options, OPTIONS
         cmd_args = []
@@ -47,12 +47,12 @@ module Buildr
       end
 
       private
-      
+
       # See arg list here: http://publib.boulder.ibm.com/infocenter/rsahelp/v7r0m0/index.jsp?topic=/org.eclipse.jdt.doc.isv/guide/jdt_api_compile.htm
       def externaljavac_args #:nodoc:
-        args = []  
+        args = []
         args << '-nowarn' unless options[:warnings]
-        args << '-verbose' if Buildr.application.options.trace
+        args << '-verbose' if trace?(:javac)
         args << '-g' if options[:debug]
         args << '-deprecation' if options[:deprecation]
         args << '-source' << options[:source].to_s if options[:source]
@@ -64,9 +64,9 @@ module Buildr
         end
         args + Array(options[:other])
       end
-      
+
     end
-    
+
   end
 end
 

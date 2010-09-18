@@ -22,7 +22,7 @@ module Buildr
       specify :language => :scala, :source_ext => 'scala'
 
       def generate(sources, target, options = {})
-        cmd_args = [ '-d', target, Buildr.application.options.trace ? '-verbose' : '' ]
+        cmd_args = [ '-d', target, trace?(:scaladoc) ? '-verbose' : '' ]
         options.reject { |key, value| [:sourcepath, :classpath].include?(key) }.
           each { |key, value| value.invoke if value.respond_to?(:invoke) }.
           each do |key, value|
@@ -68,7 +68,7 @@ module Buildr
       specify :language => :scala, :source_ext => 'scala'
 
       def generate(sources, target, options = {})
-        cmd_args = [ '-d', target, (Buildr.application.options.trace ? '-verbose' : ''),
+        cmd_args = [ '-d', target, (trace?(:vscaladoc) ? '-verbose' : ''),
           '-sourcepath', project.compile.sources.join(File::PATH_SEPARATOR) ]
         options.reject { |key, value| [:sourcepath, :classpath].include?(key) }.
           each { |key, value| value.invoke if value.respond_to?(:invoke) }.

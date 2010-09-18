@@ -78,6 +78,36 @@ Buildr supports several different shell providers, and the framework is flexible
 
 Note that some of these shells impose certain requirements to enable use.  The Groovy shell requires the @GROOVY_HOME@ environment variable to point to the Groovy install path.  The Clojure REPL makes a similar requirement of @CLOJURE_HOME@.  The JRuby and Scala shells will use @JRUBY_HOME@ and @SCALA_HOME@ respectively if they are defined.  However, if these environment variables are not defined, the relevant JAR files will be automatically downloaded from the appropriate Maven2 repository.
 
+h3. Verbosity and Tracing
+
+By default, Buildr is moderately verbose, meaning that it attempts to give you enough context into what's happening during the build.
+
+It's possible to silence Buildr if you're inconvenienced by its default verbosity by issuing,
+
+{% highlight sh %}
+$ buildr --silent
+{% endhighlight %}
+
+On the other hand, if you want Buildr to give you more context in order to trace what's happening, you can use the @-t@ options:
+
+{% highlight sh %}
+$ buildr -t
+{% endhighlight %}
+
+Using @-t@ will also display backtraces if and when they occur.
+
+Many components can be individually configured to display more output if you're debugging a specific area of your build.  For instance, you could use @--trace=javac,groovyc@ to enable tracing of the Java and Groovy compilers:
+
+{% highlight sh %}
+$ buildr --trace=javac,groovyc
+{% endhighlight %}
+
+If you don't know which tracing category you need to enable or if you want a full firehose worth of traces, you can enable all traces:
+
+{% highlight sh %}
+$ buildr --trace=all
+{% endhighlight %}
+
 h3. JavaRebel Integration
 
 "JavaRebel":http://www.zeroturnaround.com/javarebel is a live bytecode reloading solution by Zero Turnaround.  It's a lot like the hot code reload feature found in many Java IDE debuggers (like Eclipse and IntelliJ), but capable of handling things like member addition or removal and new class definition.  The tool itself is commercial and works with any JVM language, but they do offer a free license for use with Scala classes only.
@@ -104,7 +134,7 @@ Running java scala.tools.nsc.MainGenericRunner
  (c) Copyright Webmedia, Ltd, 2007-2009. All rights reserved.
 
  This product is licensed to Daniel Spiewak
- for personal use only. 
+ for personal use only.
 
 #############################################################
 
@@ -114,7 +144,7 @@ Type :help for more information.
 
 scala> </pre>
 
-Note that Buildr does *not* check to make sure that you have a valid JavaRebel license, so you may end up launching with JavaRebel configured but without the ability to use it (in which case, JavaRebel will print a notification). 
+Note that Buildr does *not* check to make sure that you have a valid JavaRebel license, so you may end up launching with JavaRebel configured but without the ability to use it (in which case, JavaRebel will print a notification).
 
 h2(#gems).  Using Gems
 
@@ -134,7 +164,7 @@ Use the @build.yaml@ file to specify these dependencies (see "Build Settings":se
 
 {% highlight yaml %}
 # This project requires the following gems
-gems: 
+gems:
   # Suppose we want to notify developers when testcases fail.
   - buildr-twitter-notifier-addon >=1
   # we test with ruby mock objects
@@ -240,7 +270,7 @@ For other platforms or if you want to notify the user differently, Buildr offers
 Here is an example using these extension points to send notifications using "Qube":http://launchpad.net/qube:
 
 {% highlight ruby %}
-# Send notifications using Qube 
+# Send notifications using Qube
 notify = lambda do |type, title, message|
   param = case type
     when 'completed'; '-i'
@@ -249,12 +279,12 @@ notify = lambda do |type, title, message|
   end
   system "qube #{param} #{title.inspect} #{message.inspect}"
 end
-  
-Buildr.application.on_completion do |title, message| 
+
+Buildr.application.on_completion do |title, message|
   notify['completed', title, message]
 end
-Buildr.application.on_failure do |title, message, ex| 
-  notify['failed', title, message] 
+Buildr.application.on_failure do |title, message, ex|
+  notify['failed', title, message]
 end
 {% endhighlight %}
 
@@ -319,7 +349,7 @@ $ buildr test cobertura:html
 
 As you can guess, the other tasks are @cobertura:xml@, @emma:html@ and @emma:xml@.
 
-If you want to generate a test coverage report only for a specific project, you can do so by using the project name as prefix to the tasks. 
+If you want to generate a test coverage report only for a specific project, you can do so by using the project name as prefix to the tasks.
 
 {% highlight sh %}
 $ buildr subModule:cobertura:html
@@ -328,7 +358,7 @@ $ buildr subModule:cobertura:html
 Each project can specify which classes to include or exclude from cobertura instrumentation by giving a class-name regexp to the @cobertura.include@ or @cobertura.exclude@ methods:
 
 {% highlight ruby %}
-define 'someModule' do 
+define 'someModule' do
   cobertura.include 'some.package.==*=='
   cobertura.include /some.(foo|bar).==*==/
   cobertura.exclude 'some.foo.util.SimpleUtil'
@@ -345,7 +375,7 @@ define 'someModule' do
   cobertura.check.branch_rate = 75
   cobertura.check.line_rate = 100
   cobertura.check.total_line_rate = 98
-  
+
   task(:deploy).enhance 'cobertura:check'
 end
 {% endhighlight %}

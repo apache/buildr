@@ -8,6 +8,7 @@ _snapshot
 _staged
 _release
 tmp
+*.swp
 *.log
 _all-in-one
 nbproject
