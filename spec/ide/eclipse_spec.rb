@@ -110,6 +110,15 @@ describe Buildr::Eclipse do
         end
       end
 
+      it 'should use eclipse project name if specified' do
+        define('foo') { eclipse.name = 'bar' }
+        task('eclipse').invoke
+        File.open('.project') do |f|
+          REXML::Document.new(f).root.
+            elements.collect("name") { |e| e.text }.should == ['bar']
+        end
+      end
+
       it 'should not generate a .classpath file' do
         define('foo')
         task('eclipse').invoke
@@ -165,6 +174,32 @@ describe Buildr::Eclipse do
         end
       end
 
+      it 'should use eclipse name for child project if set' do
+        mkdir 'foo'
+        define('myproject') {
+          project.version = '1.0'
+          define('foo') { eclipse.name = 'bar'; compile.using(:javac); package :jar }
+        }
+        task('eclipse').invoke
+        File.open(File.join('foo', '.project')) do |f|
+          REXML::Document.new(f).root.
+            elements.collect("name") { |e| e.text }.should == ['bar']
+        end
+      end
+
+      it 'should use short name for child project if eclipse.options.short_names = true' do
+        mkdir 'foo'
+        define('myproject') {
+          project.version = '1.0'
+          eclipse.options.short_names = true
+          define('foo') { compile.using(:javac); package :jar }
+        }
+        task('eclipse').invoke
+        File.open(File.join('foo', '.project')) do |f|
+          REXML::Document.new(f).root.
+            elements.collect("name") { |e| e.text }.should == ['foo']
+        end
+      end
     end
 
     describe 'scala project' do
@@ -463,6 +498,21 @@ MANIFEST
         File.open(File.join('bar', '.classpath')) do |f|
           REXML::Document.new(f).root.
             elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.should include('/myproject-foo')
+        end
+      end
+
+      it 'should use eclipse name in its classpath if set' do
+        mkdir 'foo'
+        mkdir 'bar'
+        define('myproject') {
+          project.version = '1.0'
+          define('foo') { eclipse.name = 'eclipsefoo'; package :jar }
+          define('bar') { eclipse.name = 'eclipsebar'; compile.using(:javac).with project('foo'); }
+        }
+        task('eclipse').invoke
+        File.open(File.join('bar', '.classpath')) do |f|
+          REXML::Document.new(f).root.
+            elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.should include('/eclipsefoo')
         end
       end
     end

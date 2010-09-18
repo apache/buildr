@@ -25,10 +25,17 @@ module Buildr
     class Eclipse
 
       attr_reader :options
+      attr_writer :name
 
       def initialize(project)
         @project = project
         @options = Options.new(project)
+      end
+      
+      def name
+        return @name if @name
+        return @project.id.split('-').last if @options.short_names
+        @project.id
       end
 
       # :call-seq:
@@ -156,7 +163,7 @@ module Buildr
 
     class Options
 
-      attr_writer :m2_repo_var
+      attr_writer :m2_repo_var, :short_names
 
       def initialize(project)
         @project = project
@@ -172,6 +179,10 @@ module Buildr
         else
           @m2_repo_var || (@project.parent ? @project.parent.eclipse.options.m2_repo_var : 'M2_REPO')
         end
+      end
+      
+      def short_names
+        @short_names || (@project.parent ? @project.parent.eclipse.options.short_names : false)
       end
     end
 
@@ -265,7 +276,7 @@ module Buildr
             File.open(task.name, 'w') do |file|
               xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
               xml.projectDescription do
-                xml.name project.id
+                xml.name project.eclipse.name
                 xml.projects
                 unless project.eclipse.builders.empty?
                   xml.buildSpec do
@@ -330,8 +341,8 @@ module Buildr
       # Write a classpathentry of kind 'src' for dependent projects.
       # Accept an array of projects.
       def src_projects project_libs
-        project_libs.map(&:id).sort.uniq.each do |project_id|
-          @xml.classpathentry :kind=>'src', :combineaccessrules=>'false', :path=>"/#{project_id}"
+        project_libs.map { |project| project.eclipse.name }.sort.uniq.each do |eclipse_name|
+          @xml.classpathentry :kind=>'src', :combineaccessrules=>'false', :path=>"/#{eclipse_name}"
         end
       end
 
