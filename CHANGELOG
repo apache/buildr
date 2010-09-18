@@ -1,4 +1,4 @@
-1.4.2 (pending)
+1.4.2 (2010-09-18)
 * Added:  BUILDR-415 Ability to exclude tests from command line
 * Added:  BUILDR-495 Document twitter on Buildr's homepage
 * Added:  BUILDR-212 Update support for SNAPSHOT artifacts (Timo Rantalaiho and Izzet Mustafa)
