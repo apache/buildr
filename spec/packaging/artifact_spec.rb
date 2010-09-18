@@ -13,9 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
-
+require 'fileutils'
 
 describe Artifact do
   before do
@@ -24,6 +23,7 @@ describe Artifact do
     @classified = artifact(@spec.merge(:classifier=>'all'))
     @snapshot = artifact(@spec.merge({ :version=>'2.1-SNAPSHOT' }))
   end
+
 
   it 'should act as one' do
     @artifact.should respond_to(:to_spec)
@@ -290,7 +290,7 @@ describe Repositories, 'remote' do
       and_return { fail URI::NotFoundError }
     URI.should_receive(:download).twice.with(uri(/2.1-SNAPSHOT\/maven-metadata.xml$/), duck_type(:write)).
       and_return { |uri, target, options| target.write(metadata) }
-    URI.should_receive(:download).twice.with(uri(/2.1-SNAPSHOT\/library-2.1-20071012.190008-8.(jar|pom)$/), /2.1-SNAPSHOT\/library-2.1-SNAPSHOT.(jar|pom)$/).
+    URI.should_receive(:download).twice.with(uri(/2.1-SNAPSHOT\/library-2.1-20071012.190008-8.(jar|pom)$/), /2.1-SNAPSHOT\/library-2.1-SNAPSHOT.(jar|pom).(\d){1,}$/).
       and_return { |uri, target, options| write target }
     lambda { artifact('com.example:library:jar:2.1-SNAPSHOT').invoke }.
       should change { File.exist?(File.join(repositories.local, 'com/example/library/2.1-SNAPSHOT/library-2.1-SNAPSHOT.jar')) }.to(true)
@@ -461,7 +461,11 @@ end
 
 
 describe Buildr, '#artifact' do
-  before { @spec = { :group=>'com.example', :id=>'library', :type=>'jar', :version=>'2.0' } }
+  before do 
+    @spec = { :group=>'com.example', :id=>'library', :type=>'jar', :version=>'2.0' }
+    @snapshot_spec = 'group:id:jar:1.0-SNAPSHOT'
+    write @file = 'testartifact.jar' 
+  end
 
   it 'should accept hash specification' do
     artifact(:group=>'com.example', :id=>'library', :type=>'jar', :version=>'2.0').should respond_to(:invoke)
@@ -548,6 +552,57 @@ describe Buildr, '#artifact' do
     Buildr.application.send(:load_artifact_ns)
     artifact(:j2ee).to_s.pathmap('%f').should == 'geronimo-spec-j2ee-1.4-rc4.jar'
   end
+  
+  it 'should try to download snapshot artifact' do
+    run_with_repo
+    snapshot = artifact(@snapshot_spec)
+    
+    URI.should_receive(:download).at_least(:twice).and_return { |uri, target, options| write target }
+    FileUtils.should_receive(:mv).at_least(:twice)
+    snapshot.invoke
+  end
+
+  it 'should not try to update snapshot in offline mode if it exists' do
+    run_with_repo
+    snapshot = artifact(@snapshot_spec)
+    write snapshot.to_s
+    Buildr.application.options.work_offline = true
+    URI.should_receive(:download).exactly(0).times
+    snapshot.invoke
+  end
+  
+  it 'should download snapshot even in offline mode if it doesn''t exist' do
+    run_with_repo
+    snapshot = artifact(@snapshot_spec)
+    Buildr.application.options.work_offline = true
+    URI.should_receive(:download).exactly(2).times
+    snapshot.invoke
+  end
+  
+  it 'should update snapshots if --update-snapshots' do
+    run_with_repo
+    snapshot = artifact(@snapshot_spec)
+    Buildr.application.options.update_snapshots = true
+    
+    URI.should_receive(:download).at_least(:twice).and_return { |uri, target, options| write target }
+    FileUtils.should_receive(:mv).at_least(:twice)
+    snapshot.invoke
+  end
+  
+  it 'should update snapshot if it''s older than 24 hours' do
+    run_with_repo
+    snapshot = artifact(@snapshot_spec)
+    write snapshot.to_s
+    time = Time.at((Time.now - (60 * 60 * 24) - 10 ).to_i)
+    File.utime(time, time, snapshot.to_s)
+    URI.should_receive(:download).at_least(:once).and_return { |uri, target, options| write target }
+    snapshot.invoke
+  end
+  
+  def run_with_repo
+    repositories.remote = 'http://example.com'
+  end
+  
 end
 
 
@@ -638,6 +693,7 @@ describe Buildr, '#install' do
   before do
     @spec = 'group:id:jar:1.0'
     write @file = 'test.jar'
+    @snapshot_spec = 'group:id:jar:1.0-SNAPSHOT'
   end
 
   it 'should return the install task' do
@@ -660,7 +716,27 @@ describe Buildr, '#install' do
     write artifact(@spec).to_s # install a version of the artifact
     old_mtime = File.mtime(artifact(@spec).to_s)
     sleep 1; write @file       # make sure the "from" file has newer modification time
-    lambda { install.invoke }.should change { File.exist?(artifact(@spec).to_s) and old_mtime < File.mtime(artifact(@spec).to_s) }.to(true)
+    lambda { install.invoke }.should change { modified?(old_mtime, @spec) }.to(true)
+  end
+
+  it 'should re-install snapshot artifact when "from" is newer' do
+    install artifact(@snapshot_spec).from(@file)
+    write artifact(@snapshot_spec).to_s # install a version of the artifact
+    old_mtime = File.mtime(artifact(@snapshot_spec).to_s)
+    sleep 1; write @file       # make sure the "from" file has newer modification time
+    lambda { install.invoke }.should change { modified?(old_mtime, @snapshot_spec) }.to(true)
+  end
+  
+  it 'should download snapshot to temporary location' do
+    repositories.remote = 'http://example.com'
+    snapshot = artifact(@snapshot_spec)
+    same_time = Time.new
+    download_file = "#{Dir.tmpdir}/#{File.basename(snapshot.name)}#{same_time.to_i}"
+    
+    Time.should_receive(:new).twice.and_return(same_time)
+    URI.should_receive(:download).at_least(:twice).and_return { |uri, target, options| write target }
+    FileUtils.should_receive(:mv).at_least(:twice)
+    snapshot.invoke
   end
 
   it 'should install POM alongside artifact' do
@@ -928,4 +1004,8 @@ XML
   it 'should bring artifact and transitive depenencies' do
     transitive(@transitive).should eql(artifacts(@transitive, @complex, @simple - [@provided]))
   end
+end
+
+def modified?(old_mtime, spec)
+  File.exist?(artifact(spec).to_s) && old_mtime < File.mtime(artifact(spec).to_s)
 end
