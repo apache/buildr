@@ -122,8 +122,8 @@ describe 'javac compiler options' do
     javac_args.should_not include('-verbose')
   end
 
-  it 'should use -verbose argument when running with --trace option' do
-    trace true
+  it 'should use -verbose argument when running with --trace=javac option' do
+    Buildr.application.options.trace_categories = [:javac]
     javac_args.should include('-verbose')
   end
 
