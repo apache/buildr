@@ -21,18 +21,20 @@ COMPILERS_WITHOUT_JAVAC = COMPILERS.dup
 COMPILERS_WITHOUT_JAVAC.delete Buildr::Compiler::Javac
 
 describe Buildr::Compiler::ExternalJavac do
-  
+
   before(:all) do
     Buildr::Compiler.send :compilers=, COMPILERS_WITHOUT_JAVAC
   end
-  
-  describe "should compile a Java project just in the same way javac does" do  
+
+  describe "should compile a Java project just in the same way javac does" do
     javac_spec = File.read(File.join(File.dirname(__FILE__), "compiler_spec.rb"))
     javac_spec = javac_spec.match(Regexp.escape("require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))\n")).post_match
     javac_spec.gsub!("javac", "externaljavac")
+    javac_spec.gsub!("--trace=externaljavac", "--trace=javac")
+    javac_spec.gsub!("trace_categories = [:externaljavac]", "trace_categories = [:javac]")
     eval(javac_spec)
   end
-  
+
   it "should accept a :jvm option as JAVA_HOME" do
     write 'src/main/java/Foo.java', 'public class Foo {}'
     define "foo" do
@@ -44,11 +46,11 @@ describe Buildr::Compiler::ExternalJavac do
     end
     trace false
   end
-  
+
   after :all do
     Buildr::Compiler.send :compilers=, COMPILERS
   end
-  
+
 end
 
 

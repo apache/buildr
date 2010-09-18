@@ -18,12 +18,12 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers')
 
 # need to test both with and without SCALA_HOME
 share_as :ScalacCompiler do
-  
+
   before(:each) do
     # Force Scala 2.8.0 for specs; don't want to rely on SCALA_HOME
     Buildr.settings.build['scala.version'] = "2.8.0"
   end
-    
+
   it 'should identify itself from source directories' do
     write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }'
     define('foo').compile.compiler.should eql(:scalac)
@@ -176,8 +176,8 @@ describe 'scalac compiler options' do
     scalac_args.should_not include('-verbose')
   end
 
-  it 'should use -verbose argument when running with --trace option' do
-    trace true
+  it 'should use -verbose argument when running with --trace=scalac option' do
+    Buildr.application.options.trace_categories = [:scalac]
     scalac_args.should include('-verbose')
   end
 
