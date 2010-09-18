@@ -61,6 +61,13 @@ module EclipseHelper
     end
   end
 
+  # <classpathentry path="PATH" javadocpath="RETURNED_VALUE" kind="var"/>
+  def javadocpath_for_path(path)
+    classpath_xml_elements.collect("classpathentry[@kind='var',@path='#{path}']") do |n|
+      n.attributes['javadocpath'] || 'no javadoc artifact'
+    end
+  end
+
   def project_xml_elements
     task('eclipse').invoke
     File.open('.project') { |f| REXML::Document.new(f).root.elements }
@@ -577,6 +584,11 @@ MANIFEST
     it 'should have a source artifact reference in the .classpath file' do
       sourcepath_for_path('M2_REPO/com/example/library/2.0/library-2.0.jar').
         should == ['M2_REPO/com/example/library/2.0/library-2.0-sources.jar']
+    end
+
+    it 'should have a javadoc artifact reference in the .classpath file' do
+      javadocpath_for_path('M2_REPO/com/example/library/2.0/library-2.0.jar').
+        should == ['M2_REPO/com/example/library/2.0/library-2.0-javadoc.jar']
     end
   end
 

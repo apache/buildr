@@ -79,6 +79,10 @@ describe Artifact do
     @artifact.sources_artifact.to_hash.should == @artifact.to_hash.merge(:classifier=>'sources')
   end
 
+  it 'should have associated javadoc artifact' do
+    @artifact.javadoc_artifact.to_hash.should == @artifact.to_hash.merge(:classifier=>'javadoc')
+  end
+
   it 'should download file if file does not exist' do
     lambda { @artifact.invoke }.should raise_error(Exception, /No remote repositories/)
     lambda { @classified.invoke }.should raise_error(Exception, /No remote repositories/)
@@ -890,6 +894,41 @@ describe Rake::Task, ' artifacts:sources' do
   end
 end
 
+describe Rake::Task, ' artifacts:javadoc' do
+
+  before do
+    task('artifacts:javadoc').clear
+    repositories.remote = 'http://example.com'
+  end
+
+  it 'should download javadoc for all specified artifacts' do
+    artifact 'group:id:jar:1.0'
+    URI.should_receive(:download).any_number_of_times.and_return { |uri, target| write target }
+    lambda { task('artifacts:javadoc').invoke }.should change { File.exist?('home/.m2/repository/group/id/1.0/id-1.0-javadoc.jar') }.to(true)
+  end
+
+  it "should not try to download javadoc for the project's artifacts" do
+    define('foo', :version=>'1.0') { package(:jar) }
+    URI.should_not_receive(:download)
+    task('artifacts:javadoc').invoke
+  end
+
+  describe 'when the javadoc artifact does not exist' do
+
+    before do
+      artifact 'group:id:jar:1.0'
+      URI.should_receive(:download).any_number_of_times.and_raise(URI::NotFoundError)
+    end
+
+    it 'should not fail' do
+      lambda { task('artifacts:javadoc').invoke }.should_not raise_error
+    end
+
+    it 'should inform the user' do
+      lambda { task('artifacts:javadoc').invoke }.should show_info('Failed to download group:id:jar:javadoc:1.0. Skipping it.')
+    end
+  end
+end
 
 describe Buildr, '#transitive' do
   before do
