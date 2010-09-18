@@ -54,7 +54,7 @@ module Buildr
     end
 
     class VScaladoc < Base
-      VERSION = '1.2-SNAPSHOT'
+      VERSION = '1.2-m1'
       Buildr.repositories.remote << 'http://scala-tools.org/repo-snapshots'
 
       class << self
