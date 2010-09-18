@@ -256,8 +256,9 @@ module Buildr
           super
           @classes = []
           @libs = []
-          prepare do
-            @classes.to_a.flatten.each { |classes| path('WEB-INF/classes').include classes, :as=>'.' }
+          enhance do |war|
+            @libs.each {|lib| lib.invoke}
+            @classes.to_a.flatten.each { |classes| include classes, :as => 'WEB-INF/classes' }
             path('WEB-INF/lib').include Buildr.artifacts(@libs) unless @libs.nil? || @libs.empty?
           end
         end
