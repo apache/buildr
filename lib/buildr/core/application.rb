@@ -357,6 +357,18 @@ module Buildr
             puts "Buildr #{Buildr::VERSION}#{RUBY_PLATFORM[/java/] ? " (JRuby #{JRUBY_VERSION})" : ""}"
             exit 0
           }
+        ],
+        ['--offline', '-o', "Do not try to download anything",
+          lambda { |value|
+            trace 'Working in offline mode; snapshot will not be updated.'
+            options.work_offline = true
+          }
+        ],
+        ['--update-snapshots', '-u', "Force updating all dependencies whose version contains SNAPSHOT",
+          lambda { |value|
+            trace 'Force update of SNAPSHOT artifacts.'
+            options.update_snapshots = true
+          }
         ]
       ]
     end

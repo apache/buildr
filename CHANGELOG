@@ -1,6 +1,7 @@
 1.4.2 (pending)
 * Added:  BUILDR-415 Ability to exclude tests from command line
 * Added:  BUILDR-495 Document twitter on Buildr's homepage
+* Added:  BUILDR-212 Update support for SNAPSHOT artifacts (Timo Rantalaiho and Izzet Mustafa)
 * Added:  Integration test to show how to change the war packaging spec.
 * Added:  Integration test to show how to use junit 3.
 * Added:  Integration test to show how to get ahold of parent project

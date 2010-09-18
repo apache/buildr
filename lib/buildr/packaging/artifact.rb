@@ -17,6 +17,7 @@
 require 'buildr/core/project'
 require 'buildr/core/transports'
 require 'buildr/packaging/artifact_namespace'
+require 'fileutils'
 
 
 module Buildr
@@ -151,7 +152,7 @@ module Buildr
           pom.install
         end
         mkpath File.dirname(in_local_repository)
-        cp name, in_local_repository
+        cp name, in_local_repository, :preserve => false
         info "Installed #{name} to #{in_local_repository}"
       end
     end
@@ -335,7 +336,7 @@ module Buildr
         # if the artifact knows how to build itself (e.g. download from a different location),
         # so don't perform it if the task found a different way to create the artifact.
         task.enhance do
-          if !File.exist?(name)
+          if download_needed? task
             info "Downloading #{to_spec}"
             download
             pom.invoke rescue nil if pom && pom != self
@@ -414,7 +415,7 @@ module Buildr
       exact_success = remote.find do |repo_url|
         begin
           path = "#{group_path}/#{id}/#{version}/#{File.basename(name)}"
-          URI.download repo_url + path, name
+          download_artifact(repo_url + path)
           true
         rescue URI::NotFoundError
           false
@@ -439,7 +440,8 @@ module Buildr
         snapshot_url = current_snapshot_repo_url(repo_url)
         if snapshot_url
           begin
-            URI.download snapshot_url, name
+            download_artifact snapshot_url
+            true
           rescue URI::NotFoundError
             false
           end
@@ -470,6 +472,71 @@ module Buildr
     def fail_download(remote_uris)
       fail "Failed to download #{to_spec}, tried the following repositories:\n#{remote_uris.join("\n")}"
     end
+
+   protected
+  
+    # :call-seq:
+    #   needed?
+    #
+    # Validates whether artifact is required to be downloaded from repository
+    def needed?
+      return true if snapshot? && File.exist?(name) && old?
+      super      
+    end
+    
+  private
+  
+    # :call-seq:
+    #   download_artifact
+    #
+    # Downloads artifact from given repository, 
+    # supports downloading snapshot artifact with relocation on succeed to local repository 
+    def download_artifact(path)
+      download_file = "#{name}.#{Time.new.to_i}"
+      begin
+        URI.download path, download_file
+        if File.exist?(download_file)
+          FileUtils.mkdir_p(File.dirname(name))
+          FileUtils.mv(download_file, name)
+        end
+      ensure
+        File.delete(download_file) if File.exist?(download_file)
+      end
+    end
+    
+    # :call-seq:
+    #   :download_needed?
+    #
+    # Validates whether artifact is required to be downloaded from repository
+    def download_needed?(task)
+      return true if !File.exist?(name)
+
+      if snapshot?
+        return false if offline? && File.exist?(name)
+        return true if update_snapshot? || old?
+      end
+      
+      return false
+    end
+    
+    def update_snapshot?
+      Buildr.application.options.update_snapshots
+    end
+    
+    def offline?
+      Buildr.application.options.work_offline
+    end
+    
+    # :call-seq:
+    #   old?
+    #
+    # Checks whether existing artifact is older than period from build settings or one day 
+    def old?
+      settings = Buildr.application.settings
+      time_to_be_old = settings.user[:expire_time] || settings.build[:expire_time] || 60 * 60 * 24
+      File.mtime(name).to_i < (Time.new.to_i - time_to_be_old)
+    end
+
   end
 
 
