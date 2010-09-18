@@ -51,8 +51,8 @@ module Java
         end
 
         cmd_args = [path_to_bin('java')]
-        classpath = classpath_from(options)
-        cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cp = classpath_from(options)
+        cmd_args << '-classpath' << cp.join(File::PATH_SEPARATOR) unless cp.empty?
         options[:properties].each { |k, v| cmd_args << "-D#{k}=#{v}" } if options[:properties]
         cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
         cmd_args += args.flatten.compact
@@ -91,10 +91,8 @@ module Java
           cmd_args << '-nocompile' << '-s' << options[:output].to_s
         end
         cmd_args << '-source' << options[:source] if options[:source]
-        classpath = classpath_from(options)
-        tools = Java.tools_jar
-        classpath << tools if tools
-        cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cp = classpath_from(options)
+        cmd_args << '-classpath' << cp.join(File::PATH_SEPARATOR) unless cp.empty?
         cmd_args += files
         unless Buildr.application.options.dryrun
           info 'Running apt'
@@ -126,8 +124,8 @@ module Java
         name = options[:name] || Dir.pwd
 
         cmd_args = []
-        classpath = classpath_from(options)
-        cmd_args << '-classpath' << classpath.join(File::PATH_SEPARATOR) unless classpath.empty?
+        cp = classpath_from(options)
+        cmd_args << '-classpath' << cp.join(File::PATH_SEPARATOR) unless cp.empty?
         cmd_args << '-sourcepath' << [options[:sourcepath]].flatten.join(File::PATH_SEPARATOR) if options[:sourcepath]
         cmd_args << '-d' << options[:output].to_s if options[:output]
         cmd_args += options[:javac_args].flatten if options[:javac_args]
