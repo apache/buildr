@@ -225,7 +225,7 @@ module Buildr::Scala
     def scalac_args #:nodoc:
       args = []
       args << "-nowarn" unless options[:warnings]
-      args << "-verbose" if Buildr.application.options.trace
+      args << "-verbose" if trace?(:scalac)
       args << "-g" if options[:debug]
       args << "-deprecation" if options[:deprecation]
       args << "-optimise" if options[:optimise]

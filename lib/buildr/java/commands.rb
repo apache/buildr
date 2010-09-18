@@ -42,7 +42,7 @@ module Java
       # * :verbose -- If true, prints the command and all its argument.
       def java(*args, &block)
         options = Hash === args.last ? args.pop : {}
-        options[:verbose] ||= Buildr.application.options.trace || false
+        options[:verbose] ||= trace?(:java)
         rake_check_options options, :classpath, :java_args, :properties, :name, :verbose
 
         name = options[:name]
@@ -84,7 +84,7 @@ module Java
 
         files = args.flatten.map(&:to_s).
           collect { |arg| File.directory?(arg) ? FileList["#{arg}/**/*.java"] : arg }.flatten
-        cmd_args = [ Buildr.application.options.trace ? '-verbose' : '-nowarn' ]
+        cmd_args = [ trace?(:apt) ? '-verbose' : '-nowarn' ]
         if options[:compile]
           cmd_args << '-d' << options[:output].to_s
         else
@@ -160,7 +160,7 @@ module Java
         options = Hash === args.last ? args.pop : {}
         fail "No output defined for javadoc" if options[:output].nil?
         options[:output] = File.expand_path(options[:output].to_s)
-        cmd_args = [ '-d', options[:output], Buildr.application.options.trace ? '-verbose' : '-quiet' ]
+        cmd_args = [ '-d', options[:output], trace?(:javadoc) ? '-verbose' : '-quiet' ]
         options.reject { |key, value| [:output, :name, :sourcepath, :classpath].include?(key) }.
           each { |key, value| value.invoke if value.respond_to?(:invoke) }.
           each do |key, value|

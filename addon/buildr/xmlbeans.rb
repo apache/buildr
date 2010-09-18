@@ -42,7 +42,7 @@ module Buildr
 
       def compile(*args)
         options = Hash === args.last ? args.pop : {}
-        options[:verbose] ||= Rake.application.options.trace || false
+        options[:verbose] ||= trace?(:xmlbeans)
         rake_check_options options, :verbose, :noop, :javasource, :jar, :compile, :output, :xsb
         puts "Running XMLBeans schema compiler" if verbose
         Buildr.ant "xmlbeans" do |ant|

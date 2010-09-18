@@ -151,7 +151,7 @@ module Buildr
         response = http.request_post("/buildr/deploy", "webapp=#{webapp}&path=#{uri.path}")
         if Net::HTTPOK === response && response.body =~ /Deployed/
           path = response.body.split[1]
-          puts "Deployed #{webapp}, context path #{uri.path}" if Rake.application.options.trace
+          puts "Deployed #{webapp}, context path #{uri.path}" if trace?
           path
         else
           fail "Deployment failed: #{response}"

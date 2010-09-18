@@ -343,9 +343,13 @@ module Buildr
             options.full_description = false
           }
         ],
-        ['--trace', '-t', "Turn on invoke/execute tracing, enable full backtrace.",
+        ['--trace', '-t [CATEGORIES]', "Turn on invoke/execute tracing, enable full backtrace.",
           lambda { |value|
             options.trace = true
+            if value
+              options.trace_categories = value.split(',').map { |v| v.downcase.to_sym }
+            end
+            options.trace_all = options.trace_categories.include? :all
             verbose(true)
           }
         ],
@@ -614,6 +618,13 @@ def trace(message)
   puts message if Buildr.application.options.trace
 end
 
+def trace?(*category)
+  options = Buildr.application.options
+  return options.trace if category.empty?
+  return true if options.trace_all
+  return false unless Buildr.application.options.trace_categories
+  options.trace_categories.include?(category.first)
+end
 
 module Rake #:nodoc
   # Rake's circular dependency checks (InvocationChain) only applies to task prerequisites,

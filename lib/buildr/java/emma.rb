@@ -62,7 +62,7 @@ module Buildr
         Buildr.ant 'emma' do |ant|
           ant.taskdef :resource=>'emma_ant.properties',
             :classpath=>Buildr.artifacts(dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
-          ant.emma :verbosity=>(Buildr.application.options.trace ? 'verbose' : 'warning') do
+          ant.emma :verbosity=>(trace?(:emma) ? 'verbose' : 'warning') do
             yield ant
           end
         end
