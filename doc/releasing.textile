@@ -89,13 +89,16 @@ If the environment variable NEXT_VERSION is set, Buildr will use this value to u
 
 For conveniency, this variable is case insensitive.
 
-So, all 3 following commands would generate the buildfile below:
+So, all 3 following commands will run a release with a custom new version: 
+
 {% highlight sh %}
 $ buildr release next_version="1.0.0-rc1"
 $ env next_version="1.0.0-rc1" buildr release
 $ env NEXT_VERSION="1.0.0-rc1" buildr release
 {% endhighlight %}
 
+
+Those commands will generate the Buildfile below:
 {% highlight ruby %}
 THIS_VERSION = "1.0.0-rc1"
 
