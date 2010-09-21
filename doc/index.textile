@@ -46,21 +46,20 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-New in Buildr 1.4.0:
+New in Buildr 1.4.2:
 
-* Support for Scala 2.8 compiler-level change detection and dependency tracking
-* Continuous compilation
-* Support for Eclipse classpath variables to avoid absolute pathnames in generated .classpath
-* "buildr test=only" will only run tests explicitly specified on the command line (and ignore transitive test dependencies)
-* Generic documentation framework (we do doc, not just javadoc)
-* New "test:failed" task to execute only tests that failed during last run
-* Project extensions (before/after_define) now support dependency ordering similar to Rake
-* Support unzipping tar.gz files
-* ScalaTest now generates JUnit XML reports in addition to text files.
-* Support protocol buffer code generation
-* Tested against Windows and Ubuntu on JRuby and MRI (and experimenting with Rubinius)
-* Dependency upgrades such as Ant 1.8.0, JUnit 4.7, JMock 2.5.1, Cobertura 1.9.4.1, Scala Specs 1.6.2.1, ScalaCheck 1.6, ScalaTest 1.0.1
-* And 60+ bug fixes !
+* Added:  BUILDR-212 Update support for SNAPSHOT artifacts
+* Added:  BUILDR-465 Eclipse project names should be customizable
+* Added:  BUILDR-493 Eclipse task should generate javadocpath
+* Added:  BUILDR-509 Option to generate non-prefixed Eclipse project names
+* Added:  BUILDR-510 Add support for trace categories: --trace=foo,bar
+* Change: BUILDR-484 Upgrade to Scala 2.8.0 (final) and associated dependencies (ScalaCheck 1.7, ScalaTest 1.2, Specs 1.6.5)
+* Change: BUILDR-487 package :sources should default to using .jar extension (instead of .zip)
+* Fixed:  BUILDR-143 Upload to a file:// path needs ability to specify permissions
+* Fixed:  BUILDR-144 Filter does not preserve file permissions
+* Fixed:  BUILDR-203 Compiler guessing parses the source files.
+* Fixed:  BUILDR-317 Contribution of the integration with the ecj compiler
+* And 50+ bug fixes !
 
 See the "CHANGELOG":CHANGELOG for full details.
 
