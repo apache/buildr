@@ -54,7 +54,7 @@ module Buildr
     def ruby(*args)
       options = Hash === args.last ? args.pop : {}
       cmd = []
-      ruby_bin = File.normalize_path(Config::CONFIG['ruby_install_name'], Config::CONFIG['bindir'])
+      ruby_bin = normalize_path(Config::CONFIG['ruby_install_name'], Config::CONFIG['bindir'])
       if options.delete(:sudo) && !(win_os? || Process.uid == File.stat(ruby_bin).uid)
         cmd << 'sudo' << '-u' << "##{File.stat(ruby_bin).uid}"
       end
@@ -142,7 +142,7 @@ module Buildr
       # is not running interactively (on a tty)
       def install(*dependencies)
         raise ArgumentError, "Expected at least one argument" if dependencies.empty?
-        remote = dependencies.map{ |dep| Gem.source_index.search(dep).last || Gem::SpecFetcher.fetcher.fetch( dep, true ).map{ |spec, source| spec }.last } 
+        remote = dependencies.map{ |dep| Gem.source_index.search(dep).last || Gem::SpecFetcher.fetcher.fetch( dep, true ).map{ |spec, source| spec }.last }
         not_found_deps, to_install = remote.partition { |gem| gem.is_a?(Gem::Dependency) || gem.nil? }
         fail Gem::LoadError, "Build requires the gems #{not_found_deps.join(', ')}, which cannot be found in local or remote repository." unless not_found_deps.empty?
         uses = "This build requires the gems #{to_install.map(&:full_name).join(', ')}:"
