@@ -1,3 +1,6 @@
+1.4.3 (Pending)
+* Fixed:  BUILDR-512 Buildr::Util.ruby invokes non existent method (Peter Donald)
+
 1.4.2 (2010-09-18)
 * Added:  BUILDR-415 Ability to exclude tests from command line
 * Added:  BUILDR-495 Document twitter on Buildr's homepage
