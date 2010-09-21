@@ -96,6 +96,30 @@ describe Buildr::Application do
       ARGV.push('--version')
       test_exit(0) { Buildr.application.send(:handle_options) }.should show(/Buildr #{Buildr::VERSION}.*/)
     end
+
+    it 'should enable tracing with --trace' do
+      ARGV.push('--trace')
+      Buildr.application.send(:handle_options)
+      Buildr.application.options.trace.should == true
+    end
+
+    it 'should enable tracing of [:foo, :bar] categories with --trace=foo,bar' do
+      ARGV.push('--trace=foo,bar')
+      Buildr.application.send(:handle_options)
+      Buildr.application.options.trace.should == true
+      Buildr.application.options.trace_categories.should == [:foo, :bar]
+      trace?(:foo).should == true
+      trace?(:not).should == false
+    end
+
+    it 'should enable tracing for all categories with --trace=all' do
+      ARGV.push('--trace=all')
+      Buildr.application.send(:handle_options)
+      Buildr.application.options.trace.should == true
+      Buildr.application.options.trace_all.should == true
+      trace?(:foo).should == true
+    end
+
   end
 
   describe 'gems' do

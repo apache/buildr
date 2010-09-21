@@ -346,9 +346,7 @@ module Buildr
         ['--trace', '-t [CATEGORIES]', "Turn on invoke/execute tracing, enable full backtrace.",
           lambda { |value|
             options.trace = true
-            if value
-              options.trace_categories = value.split(',').map { |v| v.downcase.to_sym }
-            end
+            options.trace_categories = value ? value.split(',').map { |v| v.downcase.to_sym } : []
             options.trace_all = options.trace_categories.include? :all
             verbose(true)
           }
