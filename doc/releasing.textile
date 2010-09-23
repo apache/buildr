@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Releasing 
+title: Releasing
 ---
 
 Now that we built and test awesome software, let's the world know and release it.
@@ -29,7 +29,7 @@ The default behavior of the Release task is the following:
 # Tag the repository with the released version number
 # Update the value of THIS_VERSION in the buildfile with the next version number
 
-Buildr will increment the last digit of the 3-digit versioni number if THIS_VERSION contains '-SNAPSHOT'. 
+Buildr will increment the last digit of the 3-digit versioni number if THIS_VERSION contains '-SNAPSHOT'.
 So, at the end of a release, the buildfile now looks like this:
 
 {% highlight ruby %}
@@ -59,7 +59,7 @@ If THIS_VERSION does not contain '-SNAPSHOT', Buildr delegates the resolution of
 
 h3(#next_version_proc). Using Release.next_version
 
-The Release class can receive the next version of the buildfile. This could be a string or a proc that would receive the current version and return the next version.
+The @Release@ class can receive the next version of the buildfile. This could be a string or a proc that would receive the current version and return the next version.
 
 {% highlight ruby %}
 THIS_VERSION = "1.0.0-SNAPSHOT"
@@ -85,11 +85,11 @@ end
 
 h3(#next_version_envvar). Using the environment variable NEXT_VERSION
 
-If the environment variable NEXT_VERSION is set, Buildr will use this value to update THIS_VERSION at the end of the release.
+If the environment variable @NEXT_VERSION@ is set, Buildr will use this value to update @THIS_VERSION@ at the end of the release.
 
 For conveniency, this variable is case insensitive.
 
-So, all 3 following commands will run a release with a custom new version: 
+So, all 3 following commands will run a release with a custom new version:
 
 {% highlight sh %}
 $ buildr release next_version="1.0.0-rc1"
@@ -97,8 +97,8 @@ $ env next_version="1.0.0-rc1" buildr release
 $ env NEXT_VERSION="1.0.0-rc1" buildr release
 {% endhighlight %}
 
-
 Those commands will generate the Buildfile below:
+
 {% highlight ruby %}
 THIS_VERSION = "1.0.0-rc1"
 
@@ -110,10 +110,9 @@ define 'killer-app' do
 end
 {% endhighlight %}
 
-The environment variable NEXT_VERSION has precedence over Release.next_version.
-
+The environment variable @NEXT_VERSION@ has precedence over Release.next_version.
 
 h2(#custom_tag_and_msg). How to specify my own tag name and commit message?
 
-As explained earlier, Buildr will create two new commits and a new tag in the version control system. Similarly to Release.next_version, the commit message and the tag name can be customized with Release.message and Release.tag_name. Both could be strings or procs that would receive the released version i.i THIS_VERSION without '-SNAPSHOT'.
+As explained earlier, Buildr will create two new commits and a new tag in the version control system. Similarly to @Release.next_version@, the commit message and the tag name can be customized with @Release.message@ and @Release.tag_name@. Both could be strings or procs that would receive the released version @THIS_VERSION@ without @-SNAPSHOT@.
 
