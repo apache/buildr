@@ -3,10 +3,9 @@ layout: default
 title: Releasing
 ---
 
-Now that we built and test awesome software, let's the world know and release it.
+Now that we built and tested our awesome software, let's tell the world and release it.
 
-
-Each buildile can specify the current version with a constant named VERSION_NUMBER or THIS_VERSION.
+Each buildfile can specify the current version with a constant named @VERSION_NUMBER@  or @THIS_VERSION@.
 
 {% highlight ruby %}
 THIS_VERSION = "1.0.0-SNAPSHOT"
@@ -22,14 +21,14 @@ end
 
 h2(#default). What does a release do?
 
-The default behavior of the Release task is the following:
+The default behavior of the @Release@ task is the following:
 # Check that the version to be released and the next version are different
 # Check that the project is being tracked by Git or Subversion
-# Package, test and deploy the artifacts using THIS_VERSION value minus the '-SNAPSHOT' suffix (if any)
+# Package, test and deploy the artifacts using @THIS_VERSION@ value minus the @-SNAPSHOT@ suffix (if any)
 # Tag the repository with the released version number
-# Update the value of THIS_VERSION in the buildfile with the next version number
+# Update the value of @THIS_VERSION@ in the buildfile with the next version number
 
-Buildr will increment the last digit of the 3-digit versioni number if THIS_VERSION contains '-SNAPSHOT'.
+Buildr will increment the last digit of the 3-digit versioni number if @THIS_VERSION@ ends with @-SNAPSHOT@.
 So, at the end of a release, the buildfile now looks like this:
 
 {% highlight ruby %}
@@ -55,7 +54,7 @@ dd35015  (tag: 1.0.0) Changed version number to 1.0.0
 
 h2(#custom_version). How to specify my own version number scheme?
 
-If THIS_VERSION does not contain '-SNAPSHOT', Buildr delegates the resolution of the next version number to the user which has 2 differents ways to express her wishes: Release.next_version or the environment variable NEXT_VERSION.
+If @THIS_VERSION@ does not contain @-SNAPSHOT@, Buildr delegates the resolution of the next version number to the user which has 2 differents ways to express her wishes: @Release.next_version@ or the environment variable @NEXT_VERSION@.
 
 h3(#next_version_proc). Using Release.next_version
 
@@ -69,7 +68,7 @@ Release.next_version = "2.0.0-SNAPSHOT"
 
 # or a proc
 Release.next_version = lambda do |this_version| # 1.0.0-SNAPSHOT
-    new_version = this_version.split(/\./)
+    new_version = @THIS_VERSION@.split(/\./)
     new_version[0] = new_version[0] + 1
     new_version
 end
