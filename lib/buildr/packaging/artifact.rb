@@ -488,23 +488,23 @@ module Buildr
     end
 
    protected
-  
+
     # :call-seq:
     #   needed?
     #
     # Validates whether artifact is required to be downloaded from repository
     def needed?
-      return true if snapshot? && File.exist?(name) && old?
-      super      
+      return true if snapshot? && File.exist?(name) && (update_snapshot? || old?)
+      super
     end
-    
+
   private
-  
+
     # :call-seq:
     #   download_artifact
     #
-    # Downloads artifact from given repository, 
-    # supports downloading snapshot artifact with relocation on succeed to local repository 
+    # Downloads artifact from given repository,
+    # supports downloading snapshot artifact with relocation on succeed to local repository
     def download_artifact(path)
       download_file = "#{name}.#{Time.new.to_i}"
       begin
@@ -517,7 +517,7 @@ module Buildr
         File.delete(download_file) if File.exist?(download_file)
       end
     end
-    
+
     # :call-seq:
     #   :download_needed?
     #
@@ -529,22 +529,22 @@ module Buildr
         return false if offline? && File.exist?(name)
         return true if update_snapshot? || old?
       end
-      
+
       return false
     end
-    
+
     def update_snapshot?
       Buildr.application.options.update_snapshots
     end
-    
+
     def offline?
       Buildr.application.options.work_offline
     end
-    
+
     # :call-seq:
     #   old?
     #
-    # Checks whether existing artifact is older than period from build settings or one day 
+    # Checks whether existing artifact is older than period from build settings or one day
     def old?
       settings = Buildr.application.settings
       time_to_be_old = settings.user[:expire_time] || settings.build[:expire_time] || 60 * 60 * 24
@@ -757,7 +757,7 @@ module Buildr
       Rake::Task['rake:artifacts'].enhance [task]
       Artifact.register(task)
       unless spec[:type] == :pom
-        Rake::Task['artifacts:sources'].enhance [task.sources_artifact] 
+        Rake::Task['artifacts:sources'].enhance [task.sources_artifact]
         Rake::Task['artifacts:javadoc'].enhance [task.javadoc_artifact]
       end
     end

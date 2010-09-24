@@ -299,7 +299,7 @@ describe Repositories, 'remote' do
     lambda { artifact('com.example:library:jar:2.1-SNAPSHOT').invoke }.
       should change { File.exist?(File.join(repositories.local, 'com/example/library/2.1-SNAPSHOT/library-2.1-SNAPSHOT.jar')) }.to(true)
   end
-  
+
   it 'should fail resolving m2-style deployed snapshots if a timestamp is missing' do
     metadata = <<-XML
     <?xml version='1.0' encoding='UTF-8'?>
@@ -325,7 +325,7 @@ describe Repositories, 'remote' do
     }.should show_error "No timestamp provided for the snapshot com.example:library:jar:2.1-SNAPSHOT"
     File.exist?(File.join(repositories.local, 'com/example/library/2.1-SNAPSHOT/library-2.1-SNAPSHOT.jar')).should be_false
   end
-  
+
   it 'should fail resolving m2-style deployed snapshots if a build number is missing' do
     metadata = <<-XML
     <?xml version='1.0' encoding='UTF-8'?>
@@ -465,10 +465,10 @@ end
 
 
 describe Buildr, '#artifact' do
-  before do 
+  before do
     @spec = { :group=>'com.example', :id=>'library', :type=>'jar', :version=>'2.0' }
     @snapshot_spec = 'group:id:jar:1.0-SNAPSHOT'
-    write @file = 'testartifact.jar' 
+    write @file = 'testartifact.jar'
   end
 
   it 'should accept hash specification' do
@@ -556,11 +556,11 @@ describe Buildr, '#artifact' do
     Buildr.application.send(:load_artifact_ns)
     artifact(:j2ee).to_s.pathmap('%f').should == 'geronimo-spec-j2ee-1.4-rc4.jar'
   end
-  
+
   it 'should try to download snapshot artifact' do
     run_with_repo
     snapshot = artifact(@snapshot_spec)
-    
+
     URI.should_receive(:download).at_least(:twice).and_return { |uri, target, options| write target }
     FileUtils.should_receive(:mv).at_least(:twice)
     snapshot.invoke
@@ -574,7 +574,7 @@ describe Buildr, '#artifact' do
     URI.should_receive(:download).exactly(0).times
     snapshot.invoke
   end
-  
+
   it 'should download snapshot even in offline mode if it doesn''t exist' do
     run_with_repo
     snapshot = artifact(@snapshot_spec)
@@ -582,17 +582,18 @@ describe Buildr, '#artifact' do
     URI.should_receive(:download).exactly(2).times
     snapshot.invoke
   end
-  
+
   it 'should update snapshots if --update-snapshots' do
     run_with_repo
     snapshot = artifact(@snapshot_spec)
+    write snapshot.to_s
     Buildr.application.options.update_snapshots = true
-    
+
     URI.should_receive(:download).at_least(:twice).and_return { |uri, target, options| write target }
     FileUtils.should_receive(:mv).at_least(:twice)
     snapshot.invoke
   end
-  
+
   it 'should update snapshot if it''s older than 24 hours' do
     run_with_repo
     snapshot = artifact(@snapshot_spec)
@@ -602,11 +603,11 @@ describe Buildr, '#artifact' do
     URI.should_receive(:download).at_least(:once).and_return { |uri, target, options| write target }
     snapshot.invoke
   end
-  
+
   def run_with_repo
     repositories.remote = 'http://example.com'
   end
-  
+
 end
 
 
@@ -730,13 +731,13 @@ describe Buildr, '#install' do
     sleep 1; write @file       # make sure the "from" file has newer modification time
     lambda { install.invoke }.should change { modified?(old_mtime, @snapshot_spec) }.to(true)
   end
-  
+
   it 'should download snapshot to temporary location' do
     repositories.remote = 'http://example.com'
     snapshot = artifact(@snapshot_spec)
     same_time = Time.new
     download_file = "#{Dir.tmpdir}/#{File.basename(snapshot.name)}#{same_time.to_i}"
-    
+
     Time.should_receive(:new).twice.and_return(same_time)
     URI.should_receive(:download).at_least(:twice).and_return { |uri, target, options| write target }
     FileUtils.should_receive(:mv).at_least(:twice)

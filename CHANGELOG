@@ -3,6 +3,7 @@
 * Fixed:  BUILDR-512 Buildr::Util.ruby invokes non existent method (Peter Donald)
 * Fixed:  BUILDR-513 --trace fails with NoMethodError : undefined method 
           `include?' for nil:NilClass
+* Fixed:  BUILDR-515 -update-snapshot doesn't work as expected
 
 1.4.2 (2010-09-18)
 * Added:  BUILDR-415 Ability to exclude tests from command line
