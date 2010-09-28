@@ -77,7 +77,7 @@ repositories:
   local: some/path/to/my_repo
 
   # prefer the local or nearest mirrors
-  remote: 
+  remote:
    - https://intra.net/maven2
    - http://example.com
 
@@ -86,8 +86,8 @@ repositories:
     username: john
     password: secret
 
-# You can place settings of your own, and reference them 
-# on buildfiles. 
+# You can place settings of your own, and reference them
+# on buildfiles.
 im:
   server: jabber.company.com
   usr: notifier@company-jabber.com
@@ -113,7 +113,7 @@ They help keep the buildfile and build.yaml file simple and readable, working to
 
 {% highlight yaml %}
 # This project requires the following ruby gems, buildr addons
-gems: 
+gems:
   # Suppose we want to notify developers when testcases fail.
   - buildr-twitter-notifier-addon >=1
   # we test with ruby mock objects
@@ -132,11 +132,11 @@ twitter:
   notify:
     test_failure: unless-modified
     compile_failure: never
-  developers: 
+  developers:
     - joe
     - jane
 
-jira: 
+jira:
   uri: https://jira.corp.org
 {% endhighlight %}
 
@@ -145,7 +145,7 @@ When buildr is loaded, required ruby gems will be installed if needed, thus addi
 Artifacts defined on @build.yaml@ can be referenced on your buildfile by supplying the ruby symbol to the @Buildr.artifact@ and @Buildr.artifacts@ methods.  The @compile.with@, @test.with@ methods can also be given these names.
 
 {% highlight ruby %}
-define 'my_project' do 
+define 'my_project' do
   compile.with artifacts(:log4j, :j2ee)
   test.with :spring, :j2ee
 end
@@ -154,7 +154,7 @@ end
 Build settings can be retreived using the @Buildr.settings.build@ accessor.
 
 {% highlight ruby %}
- task 'create_patch' do 
+ task 'create_patch' do
    patch = Git.create_patch :interactive => true
    if patch && agree("Would you like to request inclusion of #{patch}")
      jira = Jira.new( Buildr.settings.build['jira']['uri'] )  # submit a patch
@@ -212,7 +212,7 @@ Here's a simple example for handling different environments within the Buildfile
 
 {% highlight ruby %}
 project 'db-module' do
-  db = (environment == 'production' ? 'oracle' : 'hsql')
+  db = (Buildr.environment == 'production' ? 'oracle' : 'hsql')
   resources.from(_("src/main/#{db}"))
 end
 {% endhighlight %}
