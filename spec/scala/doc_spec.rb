@@ -58,7 +58,8 @@ describe "Scaladoc" do
       doc.using :windowtitle => "foo"
     end
     Java.scala.tools.nsc.ScalaDoc.should_receive(:main) do |args|
-      args.map(&:toString).should include("-doc-title")
+      # Convert Java Strings to Ruby Strings, if needed.
+      args.map { |a| a.is_a?(String) ? a : a.toString }.should include("-doc-title")
       0 # normal return
     end
     project('foo').doc.invoke
