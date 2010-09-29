@@ -1,4 +1,5 @@
 1.4.3 (Pending)
+* Fixed:  BUILDR-520 Scaladoc 2.8 no longer support -windowtitle, use -doc-title instead.
 * Fixed:  BUILDR-512 Buildr::Util.ruby invokes non existent method (Peter Donald)
 * Fixed:  BUILDR-513 --trace fails with NoMethodError : undefined method 
           `include?' for nil:NilClass

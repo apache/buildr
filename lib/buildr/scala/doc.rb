@@ -18,6 +18,20 @@ require 'buildr/scala/compiler'   # ensure Scala dependencies are ready
 
 module Buildr
   module Doc
+
+    module ScaladocDefaults
+      include Extension
+
+      # Default scaladoc -doc-title to project's comment or name
+      after_define(:scaladoc => :doc) do |project|
+        if project.doc.engine? Scaladoc
+          options = project.doc.options
+          key = Scala.compatible_28? ? "doc-title".to_sym : :windowtitle
+          options[key] = (project.comment || project.name) unless options[key]
+        end
+      end
+    end
+
     class Scaladoc < Base
       specify :language => :scala, :source_ext => 'scala'
 
@@ -99,6 +113,10 @@ module Buildr
         end
       end
     end
+  end
+
+  class Project
+    include ScaladocDefaults
   end
 end
 
