@@ -706,7 +706,8 @@ module Buildr
     #   repositories.release_to[:password] = 'secret'
     def release_to
       unless @release_to
-        value = Buildr.settings.user['repositories'] && Buildr.settings.user['repositories']['release_to']
+        value = (Buildr.settings.user['repositories'] && Buildr.settings.user['repositories']['release_to']) \
+          || (Buildr.settings.build['repositories'] && Buildr.settings.build['repositories']['release_to'])
         @release_to = Hash === value ? value.inject({}) { |hash, (key, value)| hash.update(key.to_sym=>value) } : { :url=>Array(value).first }
       end
       @release_to
