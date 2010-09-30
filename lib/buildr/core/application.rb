@@ -467,11 +467,18 @@ module Buildr
       if File.exist?(old) && !File.exist?(new)
         warn "Deprecated: Please move buildr.rb from your home directory to the .buildr directory in your home directory"
       end
+
       # Load home/.buildr/buildr.rb in preference
       files = [ File.exist?(new) ? new : old, 'buildr.rb' ].select { |file| File.exist?(file) }
       files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
         select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
       files += (options.rakelib || []).collect { |rlib| Dir["#{rlib}/*.rake"] }.flatten
+
+      # Load .buildr/_buildr.rb same directory as buildfile
+      %w{.buildr.rb _buildr.rb}.each do |f|
+        local_buildr = File.expand_path("#{File.dirname(Buildr.application.buildfile.to_s)}/#{f}")
+        files << local_buildr if File.exist?( local_buildr )
+      end
 
       files.each do |file|
         unless $LOADED_FEATURES.include?(file)

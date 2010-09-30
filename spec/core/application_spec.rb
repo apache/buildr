@@ -561,13 +561,23 @@ describe Buildr, 'settings' do
 
     it 'should have the same timestamp as build.rb in home dir if the latter is newer (until version 1.6)' do
       Buildr::VERSION.should < '1.6'
-      write 'home/buildr.rb'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'home/buildr.rb')
-      Buildr.application.send :load_tasks
-      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
+      buildfile_should_have_same_timestamp_as 'home/buildr.rb'
     end
 
     it 'should have the same timestamp as build.rb in home dir if the latter is newer' do
-      write 'home/.buildr/buildr.rb'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'home/.buildr/buildr.rb')
+      buildfile_should_have_same_timestamp_as 'home/.buildr/buildr.rb'
+    end
+
+    it 'should have the same timestamp as .buildr.rb in buildfile dir if the latter is newer' do
+      buildfile_should_have_same_timestamp_as '.buildr.rb'
+    end
+
+    it 'should have the same timestamp as _buildr.rb in buildfile dir if the latter is newer' do
+      buildfile_should_have_same_timestamp_as '_buildr.rb'
+    end
+
+    def buildfile_should_have_same_timestamp_as(file)
+      write file; File.utime(@buildfile_time + 5, @buildfile_time + 5, file)
       Buildr.application.send :load_tasks
       Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
     end
