@@ -1,5 +1,6 @@
 1.4.3 (Pending)
-* Fixed:  BUILDR-519 Load repositories.release_to from build settings (Peter Donald)
+* Added:  BUILDR-518 Load _buildr.rb or .buildr.rb from same directory as Buildfile if they exist (Peter Donald)
+* Added:  BUILDR-519 Load repositories.release_to from build settings (Peter Donald)
 * Fixed:  BUILDR-520 Scaladoc 2.8 no longer support -windowtitle, use -doc-title instead.
 * Fixed:  BUILDR-512 Buildr::Util.ruby invokes non existent method (Peter Donald)
 * Fixed:  BUILDR-513 --trace fails with NoMethodError : undefined method 
