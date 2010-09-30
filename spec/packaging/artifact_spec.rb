@@ -451,6 +451,14 @@ describe Repositories, 'release_to' do
     repositories.release_to.should == { :url=>'http://john:secret@example.com' }
   end
 
+  it 'should load URL from build settings file' do
+    write 'build.yaml', <<-YAML
+    repositories:
+      release_to: http://john:secret@example.com
+    YAML
+    repositories.release_to.should == { :url=>'http://john:secret@example.com' }
+  end
+
   it 'should load URL, username and password from settings file' do
     write 'home/.buildr/settings.yaml', <<-YAML
     repositories:
