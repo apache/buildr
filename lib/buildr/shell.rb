@@ -79,12 +79,12 @@ module Buildr
         unless @rebel_home
           @rebel_home = ENV['REBEL_HOME'] || ENV['JREBEL'] || ENV['JREBEL_HOME']
 
-          if @rebel_home && File.directory? @rebel_home
+          if @rebel_home and File.directory? @rebel_home
             @rebel_home += File::SEPARATOR + 'jrebel.jar'
           end
         end
 
-        if @rebel_home && File.exists? @rebel_home
+        if @rebel_home and File.exists? @rebel_home
           @rebel_home
         else
           nil
