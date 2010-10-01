@@ -13,19 +13,31 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'buildr/core/common'
-require 'buildr/core/application'
-require 'buildr/core/project'
-require 'buildr/core/environment'
-require 'buildr/core/help'
-require 'buildr/core/build'
-require 'buildr/core/filter'
-require 'buildr/core/compile'
-require 'buildr/core/test'
-require 'buildr/core/shell'
-require 'buildr/core/run'
-require 'buildr/core/checks'
-require 'buildr/core/transports'
-require 'buildr/core/generate'
-require 'buildr/core/cc'
-require 'buildr/core/osx' if RUBY_PLATFORM =~ /darwin/
+require 'buildr/run'
+require 'buildr/java/commands'
+require 'buildr/core/util'
+
+module Buildr
+  module Run
+
+    class JavaRunner < Base
+      include Shell::JavaRebel
+
+      specify :name => :java, :languages => [:java, :scala, :groovy, :clojure]
+
+      def run(task)
+        fail "Missing :main option" unless task.options[:main]
+        cp = project.compile.dependencies + [project.path_to(:target, :classes)] + task.classpath
+        Java::Commands.java(task.options[:main], {
+          :properties => rebel_props(project).merge (task.options[:properties] || {}),
+          :classpath => cp,
+          :java_args => rebel_args + (task.options[:java_args] || [])
+        })
+      end
+    end # JavaRunnner
+
+  end
+end
+
+Buildr::Run.runners << Buildr::Run::JavaRunner
+

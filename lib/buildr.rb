@@ -22,6 +22,7 @@ require 'buildr/packaging'
 require 'buildr/java'
 require 'buildr/ide'
 require 'buildr/shell'
+require 'buildr/run'
 
 # Methods defined in Buildr are both instance methods (e.g. when included in Project)
 # and class methods when invoked like Buildr.artifacts().

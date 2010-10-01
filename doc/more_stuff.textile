@@ -108,7 +108,7 @@ If you don't know which tracing category you need to enable or if you want a ful
 $ buildr --trace=all
 {% endhighlight %}
 
-h3. JavaRebel Integration
+h3(#javarebel). JavaRebel Integration
 
 "JavaRebel":http://www.zeroturnaround.com/javarebel is a live bytecode reloading solution by Zero Turnaround.  It's a lot like the hot code reload feature found in many Java IDE debuggers (like Eclipse and IntelliJ), but capable of handling things like member addition or removal and new class definition.  The tool itself is commercial and works with any JVM language, but they do offer a free license for use with Scala classes only.
 
@@ -145,6 +145,59 @@ Type :help for more information.
 scala> </pre>
 
 Note that Buildr does *not* check to make sure that you have a valid JavaRebel license, so you may end up launching with JavaRebel configured but without the ability to use it (in which case, JavaRebel will print a notification).
+
+h2(#run). Running Your Application
+
+The @run@ task lets you easily run programs from your buildfile, such as launching your own application.
+
+In its simplest form, you simply define the main class of your Java application,
+
+{% highlight ruby %}
+define 'my-project' do
+  compile.with COMMONS_IO, HTTPCLIENT
+  run.using :main => "org.example.Main"
+end
+{% endhighlight %}
+
+And then run,
+
+{% highlight ruby %}
+~/my-project$ buildr run
+{% endhighlight %}
+
+which would launch your application using the project's compile classpath.
+
+It's also possible to pass arguments to the JVM using the @:java_args@ option:
+
+{% highlight ruby %}
+  run.using :main => "org.example.Main",
+            :java_args => ["-server"]
+{% endhighlight %}
+
+If your application requires arguments, you can pass in an array of values for the @:main@ option, or provide a set of system properties using @:properties@.
+
+{% highlight ruby %}
+  run.using :main => ["org.example.Main", "-t", "input.txt"],
+            :properties => { :debug => "true" }
+{% endhighlight %}
+
+The @run@ task is a local task, which means that Buildr will automatically pick the @run@ task matching the project in the current directory.  Executing the following command:
+
+{% highlight ruby %}
+~/my-project/subproject$ buildr run
+{% endhighlight %}
+
+will run the @my-project:subproject:run@ task, assuming @my-project@ is your top-level project.
+
+Here is a summary of @run.using@ options,
+
+|_. Option |_. Description ... |
+| @:main@   | The java main class, e.g. "com.example.Main". Can also be an array if the main class requires arguments. |
+| @:properties@   | A hash of system properties to be passed to java. |
+| @:java_args@ | An array of additional parameters to pass to java |
+| @:classpath@   | An array of additional classpath elements (i.e. artifacts, files, etc.). By default, the @run@ task automatically uses the @compile.dependencies@, @test.dependencies@ and @test.compile.target@ of your project. |
+
+p(note). The @run@ task also detects and uses JavaRebel if it's available.  See the "JavaRebel":#javarebel section for details.
 
 h2(#gems).  Using Gems
 
