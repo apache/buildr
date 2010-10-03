@@ -112,6 +112,7 @@ module Buildr::Scala
         reportFile = File.join(reportDir, "TEST-#{suite}.txt")
         taskdef = Buildr.artifacts(self.class.dependencies).each(&:invoke).map(&:to_s)
         Buildr.ant('scalatest') do |ant|
+          # ScalaTestTask was deprecated in 1.2, in favor of ScalaTestAntTask
           classname = (ScalaTest.version =~ /1\.[01]/) ? \
             'org.scalatest.tools.ScalaTestTask' : 'org.scalatest.tools.ScalaTestAntTask'
           ant.taskdef :name=>'scalatest', :classname=>'org.scalatest.tools.ScalaTestTask',
