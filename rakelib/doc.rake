@@ -25,6 +25,13 @@ end
 
 require 'rake/rdoctask'
 
+desc "Creates a symlink to rake's lib directory to support combined rdoc generation"
+file "rake/lib" do
+  rake_path = $LOAD_PATH.find { |p| File.exist? File.join(p, "rake.rb") }
+  mkdir_p "rake"
+  File.symlink(rake_path, "rake/lib")
+end
+
 desc "Generate RDoc documentation in rdoc/"
 Rake::RDocTask.new :rdoc do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
@@ -32,8 +39,11 @@ Rake::RDocTask.new :rdoc do |rdoc|
   rdoc.options  = spec.rdoc_options.clone
   rdoc.rdoc_files.include('lib/**/*.rb')
   rdoc.rdoc_files.include spec.extra_rdoc_files
-end
 
+  # include rake source for better inheritance rdoc
+  rdoc.rdoc_files.include('rake/lib/**.rb')
+end
+task :rdoc => ["rake/lib"]
 
 begin
   require 'jekylltask'
