@@ -54,8 +54,8 @@ p(note). Buildr does not check any of the arguments in @JAVA_OPTS@.  A common mi
 Some extensions may use additional environment variables, and of course, you can always add your own.  This example uses two environment variables for specifying the username and password:
 
 {% highlight ruby %}
-repositories.upload_to[:username] = ENV['USERNAME']
-repositories.upload_to[:password] = ENV['PASSWORD']
+repositories.release_to[:username] = ENV['USERNAME']
+repositories.release_to[:password] = ENV['PASSWORD']
 {% endhighlight %}
 
 
@@ -174,8 +174,8 @@ Here's an example @buildr.rb@:
 
 {% highlight ruby %}
 # Only I should know that
-repositories.upload_to[:username] = 'assaf'
-repositories.upload_to[:password] = 'supersecret'
+repositories.release_to[:username] = 'assaf'
+repositories.release_to[:password] = 'supersecret'
 # Search here first, it's faster
 repositories.remote << 'http://inside-the-firewall'
 {% endhighlight %}
