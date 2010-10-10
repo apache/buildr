@@ -1,13 +1,15 @@
 1.4.3 (Pending)
 * Added:  BUILDR-514 New 'run' local task. http://buildr.apache.org/more_stuff.html#run
-* Added:  BUILDR-518 Load _buildr.rb or .buildr.rb from same directory as Buildfile if they exist (Peter Donald)
+* Added:  BUILDR-518 Load _buildr.rb or .buildr.rb from same directory as Buildfile 
+          if they exist (Peter Donald)
 * Added:  BUILDR-519 Load repositories.release_to from build settings (Peter Donald)
 * Fixed:  BUILDR-520 Scaladoc 2.8 no longer support -windowtitle, use -doc-title instead.
 * Fixed:  BUILDR-512 Buildr::Util.ruby invokes non existent method (Peter Donald)
 * Fixed:  BUILDR-513 --trace fails with NoMethodError : undefined method 
           `include?' for nil:NilClass
 * Fixed:  BUILDR-515 -update-snapshot doesn't work as expected
-* Fixed;  BUILDR-525 Documentation refers to repositories.upload_to rather than repositories.release_to
+* Fixed:  BUILDR-525 Documentation refers to repositories.upload_to rather than
+          repositories.release_to (Peter Donald)
 * Fixed:  BUILDR-527 package(:war) if libs passed are files (instead of artifacts)
 * Fixed:  JavaRebel was previously not correctly detected.
 
