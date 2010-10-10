@@ -10,6 +10,7 @@
 * Fixed:  BUILDR-515 -update-snapshot doesn't work as expected
 * Fixed:  BUILDR-525 Documentation refers to repositories.upload_to rather than
           repositories.release_to (Peter Donald)
+* Fixed:  BUILDR-526 Gracefully handle h2 sections with no id in documentation (Peter Donald)
 * Fixed:  BUILDR-527 package(:war) if libs passed are files (instead of artifacts)
 * Fixed:  JavaRebel was previously not correctly detected.
 
