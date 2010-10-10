@@ -7,6 +7,7 @@
 * Fixed:  BUILDR-513 --trace fails with NoMethodError : undefined method 
           `include?' for nil:NilClass
 * Fixed:  BUILDR-515 -update-snapshot doesn't work as expected
+* Fixed:  BUILDR-527: package(:war) if libs passed are files (instead of artifacts)
 * Fixed:  JavaRebel was previously not correctly detected.
 
 1.4.2 (2010-09-18)
