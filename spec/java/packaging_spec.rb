@@ -567,12 +567,19 @@ describe Packaging, 'war' do
   end
 
   it 'should accept file from :libs option' do
+    write 'lib/foo.jar'
+    define('foo', :version=>'1.0') { package(:war).libs << 'lib/foo.jar' }
+    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/foo.jar') }
+  end
+
+
+  it 'should accept artifacts from :libs option' do
     make_jars
     define('foo', :version=>'1.0') { package(:war).with(:libs=>'group:id:jar:1.0') }
     inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
   end
 
-  it 'should accept file from :libs option' do
+  it 'should accept artifacts from :libs option' do
     make_jars
     define('foo', :version=>'1.0') { package(:war).with(:libs=>['group:id:jar:1.0', 'group:id:jar:2.0']) }
     inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar', 'WEB-INF/lib/id-2.0.jar') }
@@ -601,25 +608,25 @@ describe Packaging, 'war' do
     define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war).exclude('**/id-2.0.jar')   }
     inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
   end
-  
+
   it 'should exclude files regardless of the path where they are included, specifying target path entirely' do
      make_jars
      define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war).exclude('WEB-INF/lib/id-2.0.jar')   }
      inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
    end
-  
-  it 'should exclude files regardless of the path where they are included for war files' do 
-     write 'src/main/java/com/example/included/Test.java', 'package com.example.included; class Test {}' 
-     write 'src/main/java/com/example/excluded/Test.java', 'package com.example.excluded; class Test {}' 
-     define('foo', :version=>'1.0') do 
-       package(:war).enhance do |war| 
+
+  it 'should exclude files regardless of the path where they are included for war files' do
+     write 'src/main/java/com/example/included/Test.java', 'package com.example.included; class Test {}'
+     write 'src/main/java/com/example/excluded/Test.java', 'package com.example.excluded; class Test {}'
+     define('foo', :version=>'1.0') do
+       package(:war).enhance do |war|
          war.exclude('WEB-INF/classes/com/example/excluded/**.class')
        end
-     end 
-     inspect_war do |files| 
-       files.should include('WEB-INF/classes/com/example/included/Test.class') 
-       files.should_not include('WEB-INF/classes/com/example/excluded/Test.class') 
-     end 
+     end
+     inspect_war do |files|
+       files.should include('WEB-INF/classes/com/example/included/Test.class')
+       files.should_not include('WEB-INF/classes/com/example/excluded/Test.class')
+     end
    end
 
   it 'should include only specified libraries' do
