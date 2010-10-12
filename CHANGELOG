@@ -9,6 +9,7 @@
           `include?' for nil:NilClass
 * Fixed:  BUILDR-515 -update-snapshot doesn't work as expected
 * Fixed:  BUILDR-517 package(:jar).include(directory, :as=>"foo") produces a corrupted jar
+* Fixed:  BUILDR-524 Optimized and more robust reading of jar MANIFEST.MF (Hugues Malphettes)
 * Fixed:  BUILDR-525 Documentation refers to repositories.upload_to rather than
           repositories.release_to (Peter Donald)
 * Fixed:  BUILDR-526 Gracefully handle h2 sections with no id in documentation (Peter Donald)
