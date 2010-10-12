@@ -59,11 +59,11 @@ module Buildr
       Zip::ZipOutputStream.open name do |zip|
         seen = {}
         mkpath = lambda do |dir|
-          unless dir == '.' || seen[dir]
-            mkpath.call File.dirname(dir)
-            dirname = (dir[-1..-1] =~ /\/$/) ? dir : dir + '/'
+          dirname = (dir[-1..-1] =~ /\/$/) ? dir : dir + '/'
+          unless dir == '.' || seen[dirname]
+            mkpath.call File.dirname(dirname)
             zip.put_next_entry(dirname, compression_level)
-            seen[dir] = true
+            seen[dirname] = true
           end
         end
 
