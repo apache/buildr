@@ -1113,11 +1113,13 @@ describe Packaging, 'sources' do
     end
   end
 
-  it 'should contain source files' do
+  it 'should contain source and resource files' do
     write 'src/main/java/Source.java'
+    write 'src/main/resources/foo.properties', 'foo=bar'
     define('foo', :version=>'1.0') { package(:sources) }
     project('foo').task('package').invoke
     project('foo').packages.first.should contain('Source.java')
+    project('foo').packages.first.should contain('foo.properties')
   end
 
   it 'should be a ZipTask' do

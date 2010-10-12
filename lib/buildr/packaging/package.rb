@@ -237,7 +237,7 @@ module Buildr
 
     def package_as_sources(file_name) #:nodoc:
       ZipTask.define_task(file_name).tap do |zip|
-        zip.include :from=>compile.sources
+        zip.include :from=>[compile.sources, resources.target].compact
       end
     end
 

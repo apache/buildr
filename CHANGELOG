@@ -14,6 +14,7 @@
 * Fixed:  BUILDR-526 Gracefully handle h2 sections with no id in documentation (Peter Donald)
 * Fixed:  BUILDR-527 package(:war) if libs passed are files (instead of artifacts)
 * Fixed:  BUILDR-528 Stop using deprecated method Gem::Dependency.version_requirements correctly (Peter Donald)
+* Fixed:  BUILDR-532 package_as_source does not package resources (Tammo van Lessen)
 * Fixed:  JavaRebel was previously not correctly detected.
 
 1.4.2 (2010-09-18)
