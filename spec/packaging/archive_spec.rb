@@ -207,7 +207,6 @@ describe 'ArchiveTask', :shared=>true do
   end
 
   it 'should archive directories into specified alias, even if it has the same name' do
-    p "dir #{@dir}"
     archive(@archive).include(@dir, :as=>File.basename(@dir)).invoke
     inspect_archive { |archive|
       archive.keys.should_not include "#{File.basename(@dir)}"
@@ -413,8 +412,6 @@ describe ZipTask do
     end
     zip.close()
   end
-
-
 
   def inspect_archive
     entries = {}
