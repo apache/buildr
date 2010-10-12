@@ -200,15 +200,16 @@ describe 'ArchiveTask', :shared=>true do
     archive(@archive).include(@files.first, :as=>'test/sample').invoke
     inspect_archive { |archive| @files.each { |f| archive['test/sample'].should eql(content_for(@files.first)) } }
   end
-  
+
   it 'should archive directory into specified alias, without using "."' do
     archive(@archive).include(@dir, :as=>'.').invoke
     inspect_archive { |archive| archive.keys.should_not include(".") }
   end
-  
+
   it 'should archive directories into specified alias, even if it has the same name' do
+    p "dir #{@dir}"
     archive(@archive).include(@dir, :as=>File.basename(@dir)).invoke
-    inspect_archive { |archive| 
+    inspect_archive { |archive|
       archive.keys.should_not include "#{File.basename(@dir)}"
     }
   end
@@ -399,6 +400,22 @@ describe ZipTask do
   before { @archive = File.expand_path('test.zip') }
   define_method(:archive) { |file| zip(file) }
 
+  after do
+    checkZip(@archive)
+  end
+
+  # Check for possible corruption usign Java's ZipInputStream since it's stricter than rubyzip
+  def checkZip(file)
+    return unless File.exist?(file)
+    zip = Java.java.util.zip.ZipInputStream.new(Java.java.io.FileInputStream.new(file))
+    while entry = zip.getNextEntry do
+      # just iterate over all entries
+    end
+    zip.close()
+  end
+
+
+
   def inspect_archive
     entries = {}
     Zip::ZipFile.open @archive do |zip|
@@ -432,7 +449,7 @@ describe ZipTask do
     archive(@archive).invoke
     inspect_archive { |archive| archive.keys.should include('code/') }
   end
-  
+
   it 'should have path object that includes empty dirs' do
     archive(@archive).path('code').include(Dir["#{@dir}/*"])
     archive(@archive).invoke
@@ -585,7 +602,7 @@ describe Unzip do
       Rake::Task.clear ; rm_rf @target
       unzip(@target=>@zip).include('test/**/*').target.invoke
       FileList[File.join(@target, 'test/path/*')].size.should be(2)
-      
+
       Rake::Task.clear ; rm_rf @target
       unzip(@target=>@zip).include('test/*').target.invoke
       FileList[File.join(@target, 'test/path/*')].size.should be(2)
@@ -702,4 +719,5 @@ describe Unzip do
     task = unzip(@target=>@zip)
     task.from_path('foo').should be(task.path('foo'))
   end
+
 end
