@@ -36,7 +36,7 @@ def install_gem(name, options = {})
     args << 'sudo' << 'env' << "JAVA_HOME=#{ENV['JAVA_HOME']}" if sudo_needed? and RAKE_SUDO
     args << rb_bin << '-S' << 'gem' << 'install' << name
 
-    if (spec.respond_to? :requirement)
+    if (dep.respond_to? :requirement)
       args << '--version' << dep.requirement.to_s
     else
       # Dependency.version_requirements deprecated in rubygems 1.3.6
@@ -56,7 +56,7 @@ desc "If you're building from sources, run this task first to setup the necessar
 task :setup do
   missing = spec.dependencies.select { |dep| Gem::SourceIndex.from_installed_gems.search(dep).empty? }
   missing.each do |dep|
-    if (spec.respond_to? :requirement)
+    if (dep.respond_to? :requirement)
       install_gem dep.name, :version=>dep.requirement
     else
       # Dependency.version_requirements deprecated in rubygems 1.3.6
