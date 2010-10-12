@@ -61,7 +61,8 @@ module Buildr
         mkpath = lambda do |dir|
           unless dir == '.' || seen[dir]
             mkpath.call File.dirname(dir)
-            zip.put_next_entry(dir + '/', compression_level)
+            dirname = (dir[-1..-1] =~ /\/$/) ? dir : dir + '/'
+            zip.put_next_entry(dirname, compression_level)
             seen[dir] = true
           end
         end
