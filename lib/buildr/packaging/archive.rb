@@ -202,7 +202,7 @@ module Buildr
     end
 
     def include_as(source, as)
-        
+
         @sources << proc { source }
         @actions << proc do |file_map|
           file = source.to_s
@@ -212,19 +212,19 @@ module Buildr
                 path = rel_path.split('/')[1..-1]
                 path.unshift as unless as == '.'
                 dest = "#{@path}#{path.join('/')}"
-                unless excluded?(dest) 
+                unless excluded?(dest)
                   trace "Adding #{dest}"
                   file_map[dest] = file
                 end
               end
               unless as == "."
                 trace "Adding #{@path}#{as}/"
-                file_map["#{@path}#{as}/"] = file #as is a folder, so the trailing / is required.
+                file_map["#{@path}#{as}/"] = nil # :as is a folder, so the trailing / is required.
               end
             else
               file_map["#{@path}#{as}"] = file
             end
-            
+
           end
         end
       end

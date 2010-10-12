@@ -1,13 +1,14 @@
 1.4.3 (Pending)
 * Added:  BUILDR-514 New 'run' local task. http://buildr.apache.org/more_stuff.html#run
-* Added:  BUILDR-518 Load _buildr.rb or .buildr.rb from same directory as Buildfile 
+* Added:  BUILDR-518 Load _buildr.rb or .buildr.rb from same directory as Buildfile
           if they exist (Peter Donald)
 * Added:  BUILDR-519 Load repositories.release_to from build settings (Peter Donald)
 * Fixed:  BUILDR-520 Scaladoc 2.8 no longer support -windowtitle, use -doc-title instead.
 * Fixed:  BUILDR-512 Buildr::Util.ruby invokes non existent method (Peter Donald)
-* Fixed:  BUILDR-513 --trace fails with NoMethodError : undefined method 
+* Fixed:  BUILDR-513 --trace fails with NoMethodError : undefined method
           `include?' for nil:NilClass
 * Fixed:  BUILDR-515 -update-snapshot doesn't work as expected
+* Fixed:  BUILDR-517 package(:jar).include(directory, :as=>"foo") produces a corrupted jar
 * Fixed:  BUILDR-525 Documentation refers to repositories.upload_to rather than
           repositories.release_to (Peter Donald)
 * Fixed:  BUILDR-526 Gracefully handle h2 sections with no id in documentation (Peter Donald)
@@ -58,10 +59,10 @@
 * Fixed:  BUILDR-482 Javadoc : cannot load class java.com.sun.tools.javadoc.Main
 * Fixed:  BUILDR-488 artifact poms not reinstalled
 * Fixed:  BUILDR-491 sftp download goes into infinite loop
-* Fixed:  BUILDR-498 Artifact download fails with "negative argument" if 
+* Fixed:  BUILDR-498 Artifact download fails with "negative argument" if
           terminal capabilities are undefined
-* Fixed:  BUILDR-499 Java package caching through constants 
-          e.g. (Java.java.lang.String cached as Java::Lang::String) 
+* Fixed:  BUILDR-499 Java package caching through constants
+          e.g. (Java.java.lang.String cached as Java::Lang::String)
           can shadow Ruby modules
 * Fixed:  BUILDR-501 Fix buildr label when listing tasks (Peter Donald)
 * Fixed:  BUILDR-503 Include with as includes directories as files when the directory has the same name as the path
