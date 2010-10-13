@@ -19,6 +19,8 @@
 * Fixed:  BUILDR-531 Improve error message when build requires gem that can't be found in local/remote 
           gem repositories (Peter Donald)
 * Fixed:  BUILDR-532 package_as_source does not package resources (Tammo van Lessen)
+* Fixed:  BUILDR-534 package_with_sources does not package source artifacts if no sources but resources exist.
+          (Tammo Van Lessen)
 * Fixed:  JavaRebel was previously not correctly detected.
 
 1.4.2 (2010-09-18)

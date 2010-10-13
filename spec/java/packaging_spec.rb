@@ -1122,6 +1122,13 @@ describe Packaging, 'sources' do
     project('foo').packages.first.should contain('foo.properties')
   end
 
+  it 'should create sources jar if resources exists (but not sources)' do
+    write 'src/main/resources/foo.properties', 'foo=bar'
+    define('foo', :version=>'1.0') { package(:sources) }
+    project('foo').package(:sources).invoke
+    project('foo').packages.first.should contain('foo.properties')
+  end
+
   it 'should be a ZipTask' do
     define 'foo', :version=>'1.0' do
       package(:sources).should be_kind_of(ZipTask)
