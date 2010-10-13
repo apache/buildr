@@ -15,6 +15,7 @@
 * Fixed:  BUILDR-526 Gracefully handle h2 sections with no id in documentation (Peter Donald)
 * Fixed:  BUILDR-527 package(:war) if libs passed are files (instead of artifacts)
 * Fixed:  BUILDR-528 Stop using deprecated method Gem::Dependency.version_requirements correctly (Peter Donald)
+* Fixed:  BUILDR-529 Stop using gem name "foo" in tests as it is the name of an actual gem (Peter Donald)
 * Fixed:  BUILDR-531 Improve error message when build requires gem that can't be found in local/remote 
           gem repositories (Peter Donald)
 * Fixed:  BUILDR-532 package_as_source does not package resources (Tammo van Lessen)
