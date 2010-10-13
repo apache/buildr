@@ -68,7 +68,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'jruby-openssl',        '>= 0.7' if spec.platform.to_s == 'java'
   spec.add_development_dependency 'jekyll', '~> 0.6.2' unless spec.platform.to_s == 'java'
   spec.add_development_dependency 'sdoc'
-  spec.add_development_dependency 'rcov', '~>0.8' unless spec.platform.to_s == 'java'
+  spec.add_development_dependency 'rcov', '0.9.9' unless spec.platform.to_s == 'java'
   spec.add_development_dependency 'win32console' if spec.platform.to_s == 'x86-mswin32'
   spec.add_development_dependency 'jekylltask', '>= 1.0.2' unless spec.platform.to_s == 'java'
 end
