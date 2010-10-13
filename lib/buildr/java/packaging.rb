@@ -630,7 +630,7 @@ module Buildr
           selected = options[:only] ? projects(options[:only]) :
             options[:except] ? ([self] + projects - projects(options[:except])) :
             [self] + projects
-          selected.reject { |project| project.compile.sources.empty? }.
+          selected.reject { |project| project.compile.sources.empty? && project.resources.target.nil? }.
             each { |project| project.package(:sources) }
         end
       end
