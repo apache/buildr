@@ -250,28 +250,32 @@ describe Buildr::Application do
     end
 
     it 'should default to >=0 version requirement if not specified' do
-      write 'build.yaml', 'gems: foo'
-      $terminal.should_receive(:agree).and_return(true)
-      Gem.source_index.should_receive(:search).with(Gem::Dependency.new('foo', '>=0')).and_return([])
-      lambda { Buildr.application.load_gems }.should raise_error
+      write 'build.yaml', 'gems: buildr-foo'
+      should_attempt_to_load_dependency(Gem::Dependency.new('buildr-foo', '>= 0'))
     end
 
     it 'should parse exact version requirement' do
-      write 'build.yaml', 'gems: foo 2.5'
-      Gem.source_index.should_receive(:search).with(Gem::Dependency.new('foo', '=2.5')).and_return([])
-      lambda { Buildr.application.load_gems }.should raise_error
+      write 'build.yaml', 'gems: buildr-foo 2.5'
+      should_attempt_to_load_dependency(Gem::Dependency.new('buildr-foo', '=2.5'))
     end
 
     it 'should parse range version requirement' do
-      write 'build.yaml', 'gems: foo ~>2.3'
-     Gem.source_index.should_receive(:search).with(Gem::Dependency.new('foo', '~>2.3')).and_return([])
-      lambda { Buildr.application.load_gems }.should raise_error
+      write 'build.yaml', 'gems: buildr-foo ~>2.3'
+      should_attempt_to_load_dependency(Gem::Dependency.new('buildr-foo', '~>2.3'))
     end
 
     it 'should parse multiple version requirements' do
-      write 'build.yaml', 'gems: foo >=2.0 !=2.1'
-      Gem.source_index.should_receive(:search).with(Gem::Dependency.new('foo', ['>=2.0', '!=2.1'])).and_return([])
-      lambda { Buildr.application.load_gems }.should raise_error
+      write 'build.yaml', 'gems: buildr-foo >=2.0 !=2.1'
+      should_attempt_to_load_dependency(Gem::Dependency.new('buildr-foo', ['>=2.0', '!=2.1']))
+    end
+
+    def should_attempt_to_load_dependency(dep)
+      Gem.source_index.should_receive(:search).with(dep).and_return([])
+      lambda { Buildr.application.load_gems }.should raise_missing_gem_error(dep)
+    end
+
+    def raise_missing_gem_error(dep)
+      raise_error(Gem::LoadError, /Build requires the gems #{dep.name} #{dep.requirement}, which cannot be found in local or remote repository./)
     end
   end
 

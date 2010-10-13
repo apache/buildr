@@ -142,8 +142,20 @@ module Buildr
       # is not running interactively (on a tty)
       def install(*dependencies)
         raise ArgumentError, "Expected at least one argument" if dependencies.empty?
-        remote = dependencies.map{ |dep| Gem.source_index.search(dep).last || Gem::SpecFetcher.fetcher.fetch( dep, true ).map{ |spec, source| spec }.last }
-        not_found_deps, to_install = remote.partition { |gem| gem.is_a?(Gem::Dependency) || gem.nil? }
+        not_found_deps = []
+        to_install = []
+        remote = dependencies.each do |dep|
+          if spec = Gem.source_index.search(dep).last
+            # Found in local repo
+            to_install << spec
+          elsif (spec = Gem::SpecFetcher.fetcher.fetch(dep, true).map { |spec, source| spec }.last)
+            # Found in remote repo
+            to_install << spec
+          else
+            # Not found anywhere
+            not_found_deps << "#{dep.name} #{dep.requirement}"
+          end
+        end
         fail Gem::LoadError, "Build requires the gems #{not_found_deps.join(', ')}, which cannot be found in local or remote repository." unless not_found_deps.empty?
         uses = "This build requires the gems #{to_install.map(&:full_name).join(', ')}:"
         fail Gem::LoadError, "#{uses} to install, run Buildr interactively." unless $stdout.isatty
