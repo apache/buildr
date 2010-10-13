@@ -68,6 +68,7 @@ module Buildr
         end
 
         file_map.each do |path, content|
+          warn "Warning:  Path in zipfile contains backslash: #{path}" if path =~ /\\/
           mkpath.call File.dirname(path)
           if content.respond_to?(:call)
             zip.put_next_entry(path, compression_level)
