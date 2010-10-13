@@ -170,7 +170,7 @@ describe Buildr::Application do
         public :load_gems
       end
       @spec = Gem::Specification.new do |spec|
-        spec.name = 'foo'
+        spec.name = 'buildr-foo'
         spec.version = '1.2'
       end
       $stdout.stub!(:isatty).and_return(true)
@@ -187,45 +187,45 @@ describe Buildr::Application do
     end
 
     it 'should fail if required gem not found in remote repository' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
+      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
       Gem.source_index.should_receive(:search).at_least(:once).and_return([])
       lambda { Buildr.application.load_gems }.should raise_error(LoadError, /cannot be found/i)
     end
 
     it 'should fail if need to install gem and not running in interactive mode' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
+      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
       Gem.source_index.should_receive(:search).and_return([@spec])
       $stdout.should_receive(:isatty).and_return(false)
       lambda { Buildr.application.load_gems }.should raise_error(LoadError, /this build requires the gems/i)
     end
 
     it 'should ask permission before installing required gems' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
+      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
       Gem.source_index.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).with(/install/, true)
       lambda { Buildr.application.load_gems }.should raise_error
     end
 
     it 'should fail if permission not granted to install gem' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
+      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
       Gem.source_index.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(false)
       lambda { Buildr.application.load_gems }.should raise_error(LoadError, /cannot build without/i)
     end
 
     it 'should install gem if permission granted' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
+      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
       Gem.source_index.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(true)
       Util.should_receive(:ruby) do |*args|
-        args.should include('install', 'foo', '-v', '1.2')
+        args.should include('install', 'buildr-foo', '-v', '1.2')
       end
       Buildr.application.should_receive(:gem).and_return(false)
       Buildr.application.load_gems
     end
 
     it 'should reload gem cache after installing required gems' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
+      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
       Gem.source_index.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(true)
       Util.should_receive(:ruby)
@@ -241,11 +241,11 @@ describe Buildr::Application do
     end
 
     it 'should load newly installed gems' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('foo', '>=1.1')])
+      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
       Gem.source_index.should_receive(:search).and_return([@spec])
       $terminal.should_receive(:agree).and_return(true)
       Util.should_receive(:ruby)
-      Buildr.application.should_receive(:gem).with('foo', @spec.version.to_s)
+      Buildr.application.should_receive(:gem).with('buildr-foo', @spec.version.to_s)
       Buildr.application.load_gems
     end
 
