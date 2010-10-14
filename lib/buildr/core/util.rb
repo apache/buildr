@@ -342,6 +342,12 @@ end
 if Buildr::Util.java_platform?
   require 'ffi'
 
+  # Workaround for BUILDR-535: when requiring 'ffi', JRuby defines an :error
+  # method with arity 0.
+  class Module
+    remove_method :error if method_defined?(:error)
+  end
+
   # Fix for BUILDR-292.
   # JRuby fails to rename a file on different devices
   # this monkey-patch wont be needed when JRUBY-3381 gets resolved.

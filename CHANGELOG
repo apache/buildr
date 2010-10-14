@@ -21,6 +21,7 @@
 * Fixed:  BUILDR-532 package_as_source does not package resources (Tammo van Lessen)
 * Fixed:  BUILDR-534 package_with_sources does not package source artifacts if no sources but resources exist.
           (Tammo Van Lessen)
+* Fixed:  BUILDR-535 Failing "checks" produce no meaningful errors  on JRuby
 * Fixed:  JavaRebel was previously not correctly detected.
 
 1.4.2 (2010-09-18)
