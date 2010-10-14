@@ -19,6 +19,8 @@
 
 require 'rubygems'
 $LOAD_PATH << File.join(File.dirname(__FILE__), 'lib') << File.join(File.dirname(__FILE__), 'addon')
+
+require 'buildr/version'
 spec = Gem::Specification.load(File.join(File.dirname(__FILE__), 'buildr.gemspec'))
 # To avoid a warning about the version_requirements deprecation, we use this method inline.
 def version_required(gem_def)
