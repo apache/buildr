@@ -1,4 +1,4 @@
-1.4.3 (2010-10-12)
+1.4.3 (2010-10-15)
 * Added:  BUILDR-514 New 'run' local task. http://buildr.apache.org/more_stuff.html#run
 * Added:  BUILDR-518 Load _buildr.rb or .buildr.rb from same directory as Buildfile
           if they exist (Peter Donald)
@@ -16,7 +16,7 @@
 * Fixed:  BUILDR-527 package(:war) if libs passed are files (instead of artifacts)
 * Fixed:  BUILDR-528 Stop using deprecated method Gem::Dependency.version_requirements correctly (Peter Donald)
 * Fixed:  BUILDR-529 Stop using gem name "foo" in tests as it is the name of an actual gem (Peter Donald)
-* Fixed:  BUILDR-531 Improve error message when build requires gem that can't be found in local/remote 
+* Fixed:  BUILDR-531 Improve error message when build requires gem that can't be found in local/remote
           gem repositories (Peter Donald)
 * Fixed:  BUILDR-532 package_as_source does not package resources (Tammo van Lessen)
 * Fixed:  BUILDR-534 package_with_sources does not package source artifacts if no sources but resources exist.
