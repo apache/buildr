@@ -20,41 +20,31 @@ require 'buildr/java/commands'
 module Buildr
   module Scala
     class ScalaShell < Buildr::Shell::Base
-      include Buildr::Shell::JavaRebel
+      include Buildr::JRebel
 
-      class << self
-        def lang
-          :scala
-        end
+      specify :name => :scala, :languages => [:scala]
 
-        def to_sym
-          :scala
-        end
-      end
+      def launch(task)
+        cp = project.compile.dependencies + Scalac.dependencies +  [project.path_to(:target, :classes)]
 
-      def launch
-        cp = project.compile.dependencies +
-          Scalac.dependencies +
-          [project.path_to(:target, :classes)]
+        java_args = task.options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split
 
-        props = {
-          'scala.home' => Scalac.scala_home
-        }
+        props = jrebel_props(project)
+        props = props.merge(task.options[:properties]) if task.options[:properties]
+        props = props.merge 'scala.home' => Scalac.scala_home
 
-        jline = [File.expand_path("lib/jline.jar", Scalac.scala_home)].find_all do |f|
-          File.exist? f
-        end
+        jline = [File.expand_path("lib/jline.jar", Scalac.scala_home)].find_all { |f| File.exist? f }
 
         Java::Commands.java 'scala.tools.nsc.MainGenericRunner',
                             '-cp', cp.join(File::PATH_SEPARATOR),
         {
-          :properties => props.merge(rebel_props(project)),
+          :properties => props,
           :classpath => Scalac.dependencies + jline,
-          :java_args => rebel_args
+          :java_args => jrebel_argss
         }
       end
     end
   end
 end
 
-Buildr::ShellProviders << Buildr::Scala::ScalaShell
+Buildr::Shell.providers << Buildr::Scala::ScalaShell

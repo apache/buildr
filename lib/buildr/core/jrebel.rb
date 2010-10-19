@@ -13,32 +13,27 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'buildr/shell'
-
 module Buildr
-  module Groovy
-    class GroovySH < Buildr::Shell::Base
-      SUFFIX = if Util.win_os? then '.bat' else '' end
-
-      specify :name => :groovy, :languages => [:groovy]
-
-      def launch(task)
-        fail 'Are we forgetting something? GROOVY_HOME not set.' unless groovy_home
-
-        cp = project.compile.dependencies.join(File::PATH_SEPARATOR) +
-          File::PATH_SEPARATOR + project.path_to(:target, :classes)
-
-        cmd_args = " -classpath '#{cp}'"
-        trace "groovysh #{cmd_args}"
-        system(File.expand_path("bin#{File::SEPARATOR}groovysh#{SUFFIX}", groovy_home) + cmd_args)
+  module JRebel
+    def jrebel_home
+      unless @jrebel_home
+        @jrebel_home = ENV['REBEL_HOME'] || ENV['JREBEL'] || ENV['JREBEL_HOME']
       end
 
-    private
-      def groovy_home
-        @home ||= ENV['GROOVY_HOME']
-      end
+      (@rebel_home && File.exists?(@rebel_home)) ? @jrebel_home : nil
+    end
+
+    def rebel_jar
+      @rebel_home ? File.join(@jrebel_home, 'jrebel.jar') : nil
+    end
+
+    def jrebel_argss
+      rebel_jar ? [ '-noverify', "-javaagent:#{rebel_jar}" ] : []
+    end
+
+    def jrebel_props(project)
+      {}
     end
   end
 end
 
-Buildr::Shell.providers << Buildr::Groovy::GroovySH
