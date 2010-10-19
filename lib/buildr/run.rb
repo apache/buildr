@@ -43,15 +43,15 @@ module Buildr
       attr_reader :project
 
       class << self
-        attr_accessor :name, :languages
+        attr_accessor :runner_name, :languages
 
         def specify(options)
-          @name ||= options[:name]
+          @runner_name ||= options[:name]
           @languages ||= options[:languages]
         end
 
         def to_sym
-          @name ||= name.split('::').last.downcase.to_sym
+          @runner_name || name.split('::').last.downcase.to_sym
         end
       end
 
@@ -128,19 +128,8 @@ module Buildr
         @runner ||= guess_runner
       end
 
-      # :call-seq:
-      #   runner?(clazz) => boolean
-      #
-      # Check if the underlying runner is an instance of the given class.
-      # If no class is supplied, simply check if runner is defined.
-      def runner?(clazz = nil)
-        begin
-          @runner ||= guess_runner if project.compile.language
-        rescue
-          return false
-        end
-        return !@runner.nil? unless clazz
-        @runner.is_a?(clazz) if @runner
+      def runner?
+        @runner ||= guess_runner if project.compile.language rescue nil
       end
 
       def run
