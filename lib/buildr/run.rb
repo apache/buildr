@@ -129,7 +129,11 @@ module Buildr
       end
 
       def runner?
-        @runner ||= guess_runner if project.compile.language rescue nil
+        @runner ||= begin
+          guess_runner if project.compile.language
+        rescue
+          nil
+        end
       end
 
       def run
