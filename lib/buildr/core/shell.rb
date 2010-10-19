@@ -22,10 +22,11 @@ module Buildr
   module Shell
 
     class BeanShell < Base
-
-      include JavaRebel
+      include Buildr::JRebel
 
       VERSION = '2.0b4'
+
+      specify :name => :bsh, :languages => [:java]
 
       class << self
         def version
@@ -35,22 +36,14 @@ module Buildr
         def artifact
           "org.beanshell:bsh:jar:#{version}"
         end
-
-        def lang
-          :java
-        end
-
-        def to_sym
-          :bsh
-        end
       end
 
-      def launch
+      def launch(task)
         cp = project.compile.dependencies + [project.path_to(:target, :classes), Buildr.artifact(BeanShell.artifact)]
         Java::Commands.java 'bsh.Console', {
-          :properties => rebel_props(project),
+          :properties => jrebel_props(project),
           :classpath => cp,
-          :java_args => rebel_args
+          :java_args => jrebel_argss
         }
       end
 
@@ -58,17 +51,11 @@ module Buildr
 
 
     class JIRB < Base
-      include JavaRebel
+      include JRebel
 
       JRUBY_VERSION = '1.4.0'
 
-      class << self
-        def lang
-          :none
-        end
-      end
-
-      def launch
+      def launch(task)
         if jruby_home     # if JRuby is installed, use it
           cp = project.compile.dependencies +
             [project.path_to(:target, :classes)] +
@@ -107,9 +94,9 @@ module Buildr
           ]
 
           Java::Commands.java 'org.jruby.Main', "#{jruby_home}#{File::SEPARATOR}bin#{File::SEPARATOR}jirb", {
-            :properties => props.merge(rebel_props(project)),
+            :properties => props.merge(jrebel_props(project)),
             :classpath => cp,
-            :java_args => args + rebel_args
+            :java_args => args + jrebel_argss
           }
         else
           cp = project.compile.dependencies + [
@@ -118,12 +105,13 @@ module Buildr
             ]
 
           Java::Commands.java 'org.jruby.Main', '--command', 'irb', {
-            :properties => rebel_props(project),
+            :properties => jrebel_props(project),
             :classpath => cp,
-            :java_args => rebel_args
+            :java_args => jrebel_argss
           }
         end
       end
+
     private
       def jruby_home
         @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : ENV['JRUBY_HOME']
@@ -137,7 +125,7 @@ module Buildr
     end
 
     class Clojure < Base
-      include JavaRebel
+      include JRebel
 
       JLINE_VERSION = '0.9.94'
 
@@ -156,7 +144,7 @@ module Buildr
         !has_source?(:clojure) or has_source?(:java) or has_source?(:scala) or has_source?(:groovy)
       end
 
-      def launch
+      def launch(task)
         fail 'Are we forgetting something? CLOJURE_HOME not set.' unless clojure_home
 
         cp = project.compile.dependencies +
@@ -172,9 +160,9 @@ module Buildr
 
         if build?
           Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', {
-            :properties => rebel_props(project),
+            :properties => jrebel_props(project),
             :classpath => cp,
-            :java_args => rebel_args
+            :java_args => jrebel_argss
           }
         else
           Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', :classpath => cp
@@ -193,6 +181,6 @@ module Buildr
   end
 end
 
-Buildr::ShellProviders << Buildr::Shell::BeanShell
-Buildr::ShellProviders << Buildr::Shell::JIRB
-Buildr::ShellProviders << Buildr::Shell::Clojure
+Buildr::Shell.providers << Buildr::Shell::BeanShell
+Buildr::Shell.providers << Buildr::Shell::JIRB
+Buildr::Shell.providers << Buildr::Shell::Clojure

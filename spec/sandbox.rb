@@ -33,7 +33,8 @@ artifacts(
   TestFramework.frameworks.map(&:dependencies).flatten,
   JUnit.ant_taskdef,
   Buildr::Groovy::Groovyc.dependencies,
-  Buildr::Scala::Specs.dependencies
+  Buildr::Scala::Specs.dependencies,
+  Buildr::Shell::BeanShell.artifact
 ).each do |path|
   file(path).invoke
 end

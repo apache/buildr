@@ -15,6 +15,7 @@
 
 require 'buildr/core/common'
 require 'buildr/core/application'
+require 'buildr/core/jrebel'
 require 'buildr/core/project'
 require 'buildr/core/environment'
 require 'buildr/core/help'
@@ -29,3 +30,4 @@ require 'buildr/core/transports'
 require 'buildr/core/generate'
 require 'buildr/core/cc'
 require 'buildr/core/osx' if RUBY_PLATFORM =~ /darwin/
+

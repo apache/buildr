@@ -15,166 +15,163 @@
 
 
 module Buildr
-  module ShellProviders
-    class << self
-      def add(p)
-        @providers ||= {}
-
-        if p.lang == :none
-          @providers[:none] ||= []
-          @providers[:none] << p
-        else
-          @providers[p.lang] = p
-        end
-      end
-      alias :<< :add
-
-      def providers
-        @providers ||= {}
-      end
-
-      def each
-        providers.each do |lang, p|
-          if lang == :none
-            p.each do |x|
-              yield x
-            end
-          else
-            yield p
-          end
-        end
-      end
-    end
-  end
-
   module Shell
-    class Base
-      attr_reader :project
-
-      class << self
-        def lang
-          :none
-        end
-
-        def to_sym
-          @symbol ||= name.split('::').last.downcase.to_sym
-        end
-      end
-
-      def initialize(project)
-        @project = project
-      end
-
-      def build?
-        true
-      end
-
-      def launch
-        fail 'Not implemented'
-      end
-    end
-
-    module JavaRebel
-      def rebel_home
-        unless @rebel_home
-          @rebel_home = ENV['REBEL_HOME'] || ENV['JREBEL'] || ENV['JREBEL_HOME']
-
-          if @rebel_home and File.directory? @rebel_home
-            @rebel_home += File::SEPARATOR + 'jrebel.jar'
-          end
-        end
-
-        if @rebel_home and File.exists? @rebel_home
-          @rebel_home
-        else
-          nil
-        end
-      end
-
-      def rebel_args
-        if rebel_home
-          [
-            '-noverify',
-            "-javaagent:#{rebel_home}"
-          ]
-        else
-          []
-        end
-      end
-
-      def rebel_props(project)
-        {}
-      end
-    end
-  end
-
-  module ShellExtension
     include Extension
+
+    class << self
+      def providers
+        @providers ||= []
+      end
+
+      def select_by_lang(lang)
+        fail 'Unable to define shell task for nil language' if lang.nil?
+        providers.detect { |e| e.languages.nil? ? false : e.languages.include?(lang.to_sym) }
+      end
+
+      alias_method :select, :select_by_lang
+
+      def select_by_name(name)
+        fail 'Unable to define run task for nil' if name.nil?
+        providers.detect { |e| e.to_sym == name.to_sym }
+      end
+
+      def define_task(project, name, provider = nil)
+        ShellTask.define_task(name).tap do |t|
+          t.send(:associate_with, project)
+          t.enhance([project.compile]) do |t|
+            # double-enhance to execute the provider last
+            t.enhance { |t| t.run }
+          end
+          t.using provider.to_sym if provider
+        end
+      end
+    end
 
     first_time do
       Project.local_task 'shell'
 
-      ShellProviders.each { |p| Project.local_task "shell:#{p.to_sym}" }    # TODO  not working
+      providers.each { |provider| Project.local_task "shell:#{provider.to_sym}" }
     end
 
     before_define(:shell => :compile) do |project|
-      ShellProviders.each do |p|
-        name = p.to_sym
-
-        trace "Defining task #{project.name}:shell:#{name}"
-
-        p_inst = p.new project
-        deps = if p_inst.build? then [:compile] else [] end
-
-        project.task "shell:#{name}" => deps do
-          trace "Launching #{name} shell"
-          p_inst.launch
-        end
-      end
+      define_task(project, "shell")
+      providers.each { |provider| define_task(project, "shell:#{provider.to_sym}", provider) }
     end
 
     after_define(:shell => :compile) do |project|
-      default_shell = project.shell.using
-
-      if default_shell
-        dep = "shell:#{default_shell.to_sym}"
-
-        trace "Defining task shell based on #{dep}"
-        project.task :shell => dep
-      else
-        project.task :shell do
-          fail "No shell provider defined for language '#{project.compile.language}'"
+      unless project.shell.provider
+        provider = providers.find { |p| p.languages.include? project.compile.language if p.languages }
+        if provider
+          project.shell.using provider.to_sym
+          project.shell.with project.test.compile.dependencies
         end
       end
     end
 
-    class ShellConfig
+    # Base class for any shell provider.
+    class Base
+      attr_reader :project # :nodoc:
+
+      class << self
+        attr_accessor :shell_name, :languages
+
+        def specify(options)
+          @shell_name ||= options[:name]
+          @languages ||= options[:languages]
+        end
+
+        def to_sym
+          @shell_name || name.split('::').last.downcase.to_sym
+        end
+      end
+
       def initialize(project)
         @project = project
       end
 
+      def launch(task)
+        fail 'Not implemented'
+      end
+
+    end
+
+    class ShellTask < Rake::Task
+      attr_reader :project # :nodoc:
+
+      # Classpath dependencies.
+      attr_accessor :classpath
+
+      # Returns the run options.
+      attr_reader :options
+
+      # Underlying shell provider
+      attr_reader :provider
+
+      def initialize(*args) # :nodoc:
+        super
+        @options = {}
+        @classpath = []
+      end
+
+      # :call-seq:
+      #   with(*artifacts) => self
+      #
+      # Adds files and artifacts as classpath dependencies, and returns self.
+      def with(*specs)
+        @classpath |= Buildr.artifacts(specs.flatten).uniq
+        self
+      end
+
+      # :call-seq:
+      #   using(options) => self
+      #
+      # Sets the run options from a hash and returns self.
+      #
+      # For example:
+      #   shell.using :properties => {'foo' => 'bar'}
+      #   shell.using :bsh
       def using(*args)
-        if args.size > 0
-          @using ||= args.first
-        else
-          @using ||= find_shell_task
+        if Hash === args.last
+          args.pop.each { |key, value| @options[key.to_sym] = value }
         end
+
+        until args.empty?
+          new_shell = Shell.select_by_name(args.pop)
+          @provider = new_shell.new(project) unless new_shell.nil?
+        end
+
+        self
+      end
+
+      def run
+        fail "No shell provider defined in project '#{project.name}' for language '#{project.compile.language.inspect}'" unless provider
+        provider.launch(self)
+      end
+
+      def prerequisites #:nodoc:
+        super + classpath
       end
 
     private
-      def find_shell_task
-        lang = @project.compile.language
-        ShellProviders.providers[lang]
+      def associate_with(project)
+        @project ||= project
       end
+
     end
 
-    # TODO  temporary hack
-    def shell
-      @shell ||= ShellConfig.new self
+    # :call-seq:
+    #   shell(&block) => ShellTask
+    #
+    # This method returns the project's shell task. It also accepts a block to be executed
+    # when the shell task is invoked.
+    def shell(&block)
+      task('shell').tap do |t|
+        t.enhance &block if block
+      end
     end
   end
 
   class Project
-    include ShellExtension
+    include Shell
   end
 end
