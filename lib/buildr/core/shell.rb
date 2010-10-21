@@ -19,6 +19,7 @@ require 'buildr/java/commands'
 require 'buildr/core/util'
 
 module Buildr
+
   module Shell
 
     class BeanShell < Base
@@ -128,55 +129,9 @@ module Buildr
       end
 
     end
-
-    class Clojure < Base
-      include JRebel
-
-      JLINE_VERSION = '0.9.94'
-
-      class << self
-        def lang
-          :none
-        end
-
-        def to_sym
-          :clj      # more common than `clojure`
-        end
-      end
-
-      # don't build if it's *only* Clojure sources
-      def build?
-        !has_source?(:clojure) or has_source?(:java) or has_source?(:scala) or has_source?(:groovy)
-      end
-
-      def launch(task)
-        clojure_jar = clojure_home ? File.expand_path('clojure.jar', clojure_home) : "org.clojure:clojure:jar:1.2.0"
-
-        cp = project.compile.dependencies +
-          [ build? ? project.path_to(:target, :classes) : project.path_to(:src, :main, :clojure),
-            clojure_jar,
-            'jline:jline:jar:0.9.94'
-          ] + task.classpath
-
-        Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', {
-          :properties => jrebel_props(project).merge(task.properties),
-          :classpath => cp,
-          :java_args => jrebel_args + task.java_args
-        }
-      end
-
-    private
-      def clojure_home
-        @home ||= ENV['CLOJURE_HOME']
-      end
-
-      def has_source?(lang)
-        File.exists? project.path_to(:src, :main, lang)
-      end
-    end
   end
 end
 
 Buildr::Shell.providers << Buildr::Shell::BeanShell
 Buildr::Shell.providers << Buildr::Shell::JIRB
-Buildr::Shell.providers << Buildr::Shell::Clojure
+

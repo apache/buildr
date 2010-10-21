@@ -25,6 +25,7 @@ repositories.remote << 'http://scala-tools.org/repo-releases'
 Buildr.settings.build['scala.version'] = "2.8.0"
 
 # Add a 'require' here only for optional extensions, not for extensions that should be loaded by default.
+require 'buildr/clojure'
 require 'buildr/groovy'
 require 'buildr/scala'
 
