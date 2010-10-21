@@ -16,6 +16,17 @@
 
 module Buildr::Groovy
 
+  REQUIRES = ArtifactNamespace.for(self) do |ns|
+    ns.jansi! 'org.fusesource.jansi:jansi:jar:1.2.1'
+    ns.jline! 'jline:jline:jar:0.9.94'
+  end
+
+  class << self
+    def dependencies #:nodoc:
+      REQUIRES.artifacts + Groovyc.dependencies
+    end
+  end
+
   # Groovyc compiler:
   #  compile.using(:groovyc)
   #

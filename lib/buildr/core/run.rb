@@ -31,7 +31,7 @@ module Buildr
         Java::Commands.java(task.options[:main], {
           :properties => jrebel_props(project).merge(task.options[:properties] || {}),
           :classpath => cp,
-          :java_args => jrebel_argss + (task.options[:java_args] || [])
+          :java_args => jrebel_args + (task.options[:java_args] || [])
         })
       end
     end # JavaRunnner

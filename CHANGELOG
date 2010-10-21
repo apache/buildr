@@ -1,4 +1,6 @@
 1.4.4 (Pending)
+* Added:  BUILDR-537 Shell tasks should use JAVA_OPTS by default
+* Added:  BUILDR-538 Shell tasks should support passing :java_args
 
 1.4.3 (2010-10-15)
 * Added:  BUILDR-514 New 'run' local task. http://buildr.apache.org/more_stuff.html#run

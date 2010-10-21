@@ -108,6 +108,7 @@ describe "shell provider", :shared=>true do
     @instance.method(:launch).should_not be_nil
     @instance.method(:launch).arity.should === 1
   end
+
 end
 
 Shell.providers.each do |provider|
@@ -116,9 +117,30 @@ Shell.providers.each do |provider|
       @provider = provider
       @project = define('foo') {}
       @instance = provider.new(@project)
+      @project.shell.using @provider.to_sym
     end
 
     it_should_behave_like "shell provider"
+
+    it 'should call Java::Commands.java with :java_args' do
+      @project.shell.using :java_args => ["-Xx"]
+      Java::Commands.should_receive(:java).with do |*args|
+        args.last.should be_a(Hash)
+        args.last.keys.should include(:java_args)
+        args.last[:java_args].should include('-Xx')
+      end
+      project('foo').shell.invoke
+    end
+
+    it 'should call Java::Commands.java with :properties' do
+      @project.shell.using :properties => {:foo => "bar"}
+      Java::Commands.should_receive(:java).with do |*args|
+        args.last.should be_a(Hash)
+        args.last.keys.should include(:properties)
+        args.last[:properties][:foo].should == "bar"
+      end
+      project('foo').shell.invoke
+    end
   end
 end
 

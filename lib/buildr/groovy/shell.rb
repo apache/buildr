@@ -18,19 +18,32 @@ require 'buildr/shell'
 module Buildr
   module Groovy
     class GroovySH < Buildr::Shell::Base
+      include JRebel
+
       SUFFIX = if Util.win_os? then '.bat' else '' end
 
       specify :name => :groovy, :languages => [:groovy]
 
       def launch(task)
-        fail 'Are we forgetting something? GROOVY_HOME not set.' unless groovy_home
+        cp = Groovy.dependencies +
+             project.compile.dependencies +
+             [ project.path_to(:target, :classes) ] +
+             task.classpath
+        props = jrebel_props(project).merge(task.properties)
+        java_args = jrebel_args + task.java_args
 
-        cp = project.compile.dependencies.join(File::PATH_SEPARATOR) +
-          File::PATH_SEPARATOR + project.path_to(:target, :classes)
-
-        cmd_args = " -classpath '#{cp}'"
-        trace "groovysh #{cmd_args}"
-        system(File.expand_path("bin#{File::SEPARATOR}groovysh#{SUFFIX}", groovy_home) + cmd_args)
+        groovy_home = nil
+        if groovy_home
+          cmd_args = " -classpath '#{cp.join(File::SEPARATOR)}'"
+          trace "groovysh #{cmd_args}"
+          system(File.expand_path("bin#{File::SEPARATOR}groovysh#{SUFFIX}", groovy_home) + cmd_args)
+        else
+          Java::Commands.java 'org.codehaus.groovy.tools.shell.Main', {
+            :properties => props,
+            :classpath => cp,
+            :java_args => java_args
+          }
+        end
       end
 
     private

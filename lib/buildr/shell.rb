@@ -152,6 +152,14 @@ module Buildr
         super + classpath
       end
 
+      def java_args
+        @options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split
+      end
+
+      def properties
+        @options[:properties] || {}
+      end
+
     private
       def associate_with(project)
         @project ||= project
