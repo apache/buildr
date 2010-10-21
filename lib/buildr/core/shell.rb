@@ -150,11 +150,11 @@ module Buildr
       end
 
       def launch(task)
-        fail 'Are we forgetting something? CLOJURE_HOME not set.' unless clojure_home
+        clojure_jar = clojure_home ? File.expand_path('clojure.jar', clojure_home) : "org.clojure:clojure:jar:1.2.0"
 
         cp = project.compile.dependencies +
           [ build? ? project.path_to(:target, :classes) : project.path_to(:src, :main, :clojure),
-            File.expand_path('clojure.jar', clojure_home),
+            clojure_jar,
             'jline:jline:jar:0.9.94'
           ] + task.classpath
 
