@@ -33,9 +33,10 @@ Java.load # Anything added to the classpath.
 artifacts(
   TestFramework.frameworks.map(&:dependencies).flatten,
   JUnit.ant_taskdef,
-  Buildr::Groovy::Groovyc.dependencies,
+  Buildr::Groovy.dependencies,
   Buildr::Scala::Specs.dependencies,
-  Buildr::Shell::BeanShell.artifact
+  Buildr::Shell::BeanShell.artifact,
+  Buildr::Clojure.dependencies
 ).each do |path|
   file(path).invoke
 end
