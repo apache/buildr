@@ -27,7 +27,7 @@ module Buildr
       @rebel_home ? File.join(@jrebel_home, 'jrebel.jar') : nil
     end
 
-    def jrebel_argss
+    def jrebel_args
       rebel_jar ? [ '-noverify', "-javaagent:#{rebel_jar}" ] : []
     end
 

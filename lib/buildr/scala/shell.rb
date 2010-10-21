@@ -25,22 +25,24 @@ module Buildr
       specify :name => :scala, :languages => [:scala]
 
       def launch(task)
-        cp = project.compile.dependencies + Scalac.dependencies +  [project.path_to(:target, :classes)]
-
-        java_args = task.options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split
-
-        props = jrebel_props(project)
-        props = props.merge(task.options[:properties]) if task.options[:properties]
-        props = props.merge 'scala.home' => Scalac.scala_home
-
         jline = [File.expand_path("lib/jline.jar", Scalac.scala_home)].find_all { |f| File.exist? f }
+
+        cp = project.compile.dependencies +
+             Scalac.dependencies +
+             [ project.path_to(:target, :classes) ] +
+             task.classpath +
+             jline
+
+        java_args = jrebel_args + task.java_args
+
+        props = jrebel_props(project).merge(task.properties).merge 'scala.home' => Scalac.scala_home
 
         Java::Commands.java 'scala.tools.nsc.MainGenericRunner',
                             '-cp', cp.join(File::PATH_SEPARATOR),
         {
           :properties => props,
-          :classpath => Scalac.dependencies + jline,
-          :java_args => jrebel_argss
+          :classpath => cp,
+          :java_args => java_args
         }
       end
     end

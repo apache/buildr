@@ -39,11 +39,13 @@ module Buildr
       end
 
       def launch(task)
-        cp = project.compile.dependencies + [project.path_to(:target, :classes), Buildr.artifact(BeanShell.artifact)]
+        cp = ( project.compile.dependencies +
+               [project.path_to(:target, :classes), Buildr.artifact(BeanShell.artifact)] +
+               task.classpath )
         Java::Commands.java 'bsh.Console', {
-          :properties => jrebel_props(project),
+          :properties => jrebel_props(project).merge(task.properties),
           :classpath => cp,
-          :java_args => jrebel_argss
+          :java_args => jrebel_args + task.java_args
         }
       end
 
@@ -59,12 +61,15 @@ module Buildr
         if jruby_home     # if JRuby is installed, use it
           cp = project.compile.dependencies +
             [project.path_to(:target, :classes)] +
-            Dir.glob("#{jruby_home}#{File::SEPARATOR}lib#{File::SEPARATOR}*.jar")
+            Dir.glob("#{jruby_home}#{File::SEPARATOR}lib#{File::SEPARATOR}*.jar") +
+            task.classpath
 
           props = {
             'jruby.home' => jruby_home,
             'jruby.lib' => "#{jruby_home}#{File::SEPARATOR}lib"
           }
+          props.merge! jrebel_props(project)
+          props.merge! task.properties
 
           if not Util.win_os?
             uname = `uname -m`
@@ -91,23 +96,23 @@ module Buildr
 
           args = [
             "-Xbootclasspath/a:#{Dir.glob("#{jruby_home}#{File::SEPARATOR}lib#{File::SEPARATOR}jruby*.jar").join File::PATH_SEPARATOR}"
-          ]
+          ] + jrebel_args + task.java_args
 
           Java::Commands.java 'org.jruby.Main', "#{jruby_home}#{File::SEPARATOR}bin#{File::SEPARATOR}jirb", {
-            :properties => props.merge(jrebel_props(project)),
+            :properties => props,
             :classpath => cp,
-            :java_args => args + jrebel_argss
+            :java_args => args
           }
         else
-          cp = project.compile.dependencies + [
-              jruby_artifact,
-              project.path_to(:target, :classes)
-            ]
+          cp = project.compile.dependencies + [ jruby_artifact, project.path_to(:target, :classes) ] +
+               task.classpath
+          props = jrebel_props(project).merge(task.properties)
+          args = jrebel_args + task.java_args
 
           Java::Commands.java 'org.jruby.Main', '--command', 'irb', {
-            :properties => jrebel_props(project),
+            :properties => props,
             :classpath => cp,
-            :java_args => jrebel_argss
+            :java_args => args
           }
         end
       end
@@ -148,25 +153,16 @@ module Buildr
         fail 'Are we forgetting something? CLOJURE_HOME not set.' unless clojure_home
 
         cp = project.compile.dependencies +
-          [
-            if build?
-              project.path_to(:target, :classes)
-            else
-              project.path_to(:src, :main, :clojure)
-            end,
+          [ build? ? project.path_to(:target, :classes) : project.path_to(:src, :main, :clojure),
             File.expand_path('clojure.jar', clojure_home),
             'jline:jline:jar:0.9.94'
-          ]
+          ] + task.classpath
 
-        if build?
-          Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', {
-            :properties => jrebel_props(project),
-            :classpath => cp,
-            :java_args => jrebel_argss
-          }
-        else
-          Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', :classpath => cp
-        end
+        Java::Commands.java 'jline.ConsoleRunner', 'clojure.lang.Repl', {
+          :properties => jrebel_props(project).merge(task.properties),
+          :classpath => cp,
+          :java_args => jrebel_args + task.java_args
+        }
       end
 
     private
