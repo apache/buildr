@@ -252,7 +252,7 @@ describe Repositories, 'remote' do
 
   it 'should support artifact classifier' do
     repositories.remote = 'http://example.com'
-    URI.should_receive(:download).twice.and_return { |uri, target, options| write target }
+    URI.should_receive(:download).once.and_return { |uri, target, options| write target }
     lambda { artifact('com.example:library:jar:all:2.0').invoke }.
       should change { File.exist?(File.join(repositories.local, 'com/example/library/2.0/library-2.0-all.jar')) }.to(true)
   end
@@ -752,11 +752,20 @@ describe Buildr, '#install' do
     snapshot.invoke
   end
 
-  it 'should install POM alongside artifact' do
+  it 'should install POM alongside artifact (if artifact has no classifier)' do
     pom = artifact(@spec).pom
     write @file
     install artifact(@spec).from(@file)
     lambda { install.invoke }.should change { File.exist?(repositories.locate(pom)) }.to(true)
+  end
+
+  it 'should not install POM alongside artifact if artifact has classifier' do
+    @spec = 'group:id:jar:all:1.0'
+    pom = artifact(@spec).pom
+    write @file
+    p method(:install)
+    install artifact(@spec).from(@file)
+    lambda { install.invoke }.should_not change { File.exist?(repositories.locate(pom)) }.to(true)
   end
 
   it 'should reinstall POM alongside artifact' do
@@ -812,14 +821,11 @@ describe ActsAsArtifact, '#upload' do
     verbose(false) { artifact.upload(:url=>'sftp://example.com/base') }
   end
 
-  it 'should support artifact classifier' do
+  it 'should support artifact classifier and should not upload pom if artifact has classifier' do
     artifact = artifact('com.example:library:jar:all:2.0')
     # Prevent artifact from downloading anything.
     write repositories.locate(artifact)
-    write repositories.locate(artifact.pom)
-    URI.should_receive(:upload).at_least(:once).
-      with(URI.parse('sftp://example.com/base/com/example/library/2.0/library-2.0.pom'), artifact.pom.to_s, anything)
-    URI.should_receive(:upload).at_least(:once).
+    URI.should_receive(:upload).exactly(:once).
       with(URI.parse('sftp://example.com/base/com/example/library/2.0/library-2.0-all.jar'), artifact.to_s, anything)
     verbose(false) { artifact.upload(:url=>'sftp://example.com/base') }
   end
@@ -842,6 +848,7 @@ describe ActsAsArtifact, '#upload' do
     artifact.upload
     lambda { artifact.upload }.should_not raise_error
   end
+
 end
 
 
