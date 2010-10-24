@@ -13,22 +13,25 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'buildr/core/common'
-require 'buildr/core/application'
-require 'buildr/core/jrebel'
-require 'buildr/core/project'
-require 'buildr/core/environment'
-require 'buildr/core/help'
-require 'buildr/core/build'
-require 'buildr/core/filter'
-require 'buildr/core/compile'
-require 'buildr/core/test'
-require 'buildr/core/shell'
-require 'buildr/core/run'
-require 'buildr/core/checks'
-require 'buildr/core/transports'
-require 'buildr/core/generate'
-require 'buildr/core/cc'
-require 'buildr/core/osx' if RUBY_PLATFORM =~ /darwin/
-require 'buildr/core/linux' if RUBY_PLATFORM =~ /linux/
+
+# Let's see if we can use notify-send.  Must be running from console in verbose mode.
+if $stdout.isatty && verbose
+
+  def command_exist?(command)
+    system("which #{command} > /dev/null 2>/dev/null")
+    $?.exitstatus == 0
+  end
+
+  def notify_send(type, title, message)
+    icon = File.join(File.dirname(__FILE__), '../resources/', type.to_s + '.png')
+    system "notify-send -i #{icon} \"#{title}\" \"#{message}\""
+  end
+
+  if command_exist? 'notify-send'
+    Buildr.application.on_completion { |title, message| notify_send(:completed, title, message) if verbose }
+    Buildr.application.on_failure { |title, message, ex| notify_send(:failed, title, message) if verbose }
+  end
+
+end
+
 
