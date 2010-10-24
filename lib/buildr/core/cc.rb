@@ -41,18 +41,18 @@ module Buildr
       # we don't want to actually fail if our dependencies don't succede
       begin
         [:compile, 'test:compile'].each { |name| project.task(name).invoke }
-        notify_build_status(true, project)
+        build_completed(project)
       rescue Exception => ex
         $stderr.puts $terminal.color(ex.message, :red)
         $stderr.puts
 
-        notify_build_status(false, project)
+        build_failed(project, ex)
       end
 
       main_dirs = project.compile.sources.map(&:to_s)
       test_dirs = project.task('test:compile').sources.map(&:to_s)
       res_dirs = project.resources.sources.map(&:to_s)
-      
+
       main_ext = Buildr::Compiler.select(project.compile.compiler).source_ext.map(&:to_s) unless project.compile.compiler.nil?
       test_ext = Buildr::Compiler.select(project.task('test:compile').compiler).source_ext.map(&:to_s) unless project.task('test:compile').compiler.nil?
 
@@ -102,25 +102,24 @@ module Buildr
             project.task(:resources).filter.run if in_res
             project.task(:compile).invoke if in_main
             project.task('test:compile').invoke if in_test || in_main
+            build_completed(project)
           rescue Exception => ex
             $stderr.puts $terminal.color(ex.message, :red)
+            build_failed(project, ex)
             successful = false
           end
 
-          notify_build_status(successful, project)
           puts $terminal.color("Build complete", :green) if successful
         end
       end
     end
 
-    def notify_build_status(successful, project)
-       if RUBY_PLATFORM =~ /darwin/ && $stdout.isatty && verbose
-         if successful
-           growl_notify('Completed', 'Your build has completed', project.path_to)
-         else
-           growl_notify('Failed', 'Your build has failed with an error', project.path_to)
-         end
-       end
+    def build_completed(project)
+      Buildr.application.build_completed('Compilation successful', project.path_to)
+    end
+
+    def build_failed(project, ex = nil)
+      Buildr.application.build_failed('Compilation failed', project.path_to, ex)
     end
 
     def check_mtime(pattern, old_times)
