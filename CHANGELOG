@@ -7,6 +7,8 @@
           does not exist yet (Gerolf Seitz)
 * Fixed:  BUILDR-543 POMs are installed and uploaded twice when using artifacts
           with classifier
+* Fixed:  BUILDR-522 Send notifications when continuous compilation
+          succeeds/fails.
 
 1.4.3 (2010-10-15)
 * Added:  BUILDR-514 New 'run' local task. http://buildr.apache.org/more_stuff.html#run
