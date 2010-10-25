@@ -24,7 +24,7 @@ unless defined?(SpecHelpers)
   spec = Gem::Specification.load(File.expand_path('../buildr.gemspec', File.dirname(__FILE__)))
   # Dependency.version_requirements deprecated in rubygems 1.3.6
   spec.dependencies.select {|dep| dep.type == :runtime }.each { |dep| gem dep.name, (dep.respond_to?(:requirement) ? dep.requirement.to_s : dep.version_requirements.to_s) }
-  
+
   # Make sure to load from these paths first, we don't want to load any
   # code from Gem library.
   $LOAD_PATH.unshift File.expand_path('../lib', File.dirname(__FILE__)),
@@ -48,7 +48,7 @@ unless defined?(SpecHelpers)
       end
     end
   end
-  
+
   # Give a chance for plugins to do a few things before requiring the sandbox.
   include SandboxHook if defined?(SandboxHook)
 
@@ -287,9 +287,9 @@ unless defined?(SpecHelpers)
 
     # Value covered by range. For example:
     #   (1..5).should cover(3)
-    def cover(value)
-      simple_matcher :cover do |given|
-        value >= given.min && value <= given.max
+    RSpec::Matchers.define :cover do |actual|
+      match do |range|
+        actual >= range.min && actual <= range.max
       end
     end
 
@@ -357,9 +357,10 @@ unless defined?(SpecHelpers)
   end
 
 
-  Spec::Runner.configure do |config|
+  RSpec.configure do |config|
     # Make all Buildr methods accessible from test cases, and add various helper methods.
-    config.include Buildr, SpecHelpers
+    config.include Buildr
+    config.include SpecHelpers
 
     # Sanbdox Buildr for each test.
     config.include Sandbox

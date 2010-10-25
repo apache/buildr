@@ -346,7 +346,7 @@ describe Project, '#meta_inf' do
 end
 
 
-describe 'package with meta_inf', :shared=>true do
+shared_examples_for 'package with meta_inf' do
 
   def package_with_meta_inf(meta_inf = nil)
     packaging = @packaging

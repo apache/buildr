@@ -15,8 +15,7 @@
 
 
 require 'buildr/core/project'
-autoload :Spec, 'spec'
-
+autoload :RSpec, 'rspec'
 
 module Buildr
   # Methods added to Project to allow checking the build.
@@ -120,7 +119,7 @@ module Buildr
           end
           define_method(:it) { subject }
           define_method(:description) { description }
-          include Spec::Matchers
+          include ::RSpec::Matchers
           include Matchers
         end
 
@@ -148,8 +147,8 @@ module Buildr
             passed
           rescue Exception=>ex
             if verbose
-              error ex.backtrace.select { |line| line =~ /#{Buildr.application.buildfile}/ }.join("\n")
               error ex
+              error ex.backtrace.select { |line| line =~ /#{Buildr.application.buildfile}/ }.join("\n")
             end
             false
           end
