@@ -3,6 +3,7 @@
           (via libnotify/notify-send)
 * Added:  BUILDR-537 Shell tasks should use JAVA_OPTS by default
 * Added:  BUILDR-538 Shell tasks should support passing :java_args
+* Change: BUILDR-540 Upgrade to rspec 2.0.0
 * Fixed:  BUILDR-542 Release task:  SVN tagging fails if parent tag directory
           does not exist yet (Gerolf Seitz)
 * Fixed:  BUILDR-543 POMs are installed and uploaded twice when using artifacts

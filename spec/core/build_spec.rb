@@ -16,7 +16,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
-describe 'local task', :shared=>true do
+shared_examples_for 'local task' do
   it "should execute task for project in current directory" do
     define 'foobar'
     lambda { @task.invoke }.should run_task("foobar:#{@task.name}")
@@ -369,7 +369,7 @@ describe Release do
 end
 
 
-describe 'a release process', :shared=>true do
+shared_examples_for 'a release process' do
 
   describe '#make' do
     before do
@@ -406,7 +406,7 @@ describe 'a release process', :shared=>true do
       @release.make
       file('buildfile').should contain('VERSION_NUMBER = "1.0.002-SNAPSHOT"')
     end
-    
+
     it 'should commit the updated buildfile' do
       @release.stub!(:tag_release)
       @release.make
@@ -419,7 +419,7 @@ describe 'a release process', :shared=>true do
       @release.make
       file('buildfile').should contain('VERSION_NUMBER = "1.0.0-rc1"')
     end
-    
+
     it 'should only commit the updated buildfile if the version changed' do
       write 'buildfile', "VERSION_NUMBER = '1.0.0-rc1'"
       @release.should_not_receive(:update_version_to_next)
@@ -465,7 +465,7 @@ describe 'a release process', :shared=>true do
       Release.next_version = lambda {|version| "#{version}++"}
       @release.send(:resolve_next_version, "1.0.0").should == 'ze_version_from_env_lowercase'
     end
-    after { 
+    after {
       Release.next_version = nil
       ENV['NEXT_VERSION'] = nil
       ENV['next_version'] = nil
@@ -509,7 +509,7 @@ describe 'a release process', :shared=>true do
       Release.next_version = lambda {|version| "#{version}++"}
       @release.send(:resolve_next_version, "1.0.0").should == 'ze_version_from_env_lowercase'
     end
-    after { 
+    after {
       Release.next_version = nil
       ENV['NEXT_VERSION'] = nil
       ENV['next_version'] = nil
@@ -553,7 +553,7 @@ describe 'a release process', :shared=>true do
       Release.next_version = lambda {|version| "#{version}++"}
       @release.send(:resolve_next_version, "1.0.0").should == 'ze_version_from_env_lowercase'
     end
-    after { 
+    after {
       Release.next_version = nil
       ENV['NEXT_VERSION'] = nil
       ENV['next_version'] = nil

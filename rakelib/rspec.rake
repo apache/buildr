@@ -13,9 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 begin
-  require 'spec/rake/spectask'
+  require 'rspec/core/rake_task'
   directory '_reports'
 
   def default_spec_opts
@@ -23,33 +22,44 @@ begin
     default << '--colour' if $stdout.isatty
     default
   end
-  
+
+  # RSpec doesn't support file exclusion, so hack our own.
+  class RSpec::Core::RakeTask
+    attr_accessor :rspec_files
+  private
+    def files_to_run
+      @rspec_files
+    end
+  end
+
   desc "Run all specs"
-  Spec::Rake::SpecTask.new :spec=>['_reports', :compile] do |task|
+  RSpec::Core::RakeTask.new :spec=>['_reports', :compile] do |task|
     ENV['USE_FSC'] = 'no'
-    task.spec_files = FileList['spec/**/*_spec.rb']
-    task.spec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
-    task.spec_opts = default_spec_opts
-    task.spec_opts << '--format specdoc'
+    task.rspec_files = FileList['spec/**/*_spec.rb']
+    task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
+    task.rspec_opts = default_spec_opts
+    task.rspec_opts << '--format documentation'
   end
   file('_reports/specs.html') { task(:spec).invoke }
 
   desc 'Run all failed examples from previous run'
-  Spec::Rake::SpecTask.new :failed do |task|
+  RSpec::Core::RakeTask.new :failed do |task|
     ENV['USE_FSC'] = 'no'
-    task.spec_files = FileList['spec/**/*_spec.rb']
-    task.spec_opts = default_spec_opts
-    task.spec_opts << '--format specdoc' << '--example failed'
+    task.rspec_files = FileList['spec/**/*_spec.rb']
+    task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
+    task.rspec_opts = default_spec_opts
+    task.rspec_opts << '--format documentation' << '--example failed'
   end
 
   desc 'Run RSpec and generate Spec and coverage reports (slow)'
-  Spec::Rake::SpecTask.new :coverage=>['_reports', :compile] do |task|
+  RSpec::Core::RakeTask.new :coverage=>['_reports', :compile] do |task|
     ENV['USE_FSC'] = 'no'
-    task.spec_files = FileList['spec/**/*_spec.rb']
-    task.spec_opts = default_spec_opts
-    task.spec_opts << '--format progress'
+    task.rspec_files = FileList['spec/**/*_spec.rb']
+    task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
+    task.rspec_opts = default_spec_opts
+    task.rspec_opts << '--format progress'
     task.rcov = true
-    task.rcov_dir = '_reports/coverage'
+    task.rcov_path = '_reports/coverage'
     task.rcov_opts = %w{--exclude / --include-file ^lib --text-summary}
   end
   file('_reports/coverage') { task(:coverage).invoke }
@@ -61,10 +71,10 @@ begin
     ci_rep_path = Gem.loaded_specs['ci_reporter'].full_gem_path
     ENV["SPEC_OPTS"] = [ENV["SPEC_OPTS"], default_spec_opts, "--require", "\"#{ci_rep_path}/lib/ci/reporter/rake/rspec_loader.rb\"", "--format", "CI::Reporter::RSpec"].join(" ")
   end
-  
+
   desc 'Run all specs with CI reporter'
-  task :ci=>[:load_ci_reporter, :spec] 
-  
+  task :ci=>[:load_ci_reporter, :spec]
+
   # Useful for testing with JRuby when using Ruby and vice versa.
   namespace :spec do
     desc "Run all specs specifically with Ruby"
@@ -85,7 +95,7 @@ begin
     rm_rf '_reports'
   end
 
-rescue LoadError
+rescue LoadError => e
   puts "Buildr uses RSpec. You can install it by running rake setup"
   task(:setup) { install_gem 'rcov', :version=>'~>0.8' }
   task(:setup) { install_gem 'win32console' if RUBY_PLATFORM[/win32/] } # Colors for RSpec, only on Windows platform.
