@@ -357,7 +357,7 @@ unless defined?(SpecHelpers)
   end
 
 
-  RSpec.configure do |config|
+  ::RSpec.configure do |config|
     # Make all Buildr methods accessible from test cases, and add various helper methods.
     config.include Buildr
     config.include SpecHelpers
