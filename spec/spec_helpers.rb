@@ -353,7 +353,7 @@ unless defined?(SpecHelpers)
 
   # Allow using matchers within the project definition.
   class Buildr::Project
-    include ::Spec::Matchers, SpecHelpers
+    include ::RSpec::Matchers, SpecHelpers
   end
 
 

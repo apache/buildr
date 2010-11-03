@@ -661,7 +661,7 @@ describe "Extension using ArtifactNamespace" do
           end
         end
 
-        include Spec::Matchers # for assertions
+        include RSpec::Matchers # for assertions
 
         # Called with the ArtifactRequirement that has just been selected
         # by a user. This allows extension author to selectively perform
