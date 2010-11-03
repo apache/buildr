@@ -105,7 +105,12 @@ describe Buildr::CCTask do
     filter.should_not_receive :run
     
     thread = Thread.new do
-      project.cc.invoke
+      begin
+        project.cc.invoke
+      rescue => e
+        p "unexpected exception #{e.inspect}"
+        p e.backtrace.join("\n").inspect
+      end
     end
     
     sleep 0.5

@@ -38,7 +38,7 @@ module Buildr
     end
 
     def monitor_and_compile
-      # we don't want to actually fail if our dependencies don't succede
+      # we don't want to actually fail if our dependencies don't succeed
       begin
         [:compile, 'test:compile'].each { |name| project.task(name).invoke }
         build_completed(project)
@@ -48,13 +48,13 @@ module Buildr
 
         build_failed(project, ex)
       end
-
       main_dirs = project.compile.sources.map(&:to_s)
       test_dirs = project.task('test:compile').sources.map(&:to_s)
       res_dirs = project.resources.sources.map(&:to_s)
 
-      main_ext = Buildr::Compiler.select(project.compile.compiler).source_ext.map(&:to_s) unless project.compile.compiler.nil?
-      test_ext = Buildr::Compiler.select(project.task('test:compile').compiler).source_ext.map(&:to_s) unless project.task('test:compile').compiler.nil?
+      source_ext = lambda { |compiler| Array(Buildr::Compiler.select(compiler).source_ext).map(&:to_s) }
+      main_ext = source_ext.call(project.compile.compiler) unless project.compile.compiler.nil?
+      test_ext = source_ext.call(project.task('test:compile').compiler) unless project.task('test:compile').compiler.nil?
 
       test_tail = if test_dirs.empty? then '' else ",{#{test_dirs.join ','}}/**/*.{#{test_ext.join ','}}" end
       res_tail = if res_dirs.empty? then '' else ",{#{res_dirs.join ','}}/**/*" end
