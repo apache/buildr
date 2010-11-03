@@ -32,6 +32,6 @@ class << self ; include Buildr ; end
 class Object #:nodoc:
   Buildr.constants.each do |name|
     const = Buildr.const_get(name)
-    const_set name, const if const.is_a?(Module) && name != "RSpec"
+    const_set name, const if const.is_a?(Module) && name.to_s != "RSpec"
   end
 end

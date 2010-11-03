@@ -102,7 +102,7 @@ describe Project, '.shell' do
   end
 end
 
-describe "shell provider", :shared=>true do
+shared_examples_for "shell provider" do
 
   it 'should have launch method accepting shell task' do
     @instance.method(:launch).should_not be_nil
