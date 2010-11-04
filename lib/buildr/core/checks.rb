@@ -89,7 +89,7 @@ module Buildr
         @description = args.pop if String === args.last
         @subject = args.shift
         raise ArgumentError, "Expecting subject followed by description, and either one is optional. Not quite sure what to do with this list of arguments." unless args.empty?
-        @block = block || lambda { info "Pending: #{description}" }
+        @block = block || lambda { |klass| info "Pending: #{description}" }
       end
 
       # :call-seq:
