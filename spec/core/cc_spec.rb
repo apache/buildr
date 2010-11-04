@@ -90,13 +90,8 @@ describe Buildr::CCTask do
     write 'src/test/java/ExampleTest.java', "public class ExampleTest {}"
     
     project = define("foo")
-    cc = project.cc
-    
     compile = project.compile
-    
-
     test_compile = project.test.compile
-
     filter = project.resources
     
     # After first period:
@@ -141,14 +136,9 @@ describe Buildr::CCTask do
     end
     
     project = project("container:foo")
-    cc = project.cc
-    
     compile = project.compile
-
     test_compile = project.test.compile
-
     filter = project.resources
-    
     
     # After first period:
     compile.should_receive :invoke
