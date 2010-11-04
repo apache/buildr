@@ -19,7 +19,7 @@ begin
 
   def default_spec_opts
     default = %w{--format failing_examples:failed --format html:_reports/specs.html --backtrace}
-    default << '--colour' if $stdout.isatty
+    default << '--colour' if $stdout.isatty && !(Config::CONFIG['host_os'] =~ /mswin|win32|dos/i)
     default
   end
 
