@@ -69,6 +69,8 @@ h2(#osx).  Installing on OS X
 
 You need to have the Apple Development Tools installed.  They are available on the Mac OSX installation CD.
 
+p(note). Java Update 3 for Snow Leopard removes header files necessary to compile the native Ruby-Java Bridge (RJB) gem, so installing rjb gem may fail on OS X.  The solution is to install Java for Mac OS X 10.6 Update 3 Developer Package from http://connect.apple.com before @gem install@.
+
 <br>
 
 *In details:* OS X 10.5 (Leopard) comes with a recent version of Ruby 1.8.6.  You do not need to install a different version of Ruby when running OS X 10.5.
