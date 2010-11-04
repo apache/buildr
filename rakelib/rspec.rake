@@ -59,8 +59,7 @@ begin
     task.rspec_opts = default_spec_opts
     task.rspec_opts << '--format progress'
     task.rcov = true
-    task.rcov_path = '_reports/coverage'
-    task.rcov_opts = %w{--exclude / --include-file ^lib --text-summary}
+    task.rcov_opts = %w{-o _reports/coverage --exclude / --include-file ^lib --text-summary}
   end
   file('_reports/coverage') { task(:coverage).invoke }
 
