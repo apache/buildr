@@ -19,6 +19,10 @@ title: Mailing Lists
 | Search        | "http://buildr.markmail.org/search/list:commits":http://buildr.markmail.org/search/list:commits |
 | Subscribe     | "commits-subscribe@buildr.apache.org":mailto:commits-subscribe@buildr.apache.org |
 | Unsubscribe   | "commits-unsubscribe@buildr.apache.org":mailto:commits-unsubscribe@buildr.apache.org |
+|_. ci          |_. Continuous integration status |
+| Search        | "http://buildr.markmail.org/search/list:ci":http://buildr.markmail.org/search/list:ci |
+| Subscribe     | "ci-subscribe@buildr.apache.org":mailto:ci-subscribe@buildr.apache.org |
+| Unsubscribe   | "ci-unsubscribe@buildr.apache.org":mailto:ci-unsubscribe@buildr.apache.org |
 
 
 
