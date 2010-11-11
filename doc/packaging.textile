@@ -320,7 +320,7 @@ Again, by example:
 
 {% highlight ruby %}
 package(:ear).display_name = 'MyCoolWebService'
-package(:ear).add project('coolWebService').package(:war), :context-root=>'coolness'
+package(:ear).add project('coolWebService').package(:war), :context_root=>'coolness'
 {% endhighlight %}
 
 If you need to disable the context root (e.g. for Portlets), set @context_root@ to @false@.
