@@ -12,6 +12,8 @@
           succeeds/fails.
 * Change: BUILDR-545 Add the ability to specify the description element in in
           application.xml contained within an ear.
+* Fixed:  BUILDR-547 - Ensure ECJ compiler works when there is a space in the
+          path of dependencies.
 
 1.4.3 (2010-10-15)
 * Added:  BUILDR-514 New 'run' local task. http://buildr.apache.org/more_stuff.html#run
