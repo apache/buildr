@@ -23,8 +23,6 @@ module Buildr
       specify :language=>:java, :sources => 'java', :source_ext => 'java',
       :target=>'classes', :target_ext=>'class', :packaging=>:jar
 
-
-
       def compile(sources, target, dependencies) #:nodoc:
         check_options options, OPTIONS
         cmd_args = []
