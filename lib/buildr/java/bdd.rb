@@ -107,8 +107,10 @@ module Buildr
       else
         cmd_options = task.options.only(:properties, :java_args)
         cmd_options.update(:classpath => dependencies, :project => task.project)
-        jruby runner.file, tests, cmd_options
+        jruby runner.file, tests, cmd_options rescue nil
       end
+
+      fail "Missing result YAML file: #{runner.result}" unless File.exist? runner.result
 
       result = YAML.load(File.read(runner.result))
       if Exception === result
@@ -197,7 +199,8 @@ module Buildr
       runner.gems ||= {}
       runner.rspec ||= ['--format', 'progress', '--format', "html:#{runner.html_report}"]
       runner.format.each { |format| runner.rspec << '--format' << format } if runner.format
-      runner.rspec.push '--format', "Buildr::TestFramework::TestResult::YamlFormatter:#{runner.result}"
+      runner.rspec.push '--format', "Buildr::TestFramework::TestResult::YamlFormatter"
+      runner.rspec.push '-o', runner.result
       runner
     end
 
@@ -240,8 +243,8 @@ module Buildr
 
     def runner_config
       runner = super
-      runner.gems.update 'rspec' => '>0'
-      runner.requires.unshift 'spec'
+      runner.gems.update 'rspec' => '=2.1.0'
+      runner.requires.unshift 'rspec'
       runner
     end
 
@@ -258,14 +261,12 @@ module Buildr
         <% else %>
           output = STDOUT
         <% end %>
-        parser = ::Spec::Runner::OptionParser.new(output, output)
+        parser = ::RSpec::Core::Parser.new
         argv = <%= runner.rspec.inspect %> || []
         argv.push *<%= tests.inspect %>
-        parser.order!(argv)
-        $rspec_options = parser.options
 
         Buildr::TestFramework::TestResult::Error.guard('<%= runner.result %>') do
-          ::Spec::Runner::CommandLine.run($rspec_options)
+          ::RSpec::Core::CommandLine.new(argv).run(output, output)
         end
         exit 0 # let buildr figure the result from the yaml file
       }
@@ -296,7 +297,7 @@ module Buildr
 
     include TestFramework::JRubyBased
 
-    VERSION = '0.5'
+    VERSION = '0.6'
 
     # pattern for rspec stories
     STORY_PATTERN    = /_(steps|story)\.rb$/
@@ -368,9 +369,11 @@ module Buildr
 
     def runner_config
       runner = super
-      # JtestR 0.3.1 comes with rspec 1.1.4 (and any other jtestr dependency) included,
+      # JtestR 0.6.0 comes with rspec 1.3.0 (and any other jtestr dependency) included,
       # so the rspec version used depends on the jtestr jar.
       runner.requires.unshift 'jtestr'
+      runner.gems.update 'rspec' => '=1.3.0'
+      runner.requires.unshift 'rspec'
       runner
     end
 
