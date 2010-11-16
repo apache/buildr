@@ -27,11 +27,18 @@ require 'buildr/run'
 # Methods defined in Buildr are both instance methods (e.g. when included in Project)
 # and class methods when invoked like Buildr.artifacts().
 module Buildr ; extend self ; end
+
 # The Buildfile object (self) has access to all the Buildr methods and constants.
 class << self ; include Buildr ; end
+
+# All modules defined under Buildr::* can be referenced without Buildr:: prefix
+# unless a conflict exists (e.g.  Buildr::RSpec vs ::RSpec)
 class Object #:nodoc:
   Buildr.constants.each do |name|
     const = Buildr.const_get(name)
-    const_set name, const if const.is_a?(Module) && name.to_s != "RSpec"
+    if const.is_a?(Module)
+      const_set name, const unless const_defined?(name)
+    end
   end
 end
+
