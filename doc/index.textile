@@ -46,22 +46,20 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-New in Buildr 1.4.3:
+New in Buildr 1.4.2:
 
-* Added:  BUILDR-514 New 'run' local task. http://buildr.apache.org/more_stuff.html#run
-* Added:  BUILDR-518 Load _buildr.rb or .buildr.rb from same directory as Buildfile if they exist (Peter Donald)
-* Added:  BUILDR-519 Load repositories.release_to from build settings (Peter Donald)
-* Fixed:  BUILDR-513 --trace fails with NoMethodError : undefined method
-          `include?' for nil:NilClass
-* Fixed:  BUILDR-515 -update-snapshot doesn't work as expected
-* Fixed:  BUILDR-517 package(:jar).include(directory, :as=>"foo") produces a corrupted jar
-* Fixed:  BUILDR-524 Optimized and more robust reading of jar MANIFEST.MF (Hugues Malphettes)
-* Fixed:  BUILDR-527 package(:war) fails if libs passed are files (instead of artifacts)
-* Fixed:  BUILDR-531 Improve error message when build requires gem that can't be found in local/remote gem repositories (Peter Donald)
-* Fixed:  BUILDR-532 package_as_source does not package resources (Tammo van Lessen)
-* Fixed:  BUILDR-535 Failing "checks" produce no meaningful errors  on JRuby
-* Fixed:  JavaRebel was previously not correctly detected.
-* And 10+ other minor bug fixes
+* Added:  BUILDR-212 Update support for SNAPSHOT artifacts
+* Added:  BUILDR-465 Eclipse project names should be customizable
+* Added:  BUILDR-493 Eclipse task should generate javadocpath
+* Added:  BUILDR-509 Option to generate non-prefixed Eclipse project names
+* Added:  BUILDR-510 Add support for trace categories: --trace=foo,bar
+* Change: BUILDR-484 Upgrade to Scala 2.8.0 (final) and associated dependencies (ScalaCheck 1.7, ScalaTest 1.2, Specs 1.6.5)
+* Change: BUILDR-487 package :sources should default to using .jar extension (instead of .zip)
+* Fixed:  BUILDR-143 Upload to a file:// path needs ability to specify permissions
+* Fixed:  BUILDR-144 Filter does not preserve file permissions
+* Fixed:  BUILDR-203 Compiler guessing parses the source files.
+* Fixed:  BUILDR-317 Contribution of the integration with the ecj compiler
+* And 50+ bug fixes !
 
 See the "CHANGELOG":CHANGELOG for full details.
 

@@ -193,8 +193,8 @@ module Buildr
 
       # Used by the test/integration to include specific tests
       def include(includes)
-        includes = wildcardify(Array(includes))
         Project.projects.each do |project|
+          includes = wildcardify(includes)
           project.test.send :include, *includes if includes.size > 0
           project.test.send :forced_need=, true
         end
@@ -202,8 +202,8 @@ module Buildr
 
       # Used by the test/integration to exclude specific tests
       def exclude(excludes)
-        excludes = wildcardify(Array(excludes))
         Project.projects.each do |project|
+          excludes = wildcardify(excludes)
           project.test.send :exclude, *excludes if excludes.size > 0
           project.test.send :forced_need=, true
         end
@@ -646,7 +646,7 @@ module Buildr
           excludes.map! { |t| t[1..-1] }
 
           TestTask.clear
-          TestTask.include(includes.empty? ? ['*'] : includes)
+          TestTask.include(includes.empty? ? '*' : includes)
           TestTask.exclude excludes
         end
         task('test').invoke

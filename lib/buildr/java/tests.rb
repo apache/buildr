@@ -219,7 +219,7 @@ module Buildr
     end
 
     def tests(dependencies) #:nodoc:
-      if (self.class.version.to_s[0,1].to_i < 4)
+      if (self.class.version[0,1].to_i < 4)
         filter_classes(dependencies, :interfaces => %w{junit.framework.TestCase})
       else
         filter_classes(dependencies,

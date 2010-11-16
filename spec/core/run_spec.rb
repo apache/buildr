@@ -67,7 +67,6 @@ describe Project, :run do
   it 'should depend on project''s compile and test.compile task' do
     define 'foo'
     project('foo').run.prerequisites.should include(project('foo').compile)
-    project('foo').run.prerequisites.should include(project('foo').test)
   end
 
   it 'should be local task' do

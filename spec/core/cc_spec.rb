@@ -90,8 +90,13 @@ describe Buildr::CCTask do
     write 'src/test/java/ExampleTest.java', "public class ExampleTest {}"
     
     project = define("foo")
+    cc = project.cc
+    
     compile = project.compile
+    
+
     test_compile = project.test.compile
+
     filter = project.resources
     
     # After first period:
@@ -100,12 +105,7 @@ describe Buildr::CCTask do
     filter.should_not_receive :run
     
     thread = Thread.new do
-      begin
-        project.cc.invoke
-      rescue => e
-        p "unexpected exception #{e.inspect}"
-        p e.backtrace.join("\n").inspect
-      end
+      project.cc.invoke
     end
     
     sleep 0.5
@@ -136,9 +136,14 @@ describe Buildr::CCTask do
     end
     
     project = project("container:foo")
+    cc = project.cc
+    
     compile = project.compile
+
     test_compile = project.test.compile
+
     filter = project.resources
+    
     
     # After first period:
     compile.should_receive :invoke

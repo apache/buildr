@@ -160,11 +160,11 @@ module Buildr
     def install
       invoke
       in_local_repository = Buildr.repositories.locate(self)
-      if pom && pom != self && classifier.nil?
-        pom.invoke
-        pom.install
-      end
       if name != in_local_repository
+        if pom && pom != self
+          pom.invoke
+          pom.install
+        end
         mkpath File.dirname(in_local_repository)
         cp name, in_local_repository, :preserve => false
         info "Installed #{name} to #{in_local_repository}"
@@ -174,7 +174,7 @@ module Buildr
     def uninstall
       installed = Buildr.repositories.locate(self)
       rm installed if File.exist?(installed)
-      pom.uninstall if pom && pom != self && classifier.nil?
+      pom.uninstall if pom && pom != self
     end
 
     # :call-seq:
@@ -208,7 +208,7 @@ module Buildr
 
       unless task = Buildr.application.lookup(uri+path)
         deps = [self]
-        deps << pom.upload_task( upload_to ) if pom && pom != self && classifier.nil?
+        deps << pom.upload_task( upload_to ) if pom && pom != self
 
         task = Rake::Task.define_task uri + path => deps do
           # Upload artifact relative to base URL, need to create path before uploading.
@@ -353,7 +353,7 @@ module Buildr
           if download_needed? task
             info "Downloading #{to_spec}"
             download
-            pom.invoke rescue nil if pom && pom != self && classifier.nil?
+            pom.invoke rescue nil if pom && pom != self
           end
         end
       end
@@ -869,15 +869,16 @@ module Buildr
   #   install artifact('group:id:jar:1.0').from('some_jar.jar')
   #   $ buildr install
   def install(*args, &block)
-    artifacts = artifacts(args).uniq
+    artifacts = artifacts(args)
     raise ArgumentError, 'This method can only install artifacts' unless artifacts.all? { |f| f.respond_to?(:to_spec) }
+    all = (artifacts + artifacts.map { |artifact| artifact.pom }).uniq
     task('install').tap do |install|
-      install.enhance(artifacts) do
-        artifacts.each(&:install)
+      install.enhance(all) do
+        all.each(&:install)
       end
       install.enhance &block if block
       task('uninstall') do
-        artifacts.map(&:to_s ).each { |file| rm file if File.exist?(file) }
+        all.map(&:to_s ).each { |file| rm file if File.exist?(file) }
       end
     end
   end

@@ -187,20 +187,6 @@ module Buildr
       @on_failure << block
     end
 
-    # Call on_completion hooks with the given title and message
-    def build_completed(title, message)
-      @on_completion.each do |block|
-        block.call(title, message) rescue nil
-      end
-    end
-
-    # Call on_failure hooks with the given title, message and exception
-    def build_failed(title, message, ex = nil)
-      @on_failure.each do |block|
-        block.call(title, message, ex) rescue nil
-      end
-    end
-
     # :call-seq:
     #   deprecated(message)
     #
@@ -255,7 +241,9 @@ module Buildr
           # On OS X this will load Cocoa and Growl which takes half a second we
           # don't want to measure, so put this after the console message.
           title, message = "Your build has completed", "#{Dir.pwd}\nbuildr #{@top_level_tasks.join(' ')}"
-          build_completed(title, message)
+          @on_completion.each do |block|
+            block.call(title, message) rescue nil
+          end
         end
       end
     end
@@ -542,7 +530,9 @@ module Buildr
       rescue Exception => ex
         ex_msg = ex.class.name == "Exception" ? ex.message : "#{ex.class.name} : #{ex.message}"
         title, message = "Your build failed with an error", "#{Dir.pwd}:\n#{ex_msg}"
-        build_failed(title, message, ex)
+        @on_failure.each do |block|
+          block.call(title, message, ex) rescue nil
+        end
         # Exit with error message
         $stderr.puts "Buildr aborted!"
         $stderr.puts $terminal.color(ex_msg, :red)

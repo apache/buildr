@@ -16,5 +16,4 @@
 
 require 'buildr/groovy/compiler'
 require 'buildr/groovy/bdd'
-require 'buildr/groovy/doc'
 require 'buildr/groovy/shell'

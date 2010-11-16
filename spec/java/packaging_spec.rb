@@ -346,7 +346,7 @@ describe Project, '#meta_inf' do
 end
 
 
-shared_examples_for 'package with meta_inf' do
+describe 'package with meta_inf', :shared=>true do
 
   def package_with_meta_inf(meta_inf = nil)
     packaging = @packaging
@@ -776,28 +776,6 @@ describe Packaging, 'ear' do
       package(:ear).display_name = 'bar'
     end
     inspect_application_xml { |xml| xml.get_text('/application/display-name').should == 'bar' }
-  end
-
-  it 'should set description in application.xml to project comment if not specified' do
-    desc "MyDescription"
-    define 'foo', :version=>'1.0' do
-      package(:ear)
-    end
-    inspect_application_xml { |xml| xml.get_text('/application/description').should == 'MyDescription' }
-  end
-
-  it 'should not set description in application.xml if not specified and no project comment' do
-    define 'foo', :version=>'1.0' do
-      package(:ear)
-    end
-    inspect_application_xml { |xml| xml.get_text('/application/description').should be_nil }
-  end
-
-  it 'should set description in application.xml if specified' do
-    define 'foo', :version=>'1.0' do
-      package(:ear).description = "MyDescription"
-    end
-    inspect_application_xml { |xml| xml.get_text('/application/description').should == 'MyDescription' }
   end
 
   it 'should map WARs to /war directory' do

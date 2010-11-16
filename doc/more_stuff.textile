@@ -311,13 +311,9 @@ $ dbuildr clean compile
 
 The @dbuildr@ command will start the BuildrServer if there isn't one already running.  Subsequent calls to dbuildr will act as the client and invoke the tasks you provide to the server.  If the buildfile has been modified it will be reloaded on the BuildrServer.
 
-h2(#notifications). Notifications: Growl, Libnotify, Qube
+h2(#growl). Growl, Qube
 
-Buildr support sending notifications when the build completes or fails, such as displaying the outcome message in an overlaid window on top of other applications.
-
-For OS X users, Buildr supports "Growl":http://growl.info/ out of the box by using the Ruby Cocoa bindings.
-
-For Debian-based Linux users, Buildr supports notifications via the "notify-send":http://manpages.ubuntu.com/manpages/gutsy/man1/notify-send.1.html command which is part of the "libnotify-bin":"http://packages.debian.org/search?keywords=libnotify-bin" package.  Just make sure `notify-send` is installed and on your path is on your `PATH`.
+For OS X users, Buildr supports "Growl":http://growl.info/ out of the box to send "completed" and "failed" notifications to the user.
 
 For other platforms or if you want to notify the user differently, Buildr offers two extension points:
 

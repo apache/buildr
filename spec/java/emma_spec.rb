@@ -20,8 +20,6 @@ artifacts(Buildr::Emma::dependencies).map(&:invoke)
 
 
 describe Buildr::Emma do
-  include TestCoverageHelper
-
   before do
     # Reloading the extension because the sandbox removes all its actions
     Buildr.module_eval { remove_const :Emma }

@@ -1,22 +1,3 @@
-1.4.4 (Pending)
-* Added:  BUILDR-550 Add support for groovydoc
-* Added:  BUILDR-521: System tray notifications for Linux systems
-          (via libnotify/notify-send)
-* Added:  BUILDR-537 Shell tasks should use JAVA_OPTS by default
-* Added:  BUILDR-538 Shell tasks should support passing :java_args
-* Change: BUILDR-540 Upgrade to rspec 2.1.0
-* Fixed:  BUILDR-542 Release task:  SVN tagging fails if parent tag directory
-          does not exist yet (Gerolf Seitz)
-* Fixed:  BUILDR-543 POMs are installed and uploaded twice when using artifacts
-          with classifier
-* Fixed:  BUILDR-522 Send notifications when continuous compilation
-          succeeds/fails.
-* Change: Upgrade to Groovy 1.7.5
-* Change: BUILDR-545 Add the ability to specify the description element in in
-          application.xml contained within an ear.
-* Fixed:  BUILDR-547 - Ensure ECJ compiler works when there is a space in the
-          path of dependencies.
-
 1.4.3 (2010-10-15)
 * Added:  BUILDR-514 New 'run' local task. http://buildr.apache.org/more_stuff.html#run
 * Added:  BUILDR-518 Load _buildr.rb or .buildr.rb from same directory as Buildfile

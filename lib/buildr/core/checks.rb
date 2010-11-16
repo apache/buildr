@@ -15,7 +15,8 @@
 
 
 require 'buildr/core/project'
-autoload :RSpec, 'rspec'
+autoload :Spec, 'spec'
+
 
 module Buildr
   # Methods added to Project to allow checking the build.
@@ -89,7 +90,7 @@ module Buildr
         @description = args.pop if String === args.last
         @subject = args.shift
         raise ArgumentError, "Expecting subject followed by description, and either one is optional. Not quite sure what to do with this list of arguments." unless args.empty?
-        @block = block || lambda { |klass| info "Pending: #{description}" }
+        @block = block || lambda { info "Pending: #{description}" }
       end
 
       # :call-seq:
@@ -119,7 +120,7 @@ module Buildr
           end
           define_method(:it) { subject }
           define_method(:description) { description }
-          include ::RSpec::Matchers
+          include Spec::Matchers
           include Matchers
         end
 
@@ -147,8 +148,8 @@ module Buildr
             passed
           rescue Exception=>ex
             if verbose
-              error ex
               error ex.backtrace.select { |line| line =~ /#{Buildr.application.buildfile}/ }.join("\n")
+              error ex
             end
             false
           end

@@ -106,9 +106,9 @@ describe Buildr::CompileTask do
     write "src/main/java/com/example/Hello.java", ""
     old_compiler = nil
     new_compiler = nil
-    define('foo') {
+    define('foo') { 
       old_compiler = compile.compiler
-      compile.using(:scalac)
+      compile.using(:scalac) 
       new_compiler = compile.compiler
     }
     old_compiler.should == :javac
@@ -416,7 +416,7 @@ describe Buildr::CompileTask, '#invoke' do
 end
 
 
-shared_examples_for 'accessor task' do
+describe 'accessor task', :shared=>true do
   it 'should return a task' do
     define('foo').send(@task_name).should be_kind_of(Rake::Task)
   end
