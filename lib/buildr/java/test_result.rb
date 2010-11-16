@@ -14,8 +14,10 @@
 # the License.
 
 # necessary to require YAML even if it is mentioned by autoload as it fails on some platforms.
-require 'yaml' 
+require 'yaml'
 require 'fileutils'
+require 'rspec/core/formatters/base_formatter'
+
 module Buildr #:nodoc:
   module TestFramework
 
@@ -52,57 +54,47 @@ module Buildr #:nodoc:
       end
 
       # An Rspec formatter used by buildr
-      class YamlFormatter
+      class YamlFormatter  < ::RSpec::Core::Formatters::BaseFormatter
         attr_reader :result
 
-        attr_accessor :example_group, :options, :where
+        # attr_accessor :example_group, :options, :output
 
-        def initialize(options, where)
-          @options = options
-          @where = where
+        def initialize(output)
+          super(output)
           @result = Hash.new
           @result[:succeeded] = []
           @result[:failed] = []
         end
 
-        %w[ example_started
-            start_dump dump_failure dump_summary dump_pending ].each do |meth|
-          module_eval "def #{meth}(*args); end"
-        end
-
-        def example_group_started(example_group)
-          @example_group = example_group
-        end
-
         def example_passed(example)
+          super(example)
           result.succeeded << example_name(example)
         end
 
-        def example_pending(example, counter)
+        def example_pending(example)
+          super(example)
           result.succeeded << example_name(example)
         end
 
-        def example_failed(example, counter, failure)
+        def example_failed(example)
+          super(example)
           result.failed << example_name(example)
         end
 
         def start(example_count)
+          super(example_count)
           @result = TestResult.new
         end
 
         def close
+          super
           result.succeeded = result.succeeded - result.failed
-          FileUtils.mkdir_p File.dirname(where)
-          File.open(where, 'w') { |f| f.puts YAML.dump(result) }
+          output.puts YAML.dump(result)
         end
 
       private
         def example_name(example)
-          if Spec::Example::ExampleProxy === example
-            example_group.location.gsub(/:\d+$/, '')
-          else
-            example.name.gsub(/(.+)(\..+\(\))/, '\1')
-          end
+          example.file_path
         end
       end # YamlFormatter
 
