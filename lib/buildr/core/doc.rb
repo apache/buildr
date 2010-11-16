@@ -204,7 +204,9 @@ module Buildr
 
       def source_files #:nodoc:
         @source_files ||= @files.map(&:to_s).map do |file|
-          File.directory?(file) ? FileList[File.join(file, "**/*.#{engine.class.source_ext}")] : file
+          Array(engine.class.source_ext).map do |ext|
+            File.directory?(file) ? FileList[File.join(file, "**/*.#{ext}")] : file
+          end
         end.flatten.reject { |file| @files.exclude?(file) }
       end
 
