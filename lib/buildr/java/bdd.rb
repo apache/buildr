@@ -240,7 +240,7 @@ module Buildr
 
     def runner_config
       runner = super
-      runner.gems.update 'rspec' => '>0'
+      runner.gems.update 'rspec' => '~>1.3.1'
       runner.requires.unshift 'spec'
       runner
     end
@@ -296,7 +296,7 @@ module Buildr
 
     include TestFramework::JRubyBased
 
-    VERSION = '0.5'
+    VERSION = '0.6'
 
     # pattern for rspec stories
     STORY_PATTERN    = /_(steps|story)\.rb$/

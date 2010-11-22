@@ -62,7 +62,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'rjb',                  '1.3.3' if spec.platform.to_s == 'ruby'
   spec.add_dependency 'rjb',                  '1.3.2' if spec.platform.to_s == 'x86-mswin32'
   spec.add_dependency 'atoulme-Antwrap',      '0.7.1'
-  spec.add_dependency 'rspec',                '>= 1.2.9'
+  spec.add_dependency 'rspec',                '~> 1.3.1'
   spec.add_dependency 'xml-simple',           '1.0.12'
   spec.add_dependency 'minitar',              '0.5.3'
   spec.add_dependency 'jruby-openssl',        '>= 0.7' if spec.platform.to_s == 'java'
