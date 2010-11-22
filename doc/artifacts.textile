@@ -102,6 +102,12 @@ When you call @repositories.remote@, you get an array of URLs for the various re
 repositories.remote << 'http://www.ibiblio.org/maven2/'
 {% endhighlight %}
 
+If your repository requires HTTP authentication, you can write,
+
+{% highlight ruby %}
+repositories.remote << URI.parse("http://user:password@repository.example.com")
+{% endhighlight %}
+
 If you need to use a proxy server to access remote repositories, you can set the environment variable @HTTP_PROXY@ to the proxy server URL (use @HTTPS_PROXY@ for proxying HTTPS connections).  You can also work without a proxy for certain hosts by specifying the @NO_PROXY@ environment variable.  For example:
 
 {% highlight sh %}
