@@ -120,6 +120,16 @@ task 'publish'=>:site do
   puts "Done"
 end
 
+# Update HTML + PDF documentation (but not entire site; no specs, coverage, etc.)
+task 'publish-doc' => ['buildr.pdf', '_site'] do
+  cp 'buildr.pdf', '_site'
+  target = "people.apache.org:/www/#{spec.name}.apache.org/"
+  puts "Uploading new site to #{target} ..."
+  sh 'rsync', '--progress', '--recursive', '_site/', target # Note: no --delete
+  sh 'ssh', 'people.apache.org', 'chmod', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
+  puts "Done"
+end
+
 task :clobber do
   rm_rf '_site'
   rm_f 'buildr.pdf'
