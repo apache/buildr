@@ -426,7 +426,8 @@ describe "ZipTask" do
     checkZip(@archive)
   end
 
-  # Check for possible corruption usign Java's ZipInputStream since it's stricter than rubyzip
+  # Check for possible corruption using Java's ZipInputStream and Java's "jar" command since
+  # they are stricter than rubyzip
   def checkZip(file)
     return unless File.exist?(file)
     zip = Java.java.util.zip.ZipInputStream.new(Java.java.io.FileInputStream.new(file))
@@ -434,6 +435,8 @@ describe "ZipTask" do
       # just iterate over all entries
     end
     zip.close()
+
+    sh "#{File.join(ENV['JAVA_HOME'], 'bin', 'jar')} tvf #{file}"
   end
 
   def inspect_archive
