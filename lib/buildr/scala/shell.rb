@@ -26,12 +26,12 @@ module Buildr
 
       def launch(task)
         jline = [File.expand_path("lib/jline.jar", Scalac.scala_home)].find_all { |f| File.exist? f }
+        jline = ['jline:jline:jar:0.9.94'] if jline.empty?
 
         cp = project.compile.dependencies +
              Scalac.dependencies +
              [ project.path_to(:target, :classes) ] +
-             task.classpath +
-             jline
+             task.classpath
 
         java_args = jrebel_args + task.java_args
 
@@ -41,7 +41,7 @@ module Buildr
                             '-cp', cp.join(File::PATH_SEPARATOR),
         {
           :properties => props,
-          :classpath => cp,
+          :classpath => cp + jline,
           :java_args => java_args
         }
       end
