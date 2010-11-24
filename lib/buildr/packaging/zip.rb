@@ -17,16 +17,18 @@
 if RUBY_VERSION >= '1.9.0' # Required to properly load RubyZip under Ruby 1.9
   $LOADED_FEATURES.unshift 'ftools'
   require 'fileutils'
+
   def File.move(source, dest)
     FileUtils.move source, dest
   end
+
   def File.rm_rf(path)
     FileUtils.rm_rf path
   end
 end
+
 require 'zip/zip'
 require 'zip/zipfilesystem'
-
 
 module Zip #:nodoc:
 
@@ -69,5 +71,108 @@ module Zip #:nodoc:
         all? { |pattern| content =~ pattern }
     end
 
+    # Override of write_c_dir_entry to fix comments being set to a fixnum instead of string
+    def write_c_dir_entry(io) #:nodoc:all
+      case @fstype
+        when FSTYPE_UNIX
+          ft = nil
+          case @ftype
+            when :file
+              ft = 010
+              @unix_perms ||= 0644
+            when :directory
+              ft = 004
+              @unix_perms ||= 0755
+            when :symlink
+              ft = 012
+              @unix_perms ||= 0755
+            else
+              raise ZipInternalError, "unknown file type #{self.inspect}"
+          end
+
+          @externalFileAttributes = (ft << 12 | (@unix_perms & 07777)) << 16
+      end
+
+      io <<
+        [0x02014b50,
+         @version,                  # version of encoding software
+         @fstype,                   # filesystem type
+         10,                        # @versionNeededToExtract
+         0,                         # @gp_flags
+         @compression_method,
+         @time.to_binary_dos_time,  # @lastModTime
+         @time.to_binary_dos_date,  # @lastModDate
+         @crc,
+         @compressed_size,
+         @size,
+         @name ? @name.length : 0,
+         @extra ? @extra.c_dir_length : 0,
+         @comment ? comment.to_s.length : 0,
+         0,                         # disk number start
+         @internalFileAttributes,   # file type (binary=0, text=1)
+         @externalFileAttributes,   # native filesystem attributes
+         @localHeaderOffset,
+         @name,
+         @extra,
+         @comment
+      ].pack('VCCvvvvvVVVvvvvvVV')
+
+      io << @name
+      io << (@extra ? @extra.to_c_dir_bin : "")
+      io << @comment
+    end
+
+    # Override write_c_dir_entry to fix comments being set to a fixnum instead of string
+    def write_c_dir_entry(io) #:nodoc:all
+      @comment = "" if @comment.nil? || @comment == -1  # Hack fix @comment being nil or fixnum -1
+
+      case @fstype
+        when FSTYPE_UNIX
+          ft = nil
+          case @ftype
+            when :file
+              ft = 010
+              @unix_perms ||= 0644
+            when :directory
+              ft = 004
+              @unix_perms ||= 0755
+            when :symlink
+              ft = 012
+              @unix_perms ||= 0755
+            else
+              raise ZipInternalError, "unknown file type #{self.inspect}"
+          end
+
+          @externalFileAttributes = (ft << 12 | (@unix_perms & 07777)) << 16
+      end
+
+      io <<
+        [0x02014b50,
+         @version,                  # version of encoding software
+         @fstype,                   # filesystem type
+         10,                        # @versionNeededToExtract
+         0,                         # @gp_flags
+         @compression_method,
+         @time.to_binary_dos_time,  # @lastModTime
+         @time.to_binary_dos_date,  # @lastModDate
+         @crc,
+         @compressed_size,
+         @size,
+         @name ? @name.length : 0,
+         @extra ? @extra.c_dir_length : 0,
+         @comment ? @comment.length : 0,
+         0,                         # disk number start
+         @internalFileAttributes,   # file type (binary=0, text=1)
+         @externalFileAttributes,   # native filesystem attributes
+         @localHeaderOffset,
+         @name,
+         @extra,
+         @comment].pack('VCCvvvvvVVVvvvvvVV')
+
+      io << @name
+      io << (@extra ? @extra.to_c_dir_bin : "")
+      io << @comment
+
+    end
   end
 end
