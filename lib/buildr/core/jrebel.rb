@@ -25,6 +25,7 @@ module Buildr
 
     def rebel_jar
       if jrebel_home
+        # jrebel_home may point to jrebel.jar directly
         File.directory?(jrebel_home) ? File.join(jrebel_home, 'jrebel.jar') : jrebel_home
       end
     end
