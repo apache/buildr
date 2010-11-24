@@ -430,16 +430,16 @@ describe "ZipTask" do
   # they are stricter than rubyzip
   def checkZip(file)
     return unless File.exist?(file)
-    empty = true
     zip = Java.java.util.zip.ZipInputStream.new(Java.java.io.FileInputStream.new(file))
+    zip_entry_count = 0
     while entry = zip.getNextEntry do
       # just iterate over all entries
-      empty = false
+      zip_entry_count = zip_entry_count + 1
     end
     zip.close()
 
     # jar tool fails with "ZipException: error in opening zip file" if empty
-    unless empty
+    if zip_entry_count > 0
       sh "#{File.join(ENV['JAVA_HOME'], 'bin', 'jar')} tvf #{file}"
     end
   end

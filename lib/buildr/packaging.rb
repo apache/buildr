@@ -20,5 +20,6 @@ require 'buildr/packaging/archive'
 require 'buildr/packaging/ziptask'
 require 'buildr/packaging/tar'
 require 'buildr/packaging/gems'
+require 'buildr/packaging/zip'
 autoload :Zlib, 'zlib'
-autoload :Zip, 'buildr/packaging/zip'
+
