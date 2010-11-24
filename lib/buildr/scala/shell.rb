@@ -35,7 +35,7 @@ module Buildr
 
         java_args = jrebel_args + task.java_args
 
-        props = jrebel_props(project).merge(task.properties).merge 'scala.home' => Scalac.scala_home
+        props = jrebel_props(project).merge(task.properties)
 
         Java::Commands.java 'scala.tools.nsc.MainGenericRunner',
                             '-cp', cp.join(File::PATH_SEPARATOR),
