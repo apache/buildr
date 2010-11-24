@@ -20,11 +20,13 @@ module Buildr
         @jrebel_home = ENV['REBEL_HOME'] || ENV['JREBEL'] || ENV['JREBEL_HOME']
       end
 
-      (@rebel_home && File.exists?(@rebel_home)) ? @jrebel_home : nil
+      (@jrebel_home && File.exists?(@jrebel_home)) ? @jrebel_home : nil
     end
 
     def rebel_jar
-      @rebel_home ? File.join(@jrebel_home, 'jrebel.jar') : nil
+      if jrebel_home
+        File.directory?(jrebel_home) ? File.join(jrebel_home, 'jrebel.jar') : jrebel_home
+      end
     end
 
     def jrebel_args
