@@ -29,7 +29,7 @@ describe Buildr::RSpec do
 
   it 'should read passed specs from result yaml' do
     write('src/spec/ruby/success_spec.rb', 'describe("success") { it("is true") { nil.should be_nil } }')
-    
+
     project('foo').test.invoke
     project('foo').test.passed_tests.should eql([File.expand_path('src/spec/ruby/success_spec.rb')])
   end
@@ -41,7 +41,7 @@ describe Buildr::RSpec do
     write(failure, 'describe("failure") { it("is false") { true.should == false } }')
     error = File.expand_path('src/spec/ruby/error_spec.rb')
     write(error, 'describe("error") { it("raises") { lambda; } }')
-    
+
     lambda { project('foo').test.invoke }.should raise_error(/Tests failed/)
     project('foo').test.tests.should include(success, failure, error)
     project('foo').test.failed_tests.sort.should eql([failure, error].sort)
@@ -234,7 +234,7 @@ describe Buildr::JtestR do
     failure = File.expand_path('src/spec/ruby/failure_expect.rb')
     write(failure, 'Expectations { expect(true) { false } }')
     error = File.expand_path('src/spec/ruby/error_expect.rb')
-    write(error, 'Expectations { expect(nil) { lambda; } }')
+    write(error, 'Expectations { expect(nil) { lambda {}; } }')
     foo do
       lambda { test.invoke }.should raise_error(/Tests failed/)
       test.tests.should include(success, failure, error)

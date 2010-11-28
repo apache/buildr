@@ -26,7 +26,6 @@
 # <%= user_config %>
 
 begin
-
   <%= jruby_gem %>
   <%= dependencies.map(&:to_s).inspect %>.each { |dep| $CLASSPATH << dep }
   <%= runner.gems.inspect %>.each { |ary| JRuby.gem(*ary.flatten) }
@@ -87,21 +86,20 @@ begin
      output = STDOUT
   <% end %>
 
-
   args = [ '<%= spec_dir %>', # the directory to search for jtestr files
            JtestR::SimpleLogger::ERR, # log level (DEBUG/WARN/ERR)
            JtestR::GenericResultHandler::QUIET, #output level (QUIET/VERBOSE)
            fake_out, # output STDOUT
            [], # groups to run
            # Use JtestR::GenericResultHandler for debugging
-           Buildr::TestFramework::TestResult::RSpecResultHandler, # result handler
+           Buildr::JtestR::ResultHandler, # result handler
            []  # classpath
          ]
 
   argv = <%= runner.rspec.inspect %> || []
   argv.push *<%= tests.inspect %>
-  Buildr::TestFramework::TestResult::RSpecResultHandler.init(argv, output, output)
-  Buildr::TestFramework::TestResult::RSpecResultHandler.test_files = <%= tests.inspect %>
+  Buildr::JtestR::ResultHandler.init(argv, output, output)
+  Buildr::JtestR::ResultHandler.test_files = <%= tests.inspect %>
 
   jtestr.run *args
 
@@ -110,7 +108,7 @@ rescue => e
   puts "-[--- ERROR ---]-", e.class, e.message, *e.backtrace
 end
 
-exit 0 # let buildr find the erros from the result yaml
+exit 0 # let buildr find the errors from the result yaml
 
 # Local Variables:
 # mode: ruby

@@ -17,7 +17,6 @@
 require 'buildr/java/tests'
 require 'buildr/java/test_result'
 
-
 module Buildr
 
   # Mixin for test frameworks using src/spec/{lang}
@@ -373,7 +372,11 @@ module Buildr
       # so the rspec version used depends on the jtestr jar.
       runner.requires.unshift 'jtestr'
       runner.gems.update 'rspec' => '=1.3.0'
-      runner.requires.unshift 'rspec'
+      runner.requires.unshift 'spec'
+      runner.requires.unshift File.join(File.dirname(__FILE__), 'jtestr_result')
+      runner.rspec = ['--format', 'progress', '--format', "html:#{runner.html_report}"]
+      runner.format.each { |format| runner.rspec << '--format' << format } if runner.format
+      runner.rspec.push '--format', "Buildr::JtestR::YamlFormatter:#{runner.result}"
       runner
     end
 
@@ -381,9 +384,7 @@ module Buildr
       runner_erb = File.join(File.dirname(__FILE__), 'jtestr_runner.rb.erb')
       Filter::Mapper.new(:erb, binding).transform(File.read(runner_erb), runner_erb)
     end
-
   end
-
 
   # JBehave is a Java BDD framework. To use in your project:
   #   test.using :jbehave
@@ -456,3 +457,4 @@ end
 Buildr::TestFramework << Buildr::RSpec
 Buildr::TestFramework << Buildr::JtestR
 Buildr::TestFramework << Buildr::JBehave
+
