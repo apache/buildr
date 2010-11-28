@@ -235,8 +235,9 @@ module Buildr
       #   project(name) => project
       #
       # See Buildr#project.
-      def project(*args) #:nodoc:
+      def project(*args, &block) #:nodoc:
         options = args.pop if Hash === args.last
+        return define(args.first, options, &block) if block
         rake_check_options options, :scope if options
         raise ArgumentError, 'Only one project name at a time' unless args.size == 1
         @projects ||= {}
@@ -557,7 +558,7 @@ module Buildr
     #   define 'foo' do
     #     project.version = '1.0'
     #   end
-    def project(*args)
+    def project(*args, &block)
       if Hash === args.last
         options = args.pop
       else
@@ -566,7 +567,7 @@ module Buildr
       if args.empty?
         self
       else
-        Project.project *(args + [{ :scope=>self.name }.merge(options)])
+        Project.project *(args + [{ :scope=>self.name }.merge(options)]), &block
       end
     end
 
@@ -641,7 +642,7 @@ module Buildr
     def call_callbacks(phase) #:nodoc:
       remaining = @callbacks.select { |cb| cb.phase == phase }
       known_callbacks = remaining.map { |cb| cb.name }
-      
+
       # call each extension in order
       until remaining.empty?
         callback = first_satisfied(remaining, known_callbacks)
@@ -652,9 +653,9 @@ module Buildr
         callback.blocks.each { |b| b.call(self) }
       end
     end
-    
+
     private
-    
+
     # find first callback with satisfied dependencies
     def first_satisfied(r, known_callbacks)
       remaining_names = r.map { |cb| cb.name }
@@ -944,8 +945,8 @@ module Buildr
   #   end
   #
   #   puts project('myapp:beans').version
-  def project(*args)
-    Project.project *args
+  def project(*args, &block)
+    Project.project *args, &block
   end
 
   # :call-seq:

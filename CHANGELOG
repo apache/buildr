@@ -5,6 +5,7 @@
 * Added:  BUILDR-537 Shell tasks should use JAVA_OPTS by default
 * Added:  BUILDR-538 Shell tasks should support passing :java_args
 * Added:  BUILDR-544 Support ${groupId} in pom files (Chris Dean)
+* Added:  BUILDR-552 Projects may now be defined using project(:name) and a block
 * Change: BUILDR-540 Upgrade to rspec 2.1.0
 * Change: BUILDR-546 Upgrade to Rubyzip 0.9.4 (Michael Guymon)
 * Fixed:  BUILDR-542 Release task:  SVN tagging fails if parent tag directory

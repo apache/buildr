@@ -499,6 +499,16 @@ describe Buildr, '#project' do
     project('foo').should be(foo)
   end
 
+  it 'should define a project if a block is given' do
+    foo = project('foo') {}
+    project('foo').should be(foo)
+  end
+
+  it 'should define a project if properties and a block are given' do
+    foo = project('foo', :version => '1.2') {}
+    project('foo').should be(foo)
+  end
+
   it 'should find a project by its full name' do
     bar, baz = nil
     define('foo') { bar = define('bar') { baz = define('baz')  } }
