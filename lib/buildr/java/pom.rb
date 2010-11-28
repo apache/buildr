@@ -115,7 +115,7 @@ module Buildr
       @properties ||= begin
         pom = ["groupId", "artifactId", "version", "packaging"].inject({}) { |hash, key|
           value = project[key] || (parent ? parent.project[key] : nil)
-          hash["pom.#{key}"] = hash["project.#{key}"] = value_of(value) if value
+          hash[key] = hash["pom.#{key}"] = hash["project.#{key}"] = value_of(value) if value
           hash
         }
         props = project["properties"].first rescue {}
