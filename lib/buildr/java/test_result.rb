@@ -57,8 +57,6 @@ module Buildr #:nodoc:
       class YamlFormatter  < ::RSpec::Core::Formatters::BaseFormatter
         attr_reader :result
 
-        # attr_accessor :example_group, :options, :output
-
         def initialize(output)
           super(output)
           @result = Hash.new
