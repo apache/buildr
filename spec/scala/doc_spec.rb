@@ -19,8 +19,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers')
 describe "Scaladoc" do
 
   before(:each) do
-    # Force Scala 2.8.0 for specs; don't want to rely on SCALA_HOME
-    Buildr.settings.build['scala.version'] = "2.8.0"
+    # Force Scala 2.8.1 for specs; don't want to rely on SCALA_HOME
+    Buildr.settings.build['scala.version'] = "2.8.1"
   end
 
   it 'should pick -doc-title from project name by default' do
@@ -52,7 +52,7 @@ describe "Scaladoc" do
     project('foo').doc.options[:"doc-title"].should eql('explicit')
   end
 
-  it 'should convert :windowtitle to -doc-title for Scala 2.8.0' do
+  it 'should convert :windowtitle to -doc-title for Scala 2.8.1' do
     write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }'
     define('foo') do
       doc.using :windowtitle => "foo"
