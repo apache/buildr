@@ -33,6 +33,15 @@ module Buildr
 
   private
 
+    # run block on sub-projects depth-first, then on this project
+    def each_project(&block)
+      depth_first = lambda do |p|
+        p.projects.each { |c| depth_first.call(c, &block) }
+        block.call(p)
+      end
+      depth_first.call(@project)
+    end
+
     def associate_with(project)
       @project = project
     end
@@ -40,7 +49,7 @@ module Buildr
     def monitor_and_compile
       # we don't want to actually fail if our dependencies don't succeed
       begin
-        [:compile, 'test:compile'].each { |name| project.task(name).invoke }
+        each_project { |p| p.test.compile.invoke }
         build_completed(project)
       rescue Exception => ex
         $stderr.puts $terminal.color(ex.message, :red)
@@ -48,60 +57,54 @@ module Buildr
 
         build_failed(project, ex)
       end
-      main_dirs = project.compile.sources.map(&:to_s)
-      test_dirs = project.task('test:compile').sources.map(&:to_s)
-      res_dirs = project.resources.sources.map(&:to_s)
 
-      source_ext = lambda { |compiler| Array(Buildr::Compiler.select(compiler).source_ext).map(&:to_s) }
-      main_ext = source_ext.call(project.compile.compiler) unless project.compile.compiler.nil?
-      test_ext = source_ext.call(project.task('test:compile').compiler) unless project.task('test:compile').compiler.nil?
-
-      test_tail = if test_dirs.empty? then '' else ",{#{test_dirs.join ','}}/**/*.{#{test_ext.join ','}}" end
-      res_tail = if res_dirs.empty? then '' else ",{#{res_dirs.join ','}}/**/*" end
-
-      pattern = "{{#{main_dirs.join ','}}/**/*.{#{main_ext.join ','}}#{test_tail}#{res_tail}}"
-
-      times, _ = check_mtime pattern, {}     # establish baseline
-
-      dir_names = (main_dirs + test_dirs + res_dirs).map { |file| strip_filename project, file }
-      if dir_names.length == 1
-        info "Monitoring directory: #{dir_names.first}"
-      else
-        info "Monitoring directories: [#{dir_names.join ', '}]"
+      dirs = []
+      each_project do |p|
+        dirs += p.compile.sources.map(&:to_s)
+        dirs += p.test.compile.sources.map(&:to_s)
+        dirs += p.resources.sources.map(&:to_s)
       end
-      trace "Monitoring extensions: [#{main_ext.join ', '}]"
+      if dirs.length == 1
+        info "Monitoring directory: #{dirs.first}"
+      else
+        info "Monitoring directories: [#{dirs.join ', '}]"
+      end
+
+      timestamps = lambda do
+        times = {}
+        dirs.each { |d| Dir.glob("#{d}/**/*").map { |f| times[f] = File.mtime f } }
+        times
+      end
+
+      old_times = timestamps.call()
 
       while true
         sleep delay
 
-        times, changed = check_mtime pattern, times
+        new_times = timestamps.call()
+        changed = changed(new_times, old_times)
+        old_times = new_times
+
         unless changed.empty?
           info ''    # better spacing
 
           changed.each do |file|
-            info "Detected changes in #{strip_filename project, file}"
+            info "Detected changes in #{file}"
           end
 
-          in_main = main_dirs.any? do |dir|
-            changed.any? { |file| file.index(dir) == 0 }
+          each_project do |p|
+            # transitively reenable prerequisites
+            reenable = lambda do |t|
+              t = task(t)
+              t.reenable
+              t.prerequisites.each { |c| reenable.call(c) }
+            end
+            reenable.call(p.test.compile)
           end
-
-          in_test = test_dirs.any? do |dir|
-            changed.any? { |file| file.index(dir) == 0 }
-          end
-
-          in_res = res_dirs.any? do |dir|
-            changed.any? { |file| file.index(dir) == 0 }
-          end
-
-          project.task(:compile).reenable if in_main
-          project.task('test:compile').reenable if in_test || in_main
 
           successful = true
           begin
-            project.task(:resources).filter.run if in_res
-            project.task(:compile).invoke if in_main
-            project.task('test:compile').invoke if in_test || in_main
+            each_project { |p| p.test.compile.invoke }
             build_completed(project)
           rescue Exception => ex
             $stderr.puts $terminal.color(ex.message, :red)
@@ -122,27 +125,20 @@ module Buildr
       Buildr.application.build_failed('Compilation failed', project.path_to, ex)
     end
 
-    def check_mtime(pattern, old_times)
-      times = {}
+    def changed(new_times, old_times)
       changed = []
-
-      Dir.glob pattern do |fname|
-        times[fname] = File.mtime fname
-        if old_times[fname].nil? || old_times[fname] < File.mtime(fname)
+      new_times.each do |(fname,newtime)|
+        if old_times[fname].nil? || old_times[fname] < newtime
           changed << fname
         end
       end
 
       # detect deletion (slower than it could be)
       old_times.each_key do |fname|
-        changed << fname unless times.has_key? fname
+        changed << fname unless new_times.has_key? fname
       end
 
-      [times, changed]
-    end
-
-    def strip_filename(project, name)
-      name.gsub project.base_dir + File::SEPARATOR, ''
+      changed
     end
   end
 
@@ -157,7 +153,6 @@ module Buildr
     before_define do |project|
       cc = CCTask.define_task :cc
       cc.send :associate_with, project
-      project.recursive_task(:cc)
     end
 
     def cc

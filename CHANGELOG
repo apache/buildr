@@ -14,6 +14,7 @@
           with classifier
 * Fixed:  BUILDR-522 Send notifications when continuous compilation
           succeeds/fails.
+* Fixed:  BUILDR-551 Continuous compilation not working for project trees
 * Change: Upgrade to Groovy 1.7.5
 * Change: BUILDR-545 Add the ability to specify the description element in in
           application.xml contained within an ear.

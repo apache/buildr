@@ -17,49 +17,37 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 module CCHelper
-  def setup_cc
-    project = define('foo')
 
-    cc = project.cc
-    project.stub!(:task).with(:cc).and_return(cc)
-
-    compile = mock 'compile'
-    project.stub!(:task).with(:compile).and_return(compile)
-
-    test_compile = mock 'test:compile'
-    project.stub!(:task).with('test:compile').and_return(test_compile)
-
-    filter = mock('resources').tap do |resources|
-      project.stub!(:task).with(:resources).and_return(resources)
-
-      back = mock 'filter'
-      resources.stub!(:filter).and_return(back)
-
-      back
+  # monkey-patch task instance to track number of times it is run
+  def instrument_task(task)
+    class << task
+      attr_accessor :run_count
     end
-
-    sources
-    tests
-    resources
-
-    [ project, compile, test_compile, filter ]
+    task.run_count = 0
+    task.enhance do |t|
+      t.run_count += 1
+    end
+    task
   end
 
-  def sources
-    @sources ||= ['Test1.java', 'Test2.java'].map { |f| File.join('src/main/java/thepackage', f) }.
-      each { |src| write src, "package thepackage; class #{src.pathmap('%n')} {}" }
+  def instrument_project(project)
+    instrument_task project.compile
+    instrument_task project.test.compile
+    instrument_task project.resources
+    project
   end
 
-  def tests
-    @tests ||= ['Test1.java', 'Test2.java'].map { |f| File.join('src/test/java/thepackage', f) }.
-      each { |src| write src, "package thepackage; class #{src.pathmap('%n')} {}" }
+  def define_foo()
+    @foo = define('foo')
+    instrument_project @foo
+    @foo
   end
 
-  def resources
-    @resources ||= ['Test1.html', 'Test2.html'].map { |f| File.join('src/main/resources', f) }.
-      each { |src| write src, '<html></html>' }
+  def foo()
+    @foo
   end
 end
+
 
 describe Buildr::CCTask do
   include CCHelper
@@ -69,101 +57,168 @@ describe Buildr::CCTask do
   end
 
   it 'should compile and test:compile on initial start' do
-    project, compile, test_compile, filter = setup_cc
+    ['Test1.java', 'Test2.java'].map { |f| File.join('src/main/java/thepackage', f) }.
+      each { |src| write src, "package thepackage; class #{src.pathmap('%n')} {}" }
 
-    compile.should_receive :invoke
-    test_compile.should_receive :invoke
-    filter.should_not_receive :run
+    ['Test1.java', 'Test2.java'].map { |f| File.join('src/test/java/thepackage', f) }.
+      each { |src| write src, "package thepackage; class #{src.pathmap('%n')} {}" }
+
+    ['Test1.html', 'Test2.html'].map { |f| File.join('src/main/resources', f) }.
+      each { |src| write src, '<html></html>' }
+
+    define_foo()
 
     thread = Thread.new do
-      project.cc.invoke
+      foo.cc.invoke
     end
 
-    sleep 0.5
+    sleep 1
+
+    foo.compile.run_count.should == 1
+    foo.test.compile.run_count.should == 1
 
     thread.exit
   end
 
   it 'should detect a file change' do |spec|
-    
+    write 'src/main/resources/my.properties', "# comment"
     write 'src/main/java/Example.java', "public class Example {}"
     write 'src/test/java/ExampleTest.java', "public class ExampleTest {}"
-    
-    project = define("foo")
-    compile = project.compile
-    test_compile = project.test.compile
-    filter = project.resources
-    
-    # After first period:
-    compile.should_receive :invoke
-    test_compile.should_receive :invoke
-    filter.should_not_receive :run
-    
+
+    define_foo
+
     thread = Thread.new do
       begin
-        project.cc.invoke
+        foo.cc.invoke
       rescue => e
         p "unexpected exception #{e.inspect}"
         p e.backtrace.join("\n").inspect
       end
     end
-    
-    sleep 0.5
-    
-    compile.should_receive :reenable
-    compile.should_receive :invoke
 
-    test_compile.should_receive :reenable
-    test_compile.should_receive :invoke
+    sleep 1
 
-    filter.should_not_receive :run
-    
+    foo.compile.run_count.should == 1
+    foo.test.compile.run_count.should == 1
+    foo.resources.run_count.should == 1
+
     sleep 1 # Wait one sec as the timestamp needs to be different.
+
     touch File.join(Dir.pwd, 'src/main/java/Example.java')
-    sleep 0.3# Wait one standard delay and half
-    
+
+    sleep 1
+
+    foo.compile.run_count.should == 2
+    foo.test.compile.run_count.should == 2
+    foo.resources.run_count.should == 2
+
     thread.exit
   end
-  
-  
+
   it 'should support subprojects' do |spec|
-    
     write 'foo/src/main/java/Example.java', "public class Example {}"
     write 'foo/src/test/java/ExampleTest.java', "public class ExampleTest {}"
-    
+
     define 'container' do
       define('foo')
     end
-    
-    project = project("container:foo")
-    compile = project.compile
-    test_compile = project.test.compile
-    filter = project.resources
-    
-    # After first period:
-    compile.should_receive :invoke
-    test_compile.should_receive :invoke
-    filter.should_not_receive :run
-    
-    thread = Thread.new do
-      project("container").cc.invoke
-    end
-    
-    sleep 0.5
-    
-    # After we changed the file:
-    compile.should_receive :reenable
-    compile.should_receive :invoke
 
-    test_compile.should_receive :reenable
-    test_compile.should_receive :invoke
-    
-    filter.should_not_receive :run
-    
-    sleep 1 # Wait one sec as the timestamp needs to be different.
+    foo = instrument_project project("container:foo")
+
+    thread = Thread.new do
+      begin
+        project("container").cc.invoke
+      rescue => e
+        p "unexpected exception #{e.inspect}"
+        p e.backtrace.join("\n").inspect
+      end
+    end
+
+    sleep 1
+
+    foo.compile.run_count.should == 1
+    foo.test.compile.run_count.should == 1
+    foo.resources.run_count.should == 1
+
+    file("foo/target/classes/Example.class").should exist
+    tstamp = File.mtime("foo/target/classes/Example.class")
     touch File.join(Dir.pwd, 'foo/src/main/java/Example.java')
-    sleep 0.3 # Wait one standard delay and half
-    
+
+    sleep 1
+
+    foo.compile.run_count.should == 2
+    foo.test.compile.run_count.should == 2
+    foo.resources.run_count.should == 2
+    File.mtime("foo/target/classes/Example.class").should_not == tstamp
+
+    thread.exit
+  end
+
+  it 'should support parent and subprojects' do |spec|
+    write 'foo/src/main/java/Example.java', "public class Example {}"
+    write 'foo/src/test/java/ExampleTest.java', "public class ExampleTest {}"
+
+    write 'bar/src/main/java/Example.java', "public class Example {}"
+    write 'bar/src/test/java/ExampleTest.java', "public class ExampleTest {}"
+
+    write 'src/main/java/Example.java', "public class Example {}"
+    write 'src/test/java/ExampleTest.java', "public class ExampleTest {}"
+
+    write 'src/main/resources/foo.txt', "content"
+
+    define 'container' do
+      define('foo')
+      define('bar')
+    end
+
+    all = projects("container", "container:foo", "container:bar")
+    all.each { |p| instrument_project(p) }
+
+    thread = Thread.new do
+      begin
+        project("container").cc.invoke
+      rescue => e
+        p "unexpected exception #{e.inspect}"
+        p e.backtrace.join("\n").inspect
+      end
+    end
+
+    sleep 2
+
+    all.each do |p|
+      p.compile.run_count.should == 1
+      p.test.compile.run_count.should == 1
+      p.resources.run_count.should == 1
+    end
+
+    file("foo/target/classes/Example.class").should exist
+    tstamp = File.mtime("foo/target/classes/Example.class")
+
+    touch 'foo/src/main/java/Example.java'
+    p "after touch"
+    sleep 2
+
+    project("container:foo").tap do |p|
+      p.compile.run_count.should == 2
+      p.test.compile.run_count.should == 2
+      p.resources.run_count.should == 2
+    end
+    project("container").tap do |p|
+      p.compile.run_count.should == 1 # not_needed
+      p.test.compile.run_count.should == 1  # not_needed
+      p.resources.run_count.should == 2
+    end
+    File.mtime("foo/target/classes/Example.class").should_not == tstamp
+
+    touch 'src/main/java/Example.java'
+    sleep 2
+
+    project("container").tap do |p|
+      p.compile.run_count.should == 2
+      p.test.compile.run_count.should == 2
+      p.resources.run_count.should == 3
+    end
+
     thread.exit
   end
 end
