@@ -21,8 +21,8 @@ Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
 repositories.remote << 'http://repo1.maven.org/maven2'
 repositories.remote << 'http://scala-tools.org/repo-releases'
 
-# Force Scala 2.8.0 for specs; don't want to rely on SCALA_HOME
-Buildr.settings.build['scala.version'] = "2.8.0"
+# Force Scala 2.8.1 for specs; don't want to rely on SCALA_HOME
+Buildr.settings.build['scala.version'] = "2.8.1"
 
 # Add a 'require' here only for optional extensions, not for extensions that should be loaded by default.
 require 'buildr/clojure'
