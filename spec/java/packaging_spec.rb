@@ -800,6 +800,17 @@ describe Packaging, 'ear' do
     inspect_application_xml { |xml| xml.get_text('/application/description').should == 'MyDescription' }
   end
 
+  it 'should add security-roles to application.xml if given' do
+    define 'foo', :version=>'1.0' do
+	  package(:ear).security_roles << {:id=>'sr1',
+		:description=>'System Administrator', :name=>'systemadministrator'}
+	end
+	inspect_application_xml do |xml|
+		xml.get_text("/application/security-role[@id='sr1']/description").to_s.should eql('System Administrator')
+		xml.get_text("/application/security-role[@id='sr1']/role-name").to_s.should eql('systemadministrator')
+	end
+  end
+
   it 'should map WARs to /war directory' do
     define 'foo', :version=>'1.0' do
       package(:ear) << package(:war)

@@ -1,4 +1,6 @@
 1.4.5 (Pending)
+* Added:  BUILDR-125 Add support for <security-role> in application.xml of
+          EAR packaging (Mikael Amborn)
 * Added:  BUILDR-550 Add support for groovydoc
 * Added:  BUILDR-521: System tray notifications for Linux systems
           (via libnotify/notify-send)

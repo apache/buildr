@@ -328,6 +328,15 @@ package(:ear).add project('coolWebService').package(:war), :context_root=>'cooln
 
 If you need to disable the context root (e.g. for Portlets), set @context_root@ to @false@.
 
+It is also possible to add @security-role@ tags to the @application.xml@ file by appending a hash with @:id@, @:description@ and @:name@ to the @security_role@ array, like so:
+
+{% highlight ruby %}
+package(:ear).security_roles << {:id=>'SecurityRole_123',
+		:description=>'Read only user', :name=>'coolUser'}
+package(:ear).security_roles << {:id=>'SecurityRole_456',
+		:description=>'Super user', :name=>'superCoolUser'}
+{% endhighlight %}
+
 
 h2(#tar).  Packaging Tars and GZipped Tars
 
