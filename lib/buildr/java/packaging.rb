@@ -395,11 +395,13 @@ module Buildr
         attr_accessor :description
         # Map from component type to path inside the EAR.
         attr_accessor :dirs
+        # Security roles entry for application.xml
+        attr_accessor :security_roles
 
         def initialize(*args)
           super
           @dirs = Hash.new { |h, k| k.to_s }
-          @libs, @components = [], []
+          @libs, @components, @security_roles = [], [], []
           prepare do
             @components.each do |component|
               path(component[:path]).include(component[:clone] || component[:artifact])
@@ -531,7 +533,7 @@ module Buildr
           "http://java.sun.com/j2ee/dtds/application_1_2.dtd"
           xml.application do
             xml.tag! 'display-name', display_name
-            desc = self.description || @project.comment 
+            desc = self.description || @project.comment
             xml.tag! 'description', desc if desc
             @components.each do |comp|
               basename = comp[:artifact].to_s.pathmap('%f')
@@ -550,6 +552,12 @@ module Buildr
                 end
               when :jar
                 xml.jar uri
+              end
+            end
+            @security_roles.each do |role|
+              xml.tag! 'security-role', :id=>role[:id] do
+                xml.description role[:description]
+                xml.tag! 'role-name', role[:name]
               end
             end
           end
