@@ -464,6 +464,27 @@ $ buildr --require buildr/jdepend jdepend:swing
 $ buildr -rbuildr/java/cobertura cobertura:html
 {% endhighlight %}
 
+h2(#jaxb_xjc). JAXB Xjc Compiler
+
+Buildr includes an extension that provides the ability to invoke jaxb xjc binding compiler. A typical project that uses the extension may look something like;
+
+{% highlight ruby %}
+require 'buildr/jaxb_xjc'
+
+define "foo" do
+  project.version = "1.0.0"
+  compile.from compile_jaxb(_('src/schemas/wildfire-1.3.xsd'),
+                            "-quiet",
+                            :package => "org.foo.api")
+  package :jar
+end
+{% endhighlight %}
+
+The method compile_jaxb accepts either an array of files or a single file as the first parameter. It then accepts 0 or more arguments that are passed to the underlying XJC compiler. The arguments are documented on the "jaxb site":https://jaxb.dev.java.net/nonav/2.2.1/docs/xjc.html. If the last argument is an options hash then the extension handles the options hash specially. The supported options include:
+
+* <tt>:directory</tt>: The directory to which source is generated. Defaults to <tt>_(:target, :generated, :jaxb)</tt>
+* <tt>:keep_content</tt>: By default the generated directory will be deleted. If <tt>true</tt> is specified for this parameter the directory will not be deleted.
+* <tt>:package</tt>: The package in which the source is generated.
 
 h2(#anything_ruby). Anything Ruby Can Do
 
