@@ -29,12 +29,14 @@ require 'buildr/clojure'
 require 'buildr/groovy'
 require 'buildr/scala'
 require 'buildr/bnd'
+require 'buildr/jaxb_xjc'
 
 Java.load # Anything added to the classpath.
 artifacts(
   TestFramework.frameworks.map(&:dependencies).flatten,
   JUnit.ant_taskdef,
   Buildr::Groovy.dependencies,
+  Buildr::JaxbXjc.dependencies,
   Buildr::Bnd.dependencies,
   Buildr::Scala::Specs.dependencies,
   Buildr::Shell::BeanShell.artifact,
