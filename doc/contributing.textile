@@ -263,3 +263,6 @@ Daniel originally came to Buildr in search of a Scala build tool which was bette
 
 Antoine used Buildr first as an excuse to evade in Ruby land, creating plugins for Debian packaging, GWT compilation, or the NSIS installer. His main area of interest is the resolving of dependencies in the OSGi world. He works on making Buildr a standalone rock solid tool.
 
+* Peter Donald
+
+Peter already used rake to automate jobs in his ruby and java projects. When it came time to upgrade that home grown ant/java/rake build system Buildr seemed the perfect match.
