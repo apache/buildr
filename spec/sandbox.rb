@@ -28,12 +28,14 @@ Buildr.settings.build['scala.version'] = "2.8.1"
 require 'buildr/clojure'
 require 'buildr/groovy'
 require 'buildr/scala'
+require 'buildr/bnd'
 
 Java.load # Anything added to the classpath.
 artifacts(
   TestFramework.frameworks.map(&:dependencies).flatten,
   JUnit.ant_taskdef,
   Buildr::Groovy.dependencies,
+  Buildr::Bnd.dependencies,
   Buildr::Scala::Specs.dependencies,
   Buildr::Shell::BeanShell.artifact,
   Buildr::Clojure.dependencies

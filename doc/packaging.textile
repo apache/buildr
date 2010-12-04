@@ -337,6 +337,180 @@ package(:ear).security_roles << {:id=>'SecurityRole_456',
 		:description=>'Super user', :name=>'superCoolUser'}
 {% endhighlight %}
 
+h2(#bundle).  Packaging OSGi Bundles
+
+OSGi bundles are jar files with additional metadata stored in the manifest. Buildr uses an external tool "Bnd":http://www.aqute.biz/Code/Bnd to create the package. Directives and properties can be explicitly passed to the build tool and buildr will provide reasonable defaults for properties that can be derived from the project model. Please see the bnd tool for documentation on the available properties.
+
+The bundle packaging format is included as an addon so the build file must explicitly require the addon using using <code>require "buildr/bnd"</code> and must add a remote repository from which the bnd can be downloaded. A typical project that uses the bundle packaging addon may look something like;
+
+{% highlight ruby %}
+require "buildr/bnd"
+
+repositories.remote << Buildr::Bnd.remote_repository
+
+define 'myProject' do
+  ...
+  package(:bundle).tap do |bnd|
+    bnd['Import-Package'] = "*;resolution:=optional"
+    bnd['Export-Package'] = "*;version=#{version}"
+  end
+  ...
+end
+{% endhighlight %}
+
+The @[]@ method on the bundle package is used to provide directives to the bnd tool that are not inherited by sub-projects while the standard 'manifest' setting is used to define properties that inherited by sub-projects.
+
+h3. Defaults
+
+The addon sets the following bnd parameters;
+
+* <tt>"Bundle-Version"</tt> defaults to the project version.
+* <tt>"Bundle-SymbolicName"</tt> defaults to the concatenation of the project group and project id, replacing ':' characters with '.'.
+* <tt>"Bundle-Name"</tt> defaults to the project description if present else the project name
+* <tt>"Bundle-Description"</tt> defaults to the project description.
+* <tt>"-classpath"</tt> is set to the compile target directory and any compile time dependencies.
+* <tt>"Include-Resource"</tt> defaults to the dir project.resources.target if it exists.
+
+h3. Parameters
+
+h4. classpath_element
+
+The user can also specify additional elements that are added to the classpath using the 'classpath_element' method. If the parameter to this element is a task, artifact, artifact namespace etc. then it will be resolved prior to invoking bnd.
+
+{% highlight ruby %}
+...
+define 'foo' do
+  ...
+  package(:bundle).tap do |bnd|
+    # This dependency will be added to classpath
+    bnd.classpath_element 'someOtherExistingFile.zip'
+    # All of these dependencies will be invoked and added to classpath
+    bnd.classpath_element artifact('com.sun.messaging.mq:imq:jar:4.4')
+    bnd.classpath_element project('bar') # Adds all the packages
+    bnd.classpath_element 'org.apache.ant:ant:jar:1.8.0'
+    bnd.classpath_element file('myLocalFile.jar')
+    ...
+  end
+
+  project 'bar' do
+    ...
+  end
+end
+{% endhighlight %}
+
+h4. classpath
+
+The user can specify the complete classpath using the 'classpath' method. The classpath should be an array of elements. If the element is a task, artifact, artifact namespace etc. then it will be resolved prior to invoking bnd.
+
+{% highlight ruby %}
+...
+define 'foo' do
+  ...
+  package(:bundle).tap do |bnd|
+    bnd.classpath [ project.compile.target,
+                    'someOtherExistingFile.zip',
+                    artifact('com.sun.messaging.mq:imq:jar:4.4'),
+                    project('bar'),
+                    'org.apache.ant:ant:jar:1.8.0',
+                    file('myLocalFile.jar') ]
+    ...
+  end
+
+  project 'bar' do
+    ...
+  end
+end
+{% endhighlight %}
+
+h3. Examples
+
+h4. Including non-class resources in a bundle
+
+Bnd can be used to include non-class resources in a bundle. The following example includes all resources in 'src/etc' into the bundle.
+
+{% highlight ruby %}
+define 'myproject' do
+  ...
+  package(:bundle).tap do |bnd|
+    bnd['Include-Resource'] = project._('src/etc') + '/'
+    ...
+  end
+end
+{% endhighlight %}
+
+h4. Using bnd to wrap an existing jar
+
+Bnd can be used to wrap an existing jar as an OSGi bundle. The following example wraps the OpenMQ JMS provider as an OSGi bundle.
+
+{% highlight ruby %}
+...
+# Add repository for OpenMQ
+repositories.remote << 'http://download.java.net/maven/2'
+
+desc 'OSGi bundle for OpenMQ JMS provider client library'
+define 'com.sun.messaging.mq.imq' do
+  project.version = '4.4'
+  project.group = 'iris'
+  package(:bundle).tap do |bnd|
+    bnd['Import-Package'] = "*;resolution:=optional"
+    bnd['Export-Package'] = "com.sun.messaging.*;version=#{version}"
+    bnd.classpath_element 'com.sun.messaging.mq:imq:jar:4.4'
+  end
+end
+{% endhighlight %}
+
+h4. Create an OSGi bundle with an Activator
+
+The following example presents a basic buildfile for building an OSGi bundle with an activator.
+
+{% highlight ruby %}
+...
+# repository for OSGi core bundle
+repositories.remote << 'https://repository.apache.org/content/repositories/releases'
+
+desc 'Hello World bundle'
+define 'helloworld' do
+  project.version = '1.0'
+  project.group = 'org.example'
+  compile.with 'org.apache.felix:org.osgi.core:jar:1.4.0'
+  package(:bundle).tap do |bnd|
+    bnd['Export-Package'] = "org.example.helloworld.api.*;version=#{version}"
+    bnd['Bundle-Activator'] = "org.example.helloworld.Activator"
+  end
+end
+{% endhighlight %}
+
+h4. Inheriting parameters for bnd tool
+
+The following example shows how you can use 'manifest' to define a bnd parameter that is inherited by all child sub-projects. The "Bundle-License" defined in the top level project is passed to the bnd tool when generating both the 'fe' and 'fi' sub-projects but the 'fo' sub-project overrides this parameter with a local value.
+
+{% highlight ruby %}
+...
+define 'myproject' do
+  manifest['Bundle-License'] = "http://www.apache.org/licenses/LICENSE-2.0"
+  ...
+  define 'fe' do
+    ...
+    package(:bundle).tap do |bnd|
+      ...
+    end
+  end
+
+  define 'fi' do
+    ...
+    package(:bundle).tap do |bnd|
+      ...
+    end
+  end
+
+  define 'fo' do
+    ...
+    package(:bundle).tap do |bnd|
+      bnd['Bundle-License'] = "http://www.apache.org/licenses/LICENSE-1.1"
+    end
+  end
+end
+{% endhighlight %}
 
 h2(#tar).  Packaging Tars and GZipped Tars
 
