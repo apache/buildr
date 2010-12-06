@@ -25,6 +25,7 @@
 * Fixed:  BUILDR-522 Send notifications when continuous compilation
           succeeds/fails.
 * Fixed:  BUILDR-551 Continuous compilation not working for project trees
+* Fixed:  BUILDR-557 MD5 + SHA1 checksums are not Maven compliant (Tammo van Lessen)
 * Change: Upgrade to Groovy 1.7.5
 * Change: BUILDR-545 Add the ability to specify the description element in in
           application.xml contained within an ear.
