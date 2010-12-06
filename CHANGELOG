@@ -11,6 +11,8 @@
 * Added:  BUILDR-538 Shell tasks should support passing :java_args
 * Added:  BUILDR-544 Support ${groupId} in pom files (Chris Dean)
 * Added:  BUILDR-552 Projects may now be defined using project(:name) and a block
+* Added:  Automatically add "require buildr/{groovy,scala}"  when generating
+          project if Groovy/Scala files are detected.
 * Change: BUILDR-540 Upgrade to rspec 2.1.0
 * Change: BUILDR-546 Upgrade to Rubyzip 0.9.4 (Michael Guymon)
 * Change: Upgrade default Scala compiler version to 2.8.1-final
