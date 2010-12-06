@@ -221,7 +221,7 @@ module URI
           end
         end
         digests.each do |key, digest|
-          self.merge("#{self.path}.#{key}").write "#{digest.hexdigest} #{File.basename(path)}",
+          self.merge("#{self.path}.#{key}").write digest.hexdigest,
             (options).merge(:progress=>false)
         end
       else
