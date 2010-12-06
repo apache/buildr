@@ -47,6 +47,8 @@ module Buildr
           if root
             script = HEADER.split("\n")
             header = <<-EOF
+#{"require 'buildr/scala'\n" if Dir.glob(path + "/**/*.scala").size > 0}
+#{"require 'buildr/groovy'\n" if Dir.glob(path + "/**/*.groovy").size > 0}
 # Version number for this release
 VERSION_NUMBER = "1.0.0"
 # Group identifier for your projects
