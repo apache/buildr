@@ -214,7 +214,7 @@ module URI
       elsif source.respond_to?(:read)
         digests = (options[:digests] || [:md5, :sha1]).
           inject({}) { |hash, name| hash[name] = Digest.const_get(name.to_s.upcase).new ; hash }
-        size = source.size rescue nil
+        size = source.stat.size rescue nil
         write (options).merge(:progress=>verbose && size, :size=>size) do |bytes|
           source.read(bytes).tap do |chunk|
             digests.values.each { |digest| digest << chunk } if chunk
@@ -406,7 +406,7 @@ module URI
           SFTP.passwords[host] = ssh_options[:password]
           trace 'connected'
 
-          with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
+          with_progress_bar options[:progress] && options[:size], path.split('/').last, options[:size] || 0 do |progress|
             trace "Downloading from #{path}"
             sftp.file.open(path, 'r') do |file|
               while chunk = file.read(RW_CHUNK_SIZE)
@@ -450,7 +450,7 @@ module URI
             "#{combined}/"
           end
 
-          with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
+          with_progress_bar options[:progress] && options[:size], path.split('/').last, options[:size] || 0 do |progress|
             trace "Uploading to #{path}"
             sftp.file.open(path, 'w') do |file|
               while chunk = yield(RW_CHUNK_SIZE)
@@ -546,7 +546,7 @@ module URI
       raise ArgumentError, 'Either you\'re attempting to write a file to another host (which we don\'t support), or you used two slashes by mistake, where you should have file:///<path>.' if host
       temp = Tempfile.new(File.basename(path))
       temp.binmode
-      with_progress_bar options[:progress] && options[:size], path.split('/'), options[:size] || 0 do |progress|
+      with_progress_bar options[:progress] && options[:size], path.split('/').last, options[:size] || 0 do |progress|
         while chunk = yield(RW_CHUNK_SIZE)
           temp.write chunk
           progress << chunk
