@@ -48,7 +48,11 @@ module Buildr
           filename = File.expand_path(source)
           unless pom = cache[filename]
             trace "Loading m2 pom file from #{filename}"
-            pom = POM.new(IO.read(filename))
+            begin
+              pom = POM.new(IO.read(filename))
+            rescue REXML::ParseException => e
+              fail "Could not parse #{filename}, #{e.continued_exception}"
+            end
             cache[filename] = pom
           end
           pom
