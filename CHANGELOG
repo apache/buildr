@@ -31,6 +31,7 @@
           application.xml contained within an ear.
 * Fixed:  BUILDR-547 - Ensure ECJ compiler works when there is a space in the
           path of dependencies.
+* Fixed:  BUILDR-558 Artifact uploads should show a progress bar (Tammo van Lessen)
 
 1.4.4 (2010-11-16)
 * Change: BUILDR-549 Upgrade to RJB 1.3.3 to address "Cannot create JVM" issue with Java Update 3
