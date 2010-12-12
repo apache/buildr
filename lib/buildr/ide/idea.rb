@@ -20,171 +20,557 @@ require 'stringio'
 
 
 module Buildr
-  module Idea #:nodoc:
+  module IntellijIdea
+    # Abstract base class for IdeaModule and IdeaProject
+    class IdeaFile
+      DEFAULT_SUFFIX = ""
 
-    include Extension
+      attr_reader :buildr_project
+      attr_writer :suffix
+      attr_writer :id
+      attr_accessor :template
 
-    first_time do
-      # Global task "idea" generates artifacts for all projects.
-      desc "Generate Idea artifacts for all projects"
-      Project.local_task "idea"=>"artifacts"
+      def suffix
+        @suffix ||= DEFAULT_SUFFIX
+      end
+
+      def filename
+        buildr_project.path_to("#{name}.#{extension}")
+      end
+
+      def id
+        @id ||= buildr_project.name.split(':').last
+      end
+
+      def add_component(name, attrs = {}, &xml)
+        self.components << create_component(name, attrs, &xml)
+      end
+
+      def write(f)
+        document.write f
+      end
+
+      protected
+
+      def name
+        "#{self.id}#{suffix}"
+      end
+
+      def create_component(name, attrs = {})
+        target = StringIO.new
+        Builder::XmlMarkup.new(:target => target, :indent => 2).component(attrs.merge({:name => name})) do |xml|
+          yield xml if block_given?
+        end
+        REXML::Document.new(target.string).root
+      end
+
+      def components
+        @components ||= self.default_components.compact
+      end
+
+      def load_document(filename)
+        REXML::Document.new(File.read(filename))
+      end
+
+      def document
+        if File.exist?(self.filename)
+          doc = load_document(self.filename)
+        else
+          doc = base_document
+          inject_components(doc, self.initial_components)
+        end
+        if self.template
+          template_doc = load_document(self.template)
+          REXML::XPath.each(template_doc, "//component") do |element|
+            inject_component(doc, element)
+          end
+        end
+        inject_components(doc, self.components)
+        doc
+      end
+
+      def inject_components(doc, components)
+        components.each do |component|
+          # execute deferred components
+          component = component.call if Proc === component
+          inject_component(doc, component) if component
+        end
+      end
+
+      # replace overridden component (if any) with specified component
+      def inject_component(doc, component)
+        doc.root.delete_element("//component[@name='#{component.attributes['name']}']")
+        doc.root.add_element component
+      end
     end
 
-    before_define(:idea) do |project|
-      project.recursive_task("idea")
-    end
+    # IdeaModule represents an .iml file
+    class IdeaModule < IdeaFile
+      DEFAULT_TYPE = "JAVA_MODULE"
+      DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE = "MAVEN_REPOSITORY"
 
-    after_define(:idea => :package) do |project|
-      idea = project.task("idea")
-      # We need paths relative to the top project's base directory.
-      root_path = lambda { |p| f = lambda { |p| p.parent ? f[p.parent] : p.base_dir }; f[p] }[project]
+      attr_accessor :type
+      attr_accessor :local_repository_env_override
+      attr_accessor :group
+      attr_reader :facets
 
-      # Find a path relative to the project's root directory.
-      relative = lambda { |path| Util.relative_path(path.to_s, project.path_to) }
+      def initialize
+        @type = DEFAULT_TYPE
+        @local_repository_env_override = DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE
+      end
 
-      m2repo = Buildr::Repositories.instance.local
-      excludes = [ '**/.svn/', '**/CVS/' ].join('|')
+      def buildr_project=(buildr_project)
+        @id = nil
+        @facets = []
+        @skip_content = false
+        @buildr_project = buildr_project
+      end
 
-      # Only for projects that are packageable.
-      task_name = project.path_to("#{project.name.gsub(':', '-')}.iml")
-      idea.enhance [ file(task_name) ]
+      def extension
+        "iml"
+      end
 
-      # The only thing we need to look for is a change in the Buildfile.
-      file(task_name=>Buildr.application.buildfile) do |task|
-        info "Writing #{task.name}"
+      def main_source_directories
+        @main_source_directories ||= [
+          buildr_project.compile.sources,
+          buildr_project.resources.sources
+        ].flatten.compact
+      end
 
-        # Idea handles modules slightly differently if they're WARs
-        idea_types = Hash.new("JAVA_MODULE")
-        idea_types["war"] = "J2EE_WEB_MODULE"
+      def test_source_directories
+        @test_source_directories ||= [
+          buildr_project.test.compile.sources,
+          buildr_project.test.resources.sources
+        ].flatten.compact
+      end
 
-        # Note: Use the test classpath since Eclipse compiles both "main" and "test" classes using the same classpath
-        deps = project.test.compile.dependencies.map(&:to_s) - [ project.compile.target.to_s ]
+      def excluded_directories
+        @excluded_directories ||= [
+          buildr_project.resources.target,
+          buildr_project.test.resources.target,
+          buildr_project.path_to(:target, :main),
+          buildr_project.path_to(:target, :test),
+          buildr_project.path_to(:reports)
+        ].flatten.compact
+      end
 
-        # Convert classpath elements into applicable Project objects
-        deps.collect! { |path| Buildr.projects.detect { |prj| prj.packages.detect { |pkg| pkg.to_s == path } } || path }
+      attr_writer :main_output_dir
 
-        # project_libs: artifacts created by other projects
-        project_libs, others = deps.partition { |path| path.is_a?(Project) }
+      def main_output_dir
+        @main_output_dir ||= buildr_project.compile.target
+      end
 
-        # Separate artifacts from Maven2 repository
-        m2_libs, others = others.partition { |path| path.to_s.index(m2repo) == 0 }
+      attr_writer :test_output_dir
 
-        # Generated: classpath elements in the project are assumed to be generated
-        generated, libs = others.partition { |path| path.to_s.index(project.path_to.to_s) == 0 }
+      def test_output_dir
+        @test_output_dir ||= buildr_project.test.compile.target
+      end
 
-        # Project type is going to be the first package type
-        if package = project.packages.first
-          File.open(task.name, "w") do |file|
-            xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
+      def main_dependencies
+        @main_dependencies ||=  buildr_project.compile.dependencies
+      end
 
-            xml.module(:version=>"4", :relativePaths=>"false", :type=>idea_types[package.type.to_s]) do
-              xml.component :name=>"ModuleRootManager"
-              xml.component "name"=>"NewModuleRootManager", "inherit-compiler-output"=>"false" do
-                has_compile_sources = project.compile.target.to_s.size > 0
-                xml.output :url=>"file://$MODULE_DIR$/#{relative[project.compile.target.to_s]}" if has_compile_sources
-                xml.tag! "exclude-output"
+      def test_dependencies
+        @test_dependencies ||=  buildr_project.test.compile.dependencies
+      end
 
-                # TODO project.test.target isn't recognized, what's the proper way to get the test compile path?
-                xml.tag! "output-test", :url=>"file://$MODULE_DIR$/target/test-classes"
+      def add_facet(name, type)
+        target = StringIO.new
+        Builder::XmlMarkup.new(:target => target, :indent => 2).facet(:name => name, :type => type) do |xml|
+          yield xml if block_given?
+        end
+        self.facets << REXML::Document.new(target.string).root
+      end
 
-                xml.content(:url=>"file://$MODULE_DIR$") do
-                  if has_compile_sources
-                    srcs = project.compile.sources.map { |src| relative[src.to_s] } + generated.map { |src| relative[src.to_s] }
-                    srcs.sort.uniq.each do |path|
-                      xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"false"
-                    end
+      def skip_content?
+        !!@skip_content
+      end
 
-                    test_sources = project.test.compile.sources.map { |src| relative[src.to_s] }
-                    test_sources.each do |paths|
-                      paths.sort.uniq.each do |path|
-                        xml.sourceFolder :url=>"file://$MODULE_DIR$/#{path}", :isTestSource=>"true"
-                      end
-                    end
-                  end
-                  [project.resources=>false, project.test.resources=>true].each do |resources, test|
-                    resources.each do |path|
-                      path[0].sources.each do |srcpath|
-                        xml.sourceFolder :url=>"file://#{srcpath}", :isTestSource=>path[1].to_s
-                      end
-                    end
-                  end
-                  xml.excludeFolder :url=>"file://$MODULE_DIR$/#{relative[project.compile.target.to_s]}" if has_compile_sources
-                end
+      def skip_content!
+        @skip_content = true
+      end
 
-                xml.orderEntry :type=>"sourceFolder", :forTests=>"false"
-                xml.orderEntry :type=>"inheritedJdk"
+      protected
 
-                # Classpath elements from other projects
-                project_libs.map(&:id).sort.uniq.each do |project_id|
-                  xml.orderEntry :type=>'module', "module-name"=>project_id
-                end
+      def test_dependency_details
+        main_dependencies_paths = main_dependencies.map(&:to_s)
+        target_dir = buildr_project.compile.target.to_s
+        test_dependencies.select { |d| d.to_s != target_dir }.collect do |d|
+          dependency_path = d.to_s
+          export = main_dependencies_paths.include?(dependency_path)
+          source_path = nil
+          if d.respond_to?(:to_spec_hash)
+            source_spec = d.to_spec_hash.merge(:classifier => 'sources')
+            source_path = Buildr.artifact(source_spec).to_s
+            source_path = nil unless File.exist?(source_path)
+          end
+          [dependency_path, export, source_path]
+        end
 
-                # Libraries
-                ext_libs = libs.map {|path| "$MODULE_DIR$/#{path.to_s}" } +
-                    m2_libs.map { |path| path.to_s.sub(m2repo, "$M2_REPO$") }
-                ext_libs.each do |path|
-                  xml.orderEntry :type=>"module-library" do
-                    xml.library do
-                      xml.CLASSES do
-                        xml.root :url=>"jar://#{path}!/"
-                      end
-                      xml.JAVADOC
-                      xml.SOURCES do
-                        xml.root :url=>"jar://#{path.sub(/\.jar$/, "-sources.jar")}!/"
-                      end
-                    end
-                  end
-                end
+      end
 
-                xml.orderEntryProperties
+      def base_directory
+        buildr_project.path_to
+      end
+
+      def base_document
+        target = StringIO.new
+        Builder::XmlMarkup.new(:target => target).module(:version => "4", :relativePaths => "true", :type => self.type)
+        REXML::Document.new(target.string)
+      end
+
+      def initial_components
+        []
+      end
+
+      def default_components
+        [
+          lambda { module_root_component },
+          lambda { facet_component }
+        ]
+      end
+
+      def facet_component
+        return nil if self.facets.empty?
+        fm = self.create_component("FacetManager")
+        self.facets.each do |facet|
+          fm.add_element facet
+        end
+        fm
+      end
+
+      def module_root_component
+        create_component("NewModuleRootManager", "inherit-compiler-output" => "false") do |xml|
+          generate_compile_output(xml)
+          generate_content(xml) unless skip_content?
+          generate_initial_order_entries(xml)
+          project_dependencies = []
+
+          # Note: Use the test classpath since IDEA compiles both "main" and "test" classes using the same classpath
+          self.test_dependency_details.each do |dependency_path, export, source_path|
+            project_for_dependency = Buildr.projects.detect do |project|
+              [project.packages, project.compile.target, project.test.compile.target].flatten.
+                detect { |proj_art| proj_art.to_s == dependency_path }
+            end
+            if project_for_dependency
+              if project_for_dependency.iml? && !project_dependencies.include?(project_for_dependency)
+                generate_project_dependency(xml, project_for_dependency.iml.name, export)
+              end
+              project_dependencies << project_for_dependency
+              next
+            else
+              generate_module_lib(xml, url_for_path(dependency_path), export, (source_path ? url_for_path(source_path) : nil))
+            end
+          end
+
+          xml.orderEntryProperties
+        end
+      end
+
+      def jar_path(path)
+        "jar://#{resolve_path(path)}!/"
+      end
+
+      def file_path(path)
+        "file://#{resolve_path(path)}"
+      end
+
+      def url_for_path(path)
+        if path =~ /jar$/i
+          jar_path(path)
+        else
+          file_path(path)
+        end
+      end
+
+      def resolve_path(path)
+        m2repo = Buildr::Repositories.instance.local
+        if path.to_s.index(m2repo) == 0 && !self.local_repository_env_override.nil?
+          return path.sub(m2repo, "$#{self.local_repository_env_override}$")
+        else
+          begin
+            return "$MODULE_DIR$/#{relative(path)}"
+          rescue ArgumentError
+            # ArgumentError happens on windows when self.base_directory and path are on different drives
+            return path
+          end
+        end
+      end
+
+      def relative(path)
+        ::Buildr::Util.relative_path(File.expand_path(path.to_s), self.base_directory)
+      end
+
+      def generate_compile_output(xml)
+        xml.output(:url => file_path(self.main_output_dir.to_s))
+        xml.tag!("output-test", :url => file_path(self.test_output_dir.to_s))
+        xml.tag!("exclude-output")
+      end
+
+      def generate_content(xml)
+        xml.content(:url => "file://$MODULE_DIR$") do
+          # Source folders
+          {
+            :main => self.main_source_directories,
+            :test => self.test_source_directories
+          }.each do |kind, directories|
+            directories.map { |dir| dir.to_s }.compact.sort.uniq.each do |dir|
+              xml.sourceFolder :url => file_path(dir), :isTestSource => (kind == :test ? 'true' : 'false')
+            end
+          end
+
+          # Exclude target directories
+          self.net_excluded_directories.
+            collect { |dir| file_path(dir) }.
+            select { |dir| relative_dir_inside_dir?(dir) }.
+            sort.each do |dir|
+            xml.excludeFolder :url => dir
+          end
+        end
+      end
+
+      def relative_dir_inside_dir?(dir)
+        !dir.include?("../")
+      end
+
+      def generate_initial_order_entries(xml)
+        xml.orderEntry :type => "sourceFolder", :forTests => "false"
+        xml.orderEntry :type => "inheritedJdk"
+      end
+
+      def generate_project_dependency(xml, other_project, export = true)
+        attribs = {:type => 'module', "module-name" => other_project}
+        attribs[:exported] = '' if export
+        xml.orderEntry attribs
+      end
+
+      def generate_module_lib(xml, path, export, source_path)
+        attribs = {:type => 'module-library'}
+        attribs[:exported] = '' if export
+        xml.orderEntry attribs do
+          xml.library do
+            xml.CLASSES do
+              xml.root :url => path
+            end
+            xml.JAVADOC
+            xml.SOURCES do
+              if source_path
+                xml.root :url => source_path
               end
             end
           end
         end
       end
 
-      # Root project aggregates all the subprojects.
-      if project.parent == nil
-        task_name = project.path_to("#{project.name.gsub(':', '-')}.ipr")
-        idea.enhance [ file(task_name) ]
-
-        file(task_name=>Buildr.application.buildfile) do |task|
-          info "Writing #{task.name}"
-
-          # Generating just the little stanza that chanages from one project to another
-          partial = StringIO.new
-          xml = Builder::XmlMarkup.new(:target=>partial, :indent=>2)
-          xml.component(:name=>"ProjectModuleManager") do
-            xml.modules do
-              project.projects.each do |subp|
-                module_name = subp.name.gsub(":", "-")
-                module_path = subp.name.split(":"); module_path.shift
-                module_path = module_path.join("/")
-                path = "#{module_path}/#{module_name}.iml"
-                xml.module :fileurl=>"file://$PROJECT_DIR$/#{path}", :filepath=>"$PROJECT_DIR$/#{path}"
-              end
-              if package = project.packages.first
-                xml.module :fileurl=>"file://$PROJECT_DIR$/#{project.name}.iml", :filepath=>"$PROJECT_DIR$/#{project.name}.iml"
-              end
-            end
+      # Don't exclude things that are subdirectories of other excluded things
+      def net_excluded_directories
+        net = []
+        all = self.excluded_directories.map { |dir| buildr_project._(dir.to_s) }.sort_by { |d| d.size }
+        all.each_with_index do |dir, i|
+          unless all[0 ... i].find { |other| dir =~ /^#{other}/ }
+            net << dir
           end
+        end
+        net
+      end
+    end
 
-          # Loading the whole fairly constant crap
-          template_xml = REXML::Document.new(File.open(File.dirname(__FILE__)+"/idea.ipr.template"))
-          include_xml = REXML::Document.new(partial.string)
-          template_xml.root.add_element(include_xml.root)
-          File.open task.name, 'w' do |file|
-            template_xml.write file
+    # IdeaModule represents an .ipr file
+    class IdeaProject < IdeaFile
+      attr_accessor :vcs
+      attr_accessor :extra_modules
+      attr_writer :jdk_version
+
+      def initialize(buildr_project)
+        @buildr_project = buildr_project
+        @vcs = detect_vcs
+        @extra_modules = []
+      end
+
+      def jdk_version
+        @jdk_version ||= buildr_project.compile.options.source || "1.6"
+      end
+
+      protected
+
+      def extension
+        "ipr"
+      end
+
+      def detect_vcs
+        if File.directory?(buildr_project._('.svn'))
+          "svn"
+        elsif File.directory?(buildr_project._('.git'))
+          "Git"
+        end
+      end
+
+      def base_document
+        target = StringIO.new
+        Builder::XmlMarkup.new(:target => target).project(:version => "4", :relativePaths => "false")
+        REXML::Document.new(target.string)
+      end
+
+      def default_components
+        [
+          lambda { modules_component },
+          vcs_component
+        ]
+      end
+
+      def initial_components
+        [
+          lambda { project_root_manager_component },
+          lambda { project_details_component }
+        ]
+      end
+
+      def project_root_manager_component
+        attribs = {"version" => "2",
+                   "assert-keyword" => "true",
+                   "jdk-15" => "true",
+                   "project-jdk-name" => self.jdk_version,
+                   "project-jdk-type" => "JavaSDK",
+                   "languageLevel" => "JDK_#{self.jdk_version.gsub('.', '_')}"}
+        create_component("ProjectRootManager", attribs) do |xml|
+          xml.output("url" => "file://$PROJECT_DIR$/out")
+        end
+      end
+
+      def project_details_component
+        create_component("ProjectDetails") do |xml|
+          xml.option("name" => "projectName", "value" => self.name)
+        end
+      end
+
+      def modules_component
+        create_component("ProjectModuleManager") do |xml|
+          xml.modules do
+            buildr_project.projects.select { |subp| subp.iml? }.each do |subproject|
+              module_path = subproject.base_dir.gsub(/^#{buildr_project.base_dir}\//, '')
+              path = "#{module_path}/#{subproject.iml.name}.iml"
+              attribs = {:fileurl => "file://$PROJECT_DIR$/#{path}", :filepath => "$PROJECT_DIR$/#{path}"}
+              if subproject.iml.group == true
+                attribs[:group] = subproject.parent.name.gsub(':', '/')
+              elsif !subproject.iml.group.nil?
+                attribs[:group] = subproject.group.to_s
+              end
+              xml.module attribs
+            end
+            self.extra_modules.each do |iml_file|
+              xml.module :fileurl => "file://$PROJECT_DIR$/#{iml_file}",
+                         :filepath => "$PROJECT_DIR$/#{iml_file}"
+            end
+            if buildr_project.iml?
+              xml.module :fileurl => "file://$PROJECT_DIR$/#{buildr_project.iml.name}.iml",
+                         :filepath => "$PROJECT_DIR$/#{buildr_project.iml.name}.iml"
+            end
           end
         end
       end
 
-    end #after define
+      def vcs_component
+        if vcs
+          create_component("VcsDirectoryMappings") do |xml|
+            xml.mapping :directory => "", :vcs => vcs
+          end
+        end
+      end
+    end
 
-  end #module Idea
-end # module Buildr
+    module ProjectExtension
+      include Extension
 
+      first_time do
+        desc "Generate Intellij IDEA artifacts for all projects"
+        Project.local_task "idea:generate" => "artifacts"
+
+        desc "Delete the generated Intellij IDEA artifacts"
+        Project.local_task "idea:clean"
+      end
+
+      before_define do |project|
+        project.recursive_task("idea:generate")
+        project.recursive_task("idea:clean")
+      end
+
+      after_define do |project|
+        idea = project.task("idea:generate")
+
+        files = [
+          (project.iml if project.iml?),
+          (project.ipr if project.ipr?)
+        ].compact
+
+        files.each do |ideafile|
+          module_dir =  File.dirname(ideafile.filename)
+          # Need to clear the actions else the extension included as part of buildr will run
+          file(ideafile.filename).clear_actions
+          idea.enhance [file(ideafile.filename)]
+          file(ideafile.filename => [Buildr.application.buildfile]) do |task|
+            mkdir_p module_dir
+            info "Writing #{task.name}"
+            t = Tempfile.open("buildr-idea")
+            temp_filename = t.path
+            t.close!
+            File.open(temp_filename, "w") do |f|
+              ideafile.write f
+            end
+            mv temp_filename, ideafile.filename
+          end
+        end
+
+        project.task("idea:clean") do
+          files.each do |f|
+            info "Removing #{f.filename}" if File.exist?(f.filename)
+            rm_rf f.filename
+          end
+        end
+      end
+
+      def ipr
+        if ipr?
+          @ipr ||= IdeaProject.new(self)
+        else
+          raise "Only the root project has an IPR"
+        end
+      end
+
+      def ipr?
+        !@no_ipr && self.parent.nil?
+      end
+
+      def iml
+        if iml?
+          unless @iml
+            inheritable_iml_source = self.parent
+            while inheritable_iml_source && !inheritable_iml_source.iml?
+              inheritable_iml_source = inheritable_iml_source.parent;
+            end
+            @iml = inheritable_iml_source ? inheritable_iml_source.iml.clone : IdeaModule.new
+            @iml.buildr_project = self
+          end
+          return @iml
+        else
+          raise "IML generation is disabled for #{self.name}"
+        end
+      end
+
+      def no_ipr
+        @no_ipr = true
+      end
+
+      def no_iml
+        @has_iml = false
+      end
+
+      def iml?
+        @has_iml = @has_iml.nil? ? true : @has_iml
+      end
+    end
+  end
+end
 
 class Buildr::Project
-  include Buildr::Idea
+  include Buildr::IntellijIdea::ProjectExtension
 end
