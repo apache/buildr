@@ -16,4 +16,4 @@
 
 require 'buildr/ide/eclipse'
 require 'buildr/ide/idea'
-require 'buildr/ide/idea7x'
+
