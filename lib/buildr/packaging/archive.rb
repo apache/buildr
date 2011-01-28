@@ -113,7 +113,10 @@ module Buildr
         expanders = files.collect do |file|
           @sources << proc { file.to_s }
           expander = ZipExpander.new(file)
-          @actions << proc { |file_map| expander.expand(file_map, path) }
+          @actions << proc do |file_map|
+            file.invoke() if file.is_a?(Rake::Task)
+            expander.expand(file_map, path)
+          end
           expander
         end
         Merge.new(expanders)
@@ -202,7 +205,6 @@ module Buildr
     end
 
     def include_as(source, as)
-
         @sources << proc { source }
         @actions << proc do |file_map|
           file = source.to_s
@@ -467,7 +469,15 @@ module Buildr
     def invoke_prerequisites(args, chain) #:nodoc:
       @prepares.each { |prepare| prepare.call(self) }
       @prepares.clear
-      @prerequisites |= @paths.collect { |name, path| path.sources }.flatten
+
+      file_map = {}
+      @paths.each do |name, path|
+        path.add_files(file_map)
+      end
+
+      # filter out Procs (dynamic content), nils and others
+      @prerequisites |= file_map.values.select { |src| src.is_a?(String) || src.is_a?(Rake::Task) }
+
       super
     end
 
