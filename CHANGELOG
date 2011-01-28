@@ -36,6 +36,8 @@
 * Fixed:  BUILDR-558 Artifact uploads should show a progress bar (Tammo van Lessen)
 * Fixed:  BUILDR-560 show a meaning full error message when POM cannot be parsed
           (Tammo van Lessen)
+* Fixed:  BUILDR-562 WAR package isn't updated if files under src/main/webapp
+          are updated
 * Fixed:  Scaladoc task would cause build to exit prematurely
 
 1.4.4 (2010-11-16)

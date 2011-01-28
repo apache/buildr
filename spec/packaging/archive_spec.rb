@@ -23,11 +23,20 @@ module ArchiveTaskHelpers
     "Content for #{File.basename(file)}"
   end
 
+  # Qualify a filename
+  #
+  # e.g. qualify("file.zip", "src") => "file-src.zip"
+  def qualify(filename, qualifier)
+    ext = (filename =~ /\.$/) ? "." : File.extname(filename)
+    base = filename[0..0-ext.size-1]
+    base + "-" + qualifier + ext
+  end
+
   # Create an archive not using the archive task, this way we do have a file in existence, but we don't
   # have an already invoked task.  Yield an archive task to the block which can use it to include files,
   # set options, etc.
   def create_without_task
-    archive(@archive + '.tmp').tap do |task|
+    archive(qualify(@archive, "tmp")).tap do |task|
       yield task if block_given?
       task.invoke
       mv task.name, @archive
@@ -35,7 +44,7 @@ module ArchiveTaskHelpers
   end
 
   def create_for_merge
-    zip(@archive + '.src').include(@files).tap do |task|
+    zip(qualify(@archive, "src")).include(@files).tap do |task|
       yield task
     end
   end
@@ -291,7 +300,7 @@ shared_examples_for 'ArchiveTask' do
   it 'should expand another archive file with nested exclude pattern' do
     @files = %w{Test1.txt Text2.html}.map { |file| File.join(@dir, "foo", file) }.
       each { |file| write file, content_for(file) }
-    zip(@archive + '.src').include(@dir).tap do |task|
+    zip(qualify(@archive, "src")).include(@dir).tap do |task|
       archive(@archive).merge(task).exclude('test/*')
       archive(@archive).invoke
       inspect_archive.should be_empty
@@ -338,6 +347,22 @@ shared_examples_for 'ArchiveTask' do
     archive(@archive).include(@files).invoke
     File.stat(@archive).mtime.should be_close(Time.now, 10)
   end
+
+  it 'should update if a file in a subdir is more recent' do
+    subdir = File.expand_path("subdir", @dir)
+    test3 = File.expand_path("test3.css", subdir)
+
+    mkdir_p subdir
+    write test3, '/* Original */'
+
+    create_without_task { |archive| archive.include(:from => @dir) }
+    inspect_archive { |archive| archive["subdir/test3.css"].should eql('/* Original */') }
+
+    write test3, '/* Refreshed */'
+    File.utime(Time.now + 100, Time.now + 100, test3)
+    archive(@archive).include(:from => @dir).invoke
+    inspect_archive { |archive| archive["subdir/test3.css"].should eql('/* Refreshed */') }
+   end
 
   it 'should do nothing if all files are uptodate' do
     create_without_task { |archive| archive.include(@files) }
