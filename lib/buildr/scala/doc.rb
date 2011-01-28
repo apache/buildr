@@ -61,8 +61,11 @@ module Buildr
           info "Generating Scaladoc for #{project.name}"
           trace (['scaladoc'] + cmd_args).join(' ')
           Java.load
-          Java.scala.tools.nsc.ScalaDoc.main(cmd_args.to_java(Java.java.lang.String)) == 0 or
-            fail 'Failed to generate Scaladocs, see errors above'
+          begin
+            Java.scala.tools.nsc.ScalaDoc.process(cmd_args.to_java(Java.java.lang.String))
+          rescue => e
+            fail 'Failed to generate Scaladocs, see errors above: ' + e
+          end
         end
       end
     end
@@ -115,8 +118,23 @@ module Buildr
     end
   end
 
+  module Packaging
+    module Scala
+      def package_as_scaladoc_spec(spec) #:nodoc:
+        spec.merge(:type=>:jar, :classifier=>'scaladoc')
+      end
+
+      def package_as_scaladoc(file_name) #:nodoc:
+        ZipTask.define_task(file_name).tap do |zip|
+          zip.include :from=>doc.target
+        end
+      end
+    end
+  end
+
   class Project
     include ScaladocDefaults
+    include Packaging::Scala
   end
 end
 
