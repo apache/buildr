@@ -57,12 +57,32 @@ describe "Scaladoc" do
     define('foo') do
       doc.using :windowtitle => "foo"
     end
-    Java.scala.tools.nsc.ScalaDoc.should_receive(:main) do |args|
+    Java.scala.tools.nsc.ScalaDoc.should_receive(:process) do |args|
       # Convert Java Strings to Ruby Strings, if needed.
       args.map { |a| a.is_a?(String) ? a : a.toString }.should include("-doc-title")
       0 # normal return
     end
     project('foo').doc.invoke
   end
-
 end
+
+describe "package(:scaladoc)" do
+  it "should generate target/project-version-scaladoc.jar" do
+    write 'src/main/scala/Foo.scala', 'class Foo'
+    define 'foo', :version=>'1.0' do
+      package(:scaladoc)
+    end
+
+    scaladoc = project('foo').package(:scaladoc)
+    scaladoc.should point_to_path('target/foo-1.0-scaladoc.jar')
+
+    lambda {
+      project('foo').task('package').invoke
+    }.should change { File.exist?('target/foo-1.0-scaladoc.jar') }.to(true)
+
+    scaladoc.should exist
+    scaladoc.should contain('index.html')
+    scaladoc.should contain('Foo.html')
+  end
+end
+

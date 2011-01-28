@@ -714,7 +714,7 @@ module Buildr
       end
 
       def package_as_javadoc_spec(spec) #:nodoc:
-        spec.merge(:type=>:zip, :classifier=>'javadoc')
+        spec.merge(:type=>:jar, :classifier=>'javadoc')
       end
 
       def package_as_javadoc(file_name) #:nodoc:
