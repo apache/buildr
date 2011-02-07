@@ -30,7 +30,7 @@ module Buildr
 
         cp = project.compile.dependencies +
              Scalac.dependencies +
-             [ project.path_to(:target, :classes) ] +
+             project.test.dependencies +
              task.classpath
 
         java_args = jrebel_args + task.java_args
