@@ -1169,16 +1169,15 @@ describe Packaging, 'sources' do
   end
 end
 
-
 describe Packaging, 'javadoc' do
   it_should_behave_like 'packaging'
-  before { @packaging, @package_type = :javadoc, :zip }
+  before { @packaging, @package_type = :javadoc, :jar }
 
   it 'should create package of type :zip and classifier \'javadoc\'' do
     define 'foo', :version=>'1.0' do
-      package(:javadoc).type.should eql(:zip)
+      package(:javadoc).type.should eql(:jar)
       package(:javadoc).classifier.should eql('javadoc')
-      package(:javadoc).name.pathmap('%f').should eql('foo-1.0-javadoc.zip')
+      package(:javadoc).name.pathmap('%f').should eql('foo-1.0-javadoc.jar')
     end
   end
 
@@ -1204,7 +1203,6 @@ describe Packaging, 'javadoc' do
   end
 end
 
-
 shared_examples_for 'package_with_' do
 
   def prepare(options = {})
@@ -1223,9 +1221,7 @@ shared_examples_for 'package_with_' do
 
   it 'should create package of the right packaging with classifier' do
     prepare
-    ext = "zip"
-    ext = "jar" if @packaging == :sources
-    project('foo').packages.first.to_s.should =~ /foo-1.0-#{@packaging}.#{ext}/
+    project('foo').packages.first.to_s.should =~ /foo-1.0-#{@packaging}.#{@ext}/
   end
 
   it 'should create package for projects that have source files' do
@@ -1261,10 +1257,10 @@ end
 
 describe 'package_with_sources' do
   it_should_behave_like 'package_with_'
-  before { @packaging = :sources }
+  before { @packaging, @ext = :sources, 'jar' }
 end
 
 describe 'package_with_javadoc' do
   it_should_behave_like 'package_with_'
-  before { @packaging = :javadoc }
+  before { @packaging, @ext = :javadoc, 'jar' }
 end
