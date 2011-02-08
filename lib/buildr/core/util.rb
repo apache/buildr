@@ -484,8 +484,8 @@ if Buildr::Util.java_platform?
           arg_str = args.map { |a| "'#{a}'" }
           __native_system__(cd + cmd.first + ' ' + arg_str.join(' '))
         end
-        $? = Buildr::ProcessStatus.new(0, res == 0, res)    # KLUDGE
-        block.call(res == 0, $?)
+        status = Buildr::ProcessStatus.new(0, res == 0, res)    # KLUDGE
+        block.call(res == 0, status)
       end
     end
 
