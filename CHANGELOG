@@ -41,6 +41,7 @@
 * Fixed:  BUILDR-562 WAR package isn't updated if files under src/main/webapp
           are updated
 * Fixed:  BUILDR-569 Buildr fails under JRuby 1.6.0.RC1 due to read-only $? variable
+* Fixed:  BUILDR-570 Buildr does not work with Rubygems 1.5.x
 * Fixed:  Scaladoc task would cause build to exit prematurely
 
 1.4.4 (2010-11-16)

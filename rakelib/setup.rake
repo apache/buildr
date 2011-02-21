@@ -15,7 +15,7 @@
 
 
 require 'jruby' if RUBY_PLATFORM[/java/]
-require 'rubygems/source_info_cache'
+require 'rubygems/source_info_cache' if Gem::VERSION =~ /1.[0-4]/
 
 RAKE_SUDO = case (ENV['RAKE_SUDO'] or 'false').strip.downcase
   when 'yes', 'true'
