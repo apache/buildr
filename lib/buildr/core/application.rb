@@ -38,9 +38,9 @@
 
 require 'rake'
 require 'highline/import'
-require 'rubygems/source_info_cache'
+require 'rubygems/source_info_cache' if Gem::VERSION =~ /1.[0-4]/
 require 'buildr/core/util'
-Gem.autoload :SourceInfoCache, 'rubygems/source_info_cache'
+Gem.autoload :SourceInfoCache, 'rubygems/source_info_cache' if Gem::VERSION =~ /1.[0-4]/
 
 
 # Gem::user_home is nice, but ENV['HOME'] lets you override from the environment.
