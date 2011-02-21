@@ -60,7 +60,7 @@ module Buildr::Scala
   # * :java_args   -- Arguments passed as is to the JVM.
   class ScalaTest < Buildr::TestFramework::Java
 
-    VERSION = '1.2'
+    VERSION = '1.3'
 
     class << self
       def version
