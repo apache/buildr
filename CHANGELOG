@@ -1,5 +1,4 @@
 1.4.5 (Pending)
-* Change: BUILDR-556 Merge buildr-iidea extension back into buildr.
 * Added:  BUILDR-555 Add support for the jaxb binding compiler (Mark Petrovic)
 * Added:  BUILDR-554 Add support for OSGi bundle packages by importing the
           buildr_bnd plugin
@@ -17,9 +16,11 @@
           project if Groovy/Scala files are detected.
 * Change: BUILDR-540 Upgrade to rspec 2.1.0
 * Change: BUILDR-546 Upgrade to Rubyzip 0.9.4 (Michael Guymon)
+* Change: BUILDR-556 Merge buildr-iidea extension back into buildr.
 * Change: Upgrade default Scala compiler version to 2.8.1-final
 * Change: Upgrade to ScalaCheck 1.8
 * Change: Upgrade to Specs 1.6.6
+* Chagne: Upgrade to JRuby 1.5.6
 * Fixed:  BUILDR-542 Release task:  SVN tagging fails if parent tag directory
           does not exist yet (Gerolf Seitz)
 * Fixed:  BUILDR-543 POMs are installed and uploaded twice when using artifacts
