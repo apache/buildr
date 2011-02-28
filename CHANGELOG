@@ -1,4 +1,4 @@
-1.4.5 (Pending)
+1.4.5 (2011-02-20)
 * Added:  BUILDR-555 Add support for the jaxb binding compiler (Mark Petrovic)
 * Added:  BUILDR-554 Add support for OSGi bundle packages by importing the
           buildr_bnd plugin
