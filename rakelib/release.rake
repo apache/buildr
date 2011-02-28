@@ -45,7 +45,6 @@ task :release do
 
   # Upload binary and source packages to RubyForge.
   lambda do
-    sh 'rubyforge', 'login'
     # update rubyforge projects, processors, etc. in local config
     sh 'rubyforge', 'config'
     files = FileList["_release/#{spec.version}/dist/*.{gem,tgz,zip}"]

@@ -18,7 +18,7 @@ begin
   directory '_reports'
 
   def default_spec_opts
-    default = %w{--format failing_examples:failed --format html:_reports/specs.html --backtrace}
+    default = %w{--format documentation --out _reports/specs.txt --backtrace}
     default << '--colour' if $stdout.isatty && !(Config::CONFIG['host_os'] =~ /mswin|win32|dos/i)
     default
   end
@@ -38,18 +38,9 @@ begin
     task.rspec_files = FileList['spec/**/*_spec.rb']
     task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
     task.rspec_opts = default_spec_opts
-    task.rspec_opts << '--format documentation'
+    task.rspec_opts = %w{--format html --out _reports/specs.html --backtrace}
   end
   file('_reports/specs.html') { task(:spec).invoke }
-
-  desc 'Run all failed examples from previous run'
-  RSpec::Core::RakeTask.new :failed do |task|
-    ENV['USE_FSC'] = 'no'
-    task.rspec_files = FileList['spec/**/*_spec.rb']
-    task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
-    task.rspec_opts = default_spec_opts
-    task.rspec_opts << '--format documentation' << '--example failed'
-  end
 
   desc 'Run RSpec and generate Spec and coverage reports (slow)'
   RSpec::Core::RakeTask.new :coverage=>['_reports', :compile] do |task|
@@ -57,7 +48,6 @@ begin
     task.rspec_files = FileList['spec/**/*_spec.rb']
     task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
     task.rspec_opts = default_spec_opts
-    task.rspec_opts << '--format progress'
     task.rcov = true
     task.rcov_opts = %w{-o _reports/coverage --exclude / --include-file ^lib --text-summary}
   end
