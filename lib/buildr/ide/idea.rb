@@ -249,7 +249,7 @@ module Buildr
           # Note: Use the test classpath since IDEA compiles both "main" and "test" classes using the same classpath
           self.test_dependency_details.each do |dependency_path, export, source_path|
             project_for_dependency = Buildr.projects.detect do |project|
-              [project.packages, project.compile.target, project.test.compile.target].flatten.
+              [project.packages, project.compile.target, project.resources.target, project.test.compile.target, project.test.resources.target].flatten.
                 detect { |proj_art| proj_art.to_s == dependency_path }
             end
             if project_for_dependency
