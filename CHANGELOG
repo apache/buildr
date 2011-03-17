@@ -1,6 +1,7 @@
 1.4.6 (Pending)
-* Fixed: BUILDR-571 Generated IDEA projects include resources multiple times (Peter Royal) 
-* Fixed: BUILDR-573 HTTP upload PUT request with incorrect Content-Type (Mathias Doenitz)
+* Change: BUILDR-576 Upgrade to JUnit 4.8.2
+* Fixed:  BUILDR-571 Generated IDEA projects include resources multiple times (Peter Royal) 
+* Fixed:  BUILDR-573 HTTP upload PUT request with incorrect Content-Type (Mathias Doenitz)
 
 1.4.5 (2011-02-20)
 * Added:  BUILDR-555 Add support for the jaxb binding compiler (Mark Petrovic)
