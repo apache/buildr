@@ -184,7 +184,7 @@ module Buildr
     end
 
     # JUnit version number.
-    VERSION = '4.7'
+    VERSION = '4.8.2'
 
     class << self
       # :call-seq:
@@ -227,7 +227,7 @@ module Buildr
                        :class_annotations => %w{org.junit.runner.RunWith},
                        :method_annotations => %w{org.junit.Test})
       end
-      
+
     end
 
     def run(tests, dependencies) #:nodoc:
@@ -330,10 +330,10 @@ module Buildr
       cmd_args << '-d' << task.report_to.to_s
       # run all tests in the same suite
       cmd_args << '-testclass' << tests
-      
+
       cmd_options = { :properties=>options[:properties], :java_args=>options[:java_args],
         :classpath=>dependencies, :name => "TestNG in #{task.send(:project).name}" }
-      
+
       tmp = nil
       begin
         tmp = Tempfile.open("testNG")
