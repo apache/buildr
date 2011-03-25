@@ -98,7 +98,7 @@ module Buildr
           elsif content.nil?
           elsif File.directory?(content.to_s)
             stat = File.stat(content.to_s)
-            tar.mkdir(path, options.merge(:mode=>stat.mode, :mtime=>stat.mtime))
+            tar.mkdir(path, options.merge(:mode=>stat.mode, :mtime=>stat.mtime, :uid=>stat.uid, :gid=>stat.gid))
           else
             File.open content.to_s, 'rb' do |is|
               tar.add_file path, options.merge(:mode=>is.stat.mode, :mtime=>is.stat.mtime, :uid=>is.stat.uid, :gid=>is.stat.gid) do |os, opts|
