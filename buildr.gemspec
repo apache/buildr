@@ -43,7 +43,6 @@ for those one-off tasks, with a language that's a joy to use.
   spec.bindir         = 'bin'                               # Use these for applications.
   spec.executable     = 'buildr'
 
-  spec.has_rdoc         = true
   spec.extra_rdoc_files = 'README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE'
   spec.rdoc_options     = '--title', 'Buildr', '--main', 'README.rdoc',
                           '--webcvs', 'http://svn.apache.org/repos/asf/buildr/trunk/'
