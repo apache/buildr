@@ -1,4 +1,6 @@
 1.4.6 (Pending)
+* Change: BUILDR-579 Format generated IDEA project files to look more like what
+          IntelliJ generates (Peter Royal)
 * Change: BUILDR-574 Enhance idea task to generate test resources with test scope
           (Jean-Philippe Caruana)
 * Change: BUILDR-576 Upgrade to JUnit 4.8.2
