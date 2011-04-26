@@ -192,6 +192,7 @@ module Buildr
 
       protected
 
+      # Note: Use the test classpath since IDEA compiles both "main" and "test" classes using the same classpath
       def test_dependency_details
         main_dependencies_paths = main_dependencies.map(&:to_s)
         target_dir = buildr_project.compile.target.to_s
@@ -206,7 +207,6 @@ module Buildr
           end
           [dependency_path, export, source_path]
         end
-
       end
 
       def base_directory
@@ -246,7 +246,6 @@ module Buildr
           generate_initial_order_entries(xml)
           project_dependencies = []
 
-          # Note: Use the test classpath since IDEA compiles both "main" and "test" classes using the same classpath
           self.test_dependency_details.each do |dependency_path, export, source_path|
             project_for_dependency = Buildr.projects.detect do |project|
               [project.packages, project.compile.target, project.resources.target, project.test.compile.target, project.test.resources.target].flatten.
@@ -254,12 +253,12 @@ module Buildr
             end
             if project_for_dependency
               if project_for_dependency.iml? && !project_dependencies.include?(project_for_dependency)
-                generate_project_dependency(xml, project_for_dependency.iml.name, export)
+                generate_project_dependency(xml, project_for_dependency.iml.name, export, !export)
               end
               project_dependencies << project_for_dependency
               next
             else
-              generate_module_lib(xml, url_for_path(dependency_path), export, (source_path ? url_for_path(source_path) : nil))
+              generate_module_lib(xml, url_for_path(dependency_path), export, (source_path ? url_for_path(source_path) : nil), !export)
             end
           end
 
@@ -338,15 +337,17 @@ module Buildr
         xml.orderEntry :type => "inheritedJdk"
       end
 
-      def generate_project_dependency(xml, other_project, export = true)
+      def generate_project_dependency(xml, other_project, export, test = false)
         attribs = {:type => 'module', "module-name" => other_project}
         attribs[:exported] = '' if export
+        attribs[:scope] = 'TEST' if test
         xml.orderEntry attribs
       end
 
-      def generate_module_lib(xml, path, export, source_path)
+      def generate_module_lib(xml, path, export, source_path, test = false)
         attribs = {:type => 'module-library'}
         attribs[:exported] = '' if export
+        attribs[:scope] = 'TEST' if test
         xml.orderEntry attribs do
           xml.library do
             xml.CLASSES do
