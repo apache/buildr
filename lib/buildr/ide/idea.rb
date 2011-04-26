@@ -21,6 +21,10 @@ require 'stringio'
 
 module Buildr
   module IntellijIdea
+    def self.new_document(value)
+      REXML::Document.new(value, :attribute_quote => :quote)
+    end
+
     # Abstract base class for IdeaModule and IdeaProject
     class IdeaFile
       DEFAULT_SUFFIX = ""
@@ -47,7 +51,7 @@ module Buildr
       end
 
       def write(f)
-        document.write f
+        document.write(f, 2, false, true)
       end
 
       protected
@@ -61,7 +65,7 @@ module Buildr
         Builder::XmlMarkup.new(:target => target, :indent => 2).component(attrs.merge({:name => name})) do |xml|
           yield xml if block_given?
         end
-        REXML::Document.new(target.string).root
+        Buildr::IntellijIdea.new_document(target.string).root
       end
 
       def components
@@ -69,7 +73,7 @@ module Buildr
       end
 
       def load_document(filename)
-        REXML::Document.new(File.read(filename))
+        Buildr::IntellijIdea.new_document(File.read(filename))
       end
 
       def document
@@ -179,7 +183,7 @@ module Buildr
         Builder::XmlMarkup.new(:target => target, :indent => 2).facet(:name => name, :type => type) do |xml|
           yield xml if block_given?
         end
-        self.facets << REXML::Document.new(target.string).root
+        self.facets << Buildr::IntellijIdea.new_document(target.string).root
       end
 
       def skip_content?
@@ -216,7 +220,7 @@ module Buildr
       def base_document
         target = StringIO.new
         Builder::XmlMarkup.new(:target => target).module(:version => "4", :relativePaths => "true", :type => self.type)
-        REXML::Document.new(target.string)
+        Buildr::IntellijIdea.new_document(target.string)
       end
 
       def initial_components
@@ -409,7 +413,7 @@ module Buildr
       def base_document
         target = StringIO.new
         Builder::XmlMarkup.new(:target => target).project(:version => "4", :relativePaths => "false")
-        REXML::Document.new(target.string)
+        Buildr::IntellijIdea.new_document(target.string)
       end
 
       def default_components
