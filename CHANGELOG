@@ -1,4 +1,5 @@
 1.4.6 (Pending)
+* Fixed:  BUILDR-583 Update jruby install to use jruby version 1.6.1 (Alexis Midon)
 * Fixed:  BUILDR-582 Revert the name change for the task to generate Intellij
           project files to 'idea'
 * Change: BUILDR-579 Format generated IDEA project files to look more like what

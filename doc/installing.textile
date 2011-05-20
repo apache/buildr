@@ -137,11 +137,11 @@ To upgrade to a new version or install a specific version:
 
 h2(#jruby).  Installing for JRuby
 
-*The easy way:* Use this bash script to "install Buildr on JRuby":scripts/install-jruby.sh.  This script will install the most recent version of Buildr, or if already installed, upgrade to the most recent version.  If necessary, it will also install JRuby 1.1.6 in @/opt/jruby@ and update the @PATH@ variable in @~/.bash_profile@ or @~/.profile@.
+*The easy way:* Use this bash script to "install Buildr on JRuby":scripts/install-jruby.sh.  This script will install the most recent version of Buildr, or if already installed, upgrade to the most recent version.  If necessary, it will also install JRuby 1.6.1 in @/opt/jruby@ and update the @PATH@ variable in @~/.bash_profile@ or @~/.profile@.
 
 <br>
 
-*In details:* If you don't already have JRuby 1.1.6 or later installed, you can download it from the "JRuby site":http://dist.codehaus.org/jruby/.
+*In details:* If you don't already have JRuby 1.5.1 or later installed, you can download it from the "JRuby site":http://www.jruby.org/download.
 
 After uncompressing JRuby, update your @PATH@ to include both @java@ and @jruby@ executables.
 
