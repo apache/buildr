@@ -477,7 +477,8 @@ module Buildr
         error "No build number provided for the snapshot #{to_spec}" if build_number.nil?
         return nil if timestamp.nil? || build_number.nil?
         snapshot_of = version[0, version.size - 9]
-        repo_url + "#{group_path}/#{id}/#{version}/#{id}-#{snapshot_of}-#{timestamp.text}-#{build_number.text}.#{type}"
+        classifier_snippet = (classifier != nil) ? "-#{classifier}" : ""
+        repo_url + "#{group_path}/#{id}/#{version}/#{id}-#{snapshot_of}-#{timestamp.text}-#{build_number.text}#{classifier_snippet}.#{type}"
       rescue URI::NotFoundError
         nil
       end

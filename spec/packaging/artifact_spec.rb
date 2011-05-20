@@ -300,6 +300,32 @@ describe Repositories, 'remote' do
       should change { File.exist?(File.join(repositories.local, 'com/example/library/2.1-SNAPSHOT/library-2.1-SNAPSHOT.jar')) }.to(true)
   end
 
+  it 'should resolve m2-style deployed snapshots with classifiers' do
+    metadata = <<-XML
+    <?xml version='1.0' encoding='UTF-8'?>
+    <metadata>
+      <groupId>com.example</groupId>
+      <artifactId>library</artifactId>
+      <version>2.1-SNAPSHOT</version>
+      <versioning>
+        <snapshot>
+          <timestamp>20071012.190008</timestamp>
+          <buildNumber>8</buildNumber>
+        </snapshot>
+        <lastUpdated>20071012190008</lastUpdated>
+      </versioning>
+    </metadata>
+    XML
+    repositories.remote = 'http://example.com'
+    URI.should_receive(:download).once.with(uri(/2.1-SNAPSHOT\/library-2.1-20071012.190008-8-classifier.jar$/), anything()).
+      and_return { |uri, target, options| write target }
+    URI.should_receive(:download).once.with(uri(/2.1-SNAPSHOT\/maven-metadata.xml$/), duck_type(:write)).
+      and_return { |uri, target, options| target.write(metadata) }
+    puts repositories.local
+    lambda { artifact('com.example:library:jar:classifier:2.1-SNAPSHOT').invoke}.
+      should change {File.exists?(File.join(repositories.local, 'com/example/library/2.1-SNAPSHOT/library-2.1-SNAPSHOT-classifier.jar')) }.to(true)
+  end
+
   it 'should fail resolving m2-style deployed snapshots if a timestamp is missing' do
     metadata = <<-XML
     <?xml version='1.0' encoding='UTF-8'?>
