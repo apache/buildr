@@ -14,11 +14,11 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 if [ -z `which jruby` ] ; then
-  version=1.1.6
+  version=1.6.1
   target=/opt/jruby
   echo "Installing JRuby ${version} in ${target}"
   sudo mkdir -p $(dirname ${target})
-  wget http://dist.codehaus.org/jruby/${version}/jruby-bin-${version}.tar.gz
+  wget http://jruby.org.s3.amazonaws.com/downloads/${version}/jruby-bin-${version}.tar.gz 
   tar -xz < jruby-bin-${version}.tar.gz
   sudo mv jruby-${version} ${target}
   rm jruby-bin-${version}.tar.gz
