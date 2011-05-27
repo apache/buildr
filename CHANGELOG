@@ -12,6 +12,7 @@
 * Change: BUILDR-574 Enhance idea task to generate test resources with test scope
           (Jean-Philippe Caruana)
 * Change: BUILDR-576 Upgrade to JUnit 4.8.2
+* Chnage: Upgrade to JRuby 1.6.2
 * Fixed:  BUILDR-571 Generated IDEA projects include resources multiple times (Peter Royal) 
 * Fixed:  BUILDR-573 HTTP upload PUT request with incorrect Content-Type (Mathias Doenitz)
 * Fixed:  BUILDR-578 Tar task does not preserve uid/gid on folders (Jean-Philippe Caruana)
