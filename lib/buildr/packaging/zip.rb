@@ -175,4 +175,10 @@ module Zip #:nodoc:
 
     end
   end
+
+  class ZipEntrySet
+    def <<(entry)
+      @entrySet[entry.to_s] = entry if entry != nil
+    end
+  end
 end
