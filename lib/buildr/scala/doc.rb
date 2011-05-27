@@ -26,7 +26,7 @@ module Buildr
       after_define(:scaladoc => :doc) do |project|
         if project.doc.engine? Scaladoc
           options = project.doc.options
-          key = Scala.compatible_28? ? "doc-title".to_sym : :windowtitle
+          key = Scala.version?(2.7) ? :windowtitle : "doc-title".to_sym
           options[key] = (project.comment || project.name) unless options[key]
         end
       end

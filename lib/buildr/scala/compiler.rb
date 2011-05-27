@@ -19,7 +19,7 @@ require 'buildr/core/compile'
 require 'buildr/packaging'
 
 module Buildr::Scala
-  DEFAULT_VERSION = '2.8.1'
+  DEFAULT_VERSION = '2.9.0-1'
 
   class << self
 
@@ -59,13 +59,15 @@ module Buildr::Scala
       Buildr.settings.build['scala.version'] || installed_version || DEFAULT_VERSION
     end
 
-    def compatible_28?
-      major, minor = version.match(/^(\d)\.(\d)/).to_a[1,2]
-      if major && minor
-        (major.to_i == 2 && minor.to_i >= 8) || (major.to_i > 2)
-      else
-        false
-      end
+    # check if version matches any of the given prefixes
+    def version?(*v)
+      v.any? { |v| version.index(v.to_s) == 0 }
+    end
+
+    # returns Scala version without build number.
+    # e.g.  "2.9.0-1" => "2.9.0"
+    def version_without_build
+      version.split('-')[0]
     end
   end
 
@@ -156,17 +158,17 @@ module Buildr::Scala
       options[:warnings] = verbose if options[:warnings].nil?
       options[:deprecation] ||= false
       options[:optimise] ||= false
-      options[:make] ||= :transitivenocp if Scala.compatible_28?
+      options[:make] ||= :transitivenocp if Scala.version? 2.8
       options[:javac] ||= {}
 
       @java = Javac.new(project, options[:javac])
     end
 
     def compile(sources, target, dependencies) #:nodoc:
-      check_options(options, OPTIONS + (Scala.compatible_28? ? [:make] : []))
+      check_options(options, OPTIONS + (Scala.version?(2.8) ? [:make] : []))
 
       java_sources = java_sources(sources)
-      enable_dep_tracing = Scala.compatible_28? && java_sources.empty?
+      enable_dep_tracing = Scala.version?(2.8) && java_sources.empty?
 
       dependencies.unshift target if enable_dep_tracing
 
@@ -226,7 +228,11 @@ module Buildr::Scala
       args = []
       args << "-nowarn" unless options[:warnings]
       args << "-verbose" if trace?(:scalac)
-      args << "-g" if options[:debug]
+      if options[:debug] == true
+        args << (Scala.version?(2.7, 2.8) ? "-g" : "-g:vars")
+      elsif options[:debug]
+        args << "-g:#{options[:debug]}"
+      end
       args << "-deprecation" if options[:deprecation]
       args << "-optimise" if options[:optimise]
       args << "-target:jvm-" + options[:target].to_s if options[:target]

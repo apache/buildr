@@ -170,7 +170,7 @@ Before using Scala, you must first @require@ the Scala compiler:
 require 'buildr/scala'
 {% endhighlight %}
 
-By default, Buildr will attempt to use the latest stable release of Scala, which is currently Scala 2.8.0 as of July 2010.  Of course you can configure a specific version of Scala for your project by adding the following entry in @build.yaml@:
+By default, Buildr will attempt to use the latest stable release of Scala, which is currently Scala 2.9.0 as of May 2011.  Of course you can configure a specific version of Scala for your project by adding the following entry in @build.yaml@:
 
 {% highlight yaml %}
 scala.version: 2.8.0.Beta1  # Pick your version
@@ -210,11 +210,11 @@ When using the Scala compiler, if you don't specify the packaging type, it defau
 The Scala compiler supports the following options:
 
 |_. Option        |_. Usage |
-| @:debug@        | Generates bytecode with debugging information.  You can also override this by setting the environment variable @debug@ to @off@. |
+| @:debug@        | If true, generates bytecode with debugging information. Scala 2.9 also accepts: none,source,line,vars,notc. |
 | @:deprecation@  | If true, shows deprecation messages.  False by default. |
+| @:make@         | Make strategy to be used by the compiler (e.g. @:make=>'transitive'@). *Scala 2.8 only* |
 | @:optimise@     | Generates faster bytecode by applying optimisations to the program. |
 | @:other@        | Array of options passed to the compiler (e.g. @:other=>'-Xprint-types'@). |
-| @:make@         | Make strategy to be used by the compiler (e.g. @:make=>'transitive'@).  *Scala 2.8 only* |
 | @:target@       | Bytecode compatibility (e.g. '1.4'). |
 | @:warnings@     | Issue warnings when compiling.  True when running in verbose mode. |
 | @:javac@        | A hash of options passed to the @javac@ compiler verbatim. |
