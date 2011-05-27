@@ -23,7 +23,16 @@ require 'buildr/java/tests'
 module Buildr::Scala
   # Scala::Check is available when using Scala::Test or Scala::Specs
   module Check
-    VERSION = '1.8'
+    VERSION = case
+      when Buildr::Scala.version?("2.7")
+        '1.6'
+      when Buildr::Scala.version?("2.8.0")
+        '1.7'
+      when Buildr::Scala.version?("2.8.1")
+        '1.8'
+      else
+        '1.9'
+    end
 
     class << self
       def version
@@ -31,15 +40,20 @@ module Buildr::Scala
       end
 
       def classifier
-        Buildr.settings.build['scala.check.classifier'] || ""
+        Buildr.settings.build['scala.check.classifier']
       end
 
       def artifact
-        Buildr.settings.build['scala.check.artifact'] || "scalacheck_#{Buildr::Scala.version}"
+        Buildr.settings.build['scala.check.artifact'] || "scalacheck_#{Buildr::Scala.version_without_build}"
       end
 
       def dependencies
-        (version =~ /:/) ? [version] : ["org.scala-tools.testing:#{artifact}:jar:#{classifier}:#{version}"]
+        return [version] if (version =~ /:/)
+        if classifier
+          ["org.scala-tools.testing:#{artifact}:jar:#{classifier}:#{version}"]
+        else
+          ["org.scala-tools.testing:#{artifact}:jar:#{version}"]
+        end
       end
 
     private
@@ -60,16 +74,26 @@ module Buildr::Scala
   # * :java_args   -- Arguments passed as is to the JVM.
   class ScalaTest < Buildr::TestFramework::Java
 
-    VERSION = '1.3'
+    VERSION = Buildr::Scala.version?(2.7, 2.8) ? '1.3' : '1.4.1'
 
     class << self
       def version
-        Buildr.settings.build['scala.test'] || VERSION
+        custom = Buildr.settings.build['scala.test']
+        (custom =~ /:/) ? Buildr.artifact(custom).version : VERSION
+      end
+
+      def specs
+        custom = Buildr.settings.build['scala.test']
+        return custom if (custom =~ /:/)
+        if Buildr::Scala.version?(2.7, 2.8)
+          "org.scalatest:scalatest:jar:#{version}"
+        else
+          "org.scalatest:scalatest_#{Buildr::Scala.version_without_build}:jar:#{version}"
+        end
       end
 
       def dependencies
-        ["org.scalatest:scalatest:jar:#{version}"] + Check.dependencies +
-          JMock.dependencies + JUnit.dependencies
+        [specs] + Check.dependencies + JMock.dependencies + JUnit.dependencies
       end
 
       def applies_to?(project) #:nodoc:

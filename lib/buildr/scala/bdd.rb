@@ -32,21 +32,34 @@ module Buildr::Scala
     @lang = :scala
     @bdd_dir = :spec
 
-    VERSION = '1.6.6'
+    VERSION = case
+      when Buildr::Scala.version?("2.8.0")
+        '1.6.5'
+      when Buildr::Scala.version?("2.8.1")
+        '1.6.8'
+      else
+        '1.6.8'
+    end
+
 
     class << self
       def version
-        Buildr.settings.build['scala.specs'] || VERSION
+        custom = Buildr.settings.build['scala.specs']
+        (custom =~ /:/) ? Buildr.artifact(custom).version : VERSION
+      end
+
+      def specs
+        custom = Buildr.settings.build['scala.specs']
+        [ (custom =~ /:/) ? custom : "org.scala-tools.testing:#{artifact}:jar:#{version}" ]
       end
 
       def artifact
-        Buildr.settings.build['scala.specs.artifact'] || "specs_#{Buildr::Scala.version}"
+        Buildr.settings.build['scala.specs.artifact'] || "specs_#{Buildr::Scala.version_without_build}"
       end
 
       def dependencies
         unless @dependencies
           super
-          specs = (version =~ /:/) ? [version] : ["org.scala-tools.testing:#{artifact}:jar:#{version}"]
           # Add utility classes (e.g. SpecsSingletonRunner) and other dependencies
           @dependencies |= [ File.join(File.dirname(__FILE__)) ] + specs +
                            Check.dependencies + JUnit.dependencies + Scalac.dependencies

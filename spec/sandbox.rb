@@ -21,8 +21,11 @@ Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
 repositories.remote << 'http://repo1.maven.org/maven2'
 repositories.remote << 'http://scala-tools.org/repo-releases'
 
-# Force Scala 2.8.1 for specs; don't want to rely on SCALA_HOME
-Buildr.settings.build['scala.version'] = "2.8.1"
+# Force Scala version for specs; don't want to rely on SCALA_HOME
+module Buildr::Scala
+  SCALA_VERSION_FOR_SPECS = ENV["SCALA_VERSION"] || "2.8.1"
+end
+Buildr.settings.build['scala.version'] = Buildr::Scala::SCALA_VERSION_FOR_SPECS
 
 # Add a 'require' here only for optional extensions, not for extensions that should be loaded by default.
 require 'buildr/clojure'
@@ -47,6 +50,25 @@ end
 
 ENV['HOME'] = File.expand_path(File.join(File.dirname(__FILE__), '..', 'tmp', 'home'))
 mkpath ENV['HOME']
+
+# Make Scala.version resilient to sandbox reset
+module Buildr::Scala
+  DEFAULT_VERSION = SCALA_VERSION_FOR_SPECS
+
+  class << self
+    def version
+      SCALA_VERSION_FOR_SPECS
+    end
+  end
+
+  class Scalac
+    class << self
+      def use_installed?
+        false
+      end
+    end
+  end
+end
 
 # We need to run all tests inside a _sandbox, tacking a snapshot of Buildr before the test,
 # and restoring everything to its previous state after the test. Damn state changes.
