@@ -56,7 +56,7 @@ module Buildr
     class JIRB < Base
       include JRebel
 
-      JRUBY_VERSION = '1.4.0'
+      JRUBY_VERSION = '1.6.2'
 
       def launch(task)
         if jruby_home     # if JRuby is installed, use it
