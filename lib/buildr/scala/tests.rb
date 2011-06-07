@@ -139,7 +139,7 @@ module Buildr::Scala
           # ScalaTestTask was deprecated in 1.2, in favor of ScalaTestAntTask
           classname = (ScalaTest.version =~ /1\.[01]/) ? \
             'org.scalatest.tools.ScalaTestTask' : 'org.scalatest.tools.ScalaTestAntTask'
-          ant.taskdef :name=>'scalatest', :classname=>'org.scalatest.tools.ScalaTestTask',
+          ant.taskdef :name=>'scalatest', :classname=>classname,
             :classpath=>taskdef.join(File::PATH_SEPARATOR)
           ant.scalatest :runpath=>dependencies.join(File::PATH_SEPARATOR) do
             ant.suite    :classname=>suite
