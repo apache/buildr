@@ -56,9 +56,10 @@ begin
   task :load_ci_reporter do
     gem 'ci_reporter'
     ENV['CI_REPORTS'] = '_reports/ci'
-    # CI_Reporter does not quote the path to rspec_loader which causes problems when ruby is installed in C:/Program Files
+    # CI_Reporter does not quote the path to rspec_loader which causes problems when ruby is installed in C:/Program Files.
+    # However, newer versions of rspec don't like double quotes escaping as well, so removing them for now.
     ci_rep_path = Gem.loaded_specs['ci_reporter'].full_gem_path
-    ENV["SPEC_OPTS"] = [ENV["SPEC_OPTS"], default_spec_opts, "--require", "\"#{ci_rep_path}/lib/ci/reporter/rake/rspec_loader.rb\"", "--format", "CI::Reporter::RSpec"].join(" ")
+    ENV["SPEC_OPTS"] = [ENV["SPEC_OPTS"], default_spec_opts, "--require", "#{ci_rep_path}/lib/ci/reporter/rake/rspec_loader.rb", "--format", "CI::Reporter::RSpec"].join(" ")
   end
 
   desc 'Run all specs with CI reporter'
