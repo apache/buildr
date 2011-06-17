@@ -1,7 +1,7 @@
 1.4.6 (Pending)
 * Added:  Support for Scala 2.9.0+ (with help of Alexis Midon)
-* Change: Scala 2.9.0-1 is now default, along with ScalaCheck 1.9, ScalaTest 1.4.1
-          and Specs 1.6.8. 
+* Change: Scala 2.9.0-1 is now default, along with ScalaCheck 1.9, ScalaTest 1.6.1
+          and Specs 1.6.8.
 * Change: ScalaCheck, ScalaTest and Specs now default to sane versions when using
           older Scala versions.
 * Fixed:  BUILDR-583 Update jruby install to use jruby version 1.6.1 (Alexis Midon)
@@ -13,13 +13,14 @@
           (Jean-Philippe Caruana)
 * Change: BUILDR-576 Upgrade to JUnit 4.8.2
 * Chnage: Upgrade to JRuby 1.6.2
-* Fixed:  BUILDR-571 Generated IDEA projects include resources multiple times (Peter Royal) 
+* Fixed:  BUILDR-571 Generated IDEA projects include resources multiple times (Peter Royal)
 * Fixed:  BUILDR-573 HTTP upload PUT request with incorrect Content-Type (Mathias Doenitz)
 * Fixed:  BUILDR-578 Tar task does not preserve uid/gid on folders (Jean-Philippe Caruana)
 * Fixed:  BUILDR-251 Classifier not handled when downloading snapshot artifacts (Ryan Fowler)
 * Fixed:  BUILDR-585 "TypeError : can't dup NilClass" when merging jars
 * Fixed:  BUILDR-586 ScalaTest uses deprecated ant task (Martin Partel)
 * Fixed:  BUILDR-584 eclipse plugin should use absolute path
+* Fixed:  BUILDR-587 ScalaTest uses deprecated reporter parameters
 
 1.4.5 (2011-02-20)
 * Added:  BUILDR-555 Add support for the jaxb binding compiler (Mark Petrovic)
