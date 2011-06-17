@@ -19,6 +19,7 @@
 * Fixed:  BUILDR-251 Classifier not handled when downloading snapshot artifacts (Ryan Fowler)
 * Fixed:  BUILDR-585 "TypeError : can't dup NilClass" when merging jars
 * Fixed:  BUILDR-586 ScalaTest uses deprecated ant task (Martin Partel)
+* Fixed:  BUILDR-584 eclipse plugin should use absolute path
 
 1.4.5 (2011-02-20)
 * Added:  BUILDR-555 Add support for the jaxb binding compiler (Mark Petrovic)

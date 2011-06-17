@@ -389,9 +389,15 @@ module Buildr
         msg = [:to_path, :to_str, :to_s].find { |msg| path.respond_to? msg }
         path = path.__send__(msg)
         begin
-          Util.relative_path(File.expand_path(path), @project.path_to)
+          relative = Util.relative_path(File.expand_path(path), @project.path_to)
+          if relative['..']
+            # paths don't share same root
+            Util.normalize_path(path)
+          else
+            relative
+          end
         rescue ArgumentError
-          File.expand_path(path)
+          Util.normalize_path(path)
         end
       end
 
