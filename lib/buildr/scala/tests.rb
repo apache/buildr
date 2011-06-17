@@ -74,7 +74,7 @@ module Buildr::Scala
   # * :java_args   -- Arguments passed as is to the JVM.
   class ScalaTest < Buildr::TestFramework::Java
 
-    VERSION = Buildr::Scala.version?(2.7, 2.8) ? '1.3' : '1.4.1'
+    VERSION = Buildr::Scala.version?(2.7, 2.8) ? '1.3' : '1.6.1'
 
     class << self
       def version
@@ -128,7 +128,12 @@ module Buildr::Scala
       mkpath task.report_to.to_s
       success = []
 
-      reporter_options = 'TFGBSAR' # testSucceeded, testFailed, testIgnored, suiteAborted, runStopped, runAborted, runCompleted
+      reporter_options = if (ScalaTest.version =~ /^0\./)
+        'TFGBSAR' # testSucceeded, testFailed, testIgnored, suiteAborted, runStopped, runAborted, runCompleted
+      else
+        ''
+      end
+
       scalatest.each do |suite|
         info "ScalaTest #{suite.inspect}"
         # Use Ant to execute the ScalaTest task, gives us performance and reporting.
@@ -137,7 +142,7 @@ module Buildr::Scala
         taskdef = Buildr.artifacts(self.class.dependencies).each(&:invoke).map(&:to_s)
         Buildr.ant('scalatest') do |ant|
           # ScalaTestTask was deprecated in 1.2, in favor of ScalaTestAntTask
-          classname = (ScalaTest.version =~ /1\.[01]/) ? \
+          classname = (ScalaTest.version =~ /^1\.[01]/) ? \
             'org.scalatest.tools.ScalaTestTask' : 'org.scalatest.tools.ScalaTestAntTask'
           ant.taskdef :name=>'scalatest', :classname=>classname,
             :classpath=>taskdef.join(File::PATH_SEPARATOR)

@@ -21,6 +21,8 @@ Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
 repositories.remote << 'http://repo1.maven.org/maven2'
 repositories.remote << 'http://scala-tools.org/repo-releases'
 
+ENV["SCALA_HOME"] = ''
+
 # Force Scala version for specs; don't want to rely on SCALA_HOME
 module Buildr::Scala
   SCALA_VERSION_FOR_SPECS = ENV["SCALA_VERSION"] || "2.8.1"
@@ -41,6 +43,7 @@ artifacts(
   Buildr::Groovy.dependencies,
   Buildr::JaxbXjc.dependencies,
   Buildr::Bnd.dependencies,
+  Buildr::Scala::Scalac.dependencies,
   Buildr::Scala::Specs.dependencies,
   Buildr::Shell::BeanShell.artifact,
   Buildr::Clojure.dependencies
