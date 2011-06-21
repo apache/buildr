@@ -179,6 +179,9 @@ describe Buildr::IntellijIdea do
 
       describe "with local_repository_env_override set to nil" do
         before do
+          Buildr.repositories.instance_eval do
+            @local = @remote = @release_to = nil
+          end
           artifact('group:id:jar:1.0') { |t| write t.to_s }
           @foo = define "foo" do
             iml.local_repository_env_override = nil
