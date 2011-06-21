@@ -31,8 +31,8 @@ task :prepare do |task, args|
     puts "Checking there are no local changes ... "
     svn = `svn status`
     fail "Cannot release unless all local changes are in SVN:\n#{svn}" unless svn.empty?
-    git = `git status`
-    fail "Cannot release unless all local changes are in Git:\n#{git}" if git[/^#\t/]
+    git = `git status -s`
+    fail "Cannot release unless all local changes are in Git:\n#{git}" if git[/^ M/] && ENV["IGNORE_GIT"].nil?
     puts "[X] There are no local changes, everything is in source control"
   end.call
 
@@ -50,7 +50,7 @@ task :prepare do |task, args|
     args.gpg or fail "Please run with gpg=<argument for gpg --local-user>"
     gpg_ok = `gpg2 --list-keys #{args.gpg}`
     if !$?.success?
-      gpg_ok = `gpg --list-keys #{args.gpg}` 
+      gpg_ok = `gpg --list-keys #{args.gpg}`
       gpg_cmd = 'gpg'
     end
     fail "No GPG user #{args.gpg}" if gpg_ok.empty?

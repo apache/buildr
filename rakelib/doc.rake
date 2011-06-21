@@ -74,7 +74,7 @@ begin
 rescue LoadError
   puts "Buildr uses the jekyll gem to generate the Web site. You can install it by running rake doc:setup"
   task 'doc:setup' do
-    install_gem 'jekyll', :version=>'0.6.2'
+    install_gem 'jekyll', :version=>'0.10.0'
     install_gem 'jekylltask', :version=>'1.0.2'
     if `pygmentize -V`.empty?
       args = %w{easy_install Pygments}

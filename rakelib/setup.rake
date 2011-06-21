@@ -54,6 +54,7 @@ end
 # Setup environment for running this Rakefile (RSpec, Jekyll, etc).
 desc "If you're building from sources, run this task first to setup the necessary dependencies."
 task :setup do
+=begin
   missing = spec.dependencies.select { |dep| Gem::SourceIndex.from_installed_gems.search(dep).empty? }
   missing.each do |dep|
     if (dep.respond_to? :requirement)
@@ -63,4 +64,5 @@ task :setup do
       install_gem dep.name, :version=>dep.version_requirements
     end
   end
+=end
 end

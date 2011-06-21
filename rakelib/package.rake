@@ -14,18 +14,18 @@
 # the License.
 
 
-require 'rake/gempackagetask'
+require 'rubygems/package_task'
 
 
-package = Rake::GemPackageTask.new(spec) do |pkg|
+package = Gem::PackageTask.new(spec) do |pkg|
   pkg.need_tar = true
   pkg.need_zip = true
 end
 
 desc "Install Buildr from source"
-task :install=>["#{package.package_dir}/#{package.gem_file}"] do |task|
+task :install=>["#{package.package_dir}/#{package.gem_spec.file_name}"] do |task|
   print "Installing #{spec.name} ... "
-  args = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', "#{package.package_dir}/#{package.gem_file}"
+  args = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', "#{package.package_dir}/#{package.gem_spec.file_name}"
   args.unshift('sudo') if sudo_needed?
   sh *args
   puts "[x] Installed Buildr #{spec.version}"
@@ -48,13 +48,13 @@ task :compile do
   args << '--trace' if Rake.application.options.trace
   sh *args
 end
-file Rake::GemPackageTask.new(spec).package_dir=>:compile
-file Rake::GemPackageTask.new(spec).package_dir_path=>:compile
+file Gem::PackageTask.new(spec).package_dir => :compile
+file Gem::PackageTask.new(spec).package_dir_path => :compile
 
 # We also need the other packages (JRuby if building on Ruby, and vice versa)
 # Must call new with block, even if block does nothing, otherwise bad things happen.
 @specs.values.each do |s|
-  Rake::GemPackageTask.new(s) { |task| }
+  Gem::PackageTask.new(s) { |task| }
 end
 
 

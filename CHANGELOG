@@ -1,4 +1,4 @@
-1.4.6 (Pending)
+1.4.6 (2011-06-17)
 * Added:  Support for Scala 2.9.0+ (with help of Alexis Midon)
 * Change: Scala 2.9.0-1 is now default, along with ScalaCheck 1.9, ScalaTest 1.6.1
           and Specs 1.6.8.

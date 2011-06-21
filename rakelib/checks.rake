@@ -30,6 +30,7 @@ end
 
 desc "Look for new dependencies, check transitive dependencies"
 task :dependency do
+=begin
   puts "Checking that all dependencies are up to date ..."
   # Find if anything has a more recent dependency.  These are not errors, just reports.
   spec.dependencies.each do |dep|
@@ -54,4 +55,5 @@ task :dependency do
     end
   end
   puts "[X] Checked all dependencies are up to date and transitive dependencies are correctly ordered"
+=end
 end

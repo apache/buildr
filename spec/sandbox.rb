@@ -21,7 +21,7 @@ Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
 repositories.remote << 'http://repo1.maven.org/maven2'
 repositories.remote << 'http://scala-tools.org/repo-releases'
 
-ENV["SCALA_HOME"] = ''
+ENV["SCALA_HOME"] = nil
 
 # Force Scala version for specs; don't want to rely on SCALA_HOME
 module Buildr::Scala
