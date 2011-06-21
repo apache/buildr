@@ -19,6 +19,42 @@ require 'fileutils'
 
 module Buildr #:nodoc:
 
+  module TestFramework
+
+    # A class used by buildr for jruby based frameworks, so that buildr can know
+    # which tests succeeded/failed.
+    class TestResult
+
+      class Error < ::Exception
+        attr_reader :message, :backtrace
+        def initialize(message, backtrace)
+          @message = message
+          @backtrace = backtrace
+          set_backtrace backtrace
+        end
+
+        def self.dump_yaml(file, e)
+          FileUtils.mkdir_p File.dirname(file)
+          File.open(file, 'w') { |f| f.puts(YAML.dump(Error.new(e.message, e.backtrace))) }
+        end
+
+        def self.guard(file)
+          begin
+            yield
+          rescue => e
+            dump_yaml(file, e)
+          end
+        end
+      end
+
+      attr_accessor :failed, :succeeded
+
+      def initialize
+        @failed, @succeeded = [], []
+      end
+    end
+  end
+
   module JtestR
 
     # An Rspec formatter used by JtestR
