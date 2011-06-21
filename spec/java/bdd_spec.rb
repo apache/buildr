@@ -267,7 +267,7 @@ describe Buildr::JtestR do
     Buildr::JtestR.instance_eval { @dependencies = nil }
   end
 
-end if RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME'] # JtestR
+end if ENV["JTESTR"] && (RUBY_PLATFORM =~ /java/ || ENV['JRUBY_HOME']) # JtestR
 
 describe Buildr::JBehave do
   def foo(*args, &prc)
