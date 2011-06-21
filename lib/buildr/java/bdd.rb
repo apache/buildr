@@ -47,7 +47,7 @@ module Buildr
   module TestFramework::JRubyBased
     extend self
 
-    VERSION = '1.6.2'
+    VERSION = '1.5.4' # Note: JtestR 0.6.0 only works up to 1.5.4
 
     class << self
       def version
@@ -75,7 +75,7 @@ module Buildr
       def dependencies
         unless @dependencies
           super
-          unless RUBY_PLATFORM[/java/] && TestFramework::JRubyBased.jruby_installed?
+          if !RUBY_PLATFORM[/java/] && !TestFramework::JRubyBased.jruby_installed?
             @dependencies |= TestFramework::JRubyBased.dependencies
           end
         end
@@ -146,11 +146,13 @@ module Buildr
       cmd_options = java_args.last
       project = cmd_options.delete(:project)
       cmd_options[:classpath] ||= []
-      Dir.glob(File.join(jruby_home, 'lib', '*.jar')) { |jar| cmd_options[:classpath] << jar }
+      if jruby_home && jruby_home != ''
+        Dir.glob(File.join(jruby_home, 'lib', '*.jar')) { |jar| cmd_options[:classpath] << jar }
+        cmd_options[:properties]['jruby.home'] = jruby_home
+      end
       cmd_options[:java_args] ||= []
       cmd_options[:java_args] << '-Xmx512m' unless cmd_options[:java_args].detect {|a| a =~ /^-Xmx/}
       cmd_options[:properties] ||= {}
-      cmd_options[:properties]['jruby.home'] = jruby_home
       Java::Commands.java(*java_args)
     end
 
@@ -370,8 +372,9 @@ module Buildr
       runner = super
       # JtestR 0.6.0 comes with rspec 1.3.0 (and any other jtestr dependency) included,
       # so the rspec version used depends on the jtestr jar.
-      runner.requires.unshift 'jtestr'
       runner.gems.update 'rspec' => '=1.3.0'
+      runner.requires.clear
+      runner.requires.unshift 'jtestr'
       runner.requires.unshift 'spec'
       runner.requires.unshift File.join(File.dirname(__FILE__), 'jtestr_result')
       runner.rspec = ['--format', 'progress', '--format', "html:#{runner.html_report}"]

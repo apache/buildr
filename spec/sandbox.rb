@@ -124,6 +124,13 @@ module Sandbox
     Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
 
     @_sandbox[:load_path] = $LOAD_PATH.clone
+
+    # clear RUBYOPT since bundler hooks into it
+    #   e.g. RUBYOPT=-I/usr/lib/ruby/gems/1.8/gems/bundler-1.0.15/lib -rbundler/setup
+    # and so Buildr's own Gemfile configuration taints e.g., JRuby's environment
+    @_sandbox[:ruby_opt] = ENV["RUBYOPT"]
+    ENV["RUBYOPT"] = nil
+
     #@_sandbox[:loaded_features] = $LOADED_FEATURES.clone
 
     # Later on we'll want to lose all the on_define created during the test.
@@ -174,6 +181,8 @@ module Sandbox
     Layout.default = @_sandbox[:layout].clone
 
     $LOAD_PATH.replace @_sandbox[:load_path]
+    ENV["RUBYOPT"] = @_sandbox[:ruby_opt]
+
     FileUtils.rm_rf @temp
     mkpath ENV['HOME']
 
