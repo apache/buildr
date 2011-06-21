@@ -21,8 +21,6 @@ Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
 repositories.remote << 'http://repo1.maven.org/maven2'
 repositories.remote << 'http://scala-tools.org/repo-releases'
 
-ENV["SCALA_HOME"] = nil
-
 # Force Scala version for specs; don't want to rely on SCALA_HOME
 module Buildr::Scala
   SCALA_VERSION_FOR_SPECS = ENV["SCALA_VERSION"] || "2.8.1"
@@ -138,16 +136,18 @@ module Sandbox
     # of some essential artifacts (e.g. JUnit artifacts required by build task), so we create
     # these first (see above) and keep them across test cases.
     @_sandbox[:artifacts] = Artifact.class_eval { @artifacts }.clone
-    Buildr.repositories.local = File.expand_path('repository')
+    @_sandbox[:local_repository] = Buildr.repositories.local
     ENV['HOME'] = File.expand_path('home')
     ENV['BUILDR_ENV'] = 'development'
 
     @_sandbox[:env_keys] = ENV.keys
     ['DEBUG', 'TEST', 'HTTP_PROXY', 'HTTPS_PROXY', 'USER'].each { |k| ENV.delete(k) ; ENV.delete(k.downcase) }
 
-    # Remove testing local repository, and reset all repository settings.
+    # By default, remote repository is user's own local M2 repository
+    # since we don't want to remotely download artifacts into the sandbox over and over
     Buildr.repositories.instance_eval do
-      @local = @remote = @release_to = nil
+      @remote = ["file://" + @local]
+      @local = @release_to = nil
     end
     Buildr.options.proxy.http = nil
 
@@ -179,6 +179,8 @@ module Sandbox
 
     # Get rid of all artifacts.
     @_sandbox[:artifacts].tap { |artifacts| Artifact.class_eval { @artifacts = artifacts } }
+
+    Buildr.repositories.local = @_sandbox[:local_repository]
 
     # Restore options.
     Buildr.options.test = nil

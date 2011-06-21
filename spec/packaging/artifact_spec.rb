@@ -18,6 +18,9 @@ require 'fileutils'
 
 describe Artifact do
   before do
+    Buildr.repositories.instance_eval do
+      @local = @remote = @release_to = nil
+    end
     @spec = { :group=>'com.example', :id=>'library', :type=>:jar, :version=>'2.0' }
     @artifact = artifact(@spec)
     @classified = artifact(@spec.merge(:classifier=>'all'))
@@ -145,6 +148,12 @@ end
 
 
 describe Repositories, 'local' do
+  before do
+    Buildr.repositories.instance_eval do
+      @local = @remote = @release_to = nil
+    end
+  end
+
   it 'should default to .m2 path' do
     # For convenience, sandbox actually sets the local repository to a temp directory
     repositories.local = nil
@@ -203,6 +212,10 @@ end
 
 describe Repositories, 'remote' do
   before do
+    Buildr.repositories.instance_eval do
+      @local = @remote = @release_to = nil
+    end
+
     @repos = [ 'http://www.ibiblio.org/maven2', 'http://repo1.maven.org/maven2' ]
   end
 
@@ -879,6 +892,12 @@ end
 
 
 describe Rake::Task, ' artifacts' do
+  before do
+    Buildr.repositories.instance_eval do
+      @local = @remote = @release_to = nil
+    end
+  end
+
   it 'should download all specified artifacts' do
     artifact 'group:id:jar:1.0'
     repositories.remote = 'http://example.com'
@@ -903,6 +922,9 @@ end
 describe Rake::Task, ' artifacts:sources' do
 
   before do
+    Buildr.repositories.instance_eval do
+      @local = @remote = @release_to = nil
+    end
     task('artifacts:sources').clear
     repositories.remote = 'http://example.com'
   end
@@ -939,6 +961,9 @@ end
 describe Rake::Task, ' artifacts:javadoc' do
 
   before do
+    Buildr.repositories.instance_eval do
+      @local = @remote = @release_to = nil
+    end
     task('artifacts:javadoc').clear
     repositories.remote = 'http://example.com'
   end
