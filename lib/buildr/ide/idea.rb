@@ -196,7 +196,6 @@ module Buildr
 
       protected
 
-      # Note: Use the test classpath since IDEA compiles both "main" and "test" classes using the same classpath
       def test_dependency_details
         main_dependencies_paths = main_dependencies.map(&:to_s)
         target_dir = buildr_project.compile.target.to_s
@@ -250,23 +249,35 @@ module Buildr
           generate_initial_order_entries(xml)
           project_dependencies = []
 
+
           self.test_dependency_details.each do |dependency_path, export, source_path|
-            project_for_dependency = Buildr.projects.detect do |project|
-              [project.packages, project.compile.target, project.resources.target, project.test.compile.target, project.test.resources.target].flatten.
-                detect { |proj_art| proj_art.to_s == dependency_path }
-            end
-            if project_for_dependency
-              if project_for_dependency.iml? && !project_dependencies.include?(project_for_dependency)
-                generate_project_dependency(xml, project_for_dependency.iml.name, export, !export)
-              end
-              project_dependencies << project_for_dependency
-              next
-            else
-              generate_module_lib(xml, url_for_path(dependency_path), export, (source_path ? url_for_path(source_path) : nil), !export)
-            end
+            next unless export
+            generate_lib(xml, dependency_path, export, source_path, project_dependencies)
+          end
+
+          self.test_dependency_details.each do |dependency_path, export, source_path|
+            next if export
+            generate_lib(xml, dependency_path, export, source_path, project_dependencies)
           end
 
           xml.orderEntryProperties
+        end
+      end
+
+      def generate_lib(xml, dependency_path, export, source_path, project_dependencies)
+        project_for_dependency = Buildr.projects.detect do |project|
+          [project.packages, project.compile.target, project.resources.target, project.test.compile.target, project.test.resources.target].flatten.
+            detect { |artifact| artifact.to_s == dependency_path }
+        end
+        if project_for_dependency
+          if project_for_dependency.iml? &&
+            !project_dependencies.include?(project_for_dependency) &&
+            project_for_dependency != self.buildr_project
+            generate_project_dependency(xml, project_for_dependency.iml.name, export, !export)
+          end
+          project_dependencies << project_for_dependency
+        else
+          generate_module_lib(xml, url_for_path(dependency_path), export, (source_path ? url_for_path(source_path) : nil), !export)
         end
       end
 
