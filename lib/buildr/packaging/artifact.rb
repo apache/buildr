@@ -212,8 +212,9 @@ module Buildr
 
         task = Rake::Task.define_task uri + path => deps do
           # Upload artifact relative to base URL, need to create path before uploading.
+          options = upload_to[:options] || {:permissions => upload_to[:permissions]}
           info "Deploying #{to_spec}"
-          URI.upload uri + path, name, :permissions=>upload_to[:permissions]
+          URI.upload uri + path, name, options
         end
       end
       task
