@@ -551,7 +551,7 @@ describe Buildr::IntellijIdea do
       end
 
       it "depends on the associated module exactly once" do
-        @bar_iml.should have_nodes("//orderEntry[@type='module', @module-name='foo']", 1)
+        @bar_iml.should have_nodes("//orderEntry[@type='module', @module-name='foo', @exported=""]", 1)
       end
 
       it "does not depend on the other project's packaged JAR" do
