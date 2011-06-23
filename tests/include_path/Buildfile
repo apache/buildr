@@ -13,6 +13,12 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+repositories.remote =  ["http://repo1.maven.org/maven2"]
+SLF4J_API = "org.slf4j:slf4j-api:jar:1.6.1"
+
 define "proj" do
-  ::Java.java.lang.System.setProperty("foo", "bar")
+  project.version = "1.0"
+  project.group = "org.example"  
+  package(:zip).include(_("doc"), :path => "distrib")
+  package(:zip).include(artifact(SLF4J_API), :path => "distrib/lib")
 end
