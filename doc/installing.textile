@@ -116,13 +116,7 @@ h2(#windows).  Installing on Windows
 
 <br>
 
-*In details:* We recommend you first upgrade to the latest version of Ruby gems:
-
-{% highlight sh %}
-> gem update --system
-{% endhighlight %}
-
-Before installing Buildr, please set the @JAVA_HOME@ environment variable to point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
+*In details:* Before installing Buildr, please set the @JAVA_HOME@ environment variable to point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
 
 {% highlight sh %}
 > gem install buildr --platform mswin32
