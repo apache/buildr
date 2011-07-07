@@ -216,6 +216,7 @@ There are several options you can use, for a full list of options type @buildr -
 | @-q/--quiet@              | Do not log messages to standard output.                 |
 | @-r/--require [file]@     | Require MODULE before executing buildfile.              |
 | @-t/--trace@              | Turn on invoke/execute tracing, enable full backtrace.  |
+| @-v/--verbose@            | Log message to standard output                          |
 | @-V/--version@            | Display the program version.                            |
 | @-P/--prereqs@            | Display tasks and dependencies, then exit.              |
 
