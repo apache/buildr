@@ -116,7 +116,7 @@ task 'publish'=>:site do
   target = "people.apache.org:/www/#{spec.name}.apache.org/"
   puts "Uploading new site to #{target} ..."
   sh 'rsync', '--progress', '--recursive', '--delete', '_site/', target
-  sh 'ssh', 'people.apache.org', 'chmod', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
+  sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
   puts "Done"
 end
 
@@ -126,7 +126,7 @@ task 'publish-doc' => ['buildr.pdf', '_site'] do
   target = "people.apache.org:/www/#{spec.name}.apache.org/"
   puts "Uploading new site to #{target} ..."
   sh 'rsync', '--progress', '--recursive', '_site/', target # Note: no --delete
-  sh 'ssh', 'people.apache.org', 'chmod', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
+  sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
   puts "Done"
 end
 

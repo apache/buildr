@@ -38,7 +38,7 @@ task :release do
     target = "people.apache.org:/www/#{spec.name}.apache.org/"
     puts "Uploading new site to #{spec.name}.apache.org ..."
     sh 'rsync', '--progress', '--recursive', '--delete', "_release/#{spec.version}/site/", target
-    sh 'ssh', 'people.apache.org', 'chmod', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
+    sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
     puts "[X] Uploaded new site to #{spec.name}.apache.org"
   end.call
 
