@@ -3,6 +3,21 @@ layout: default
 title: Installing and Running
 ---
 
+h1(#all-in-one). All In One Bundle
+
+Contributors to this project maintain a separate distribution over on "RubyForge":http://rubyforge.org/projects/buildr. Using this distribution, it is possible to install Buildr just like you would install Apache Ant or Apache Maven. It comes bundled with JRuby and distributed as a cross-platform zip or tar.gz file.
+
+The RubyForge distribution is *not* an official Apache distribution. The all-in-one bundles are hosted on the "Files page":http://rubyforge.org/frs/?group_id=3180.
+
+*In details:* Navigate to "Rubyforge's buildr's Files page":http://rubyforge.org/frs/?group_id=3180 and download the all-in-one bundle for the latest version available.
+
+Unzip the bundle in a convenient location. 
+
+You can execute the buildr executable under the bin directory directly. 
+
+You should consider adding the bin directory of the result to the @PATH@ global environment variable. See "Installing Buildr for JRuby":#jruby for instructions to update it.  
+
+h1(#the-gem). Installing the gem
 
 *The easy way:*  We recommend you pick the platform you want to run Buildr on and then follow the _easy way_ instructions for that platform.  It could save you an hour or two struggling to install all the right dependencies.
 
