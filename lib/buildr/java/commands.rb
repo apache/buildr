@@ -56,12 +56,39 @@ module Java
         options[:properties].each { |k, v| cmd_args << "-D#{k}=#{v}" } if options[:properties]
         cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
         cmd_args += args.flatten.compact
-        unless Buildr.application.options.dryrun
-          info "Running #{name}" if name && options[:verbose]
-          block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
-          cmd_args = cmd_args.map(&:inspect).join(' ') if Util.win_os?
-          sh(*cmd_args) do |ok, ps|
-            block.call ok, ps
+
+        tmp = nil
+        begin
+            # Windows can't handle cmd lines greater than 2048/8192 chars.
+            # If our cmd line is longer, we create a batch file and execute it instead.
+          if Util.win_os? &&  cmd_args.map(&:inspect).join(' ').size > 2048
+            # remove '-classpath' and the classpath itself from the cmd line.
+            cp_i = cmd_args.index{|x| x.starts_with('-classpath')}
+            2.times do
+              cmd_args.delete_at cp_i unless cp_i.nil?
+            end
+            # create tmp batch file.
+            tmp = Tempfile.new(['starter', '.bat'])
+            tmp.write "@echo off\n"
+            tmp.write "SET CLASSPATH=#{cp.join(File::PATH_SEPARATOR).gsub(%r{/}, '\\')}\n"
+            tmp.write cmd_args.map(&:inspect).join(' ')
+            tmp.close
+            # set new cmd line.
+            cmd_args = [tmp.path]
+          end
+          
+          unless Buildr.application.options.dryrun
+            info "Running #{name}" if name && options[:verbose]
+            block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
+            cmd_args = cmd_args.map(&:inspect).join(' ') if Util.win_os?
+            sh(*cmd_args) do |ok, ps|
+              block.call ok, ps
+            end
+          end
+        ensure
+          unless tmp.nil?
+            tmp.close 
+            tmp.unlink
           end
         end
       end
