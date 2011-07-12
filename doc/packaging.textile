@@ -581,6 +581,16 @@ task 'upload'=>'docs' do
 end
 {% endhighlight %}
 
+h3(#uploading-options). Uploading Options
+
+For convenience, you can also pass "any option of Net::SSH":http://net-ssh.github.com/ssh/v2/api/classes/Net/SSH.html#M000002 when configuring the remote repository.
+
+If you need to enforce to use password-only authentication for example, you can set this option:
+
+{% highlight ruby %}
+# Set password authentication only
+repositories.release_to[:options] = {:ssh_options=>{:auth_methods=> 'password'}}
+{% endhighlight %}
 
 h2(#source_javadoc). Packaging Sources and JavaDocs
 
