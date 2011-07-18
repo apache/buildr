@@ -494,4 +494,44 @@ describe Buildr::TestNG do
     define('foo') { test.using(:testng) }
     lambda { project('foo').test.invoke }.should change { File.exist?('reports/testng/foo/index.html') }.to(true)
   end
+
+  it 'should include classes using TestNG annotations marked with a specific group' do
+    write 'src/test/java/com/example/AnnotatedClass.java', <<-JAVA
+      package com.example;
+      @org.testng.annotations.Test(groups={"included"})
+      public class AnnotatedClass { }
+    JAVA
+    write 'src/test/java/com/example/AnnotatedMethod.java', <<-JAVA
+      package com.example;
+      public class AnnotatedMethod {
+        @org.testng.annotations.Test
+        public void annotated() {
+          org.testng.AssertJUnit.assertTrue(false);
+        }
+      }
+    JAVA
+    define('foo').test.using :testng, :groups=>['included']
+    lambda { project('foo').test.invoke }.should_not raise_error
+  end
+
+  it 'should exclude classes using TestNG annotations marked with a specific group' do
+    write 'src/test/java/com/example/AnnotatedClass.java', <<-JAVA
+      package com.example;
+      @org.testng.annotations.Test(groups={"excluded"})
+      public class AnnotatedClass {
+        public void annotated() {
+          org.testng.AssertJUnit.assertTrue(false);
+        }
+      }
+    JAVA
+    write 'src/test/java/com/example/AnnotatedMethod.java', <<-JAVA
+      package com.example;
+      public class AnnotatedMethod {
+        @org.testng.annotations.Test(groups={"included"})
+        public void annotated() {}
+      }
+    JAVA
+    define('foo').test.using :testng, :excludegroups=>['excluded']
+    lambda { project('foo').test.invoke }.should_not raise_error
+  end
 end
