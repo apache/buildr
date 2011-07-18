@@ -15,3 +15,5 @@ nbproject
 .rakeTasks
 buildr.iml
 libs
+.DS_Store
+
