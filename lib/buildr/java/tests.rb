@@ -1,3 +1,4 @@
+
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with this
 # work for additional information regarding copyright ownership.  The ASF
@@ -328,6 +329,14 @@ module Buildr
     def run(tests, dependencies) #:nodoc:
       cmd_args = ['-log', '2', '-sourcedir', task.compile.sources.join(';'), '-suitename', task.project.id ]
       cmd_args << '-d' << task.report_to.to_s
+      exclude_args = options[:excludegroups] || []
+      if !exclude_args.empty?
+        cmd_args << '-excludegroups' << exclude_args.join(",")
+      end
+      groups_args = options[:groups] || []
+      if !groups_args.empty?
+        cmd_args << '-groups' << groups_args.join(",")
+      end
       # run all tests in the same suite
       cmd_args << '-testclass' << tests
 
