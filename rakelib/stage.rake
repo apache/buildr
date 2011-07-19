@@ -51,7 +51,6 @@ task :prepare do |task, args|
   end.call
 
   task(:license).invoke
-  task(:dependency).invoke
 
   # Need JRuby, Scala and Groovy installed to run all the specs.
   lambda do
