@@ -86,7 +86,5 @@ begin
   end
 
 rescue LoadError => e
-  puts "Buildr uses RSpec. You can install it by running rake setup"
-  task(:setup) { install_gem 'rcov', :version=>'~>0.8' }
-  task(:setup) { install_gem 'win32console' if RUBY_PLATFORM[/win32/] } # Colors for RSpec, only on Windows platform.
+  puts "Buildr uses RSpec. You can install it by running bundler"
 end
