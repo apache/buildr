@@ -22,8 +22,7 @@ rescue LoadError
   task('doc:setup') { install_gem 'voloko-sdoc', :source=>'http://gems.github.com' }
 end
 
-
-require 'rake/rdoctask'
+require 'rdoc/task'
 
 desc "Creates a symlink to rake's lib directory to support combined rdoc generation"
 file "rake/lib" do
