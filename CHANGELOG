@@ -1,4 +1,6 @@
 1.4.7 (Pending)
+* Change: Upgrade to JRuby 1.6.2
+* Change: Move to Bundler to manage the project dependencies
 * Change: BUILDR-548 Remove support for JTestR as it is no longer maintained (Antoine Toulme)
 * Added:  BUILDR-598 TestNG support for :groups and :excludegroups (Christopher Coco)
 * Fixed:  BUILDR-439 "The command line is too long" when running TestNG tests (Tammo Van Lessen)
