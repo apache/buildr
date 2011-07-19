@@ -17,12 +17,6 @@
 require 'digest/md5'
 require 'digest/sha1'
 
-begin # Releases upload Gems to RubyForge.
-  require 'rubyforge'
-rescue LoadError
-  task(:setup) { install_gem 'rubyforge' }
-end
-
 gpg_cmd = 'gpg2'
 
 task :prepare do |task, args|

@@ -18,8 +18,7 @@ task 'doc:setup'
 begin # For the Web site, we use the SDoc RDoc generator/theme (http://github.com/voloko/sdoc/)
   require 'sdoc'
 rescue LoadError
-  puts "Buildr uses the SDoc RDoc generator/theme. You can install it by running rake doc:setup"
-  task('doc:setup') { install_gem 'voloko-sdoc', :source=>'http://gems.github.com' }
+  puts "Buildr uses the SDoc RDoc generator/theme. You can install it by running bundler"
 end
 
 require 'rdoc/task'
@@ -71,18 +70,12 @@ begin
   end
 
 rescue LoadError
-  puts "Buildr uses the jekyll gem to generate the Web site. You can install it by running rake doc:setup"
-  task 'doc:setup' do
-    install_gem 'jekyll', :version=>'0.10.0'
-    install_gem 'jekylltask', :version=>'1.0.2'
-    if `pygmentize -V`.empty?
-      args = %w{easy_install Pygments}
-      args.unshift 'sudo' unless Config::CONFIG['host_os'] =~ /windows/
-      sh *args
-    end
-  end
+  puts "Buildr uses the jekyll gem to generate the Web site. You can install it by running bundler"
 end
 
+if `pygmentize -V`.empty?
+  puts "Buildr uses the Pygments python library. You can install it by running 'sudo easy_install Pygments'"
+end
 
 desc "Generate Buildr documentation as buildr.pdf"
 file 'buildr.pdf'=>'_site' do |task|
