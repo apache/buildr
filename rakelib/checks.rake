@@ -26,34 +26,3 @@ task :license=>FileList["**/*.{rb,rake,java,gemspec,buildfile}", 'Rakefile'] do 
   fail "#{missing.join(', ')} missing Apache License, please add it before making a release!" unless missing.empty?
   puts "[x] Source files contain the Apache license"
 end
-
-
-desc "Look for new dependencies, check transitive dependencies"
-task :dependency do
-=begin
-  puts "Checking that all dependencies are up to date ..."
-  # Find if anything has a more recent dependency.  These are not errors, just reports.
-  spec.dependencies.each do |dep|
-    current = Gem::SourceInfoCache.search(dep).last
-    latest = Gem::SourceInfoCache.search(Gem::Dependency.new(dep.name, '>0')).last
-    puts "A new version of #{dep.name} is available, #{latest.version} replaces #{current.version}" if (current && latest && latest.version > current.version)
-  end
-
-  # Returns orderd list of transitive dependencies for the given dependency.
-  transitive = lambda { |depend|
-    dep_spec = Gem::SourceIndex.from_installed_gems.search(depend).last
-    fail "No specification for dependency #{depend}" unless dep_spec
-    dep_spec.runtime_dependencies.map { |trans| transitive[trans].push(trans) }.flatten.uniq }
-  # For each dependency, make sure *all* its transitive dependencies are listed
-  # as a Buildr dependency, and order is preserved.
-  spec.dependencies.select {|dep| dep.type == :runtime }.each_with_index do |dep, index|
-    puts "checking #{dep.name}"
-    transitive[dep].each do |trans|
-      matching = spec.dependencies.find { |existing| trans =~ existing }
-      fail "#{trans} required by #{dep} and missing from spec" unless matching
-      fail "#{trans} must come before #{dep} in dependency list" unless spec.dependencies.index(matching) < index
-    end
-  end
-  puts "[X] Checked all dependencies are up to date and transitive dependencies are correctly ordered"
-=end
-end
