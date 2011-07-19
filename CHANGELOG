@@ -1,9 +1,9 @@
 1.4.7 (Pending)
-* Chage: BUILDR-548 Remove support for JTestR as it is no longer maintained (Antoine Toulme)
-* Added: BUILDR-598 TestNG support for :groups and :excludegroups (Christopher Coco)
-* Fixed: BUILDR-439 "The command line is too long" when running TestNG tests (Tammo Van Lessen)
-* Fixed: BUILDR-595 Add option to specifiy location of ca cert
-* Fixed: BUILDR-596 Update installation notes to talk about the all-in-one bundle
+* Change: BUILDR-548 Remove support for JTestR as it is no longer maintained (Antoine Toulme)
+* Added:  BUILDR-598 TestNG support for :groups and :excludegroups (Christopher Coco)
+* Fixed:  BUILDR-439 "The command line is too long" when running TestNG tests (Tammo Van Lessen)
+* Fixed:  BUILDR-595 Add option to specifiy location of ca cert
+* Fixed:  BUILDR-596 Update installation notes to talk about the all-in-one bundle
 
 1.4.6 (2011-06-21)
 * Added:  BUILDR-592 Allow Users to Specify SSH Options for Deployment (Marc-André Laverdière)
