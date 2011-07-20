@@ -54,6 +54,9 @@ mkpath ENV['HOME']
 
 # Make Scala.version resilient to sandbox reset
 module Buildr::Scala
+
+  remove_const(:DEFAULT_VERSION)
+
   DEFAULT_VERSION = SCALA_VERSION_FOR_SPECS
 
   class << self
