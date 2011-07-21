@@ -20,7 +20,7 @@ require 'buildr/java'
 module Buildr
 
   # Provides the <code>cobertura:html</code>, <code>cobertura:xml</code> and <code>cobertura:check</code> tasks.
-  # Require explicitly using <code>require "buildr/cobertura"</code>.
+  # Require explicitly using <code>require "buildr/java/cobertura"</code>.
   #
   # You can generate cobertura reports for a single project
   # using the project name as prefix:
