@@ -54,7 +54,7 @@ end
 
 
 task 'help' do
-  # Greeater.
+  # Greeter
   puts 'Usage:'
   puts '  buildr [-f rakefile] {options} targets...'
   puts
