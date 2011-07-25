@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/packaging/version_requirement'
-
-
 module Buildr
 
   # An ArtifactNamespace is a hierarchical dictionary used to manage ArtifactRequirements.

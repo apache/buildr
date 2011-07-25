@@ -13,11 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/common'
-require 'find'
-
-
 module Buildr
 
   # The underlying compiler used by CompileTask.

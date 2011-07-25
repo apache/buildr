@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'buildr/shell'
-
 module Buildr
   module Groovy
     class GroovySH < Buildr::Shell::Base

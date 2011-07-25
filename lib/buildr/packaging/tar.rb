@@ -13,10 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/packaging/archive'
-gem 'minitar' ; autoload :Archive, 'archive/tar/minitar'
-
+autoload :Archive, 'archive/tar/minitar'
+autoload :Zlib, 'zlib'
 
 module Buildr
 

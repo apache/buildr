@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'buildr/run'
-require 'buildr/java/commands'
-require 'buildr/core/util'
-
 module Buildr
   module Run
 

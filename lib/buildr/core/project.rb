@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/util'
-
-
 module Buildr
 
   # Symbolic mapping for directory layout.  Used for both the default and custom layouts.

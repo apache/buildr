@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/java'
-
-
 module Buildr
 
   # Provides the <code>emma:html</code> and <code>emma:xml</code> tasks.

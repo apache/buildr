@@ -13,12 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/project'
-require 'buildr/packaging'
-require 'stringio'
-
-
 module Buildr
   module IntellijIdea
     def self.new_document(value)

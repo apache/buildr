@@ -13,9 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'buildr/core/doc'
-require 'buildr/scala/compiler'   # ensure Scala dependencies are ready
-
 module Buildr
   module Doc
 

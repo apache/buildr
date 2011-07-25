@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 # Base module for all things Java.
 module Java
 

@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 # Let's see if we can use notify-send.  Must be running from console in verbose mode.
 if $stdout.isatty && verbose
   system("which notify-send > /dev/null 2>/dev/null")

@@ -13,10 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 require 'java'
 require 'jruby'
-
 
 # Buildr runs along side a JVM, using either RJB or JRuby.  The Java module allows
 # you to access Java classes and create Java objects.

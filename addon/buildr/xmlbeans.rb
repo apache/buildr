@@ -13,11 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/java'
-require 'buildr/java/ant'
-
-
 module Buildr
 
   # Provides XMLBeans schema compiler. Require explicitly using <code>require "buildr/xmlbeans"</code>.

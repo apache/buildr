@@ -14,8 +14,7 @@
 # the License.
 
 
-require 'hpricot'
-
+autoload :Hpricot, 'hpricot'
 
 module Buildr
 

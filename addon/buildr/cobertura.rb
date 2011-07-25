@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 if Buildr::VERSION < '1.5'
   Buildr.application.deprecated "'buildr/cobertura', use 'buildr/java/cobertura' instead"
   require 'buildr/java/cobertura'

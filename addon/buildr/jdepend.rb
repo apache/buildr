@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/java'
-
-
 module Buildr
 
   # Addes the <code>jdepend:swing</code>, <code>jdepend:text</code> and <code>jdepend:xml</code> tasks.

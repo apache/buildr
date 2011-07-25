@@ -13,12 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/packaging/package'
-require 'buildr/packaging/archive'
-gem 'rubyforge' ; autoload :RubyForge, 'rubyforge'
+autoload :RubyForge, 'rubyforge'
 Gem.autoload :Package, 'rubygems/package'
-
 
 module Buildr
 

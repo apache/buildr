@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/java'
-
-
 module Buildr
   # Provides JavaCC compile tasks. Require explicitly using <code>require "buildr/javacc"</code>.
   module JavaCC

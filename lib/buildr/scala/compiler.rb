@@ -13,11 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'buildr/core/project'
-require 'buildr/core/common'
-require 'buildr/core/compile'
-require 'buildr/packaging'
-
 module Buildr::Scala
   DEFAULT_VERSION = '2.9.0-1'
 
