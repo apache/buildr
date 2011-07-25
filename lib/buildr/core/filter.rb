@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'erb'
-
-
 module Buildr
 
   # A filter knows how to copy files from one directory to another, applying mappings to the
@@ -364,7 +360,6 @@ module Buildr
         else
           bnd = config.instance_eval { binding }
         end
-        require 'erb'
         ERB.new(content).result(bnd)
       end
 

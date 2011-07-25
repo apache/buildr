@@ -13,11 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/project'
-require 'buildr/packaging'
-
-
 module Buildr
   module Eclipse #:nodoc:
     include Extension
@@ -426,8 +421,4 @@ class Buildr::Project
   include Buildr::Eclipse
 end
 
-# Order is significant for auto-detection, from most specific to least
-require 'buildr/ide/eclipse/plugin'
-require 'buildr/ide/eclipse/scala'
-require 'buildr/ide/eclipse/java'
 

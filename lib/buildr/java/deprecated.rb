@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/project'
-
-
 module Java
 
   # *Deprecated:* In earlier versions, Java.wrapper served as a wrapper around RJB/JRuby.

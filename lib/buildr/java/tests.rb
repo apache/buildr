@@ -14,12 +14,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/build'
-require 'buildr/core/compile'
-require 'buildr/java/ant'
-
-
 module Buildr
 
   class TestFramework::Java < TestFramework::Base

@@ -13,14 +13,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 require 'uri'
 require 'net/http'
-require 'buildr/core/project'
-require 'buildr/java'
-require 'buildr/packaging'
 require 'thread'
-
 
 module Buildr
 

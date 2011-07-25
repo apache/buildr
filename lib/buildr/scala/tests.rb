@@ -13,13 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/build'
-require 'buildr/core/compile'
-require 'buildr/java/ant'
-require 'buildr/java/tests'
-
-
 module Buildr::Scala
   # Scala::Check is available when using Scala::Test or Scala::Specs
   module Check

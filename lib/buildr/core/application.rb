@@ -36,14 +36,9 @@
 # SOFTWARE.
 
 
-require 'rake'
-require 'highline/import'
-require 'buildr/core/util'
-
 # Gem::user_home is nice, but ENV['HOME'] lets you override from the environment.
 ENV['HOME'] ||= File.expand_path(Gem::user_home)
 ENV['BUILDR_ENV'] ||= 'development'
-
 
 module Buildr
 

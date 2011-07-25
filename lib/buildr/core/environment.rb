@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 module Buildr
 
   # Collection of options for controlling Buildr.

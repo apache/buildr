@@ -13,13 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/project'
-require 'buildr/core/common'
-require 'buildr/core/compile'
-require 'buildr/packaging'
-
-
 module Buildr
   module Compiler
 

@@ -1,4 +1,5 @@
 1.4.7 (Pending)
+* Change: BUILDR-600 Centralize the common ad internal requires into one location.
 * Change: Upgrade to JRuby 1.6.2
 * Change: Move to Bundler to manage the project dependencies
 * Change: BUILDR-548 Remove support for JTestR as it is no longer maintained (Antoine Toulme)

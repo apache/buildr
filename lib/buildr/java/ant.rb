@@ -17,9 +17,6 @@
 gem 'atoulme-Antwrap'
 autoload :Antwrap, 'antwrap'
 autoload :Logger, 'logger'
-require 'buildr/core/project'
-require 'buildr/core/help'
-
 
 module Buildr
   module Ant

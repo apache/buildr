@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/java'
-
-
 module Buildr
 
   # Provides the <code>cobertura:html</code>, <code>cobertura:xml</code> and <code>cobertura:check</code> tasks.
