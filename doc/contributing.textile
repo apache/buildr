@@ -239,7 +239,7 @@ Buildr uses the Jenkins continuous integration tool to perform builds, run tests
 
 The care and feeding of the "CI Jobs":https://builds.apache.org/view/A-F/view/Buildr is the responsibility of the committers. To get access to configure the CI Jobs a committer needs to follow the directions on the "jenkins":http://wiki.apache.org/general/Hudson documentation site.
 
-You may also need to coordinate with the Apache infrastructure team to get accounts on the actual slave hosts that run the CI jobs. This access may be required to install tools and gems required to run the CI jobs. The main slave host to get access to is vesta.apache.org at the time of writing. You can also log on to the slave host, impersonate hudson and manually run tasks when you are attempting to track down build problems. Of course to impersonate hudso you will need to learn how to use "OPIE.":http://apache.org/dev/freebsd-jails
+You may also need to coordinate with the Apache infrastructure team to get accounts on the actual slave hosts that run the CI jobs. This access may be required to install tools and gems required to run the CI jobs. The main slave host to get access to is vesta.apache.org at the time of writing. You can also log on to the slave host, impersonate hudson and manually run tasks when you are attempting to track down build problems. Of course to impersonate hudson you will need to learn how to use "OPIE.":http://apache.org/dev/freebsd-jails
 
 h2(#contributors).  Contributors
 
