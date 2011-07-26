@@ -629,7 +629,7 @@ def trace?(*category)
   options = Buildr.application.options
   return options.trace if category.empty?
   return true if options.trace_all
-  return false unless Buildr.application.options.trace_categories
+  return false unless options.trace_categories
   options.trace_categories.include?(category.first)
 end
 
