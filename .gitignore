@@ -18,4 +18,4 @@ buildr.ipr
 buildr.iws
 libs
 Gemfile.lock
-
+*.rbc
