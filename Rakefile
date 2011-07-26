@@ -16,7 +16,7 @@
 # We need JAVA_HOME for most things (setup, spec, etc).
 unless ENV['JAVA_HOME']
   if RUBY_PLATFORM[/java/]
-    ENV['JAVA_HOME'] = java.lang.System.getProperty('java.home')
+    ENV['JAVA_HOME'] = Java.java.lang.System.getProperty('java.home')
   elsif RUBY_PLATFORM[/darwin/]
     ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.framework/Home'
   else
