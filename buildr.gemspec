@@ -15,6 +15,7 @@
 
 unless defined?(Buildr::VERSION)
   require File.join(File.dirname(__FILE__), 'lib', 'buildr', 'version.rb')
+  $LOADED_FEATURES << 'buildr/version.rb'
 end
 
 Gem::Specification.new do |spec|
