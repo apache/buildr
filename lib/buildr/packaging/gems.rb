@@ -35,14 +35,6 @@ module Buildr
       @spec
     end
 
-    def install
-      Util::Gems.command 'install', name
-    end
-
-    def uninstall
-      Util::Gems.command 'uninstall', spec.name, '-v', spec.version.to_s
-    end
-
     def upload
       rubyforge = RubyForge.new
       rubyforge.login

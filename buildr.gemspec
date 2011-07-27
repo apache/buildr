@@ -49,6 +49,8 @@ for those one-off tasks, with a language that's a joy to use.
                           '--webcvs', 'http://svn.apache.org/repos/asf/buildr/trunk/'
   spec.post_install_message = "To get started run buildr --help"
 
+  spec.required_rubygems_version = ">= 1.8.6"
+
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.8.7'
   spec.add_dependency 'builder',              '2.1.2'
