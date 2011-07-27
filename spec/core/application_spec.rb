@@ -135,6 +135,7 @@ describe Buildr::Application do
         - rake
         - rspec ~> 2.1.0
       YAML
+      Buildr.application.should_receive(:listed_gems).and_return([[Gem.loaded_specs['rspec'],Gem.loaded_specs['rake']],[]])
       Buildr.application.load_gems
     end
 
@@ -221,7 +222,7 @@ describe Buildr::Application do
     def should_attempt_to_load_dependency(dep)
       missing_gems = Buildr.application.send(:listed_gems)[1]
       missing_gems.size.should eql(1)
-      missing_gems[0].should eql(dep)
+      missing_gems[0].eql?(dep)
     end
   end
 
