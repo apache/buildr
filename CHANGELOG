@@ -1,4 +1,6 @@
 1.4.7 (Pending)
+* Change: Upgrade to jekyll 0.11.0, jekylltask 1.1.0, RedCloth 4.2.7, rdoc 3.8 for
+          generating documentation
 * Change: Upgrade to require rubygems > 1.8.6
 * Change: BUILDR-603 Remove install/uninstall actions from :gem packaging type
 * Change: BUILDR-602 Fail the build when gem dependencies are missing rather than

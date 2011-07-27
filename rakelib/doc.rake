@@ -14,13 +14,6 @@
 # the License.
 
 if !RUBY_PLATFORM[/java/]
-  task 'doc:setup'
-  begin # For the Web site, we use the SDoc RDoc generator/theme (http://github.com/voloko/sdoc/)
-    require 'sdoc'
-  rescue LoadError
-    puts "Buildr uses the SDoc RDoc generator/theme. You can install it by running bundler"
-  end
-
   require 'rdoc/task'
 
   desc "Creates a symlink to rake's lib directory to support combined rdoc generation"
