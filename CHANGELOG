@@ -1,4 +1,9 @@
 1.4.7 (Pending)
+* Change: Upgrade to require rubygems > 1.8.6
+* Change: BUILDR-603 Remove install/uninstall actions from :gem packaging type
+* Change: BUILDR-602 Fail the build when gem dependencies are missing rather than
+          attempting to install the dependencies
+* Change: BUILDR-601 Remove Buildr::Util::Gems
 * Change: BUILDR-600 Centralize the common ad internal requires into one location.
 * Change: Upgrade to JRuby 1.6.2
 * Change: Move to Bundler to manage the project dependencies
