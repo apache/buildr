@@ -75,11 +75,10 @@ for those one-off tasks, with a language that's a joy to use.
 
   # The documentation is currently not generated whe building via jruby
   unless spec.platform.to_s == 'java'
-    spec.add_development_dependency 'jekyll', '>= 0.10.0'
-    spec.add_development_dependency 'RedCloth'
-    spec.add_development_dependency 'jekylltask', '>= 1.0.2'
-    spec.add_development_dependency 'rdoc', '2.4.3'
-    spec.add_development_dependency 'sdoc'
+    spec.add_development_dependency 'jekyll', '0.11.0'
+    spec.add_development_dependency 'RedCloth', '4.2.7'
+    spec.add_development_dependency 'jekylltask', '1.1.0'
+    spec.add_development_dependency 'rdoc', '3.8'
     spec.add_development_dependency 'rcov', '0.9.9'
   end
 
