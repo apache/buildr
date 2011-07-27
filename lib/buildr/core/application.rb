@@ -420,8 +420,7 @@ module Buildr
 
     # Load/install all Gems specified in build.yaml file.
     def load_gems #:nodoc:
-      gems = listed_gems
-      installed, missing_deps = gems[0], gems[1]
+      installed, missing_deps = listed_gems
       unless missing_deps.empty?
         fail Gem::LoadError, "Build requires the gems #{missing_deps.join(', ')}, which cannot be found in the local repository. Please install the gems before attempting to build project."
       end
