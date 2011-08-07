@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+if Java.java.lang.System.getProperty("java.runtime.version") >= "1.6"
 
 require File.expand_path('../spec_helpers', File.dirname(__FILE__))
 Sandbox.require_optional_extension 'buildr/jaxb_xjc'
@@ -122,4 +123,8 @@ describe Buildr::JaxbXjc do
       File.should be_exist(@foo._("target/classes/org/foo/api/Wildfire.class"))
     end
   end
+end
+
+elsif Buildr::VERSION >= '1.5'
+  raise "JVM version guard in #{__FILE__} should be removed since it is assumed that Java 1.5 is no longer supported."
 end
