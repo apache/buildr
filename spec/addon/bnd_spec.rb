@@ -273,14 +273,14 @@ SRC
 
     it "defaults -classpath to compile path and dependencies" do
       @foo.packages[0].to_params['-classpath'].should include(@foo.compile.target.to_s)
-      @foo.packages[0].to_params['-classpath'].should include(Buildr.artifacts(Buildr::Ant.dependencies[0]).to_s)
+      @foo.packages[0].to_params['-classpath'].should include(Buildr.artifact(Buildr::Ant.dependencies[0]).to_s)
       @bar.packages[0].to_params['-classpath'].should include(@bar.compile.target.to_s)
     end
 
     it "classpath method returns compile path and dependencies" do
       @foo.packages[0].classpath.should include(@foo.compile.target)
       Buildr::Ant.dependencies.each do |dependency|
-        @foo.packages[0].classpath.to_s.should include(Buildr.artifacts(dependency).to_s)
+        @foo.packages[0].classpath.to_s.should include(Buildr.artifact(dependency).to_s)
       end
       @bar.packages[0].classpath.should include(@bar.compile.target)
     end
