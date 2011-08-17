@@ -28,7 +28,7 @@ module Buildr
       attr_writer :suffix
       attr_writer :id
       attr_accessor :template
-      attr_reader :local_repository_env_override
+      attr_writer :local_repository_env_override
 
       def local_repository_env_override
         @local_repository_env_override || DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE
