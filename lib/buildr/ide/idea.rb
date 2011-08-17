@@ -28,10 +28,10 @@ module Buildr
       attr_writer :suffix
       attr_writer :id
       attr_accessor :template
-      attr_writer :local_repository_env_override
+      attr_accessor :local_repository_env_override
 
-      def local_repository_env_override
-        @local_repository_env_override || DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE
+      def initialize
+        @local_repository_env_override = DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE
       end
 
       def suffix
@@ -161,6 +161,7 @@ module Buildr
       attr_reader :facets
 
       def initialize
+        super()
         @type = DEFAULT_TYPE
       end
 
@@ -414,6 +415,7 @@ module Buildr
       attr_writer :jdk_version
 
       def initialize(buildr_project)
+        super()
         @buildr_project = buildr_project
         @vcs = detect_vcs
         @extra_modules = []
