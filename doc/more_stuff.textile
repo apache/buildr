@@ -591,6 +591,48 @@ define "foo" do
 end
 {% endhighlight %}
 
+h4. Project Configurations
+
+Configurations are IDEAs mechanism for running or debugging the project. Shared configurations are stored in the project file. The extension makes it possible to generate an @.ipr@ with specific configurations via the "ipr.add_configuration" method.
+
+h5. Example
+
+This example adds a configuration to invoke a GWT application.
+
+{% highlight ruby %}
+define "foo" do
+  ...
+  ipr.add_configuration("Run Contacts.html", "GWT.ConfigurationType", "GWT Configuration") do |xml|
+    xml.module(:name => project.iml.id)
+    xml.option(:name => "RUN_PAGE", :value => "Contacts.html")
+    xml.option(:name => "compilerParameters", :value => "-draftCompile -localWorkers 2")
+    xml.option(:name => "compilerMaxHeapSize", :value => "512")
+
+    xml.RunnerSettings(:RunnerId => "Run")
+    xml.ConfigurationWrapper(:RunnerId => "Run")
+    xml.method()
+  end
+end
+{% endhighlight %}
+
+h4. Project Artifacts
+
+IDEA can build artifacts such as jars and wars. The artifact configuration is stored in the project file. The extension makes it possible to generate an @.ipr@ with specific artifacts via the "ipr.add_artifact" method.
+
+h5. Example
+
+This example adds a jar artifact to the project.
+
+{% highlight ruby %}
+define "foo" do
+  ...
+  ipr.add_artifact("MyFancy.jar", "jar") do |xml|
+    xml.tag!('output-path', project._(:artifacts, "MyFancy.jar"))
+    xml.element :id => "module-output", :name => "foo"
+  end
+end
+{% endhighlight %}
+
 h4. Custom Component Sections
 
 If the extension does not provide capability to generate configuration for a particular IDEA plugin the user can provide their own configuration data via the "ipr.add_component" or "iml.add_component" methods.

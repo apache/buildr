@@ -296,6 +296,66 @@ describe Buildr::IntellijIdea do
       end
     end
 
+    describe "with artifacts added to root project" do
+      before do
+        @foo = define "foo" do
+          ipr.add_artifact("MyFancy.jar", "jar") do |xml|
+            xml.tag!('output-path', project._(:artifacts, "MyFancy.jar"))
+            xml.element :id => "module-output", :name => "foo"
+          end
+          ipr.add_artifact("MyOtherFancy.jar", "jar") do |xml|
+            xml.tag!('output-path', project._(:artifacts, "MyOtherFancy.jar"))
+            xml.element :id => "module-output", :name => "foo"
+          end
+        end
+        invoke_generate_task
+      end
+
+      it "generates an IPR with multiple jar artifacts" do
+        doc = xml_document(@foo._("foo.ipr"))
+        facet_xpath = "/project/component[@name='ArtifactManager']/artifact"
+        doc.should have_nodes(facet_xpath, 2)
+        doc.should have_xpath("#{facet_xpath}[@type='jar', @name='MyFancy.jar']")
+        doc.should have_xpath("#{facet_xpath}[@type='jar', @name='MyOtherFancy.jar']")
+      end
+    end
+
+    describe "with configurations added to root project" do
+      before do
+        @foo = define "foo" do
+          ipr.add_configuration("Run Contacts.html", "GWT.ConfigurationType", "GWT Configuration") do |xml|
+            xml.module(:name => project.iml.id)
+            xml.option(:name => "RUN_PAGE", :value => "Contacts.html")
+            xml.option(:name => "compilerParameters", :value => "-draftCompile -localWorkers 2")
+            xml.option(:name => "compilerMaxHeapSize", :value => "512")
+
+            xml.RunnerSettings(:RunnerId => "Run")
+            xml.ConfigurationWrapper(:RunnerId => "Run")
+            xml.method()
+          end
+          ipr.add_configuration("Run Planner.html", "GWT.ConfigurationType", "GWT Configuration") do |xml|
+            xml.module(:name => project.iml.id)
+            xml.option(:name => "RUN_PAGE", :value => "Planner.html")
+            xml.option(:name => "compilerParameters", :value => "-draftCompile -localWorkers 2")
+            xml.option(:name => "compilerMaxHeapSize", :value => "512")
+
+            xml.RunnerSettings(:RunnerId => "Run")
+            xml.ConfigurationWrapper(:RunnerId => "Run")
+            xml.method()
+          end
+        end
+        invoke_generate_task
+      end
+
+      it "generates an IPR with multiple configurations" do
+        doc = xml_document(@foo._("foo.ipr"))
+        facet_xpath = "/project/component[@name='ProjectRunConfigurationManager']/configuration"
+        doc.should have_nodes(facet_xpath, 2)
+        doc.should have_xpath("#{facet_xpath}[@type='GWT.ConfigurationType', @name='Run Contacts.html']")
+        doc.should have_xpath("#{facet_xpath}[@type='GWT.ConfigurationType', @name='Run Planner.html']")
+      end
+    end
+
     describe "with iml.group specified" do
       before do
         @foo = define "foo" do
