@@ -1,5 +1,7 @@
 1.4.7 (Pending)
-* Change: Changed the default output directory for Intellij IDEA to be
+* Added:  Enhance the Intellij IDEA extension to support the addition of "artifacts"
+          and "configurations" to the generated project file.
+* Change: Changed the default output directory for Intellij IDEA extension to be
           _(:target, :main, :idea, :classes) from _(:target, :main, :java) and the
           default test output directory to be _(:target, :test, :idea, :classes)
           from _(:target, :test, :java)

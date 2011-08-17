@@ -22,11 +22,17 @@ module Buildr
     # Abstract base class for IdeaModule and IdeaProject
     class IdeaFile
       DEFAULT_SUFFIX = ""
+      DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE = "MAVEN_REPOSITORY"
 
       attr_reader :buildr_project
       attr_writer :suffix
       attr_writer :id
       attr_accessor :template
+      attr_reader :local_repository_env_override
+
+      def local_repository_env_override
+        @local_repository_env_override || DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE
+      end
 
       def suffix
         @suffix ||= DEFAULT_SUFFIX
@@ -54,6 +60,32 @@ module Buildr
         "#{self.id}#{suffix}"
       end
 
+      def relative(path)
+        ::Buildr::Util.relative_path(File.expand_path(path.to_s), self.base_directory)
+      end
+
+      def base_directory
+        buildr_project.path_to
+      end
+
+      def resolve_path_from_base(path, base_variable)
+        m2repo = Buildr::Repositories.instance.local
+        if path.to_s.index(m2repo) == 0 && !self.local_repository_env_override.nil?
+          return path.sub(m2repo, "$#{self.local_repository_env_override}$")
+        else
+          begin
+            return "#{base_variable}/#{relative(path)}"
+          rescue ArgumentError
+            # ArgumentError happens on windows when self.base_directory and path are on different drives
+            return path
+          end
+        end
+      end
+
+      def file_path(path)
+        "file://#{resolve_path(path)}"
+      end
+
       def create_component(name, attrs = {})
         target = StringIO.new
         Builder::XmlMarkup.new(:target => target, :indent => 2).component(attrs.merge({:name => name})) do |xml|
@@ -64,6 +96,24 @@ module Buildr
 
       def components
         @components ||= self.default_components.compact
+      end
+
+      def create_composite_component(name, components)
+        return nil if components.empty?
+        component = self.create_component(name)
+        components.each do |element|
+          element = element.call if element.is_a?(Proc)
+          component.add_element element
+        end
+        component
+      end
+
+      def add_to_composite_component(components)
+        components << lambda do
+          target = StringIO.new
+          yield Builder::XmlMarkup.new(:target => target, :indent => 2)
+          Buildr::IntellijIdea.new_document(target.string).root
+        end
       end
 
       def load_document(filename)
@@ -105,16 +155,13 @@ module Buildr
     # IdeaModule represents an .iml file
     class IdeaModule < IdeaFile
       DEFAULT_TYPE = "JAVA_MODULE"
-      DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE = "MAVEN_REPOSITORY"
 
       attr_accessor :type
-      attr_accessor :local_repository_env_override
       attr_accessor :group
       attr_reader :facets
 
       def initialize
         @type = DEFAULT_TYPE
-        @local_repository_env_override = DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE
       end
 
       def buildr_project=(buildr_project)
@@ -173,11 +220,11 @@ module Buildr
       end
 
       def add_facet(name, type)
-        target = StringIO.new
-        Builder::XmlMarkup.new(:target => target, :indent => 2).facet(:name => name, :type => type) do |xml|
-          yield xml if block_given?
+        add_to_composite_component(self.facets) do |xml|
+          xml.facet(:name => name, :type => type) do |xml|
+            yield xml if block_given?
+          end
         end
-        self.facets << Buildr::IntellijIdea.new_document(target.string).root
       end
 
       def skip_content?
@@ -206,10 +253,6 @@ module Buildr
         end
       end
 
-      def base_directory
-        buildr_project.path_to
-      end
-
       def base_document
         target = StringIO.new
         Builder::XmlMarkup.new(:target => target).module(:version => "4", :relativePaths => "true", :type => self.type)
@@ -228,12 +271,7 @@ module Buildr
       end
 
       def facet_component
-        return nil if self.facets.empty?
-        fm = self.create_component("FacetManager")
-        self.facets.each do |facet|
-          fm.add_element facet
-        end
-        fm
+        create_composite_component("FacetManager", self.facets)
       end
 
       def module_root_component
@@ -279,10 +317,6 @@ module Buildr
         "jar://#{resolve_path(path)}!/"
       end
 
-      def file_path(path)
-        "file://#{resolve_path(path)}"
-      end
-
       def url_for_path(path)
         if path =~ /jar$/i
           jar_path(path)
@@ -292,21 +326,7 @@ module Buildr
       end
 
       def resolve_path(path)
-        m2repo = Buildr::Repositories.instance.local
-        if path.to_s.index(m2repo) == 0 && !self.local_repository_env_override.nil?
-          return path.sub(m2repo, "$#{self.local_repository_env_override}$")
-        else
-          begin
-            return "$MODULE_DIR$/#{relative(path)}"
-          rescue ArgumentError
-            # ArgumentError happens on windows when self.base_directory and path are on different drives
-            return path
-          end
-        end
-      end
-
-      def relative(path)
-        ::Buildr::Util.relative_path(File.expand_path(path.to_s), self.base_directory)
+        resolve_path_from_base(path, "$MODULE_DIR$")
       end
 
       def generate_compile_output(xml)
@@ -389,16 +409,36 @@ module Buildr
     class IdeaProject < IdeaFile
       attr_accessor :vcs
       attr_accessor :extra_modules
+      attr_accessor :artifacts
+      attr_accessor :configurations
       attr_writer :jdk_version
 
       def initialize(buildr_project)
         @buildr_project = buildr_project
         @vcs = detect_vcs
         @extra_modules = []
+        @artifacts = []
+        @configurations = []
       end
 
       def jdk_version
         @jdk_version ||= buildr_project.compile.options.source || "1.6"
+      end
+
+      def add_artifact(name, type, build_on_make = true)
+        add_to_composite_component(self.artifacts) do |xml|
+          xml.artifact(:name => name, :type => type, :"build-on-make" => build_on_make) do |xml|
+            yield xml if block_given?
+          end
+        end
+      end
+
+      def add_configuration(name, type, factory_name, default = false)
+        add_to_composite_component(self.configurations) do |xml|
+          xml.configuration(:name => name, :type => type, :factoryName => factory_name, :default => default) do |xml|
+            yield xml if block_given?
+          end
+        end
       end
 
       protected
@@ -424,7 +464,9 @@ module Buildr
       def default_components
         [
           lambda { modules_component },
-          vcs_component
+          vcs_component,
+          artifacts_component,
+          configurations_component
         ]
       end
 
@@ -485,6 +527,18 @@ module Buildr
             xml.mapping :directory => "", :vcs => vcs
           end
         end
+      end
+
+      def artifacts_component
+        create_composite_component("ArtifactManager", self.artifacts)
+      end
+
+      def configurations_component
+        create_composite_component("ProjectRunConfigurationManager", self.configurations)
+      end
+
+      def resolve_path(path)
+        resolve_path_from_base(path, "$PROJECT_DIR$")
       end
     end
 
