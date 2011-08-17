@@ -568,12 +568,9 @@ module Buildr
 
         files.each do |ideafile|
           module_dir =  File.dirname(ideafile.filename)
-          # Need to clear the actions else the extension included as part of buildr will run
-          file(ideafile.filename).clear_actions
-          idea.enhance [file(ideafile.filename)]
-          file(ideafile.filename => [Buildr.application.buildfile]) do |task|
+          idea.enhance do |task|
             mkdir_p module_dir
-            info "Writing #{task.name}"
+            info "Writing #{ideafile.filename}"
             t = Tempfile.open("buildr-idea")
             temp_filename = t.path
             t.close!
