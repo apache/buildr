@@ -155,13 +155,13 @@ module Buildr
       attr_writer :main_output_dir
 
       def main_output_dir
-        @main_output_dir ||= buildr_project._(:target, :main, :java)
+        @main_output_dir ||= buildr_project._(:target, :main, :idea, :classes)
       end
 
       attr_writer :test_output_dir
 
       def test_output_dir
-        @test_output_dir ||= buildr_project._(:target, :test, :java)
+        @test_output_dir ||= buildr_project._(:target, :test, :idea, :classes)
       end
 
       def main_dependencies

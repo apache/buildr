@@ -1,4 +1,8 @@
 1.4.7 (Pending)
+* Change: Changed the default output directory for Intellij IDEA to be
+          _(:target, :main, :idea, :classes) from _(:target, :main, :java) and the
+          default test output directory to be _(:target, :test, :idea, :classes)
+          from _(:target, :test, :java)
 * Fixed:  Bnd Plugin: Add each artifact individually as a prerequisite to
           bundle / package task when passed to classpath_element method
 * Change: Upgrade to highline 1.6.2
