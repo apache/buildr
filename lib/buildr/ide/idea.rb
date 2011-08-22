@@ -50,8 +50,10 @@ module Buildr
         self.components << create_component(name, attrs, &xml)
       end
 
+      # IDEA can not handle text content with indents so need to removing indenting
+      # Can not pass true as third argument as the ruby library seems broken
       def write(f)
-        document.write(f, 2, false, true)
+        document.write(f, -1, false, true)
       end
 
       protected

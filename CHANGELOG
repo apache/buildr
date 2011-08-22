@@ -1,4 +1,6 @@
 1.4.7 (Pending)
+* Change: Stop pretty printing the Intellij IDEA project files to avoid IDEA breaking
+          in the presence of non-normalized whitespace content.
 * Change: Change the Intellij IDEA extension to always rebuild the project files.
 * Added:  Enhance the Intellij IDEA extension to support the addition of "artifacts"
           and "configurations" to the generated project file.
