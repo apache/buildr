@@ -429,7 +429,7 @@ module Buildr
         @jdk_version ||= buildr_project.compile.options.source || "1.6"
       end
 
-      def add_artifact(name, type, build_on_make = true)
+      def add_artifact(name, type, build_on_make = false)
         add_to_composite_component(self.artifacts) do |xml|
           xml.artifact(:name => name, :type => type, :"build-on-make" => build_on_make) do |xml|
             yield xml if block_given?
