@@ -16,7 +16,8 @@ We run two mailing lists, the "users":http://buildr.markmail.org/search/list:use
 
 Check the "mailing lists":mailing_lists.html page for more information on subscribing, searching and posting to the mailing list.
 
-h2(#IRC). IRC
+
+h2(#irc).  Internet Relay Chat
 
 We are live on IRC under the buildr channel on irc.freenode.net, with a broad coverage of the US timezone. We tend to idle there, so feel free to ping the channel owner (toulmean) to make noise.
 
