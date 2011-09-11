@@ -3,6 +3,7 @@
 * Change: Stop pretty printing the Intellij IDEA project files to avoid IDEA breaking
           in the presence of non-normalized whitespace content.
 * Change: Change the Intellij IDEA extension to always rebuild the project files.
+* Change: Upgrade to require atoulme-Antwrap 0.7.2
 * Added:  Enhance the Intellij IDEA extension to support the addition of "artifacts"
           and "configurations" to the generated project file.
 * Change: Changed the default output directory for Intellij IDEA extension to be
