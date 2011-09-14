@@ -1,4 +1,5 @@
 1.4.7 (Pending)
+* Added:  ScalaTest now automatically loads the Mockito library
 * Fixed:  scaladoc generation with scala 2.9.x
 * Change: Stop pretty printing the Intellij IDEA project files to avoid IDEA breaking
           in the presence of non-normalized whitespace content.
