@@ -1,4 +1,6 @@
 1.4.7 (Pending)
+* Fixed:  BUILDR-611 Buildr should not unnecessarily recompile Java files
+          explicitly added to compile.from
 * Added:  ScalaTest now automatically loads the Mockito library
 * Fixed:  scaladoc generation with scala 2.9.x
 * Change: Stop pretty printing the Intellij IDEA project files to avoid IDEA breaking

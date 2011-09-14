@@ -46,9 +46,9 @@ module Buildr
       def compilers
         @compilers ||= []
       end
-      
+
       private
-      
+
       # Only used by our specs.
       def compilers=(compilers)
         @compilers = compilers
@@ -87,8 +87,8 @@ module Buildr
           paths = task.sources + [sources].flatten.map { |src| Array(project.path_to(:source, task.usage, src.to_sym)) }
           paths.flatten!
           ext_glob = Array(source_ext).join(',')
-          
-          paths.each { |path| 
+
+          paths.each { |path|
             Find.find(path) {|found|
               if (!File.directory?(found)) && found.match(/.*\.#{Array(source_ext).join('|')}/)
                 return true
@@ -187,7 +187,7 @@ module Buildr
           else
             # try to extract package name from .java or .scala files
             if ['.java', '.scala', '.groovy'].include? File.extname(source)
-              package = findFirst(source, /^\s*package\s+(\S+)\s*;?\s*$/)
+              package = findFirst(source, /^\s*package\s+([^\s;]+)\s*;?\s*/)
               map[source] = package ? File.join(target, package[1].gsub('.', '/'), File.basename(source).ext(target_ext)) : target
             elsif
               map[source] = target
