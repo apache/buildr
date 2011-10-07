@@ -81,7 +81,7 @@ task :prepare do |task, args|
 end
 
 
-task :stage=>['setup', :clobber, :prepare] do |task, args|
+task :stage=>[:clobber, :prepare] do |task, args|
   mkpath '_staged'
 
   # Start by figuring out what has changed.
