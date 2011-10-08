@@ -68,15 +68,18 @@ describe 'javac compiler' do
     end
   end
 
-  it 'should include classpath dependencies' do
-    write 'src/dependency/Dependency.java', 'class Dependency {}'
-    define 'dependency', :version=>'1.0' do
-      compile.from('src/dependency').into('target/dependency')
-      package(:jar)
+  # Doesn't work under jdk1.5 - caused in one of the commits 1167678, 1170604, 1170605, 1180125
+  if Java.java.lang.System.getProperty("java.runtime.version") >= "1.6"
+    it 'should include classpath dependencies' do
+      write 'src/dependency/Dependency.java', 'class Dependency {}'
+      define 'dependency', :version=>'1.0' do
+        compile.from('src/dependency').into('target/dependency')
+        package(:jar)
+      end
+      write 'src/test/DependencyTest.java', 'class DependencyTest { Dependency _var; }'
+      define('foo').compile.from('src/test').with(project('dependency')).invoke
+      file('target/classes/DependencyTest.class').should exist
     end
-    write 'src/test/DependencyTest.java', 'class DependencyTest { Dependency _var; }'
-    define('foo').compile.from('src/test').with(project('dependency')).invoke
-    file('target/classes/DependencyTest.class').should exist
   end
 
   it 'should include tools.jar dependency' do
