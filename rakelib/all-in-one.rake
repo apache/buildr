@@ -101,7 +101,7 @@ namespace :'all-in-one' do
   task :package do
     puts "Zipping distribution ..."
     cd '..'
-    new_dir  = "#{spec.name}-#{spec.version}"
+    new_dir  = "#{spec.name}-all-in-one-#{spec.version}"
     mv dir, new_dir
     zip = "#{new_dir}.zip"
     rm zip if File.exist? zip
