@@ -262,9 +262,9 @@ module Buildr
       end
 
       [:xml, :html].each do |format|
-        report_target = report_to(format)
-        desc "Run the test cases and produce code coverage reports in #{report_target}"
+        desc "Run the test cases and produce code coverage reports"
         task format => ["instrument", "test"] do
+          report_target = report_to(format)
           if Buildr.projects.detect { |project| !project.compile.sources.empty? }
             info "Creating test coverage reports in #{report_target}"
             Buildr.ant "cobertura" do |ant|
