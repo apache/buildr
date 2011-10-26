@@ -34,6 +34,10 @@ module Buildr
   #      cobertura.exclude /*.Const(ants)?/i
   #   end
   #
+  # You can also specify the top level directory to which the top level cobertura tasks
+  # will generate reports by setting the value of the <code>Buildr::Cobertura.report_dir</code>
+  # configuration parameter.
+  #
   module Cobertura
 
     VERSION = '1.9.4.1'
@@ -61,12 +65,18 @@ module Buildr
         REQUIRES.artifacts
       end
 
-      def report_to(file = nil)
-        File.expand_path(File.join(*["reports/cobertura", file.to_s].compact))
+      attr_writer :report_dir
+
+      def report_dir
+        @report_dir || "reports/cobertura"
       end
 
-      def data_file()
-        File.expand_path("reports/cobertura.ser")
+      def report_to(file = nil)
+        File.expand_path(File.join(*[report_dir, file.to_s].compact))
+      end
+
+      def data_file
+        File.expand_path("#{report_dir}/cobertura.ser")
       end
 
     end

@@ -1,4 +1,6 @@
 1.4.7 (Pending)
+* Change: Parameterize the the directory where the top level cobertura tasks will generate
+          reports. Specify using Buildr::Cobertura.report_dir = '....'
 * Fixed:  BUILDR-611 Buildr should not unnecessarily recompile Java files
           explicitly added to compile.from
 * Added:  ScalaTest now automatically loads the Mockito library
