@@ -76,7 +76,7 @@ module Buildr
       end
 
       def data_file
-        File.expand_path("#{report_dir}/cobertura.ser")
+        File.expand_path("#{report_dir}.ser")
       end
 
     end
