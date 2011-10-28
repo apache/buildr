@@ -384,7 +384,7 @@ h2(#idea). IntelliJ IDEA
 If you use IntelliJ IDEA, you can generate project files by issuing:
 
 {% highlight sh %}
-$ buildr idea:generate
+$ buildr idea
 {% endhighlight %}
 
 This task will generate a @.iml@ file for every project (or subproject) and a @.ipr@ that you can directly open for the root project.
