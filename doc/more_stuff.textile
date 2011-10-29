@@ -835,7 +835,7 @@ If the xsl file named "checkstyle-report.xsl" is present in the configuration di
 
 h2(#javancss). JavaNCSS
 
-Checkstyle is integrated into Buildr through an extension. The extension adds the "javancss:xml" task that generates an xml report and may add a "javancss:html" task if an appropriate xsl is preset. A typical project that uses the extension may look something like;
+JavaNCSS is integrated into Buildr through an extension. The extension adds the "javancss:xml" task that generates an xml report and may add a "javancss:html" task if an appropriate xsl is preset. A typical project that uses the extension may look something like;
 
 {% highlight ruby %}
 require 'buildr/javancss'
