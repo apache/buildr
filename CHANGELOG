@@ -1,4 +1,5 @@
 1.4.7 (Pending)
+* Added:  Add a Checkstyle extension.
 * Change: Parameterize the the directory where the top level cobertura tasks will generate
           reports. Specify using Buildr::Cobertura.report_dir = '....'
 * Fixed:  BUILDR-611 Buildr should not unnecessarily recompile Java files
