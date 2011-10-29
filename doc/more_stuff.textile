@@ -810,7 +810,7 @@ $ buildr -rbuildr/java/cobertura cobertura:html
 
 h2(#checkstyle). Checkstyle
 
-Checkstyle is integrated into Buildr through an extension. The extension adds the "checkstyle:xml" task that generates an xml report listing checkstyle violations in xml format and may add a "checkstyle:html" task if an appropriate xsl is preset. A typical project that uses the extension may look something like;
+Checkstyle is integrated into Buildr through an extension. The extension adds the "checkstyle:xml" task that generates an xml report listing checkstyle violations and may add a "checkstyle:html" task if an appropriate xsl is preset. A typical project that uses the extension may look something like;
 
 {% highlight ruby %}
 require 'buildr/checkstyle'
