@@ -833,6 +833,29 @@ The extension will include the source and test directories of the project aswell
 
 If the xsl file named "checkstyle-report.xsl" is present in the configuration directory then a "checkstyle:html" task will be defined. The name of the xsl file can be overridden by the parameter "checkstyle.style_file".
 
+h2(#javancss). JavaNCSS
+
+Checkstyle is integrated into Buildr through an extension. The extension adds the "javancss:xml" task that generates an xml report and may add a "javancss:html" task if an appropriate xsl is preset. A typical project that uses the extension may look something like;
+
+{% highlight ruby %}
+require 'buildr/javancss'
+
+define "foo" do
+  project.version = "1.0.0"
+
+  define "bar" do ... end
+
+  javancss.enabled = true
+  javancss.config_directory = _('etc/javancss')
+  javancss.source_paths << project('bar')._(:source, :main, :java)
+
+end
+{% endhighlight %}
+
+The extension will include the source and test directories of the project when invoking the javancss tool. These can be added to by the parameters "javancss.source_paths".
+
+By default checkstyle will look for all configuration files in the src/main/etc/javancss directory but this can be overriden by the setting the "javancss.config_directory" parameter. The "javancss:xml" task will be defined if the "javancss.enabled" property is set to true. If the xsl file named "javancss2html.xsl" is present in the configuration directory then a "javancss:html" task will be defined. The name of the xsl file can be overridden by the parameter "javancss.style_file".
+
 h2(#jaxb_xjc). JAXB Xjc Compiler
 
 Buildr includes an extension that provides the ability to invoke jaxb xjc binding compiler. A typical project that uses the extension may look something like;
