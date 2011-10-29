@@ -810,7 +810,7 @@ $ buildr -rbuildr/java/cobertura cobertura:html
 
 h2(#checkstyle). Checkstyle
 
-Checkstyle is integrated into Buildr through an extension. The extension adds the "checkstyle:xml" task that generates an xml report listing checkstyle violations and may add a "checkstyle:html" task if an appropriate xsl is preset. A typical project that uses the extension may look something like;
+Checkstyle is integrated into Buildr through an extension. The extension adds the "checkstyle:xml" task that generates an xml report listing checkstyle violations and may add a "checkstyle:html" task if an appropriate xsl is present. A typical project that uses the extension may look something like;
 
 {% highlight ruby %}
 require 'buildr/checkstyle'
@@ -835,7 +835,7 @@ If the xsl file named "checkstyle-report.xsl" is present in the configuration di
 
 h2(#javancss). JavaNCSS
 
-JavaNCSS is integrated into Buildr through an extension. The extension adds the "javancss:xml" task that generates an xml report and may add a "javancss:html" task if an appropriate xsl is preset. A typical project that uses the extension may look something like;
+JavaNCSS is integrated into Buildr through an extension. The extension adds the "javancss:xml" task that generates an xml report and may add a "javancss:html" task if an appropriate xsl is present. A typical project that uses the extension may look something like;
 
 {% highlight ruby %}
 require 'buildr/javancss'
@@ -854,7 +854,34 @@ end
 
 The extension will include the source and test directories of the project when invoking the javancss tool. These can be added to by the parameters "javancss.source_paths".
 
-By default checkstyle will look for all configuration files in the src/main/etc/javancss directory but this can be overriden by the setting the "javancss.config_directory" parameter. The "javancss:xml" task will be defined if the "javancss.enabled" property is set to true. If the xsl file named "javancss2html.xsl" is present in the configuration directory then a "javancss:html" task will be defined. The name of the xsl file can be overridden by the parameter "javancss.style_file".
+By default javancss will look for all configuration files in the src/main/etc/javancss directory but this can be overriden by the setting the "javancss.config_directory" parameter. The "javancss:xml" task will be defined if the "javancss.enabled" property is set to true. If the xsl file named "javancss2html.xsl" is present in the configuration directory then a "javancss:html" task will be defined. The name of the xsl file can be overridden by the parameter "javancss.style_file".
+
+h2(#pmd). PMD
+
+PMD is integrated into Buildr through an extension. The extension adds the "pmd:rule:xml" and "pmd:rule:html" tasks. A typical project that uses the extension may look something like;
+
+
+{% highlight ruby %}
+require 'buildr/javancss'
+
+define "foo" do
+  project.version = "1.0.0"
+
+  define "bar" do ... end
+
+  pmd.enable
+  pmd.rule_set_paths = _('etc/pmd') + "/"
+  pmd.source_paths << project('bar')._(:source, :main, :java)
+  pmd.rule_set_files = ['basic','imports','unusedcode','logging-java','finalizers']
+
+end
+{% endhighlight %}
+
+The "pmd:rule:xml" task will be defined if the "pmd.enable" method is invoked.
+
+The extension will include the source and test directories of the project when invoking the pmd tool. These can be added to by the parameters "pmd.source_paths".
+
+By default the pmd rule files 'basic','imports' and 'unusedcode' will be evaluated but this can be overriden by the "pmd.rule_set_files" parameter. The rule sets will be loaded from the classpath and this can be added to by modifying the "pmd.rule_set_paths" parameter.
 
 h2(#jaxb_xjc). JAXB Xjc Compiler
 
