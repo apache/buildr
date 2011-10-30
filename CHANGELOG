@@ -1,4 +1,7 @@
 1.4.7 (Pending)
+* Change: Make it possible to parameterize the JDepend extension and control the projects that
+          are included in the analysis and to enable support for loading a per project
+          jdepend.properties.
 * Added:  Add a Checkstyle extension.
 * Added:  Add a JavaNCSS extension.
 * Added:  Add a PMD extension.
