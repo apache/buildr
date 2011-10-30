@@ -738,7 +738,7 @@ h4. Buildr plugin for IDEA
 
 Also, check out the "Buildr plugin for IDEA":http://www.digitalsanctum.com/buildr-plug-in/ (IDEA 7 and later).  Once installed, open your project with IDEA.  If IDEA finds that you have Buildr installed and finds a buildfile in the project's directory, it will show all the tasks available for that project.  To run a task, double-click it.  When the task completes, IDEA will show the results in the Buildr Output window.
 
-h2(#cobertura_emma_jdepend). Cobertura, Emma, JDepend
+h2(#cobertura_emma). Cobertura, Emma
 
 You can use "Cobertura":http://cobertura.sourceforge.net/ or "Emma":http://emma.sourceforge.net/ to instrument your code, run the tests and create a test coverage report in either HTML or XML format.
 
@@ -783,20 +783,11 @@ end
 
 The @cobertura:check@ task supports all of the configuration parameters allowed by the @cobertura-check@ Ant task (as "documented here":http://cobertura.sourceforge.net/anttaskreference.html).  Configuration parameters are "Ruby-ized" (as demonstrated in the example above).
 
-You can use "JDepend":http://clarkware.com/software/JDepend.html on to generate design quality metrics.  There are three tasks this time, the eye candy one:
-
-{% highlight sh %}
-$ buildr jdepend:swing
-{% endhighlight %}
-
-The other two tasks are @jdepend:text@ and @jdepend:xml@.
-
 We want Buildr to load fast, and not everyone cares for these tasks, so we don't include them by default.  If you want to use one of them, you need to require it explicitly.  The proper way to do it in Ruby:
 
 {% highlight ruby %}
 require 'buildr/java/cobertura'
 require 'buildr/java/emma'
-require 'buildr/jdepend'
 {% endhighlight %}
 
 You may want to add those to the Buildfile.  Alternatively, you can use these tasks for all your projects without modifying the Buildfile.  One convenient method is to add these lines to the @buildr.rb@ file in the @.buildr@ directory under your home directory.
@@ -804,7 +795,6 @@ You may want to add those to the Buildfile.  Alternatively, you can use these ta
 Another option is to require it from the command line (@--require@ or @-r@), for example:
 
 {% highlight sh %}
-$ buildr --require buildr/jdepend jdepend:swing
 $ buildr -rbuildr/java/cobertura cobertura:html
 {% endhighlight %}
 
@@ -855,6 +845,29 @@ end
 The extension will include the source and test directories of the project when invoking the javancss tool. These can be added to by the parameters "javancss.source_paths".
 
 By default javancss will look for all configuration files in the src/main/etc/javancss directory but this can be overriden by the setting the "javancss.config_directory" parameter. The "javancss:xml" task will be defined if the "javancss.enabled" property is set to true. If the xsl file named "javancss2html.xsl" is present in the configuration directory then a "javancss:html" task will be defined. The name of the xsl file can be overridden by the parameter "javancss.style_file".
+
+h2(#jdepend). JDepend
+
+"JDepend":http://clarkware.com/software/JDepend.html is integrated into Buildr through an extension. The extension adds the "jdepend:xml" task that generates an xml report, "jdepend:swing" that shows a Swing UI, and may add a "jdepend:html" task if an appropriate xsl is present. A typical project that uses the extension may look something like;
+
+{% highlight ruby %}
+require 'buildr/jdepend'
+
+define "foo" do
+  project.version = "1.0.0"
+
+  define "bar" do ... end
+
+  jdepend.enabled = true
+  jdepend.config_directory = _('etc/jdepend')
+  jdepend.target_paths << project('bar').compile.target
+
+end
+{% endhighlight %}
+
+The extension will include the compiled source and test directories of the project when invoking the JDepend tool. These can be added to by the parameters "jdepend.target_paths".
+
+By default JDepend will look for all configuration files in the src/main/etc/jdepend directory but this can be overriden by the setting the "jdepend.config_directory" parameter. The "jdepend:xml" and "jdepend:swing" task will be defined if the "jdepend.enabled" property is set to true. If a "jdepend.properties" is included in the configuration directory then jdepend will load it during the analysis. If the xsl file named "jdepend.xsl" is present in the configuration directory then a "jdepend:html" task will be defined. The name of the xsl file can be overridden by the parameter "jdepend.style_file".
 
 h2(#pmd). PMD
 
