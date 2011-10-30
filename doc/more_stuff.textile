@@ -869,7 +869,7 @@ define "foo" do
 
   define "bar" do ... end
 
-  pmd.enable
+  pmd.enabled = true
   pmd.rule_set_paths = _('etc/pmd') + "/"
   pmd.source_paths << project('bar')._(:source, :main, :java)
   pmd.rule_set_files = ['basic','imports','unusedcode','logging-java','finalizers']
@@ -877,7 +877,7 @@ define "foo" do
 end
 {% endhighlight %}
 
-The "pmd:rule:xml" task will be defined if the "pmd.enable" method is invoked.
+The "pmd:rule:xml" task will be defined if the "pmd.enabled" property is set to true.
 
 The extension will include the source and test directories of the project when invoking the pmd tool. These can be added to by the parameters "pmd.source_paths".
 
