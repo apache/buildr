@@ -72,9 +72,7 @@ module Buildr
 
     class Config
 
-      def enable
-        @enabled = true
-      end
+      attr_writer :enabled
 
       def enabled?
         !!@enabled
