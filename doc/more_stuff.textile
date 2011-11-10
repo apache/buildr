@@ -823,6 +823,32 @@ The extension will include the source and test directories of the project aswell
 
 If the xsl file named "checkstyle-report.xsl" is present in the configuration directory then a "checkstyle:html" task will be defined. The name of the xsl file can be overridden by the parameter "checkstyle.style_file".
 
+h2(#findbugs). FindBugs
+
+FindBugs is integrated into Buildr through an extension. The extension adds the "findbugs:xml" task that generates an xml report listing findbugs violations and may add a "findbugs:html" task if an appropriate xsl is present. A typical project that uses the extension may look something like;
+
+{% highlight ruby %}
+require 'buildr/findbugs'
+
+define "foo" do
+  project.version = "1.0.0"
+
+  define "bar" do ... end
+
+  findbugs.config_directory = _('etc/findbugs')
+  findbugs.source_paths << project('bar')._(:source, :main, :java)
+  findbugs.analyze_paths << project('bar').compile.target
+  findbugs.extra_dependencies << project('bar').compile.dependencies
+
+end
+{% endhighlight %}
+
+By default findbugs will look for all configuration files in the src/main/etc/findbugs directory but this can be overriden by the setting the "findbugs.config_directory" parameter. The "findbugs:xml" task will past FindBugs a filter xml if a file named "filter.xml" is present in the configuration directory. This can be overridden by setting the "findbugs.filter_file" parameter.
+
+The extension will include the source and test directories of the project aswell as the compile and test dependencies when invoking the findbugs tool. These can be added to by the parameters "findbugs.source_paths" and "findbugs.extra_dependencies" as appropriate. The actual analysis is run across compiled artifacts ad this will default to the target directory of the project but this can be overriden by the "findbugs.analyze_paths" parameter.
+
+If the xsl file named "findbugs-report.xsl" is present in the configuration directory then a "findbugs:html" task will be defined. The name of the xsl file can be overridden by the parameter "findbugs.style_file".
+
 h2(#javancss). JavaNCSS
 
 JavaNCSS is integrated into Buildr through an extension. The extension adds the "javancss:xml" task that generates an xml report and may add a "javancss:html" task if an appropriate xsl is present. A typical project that uses the extension may look something like;
