@@ -304,6 +304,8 @@ module URI
               end
             end
             return result
+          when Net::HTTPUnauthorized
+            raise NotFoundError, "Looking for #{self} but repository says Unauthorized/401."
           when Net::HTTPNotFound
             raise NotFoundError, "Looking for #{self} and all I got was a 404!"
           else
