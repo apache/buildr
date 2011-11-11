@@ -802,7 +802,11 @@ module Buildr
       when Struct
         set |= artifacts(spec.values)
       else
-        fail "Invalid artifact specification in #{specs.inspect}"
+        if spec.respond_to? :to_spec
+          set |= artifacts(spec.to_spec)
+        else
+          fail "Invalid artifact specification in #{specs.inspect}"
+        end
       end
     end
   end
