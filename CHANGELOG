@@ -1,4 +1,5 @@
 1.4.7 (Pending)
+* Change: Scala 2.9.1 is now default
 * Fixed:  Buildr.artifacts() should handle any object with :to_spec method
           (i.e., any object that ActsAsArtifact)
 * Fixed:  Handle HTTP Unauthorized (501) result code when downloading artifacts.
