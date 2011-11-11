@@ -211,7 +211,59 @@ module Buildr::Scala
       end
     end
 
+  protected
+
+    # :nodoc: see Compiler:Base
+    def compile_map(sources, target)
+      target_ext = self.class.target_ext
+      ext_glob = Array(self.class.source_ext).join(',')
+      sources.flatten.map{|f| File.expand_path(f)}.inject({}) do |map, source|
+        sources = if File.directory?(source)
+          FileList["#{source}/**/*.{#{ext_glob}}"].reject { |file| File.directory?(file) }
+        else
+          [source]
+        end
+
+        sources.each do |source|
+          # try to extract package name from .java or .scala files
+          if ['.java', '.scala'].include? File.extname(source)
+            name = File.basename(source).split(".")[0]
+            package = findFirst(source, /^\s*package\s+([^\s;]+)\s*;?\s*/)
+            packages = count(source, /^\s*package\s+([^\s;]+)\s*;?\s*/)
+            found = findFirst(source, /((trait)|(class)|(object))\s+(#{name})/)
+
+            # if there's only one package statement and we know the target name, then we can depend
+            # directly on a specific file, otherwise, we depend on the general target
+            if (found && packages == 1)
+              map[source] = package ? File.join(target, package[1].gsub('.', '/'), name.ext(target_ext)) : target
+            else
+              map[source] = target
+            end
+
+          elsif
+            map[source] = target
+          end
+        end
+
+        map.each do |key,value|
+          map[key] = first_file unless map[key]
+        end
+
+        map
+      end
+    end
+
   private
+
+    def count(file, pattern)
+      count = 0
+      File.open(file, "r") do |infile|
+        while (line = infile.gets)
+          count += 1 if line.match(pattern)
+        end
+      end
+      count
+    end
 
     def java_sources(sources)
       sources.flatten.map { |source| File.directory?(source) ? FileList["#{source}/**/*.java"] : source } .
