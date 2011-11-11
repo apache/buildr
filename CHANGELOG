@@ -1,4 +1,5 @@
 1.4.7 (Pending)
+* Fixed:  ArtifactNamespace fails when using artifacts with classfier.
 * Added:  Buildr.transitive() now accepts hash with :scopes, :optional and
           :scopes_transitive parameters
 * Added:  Improved scala file change detection
