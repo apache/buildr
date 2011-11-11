@@ -1,4 +1,6 @@
 1.4.7 (Pending)
+* Added:  Improved scala file change detection
+          (to avoid recompiling  unnecessarily)
 * Change: Scala 2.9.1 is now default
 * Fixed:  Buildr.artifacts() should handle any object with :to_spec method
           (i.e., any object that ActsAsArtifact)
