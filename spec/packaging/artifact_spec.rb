@@ -1040,6 +1040,13 @@ describe Buildr, '#transitive' do
       <version>8.4</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <artifactId>jlib-optional</artifactId>
+      <groupId>jlib</groupId>
+      <version>1.4</version>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 </project>
 XML
@@ -1117,6 +1124,16 @@ XML
 
   it 'should bring artifact and transitive depenencies' do
     transitive(@transitive).should eql(artifacts(@transitive, @complex, @simple - [@provided]))
+  end
+
+  it 'should filter dependencies based on :scopes argument' do
+    specs = [@complex, 'saxon:saxon-dom:jar:8.4']
+    transitive(@complex, :scopes => [:runtime]).should eql(specs.map { |spec| artifact(spec) })
+  end
+
+  it 'should filter dependencies based on :optional argument' do
+    specs = [@complex, 'saxon:saxon-dom:jar:8.4', 'jlib:jlib-optional:jar:1.4']
+    transitive(@complex, :scopes => [:runtime], :optional => true).should eql(specs.map { |spec| artifact(spec) })
   end
 end
 
