@@ -1,4 +1,6 @@
 1.4.7 (Pending)
+* Added:  Buildr.transitive() now accepts hash with :scopes, :optional and
+          :scopes_transitive parameters
 * Added:  Improved scala file change detection
           (to avoid recompiling  unnecessarily)
 * Change: Scala 2.9.1 is now default
