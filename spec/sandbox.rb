@@ -42,7 +42,6 @@ artifacts(
   Buildr::JaxbXjc.dependencies,
   Buildr::Bnd.dependencies,
   Buildr::Scala::Scalac.dependencies,
-  Buildr::Scala::Specs.dependencies,
   Buildr::Shell::BeanShell.artifact,
   Buildr::Clojure.dependencies
 ).each do |path|
