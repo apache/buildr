@@ -1,42 +1,34 @@
 1.4.7 (Pending)
-* Added:  MultiTest framework that allows combining multiple test frameworks
-          for a single project.
-* Added:  Scala Specs2 framework support.
-* Change: Scala Specs upgraded to 1.6.9 if using Scala 2.9.1
-* Fixed:  ArtifactNamespace fails when using artifacts with classfier.
-* Added:  Buildr.transitive() now accepts hash with :scopes, :optional and
-          :scopes_transitive parameters
-* Added:  Improved scala file change detection
-          (to avoid recompiling  unnecessarily)
-* Change: Scala 2.9.1 is now default
-* Fixed:  Buildr.artifacts() should handle any object with :to_spec method
-          (i.e., any object that ActsAsArtifact)
-* Fixed:  Handle HTTP Unauthorized (501) result code when downloading artifacts.
-* Change: Make it possible to parameterize the JDepend extension and control the projects that
-          are included in the analysis and to enable support for loading a per project
-          jdepend.properties.
 * Added:  Add a Findbugs extension.
 * Added:  Add a Checkstyle extension.
 * Added:  Add a JavaNCSS extension.
 * Added:  Add a PMD extension.
+* Added:  MultiTest framework that allows combining multiple test frameworks
+          for a single project.
+* Added:  Scala Specs2 framework support.
+* Added:  Buildr.transitive() now accepts hash with :scopes, :optional and
+          :scopes_transitive parameters
+* Added:  Improved scala file change detection
+          (to avoid recompiling  unnecessarily)
+* Added:  ScalaTest now automatically loads the Mockito library
+* Added:  Enhance the Intellij IDEA extension to support the addition of "artifacts"
+          and "configurations" to the generated project file.
+* Added:  BUILDR-598 TestNG support for :groups and :excludegroups (Christopher Coco)
+* Change: Scala Specs upgraded to 1.6.9 if using Scala 2.9.1
+* Change: Scala 2.9.1 is now default
+* Change: Make it possible to parameterize the JDepend extension and control the
+          projects that are included in the analysis and to enable support for
+          loading a per project jdepend.properties.
 * Change: Parameterize the the directory where the top level cobertura tasks will generate
           reports. Specify using Buildr::Cobertura.report_dir = '....'
-* Fixed:  BUILDR-611 Buildr should not unnecessarily recompile Java files
-          explicitly added to compile.from
-* Added:  ScalaTest now automatically loads the Mockito library
-* Fixed:  scaladoc generation with scala 2.9.x
 * Change: Stop pretty printing the Intellij IDEA project files to avoid IDEA breaking
           in the presence of non-normalized whitespace content.
 * Change: Change the Intellij IDEA extension to always rebuild the project files.
 * Change: Upgrade to require atoulme-Antwrap 0.7.2
-* Added:  Enhance the Intellij IDEA extension to support the addition of "artifacts"
-          and "configurations" to the generated project file.
 * Change: Changed the default output directory for Intellij IDEA extension to be
           _(:target, :main, :idea, :classes) from _(:target, :main, :java) and the
           default test output directory to be _(:target, :test, :idea, :classes)
           from _(:target, :test, :java)
-* Fixed:  Bnd Plugin: Add each artifact individually as a prerequisite to
-          bundle / package task when passed to classpath_element method
 * Change: Upgrade to highline 1.6.2
 * Change: Upgrade to jekyll 0.11.0, jekylltask 1.1.0, RedCloth 4.2.7, rdoc 3.8 for
           generating documentation
@@ -49,7 +41,15 @@
 * Change: Upgrade to JRuby 1.6.2
 * Change: Move to Bundler to manage the project dependencies
 * Change: BUILDR-548 Remove support for JTestR as it is no longer maintained (Antoine Toulme)
-* Added:  BUILDR-598 TestNG support for :groups and :excludegroups (Christopher Coco)
+* Fixed:  ArtifactNamespace fails when using artifacts with classfier.
+* Fixed:  Buildr.artifacts() should handle any object with :to_spec method
+          (i.e., any object that ActsAsArtifact)
+* Fixed:  Handle HTTP Unauthorized (501) result code when downloading artifacts.
+* Fixed:  BUILDR-611 Buildr should not unnecessarily recompile Java files
+          explicitly added to compile.from
+* Fixed:  scaladoc generation with scala 2.9.x
+* Fixed:  Bnd Plugin: Add each artifact individually as a prerequisite to
+          bundle / package task when passed to classpath_element method
 * Fixed:  BUILDR-439 "The command line is too long" when running TestNG tests (Tammo Van Lessen)
 * Fixed:  BUILDR-595 Add option to specifiy location of ca cert
 * Fixed:  BUILDR-596 Update installation notes to talk about the all-in-one bundle
