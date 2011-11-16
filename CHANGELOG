@@ -14,6 +14,7 @@
 * Added:  Enhance the Intellij IDEA extension to support the addition of "artifacts"
           and "configurations" to the generated project file.
 * Added:  BUILDR-598 TestNG support for :groups and :excludegroups (Christopher Coco)
+* Added:  BUILDR-616 Buildr development - If using rvm a default .rvmrc file would be helpful (Russell Teabeault)
 * Change: Scala Specs upgraded to 1.6.9 if using Scala 2.9.1
 * Change: Scala 2.9.1 is now default
 * Change: Make it possible to parameterize the JDepend extension and control the
