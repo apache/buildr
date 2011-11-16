@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+cat <<EOF
+********************************************************************
+*  RVM will install the environment for Buildr development now.
+*  By default it will use ruby-1.9.2.
+*  To force use an other version of ruby, set BUILDR_RUBY_VERSION.
+*  Example:
+*     export BUILDR_RUBY_VERSION=jruby-1.6.5
+********************************************************************
+EOF
+
+ruby_string="${BUILDR_RUBY_VERSION:-ruby-1.9.2}" 
+bundler_gem_home="vendor/bundle" 
+
+if rvm list strings | grep -q "${ruby_string}" ; then 
+  rvm use --create "${ruby_string}@buildr" 
+
+  gem list | grep 'bundler' &> /dev/null 
+  if [ $? -gt 0 ]; then 
+    echo "Installing bundler..." 
+    gem install bundler 
+  fi
+
+  bundle install 
+else 
+  echo "${ruby_string} was not found, please run 'rvm install ${ruby_string}' and then cd back into the project directory." 
+fi
