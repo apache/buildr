@@ -61,7 +61,12 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'json_pure',            '1.4.3'
   spec.add_dependency 'rubyforge',            '2.0.3'
   spec.add_dependency 'hoe',                  '2.3.3'
-  spec.add_dependency 'rjb',                  '1.3.3' if spec.platform.to_s == 'ruby'
+  if spec.platform.to_s == 'ruby'
+    if RUBY_PLATFORM.downcase.include?("darwin") && !ENV["rvm_ruby_string"].nil? && ENV["rvm_ruby_string"] != 'system' 
+        Gem.platforms = [Gem::Platform::RUBY] 
+    end
+    spec.add_dependency 'rjb',                  '1.3.3'
+  end
   spec.add_dependency 'rjb',                  '1.3.2' if spec.platform.to_s == 'x86-mswin32'
   spec.add_dependency 'atoulme-Antwrap',      '~> 0.7.2'
   spec.add_dependency 'diff-lcs',             '1.1.2'
