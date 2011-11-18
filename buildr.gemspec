@@ -85,4 +85,5 @@ for those one-off tasks, with a language that's a joy to use.
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'win32console' if spec.platform.to_s == 'x86-mswin32'
+  spec.add_development_dependency 'rubyforge'
 end
