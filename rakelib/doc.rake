@@ -14,8 +14,8 @@
 # the License.
 
 if !RUBY_PLATFORM[/java/]
+  gem 'rdoc'
   require 'rdoc/task'
-
   desc "Creates a symlink to rake's lib directory to support combined rdoc generation"
   file "rake/lib" do
     rake_path = $LOAD_PATH.find { |p| File.exist? File.join(p, "rake.rb") }
@@ -24,7 +24,7 @@ if !RUBY_PLATFORM[/java/]
   end
 
   desc "Generate RDoc documentation in rdoc/"
-  Rake::RDocTask.new :rdoc do |rdoc|
+  RDoc::Task.new :rdoc do |rdoc|
     rdoc.rdoc_dir = 'rdoc'
     rdoc.title = spec.name
     rdoc.options = spec.rdoc_options.clone
@@ -79,7 +79,7 @@ if !RUBY_PLATFORM[/java/]
   desc "Build a copy of the Web site in the ./_site"
   task :site=>['_site', :rdoc, '_reports/specs.html', '_reports/coverage', 'buildr.pdf'] do
     cp_r 'rdoc', '_site'
-    fail 'No RDocs in site directory' unless File.exist?('_site/rdoc/files/lib/buildr_rb.html')
+    fail 'No RDocs in site directory' unless File.exist?('_site/rdoc/lib/buildr_rb.html')
     cp '_reports/specs.html', '_site'
     cp_r '_reports/coverage', '_site'
     fail 'No coverage report in site directory' unless File.exist?('_site/coverage/index.html')

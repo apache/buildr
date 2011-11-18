@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
+require 'rubyforge'
 require 'digest/md5'
 require 'digest/sha1'
 
@@ -58,7 +58,8 @@ task :prepare do |task, args|
   lambda do
     puts "Checking that we have JRuby, Scala and Groovy available ... "
     sh 'jruby --version'
-    sh 'scala -version'
+    `scala -version`
+    $?.exitstatus == 1 or fail "Scala is not installed"
     sh 'groovy -version'
     puts "[X] We have JRuby, Scala and Groovy"
   end.call
@@ -84,6 +85,7 @@ end
 
 
 task :stage=>[:clobber, :prepare] do |task, args|
+  gpg_arg = args.gpg || ENV['gpg']
   mkpath '_staged'
 
   # Start by figuring out what has changed.
