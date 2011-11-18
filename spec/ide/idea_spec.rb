@@ -331,7 +331,7 @@ describe Buildr::IntellijIdea do
 
             xml.RunnerSettings(:RunnerId => "Run")
             xml.ConfigurationWrapper(:RunnerId => "Run")
-            xml.method()
+            xml.tag! :method
           end
           ipr.add_configuration("Run Planner.html", "GWT.ConfigurationType", "GWT Configuration") do |xml|
             xml.module(:name => project.iml.id)
@@ -341,7 +341,7 @@ describe Buildr::IntellijIdea do
 
             xml.RunnerSettings(:RunnerId => "Run")
             xml.ConfigurationWrapper(:RunnerId => "Run")
-            xml.method()
+            xml.tag! :method
           end
         end
         invoke_generate_task
