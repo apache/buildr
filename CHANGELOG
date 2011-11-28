@@ -1,5 +1,7 @@
 1.4.8 (Pending)
 * Fixed:  BUILDR-617 pom exclusion does not work (Kafka Liu)
+* Change: BUILDR-615 VersionRequirement.version? now returns true for
+          versions following pattern "r9999", e.g. "r09"
 
 1.4.7 (2011-11-17)
 * Added:  Add a Findbugs extension.

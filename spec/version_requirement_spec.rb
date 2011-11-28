@@ -136,8 +136,10 @@ describe Buildr::VersionRequirement, '#version?' do
     Buildr::VersionRequirement.version?('11.0').should be_true
     Buildr::VersionRequirement.version?(' 11.0 ').should be_true
     Buildr::VersionRequirement.version?('11.0-alpha').should be_true
+    Buildr::VersionRequirement.version?('r09').should be_true # BUILDR-615: com.google.guava:guava:jar:r09
 
     Buildr::VersionRequirement.version?('a').should be_false
     Buildr::VersionRequirement.version?('a1').should be_false
+    Buildr::VersionRequirement.version?('r').should be_false
   end
 end
