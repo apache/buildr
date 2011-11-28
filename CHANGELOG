@@ -1,3 +1,6 @@
+1.4.8 (Pending)
+* Fixed:  BUILDR-617 pom exclusion does not work (Kafka Liu)
+
 1.4.7 (2011-11-17)
 * Added:  Add a Findbugs extension.
 * Added:  Add a Checkstyle extension.

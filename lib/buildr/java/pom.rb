@@ -103,10 +103,10 @@ module Buildr
             if options[:scopes].include?(spec[:scope])
               spec.delete(:scope)
 
-              exclusions = dep["exclusions"]["exclusion"] rescue nil
+              exclusions = dep["exclusions"].first["exclusion"] rescue nil
               transitive_deps = POM.load(spec).dependencies(options[:scopes_transitive] || SCOPES_TRANSITIVE)
               transitive_deps = transitive_deps.reject{|dep|
-                exclusions.find {|ex| dep.index("#{dep['groupdId'].first}:#{dep['artifactId'].first}:") == 0}
+                exclusions.find {|ex| dep.index("#{ex['groupId'].first}:#{ex['artifactId'].first}:") == 0}
               } if exclusions
 
               [Artifact.to_spec(spec)] + transitive_deps
