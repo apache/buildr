@@ -61,7 +61,7 @@ XML
 XML
   end
 
-  it 'should return a list of artifacts from all its arguments' do
+  it 'should respect exclusions when computing transitive dependencies' do
     pom = POM.load(artifact(@app).pom)
     specs = [ 'org.example:library:jar:1.1', 'org.example:foo:jar:2.0' ]
     pom.dependencies.should eql(specs)
