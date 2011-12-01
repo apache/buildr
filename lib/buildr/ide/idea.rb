@@ -509,7 +509,7 @@ module Buildr
               if subproject.iml.group == true
                 attribs[:group] = subproject.parent.name.gsub(':', '/')
               elsif !subproject.iml.group.nil?
-                attribs[:group] = subproject.group.to_s
+                attribs[:group] = subproject.iml.group.to_s
               end
               xml.module attribs
             end
