@@ -54,13 +54,15 @@ module Buildr
       def cpd(format, output_file_prefix, source_paths, options = {})
         dependencies = (options[:dependencies] || []) + self.dependencies
         cp = Buildr.artifacts(dependencies).each(&:invoke).map(&:to_s)
+        minimum_token_count = options[:minimum_token_count] || 100
+        encoding = options[:encoding] || 'UTF-8'
 
         puts "PMD-CPD: Analyzing source code..."
         mkdir_p File.dirname(output_file_prefix)
 
         Buildr.ant("cpd-report") do |ant|
           ant.taskdef :name=> 'cpd', :classpath => cp.join(';'), :classname => 'net.sourceforge.pmd.cpd.CPDTask'
-          ant.cpd :format => format, :minimumTokenCount => 100, :outputFile => "#{output_file_prefix}.#{format}" do
+          ant.cpd :format => format, :minimumTokenCount => minimum_token_count, :encoding => encoding, :outputFile => "#{output_file_prefix}.#{format}" do
             source_paths.each do |src|
               ant.fileset :dir=> src, :includes=>'**/*.java'
             end
