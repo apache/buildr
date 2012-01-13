@@ -250,16 +250,16 @@ module Buildr
                     classpathentry.src project.test.resources
                   end
 
-                  # Classpath elements from other projects
-                  classpathentry.src_projects project_libs
-
-                  classpathentry.output project.compile.target if project.compile.target
-                  classpathentry.lib libs
-                  classpathentry.var vars
-
                   project.eclipse.classpath_containers.each { |container|
                     classpathentry.con container
                   }
+                  
+                  # Classpath elements from other projects
+                  classpathentry.src_projects project_libs
+                  
+                  classpathentry.output project.compile.target if project.compile.target
+                  classpathentry.lib libs
+                  classpathentry.var vars
                 end
               end
             end
