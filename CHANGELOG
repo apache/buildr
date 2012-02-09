@@ -1,4 +1,5 @@
 1.4.8 (Pending)
+* Added:  Add several utility methods to IDEA extension for defining artifacts and configurations.
 * Change: Make minimumTokenCount and encoding configurable for the PMD/CPD action
           and default encoding to UTF-8 for compatibility with external tools (i.e. Jenkins)
 * Fixed:  BUILDR-617 pom exclusion does not work (Kafka Liu)
