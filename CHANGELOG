@@ -1379,3 +1379,6 @@ might change when adding filtering later on.
 * Added: WAR packaging.
 * Changed: Root project operates on the current directory, sub-projects on sub
 directories. See Rakefile for example.
+foo
+FFFFF
+EEE
