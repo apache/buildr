@@ -36,17 +36,9 @@
 # SOFTWARE.
 
 
-require 'rake'
-require 'highline/import'
-require 'rubygems/source_info_cache' if Gem::VERSION =~ /1.[0-4]/
-require 'buildr/core/util'
-Gem.autoload :SourceInfoCache, 'rubygems/source_info_cache' if Gem::VERSION =~ /1.[0-4]/
-
-
 # Gem::user_home is nice, but ENV['HOME'] lets you override from the environment.
 ENV['HOME'] ||= File.expand_path(Gem::user_home)
 ENV['BUILDR_ENV'] ||= 'development'
-
 
 module Buildr
 
@@ -428,36 +420,35 @@ module Buildr
 
     # Load/install all Gems specified in build.yaml file.
     def load_gems #:nodoc:
-      missing_deps, installed = listed_gems.partition { |gem| gem.is_a?(Gem::Dependency) }
+      installed, missing_deps = listed_gems
       unless missing_deps.empty?
-        newly_installed = Util::Gems.install(*missing_deps)
-        installed += newly_installed
+        fail Gem::LoadError, "Build requires the gems #{missing_deps.join(', ')}, which cannot be found in the local repository. Please install the gems before attempting to build project."
       end
-      installed.each do |spec|
-        if gem(spec.name, spec.version.to_s)
-          # TODO: is this intended to load rake tasks from the installed gems?
-          # We should use a convention like .. if the gem has a _buildr.rb file, load it.
-
-          #FileList[spec.require_paths.map { |path| File.expand_path("#{path}/*.rb", spec.full_gem_path) }].
-          #  map { |path| File.basename(path) }.each { |file| require file }
-          #FileList[File.expand_path('tasks/*.rake', spec.full_gem_path)].each do |file|
-          #  Buildr.application.add_import file
-          #end
-        end
-      end
+      installed.each { |spec| spec.activate }
       @gems = installed
     end
 
-    # Returns Gem::Specification for every listed and installed Gem, Gem::Dependency
-    # for listed and uninstalled Gem, which is the installed before loading the buildfile.
+    # Returns two lists. The first contains a Gem::Specification for every listed and installed
+    # Gem, the second contains a Gem::Dependency for every listed and uninstalled Gem.
     def listed_gems #:nodoc:
-      Array(settings.build['gems']).map do |dep|
-        name, trail = dep.scan(/^\s*(\S*)\s*(.*)\s*$/).first
-        versions = trail.scan(/[=><~!]{0,2}\s*[\d\.]+/)
-        versions = ['>= 0'] if versions.empty?
-        dep = Gem::Dependency.new(name, versions)
-        Gem::SourceIndex.from_installed_gems.search(dep).last || dep
+      found = []
+      missing = []
+      Array(settings.build['gems']).each do |dep|
+        name, versions = parse_gem_dependency(dep)
+        begin
+          found << Gem::Specification.find_by_name(name, versions)
+        rescue Exception
+          missing << Gem::Dependency.new(name, versions)
+        end
       end
+      return [found, missing]
+    end
+
+    def parse_gem_dependency(dep) #:nodoc:
+      name, trail = dep.scan(/^\s*(\S*)\s*(.*)\s*$/).first
+      versions = trail.scan(/[=><~!]{0,2}\s*[\d\.]+/)
+      versions = ['>= 0'] if versions.empty?
+      return name, versions
     end
 
     # Load artifact specs from the build.yaml file, making them available
@@ -637,7 +628,7 @@ def trace?(*category)
   options = Buildr.application.options
   return options.trace if category.empty?
   return true if options.trace_all
-  return false unless Buildr.application.options.trace_categories
+  return false unless options.trace_categories
   options.trace_categories.include?(category.first)
 end
 

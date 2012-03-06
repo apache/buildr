@@ -13,17 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'rbconfig'
-require 'pathname'
-autoload :Tempfile, 'tempfile'
-autoload :YAML, 'yaml'
-autoload :REXML, 'rexml/document'
-gem 'xml-simple' ; autoload :XmlSimple, 'xmlsimple'
-gem 'builder' ; autoload :Builder, 'builder' # A different kind of buildr, one we use to create XML.
-require 'highline/import'
-
-
 module Buildr
 
   module Util
@@ -130,58 +119,6 @@ module Buildr
         filename[0..-ext.length] + new_ext
       end
     end
-
-    # Utility methods for running gem commands
-    module Gems #:nodoc:
-      extend self
-
-      # Install gems specified by each Gem::Dependency if they are missing. This method prompts the user
-      # for permission before installing anything.
-      #
-      # Returns the installed Gem::Dependency objects or fails if permission not granted or when buildr
-      # is not running interactively (on a tty)
-      def install(*dependencies)
-        raise ArgumentError, "Expected at least one argument" if dependencies.empty?
-        not_found_deps = []
-        to_install = []
-        remote = dependencies.each do |dep|
-          if spec = Gem.source_index.search(dep).last
-            # Found in local repo
-            to_install << spec
-          elsif (spec = Gem::SpecFetcher.fetcher.fetch(dep, true).map { |spec, source| spec }.last)
-            # Found in remote repo
-            to_install << spec
-          else
-            # Not found anywhere
-            not_found_deps << "#{dep.name} #{dep.requirement}"
-          end
-        end
-        fail Gem::LoadError, "Build requires the gems #{not_found_deps.join(', ')}, which cannot be found in local or remote repository." unless not_found_deps.empty?
-        uses = "This build requires the gems #{to_install.map(&:full_name).join(', ')}:"
-        fail Gem::LoadError, "#{uses} to install, run Buildr interactively." unless $stdout.isatty
-        unless agree("#{uses} do you want me to install them? [Y/n]", true)
-          fail Gem::LoadError, 'Cannot build without these gems.'
-        end
-        to_install.each do |spec|
-          say "Installing #{spec.full_name} ... " if verbose
-          command 'install', spec.name, '-v', spec.version.to_s, :verbose => false
-          Gem.source_index.load_gems_in Gem::SourceIndex.installed_spec_directories
-        end
-        to_install
-      end
-
-      # Execute a GemRunner command
-      def command(cmd, *args)
-        options = Hash === args.last ? args.pop : {}
-        gem_home = ENV['GEM_HOME'] || Gem.path.find { |f| File.writable?(f) }
-        options[:sudo] = :root unless Util.win_os? || gem_home
-        options[:command] = 'gem'
-        args << options
-        args.unshift '-i', gem_home if cmd == 'install' && gem_home && !args.any?{ |a| a[/-i|--install-dir/] }
-        Util.ruby cmd, *args
-      end
-
-    end # Gems
 
   end # Util
 end

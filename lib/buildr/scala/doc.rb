@@ -13,9 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'buildr/core/doc'
-require 'buildr/scala/compiler'   # ensure Scala dependencies are ready
-
 module Buildr
   module Doc
 
@@ -62,7 +59,12 @@ module Buildr
           trace (['scaladoc'] + cmd_args).join(' ')
           Java.load
           begin
-            Java.scala.tools.nsc.ScalaDoc.process(cmd_args.to_java(Java.java.lang.String))
+            if Scala.version?(2.7, 2.8)
+              Java.scala.tools.nsc.ScalaDoc.process(cmd_args.to_java(Java.java.lang.String))
+            else
+              scaladoc = Java.scala.tools.nsc.ScalaDoc.new
+              scaladoc.process(cmd_args.to_java(Java.java.lang.String))
+            end
           rescue => e
             fail 'Failed to generate Scaladocs, see errors above: ' + e
           end

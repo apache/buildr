@@ -13,12 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/project'
-require 'buildr/packaging'
-require 'stringio'
-
-
 module Buildr
   module IntellijIdea
     def self.new_document(value)
@@ -28,11 +22,17 @@ module Buildr
     # Abstract base class for IdeaModule and IdeaProject
     class IdeaFile
       DEFAULT_SUFFIX = ""
+      DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE = "MAVEN_REPOSITORY"
 
       attr_reader :buildr_project
       attr_writer :suffix
       attr_writer :id
       attr_accessor :template
+      attr_accessor :local_repository_env_override
+
+      def initialize
+        @local_repository_env_override = DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE
+      end
 
       def suffix
         @suffix ||= DEFAULT_SUFFIX
@@ -50,14 +50,42 @@ module Buildr
         self.components << create_component(name, attrs, &xml)
       end
 
+      # IDEA can not handle text content with indents so need to removing indenting
+      # Can not pass true as third argument as the ruby library seems broken
       def write(f)
-        document.write(f, 2, false, true)
+        document.write(f, -1, false, true)
       end
 
       protected
 
       def name
         "#{self.id}#{suffix}"
+      end
+
+      def relative(path)
+        ::Buildr::Util.relative_path(File.expand_path(path.to_s), self.base_directory)
+      end
+
+      def base_directory
+        buildr_project.path_to
+      end
+
+      def resolve_path_from_base(path, base_variable)
+        m2repo = Buildr::Repositories.instance.local
+        if path.to_s.index(m2repo) == 0 && !self.local_repository_env_override.nil?
+          return path.sub(m2repo, "$#{self.local_repository_env_override}$")
+        else
+          begin
+            return "#{base_variable}/#{relative(path)}"
+          rescue ArgumentError
+            # ArgumentError happens on windows when self.base_directory and path are on different drives
+            return path
+          end
+        end
+      end
+
+      def file_path(path)
+        "file://#{resolve_path(path)}"
       end
 
       def create_component(name, attrs = {})
@@ -70,6 +98,24 @@ module Buildr
 
       def components
         @components ||= self.default_components.compact
+      end
+
+      def create_composite_component(name, components)
+        return nil if components.empty?
+        component = self.create_component(name)
+        components.each do |element|
+          element = element.call if element.is_a?(Proc)
+          component.add_element element
+        end
+        component
+      end
+
+      def add_to_composite_component(components)
+        components << lambda do
+          target = StringIO.new
+          yield Builder::XmlMarkup.new(:target => target, :indent => 2)
+          Buildr::IntellijIdea.new_document(target.string).root
+        end
       end
 
       def load_document(filename)
@@ -111,16 +157,14 @@ module Buildr
     # IdeaModule represents an .iml file
     class IdeaModule < IdeaFile
       DEFAULT_TYPE = "JAVA_MODULE"
-      DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE = "MAVEN_REPOSITORY"
 
       attr_accessor :type
-      attr_accessor :local_repository_env_override
       attr_accessor :group
       attr_reader :facets
 
       def initialize
+        super()
         @type = DEFAULT_TYPE
-        @local_repository_env_override = DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE
       end
 
       def buildr_project=(buildr_project)
@@ -161,13 +205,13 @@ module Buildr
       attr_writer :main_output_dir
 
       def main_output_dir
-        @main_output_dir ||= buildr_project._(:target, :main, :java)
+        @main_output_dir ||= buildr_project._(:target, :main, :idea, :classes)
       end
 
       attr_writer :test_output_dir
 
       def test_output_dir
-        @test_output_dir ||= buildr_project._(:target, :test, :java)
+        @test_output_dir ||= buildr_project._(:target, :test, :idea, :classes)
       end
 
       def main_dependencies
@@ -179,11 +223,11 @@ module Buildr
       end
 
       def add_facet(name, type)
-        target = StringIO.new
-        Builder::XmlMarkup.new(:target => target, :indent => 2).facet(:name => name, :type => type) do |xml|
-          yield xml if block_given?
+        add_to_composite_component(self.facets) do |xml|
+          xml.facet(:name => name, :type => type) do |xml|
+            yield xml if block_given?
+          end
         end
-        self.facets << Buildr::IntellijIdea.new_document(target.string).root
       end
 
       def skip_content?
@@ -192,6 +236,107 @@ module Buildr
 
       def skip_content!
         @skip_content = true
+      end
+
+
+      def add_gwt_facet(modules = {}, options = {})
+        name = options[:name] || "GWT"
+        settings =
+          {
+            :webFacet => "Web",
+            :compilerMaxHeapSize => "512",
+            :compilerParameters => "-draftCompile -localWorkers 2",
+            :gwtSdkUrl => "file://$GWT_TOOLS$",
+            :gwtScriptOutputStyle => "PRETTY"
+          }.merge(options[:settings] || {})
+
+        add_facet(name, "gwt") do |f|
+          f.configuration do |c|
+            settings.each_pair do |k, v|
+              c.setting :name => k.to_s, :value => v.to_s
+            end
+            c.packaging do |d|
+              modules.each_pair do |k, v|
+                d.module :name => v, :path => k
+              end
+            end
+          end
+        end
+      end
+
+      def add_web_facet(options = {})
+        name = options[:name] || "Web"
+        url_base = options[:url_base] || "/"
+        webroot = options[:webroot] || buildr_project._(:source, :main, :webapp)
+        web_xml = options[:web_xml] || "#{webroot}/WEB-INF/web.xml"
+        version = options[:version] || "3.0"
+
+        add_facet(name, "web") do |f|
+          f.configuration do |c|
+            c.descriptors do |d|
+              d.deploymentDescriptor :name => 'web.xml', :url => file_path(web_xml), :optional => "true", :version => version
+            end
+            c.webroots do |w|
+              w.root :url => file_path(webroot), :relative => url_base
+            end
+          end
+        end
+      end
+
+
+      def add_jruby_facet(options = {})
+        name = options[:name] || "JRuby"
+        jruby_version = options[:jruby_version] || "jruby-1.5.2-p249"
+        add_facet(name, "JRUBY") do |f|
+          f.configuration(:number => 0) do |c|
+            c.JRUBY_FACET_CONFIG_ID :NAME => "JRUBY_SDK_NAME", :VALUE => jruby_version
+          end
+        end
+      end
+
+      def add_jpa_facet(options = {})
+        name = options[:name] || "JPA"
+        factory_entry = options[:factory_entry] || buildr_project.name.to_s
+        validation_enabled = options[:validation_enabled].nil? ? true : options[:validation_enabled]
+        provider_enabled = options[:provider_enabled] || 'Hibernate'
+        persistence_xml = options[:persistence_xml] || buildr_project._(:source, :main, :resources, "META-INF/persistence.xml")
+        orm_xml = options[:orm_xml] || buildr_project._(:source, :main, :resources, "META-INF/orm.xml")
+        add_facet(name, "jpa") do |f|
+          f.configuration do |c|
+            c.setting :name => "validation-enabled", :value => validation_enabled
+            c.setting :name => "provider-name", :value => provider_enabled
+            c.tag!('datasource-mapping') do |ds|
+              ds.tag!('factory-entry', :name => factory_entry)
+            end
+            if File.exist?(persistence_xml)
+              c.deploymentDescriptor :name => 'persistence.xml', :url => file_path(persistence_xml)
+            end
+            if File.exist?(orm_xml)
+              c.deploymentDescriptor :name => 'orm.xml', :url => file_path(orm_xml)
+            end
+          end
+        end
+      end
+
+      def add_ejb_facet(options = {})
+        name = options[:name] || "EJB"
+        ejb_xml = options[:ejb_xml] || buildr_project._(:source, :main, :resources, "WEB-INF/ejb-jar.xml")
+        ejb_roots = options[:ejb_roots] || [buildr_project.packages, buildr_project.compile.target, buildr_project.resources.target].flatten
+
+        add_facet(name, "ejb") do |facet|
+          facet.configuration do |c|
+            c.descriptors do |d|
+              if File.exist?(ejb_xml)
+                d.deploymentDescriptor :name => 'ejb-jar.xml', :url => ejb_xml
+              end
+            end
+            c.ejbRoots do |e|
+              ejb_roots.each do |ejb_root|
+                e.root :url => file_path(ejb_root)
+              end
+            end
+          end
+        end
       end
 
       protected
@@ -212,10 +357,6 @@ module Buildr
         end
       end
 
-      def base_directory
-        buildr_project.path_to
-      end
-
       def base_document
         target = StringIO.new
         Builder::XmlMarkup.new(:target => target).module(:version => "4", :relativePaths => "true", :type => self.type)
@@ -234,12 +375,7 @@ module Buildr
       end
 
       def facet_component
-        return nil if self.facets.empty?
-        fm = self.create_component("FacetManager")
-        self.facets.each do |facet|
-          fm.add_element facet
-        end
-        fm
+        create_composite_component("FacetManager", self.facets)
       end
 
       def module_root_component
@@ -285,10 +421,6 @@ module Buildr
         "jar://#{resolve_path(path)}!/"
       end
 
-      def file_path(path)
-        "file://#{resolve_path(path)}"
-      end
-
       def url_for_path(path)
         if path =~ /jar$/i
           jar_path(path)
@@ -298,21 +430,7 @@ module Buildr
       end
 
       def resolve_path(path)
-        m2repo = Buildr::Repositories.instance.local
-        if path.to_s.index(m2repo) == 0 && !self.local_repository_env_override.nil?
-          return path.sub(m2repo, "$#{self.local_repository_env_override}$")
-        else
-          begin
-            return "$MODULE_DIR$/#{relative(path)}"
-          rescue ArgumentError
-            # ArgumentError happens on windows when self.base_directory and path are on different drives
-            return path
-          end
-        end
-      end
-
-      def relative(path)
-        ::Buildr::Util.relative_path(File.expand_path(path.to_s), self.base_directory)
+        resolve_path_from_base(path, "$MODULE_DIR$")
       end
 
       def generate_compile_output(xml)
@@ -395,17 +513,108 @@ module Buildr
     class IdeaProject < IdeaFile
       attr_accessor :vcs
       attr_accessor :extra_modules
+      attr_accessor :artifacts
+      attr_accessor :configurations
       attr_writer :jdk_version
 
       def initialize(buildr_project)
+        super()
         @buildr_project = buildr_project
         @vcs = detect_vcs
         @extra_modules = []
+        @artifacts = []
+        @configurations = []
       end
 
       def jdk_version
         @jdk_version ||= buildr_project.compile.options.source || "1.6"
       end
+
+      def add_artifact(name, type, build_on_make = false)
+        add_to_composite_component(self.artifacts) do |xml|
+          xml.artifact(:name => name, :type => type, :"build-on-make" => build_on_make) do |xml|
+            yield xml if block_given?
+          end
+        end
+      end
+
+      def add_configuration(name, type, factory_name, default = false)
+        add_to_composite_component(self.configurations) do |xml|
+          xml.configuration(:name => name, :type => type, :factoryName => factory_name, :default => default) do |xml|
+            yield xml if block_given?
+          end
+        end
+      end
+
+      def add_exploded_war_artifact(project, options = {})
+        artifact_name = options[:name] || project.iml.id
+        build_on_make = options[:build_on_make].nil? ? false : options[:build_on_make]
+
+        add_artifact(artifact_name, "exploded-war", build_on_make) do |xml|
+          dependencies = (options[:dependencies] || ([project] + project.compile.dependencies)).flatten
+          libraries, projects = partition_dependencies(dependencies)
+
+          ## The content here can not be indented
+          output_dir = options[:output_dir] || project._(:artifacts, artifact_name)
+          xml.tag!('output-path', output_dir)
+
+          xml.root :id => "root" do
+            xml.element :id => "directory", :name => "WEB-INF" do
+              xml.element :id => "directory", :name => "classes" do
+                projects.each do |p|
+                  xml.element :id => "module-output", :name => p.iml.id
+                end
+                if options[:enable_jpa]
+                  module_names = options[:jpa_module_names] || [project.iml.id]
+                  module_names.each do |module_name|
+                    facet_name = options[:jpa_facet_name] || "JPA"
+                    xml.element :id => "jpa-descriptors", :facet => "#{module_name}/jpa/#{facet_name}"
+                  end
+                end
+              end
+              xml.element :id => "directory", :name => "lib" do
+                libraries.each(&:invoke).map(&:to_s).each do |dependency_path|
+                  xml.element :id => "file-copy", :path => resolve_path(dependency_path)
+                end
+              end
+            end
+
+            if options[:enable_war].nil? || options[:enable_war]
+              module_names = options[:war_module_names] || [project.iml.id]
+              module_names.each do |module_name|
+                facet_name = options[:war_facet_name] || "Web"
+                xml.element :id => "javaee-facet-resources", :facet => "#{module_name}/web/#{facet_name}"
+              end
+            end
+
+            if options[:enable_gwt]
+              module_names = options[:gwt_module_names] || [project.iml.id]
+              module_names.each do |module_name|
+                facet_name = options[:gwt_facet_name] || "GWT"
+                xml.element :id => "gwt-compiler-output", :facet => "#{module_name}/gwt/#{facet_name}"
+              end
+            end
+          end
+        end
+      end
+
+      def add_gwt_configuration(launch_page, project, options = {})
+        name = options[:name] || "Run #{launch_page}"
+        shell_parameters = options[:shell_parameters] || ""
+        vm_parameters = options[:vm_parameters] || "-Xmx512m"
+
+        add_configuration(name, "GWT.ConfigurationType", "GWT Configuration") do |xml|
+          xml.module(:name => project.iml.id)
+          xml.option(:name => "RUN_PAGE", :value => launch_page)
+          xml.option(:name => "SHELL_PARAMETERS", :value => shell_parameters)
+          xml.option(:name => "VM_PARAMETERS", :value => vm_parameters)
+
+          xml.RunnerSettings(:RunnerId => "Run")
+          xml.ConfigurationWrapper(:RunnerId => "Run")
+          xml.method()
+        end
+      end
+
 
       protected
 
@@ -430,7 +639,9 @@ module Buildr
       def default_components
         [
           lambda { modules_component },
-          vcs_component
+          vcs_component,
+          artifacts_component,
+          configurations_component
         ]
       end
 
@@ -469,7 +680,7 @@ module Buildr
               if subproject.iml.group == true
                 attribs[:group] = subproject.parent.name.gsub(':', '/')
               elsif !subproject.iml.group.nil?
-                attribs[:group] = subproject.group.to_s
+                attribs[:group] = subproject.iml.group.to_s
               end
               xml.module attribs
             end
@@ -491,6 +702,18 @@ module Buildr
             xml.mapping :directory => "", :vcs => vcs
           end
         end
+      end
+
+      def artifacts_component
+        create_composite_component("ArtifactManager", self.artifacts)
+      end
+
+      def configurations_component
+        create_composite_component("ProjectRunConfigurationManager", self.configurations)
+      end
+
+      def resolve_path(path)
+        resolve_path_from_base(path, "$PROJECT_DIR$")
       end
     end
 
@@ -520,12 +743,9 @@ module Buildr
 
         files.each do |ideafile|
           module_dir =  File.dirname(ideafile.filename)
-          # Need to clear the actions else the extension included as part of buildr will run
-          file(ideafile.filename).clear_actions
-          idea.enhance [file(ideafile.filename)]
-          file(ideafile.filename => [Buildr.application.buildfile]) do |task|
+          idea.enhance do |task|
             mkdir_p module_dir
-            info "Writing #{task.name}"
+            info "Writing #{ideafile.filename}"
             t = Tempfile.open("buildr-idea")
             temp_filename = t.path
             t.close!

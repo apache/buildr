@@ -13,11 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# necessary to require YAML even if it is mentioned by autoload as it fails on some platforms.
-require 'yaml'
-require 'fileutils'
-require 'rspec/core/formatters/base_formatter'
-
 module Buildr #:nodoc:
   module TestFramework
 

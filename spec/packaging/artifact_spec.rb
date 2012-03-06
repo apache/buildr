@@ -690,6 +690,14 @@ describe Buildr, '#artifacts' do
     artifacts('c:test').first.should be_kind_of(String)
   end
 
+  it 'should accept any object responding to :to_spec' do
+    obj = Object.new
+    class << obj
+      def to_spec; "org.example:artifact:jar:1.1"; end
+    end
+    artifacts(obj).size.should be(1)
+  end
+
   it 'should accept project and return all its packaging tasks' do
     define 'foobar', :group=>'group', :version=>'1.0' do
       package :jar, :id=>'code'
@@ -1032,6 +1040,13 @@ describe Buildr, '#transitive' do
       <version>8.4</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <artifactId>jlib-optional</artifactId>
+      <groupId>jlib</groupId>
+      <version>1.4</version>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 </project>
 XML
@@ -1109,6 +1124,16 @@ XML
 
   it 'should bring artifact and transitive depenencies' do
     transitive(@transitive).should eql(artifacts(@transitive, @complex, @simple - [@provided]))
+  end
+
+  it 'should filter dependencies based on :scopes argument' do
+    specs = [@complex, 'saxon:saxon-dom:jar:8.4']
+    transitive(@complex, :scopes => [:runtime]).should eql(specs.map { |spec| artifact(spec) })
+  end
+
+  it 'should filter dependencies based on :optional argument' do
+    specs = [@complex, 'saxon:saxon-dom:jar:8.4', 'jlib:jlib-optional:jar:1.4']
+    transitive(@complex, :scopes => [:runtime], :optional => true).should eql(specs.map { |spec| artifact(spec) })
   end
 end
 

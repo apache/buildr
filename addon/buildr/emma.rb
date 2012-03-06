@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 if Buildr::VERSION < '1.5'
   Buildr.application.deprecated "'buildr/emma', use 'buildr/java/emma' instead"
   require 'buildr/java/emma'

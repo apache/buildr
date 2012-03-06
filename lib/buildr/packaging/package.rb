@@ -13,12 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/project'
-require 'buildr/core/compile'
-require 'buildr/packaging/artifact'
-
-
 module Buildr
   # Methods added to Project to support packaging and tasks for packaging,
   # installing and uploading packages.

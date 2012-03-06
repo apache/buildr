@@ -413,6 +413,17 @@ describe Buildr::CompileTask, '#invoke' do
       lambda { compile.from('sources').invoke }.should raise_error(RuntimeError, /no compiler selected/i)
     end
   end
+
+  it 'should not unnecessarily recompile files explicitly added to compile list (BUILDR-611)' do
+    mkpath 'src/other'
+    write 'src/other/Foo.java', 'package foo; public class Foo {}'
+    compile_task.from FileList['src/other/**.java']
+    mkpath 'target/classes/foo'
+    touch 'target/classes/foo/Foo.class'
+    File.utime(Time.now - 10, Time.now - 10, compile_task.target.to_s)
+    compile_task.invoke
+    File.stat(compile_task.target.to_s).mtime.should be_close(Time.now - 10, 2)
+  end
 end
 
 

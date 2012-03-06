@@ -16,7 +16,8 @@ We run two mailing lists, the "users":http://buildr.markmail.org/search/list:use
 
 Check the "mailing lists":mailing_lists.html page for more information on subscribing, searching and posting to the mailing list.
 
-h2(#IRC). IRC
+
+h2(#irc).  Internet Relay Chat
 
 We are live on IRC under the buildr channel on irc.freenode.net, with a broad coverage of the US timezone. We tend to idle there, so feel free to ping the channel owner (toulmean) to make noise.
 
@@ -233,6 +234,14 @@ $ open buildr.pdf
 {% endhighlight %}
 
 
+h2(#ci).  Continuous Integration
+
+Buildr uses the Jenkins continuous integration tool to perform builds, run tests and report back on problems when changes are made to the source code repository.
+
+The care and feeding of the "CI Jobs":https://builds.apache.org/view/A-F/view/Buildr is the responsibility of the committers. To get access to configure the CI Jobs a committer needs to follow the directions on the "jenkins":http://wiki.apache.org/general/Hudson documentation site.
+
+You may also need to coordinate with the Apache infrastructure team to get accounts on the actual slave hosts that run the CI jobs. This access may be required to install tools and gems required to run the CI jobs. The main slave host to get access to is vesta.apache.org at the time of writing. You can also log on to the slave host, impersonate hudson and manually run tasks when you are attempting to track down build problems. Of course to impersonate hudson you will need to learn how to use "OPIE.":http://apache.org/dev/freebsd-jails
+
 h2(#contributors).  Contributors
 
 Here is the list of people who are actively working and committing on Buildr:
@@ -263,6 +272,6 @@ Daniel originally came to Buildr in search of a Scala build tool which was bette
 
 Antoine used Buildr first as an excuse to evade in Ruby land, creating plugins for Debian packaging, GWT compilation, or the NSIS installer. His main area of interest is the resolving of dependencies in the OSGi world. He works on making Buildr a standalone rock solid tool.
 
-* Peter Donald
+*Peter Donald*
 
 Peter already used rake to automate jobs in his ruby and java projects. When it came time to upgrade that home grown ant/java/rake build system Buildr seemed the perfect match.

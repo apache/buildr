@@ -135,6 +135,7 @@ describe Buildr::Application do
         - rake
         - rspec ~> 2.1.0
       YAML
+      Buildr.application.should_receive(:listed_gems).and_return([[Gem.loaded_specs['rspec'],Gem.loaded_specs['rake']],[]])
       Buildr.application.load_gems
     end
 
@@ -181,71 +182,20 @@ describe Buildr::Application do
     end
 
     it 'should install nothing if specified gems already installed' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem.loaded_specs['rspec']])
+      Buildr.application.should_receive(:listed_gems).and_return([[Gem.loaded_specs['rspec']],[]])
       Util.should_not_receive(:ruby)
       lambda { Buildr.application.load_gems }.should_not raise_error
     end
 
-    it 'should fail if required gem not found in remote repository' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
-      Gem.source_index.should_receive(:search).at_least(:once).and_return([])
+    it 'should fail if required gem not installed' do
+      Buildr.application.should_receive(:listed_gems).and_return([[],[Gem::Dependency.new('buildr-foo', '>=1.1')]])
       lambda { Buildr.application.load_gems }.should raise_error(LoadError, /cannot be found/i)
     end
 
-    it 'should fail if need to install gem and not running in interactive mode' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
-      Gem.source_index.should_receive(:search).and_return([@spec])
-      $stdout.should_receive(:isatty).and_return(false)
-      lambda { Buildr.application.load_gems }.should raise_error(LoadError, /this build requires the gems/i)
-    end
-
-    it 'should ask permission before installing required gems' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
-      Gem.source_index.should_receive(:search).and_return([@spec])
-      $terminal.should_receive(:agree).with(/install/, true)
-      lambda { Buildr.application.load_gems }.should raise_error
-    end
-
-    it 'should fail if permission not granted to install gem' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
-      Gem.source_index.should_receive(:search).and_return([@spec])
-      $terminal.should_receive(:agree).and_return(false)
-      lambda { Buildr.application.load_gems }.should raise_error(LoadError, /cannot build without/i)
-    end
-
-    it 'should install gem if permission granted' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
-      Gem.source_index.should_receive(:search).and_return([@spec])
-      $terminal.should_receive(:agree).and_return(true)
-      Util.should_receive(:ruby) do |*args|
-        args.should include('install', 'buildr-foo', '-v', '1.2')
-      end
-      Buildr.application.should_receive(:gem).and_return(false)
-      Buildr.application.load_gems
-    end
-
-    it 'should reload gem cache after installing required gems' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
-      Gem.source_index.should_receive(:search).and_return([@spec])
-      $terminal.should_receive(:agree).and_return(true)
-      Util.should_receive(:ruby)
-      Gem.source_index.should_receive(:load_gems_in).with(Gem::SourceIndex.installed_spec_directories)
-      Buildr.application.should_receive(:gem).and_return(false)
-      Buildr.application.load_gems
-    end
-
     it 'should load previously installed gems' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem.loaded_specs['rspec']])
-      Buildr.application.should_receive(:gem).with('rspec', Gem.loaded_specs['rspec'].version.to_s)
-      Buildr.application.load_gems
-    end
-
-    it 'should load newly installed gems' do
-      Buildr.application.should_receive(:listed_gems).and_return([Gem::Dependency.new('buildr-foo', '>=1.1')])
-      Gem.source_index.should_receive(:search).and_return([@spec])
-      $terminal.should_receive(:agree).and_return(true)
-      Util.should_receive(:ruby)
-      Buildr.application.should_receive(:gem).with('buildr-foo', @spec.version.to_s)
+      Gem.loaded_specs['rspec'].should_receive(:activate)
+      Buildr.application.should_receive(:listed_gems).and_return([[Gem.loaded_specs['rspec']],[]])
+      #Buildr.application.should_receive(:gem).with('rspec', Gem.loaded_specs['rspec'].version.to_s)
       Buildr.application.load_gems
     end
 
@@ -270,12 +220,9 @@ describe Buildr::Application do
     end
 
     def should_attempt_to_load_dependency(dep)
-      Gem.source_index.should_receive(:search).with(dep).and_return([])
-      lambda { Buildr.application.load_gems }.should raise_missing_gem_error(dep)
-    end
-
-    def raise_missing_gem_error(dep)
-      raise_error(Gem::LoadError, /Build requires the gems #{dep.name} #{dep.requirement}, which cannot be found in local or remote repository./)
+      missing_gems = Buildr.application.send(:listed_gems)[1]
+      missing_gems.size.should eql(1)
+      missing_gems[0].eql?(dep)
     end
   end
 

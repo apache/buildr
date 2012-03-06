@@ -14,12 +14,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/build'
-require 'buildr/core/compile'
-require 'buildr/java/ant'
-
-
 module Buildr
 
   class TestFramework::Java < TestFramework::Base
@@ -364,8 +358,67 @@ module Buildr
 
   end
 
+  # A composite test framework that runs multiple other test frameworks.
+  #
+  # e.g.,
+  #        test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ], :options = {
+  #          :junit => { :fork => true },
+  #          :testng => { ... }
+  #        }
+  #
+  class MultiTest < Buildr::TestFramework::Java
+    # TODO: Support multiple test report locations, one per framework
+
+    class << self
+      def applies_to?(project)  #:nodoc:
+        false # no auto-detection, should be set explicitly
+      end
+    end
+
+    attr_accessor :frameworks
+
+    def initialize(task, options) #:nodoc:
+      super
+      fail "Missing :frameworks option" unless options[:frameworks]
+      @frameworks = options[:frameworks].map do |f|
+        framework_options = (options[:options] || {})[f.to_sym] || {}
+        f.new(task, options)
+      end
+    end
+
+    def dependencies #:nodoc:
+      unless @dependencies
+        @dependencies = TestFramework::Java.dependencies
+        @dependencies += @frameworks.map { |f| f.dependencies }.flatten
+      end
+      @dependencies
+    end
+
+
+    def tests(dependencies)
+      @frameworks.map { |f| f.tests(dependencies) }.flatten
+    end
+
+    def run(tests, dependencies)  #:nodoc:
+      framework_for_test = @frameworks.inject({}) do |hash, f|
+        f.tests(dependencies).each { |t| hash[t] = f }
+        hash
+      end
+
+      tests_by_framework = tests.group_by { |t| framework_for_test[t] }
+
+      passed = []
+      tests_by_framework.each do |f, tests|
+        passed += f.run(tests, dependencies)
+      end
+      passed
+    end
+  end # MultiTest
+
 end # Buildr
 
 
 Buildr::TestFramework << Buildr::JUnit
 Buildr::TestFramework << Buildr::TestNG
+Buildr::TestFramework << Buildr::MultiTest
+

@@ -13,14 +13,23 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/core/build'
-require 'buildr/core/compile'
-require 'buildr/java/ant'
-require 'buildr/java/tests'
-
-
 module Buildr::Scala
+
+  # Mockito is available when running ScalaTest
+  module Mockito
+    VERSION = '1.8.5'
+
+    class << self
+      def version
+        Buildr.settings.build['scalatest-mockito'] || Buildr.settings.build['mockito'] || VERSION
+      end
+
+      def dependencies
+        @dependencies ||= ["org.mockito:mockito-all:jar:#{version}"]
+      end
+    end
+  end
+
   # Scala::Check is available when using Scala::Test or Scala::Specs
   module Check
     VERSION = case
@@ -93,7 +102,7 @@ module Buildr::Scala
       end
 
       def dependencies
-        [specs] + Check.dependencies + JMock.dependencies + JUnit.dependencies
+        [specs] + Check.dependencies + JMock.dependencies + JUnit.dependencies + Mockito.dependencies
       end
 
       def applies_to?(project) #:nodoc:

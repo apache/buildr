@@ -162,6 +162,21 @@ describe Buildr::ArtifactNamespace do
       end
     end
 
+    it 'should accept an artifact spec with classifier' do
+      define 'one' do
+        artifact_ns.need 'a:b:c:d:1'
+        # referenced by spec
+        artifact_ns['a:b:c:d:'].should_not be_selected
+
+        # referenced by name
+        artifact_ns[:b].should_not be_selected
+        artifact_ns[:b].should be_satisfied_by('a:b:c:d:1')
+        artifact_ns[:b].should_not be_satisfied_by('a:b:c:d:2')
+        artifact_ns[:b].should_not be_satisfied_by('d:b:c:d:1')
+        artifact_ns[:b].version.should == '1'
+      end
+    end
+
     it 'should accept a requirement_spec' do
       define 'one' do
         artifact_ns.need 'thing -> a:b:c:2.1 -> ~>2.0'

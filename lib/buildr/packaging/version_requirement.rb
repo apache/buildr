@@ -49,7 +49,7 @@ module Buildr
     class << self
       # is +str+ a version string?
       def version?(str)
-        /^\s*\d[#{VER_CHARS}]*\s*$/ === str
+        /^\s*r?\d[#{VER_CHARS}]*\s*$/ === str
       end
 
       # is +str+ a version requirement?

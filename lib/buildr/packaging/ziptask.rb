@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/packaging/archive'
-
-
 module Buildr
 
   # The ZipTask creates a new Zip file. You can include any number of files and and directories,

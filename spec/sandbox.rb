@@ -42,7 +42,6 @@ artifacts(
   Buildr::JaxbXjc.dependencies,
   Buildr::Bnd.dependencies,
   Buildr::Scala::Scalac.dependencies,
-  Buildr::Scala::Specs.dependencies,
   Buildr::Shell::BeanShell.artifact,
   Buildr::Clojure.dependencies
 ).each do |path|
@@ -54,6 +53,9 @@ mkpath ENV['HOME']
 
 # Make Scala.version resilient to sandbox reset
 module Buildr::Scala
+
+  remove_const(:DEFAULT_VERSION)
+
   DEFAULT_VERSION = SCALA_VERSION_FOR_SPECS
 
   class << self

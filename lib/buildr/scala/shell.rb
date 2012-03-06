@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/shell'
-require 'buildr/java/commands'
-
 module Buildr
   module Scala
     class ScalaShell < Buildr::Shell::Base

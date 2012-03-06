@@ -81,7 +81,7 @@ repositories:
    - https://intra.net/maven2
    - http://example.com
 
-  relase_to:
+  release_to:
     url: http://intra.net/maven2
     username: john
     password: secret
@@ -97,7 +97,7 @@ im:
 Later your buildfile or addons can reference user preferences using the  hash returned by the @Buildr.settings.user@ accessor.
 
 {% highlight ruby %}
-task 'relase-notification' do
+task 'release-notification' do
  usr, pwd, server = settings.user['im'].values_at('usr', 'pwd', 'server')
  jabber = JabberAPI.new(server, usr, pwd)
  jabber.msg("We are pleased to announce the last stable version #{VERSION}")

@@ -14,15 +14,15 @@
 # the License.
 
 desc "Create JRuby all-in-one distribution"
-task "all-in-one" => 'all-in-one:all-in-one' 
+task "all-in-one" => 'all-in-one:all-in-one'
 
 namespace :'all-in-one' do
-  
-  version = "1.6.2"
+
+  version = "1.6.4"
   jruby_distro = "jruby-bin-#{version}.tar.gz"
   url = "http://jruby.org.s3.amazonaws.com/downloads/#{version}/#{jruby_distro}"
   dir = "jruby-#{version}"
-  
+
   task "all-in-one" => [:gem,
       # Prepare to run
       :prepare,
@@ -73,41 +73,50 @@ namespace :'all-in-one' do
     rm_rf 'samples'
     rm_rf 'share'
   end
-  
+
   desc 'Install Buildr gem and dependencies'
   task :install_dependencies do
+    puts "Install rubygems-update"
+    sh "bin/jruby -S gem install rubygems-update"
+
+    puts "Upgrade Rubygems"
+    sh "bin/jruby -S gem update --system"
+
+    puts "Install ffi-ncurses"
+    sh "bin/jruby -S gem install ffi-ncurses"
+
     puts "Install Buildr gem ..."
     sh "bin/jruby", '-S', 'gem', 'install', FileList['../../pkg/*-java.gem'].first,
        '--no-rdoc', '--no-ri'
     puts "[X] Install Buildr gem"
   end
-  
+
   desc 'Add Buildr executables/scripts'
   task :add_execs do
     cp 'bin/jruby.exe', 'bin/_buildr.exe'
     cp Dir["../../all-in-one/*"], 'bin'
   end
-  
+
   desc 'Package distribution'
   task :package do
     puts "Zipping distribution ..."
     cd '..'
-    new_dir  = "#{spec.name}-#{spec.version}"
+    new_dir  = "#{spec.name}-all-in-one-#{spec.version}"
     mv dir, new_dir
     zip = "#{new_dir}.zip"
     rm zip if File.exist? zip
     sh 'zip', '-q', '-r', zip, new_dir
     puts "[X] Zipped distribution"
-   
+
     puts "Tarring distribution ..."
     tar = "#{new_dir}.tar.gz"
     rm tar if File.exist? tar
     sh 'tar', 'czf', tar, new_dir
     puts "[X] Tarred distribution"
-    
+
     rm_rf new_dir
   end
-  
+
 end
 
 task(:clobber) { rm_rf '_all-in-one' }

@@ -195,7 +195,6 @@ describe Buildr::CCTask do
     tstamp = File.mtime("foo/target/classes/Example.class")
 
     touch 'foo/src/main/java/Example.java'
-    p "after touch"
     sleep 2
 
     project("container:foo").tap do |p|

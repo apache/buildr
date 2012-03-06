@@ -13,8 +13,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
+
+if Java.java.lang.System.getProperty("java.runtime.version") >= "1.6"
 
 # TODO's
 #  -test passing System props
@@ -289,3 +290,6 @@ describe Buildr::Scala::ScalaTest do
 
 end
 
+elsif Buildr::VERSION >= '1.5'
+  raise "JVM version guard in #{__FILE__} should be removed since it is assumed that Java 1.5 is no longer supported."
+end

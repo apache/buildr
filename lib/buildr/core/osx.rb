@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 # Let's see if we can use Growl.  Must be running from console in verbose mode.
 if $stdout.isatty && verbose
   def growl_notify(type, title, message)

@@ -13,10 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
-require 'buildr/packaging/version_requirement'
-
-
 module Buildr
 
   # An ArtifactNamespace is a hierarchical dictionary used to manage ArtifactRequirements.
@@ -224,6 +220,32 @@ module Buildr
         const_set(:ROOT, new('root'))
       end
 
+      # Differs from Artifact.to_hash in that 1) it does not choke when version isn't present
+      # and 2) it assumes that if an artifact spec ends with a colon, e.g. "org.example:library:jdk5:"
+      # it indicates the last segment ("jdk5") is a classifier.
+      def to_hash(spec)
+        if spec.respond_to?(:to_spec)
+          to_hash spec.to_spec
+        elsif Hash === spec
+          return spec
+        elsif String === spec || Symbol === spec
+          spec = spec.to_s
+          if spec[-1,1] == ':'
+            group, id, type, classifier, *rest = spec.split(':').map { |part| part.empty? ? nil : part }
+          else
+            group, id, type, version, *rest = spec.split(':').map { |part| part.empty? ? nil : part }
+            unless rest.empty?
+              # Optional classifier comes before version.
+              classifier, version = version, rest.shift
+            end
+          end
+          fail "Expecting <group:id:type:version> or <group:id:type:classifier:version>, found <#{spec}>" unless rest.empty?
+          { :group => group, :id => id, :type => type, :version => version, :classifier => classifier }.reject { |k,v| v == nil }
+        else
+          fail "Unexpected artifact spec: #{spec.inspect}"
+        end
+      end
+
       # Populate namespaces from a hash of hashes.
       # The following example uses the profiles yaml to achieve this.
       #
@@ -400,11 +422,17 @@ module Buildr
           copy_attrs(spec)
         else
           spec = requirement_hash(spec)
-          apply_spec(spec[:spec])
+          apply_spec_no_validation(spec[:spec])
           self.name = spec[:name]
           @requirement = spec[:requirement]
           @version = @requirement.default if VersionRequirement.requirement?(@version)
         end
+      end
+
+      def apply_spec_no_validation(spec)
+        spec = ArtifactNamespace.to_hash(spec)
+        ActsAsArtifact::ARTIFACT_ATTRIBUTES.each { |key| instance_variable_set("@#{key}", spec[key]) }
+        self
       end
 
       # Copy attributes from other to this object
@@ -433,22 +461,22 @@ module Buildr
           parts = spec.split(/\s*->\s*/, 3).map(&:strip)
           case parts.size
           when 1
-            result[:spec] = Artifact.to_hash(parts.first)
+            result[:spec] = ArtifactNamespace.to_hash(parts.first)
           when 2
             if /^\w+$/ === parts.first
               result[:name] = parts.first
-              result[:spec] = Artifact.to_hash(parts.last)
+              result[:spec] = ArtifactNamespace.to_hash(parts.last)
             else
-              result[:spec] = Artifact.to_hash(parts.first)
+              result[:spec] = ArtifactNamespace.to_hash(parts.first)
               result[:requirement] = VersionRequirement.create(parts.last)
             end
           when 3
             result[:name] = parts.first
-            result[:spec] = Artifact.to_hash(parts[1])
+            result[:spec] = ArtifactNamespace.to_hash(parts[1])
             result[:requirement] = VersionRequirement.create(parts.last)
           end
         else
-          result[:spec] = Artifact.to_hash(spec)
+          result[:spec] = ArtifactNamespace.to_hash(spec)
         end
         result[:name] ||= result[:spec][:id].to_s.to_sym
         result[:requirement] ||= VersionRequirement.create(result[:spec][:version])
@@ -458,7 +486,7 @@ module Buildr
       # Test if this requirement is satisfied by an artifact spec.
       def satisfied_by?(spec)
         return false unless requirement
-        spec = Artifact.to_hash(spec)
+        spec = ArtifactNamespace.to_hash(spec)
         hash = to_spec_hash
         hash.delete(:version)
         version = spec.delete(:version)
@@ -499,24 +527,23 @@ module Buildr
 
       # Return an artifact spec without the version part.
       def unversioned_spec
-        str = to_spec
-        return nil if str =~ /^:+/
-        ary = str.split(':')
-        ary = ary[0...-1] if ary.size > 3
-        ary.join(':')
+        hash = to_spec_hash
+        return nil if hash.values.compact.length <= 1
+        if hash[:classifier]
+          "#{hash[:group]}:#{hash[:id]}:#{hash[:type]}:#{hash[:classifier]}:"
+        else
+          "#{hash[:group]}:#{hash[:id]}:#{hash[:type]}"
+        end
       end
 
       class << self
-        # Return an artifact spec without the version part.
         def unversioned_spec(spec)
-          str = spec.to_s
-          return nil if str =~ /^:+/
-          ary = str.split(':')
-          ary = ary[0...-1] if ary.size > 3
-          if ary.size > 2
-            ary.join(':')
+          hash = ArtifactNamespace.to_hash(spec)
+          return nil if hash.values.compact.length <= 1
+          if hash[:classifier]
+            "#{hash[:group]}:#{hash[:id]}:#{hash[:type]}:#{hash[:classifier]}:"
           else
-            new(spec).unversioned_spec
+            "#{hash[:group]}:#{hash[:id]}:#{hash[:type]}"
           end
         end
       end

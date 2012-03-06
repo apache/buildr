@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 module Buildr
   class POM
 
@@ -76,36 +75,44 @@ module Buildr
 
     # :call-seq:
     #   dependencies(scopes?) => artifacts
+    #   dependencies(:scopes = [:runtime, :test, ...], :optional = true) => artifacts
     #
     # Returns list of required dependencies as specified by the POM. You can specify which scopes
     # to use (e.g. "compile", "runtime"); use +nil+ for dependencies with unspecified scope.
-    # The default scopes are +nil+, "compile" and "runtime" (aka SCOPES_WE_USE).
-    def dependencies(scopes = SCOPES_WE_USE)
-      #try to cache dependencies also
+    # The default scopes are +nil+, "compile" and "runtime" (aka SCOPES_WE_USE) and no optional dependencies.
+    # Specifying optional = true will return all optional dependencies matching the given scopes.
+    def dependencies(options = {})
+      # backward compatibility
+      options = { :scopes => options } if Array === options
+
+      # support symbols, but don't fidget with nil
+      options[:scopes] = (options[:scopes] || SCOPES_WE_USE).map { |s| s.to_s if s }
+
+      # try to cache dependencies also
       @depends_for_scopes ||= {}
-      unless depends = @depends_for_scopes[scopes]
+      unless depends = @depends_for_scopes[options]
         declared = project["dependencies"].first["dependency"] rescue nil
-        depends = (declared || []).reject { |dep| value_of(dep["optional"]) =~ /true/ }.
-          map { |dep|
+        depends = (declared || [])
+        depends = depends.reject { |dep| value_of(dep["optional"]) =~ /true/ } unless options[:optional]
+        depends = depends.map { |dep|
             spec = pom_to_hash(dep, properties)
             apply = managed(spec)
             spec = apply.merge(spec) if apply
 
-            #calculate transitive dependencies
-            if scopes.include?(spec[:scope])
+            # calculate transitive dependencies
+            if options[:scopes].include?(spec[:scope])
               spec.delete(:scope)
 
-              exclusions = dep["exclusions"]["exclusion"] rescue nil
-              transitive_deps = POM.load(spec).dependencies(SCOPES_TRANSITIVE)
+              exclusions = dep["exclusions"].first["exclusion"] rescue nil
+              transitive_deps = POM.load(spec).dependencies(options[:scopes_transitive] || SCOPES_TRANSITIVE)
               transitive_deps = transitive_deps.reject{|dep|
-                exclusions.find {|ex| dep.index("#{dep['groupdId'].first}:#{dep['artifactId'].first}:") == 0}
+                exclusions.find {|ex| dep.index("#{ex['groupId'].first}:#{ex['artifactId'].first}:") == 0}
               } if exclusions
 
               [Artifact.to_spec(spec)] + transitive_deps
             end
           }.flatten.compact #.uniq_by{|spec| art = spec.split(':'); "#{art[0]}:#{art[1]}"}
-
-        @depends_for_scopes[scopes] = depends
+        @depends_for_scopes[options] = depends
       end
       depends
     end
