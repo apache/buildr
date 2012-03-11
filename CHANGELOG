@@ -1,5 +1,7 @@
 1.4.8 (Pending)
 * Added:  Add several utility methods to IDEA extension for defining artifacts and configurations.
+* Change: Upgraded to Apache Ant 1.8.3
+* Change: Default maven2 repository is now repo1.maven.org/maven2.
 * Change: Make minimumTokenCount and encoding configurable for the PMD/CPD action
           and default encoding to UTF-8 for compatibility with external tools (i.e. Jenkins)
 * Change: BUILDR-615 VersionRequirement.version? now returns true for
