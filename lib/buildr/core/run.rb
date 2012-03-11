@@ -23,7 +23,7 @@ module Buildr
 
       def run(task)
         fail "Missing :main option" unless task.options[:main]
-        cp = project.compile.dependencies + [project.path_to(:target, :classes)] + task.classpath
+        cp = project.compile.dependencies + [project.path_to(:target, :classes), project.path_to(:target, :resources)] + task.classpath
         Java::Commands.java(task.options[:main], {
           :properties => jrebel_props(project).merge(task.options[:properties] || {}),
           :classpath => cp,

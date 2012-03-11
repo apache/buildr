@@ -27,13 +27,20 @@ describe Project, :run do
     project('foo').run.should be_kind_of(Run::RunTask)
   end
 
-  it 'should include compile and test.compile dependencies' do
+  it 'should include compile dependencies' do
     define('foo') do
       compile.using(:javac).with 'group:compile:jar:1.0'
       test.compile.using(:javac).with 'group:test:jar:1.0'
     end
     project('foo').run.classpath.should include(artifact('group:compile:jar:1.0'))
-    project('foo').run.classpath.should include(artifact('group:test:jar:1.0'))
+  end
+  
+  it 'should not include test dependencies' do
+    define('foo') do
+      compile.using(:javac).with 'group:compile:jar:1.0'
+      test.compile.using(:javac).with 'group:test:jar:1.0'
+    end
+    project('foo').run.classpath.should_not include(artifact('group:test:jar:1.0'))
   end
 
   it 'should respond to using() and return self' do
@@ -63,11 +70,17 @@ describe Project, :run do
     end
     project('foo').run.runner.should be_a(Run::JavaRunner)
   end
+  
+  it "should run with the project resources" do
+    write 'src/main/java/Test.java', 'class Test {}'
+    write 'src/main/resources/test.properties', ''
+    define 'foo'
+    project('foo').run.classpath.should include project('foo').resources.target
+  end
 
-  it 'should depend on project''s compile and test.compile task' do
+  it 'should depend on project''s compile task' do
     define 'foo'
     project('foo').run.prerequisites.should include(project('foo').compile)
-    project('foo').run.prerequisites.should include(project('foo').test)
   end
 
   it 'should be local task' do
