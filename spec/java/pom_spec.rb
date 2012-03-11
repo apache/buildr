@@ -19,10 +19,10 @@ require 'fileutils'
 describe Buildr::POM do
   before do
     repositories.remote = 'http://example.com'
-    @app = 'group:app:jar:1.0'
+    @app = 'group:pomapp:jar:1.0'
     write artifact(@app).pom.to_s, <<-XML
 <project>
-  <artifactId>app</artifactId>
+  <artifactId>pomapp</artifactId>
   <groupId>group</groupId>
   <dependencies>
     <dependency>
@@ -43,7 +43,7 @@ XML
     @library = 'org.example:library:jar:1.1'
     write artifact(@library).pom.to_s, <<-XML
 <project>
-  <artifactId>app</artifactId>
+  <artifactId>pomapp</artifactId>
   <groupId>group</groupId>
   <dependencies>
     <dependency>
