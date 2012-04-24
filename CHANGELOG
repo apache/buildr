@@ -1,5 +1,8 @@
 1.4.8 (Pending)
+* Added:  Enhance the IDEA extension to support the addition of several explicit facets such as
+          ejb, jruby, jpa, web and gwt.
 * Added:  Add several utility methods to IDEA extension for defining artifacts and configurations.
+          Add some explicit methods to support a gwt configuration and a "Exploded War" artifact.
 * Change: Upgraded to Apache Ant 1.8.3
 * Change: Default maven2 repository is now repo1.maven.org/maven2.
 * Change: Make minimumTokenCount and encoding configurable for the PMD/CPD action
