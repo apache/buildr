@@ -577,6 +577,13 @@ module Buildr
                     xml.element :id => "jpa-descriptors", :facet => "#{module_name}/jpa/#{facet_name}"
                   end
                 end
+                if options[:enable_ejb]
+                  module_names = options[:ejb_module_names] || [project.iml.id]
+                  module_names.each do |module_name|
+                    facet_name = options[:ejb_facet_name] || "EJB"
+                    xml.element :id => "javaee-facet-resources", :facet => "#{module_name}/ejb/#{facet_name}"
+                  end
+                end
               end
               xml.element :id => "directory", :name => "lib" do
                 libraries.each(&:invoke).map(&:to_s).each do |dependency_path|
@@ -620,7 +627,6 @@ module Buildr
           xml.method()
         end
       end
-
 
       protected
 
