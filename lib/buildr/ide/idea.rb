@@ -244,7 +244,7 @@ module Buildr
           {
             :webFacet => "Web",
             :compilerMaxHeapSize => "512",
-            :compilerParameters => "-draftCompile -localWorkers 2",
+            :compilerParameters => "-draftCompile -localWorkers 2 -strict",
             :gwtSdkUrl => "file://$GWT_TOOLS$",
             :gwtScriptOutputStyle => "PRETTY"
           }.merge(options[:settings] || {})
@@ -256,7 +256,7 @@ module Buildr
             end
             c.packaging do |d|
               modules.each_pair do |k, v|
-                d.module :name => v, :path => k
+                d.module :name => k, :enabled => v
               end
             end
           end
