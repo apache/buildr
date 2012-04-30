@@ -13,7 +13,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-if !RUBY_PLATFORM[/java/]
+if (RUBY_PLATFORM[/java/] and JRUBY_VERSION < '1.6.6')
+  puts "Running jekyll under jruby < 1.6.6 would never complete!"
+else
   gem 'rdoc'
   require 'rdoc/task'
   desc "Creates a symlink to rake's lib directory to support combined rdoc generation"

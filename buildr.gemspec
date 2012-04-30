@@ -73,17 +73,17 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'jruby-openssl',        '>= 0.7' if spec.platform.to_s == 'java'
 
   # The documentation is currently not generated whe building via jruby
-  unless spec.platform.to_s == 'java'
-    spec.add_development_dependency 'jekyll', '0.11.0'
-    spec.add_development_dependency 'RedCloth', '4.2.9'
-    spec.add_development_dependency 'jekylltask', '1.1.0'
-    spec.add_development_dependency 'rdoc', '3.8'
-    spec.add_development_dependency 'rcov', '0.9.9'
-  end
+  spec.add_development_dependency 'jekyll', '0.11.0'
+  spec.add_development_dependency 'RedCloth', '4.2.9'
+  spec.add_development_dependency 'jekylltask', '1.1.0'
+  spec.add_development_dependency 'rdoc', '3.8'
+  spec.add_development_dependency 'rcov', '0.9.9'
 
   spec.add_development_dependency 'ci_reporter', '1.6.3'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'win32console' if spec.platform.to_s == 'x86-mswin32'
   spec.add_development_dependency 'rubyforge'
+  spec.add_development_dependency 'psych' if RUBY_VERSION >= '1.9.2'
+  spec.add_development_dependency 'pygmentize', '0.0.3'
 end
