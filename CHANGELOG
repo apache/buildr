@@ -1,4 +1,5 @@
 1.4.7 (Pending)
+* Change: BUILDR-637 Update rubyzip version to 0.9.8 (Russell Teabeault)
 * Change: BUILDR-639 Stop requiring pygmentize to run "rake -T" (Russell Teabeault)
 * Added:  Enhance the IDEA extension to support the addition of several explicit facets such as
           ejb, jruby, jpa, web and gwt.
