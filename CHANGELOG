@@ -1,4 +1,5 @@
 1.4.7 (Pending)
+* Added:  BUILDR-316 Add a GWT extension
 * Change: BUILDR-624 Update rspec version to 2.9.0 (Russell Teabeault)
 * Change: BUILDR-637 Update rubyzip version to 0.9.8 (Russell Teabeault)
 * Change: BUILDR-632 Update net-ssh version to 2.3.0 (Russell Teabeault)
