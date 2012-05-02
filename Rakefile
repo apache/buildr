@@ -14,8 +14,6 @@
 # the License.
 
 # To work-around a bug with gemcutter: http://stackoverflow.com/questions/4932881/gemcutter-rake-build-now-throws-undefined-method-write-for-syckemitter
-require 'psych' unless RUBY_PLATFORM[/java/]
-
 # We need JAVA_HOME for most things (setup, spec, etc).
 unless ENV['JAVA_HOME']
   if RUBY_PLATFORM[/java/]
