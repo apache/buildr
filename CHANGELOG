@@ -1,4 +1,4 @@
-1.4.8 (Pending)
+1.4.7 (Pending)
 * Added:  Enhance the IDEA extension to support the addition of several explicit facets such as
           ejb, jruby, jpa, web and gwt.
 * Added:  Add several utility methods to IDEA extension for defining artifacts and configurations.
@@ -12,7 +12,6 @@
 * Change: BUILDR-630 Run task should not add test dependencies (Russell Teabeault)
 * Change: BUILDR-629 JavaRunner should include target/resources in classpath (Russell Teabeault)
 * Fixed:  BUILDR-617 pom exclusion does not work (Kafka Liu)
-1.4.7 (2011-11-17)
 * Added:  Add a Findbugs extension.
 * Added:  Add a Checkstyle extension.
 * Added:  Add a JavaNCSS extension.
