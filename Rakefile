@@ -39,7 +39,7 @@ end
 
 # Tell us if we need sudo for various commands.
 def sudo_needed?
-  Config::CONFIG['host_os'] !~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i && !ENV['GEM_HOME']
+  RbConfig::CONFIG['host_os'] !~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i && !ENV['GEM_HOME']
 end
 
 

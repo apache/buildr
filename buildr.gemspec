@@ -52,7 +52,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.required_rubygems_version = ">= 1.8.6"
 
   # Tested against these dependencies.
-  spec.add_dependency 'rake',                 '0.8.7'
+  spec.add_dependency 'rake',                 '0.9.2.2'
   spec.add_dependency 'builder',              '2.1.2'
   spec.add_dependency 'net-ssh',              '2.3.0'
   spec.add_dependency 'net-sftp',             '2.0.5'

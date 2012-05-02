@@ -32,7 +32,7 @@ module Buildr
     # For JRuby, the value for RUBY_PLATFORM will always be 'java'
     # That's why this function checks on Config::CONFIG['host_os']
     def win_os?
-      Config::CONFIG['host_os'] =~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i
+      RbConfig::CONFIG['host_os'] =~ /windows|cygwin|bccwin|cygwin|djgpp|mingw|mswin|wince/i
     end
 
     # Runs Ruby with these command line arguments.  The last argument may be a hash,
@@ -43,7 +43,7 @@ module Buildr
     def ruby(*args)
       options = Hash === args.last ? args.pop : {}
       cmd = []
-      ruby_bin = normalize_path(Config::CONFIG['ruby_install_name'], Config::CONFIG['bindir'])
+      ruby_bin = normalize_path(RbConfig::CONFIG['ruby_install_name'], RbConfig::CONFIG['bindir'])
       if options.delete(:sudo) && !(win_os? || Process.uid == File.stat(ruby_bin).uid)
         cmd << 'sudo' << '-u' << "##{File.stat(ruby_bin).uid}"
       end

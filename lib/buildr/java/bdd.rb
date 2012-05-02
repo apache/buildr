@@ -115,7 +115,7 @@ module Buildr
     end
 
     def jruby_home
-      @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] :
+      @jruby_home ||= RUBY_PLATFORM =~ /java/ ? RbConfig::CONFIG['prefix'] :
         ( ENV['JRUBY_HOME'] || File.expand_path('~/.jruby') )
     end
 
@@ -166,7 +166,7 @@ module Buildr
        require 'jruby'
        def JRuby.gem(name, version = '>0', *args)
           require 'rbconfig'
-          jruby_home = Config::CONFIG['prefix']
+          jruby_home = RbConfig::CONFIG['prefix']
           expected_version = '#{TestFramework::JRubyBased.version}'
           unless JRUBY_VERSION >= expected_version
             fail "Expected JRuby version \#{expected_version} installed at \#{jruby_home} but got \#{JRUBY_VERSION}"
