@@ -56,7 +56,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'builder',              '2.1.2'
   spec.add_dependency 'net-ssh',              '2.0.23'
   spec.add_dependency 'net-sftp',             '2.0.4'
-  spec.add_dependency 'rubyzip',              '0.9.4'
+  spec.add_dependency 'rubyzip',              '0.9.8'
   spec.add_dependency 'highline',             '1.6.2'
   spec.add_dependency 'json_pure',            '1.4.3'
   spec.add_dependency 'rubyforge',            '2.0.3'
