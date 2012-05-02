@@ -49,7 +49,7 @@ module Buildr
 
     # Returns the path to JRUBY_HOME.
     def jruby_home
-      ENV['JRUBY_HOME'] || Config::CONFIG['prefix']
+      ENV['JRUBY_HOME'] || RbConfig::CONFIG['prefix']
     end
 
     # Returns the path to NAILGUN_HOME.
@@ -164,7 +164,7 @@ module Buildr
       attr_reader :artifact
       @artifact = Buildr.artifact(ARTIFACT_SPEC).from(nailgun_jar)
 
-      compiled_bin = file(tmp_path(NAME, NAME, 'ng' + Config::CONFIG['EXEEXT']) => dist_dir.target) do |task|
+      compiled_bin = file(tmp_path(NAME, NAME, 'ng' + RbConfig::CONFIG['EXEEXT']) => dist_dir.target) do |task|
         unless task.to_s.pathmap('%x') == '.exe'
           Dir.chdir(task.to_s.pathmap('%d')) do
             info "Compiling #{task.to_s}"

@@ -25,7 +25,7 @@ end
 desc "Install Buildr from source"
 task :install=>["#{package.package_dir}/#{package.gem_spec.file_name}"] do |task|
   print "Installing #{spec.name} ... "
-  args = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'install', "#{package.package_dir}/#{package.gem_spec.file_name}"
+  args = RbConfig::CONFIG['ruby_install_name'], '-S', 'gem', 'install', "#{package.package_dir}/#{package.gem_spec.file_name}"
   args.unshift('sudo') if sudo_needed?
   sh *args
   puts "[x] Installed Buildr #{spec.version}"
@@ -34,7 +34,7 @@ end
 desc "Uninstall previous rake install"
 task :uninstall do |task|
   puts "Uninstalling #{spec.name} ... "
-  args = Config::CONFIG['ruby_install_name'], '-S', 'gem', 'uninstall', spec.name, '--version', spec.version.to_s
+  args = RbConfig::CONFIG['ruby_install_name'], '-S', 'gem', 'uninstall', spec.name, '--version', spec.version.to_s
   args.unshift('sudo') if sudo_needed?
   sh *args
   puts "[x] Uninstalled Buildr #{spec.version}"
@@ -44,7 +44,7 @@ end
 desc "Compile Java libraries used by Buildr"
 task :compile do
   puts "Compiling Java libraries ..."
-  args = Config::CONFIG['ruby_install_name'], File.expand_path(RUBY_PLATFORM[/java/] ? '_jbuildr' : '_buildr'), '--buildfile', 'buildr.buildfile', 'compile'
+  args = RbConfig::CONFIG['ruby_install_name'], File.expand_path(RUBY_PLATFORM[/java/] ? '_jbuildr' : '_buildr'), '--buildfile', 'buildr.buildfile', 'compile'
   args << '--trace' if Rake.application.options.trace
   sh *args
 end

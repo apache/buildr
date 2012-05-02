@@ -22,7 +22,7 @@ unless RUBY_PLATFORM =~ /java/
     before do
       @old_home, ENV['JAVA_HOME'] = ENV['JAVA_HOME'], nil
       @old_env_java = Object.module_eval { remove_const :ENV_JAVA }
-      Config::CONFIG.should_receive(:[]).with('host_os').and_return('darwin0.9')
+      RbConfig::CONFIG.should_receive(:[]).with('host_os').and_return('darwin0.9')
     end
 
     it 'should point to default JVM' do

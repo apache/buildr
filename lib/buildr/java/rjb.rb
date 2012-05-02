@@ -74,7 +74,7 @@ module Java
 
   # On OS X we know where the default JDK is. We can try to guess for other OS.
   # We set JAVA_HOME early so we can use it without calling Java.load first.
-  ENV['JAVA_HOME'] ||= '/System/Library/Frameworks/JavaVM.framework/Home' if Config::CONFIG['host_os'] =~ /darwin/i
+  ENV['JAVA_HOME'] ||= '/System/Library/Frameworks/JavaVM.framework/Home' if RbConfig::CONFIG['host_os'] =~ /darwin/i
 
   class << self
 

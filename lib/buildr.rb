@@ -18,6 +18,8 @@ unless defined?(Buildr::VERSION)
 end
 
 require 'rake'
+include Rake::DSL
+
 require 'rbconfig'
 require 'pathname'
 autoload :Tempfile, 'tempfile'

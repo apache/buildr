@@ -275,6 +275,7 @@ module Buildr
             options.show_tasks = true
             options.full_description = true
             options.show_task_pattern = Regexp.new(value || '')
+            Rake::TaskManager.record_task_metadata = true
           }
         ],
         ['--execute',  '-E CODE',
@@ -300,6 +301,7 @@ module Buildr
           lambda { |value|
             options.show_prereqs = true
             options.show_task_pattern = Regexp.new(value || '')
+            Rake::TaskManager.record_task_metadata = true
           }
         ],
         ['--quiet', '-q', "Do not log messages to standard output.",
@@ -345,6 +347,7 @@ module Buildr
             options.show_tasks = true
             options.show_task_pattern = Regexp.new(value || '')
             options.full_description = false
+            Rake::TaskManager.record_task_metadata = true
           }
         ],
         ['--trace', '-t [CATEGORIES]', "Turn on invoke/execute tracing, enable full backtrace.",

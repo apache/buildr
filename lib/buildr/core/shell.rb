@@ -115,7 +115,7 @@ module Buildr
 
     private
       def jruby_home
-        @jruby_home ||= RUBY_PLATFORM =~ /java/ ? Config::CONFIG['prefix'] : ENV['JRUBY_HOME']
+        @jruby_home ||= RUBY_PLATFORM =~ /java/ ? RbConfig::CONFIG['prefix'] : ENV['JRUBY_HOME']
       end
 
       def jruby_artifact
