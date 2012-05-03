@@ -66,8 +66,8 @@ if !RUBY_PLATFORM[/java/]
     puts "Buildr uses the jekyll gem to generate the Web site. You can install it by running bundler"
   end
 
-  if system("pygmentize -V")
-    puts "Buildr uses the Pygments python library. You can install it by running 'sudo easy_install Pygments'"
+  if 0 == system("pygmentize -V > /dev/null 2> /dev/null")
+    puts "Buildr uses the Pygments python library. You can install it by running 'sudo easy_install Pygments' or 'sudo apt-get install python-pygments'"
   end
 
   desc "Generate Buildr documentation as buildr.pdf"
