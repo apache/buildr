@@ -81,6 +81,30 @@ module Buildr
       end
 
       # :call-seq:
+      #   project_references=(project_references)
+      # Sets the Eclipse project references on the project.
+      #
+      def project_references=(var)
+        @project_references = arrayfy(var)
+      end
+
+      # :call-seq:
+      #   project_references() => [p1, p2]
+      # Returns the Eclipse project references on the project.
+      # They may be derived from the parent project if no specific references have been set
+      # on the project.
+      #
+      # An Eclipse project reference is used internally by Eclipse to determine the references of a project.
+      def project_references(*values)
+        if values.size > 0
+          @project_references ||= []
+          @project_references += values.flatten
+        else
+          @project_references || (@project.parent ? @project.parent.eclipse.project_references : [])
+        end
+      end
+
+      # :call-seq:
       #   classpath_containers=(cc)
       # Sets the Eclipse project classpath containers on the project.
       #
@@ -272,7 +296,16 @@ module Buildr
               xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
               xml.projectDescription do
                 xml.name project.eclipse.name
-                xml.projects
+                if project.eclipse.project_references.empty?
+                  xml.projects
+                else
+                  xml.projects do
+                    project.eclipse.project_references.each do |project_reference|
+                      xml.project project_reference
+                    end
+                  end
+                end
+
                 unless project.eclipse.builders.empty?
                   xml.buildSpec do
                     project.eclipse.builders.each { |builder|
