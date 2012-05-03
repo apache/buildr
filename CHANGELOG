@@ -1,4 +1,5 @@
 1.4.7 (Pending)
+* Added:  Add a Sonar extension.
 * Change: BUILDR-638 Update to rake 0.9.2.2 (Russell Teabeault)
 * Added:  BUILDR-316 Add a GWT extension
 * Change: BUILDR-624 Update rspec version to 2.9.0 (Russell Teabeault)
