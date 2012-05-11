@@ -253,6 +253,14 @@ module Buildr
                   # project_libs: artifacts created by other projects
                   project_libs, others = cp.partition { |path| path.is_a?(Project) }
 
+				  #splice back in after converting to global reference
+				  project_libs.each do |l|
+					package_spec = l.package.to_spec					
+					new_value = Buildr.repositories.locate package_spec
+					raise "Could not find #{package_spec} in repository.  Please ensure this is installed before running this command again" if new_value.nil?
+					others.push new_value
+				  end				  
+				 				  
                   # Separate artifacts under known classpath variable paths
                   # including artifacts located in local Maven2 repository
                   vars = []
@@ -274,16 +282,14 @@ module Buildr
                     classpathentry.src project.test.resources
                   end
 
+                  classpathentry.output project.compile.target if project.compile.target
+                  classpathentry.lib libs
+                  classpathentry.var vars
+
                   project.eclipse.classpath_containers.each { |container|
                     classpathentry.con container
                   }
 
-                  # Classpath elements from other projects
-                  classpathentry.src_projects project_libs
-
-                  classpathentry.output project.compile.target if project.compile.target
-                  classpathentry.lib libs
-                  classpathentry.var vars
                 end
               end
             end
