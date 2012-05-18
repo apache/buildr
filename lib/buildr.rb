@@ -19,6 +19,7 @@ end
 
 require 'rake'
 include Rake::DSL
+Rake::TaskManager.record_task_metadata = true
 
 require 'rbconfig'
 require 'pathname'
