@@ -100,7 +100,7 @@ describe Artifact do
 
   it 'should handle lack of POM gracefully' do
     repositories.remote = 'http://example.com'
-    URI.should_receive(:download).twice { |uri, target, options| raise URI::NotFoundError if uri.to_s.ends_with('.pom') }
+    URI.should_receive(:download).twice { |*args| raise URI::NotFoundError if args[0].to_s.end_with?('.pom') }
     lambda { @artifact.invoke }.should_not raise_error
   end
 
