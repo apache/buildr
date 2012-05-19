@@ -112,7 +112,7 @@ module Buildr
       # Includes additional source files and directories when generating the documentation
       # and returns self. When specifying a directory, includes all source files in that directory.
       def include(*files)
-        @files.include *files.flatten.compact
+        @files.include *files.flatten.compact.collect{|f|File.expand_path(f)}
         self
       end
 
@@ -121,7 +121,7 @@ module Buildr
       #
       # Excludes source files and directories from generating the documentation.
       def exclude(*files)
-        @files.exclude *files
+        @files.exclude *files.collect{|f|File.expand_path(f)}
         self
       end
 
@@ -205,7 +205,7 @@ module Buildr
       def source_files #:nodoc:
         @source_files ||= @files.map(&:to_s).map do |file|
           Array(engine.class.source_ext).map do |ext|
-            File.directory?(file) ? FileList[File.join(file, "**/*.#{ext}")] : file
+            File.directory?(file) ? FileList[File.join(file, "**/*.#{ext}")] : File.expand_path(file)
           end
         end.flatten.reject { |file| @files.exclude?(file) }
       end
