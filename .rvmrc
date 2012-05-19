@@ -23,7 +23,10 @@ if rvm list strings | grep -q "${ruby_string}" ; then
     gem install bundler 
   fi
 
-  bundle install 
+  bundle install
+
+  export JRUBY_OPTS="-J-XX:MaxPermSize=128m -J-Xmx1024M"
+  export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m"
 else 
   echo "${ruby_string} was not found, please run 'rvm install ${ruby_string}' and then cd back into the project directory." 
 fi
