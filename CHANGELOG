@@ -3,7 +3,6 @@
 * Change: BUILDR-638 Update to rake 0.9.2.2 (Russell Teabeault)
 * Added:  BUILDR-316 Add a GWT extension
 * Change: BUILDR-624 Update rspec version to 2.9.0 (Russell Teabeault)
-* Change: BUILDR-637 Update rubyzip version to 0.9.8 (Russell Teabeault)
 * Change: BUILDR-632 Update net-ssh version to 2.3.0 (Russell Teabeault)
 * Change: BUILDR-632 Update net-sftp version to 2.0.5 (Russell Teabeault)
 * Fixed:  BUILDR-635 JRE container entry to be declared before user sources and dependencies (Dani Perez)
