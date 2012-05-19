@@ -124,7 +124,7 @@ describe Project, '#doc' do
       compile.using(:javac)
       doc.include included
     end
-    project('foo').doc.source_files.should include(included)
+    project('foo').doc.source_files.should include(File.expand_path(included))
   end
 
   it 'should respond to exclude() and return self' do
