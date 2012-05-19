@@ -65,18 +65,33 @@ begin
   desc 'Run all specs with CI reporter'
   task :ci=>[:load_ci_reporter, :spec]
 
+  def rvm_run_in(version, command)
+    current_rvm = `rvm current`.strip
+    begin
+      sh "rvm use #{version} && #{command}"
+    ensure
+      sh "rvm use #{current_rvm}"
+    end
+  end
+
   # Useful for testing with JRuby when using Ruby and vice versa.
   namespace :spec do
-    desc "Run all specs specifically with Ruby"
-    task :ruby do
+    desc "Run all specs specifically with Ruby 1.9"
+    task :ruby_1_9 do
       puts "Running test suite using Ruby ..."
-      sh 'ruby -S rake spec'
+      rvm_run_in("ruby-1.9.2-p320@buildr", "rake spec")
+    end
+
+    desc "Run all specs specifically with Ruby 1.8"
+    task :ruby_1_8 do
+      puts "Running test suite using Ruby ..."
+      rvm_run_in("ruby-1.8.7-p358@buildr", "rake spec")
     end
 
     desc "Run all specs specifically with JRuby"
     task :jruby do
       puts "Running test suite using JRuby ..."
-      sh 'jruby -S rake spec'
+      rvm_run_in("ruby-1.6.7@buildr", "rake spec")
     end
   end
 

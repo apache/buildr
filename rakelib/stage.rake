@@ -56,12 +56,11 @@ task :prepare do |task, args|
 
   # Need JRuby, Scala and Groovy installed to run all the specs.
   lambda do
-    puts "Checking that we have JRuby, Scala and Groovy available ... "
-    sh 'jruby --version'
+    puts "Checking that we have Scala and Groovy available ... "
     `scala -version`
     $?.exitstatus == 1 or fail "Scala is not installed"
     sh 'groovy -version'
-    puts "[X] We have JRuby, Scala and Groovy"
+    puts "[X] We have Scala and Groovy"
   end.call
 
   # Need Prince to generate PDF
@@ -80,9 +79,10 @@ task :prepare do |task, args|
   end.call
 
   # We will be speccing in one platform, so also spec the other one.
-  task(RUBY_PLATFORM =~ /java/ ? 'spec:ruby' : 'spec:jruby').invoke # Test the *other* platform
+  task('spec:ruby_1_9').invoke unless RUBY_VERSION >= '1.9' && !RUBY_PLATFORM[/java/]
+  task('spec:ruby_1_8').invoke unless RUBY_VERSION >= '1.8.7' && !RUBY_PLATFORM[/java/]
+  task('spec:jruby').invoke unless RUBY_PLATFORM[/java/]
 end
-
 
 task :stage=>[:clobber, :prepare] do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
