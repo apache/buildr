@@ -112,7 +112,13 @@ module Buildr
       # Includes additional source files and directories when generating the documentation
       # and returns self. When specifying a directory, includes all source files in that directory.
       def include(*files)
-        @files.include *files.flatten.compact.collect{|f|File.expand_path(f)}
+        files.each do |file|
+          if file.respond_to? :to_ary
+            include(*file.to_ary)
+          else
+            @files.include *files.flatten.compact.collect { |f| File.expand_path(f.to_s) }
+          end
+        end
         self
       end
 
