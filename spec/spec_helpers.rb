@@ -251,7 +251,11 @@ unless defined?(SpecHelpers)
       end
 
       def description
-        "URI with path matching #{@expression}"
+        "URI with path matching #{@expression} vs #{@uri}"
+      end
+
+      def failure_message_for_should
+        "expected #{description}"
       end
     end
 
