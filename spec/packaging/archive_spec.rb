@@ -474,7 +474,7 @@ describe "ZipTask" do
     Zip::ZipFile.open @archive do |zip|
       zip.entries.each do |entry|
         # Ignore the / directory created for empty ZIPs when using java.util.zip.
-        entries[entry.to_s] = zip.read(entry) unless entry.to_s == '/'
+        entries[entry.name.to_s] = zip.read(entry.name) unless entry.name.to_s == '/'
       end
     end
     yield entries if block_given?
