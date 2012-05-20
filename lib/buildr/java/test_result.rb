@@ -13,6 +13,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# It is necessary to require these files here as the bdd plugin directly includes this file
+require 'yaml'
+require 'rspec/core/formatters/base_formatter'
+
 module Buildr #:nodoc:
   module TestFramework
 

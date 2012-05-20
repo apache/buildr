@@ -35,9 +35,6 @@ require 'find'
 require 'uri'
 require 'stringio'
 require 'fileutils'
-require 'yaml' # From test_result.rb: necessary to require YAML even if it is mentioned by autoload as it fails on some platforms.
-require 'rspec/core/formatters/base_formatter' # From test_result.rb
-
 
 require 'buildr/core/util'
 require 'buildr/core/common'
