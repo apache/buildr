@@ -139,7 +139,7 @@ module Buildr
   # cases are written in Java, then JUnit is selected as the test framework.  You can also select
   # a specific test framework, for example, to use TestNG instead of JUnit:
   #   test.using :testng
-  class TestTask < Rake::Task
+  class TestTask < ::Rake::Task
 
     class << self
 
