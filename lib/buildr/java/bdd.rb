@@ -240,7 +240,7 @@ module Buildr
 
     def runner_config
       runner = super
-      runner.gems.update 'rspec' => '~> 2.1.0'
+      runner.gems.update 'rspec' => '~> 2.9.0'
       runner.requires.unshift 'rspec'
       runner
     end
