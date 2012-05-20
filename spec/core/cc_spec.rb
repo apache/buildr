@@ -92,21 +92,29 @@ describe Buildr::CCTask do
         foo.cc.invoke
       rescue => e
         p "unexpected exception #{e.inspect}"
-        p e.backtrace.join("\n").inspect
+        p e.backtrace.join("\n")
       end
     end
 
-    sleep 1
+    #Ick! Try to get the sleeping enough on each platform that the tests reliably pass
+    sleep 1 if RUBY_VERSION >= '1.9' && !RUBY_PLATFORM[/java/]
+    sleep 5 if RUBY_VERSION >= '1.8.7' && !RUBY_PLATFORM[/java/]
+    sleep 1 if RUBY_PLATFORM[/java/]
 
     foo.compile.run_count.should == 1
     foo.test.compile.run_count.should == 1
     foo.resources.run_count.should == 1
 
-    sleep 1 # Wait one sec as the timestamp needs to be different.
+    # Wait some time as the timestamp needs to be different on files.
+    sleep 3 if Buildr::Util.win_os?
+    sleep 1 unless Buildr::Util.win_os?
 
     touch File.join(Dir.pwd, 'src/main/java/Example.java')
 
-    sleep 1
+    #Ick! Try to get the sleeping enough on each platform that the tests reliably pass
+    sleep 1 if RUBY_VERSION >= '1.9' && !RUBY_PLATFORM[/java/]
+    sleep 5 if RUBY_VERSION >= '1.8.7' && !RUBY_PLATFORM[/java/]
+    sleep 1 if RUBY_PLATFORM[/java/]
 
     foo.compile.run_count.should == 2
     foo.test.compile.run_count.should == 2
