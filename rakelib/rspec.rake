@@ -96,6 +96,9 @@ begin
       puts "Running test suite using JRuby ..."
       rvm_run_in("jruby-1.6.7@buildr", "rake spec")
     end
+
+    desc "Run all specs across various rubies"
+    task :all => [:jruby, :ruby_1_8, :ruby_1_9]
   end
 
   task :clobber do
