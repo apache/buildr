@@ -133,7 +133,7 @@ describe Buildr::Application do
       write 'build.yaml', <<-YAML
         gems:
         - rake
-        - rspec ~> 2.1.0
+        - rspec ~> 2.9.0
       YAML
       Buildr.application.should_receive(:listed_gems).and_return([[Gem.loaded_specs['rspec'],Gem.loaded_specs['rake']],[]])
       Buildr.application.load_gems
