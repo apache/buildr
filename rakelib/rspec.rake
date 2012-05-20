@@ -66,11 +66,14 @@ begin
   task :ci=>[:load_ci_reporter, :spec]
 
   def rvm_run_in(version, command)
-    current_rvm = `rvm current`.strip
-    begin
-      sh "rvm use #{version} && #{command}"
-    ensure
-      sh "rvm use #{current_rvm}"
+    if !(Config::CONFIG['host_os'] =~ /mswin|win32|dos/i)
+      prefix = "[[ -s \"~/.rvm/scripts/rvm\" ]] && source \"~/.rvm/scripts/rvm\""
+      cmd_prefix = "rvm #{version} exec"
+      bundle = "rm Gemfile.lock; #{cmd_prefix} bundle install"
+      cmd = "#{cmd_prefix} #{command}"
+      sh "#{prefix}; #{bundle}; #{cmd}"
+    else
+      sh "#{version =~ /jruby/ ? "j" : ""}ruby -S #{command}"
     end
   end
 
@@ -91,7 +94,7 @@ begin
     desc "Run all specs specifically with JRuby"
     task :jruby do
       puts "Running test suite using JRuby ..."
-      rvm_run_in("ruby-1.6.7@buildr", "rake spec")
+      rvm_run_in("jruby-1.6.7@buildr", "rake spec")
     end
   end
 
