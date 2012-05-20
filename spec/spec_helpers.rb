@@ -362,6 +362,7 @@ unless defined?(SpecHelpers)
 
 
   ::RSpec.configure do |config|
+    config.treat_symbols_as_metadata_keys_with_true_values = true
     # Make all Buildr methods accessible from test cases, and add various helper methods.
     config.include Buildr
     config.include SpecHelpers
