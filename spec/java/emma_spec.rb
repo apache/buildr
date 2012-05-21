@@ -13,8 +13,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 require File.expand_path(File.join(File.dirname(__FILE__), 'test_coverage_helper'))
+if ENV_JAVA['java.version'] < "1.7"
+
 Sandbox.require_optional_extension 'buildr/java/emma'
 artifacts(Buildr::Emma::dependencies).map(&:invoke)
 
@@ -118,4 +119,6 @@ describe Buildr::Emma do
       end
     end
   end
+end
+
 end
