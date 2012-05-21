@@ -67,11 +67,8 @@ begin
 
   def rvm_run_in(version, command)
     if !(Config::CONFIG['host_os'] =~ /mswin|win32|dos/i)
-      prefix = "[[ -s \"~/.rvm/scripts/rvm\" ]] && source \"~/.rvm/scripts/rvm\""
       cmd_prefix = "rvm #{version} exec"
-      bundle = "rm Gemfile.lock; #{cmd_prefix} bundle install"
-      cmd = "#{cmd_prefix} #{command}"
-      sh "#{prefix}; #{bundle}; #{cmd}"
+      sh "rm -f Gemfile.lock; #{cmd_prefix} bundle install; #{cmd_prefix} bundle exec #{command}"
     else
       sh "#{version =~ /jruby/ ? "j" : ""}ruby -S #{command}"
     end
