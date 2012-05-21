@@ -15,6 +15,8 @@
 
 
 require File.expand_path(File.join(File.dirname(__FILE__), 'test_coverage_helper'))
+if ENV_JAVA['java.version'] < "1.7"
+
 Sandbox.require_optional_extension 'buildr/java/cobertura'
 artifacts(Buildr::Cobertura::dependencies).map(&:invoke)
 
@@ -109,4 +111,6 @@ JAVA
       
     end
   end
+end
+
 end
