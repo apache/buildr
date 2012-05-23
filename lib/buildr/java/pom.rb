@@ -130,7 +130,7 @@ module Buildr
           hash
         }
         props = project["properties"].first rescue {}
-        props = props.inject({}) { |mapped, pair| mapped[pair.first] = value_of(pair.last, pom) ; mapped }
+        props = props.inject({}) { |mapped, pair| mapped[pair.first] = value_of(pair.last, props) ; mapped }
         (parent ? parent.properties.merge(props) : props).merge(pom)
       end
     end
