@@ -922,6 +922,37 @@ The extension will include the source and test directories of the project when i
 
 By default the pmd rule files 'basic','imports' and 'unusedcode' will be evaluated but this can be overriden by the "pmd.rule_set_files" parameter. The rule sets will be loaded from the classpath and this can be added to by modifying the "pmd.rule_set_paths" parameter.
 
+h2(#sonar). Sonar
+
+"Sonar":http://www.sonarsource.org/ is "an open platform to manage code quality". It is integrated into Buildr through an extension. The extension adds the "sonar" task. A typical project that uses the extension may look something like;
+
+{% highlight ruby %}
+require 'buildr/sonar'
+
+define "foo" do
+  project.version = "1.0.0"
+
+  define "bar" do ... end
+
+  sonar.enabled = true
+  sonar.project_name = 'Foo-Project'
+  sonar.key = 'foo:project'
+  sonar.jdbc_url = 'jdbc:jtds:sqlserver://example.org/SONAR;instance=MyInstance;SelectMethod=Cursor'
+  sonar.jdbc_driver_class_name = 'net.sourceforge.jtds.jdbc.Driver'
+  sonar.jdbc_username = 'sonar'
+  sonar.jdbc_password = 'secret'
+  sonar.host_url = 'http://127.0.0.1:9000'
+  sonar.sources << project('foo:bar')._(:source, :main, :java)
+  sonar.binaries << project('foo:bar').compile.target
+  sonar.libraries << project('foo:bar').compile.dependencies
+
+end
+{% endhighlight %}
+
+The "sonar" task will be defined if the "sonar.enabled" property is set to true.
+
+Defaults exist for the "project_name", "key", "sources", "binaries" and "libraries" parameters but the others should be set explicitly. The extension will include the source and test directories of the project as sources by default, the target directory as a binary and the dependencies as libraries.
+
 h2(#jaxb_xjc). JAXB Xjc Compiler
 
 Buildr includes an extension that provides the ability to invoke jaxb xjc binding compiler. A typical project that uses the extension may look something like;
