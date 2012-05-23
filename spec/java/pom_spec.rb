@@ -68,3 +68,58 @@ XML
   end
 end
 
+describe Buildr::POM do
+  before do
+    repositories.remote = 'http://example.com'
+    @app = 'group:app:jar:1.0'
+    write artifact(@app).pom.to_s, <<-XML
+<project>
+  <properties>
+    <a.version>${b.version}</a.version>
+    <b.version>1.1</b.version>
+  </properties>
+  <artifactId>app</artifactId>
+  <groupId>group</groupId>
+  <dependencies>
+    <dependency>
+      <artifactId>library</artifactId>
+      <groupId>org.example</groupId>
+      <version>${a.version}</version>
+      <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.mail</groupId>
+          <artifactId>mail</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+</project>
+XML
+    @library = 'org.example:library:jar:1.1'
+    write artifact(@library).pom.to_s, <<-XML
+<project>
+  <artifactId>app</artifactId>
+  <groupId>group</groupId>
+  <dependencies>
+    <dependency>
+      <artifactId>mail</artifactId>
+      <groupId>javax.mail</groupId>
+      <version>1.0</version>
+    </dependency>
+    <dependency>
+      <artifactId>foo</artifactId>
+      <groupId>org.example</groupId>
+      <version>2.0</version>
+    </dependency>
+  </dependencies>
+</project>
+XML
+  end
+
+  it 'should respect exclusions when computing transitive dependencies when the pom includes properties' do
+    pom = POM.load(artifact(@app).pom)
+    specs = {"a.version"=>"1.1", "b.version"=>"1.1", "project.groupId"=>"group", "pom.groupId"=>"group", "groupId"=>"group", "project.artifactId"=>"app", "pom.artifactId"=>"app", "artifactId"=>"app"}
+    pom.properties.should eql(specs)
+  end
+end
