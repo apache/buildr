@@ -65,7 +65,7 @@
 * Change: Move to Bundler to manage the project dependencies
 * Change: BUILDR-548 Remove support for JTestR as it is no longer maintained (Antoine Toulme)
 * Change: BUILDR-614 Buildr development - Using rvm, bundler and OSX installs the wrong rjb (Russell Teabeault)
-* Change: Upgrade to RJB 1.3.7
+* Change: Upgrade to RJB 1.4.0
 * Fixed:  ArtifactNamespace fails when using artifacts with classfier.
 * Fixed:  Buildr.artifacts() should handle any object with :to_spec method
           (i.e., any object that ActsAsArtifact)
