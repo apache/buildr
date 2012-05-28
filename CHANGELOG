@@ -1,4 +1,4 @@
-1.4.7 (2012-05-19)
+1.4.7 (2012-05-28)
 * Added:  BUILDR-618 pom properties feature does not support hierarchy (kafka liu)
 * Added:  Add a Sonar extension.
 * Change: BUILDR-638 Update to rake 0.9.2.2 (Russell Teabeault)
