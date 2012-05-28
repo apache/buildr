@@ -63,7 +63,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'json_pure',            '1.4.3'
   spec.add_dependency 'rubyforge',            '2.0.3'
   spec.add_dependency 'hoe',                  '2.3.3'
-  spec.add_dependency 'rjb',                  '1.3.7' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
+  spec.add_dependency 'rjb',                  '1.4.0' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
   spec.add_dependency 'atoulme-Antwrap',      '~> 0.7.2'
   spec.add_dependency 'diff-lcs',             '1.1.3'
   spec.add_dependency 'rspec-expectations',   '2.9.0'
@@ -76,7 +76,7 @@ for those one-off tasks, with a language that's a joy to use.
 
   # The documentation is currently not generated whe building via jruby
   unless $platform.to_s == 'java'
-    spec.add_development_dependency 'jekyll', '0.11.0'
+    spec.add_development_dependency 'jekyll', '0.11.2'
     spec.add_development_dependency 'RedCloth', '4.2.9'
     spec.add_development_dependency 'jekylltask', '1.1.0'
     spec.add_development_dependency 'rdoc', '3.8'
