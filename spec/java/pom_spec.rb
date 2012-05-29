@@ -59,6 +59,20 @@ XML
   </dependencies>
 </project>
 XML
+
+    write artifact("javax.mail:mail:pom:1.0").pom.to_s, <<-XML
+<project>
+  <artifactId>mail</artifactId>
+  <groupId>javax.mail</groupId>
+</project>
+XML
+
+    write artifact("org.example:foo:pom:2.0").pom.to_s, <<-XML
+<project>
+  <artifactId>foo</artifactId>
+  <groupId>org.example</groupId>
+</project>
+XML
   end
 
   it 'should respect exclusions when computing transitive dependencies' do
