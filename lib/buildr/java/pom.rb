@@ -164,7 +164,8 @@ module Buildr
     # property substitution.
     def value_of(element, substitute = nil)
       value = element.to_a.join.strip
-      substitute ? value.gsub(/\$\{([^}]+)\}/) { |key| substitute[$1] } : value
+      value = value.gsub(/\$\{([^}]+)\}/) { |key| Array(substitute[$1]).join.strip } if substitute
+      value
     end
 
     # :call-seq:
