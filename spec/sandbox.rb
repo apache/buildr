@@ -180,6 +180,10 @@ module Sandbox
       @extension_modules = extension_modules
     end
 
+    POM.class_eval do
+      @cache = nil
+    end
+
     Layout.default = @_sandbox[:layout].clone
 
     $LOAD_PATH.replace @_sandbox[:load_path]
