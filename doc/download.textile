@@ -20,6 +20,18 @@ The source code is included in both source and binary distribution, the Gem dist
 
 h2(#dist).  Binaries and Source Code
 
+h3. buildr 1.4.7 (2012-05-29)
+
+|_. Package |_. MD5 Checksum |_. PGP |
+| "buildr-1.4.7-x86-mswin32.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.7/buildr-1.4.7-x86-mswin32.gem | "062031b8890b489673be814ca08598cb":http://www.apache.org/dist/buildr/1.4.7/buildr-1.4.7-x86-mswin32.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.7/buildr-1.4.7-x86-mswin32.gem.asc |
+| "buildr-1.4.7-java.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.7/buildr-1.4.7-java.gem | "a7cfac76a53fb6deaac0b12acc02a82c":http://www.apache.org/dist/buildr/1.4.7/buildr-1.4.7-java.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.7/buildr-1.4.7-java.gem.asc |
+| "buildr-1.4.7.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.7/buildr-1.4.7.gem | "85a8ddb9ae752e04c0416e2f1d30d064":http://www.apache.org/dist/buildr/1.4.7/buildr-1.4.7.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.7/buildr-1.4.7.gem.asc |
+| "buildr-1.4.7.tgz":http://www.apache.org/dyn/closer.cgi/buildr/1.4.7/buildr-1.4.7.tgz | "576789cb7d10216cc3b7383441fd2596":http://www.apache.org/dist/buildr/1.4.7/buildr-1.4.7.tgz.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.7/buildr-1.4.7.tgz.asc |
+| "buildr-1.4.7.zip":http://www.apache.org/dyn/closer.cgi/buildr/1.4.7/buildr-1.4.7.zip | "e414f72706885a695a380693e9c530c7":http://www.apache.org/dist/buildr/1.4.7/buildr-1.4.7.zip.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.7/buildr-1.4.7.zip.asc |
+
+p>. ("Release signing keys":http://www.apache.org/dist/buildr/1.4.7/KEYS)
+
+
 h3. buildr 1.4.6 (2011-06-22)
 
 |_. Package |_. MD5 Checksum |_. PGP |
