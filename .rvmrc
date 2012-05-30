@@ -23,6 +23,7 @@ if rvm list strings | grep -q "${ruby_string}" ; then
     gem install bundler 
   fi
 
+  rm Gemfile.lock
   bundle install
 
   export JRUBY_OPTS="-J-XX:MaxPermSize=128m -J-Xmx1024M"
