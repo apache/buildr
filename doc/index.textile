@@ -51,8 +51,7 @@ Highlights from Buildr 1.4.7 (May 29th, 2012)
 * Added:  BUILDR-618 pom properties feature does not support hierarchy (kafka liu)
 * Added:  Add a Sonar extension.
 * Added:  BUILDR-316 Add a GWT extension
-* Added:  Enhance the IDEA extension to support the addition of several explicit facets such as
-          ejb, jruby, jpa, web and gwt.
+* Added:  Enhance the IDEA extension to support the addition of several explicit facets such as ejb, jruby, jpa, web and gwt.
 * Added:  Add a Findbugs extension.
 * Added:  Add a Checkstyle extension.
 * Added:  Add a JavaNCSS extension.
@@ -74,7 +73,7 @@ Highlights from Buildr 1.4.7 (May 29th, 2012)
 * Fixed:  BUILDR-439 "The command line is too long" when running TestNG tests (Tammo Van Lessen)
 * Fixed:  BUILDR-617 pom exclusion does not work (Kafka Liu)
 
-See the "CHANGELOG":CHANGELOG for full details.
+This is a partial list -- see the "CHANGELOG":CHANGELOG for full details.
 
 h2(#notices).  Credits & Notices
 
