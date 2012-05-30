@@ -69,7 +69,7 @@ task :release do
       `gem push #{f}`
     end
     puts "[X] Pushed gems to Rubyforge.org / Gemcutter"
-  end
+  end.call
 
   # Create an SVN tag for this release.
   lambda do
