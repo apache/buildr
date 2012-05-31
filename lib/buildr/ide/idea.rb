@@ -727,6 +727,28 @@ module Buildr
       def resolve_path(path)
         resolve_path_from_base(path, "$PROJECT_DIR$")
       end
+
+    private
+
+      def partition_dependencies(dependencies)
+        libraries = []
+        projects = []
+
+        dependencies.each do |dependency|
+          artifacts = Buildr.artifacts(dependency)
+          artifacts_as_strings = artifacts.map(&:to_s)
+          project = Buildr.projects.detect do |project|
+            [project.packages, project.compile.target, project.resources.target, project.test.compile.target, project.test.resources.target].flatten.
+              detect { |component| artifacts_as_strings.include?(component.to_s) }
+          end
+          if project
+            projects << project
+          else
+            libraries += artifacts
+          end
+        end
+        return libraries.uniq, projects.uniq
+      end
     end
 
     module ProjectExtension
