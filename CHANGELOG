@@ -1,4 +1,5 @@
 1.4.8 (Pending)
+* Fixed:  Fix the extension of the gwt plugin so that it can be required as an addon.
 
 1.4.7 (2012-05-29)
 * Added:  BUILDR-618 pom properties feature does not support hierarchy (kafka liu)
