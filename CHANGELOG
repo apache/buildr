@@ -1,4 +1,6 @@
 1.4.8 (Pending)
+* Fixed:  Fix the add_exploded_war_artifact method on the idea project by adding in missing method
+          `partition_dependencies`.
 * Fixed:  Fix the extension of the gwt plugin so that it can be required as an addon.
 
 1.4.7 (2012-05-29)
