@@ -268,7 +268,8 @@ module Buildr
         url_base = options[:url_base] || "/"
         default_webroots = [buildr_project._(:source, :main, :webapp)]
         webroots = options[:webroots] || default_webroots
-        web_xml = options[:web_xml] || "#{buildr_project._(:source, :main, :webapp)}/WEB-INF/web.xml"
+        default_web_xml = "#{buildr_project._(:source, :main, :webapp)}/WEB-INF/web.xml"
+        web_xml = options[:web_xml] || default_web_xml
         version = options[:version] || "3.0"
 
         add_facet(name, "web") do |f|
