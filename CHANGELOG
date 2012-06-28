@@ -2,6 +2,7 @@
 * Fixed:  Fix the add_exploded_war_artifact method on the idea project by adding in missing method
           `partition_dependencies`.
 * Fixed:  Fix the extension of the gwt plugin so that it can be required as an addon.
+* Fixed:  Fix the undefined default_web_xml variable in the add_web_facet method on the idea project.
 
 1.4.7 (2012-05-29)
 * Added:  BUILDR-618 pom properties feature does not support hierarchy (kafka liu)
