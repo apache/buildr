@@ -1,4 +1,5 @@
 1.4.8 (Pending)
+* Added:  Add add_exploded_ear_artifact and add_exploded_ejb_artifact to the idea project extension.
 * Change: Default to using Checkstyle 5.5 in the checkstyle addon.
 * Fixed:  Fix the add_exploded_war_artifact method on the idea project by adding in missing method
           `partition_dependencies`.

@@ -612,6 +612,77 @@ module Buildr
         end
       end
 
+      def add_exploded_ear_artifact(project, options ={})
+
+        artifact_name = options[:name] || project.iml.id
+        build_on_make = options[:build_on_make].nil? ? true : options[:build_on_make]
+
+        add_artifact(artifact_name, "exploded-ear", build_on_make) do |xml|
+          dependencies = (options[:dependencies] || ([project] + project.compile.dependencies)).flatten
+          libraries, projects = partition_dependencies(dependencies)
+
+          ## The content here can not be indented
+          output_dir = options[:output_dir] || project._(:artifacts, artifact_name)
+          xml.tag!('output-path', output_dir)
+
+          xml.root :id => "root" do
+
+            xml.element :id => "module-output", :name => project.iml.id
+
+            projects.each do |p|
+              xml.element :id => "directory", :name => p.iml.id do
+                xml.element :id => "module-output", :name => p.iml.id
+              end
+            end
+
+            xml.element :id => "directory", :name => "lib" do
+              libraries.each(&:invoke).map(&:to_s).each do |dependency_path|
+                xml.element :id => "file-copy", :path => resolve_path(dependency_path)
+              end
+            end
+
+          end
+        end
+      end
+
+      def add_exploded_ejb_artifact(project, options = {})
+
+        artifact_name = options[:name] || project.iml.id
+        build_on_make = options[:build_on_make].nil? ? true : options[:build_on_make]
+
+        add_artifact(artifact_name, "exploded-ejb", build_on_make) do |xml|
+          dependencies = (options[:dependencies] || ([project] + project.compile.dependencies)).flatten
+          libraries, projects = partition_dependencies(dependencies)
+
+          ## The content here can not be indented
+          output_dir = options[:output_dir] || project._(:artifacts, artifact_name)
+          xml.tag!('output-path', output_dir)
+
+          xml.root :id => "root" do
+
+            xml.element :id => "module-output", :name => project.iml.id
+
+            if options[:enable_jpa]
+              module_names = options[:jpa_module_names] || [project.iml.id]
+              module_names.each do |module_name|
+                facet_name = options[:jpa_facet_name] || "JPA"
+                xml.element :id => "jpa-descriptors", :facet => "#{module_name}/jpa/#{facet_name}"
+              end
+            end
+
+            if options[:enable_ejb].nil? || options[:enable_ejb]
+              module_names = options[:ejb_module_names] || [project.iml.id]
+              module_names.each do |module_name|
+                facet_name = options[:ejb_facet_name] || "EJB"
+                xml.element :id => "javaee-facet-resources", :facet => "#{module_name}/ejb/#{facet_name}"
+              end
+            end
+
+          end
+        end
+      end
+
+
       def add_gwt_configuration(launch_page, project, options = {})
         name = options[:name] || "Run #{launch_page}"
         shell_parameters = options[:shell_parameters] || ""
