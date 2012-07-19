@@ -157,8 +157,8 @@ module Buildr
                   dest = File.expand_path(dest, target.to_s)
                   trace "Extracting #{dest}"
                   mkpath File.dirname(dest) rescue nil
-                  #entry.restore_permissions = true
-                  File.open(dest, 'wb') {|f| f.write entry.read}
+                  File.open(dest, 'wb', entry.mode) {|f| f.write entry.read}
+                  File.chmod(entry.mode, dest)
                 end
               end
             end

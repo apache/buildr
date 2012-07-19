@@ -1,4 +1,6 @@
 1.4.8 (Pending)
+* Fixed:  BUILDR-646 TGZ files do not keep their permissions when extracted
+          via Buildr::Unzip#extract
 * Added:  Add add_exploded_ear_artifact and add_exploded_ejb_artifact to the idea project extension.
 * Change: Default to using Checkstyle 5.5 in the checkstyle addon.
 * Fixed:  Fix the add_exploded_war_artifact method on the idea project by adding in missing method
