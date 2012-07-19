@@ -52,10 +52,17 @@ describe "Scaladoc" do
     define('foo') do
       doc.using :windowtitle => "foo"
     end
-    Java.scala.tools.nsc.ScalaDoc.should_receive(:process) do |args|
+    actual = Java.scala.tools.nsc.ScalaDoc.new
+    scaladoc = Java.scala.tools.nsc.ScalaDoc.new
+    Java.scala.tools.nsc.ScalaDoc.should_receive(:new) do
+      scaladoc
+    end
+    scaladoc.should_receive(:process) do |args|
       # Convert Java Strings to Ruby Strings, if needed.
-      args.map { |a| a.is_a?(String) ? a : a.toString }.should include("-doc-title")
-      0 # normal return
+      xargs = args.map { |a| a.is_a?(String) ? a : a.toString }
+      xargs.should include("-doc-title")
+      xargs.should_not include("-windowtitle")
+      actual.process(args).should eql(true)
     end
     project('foo').doc.invoke
   end unless Buildr::Scala.version?(2.7, "2.8.0")
