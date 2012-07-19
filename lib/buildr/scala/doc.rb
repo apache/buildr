@@ -23,8 +23,13 @@ module Buildr
       after_define(:scaladoc => :doc) do |project|
         if project.doc.engine? Scaladoc
           options = project.doc.options
-          key = Scala.version?(2.7) ? :windowtitle : "doc-title".to_sym
-          options[key] = (project.comment || project.name) unless options[key]
+          if Scala.version?(2.7)
+            options[:windowtitle] = (project.comment || project.name) unless options[:windowtitle]
+          else
+            doc_title = "doc-title".to_sym
+            options[doc_title] = (project.comment || project.name) unless options[doc_title]
+            options.delete(:windowtitle) if options[:windowtitle]
+          end
         end
       end
     end
@@ -33,7 +38,8 @@ module Buildr
       specify :language => :scala, :source_ext => 'scala'
 
       def generate(sources, target, options = {})
-        cmd_args = [ '-d', target, trace?(:scaladoc) ? '-verbose' : '' ]
+        cmd_args = [ '-d', target]
+        cmd_args << '-verbose' if trace?(:scaladoc)
         options.reject { |key, value| [:sourcepath, :classpath].include?(key) }.
           each { |key, value| value.invoke if value.respond_to?(:invoke) }.
           each do |key, value|
@@ -74,11 +80,17 @@ module Buildr
 
     class VScaladoc < Base
       VERSION = '1.2-m1'
-      Buildr.repositories.remote << 'http://scala-tools.org/repo-snapshots'
+      Buildr.repositories.remote << 'https://oss.sonatype.org/content/groups/scala-tools'
 
       class << self
         def dependencies
-          [ "org.scala-tools:vscaladoc:jar:#{VERSION}" ]
+          case
+            when Buildr::Scala.version?("2.7")
+              [ "org.scala-tools:vscaladoc:jar:#{VERSION}" ]
+            else
+              warn "VScaladoc does not support Scala 2.8+"
+              []
+          end
         end
       end
 

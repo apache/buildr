@@ -134,8 +134,10 @@ module Buildr::Scala
     VERSION = case
       when Buildr::Scala.version?("2.8.0"),  Buildr::Scala.version?("2.8.1"), Buildr::Scala.version?("2.8.2")
         '1.5'
+      when Buildr::Scala.version?("2.9")
+        '1.11'
       else
-        '1.6.1'
+        fail "No default specs2 version for Scala #{Scala.version_without_build}"
     end
 
     class << self
@@ -150,7 +152,12 @@ module Buildr::Scala
       end
 
       def artifact
-        Buildr.settings.build['scala.specs2.artifact'] || "specs2_#{Buildr::Scala.version_without_build}"
+        case
+          when Buildr.settings.build['scala.specs2.artifact']
+            Buildr.settings.build['scala.specs2.artifact']
+          else
+            "specs2_#{Buildr::Scala.version_without_build}"
+        end
       end
 
       def scalaz_dependencies

@@ -40,7 +40,7 @@ module Buildr::Scala
       when Buildr::Scala.version?("2.8.1")
         '1.8'
       else
-        '1.9'
+        '1.10.0'
     end
 
     class << self
@@ -58,10 +58,16 @@ module Buildr::Scala
 
       def dependencies
         return [version] if (version =~ /:/)
+        group = case
+          when version =~ /^1.[67]/
+            "org.scala-tools.testing"
+          else
+            "org.scalacheck"
+        end
         if classifier
-          ["org.scala-tools.testing:#{artifact}:jar:#{classifier}:#{version}"]
+          ["#{group}:#{artifact}:jar:#{classifier}:#{version}"]
         else
-          ["org.scala-tools.testing:#{artifact}:jar:#{version}"]
+          ["#{group}:#{artifact}:jar:#{version}"]
         end
       end
 
@@ -83,7 +89,12 @@ module Buildr::Scala
   # * :java_args   -- Arguments passed as is to the JVM.
   class ScalaTest < Buildr::TestFramework::Java
 
-    VERSION = Buildr::Scala.version?(2.7, 2.8) ? '1.3' : '1.6.1'
+    VERSION = case
+      when Buildr::Scala.version?(2.7)
+        '1.3'
+      else
+        '1.8'
+    end
 
     class << self
       def version

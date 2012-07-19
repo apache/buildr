@@ -32,8 +32,8 @@ describe "scalatest version" do
       Scala::ScalaTest.dependencies.should include("org.scalatest:scalatest:jar:1.3")
     end
   when Buildr::Scala.version?(2.9)
-    it 'should be 1.6.1 for scala 2.9' do
-      Scala::ScalaTest.dependencies.should include("org.scalatest:scalatest_2.9.0:jar:1.6.1")
+    it 'should be 1.8 for scala 2.9' do
+      Scala::ScalaTest.dependencies.should include("org.scalatest:scalatest_2.9.2:jar:1.8")
     end
   end
 end
