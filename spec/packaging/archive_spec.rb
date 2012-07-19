@@ -411,6 +411,23 @@ describe TarTask do
     yield entries if block_given?
     entries
   end
+
+  # chmod is not reliable on Windows
+  unless Buildr::Util.win_os?
+    it 'should preserve file permissions' do
+      # with JRuby it's important to use absolute paths with File.chmod()
+      # http://jira.codehaus.org/browse/JRUBY-3300
+      hello = File.expand_path('src/main/bin/hello')
+      write hello, 'echo hi'
+      File.chmod(0777,  hello)
+      fail("Failed to set permission on #{hello}") unless (File.stat(hello).mode & 0777) == 0777
+
+      tar('foo.tgz').include('src/main/bin/*').invoke
+      unzip('target' => 'foo.tgz').extract
+      (File.stat('target/hello').mode & 0777).should == 0777
+    end
+  end
+
 end
 
 
