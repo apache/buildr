@@ -1,4 +1,5 @@
 1.4.8 (Pending)
+* Added:  BUILDR-645 Support Mercurial as a version control system (Tan Quach)
 * Fixed:  BUILDR-646 TGZ files do not keep their permissions when extracted
           via Buildr::Unzip#extract
 * Added:  Add add_exploded_ear_artifact and add_exploded_ejb_artifact to the idea project extension.
