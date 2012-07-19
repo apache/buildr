@@ -100,6 +100,58 @@ module Buildr
 
   end
 
+  module Hg #:nodoc:
+    module_function
+
+    # :call-seq:
+    #   hg(*args)
+    #
+    # Executes a Mercurial (hg) command passing through the args and returns the output. 
+    # Throws exception if the exit status is not zero. For example:
+    #   hg 'commit'
+    #   hg 'update', 'default'
+    def hg(*args)
+      cmd = "hg #{args.shift} #{args.map { |arg| arg.inspect }.join(' ')}"
+      output = `#{cmd}`
+      fail "Mercurial command \"#{cmd}\" failed with status #{$?.exitstatus}\n#{output}" unless $?.exitstatus == 0
+      return output
+    end
+
+    # Return a list of uncommitted / untracked files as reported by hg status
+    # The codes used to show the status of files are:
+    #   M = modified
+    #   A = added
+    #   R = removed
+    #   C = clean
+    #   ! = missing (deleted by non-hg command, but still tracked)
+    #   ? = not tracked
+    #   I = ignored
+    #     = origin of the previous file listed as A (added)
+    def uncommitted_files
+      `hg status`.scan(/^(A|M|R|!|\?) (\S.*)$/).map{ |match| match.last.split.last }
+    end
+
+    # Commit the given file with a message. The file should already be added to the Mercurial index.
+    def commit(file, message)
+      hg 'commit', '-m', message, file
+    end
+
+    # Update the remote branch with the local commits
+    # This will push the current remote destination and current branch.
+    def push
+      hg 'push'
+    end
+
+    # Return the name of the current local branch or nil if none.
+    def current_branch
+      hg('branch').to_s.strip
+    end
+
+    # Return the aliases (if any) of any remote repositories which the current local branch tracks
+    def remote
+      hg('paths').scan(/^(?:default|default-push)\s+=\s+(\S.*)/).map{ |match| match.last }
+    end
+  end
 
   module Git  #:nodoc:
     module_function
@@ -415,6 +467,54 @@ module Buildr
   end
 
 
+  class HgRelease < Release
+    class << self
+      def applies_to?
+        if File.exist? '.hg/requires'
+          true
+        else
+          curr_pwd = Dir.pwd
+          Dir.chdir('..') do
+            return false if curr_pwd == Dir.pwd # Means going up one level is not possible.
+            applies_to?
+          end
+        end
+      end
+    end
+
+    # Fails if one of these 2 conditions are not met:
+    #   1. The reository is not 'clean'; no content staged or unstaged
+    #   2. The repository is only a local repository and has no remote refs
+    def check
+      super
+      info "Working in branch '#{Hg.current_branch}'"
+      uncommitted = Hg.uncommitted_files
+      fail "Uncommitted files violate the First Principle Of Release!\n#{uncommitted.join("\n")}" unless uncommitted.empty?
+      fail "You are releasing from a local branch that does not track a remote!" if Hg.remote.empty?
+    end
+
+    # Tag this release in Mercurial
+    def tag_release(tag)
+      unless this_version == extract_version
+        info "Committing buildfile with version number #{extract_version}"
+        Hg.commit File.basename(Buildr.application.buildfile.to_s), message
+        Hg.push if Hg.remote
+      end
+      info "Tagging release #{tag}"
+      Hg.hg 'tag', tag, '-m', "[buildr] Cutting release #{tag}"
+      Hg.push if Hg.remote
+    end
+
+    # Update buildfile with next version number
+    def update_version_to_next
+      super
+      info "Current version is now #{extract_version}"
+      Hg.commit File.basename(Buildr.application.buildfile.to_s), message
+      Hg.push if Hg.remote
+    end     
+  end
+
+
   class GitRelease < Release
     class << self
       def applies_to?
@@ -430,7 +530,7 @@ module Buildr
       end
     end
 
-    # Fails if one of theses 2 conditions are not met:
+    # Fails if one of these 2 conditions are not met:
     #    1. the repository is clean: no content staged or unstaged
     #    2. some remote repositories are defined but the current branch does not track any
     def check
@@ -491,6 +591,7 @@ module Buildr
     end
   end
 
+  Release.add HgRelease
   Release.add SvnRelease
   Release.add GitRelease
 

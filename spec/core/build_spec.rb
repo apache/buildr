@@ -200,6 +200,66 @@ describe Project, '#reports' do
 end
 
 
+describe Hg do
+  describe '#current_branch' do
+    it 'should return the correct branch' do
+      Hg.should_receive(:hg).with('branch').and_return("default\n")
+      Hg.send(:current_branch).should == 'default'
+    end
+  end
+
+  describe '#uncommitted_files' do
+    it 'should return an array of modified files' do
+      Hg.should_receive(:`).with('hg status').and_return <<-EOF
+M abc.txt
+M xyz.txt
+R hello
+R removed
+! conflict
+A README
+? ignore.txt
+      EOF
+      Hg.uncommitted_files.should include('abc.txt', 'xyz.txt', 'hello', 'README', 'conflict', 'ignore.txt')
+    end
+  end
+
+  describe '#uncommitted_files' do
+    it 'should return an empty array on a clean repository' do
+      Hg.should_receive(:`).with('hg status').and_return "\n"
+      Hg.uncommitted_files.should be_empty
+    end   
+  end
+
+  describe '#remote' do
+    it 'should return the aliases of the default remote repositories' do
+      Hg.should_receive(:hg).with('paths').and_return <<-EOF
+default = https://hg.apache.org/repo/my-repo
+    EOF
+    Hg.send(:remote).should include('https://hg.apache.org/repo/my-repo')
+    end
+
+    it 'should return the aliases of the default push remote repositories' do
+      Hg.should_receive(:hg).with('paths').and_return <<-EOF
+default-push = https://hg.apache.org/repo/my-repo
+    EOF
+    Hg.send(:remote).should include('https://hg.apache.org/repo/my-repo')
+    end
+
+    it 'should return empty array when no remote repositories found' do
+      Hg.should_receive(:hg).with('paths').and_return "\n"
+      Hg.send(:remote).should be_empty
+    end
+
+    it 'should return empty array when no default-push remote repository found' do
+      Hg.should_receive(:hg).with('paths').and_return <<-EOF
+blah = https://bitbucket.org/sample-repo
+      EOF
+      Hg.send(:remote).should be_empty
+    end
+  end
+end # end of Hg
+
+
 describe Git do
   describe '#uncommitted_files' do
     it 'should return an empty array on a clean repository' do
@@ -346,6 +406,11 @@ end # of Buildr::Svn
 
 describe Release do
   describe 'find' do
+    it 'should return HgRelease if project uses Hg' do
+      write '.hg/requires'
+      Release.find.should be_instance_of(HgRelease)
+    end
+
     it 'should return GitRelease if project uses Git' do
       write '.git/config'
       Release.find.should be_instance_of(GitRelease)
@@ -674,6 +739,58 @@ shared_examples_for 'a release process' do
     it 'should fail if THIS_VERSION equals the next_version' do
       @release.stub!(:resolve_next_version).and_return('1.0.0-SNAPSHOT')
       lambda { @release.check }.should raise_error("The next version can't be equal to the current version 1.0.0-SNAPSHOT.\nUpdate THIS_VERSION/VERSION_NUMBER, specify Release.next_version or use NEXT_VERSION env var")
+    end
+  end
+end
+
+
+describe HgRelease do
+  it_should_behave_like 'a release process'
+
+  before do
+    write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
+    @release = HgRelease.new
+    Hg.stub!(:hg)
+    Hg.stub!(:remote).and_return('https://bitbucket.org/sample-repo')
+    Hg.stub!(:current_branch).and_return('default')
+  end
+
+  describe '#applies_to?' do
+    it 'should reject a non-hg repo' do
+      Dir.chdir(Dir.tmpdir) do
+        HgRelease.applies_to?.should be_false
+      end
+    end
+
+    it 'should accept a hg repo' do
+      FileUtils.mkdir '.hg'
+      FileUtils.touch File.join('.hg', 'requires')
+      HgRelease.applies_to?.should be_true
+    end
+  end
+
+  describe '#check' do
+    before do
+      @release = HgRelease.new
+      @release.send(:this_version=, '1.0.0-SNAPSHOT')
+    end
+
+    it 'should accept a clean repo' do
+      Hg.should_receive(:uncommitted_files).and_return([])
+      Hg.should_receive(:remote).and_return(["http://bitbucket.org/sample-repo"])
+      lambda { @release.check }.should_not raise_error
+    end
+
+    it 'should reject a dirty repo' do
+      Hg.should_receive(:uncommitted_files).and_return(['dirty_file.txt'])
+      lambda { @release.check }.should raise_error(RuntimeError, /uncommitted files/i)
+    end
+
+    it 'should reject a local branch not tracking a remote repo' do
+      Hg.should_receive(:uncommitted_files).and_return([])
+      Hg.should_receive(:remote).and_return([])
+      lambda{ @release.check }.should raise_error(RuntimeError,
+        "You are releasing from a local branch that does not track a remote!")
     end
   end
 end
