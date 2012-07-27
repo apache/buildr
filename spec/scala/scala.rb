@@ -18,11 +18,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers')
 
 describe 'scala' do
 
-  it 'should automatically add the remote scala-tools.org repository' do
+  it 'should automatically add the remote oss.sonatype.org repository' do
     # NOTE: the sandbox environment clears "repositories.remote" so we can't
     #       test for this spec right now.
     #
-    # repositories.remote.should include('http://scala-tools.org/repo-releases')
+    # repositories.remote.should include('http://oss.sonatype.org/content/repositories/releases')
   end
 
   it "should provide the Scala version string" do

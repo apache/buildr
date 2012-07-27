@@ -1,4 +1,12 @@
 1.4.8 (Pending)
+* Changed: Default to Scala 2.9.2, ScalaTest 1.8, Scala Specs2 1.11,
+           ScalaCheck 1.10.0.
+* Changed: Scala artifact repository changed to
+           http://oss.sonatype.org/content/repositories/releases
+* Added:  BUILDR-645 Support Mercurial as a version control system (Tan Quach)
+* Fixed:  BUILDR-646 TGZ files do not keep their permissions when extracted
+          via Buildr::Unzip#extract
+* Added:  Add add_exploded_ear_artifact and add_exploded_ejb_artifact to the idea project extension.
 * Change: Default to using Checkstyle 5.5 in the checkstyle addon.
 * Fixed:  Fix the add_exploded_war_artifact method on the idea project by adding in missing method
           `partition_dependencies`.

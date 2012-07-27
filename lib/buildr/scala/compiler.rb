@@ -14,7 +14,7 @@
 # the License.
 
 module Buildr::Scala
-  DEFAULT_VERSION = '2.9.1'
+  DEFAULT_VERSION = '2.9.2'
 
   class << self
 

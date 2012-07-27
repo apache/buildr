@@ -19,11 +19,12 @@
 # repository and cache these across test cases.
 Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
 repositories.remote << 'http://repo1.maven.org/maven2'
-repositories.remote << 'http://scala-tools.org/repo-releases'
+repositories.remote << 'https://oss.sonatype.org/content/groups/scala-tools'
+
 
 # Force Scala version for specs; don't want to rely on SCALA_HOME
 module Buildr::Scala
-  SCALA_VERSION_FOR_SPECS = ENV["SCALA_VERSION"] || "2.8.1"
+  SCALA_VERSION_FOR_SPECS = ENV["SCALA_VERSION"] || "2.9.2"
 end
 Buildr.settings.build['scala.version'] = Buildr::Scala::SCALA_VERSION_FOR_SPECS
 

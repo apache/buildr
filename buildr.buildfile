@@ -18,8 +18,8 @@ require 'buildr/jetty'
 require 'buildr/nailgun'
 require 'buildr/scala'
 repositories.remote << 'http://repo1.maven.org/maven2'
-repositories.remote << 'http://scala-tools.org/repo-releases/'
 
+repositories.remote << 'https://oss.sonatype.org/content/groups/scala-tools'
 
 define 'buildr' do
   compile.using :source=>'1.5', :target=>'1.5', :debug=>false
