@@ -1,4 +1,5 @@
 1.4.8 (Pending)
+* Added:   Integrate with Zinc (incremental compilation wrapper for scalac 2.9+)
 * Changed: Default to Scala 2.9.2, ScalaTest 1.8, Scala Specs2 1.11,
            ScalaCheck 1.10.0.
 * Changed: Scala artifact repository changed to

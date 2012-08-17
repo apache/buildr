@@ -319,3 +319,39 @@ describe 'scala compiler 2.9 options' do
 
 end if Buildr::Scala.version?(2.9)
 
+describe 'zinc compiler (enabled through Buildr.settings)' do
+  before :each do
+    Buildr.settings.build['scalac.incremental'] = true
+  end
+
+  it 'should compile with zinc' do
+    write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }'
+    project = define('foo')
+    compile_task = project.compile.using(:scalac)
+    compiler = compile_task.instance_eval { @compiler }
+    compiler.send(:zinc?).should eql(true)
+    compiler.should_receive(:compile_with_zinc).once
+    compile_task.invoke
+  end
+
+  after :each do
+    Buildr.settings.build['scalac.incremental'] = nil
+  end
+
+  it_should_behave_like ScalacCompiler
+end
+
+describe 'zinc compiler (enabled through project.scala_options)' do
+
+  it 'should compile with zinc' do
+    write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }'
+    project = define('foo')
+    project.scalac_options.incremental = true
+    compile_task = project.compile.using(:scalac)
+    compiler = compile_task.instance_eval { @compiler }
+    compiler.send(:zinc?).should eql(true)
+    compiler.should_receive(:compile_with_zinc).once
+    compile_task.invoke
+  end
+end
+
