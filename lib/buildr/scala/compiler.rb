@@ -80,6 +80,10 @@ module Buildr::Scala
   # * :other       -- Array of options to pass to the Scalac compiler as is, e.g. -Xprint-types
   class Scalac < Buildr::Compiler::Base
 
+    DEFAULT_ZINC_VERSION  = '0.1.0'
+    DEFAULT_SBT_VERSION   = '0.12.0'
+    DEFAULT_JLINE_VERSION = '1.0'
+
     # The scalac compiler jars are added to classpath at load time,
     # if you want to customize artifact versions, you must set them on the
     #
@@ -91,6 +95,17 @@ module Buildr::Scala
       version = Buildr.settings.build['scala.version'] || DEFAULT_VERSION
       ns.library!      'org.scala-lang:scala-library:jar:>=' + version
       ns.compiler!     'org.scala-lang:scala-compiler:jar:>=' + version
+    end
+
+    ZINC_REQUIRES = ArtifactNamespace.for(self) do |ns|
+      zinc_version  = Buildr.settings.build['zinc.version']  || DEFAULT_ZINC_VERSION
+      sbt_version   = Buildr.settings.build['sbt.version']   || DEFAULT_SBT_VERSION
+      jline_version = Buildr.settings.build['jline.version'] || DEFAULT_JLINE_VERSION
+      ns.zinc!          "com.typesafe.zinc:zinc:jar:>=#{zinc_version}"
+      ns.sbt_interface! "com.typesafe.sbt:sbt-interface:jar:>=#{sbt_version}"
+      ns.incremental!   "com.typesafe.sbt:incremental-compiler:jar:>=#{sbt_version}"
+      ns.compiler_interface_sources! "com.typesafe.sbt:compiler-interface:jar:sources:>=#{sbt_version}"
+      ns.jline!        "jline:jline:jar:>=#{jline_version}"
     end
 
     class << self
@@ -117,11 +132,15 @@ module Buildr::Scala
       end
 
       def dependencies
-        if use_installed?
+        scala_dependencies = if use_installed?
           ['scala-library', 'scala-compiler'].map { |s| File.expand_path("lib/#{s}.jar", scala_home) }
         else
           REQUIRES.artifacts.map(&:to_s)
         end
+
+        zinc_dependencies = ZINC_REQUIRES.artifacts.map(&:to_s)
+
+        scala_dependencies + zinc_dependencies
       end
 
       def use_fsc
@@ -155,11 +174,18 @@ module Buildr::Scala
       options[:optimise] ||= false
       options[:make] ||= :transitivenocp if Scala.version? 2.8
       options[:javac] ||= {}
-
       @java = Javac.new(project, options[:javac])
     end
 
     def compile(sources, target, dependencies) #:nodoc:
+      if zinc?
+        compile_with_zinc(sources, target, dependencies)
+      else
+        compile_with_scalac(sources, target, dependencies)
+      end
+    end
+
+    def compile_with_scalac(sources, target, dependencies) #:nodoc:
       check_options(options, OPTIONS + (Scala.version?(2.8) ? [:make] : []))
 
       java_sources = java_sources(sources)
@@ -211,6 +237,40 @@ module Buildr::Scala
       end
     end
 
+    def compile_with_zinc(sources, target, dependencies) #:nodoc:
+
+      java_sources = java_sources(sources)
+
+      dependencies.unshift target
+
+      cmd_args = []
+      cmd_args << '-sbt-interface' << REQUIRES.sbt_interface.artifact
+      cmd_args << '-compiler-interface' << REQUIRES.compiler_interface_sources.artifact
+      cmd_args << '-scala-library' << dependencies.find { |d| d =~ /scala-library/ }
+      cmd_args << '-scala-compiler' << dependencies.find { |d| d =~ /scala-compiler/ }
+      cmd_args << '-classpath' << dependencies.join(File::PATH_SEPARATOR)
+      source_paths = sources.select { |source| File.directory?(source) }
+      cmd_args << '-Ssourcepath' << ("-S" + source_paths.join(File::PATH_SEPARATOR)) unless source_paths.empty?
+      cmd_args << '-d' << File.expand_path(target)
+      cmd_args += scalac_args
+      cmd_args << "-debug" if trace?(:scalac)
+
+      cmd_args.map!(&:to_s)
+
+      cmd_args += files_from_sources(sources)
+
+      unless Buildr.application.options.dryrun
+        trace((['com.typesafe.zinc.Main.main'] + cmd_args).join(' '))
+
+        Java.load
+        begin
+          Java.com.typesafe.zinc.Main.main(cmd_args.to_java(Java.java.lang.String))
+        rescue => e
+          fail "Zinc compiler crashed:\n#{e.inspect}\n#{e.backtrace.join("\n")}"
+        end
+      end
+    end
+
   protected
 
     # :nodoc: see Compiler:Base
@@ -255,6 +315,10 @@ module Buildr::Scala
 
   private
 
+    def zinc?
+      (options[:incremental] || @project.scalac_options.incremental || (Buildr.settings.build['scalac.incremental'].to_s == "true"))
+    end
+
     def count(file, pattern)
       count = 0
       File.open(file, "r") do |infile|
@@ -283,13 +347,39 @@ module Buildr::Scala
       args << "-deprecation" if options[:deprecation]
       args << "-optimise" if options[:optimise]
       args << "-target:jvm-" + options[:target].to_s if options[:target]
-      args + Array(options[:other])
+      args += Array(options[:other])
+      if zinc?
+        args.map { |arg| "-S" + arg } + Array(options[:zinc_options])
+      else
+        args
+      end
     end
-
   end
 
+  module ProjectExtension
+    def scalac_options
+      @scalac ||= ScalacOptions.new(self)
+    end
+  end
+
+  class ScalacOptions
+    attr_writer :incremental
+
+    def initialize(project)
+      @project = project
+    end
+
+    def incremental
+      @incremental || (@project.parent ? @project.parent.scalac_options.incremental : nil)
+    end
+  end
 end
 
 # Scala compiler comes first, ahead of Javac, this allows it to pick
 # projects that mix Scala and Java code by spotting Scala code first.
 Buildr::Compiler.compilers.unshift Buildr::Scala::Scalac
+
+class Buildr::Project
+  include Buildr::Scala::ProjectExtension
+end
+
