@@ -1,5 +1,5 @@
 1.4.8 (Pending)
-* Added:  Create the git_auto_aversion addon that automatically specifies a version for a git project based
+* Added:  Create the git_auto_version addon that automatically specifies a version for a git project based
           on git describe.
 * Added:   Integrate with Zinc (incremental compilation wrapper for scalac 2.9+)
 * Changed: Default to Scala 2.9.2, ScalaTest 1.8, Scala Specs2 1.11,
