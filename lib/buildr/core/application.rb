@@ -593,7 +593,7 @@ end
 HighLine.use_color = false
 if $stdout.isatty
   begin
-    require 'Win32/Console/ANSI' if Config::CONFIG['host_os'] =~ /mswin|win32|dos|cygwin|mingw/i
+    require 'Win32/Console/ANSI' if RbConfig::CONFIG['host_os'] =~ /mswin|win32|dos|cygwin|mingw/i
     HighLine.use_color = true
   rescue LoadError
   end
