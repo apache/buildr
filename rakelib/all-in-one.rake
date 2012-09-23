@@ -13,12 +13,16 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+def workspace_dir
+  "#{File.expand_path(File.join(File.dirname(__FILE__), ".."))}"
+end
+
 desc "Create JRuby all-in-one distribution"
 task "all-in-one" => 'all-in-one:all-in-one'
 
 namespace :'all-in-one' do
 
-  version = "1.6.4"
+  version = "1.6.7"
   jruby_distro = "jruby-bin-#{version}.tar.gz"
   url = "http://jruby.org.s3.amazonaws.com/downloads/#{version}/#{jruby_distro}"
   dir = "jruby-#{version}"
@@ -46,9 +50,15 @@ namespace :'all-in-one' do
 
   desc 'Download and extract JRuby'
   task :download_and_extract do
-    unless File.exist? jruby_distro
+    unless File.exist?(jruby_distro)
       puts "Downloading JRuby from #{url} ..."
-      sh 'wget', url
+      require 'open-uri'
+      File.open(jruby_distro, "wb") do |saved_file|
+        # the following "open" is provided by open-uri
+        open(url) do |read_file|
+          saved_file.write(read_file.read)
+        end
+      end
       puts "[X] Downloaded JRuby"
     end
 
@@ -94,22 +104,27 @@ namespace :'all-in-one' do
   desc 'Add Buildr executables/scripts'
   task :add_execs do
     cp 'bin/jruby.exe', 'bin/_buildr.exe'
-    cp Dir["../../all-in-one/*"], 'bin'
+    cp "#{workspace_dir}/all-in-one/buildr", 'bin/buildr'
+    cp "#{workspace_dir}/all-in-one/_buildr", 'bin/_buildr'
+    cp "#{workspace_dir}/all-in-one/buildr.cmd", 'bin/buildr.cmd'
+    File.chmod(0500, 'bin/_buildr', 'bin/buildr')
   end
 
   desc 'Package distribution'
   task :package do
+    pkg_dir = "#{workspace_dir}/pkg"
+    mkpath pkg_dir
     puts "Zipping distribution ..."
     cd '..'
     new_dir  = "#{spec.name}-all-in-one-#{spec.version}"
     mv dir, new_dir
-    zip = "#{new_dir}.zip"
+    zip = "#{pkg_dir}/#{new_dir}.zip"
     rm zip if File.exist? zip
     sh 'zip', '-q', '-r', zip, new_dir
     puts "[X] Zipped distribution"
 
     puts "Tarring distribution ..."
-    tar = "#{new_dir}.tar.gz"
+    tar = "#{pkg_dir}/#{new_dir}.tar.gz"
     rm tar if File.exist? tar
     sh 'tar', 'czf', tar, new_dir
     puts "[X] Tarred distribution"
