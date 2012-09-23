@@ -16,14 +16,23 @@
 module Buildr
   module Bnd
     class << self
+      @@version = '1.50.0'
+      def version
+        @@version
+      end
+
+      def version=(newVersion)
+        @@version = newVersion
+      end
+
       # The specs for requirements
       def dependencies
-        ["biz.aQute:bnd:jar:0.0.384"]
+        ["biz.aQute:bnd:jar:#{version}"]
       end
 
       # Repositories containing the requirements
       def remote_repository
-        "http://www.aQute.biz/repo"
+        "http://maven.apache.org"
       end
 
       def bnd_main(*args)
@@ -102,7 +111,7 @@ module Buildr
             f.print params.collect { |k, v| "#{k}=#{v}" }.join("\n")
           end
 
-          Buildr::Bnd.bnd_main( "build", "-noeclipse", bnd_filename )
+          Buildr::Bnd.bnd_main( bnd_filename )
           begin
             Buildr::Bnd.bnd_main( "print", "-verify", filename )
           rescue => e
