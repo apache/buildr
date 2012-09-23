@@ -34,7 +34,9 @@ if [ -f Gemfile ]; then
   fi
   rm -f Gemfile.lock
   rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec bundle install
-  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem cleanup -q
+  if [ "X$BUILDR_RUBY_VERSION" != "Xjruby-1.6.7" ]; then
+    rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem cleanup -q
+  fi
 fi
 
 if [ ! -z "$PS1" ]; then
