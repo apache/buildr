@@ -12,22 +12,26 @@ cat <<EOF
 EOF
 
 ruby_string="${BUILDR_RUBY_VERSION:-ruby-1.9.2-p320}"
-bundler_gem_home="vendor/bundle" 
+project_dir=`pwd`
+export project_name=${JOB_NAME-`basename "$project_dir"`}
 
-if rvm list strings | grep -q "${ruby_string}" ; then 
-  rvm use --create "${ruby_string}@buildr" 
+detected_version=`rvm list strings | grep ${ruby_string}`
+if [ "X" == "X${detected_version}" ] ; then
+  echo "${ruby_string} was not found, running 'rvm install ${ruby_string}'..."
+  rvm install ${ruby_string}
+fi
 
-  gem list | grep 'bundler' &> /dev/null 
-  if [ $? -gt 0 ]; then 
-    echo "Installing bundler..." 
-    gem install bundler 
+rvm use --create "${ruby_string}@${project_name}"
+
+export JRUBY_OPTS="-J-XX:MaxPermSize=128m -J-Xmx1024M"
+export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m"
+
+if [ -f Gemfile ]; then
+  gem list | grep 'bundler' &> /dev/null
+  if [ $? -gt 0 ]; then
+    echo "Installing bundler..."
+    gem install bundler
   fi
-
-  rm Gemfile.lock
-  bundle install
-
-  export JRUBY_OPTS="-J-XX:MaxPermSize=128m -J-Xmx1024M"
-  export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m"
-else 
-  echo "${ruby_string} was not found, please run 'rvm install ${ruby_string}' and then cd back into the project directory." 
+  bundle install --binstubs
+  gem cleanup -q
 fi
