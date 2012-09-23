@@ -21,6 +21,11 @@ if [ "X" == "X${detected_version}" ]; then
   rvm install ${BUILDR_RUBY_VERSION}
 fi
 
+# If running in the ci then remove the existing gemset
+if [ "X" != "X$JENKINS_HOME" ]; then
+  rvm ${BUILDR_RUBY_VERSION} gemset delete ${BUILDR_GEMSET}
+fi
+
 rvm ${BUILDR_RUBY_VERSION} gemset create ${BUILDR_GEMSET}
 
 export JRUBY_OPTS="-J-XX:MaxPermSize=128m -J-Xmx1024M"
