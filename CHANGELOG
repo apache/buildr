@@ -1,13 +1,13 @@
 1.4.8 (Pending)
-* Changed: Mark Buildr:Bnd.remote_repository as deprecated as dependencies appear in maven central.
+* Change: Mark Buildr:Bnd.remote_repository as deprecated as dependencies appear in maven central.
 * Added:  BUILDR-654 Add the ability to configure the version of BND used by bnd addon. (Niklaus Giger)
 * Added:  Create the git_auto_version addon that automatically specifies a version for a git project based
           on git describe.
-* Added:   Integrate with Zinc (incremental compilation wrapper for scalac 2.9+)
-* Changed: Default to Scala 2.9.2, ScalaTest 1.8, Scala Specs2 1.11,
-           ScalaCheck 1.10.0.
-* Changed: Scala artifact repository changed to
-           http://oss.sonatype.org/content/repositories/releases
+* Added:  Integrate with Zinc (incremental compilation wrapper for scalac 2.9+)
+* Change: Default to Scala 2.9.2, ScalaTest 1.8, Scala Specs2 1.11,
+          ScalaCheck 1.10.0.
+* Change: Scala artifact repository changed to
+          http://oss.sonatype.org/content/repositories/releases
 * Added:  BUILDR-645 Support Mercurial as a version control system (Tan Quach)
 * Fixed:  BUILDR-646 TGZ files do not keep their permissions when extracted
           via Buildr::Unzip#extract
