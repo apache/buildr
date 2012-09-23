@@ -23,6 +23,7 @@ elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.5" ]; then
   rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake ci --trace 2>&1
 elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.6" ]; then
   export BUILDR_RUBY_VERSION=jruby-1.6.7
+  export JAVA_HOME=/home/hudson/tools/java/latest1.6-64 ;
   source .rvmrc
   rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake ci --trace 2>&1
 elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.7" ]; then
