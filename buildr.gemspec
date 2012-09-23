@@ -89,4 +89,5 @@ for those one-off tasks, with a language that's a joy to use.
   # Ideally we would depend on psych when the platform has >= 1.9.2 support and jruby platform version > 1.6.6
   #spec.add_development_dependency 'psych' if RUBY_VERSION >= '1.9.2'
   spec.add_development_dependency 'pygmentize', '0.0.3'
+  spec.add_development_dependency 'saikuro_treemap', '0.2.0'
 end
