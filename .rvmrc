@@ -16,7 +16,7 @@ project_dir=`pwd`
 export BUILDR_GEMSET=${JOB_NAME-`basename "$project_dir"`}
 
 detected_version=`rvm list strings | grep ${BUILDR_RUBY_VERSION}`
-if [ "X" == "X${detected_version}" ] ; then
+if [ "X" == "X${detected_version}" ]; then
   echo "${BUILDR_RUBY_VERSION} was not found, running 'rvm install ${BUILDR_RUBY_VERSION}'..."
   rvm install ${BUILDR_RUBY_VERSION}
 fi
