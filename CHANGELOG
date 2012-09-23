@@ -1,4 +1,5 @@
 1.4.8 (Pending)
+* Change: BUILDR-640 Enable building jekyll and rdoc under more rubies. (Niklaus Giger)
 * Change: Mark Buildr:Bnd.remote_repository as deprecated as dependencies appear in maven central.
 * Added:  BUILDR-654 Add the ability to configure the version of BND used by bnd addon. (Niklaus Giger)
 * Added:  Create the git_auto_version addon that automatically specifies a version for a git project based
