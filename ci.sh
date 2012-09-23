@@ -42,6 +42,11 @@ elif [ "X$JOB_NAME" == "XBuildr-website-build" ]; then
   export PATH=$PATH:/home/toulmean/prince/bin
   source .rvmrc
   rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake jekyll --trace 2>&1
+elif [ "X$JOB_NAME" == "XBuildr-omnibus" ]; then
+  export BUILDR_RUBY_VERSION=ruby-1.9.2-p320
+  export JAVA_HOME=/home/hudson/tools/java/latest1.7-64 ;
+  source .rvmrc
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake all-in-one --trace 2>&1
 else
   echo "Unknown build job"
   exit 42
