@@ -32,6 +32,7 @@ module Buildr
 
       # Repositories containing the requirements
       def remote_repository
+        Buildr.application.deprecated "'Buildr:Bnd.remote_repository deprecated as the dependencies appear in maven central."
         "http://maven.apache.org"
       end
 
