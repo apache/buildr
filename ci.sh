@@ -37,7 +37,7 @@ elif [ "X$JOB_NAME" == "XBuildr-metrics-build" ]; then
   source .rvmrc
   rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake coverage metrics --trace 2>&1
 elif [ "X$JOB_NAME" == "XBuildr-website-build" ]; then
-  export BUILDR_RUBY_VERSION=ruby-1.9.2-p320
+  export BUILDR_RUBY_VERSION=ruby-1.8.7-p358
   export JAVA_HOME=/home/hudson/tools/java/latest1.6-64 ;
   export PATH=$PATH:/home/toulmean/prince/bin
   source .rvmrc
