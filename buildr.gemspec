@@ -80,7 +80,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_development_dependency 'rdoc', '3.8'
   spec.add_development_dependency 'rcov', '0.9.9'
 
-  spec.add_development_dependency 'ci_reporter', '1.6.3'
+  spec.add_development_dependency 'ci_reporter', '1.7.2'
 
   spec.add_development_dependency 'ffi-ncurses', '0.4.0' if $platform.to_s == 'java'
   spec.add_development_dependency 'bundler'
