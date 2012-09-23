@@ -90,4 +90,5 @@ for those one-off tasks, with a language that's a joy to use.
   #spec.add_development_dependency 'psych' if RUBY_VERSION >= '1.9.2'
   spec.add_development_dependency 'pygmentize', '0.0.3'
   spec.add_development_dependency 'saikuro_treemap', '0.2.0'
+  spec.add_development_dependency 'atoulme-Saikuro', '1.2.1'
 end
