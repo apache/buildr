@@ -28,8 +28,8 @@ fi
 
 rvm ${BUILDR_RUBY_VERSION} gemset create ${BUILDR_GEMSET}
 
-export JRUBY_OPTS="-J-XX:MaxPermSize=128m -J-Xmx1024M"
-export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m"
+export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx1024M"
+export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=312m"
 
 if [ -f Gemfile ]; then
   rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem list | grep 'bundler' &> /dev/null
