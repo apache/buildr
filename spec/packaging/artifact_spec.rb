@@ -1115,11 +1115,11 @@ XML
   end
 
   it 'should bring artifact and its dependencies' do
-    transitive(@complex).should eql(artifacts(@complex, @simple))
+    transitive(@complex).should eql(artifacts(@complex, @simple - [@provided]))
   end
 
   it 'should bring dependencies of POM without artifact itself' do
-    transitive(@complex.sub(/jar/, 'pom')).should eql(artifacts(@simple))
+    transitive(@complex.sub(/jar/, 'pom')).should eql(artifacts(@simple - [@provided]))
   end
 
   it 'should bring artifact and transitive depenencies' do

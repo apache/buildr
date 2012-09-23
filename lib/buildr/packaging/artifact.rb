@@ -814,7 +814,7 @@ module Buildr
   def transitive(*args)
     options = Hash === args.last ? args.pop : {}
     dep_opts = {
-      :scopes   => options[:scopes] || [nil, "compile", "runtime", "provided"],
+      :scopes   => options[:scopes] || [nil, "compile", "runtime"],
       :optional => options[:optional]
     }
     specs = args.flatten

@@ -1,4 +1,6 @@
 1.4.8 (Pending)
+* Fixed:  BUILDR-606 Transitive artifact resolution should not include artifacts in 'provided' scope in poms to
+          match maven behaviour. (Julio Arias)
 * Change: BUILDR-640 Enable building jekyll and rdoc under more rubies. (Niklaus Giger)
 * Change: Mark Buildr:Bnd.remote_repository as deprecated as dependencies appear in maven central.
 * Added:  BUILDR-654 Add the ability to configure the version of BND used by bnd addon. (Niklaus Giger)
