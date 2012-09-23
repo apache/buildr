@@ -1,4 +1,5 @@
 1.4.8 (Pending)
+* Fixed:  BUILDR-627 Support explicitly listed source files in buildr cc task. (Christopher Tiwald)
 * Fixed:  BUILDR-606 Transitive artifact resolution should not include artifacts in 'provided' scope in poms to
           match maven behaviour. (Julio Arias)
 * Change: BUILDR-640 Enable building jekyll and rdoc under more rubies. (Niklaus Giger)
