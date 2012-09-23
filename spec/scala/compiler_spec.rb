@@ -319,6 +319,8 @@ describe 'scala compiler 2.9 options' do
 
 end if Buildr::Scala.version?(2.9)
 
+if Java.java.lang.System.getProperty("java.runtime.version") >= "1.6"
+
 describe 'zinc compiler (enabled through Buildr.settings)' do
   before :each do
     Buildr.settings.build['scalac.incremental'] = true
@@ -355,3 +357,6 @@ describe 'zinc compiler (enabled through project.scala_options)' do
   end
 end
 
+elsif Buildr::VERSION >= '1.5'
+  raise "JVM version guard in #{__FILE__} should be removed since it is assumed that Java 1.5 is no longer supported."
+end
