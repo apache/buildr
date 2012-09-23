@@ -10,26 +10,26 @@ elif [ "X$JOB_NAME" == "XBuildr-ci-build-1.9" ]; then
   export JAVA_HOME=/home/hudson/tools/java/latest1.6-64 ;
   export BUILDR_RUBY_VERSION=ruby-1.9.2-p320
   source .rvmrc
-  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake spec:ruby_1_9 --trace 2>&1
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake ci --trace 2>&1
 elif [ "X$JOB_NAME" == "XBuildr-ci-build-1.8" ]; then
   export JAVA_HOME=/home/hudson/tools/java/latest1.6-64 ;
   export BUILDR_RUBY_VERSION=ruby-1.8.7-p358
   source .rvmrc
-  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake spec:ruby_1_8 --trace 2>&1
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake ci --trace 2>&1
 elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.5" ]; then
   export BUILDR_RUBY_VERSION=jruby-1.6.7
   export JAVA_HOME=/home/hudson/tools/java/latest1.5-64 ;
   source .rvmrc
-  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake spec:jruby --trace 2>&1
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake ci --trace 2>&1
 elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.6" ]; then
   export BUILDR_RUBY_VERSION=jruby-1.6.7
   source .rvmrc
-  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake spec:jruby --trace 2>&1
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake ci --trace 2>&1
 elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.7" ]; then
   export BUILDR_RUBY_VERSION=jruby-1.6.7
   export JAVA_HOME=/home/hudson/tools/java/latest1.7-64 ;
   source .rvmrc
-  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake spec:jruby --trace 2>&1
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake ci --trace 2>&1
 else
   echo "Unknown build job"
   exit 42
