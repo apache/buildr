@@ -31,6 +31,11 @@ elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.7" ]; then
   export JAVA_HOME=/home/hudson/tools/java/latest1.7-64 ;
   source .rvmrc
   rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake ci --trace 2>&1
+elif [ "X$JOB_NAME" == "XBuildr-metrics-build" ]; then
+  export BUILDR_RUBY_VERSION=ruby-1.9.2-p320
+  export JAVA_HOME=/home/hudson/tools/java/latest1.6-64 ;
+  source .rvmrc
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake coverage metrics --trace 2>&1
 else
   echo "Unknown build job"
   exit 42
