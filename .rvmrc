@@ -11,27 +11,31 @@ cat <<EOF
 ********************************************************************
 EOF
 
-ruby_string="${BUILDR_RUBY_VERSION:-ruby-1.9.2-p320}"
+export BUILDR_RUBY_VERSION="${BUILDR_RUBY_VERSION:-ruby-1.9.2-p320}"
 project_dir=`pwd`
-export project_name=${JOB_NAME-`basename "$project_dir"`}
+export BUILDR_GEMSET=${JOB_NAME-`basename "$project_dir"`}
 
-detected_version=`rvm list strings | grep ${ruby_string}`
+detected_version=`rvm list strings | grep ${BUILDR_RUBY_VERSION}`
 if [ "X" == "X${detected_version}" ] ; then
-  echo "${ruby_string} was not found, running 'rvm install ${ruby_string}'..."
-  rvm install ${ruby_string}
+  echo "${BUILDR_RUBY_VERSION} was not found, running 'rvm install ${BUILDR_RUBY_VERSION}'..."
+  rvm install ${BUILDR_RUBY_VERSION}
 fi
 
-rvm use --create "${ruby_string}@${project_name}"
+rvm ${BUILDR_RUBY_VERSION} gemset create ${BUILDR_GEMSET}
 
 export JRUBY_OPTS="-J-XX:MaxPermSize=128m -J-Xmx1024M"
 export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=256m"
 
 if [ -f Gemfile ]; then
-  gem list | grep 'bundler' &> /dev/null
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem list | grep 'bundler' &> /dev/null
   if [ $? -gt 0 ]; then
     echo "Installing bundler..."
-    gem install bundler
+    rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem install bundler
   fi
-  bundle install --binstubs
-  gem cleanup -q
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec bundle install --binstubs
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem cleanup -q
+fi
+
+if [ ! -z "$PS1" ]; then
+  rvm use "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}"
 fi
