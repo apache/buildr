@@ -32,6 +32,7 @@ if [ -f Gemfile ]; then
     echo "Installing bundler..."
     rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem install bundler
   fi
+  rm -f Gemfile.lock
   rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec bundle install
   rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem cleanup -q
 fi
