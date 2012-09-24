@@ -82,10 +82,6 @@ require 'buildr/java/doc'
 require 'buildr/java/deprecated'
 require 'buildr/ide/idea'
 require 'buildr/ide/eclipse'
-# Order is significant for auto-detection, from most specific to least
-require 'buildr/ide/eclipse/plugin'
-require 'buildr/ide/eclipse/scala'
-require 'buildr/ide/eclipse/java'
 
 # Methods defined in Buildr are both instance methods (e.g. when included in Project)
 # and class methods when invoked like Buildr.artifacts().
