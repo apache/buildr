@@ -26,7 +26,10 @@ if [ "X" != "X$JENKINS_HOME" ]; then
   rvm ${BUILDR_RUBY_VERSION} --force gemset delete ${BUILDR_GEMSET}
 fi
 
-rvm ${BUILDR_RUBY_VERSION} --force gemset create ${BUILDR_GEMSET}
+# rvm ${BUILDR_RUBY_VERSION} --force gemset create ${BUILDR_GEMSET}
+
+# Force the creation of the gemset
+rvm use "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" --create
 
 export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx1024M"
 export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=312m"
