@@ -78,7 +78,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_development_dependency 'RedCloth', '4.2.9'
   spec.add_development_dependency 'jekylltask', '1.1.0'
   spec.add_development_dependency 'rdoc', '3.12'
-  spec.add_development_dependency 'rcov', '1.0.0'
+  spec.add_development_dependency 'rcov', '0.9.9'
 
   spec.add_development_dependency 'ci_reporter', '1.7.2'
 
