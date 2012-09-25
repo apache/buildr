@@ -70,7 +70,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'rspec-mocks',          '2.9.0'
   spec.add_dependency 'rspec-core',           '2.9.0'
   spec.add_dependency 'rspec',                '2.9.0'
-  spec.add_dependency 'xml-simple',           '1.0.12'
+  spec.add_dependency 'xml-simple',           '1.1.1'
   spec.add_dependency 'minitar',              '0.5.3'
   spec.add_dependency 'jruby-openssl',        '>= 0.7' if $platform.to_s == 'java'
 
