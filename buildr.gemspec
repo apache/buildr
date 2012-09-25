@@ -59,7 +59,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'net-ssh',              '2.3.0'
   spec.add_dependency 'net-sftp',             '2.0.5'
   spec.add_dependency 'rubyzip',              '0.9.4'
-  spec.add_dependency 'highline',             '1.6.2'
+  spec.add_dependency 'highline',             '1.6.15'
   spec.add_dependency 'json_pure',            '1.4.3'
   spec.add_dependency 'rubyforge',            '2.0.4'
   spec.add_dependency 'hoe',                  '2.3.3'
