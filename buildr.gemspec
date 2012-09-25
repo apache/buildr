@@ -61,7 +61,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'rubyzip',              '0.9.4'
   spec.add_dependency 'highline',             '1.6.2'
   spec.add_dependency 'json_pure',            '1.4.3'
-  spec.add_dependency 'rubyforge',            '2.0.3'
+  spec.add_dependency 'rubyforge',            '2.0.4'
   spec.add_dependency 'hoe',                  '2.3.3'
   spec.add_dependency 'rjb',                  '1.4.1' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
   spec.add_dependency 'atoulme-Antwrap',      '~> 0.7.2'
@@ -85,7 +85,6 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_development_dependency 'ffi-ncurses', '0.4.0' if $platform.to_s == 'java'
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'win32console' if $platform.to_s == 'x86-mswin32'
-  spec.add_development_dependency 'rubyforge'
   # Ideally we would depend on psych when the platform has >= 1.9.2 support and jruby platform version > 1.6.6
   #spec.add_development_dependency 'psych' if RUBY_VERSION >= '1.9.2'
   spec.add_development_dependency 'pygmentize', '0.0.3'
