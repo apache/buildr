@@ -20,7 +20,7 @@ module Buildr
       script = nil
       choose do |menu|
         menu.header = "To use Buildr you need a buildfile. Do you want me to create one?"
-	menu.choice("From eclipse .project files") { script = Generate.from_eclipse(Dir.pwd).join("\n") } if has_eclipse_project?
+        menu.choice("From eclipse .project files") { script = Generate.from_eclipse(Dir.pwd).join("\n") } if has_eclipse_project?
         menu.choice("From maven2 pom file") { script = Generate.from_maven2_pom('pom.xml').join("\n") } if File.exists?("pom.xml")
         menu.choice("From directory structure") { script = Generate.from_directory(Dir.pwd).join("\n") }
         menu.choice("Skip") { }
