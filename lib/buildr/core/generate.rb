@@ -61,7 +61,7 @@ module Buildr
         candidates = Dir.glob("**/.project")
         return false if candidates.size == 0
         candidates.find { |x| get_project_natures(x) }
-        return false
+        return candidates.size > 0
       end
 
 
