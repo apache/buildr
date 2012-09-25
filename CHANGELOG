@@ -1,5 +1,5 @@
 1.4.8 (Pending)
-* Change: Updated dependency versions; rdoc (3.12 > 3.8)
+* Change: Updated dependency versions; rjb (1.4.1 > 1.4.0), rdoc (3.12 > 3.8)
 * Added:  BUILDR-652 Generate buildfile from Eclipse workspace. (Niklaus Giger)
 * Fixed:  BUILDR-627 Support explicitly listed source files in buildr cc task. (Christopher Tiwald)
 * Fixed:  BUILDR-606 Transitive artifact resolution should not include artifacts in 'provided' scope in poms to
