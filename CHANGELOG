@@ -4,6 +4,7 @@
           - highline (1.6.15)
           - rubyforge (2.0.4)
           - net-ssh (2.6.0)
+          - hoe (3.1.0)
           - rjb (1.4.1)
           - rdoc (3.12)
           - xml-simple (1.1.1)
