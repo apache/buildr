@@ -1,5 +1,5 @@
 1.4.8 (Pending)
-* Change: Updated dependency versions; highline (1.6.15 > 1.6.2), rubyforge (2.0.4 > 2.0.3), rubyzip (0.9.9 > 0.9.4), rjb (1.4.1 > 1.4.0), rdoc (3.12 > 3.8), xml-simple (1.1.1 > 1.0.12), json_pure (1.7.5 > 1.4.3)
+* Change: Updated dependency versions; highline (1.6.15 > 1.6.2), rubyforge (2.0.4 > 2.0.3), rjb (1.4.1 > 1.4.0), rdoc (3.12 > 3.8), xml-simple (1.1.1 > 1.0.12)
 * Added:  BUILDR-652 Generate buildfile from Eclipse workspace. (Niklaus Giger)
 * Fixed:  BUILDR-627 Support explicitly listed source files in buildr cc task. (Christopher Tiwald)
 * Fixed:  BUILDR-606 Transitive artifact resolution should not include artifacts in 'provided' scope in poms to
