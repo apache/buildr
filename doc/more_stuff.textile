@@ -349,6 +349,8 @@ You can place this code inside @buildr.rb@ in the @.buildr@ directory under your
 
 h2(#eclipse). Eclipse
 
+h3. Use Apache Buildr to create Eclipse projects
+
 If you're using Eclipse, you can generate @.classpath@ and @.project@ from your Buildfile and use them to create a project in your workspace:
 
 {% highlight sh %}
@@ -378,6 +380,16 @@ end
 {% endhighlight %}
 
 One more thing; these settings are inherited hierarchically so you may set them on a parent project if you want to share them across different projects.
+
+h3. Use Apache Buildr to create a buildfile from an Eclipse workspace
+
+If you're using Eclipse, you can generate a @buildfile@ from a directory which contains one (or more) Eclipse projects somewhere in its sub-directories.
+
+{% highlight sh %}
+$ buildr --generate /path/to/my_project
+{% endhighlight %}
+
+This creates a basic buildfile with a main project called 'my_project'. The buildfile contains a skeleton for compiling the Eclipse projects. If you want to automate dependency tracking via OSGi have a look at the "buildr4osgi":http://oss.intalio.com/buildr4osgi/ project. Support for building Eclipse RCP applications, running PDE tests and P2-sites is currently lacking in Buildr.
 
 h2(#idea). IntelliJ IDEA
 
