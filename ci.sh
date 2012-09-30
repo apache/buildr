@@ -35,12 +35,12 @@ fi
 
 # Select the JVM and default to 1.7 if not specified
 if [ "X$BUILD_JVM" == "X1.5" ]; then
-  export JAVA_HOME=/home/hudson/tools/java/latest1.5-64;
+  export JAVA_HOME=/home/hudson/tools/java/latest1.5-64
 elif [ "X$BUILD_JVM" == "X1.6" ]; then
-  export JAVA_HOME=/home/hudson/tools/java/latest1.6-64 ;
+  export JAVA_HOME=/home/hudson/tools/java/latest1.6-64
 else
-  export JAVA_HOME=/home/hudson/tools/java/latest1.7-64 ;
-end
+  export JAVA_HOME=/home/hudson/tools/java/latest1.7-64
+fi
 
 # Select the Ruby virtual machine and default to 1.9.3 if not specified
 if [ "X$BUILD_RVM" == "X1.9.2" ]; then
@@ -51,7 +51,7 @@ elif [ "X$BUILD_JVM" == "Xjruby" ]; then
   export BUILDR_RUBY_VERSION=jruby-1.6.7
 else
   export BUILDR_RUBY_VERSION=ruby-1.9.3-p0
-end
+fi
 
 export BUILDR_GEMSET=$JOB_NAME
 
