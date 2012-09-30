@@ -12,6 +12,7 @@
           - rspec-mocks (2.11.3)
           - rspec-core (2.11.1)
           - rspec (2.11.0)
+          - rubyzip (0.9.9)
 * Added:  BUILDR-652 Generate buildfile from Eclipse workspace. (Niklaus Giger)
 * Fixed:  BUILDR-627 Support explicitly listed source files in buildr cc task. (Christopher Tiwald)
 * Fixed:  BUILDR-606 Transitive artifact resolution should not include artifacts in 'provided' scope in poms to

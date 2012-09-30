@@ -490,8 +490,14 @@ describe "ZipTask" do
     entries = {}
     Zip::ZipFile.open @archive do |zip|
       zip.entries.each do |entry|
-        # Ignore the / directory created for empty ZIPs when using java.util.zip.
-        entries[entry.name.to_s] = zip.read(entry.name) unless entry.name.to_s == '/'
+        if entry.directory?
+          # Ignore the / directory created for empty ZIPs when using java.util.zip.
+          if entry.name.to_s != '/'
+            entries[entry.name.to_s] = nil
+          end
+        else
+          entries[entry.name.to_s] = zip.read(entry.name)
+        end
       end
     end
     yield entries if block_given?
