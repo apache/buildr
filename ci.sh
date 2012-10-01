@@ -53,6 +53,10 @@ else
   export BUILDR_RUBY_VERSION=ruby-1.9.3-p0
 fi
 
+# Consider updating RVM to the latest version.
+# Get a lock on the directory prior to this action
+#rvm get stable --auto
+
 export BUILDR_GEMSET=$JOB_NAME
 
 rvm ${BUILDR_RUBY_VERSION} --force gemset delete ${BUILDR_GEMSET} 2>&1 > /dev/null
