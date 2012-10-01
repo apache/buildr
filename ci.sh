@@ -6,29 +6,29 @@ export SCALA_HOME=/home/hudson/tools/scala-2.9.0.1 ;
 export BUILD_RAKE_TASK=ci
 
 # Override any specific settings for particular jobs
-if [ "X$BUILD_JOB" == "XBuildr-metrics-build" ]; then
+if [ "X$JOB_NAME" == "XBuildr-metrics-build" ]; then
   export BUILD_RVM=1.9.2
   export BUILD_RAKE_TASK="coverage metrics"
-elif [ "X$BUILD_JOB" == "XBuildr-website-build" ]; then
+elif [ "X$JOB_NAME" == "XBuildr-website-build" ]; then
   export BUILD_RVM=1.8.7
   export BUILD_JVM=1.6
   export BUILD_RAKE_TASK=jekyll
   export PATH=$PATH:/home/toulmean/prince/bin
-elif [ "X$BUILD_JOB" == "XBuildr-omnibus-build" ]; then
+elif [ "X$JOB_NAME" == "XBuildr-omnibus-build" ]; then
   export BUILD_RAKE_TASK=all-in-one
-elif [ "X$BUILD_TASK" == "XBuildr-ci-build-1.9" ]; then
+elif [ "X$JOB_NAME" == "XBuildr-ci-build-1.9" ]; then
   export BUILD_RVM=1.9.2
-elif [ "X$BUILD_TASK" == "XBuildr-ci-build-1.9.3" ]; then
+elif [ "X$JOB_NAME" == "XBuildr-ci-build-1.9.3" ]; then
   export BUILD_RVM=1.9.3
-elif [ "X$BUILD_TASK" == "XBuildr-ci-build-1.8" ]; then
+elif [ "X$JOB_NAME" == "XBuildr-ci-build-1.8" ]; then
   export BUILD_RVM=1.8.7
-elif [ "X$BUILD_TASK" == "XBuildr-ci-build-jruby-jdk1.5" ]; then
+elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.5" ]; then
   export BUILD_RVM=jruby
   export BUILD_JVM=1.5
-elif [ "X$BUILD_TASK" == "XBuildr-ci-build-jruby-jdk1.6" ]; then
+elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.6" ]; then
   export BUILD_RVM=jruby
   export BUILD_JVM=1.6
-elif [ "X$BUILD_TASK" == "XBuildr-ci-build-jruby-jdk1.7" ]; then
+elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.7" ]; then
   export BUILD_RVM=jruby
   export BUILD_JVM=1.7
 fi
