@@ -13,20 +13,13 @@ EOF
 
 export BUILDR_RUBY_VERSION="${BUILDR_RUBY_VERSION:-ruby-1.9.2-p320}"
 project_dir=`pwd`
-export BUILDR_GEMSET=${JOB_NAME-`basename "$project_dir"`}
+export BUILDR_GEMSET=${BUILDR_GEMSET-`basename "$project_dir"`}
 
 detected_version=`rvm list strings | grep ${BUILDR_RUBY_VERSION}`
 if [ "X" == "X${detected_version}" ]; then
   echo "${BUILDR_RUBY_VERSION} was not found, running 'rvm install ${BUILDR_RUBY_VERSION}'..."
   rvm install ${BUILDR_RUBY_VERSION}
 fi
-
-# If running in the ci then remove the existing gemset
-if [ "X" != "X$JENKINS_HOME" ]; then
-  rvm ${BUILDR_RUBY_VERSION} --force gemset delete ${BUILDR_GEMSET}
-fi
-
-# rvm ${BUILDR_RUBY_VERSION} --force gemset create ${BUILDR_GEMSET}
 
 # Force the creation of the gemset
 rvm use "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" --create
@@ -42,8 +35,4 @@ if [ -f Gemfile ]; then
   fi
   rm -f Gemfile.lock
   rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec bundle install --no-binstubs
-fi
-
-if [ ! -z "$PS1" ]; then
-  rvm use "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}"
 fi
