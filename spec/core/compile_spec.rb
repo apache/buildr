@@ -586,7 +586,7 @@ describe Project, '#resources' do
   it 'should copy new resources to target directory' do
     time = Time.now
     mkdir_p 'target/resources'
-    File.utime(time-1, time-1, 'target/resources')
+    File.utime(time-10, time-10, 'target/resources')
 
     write 'src/main/resources/foo', 'Foo'
 
@@ -599,8 +599,8 @@ describe Project, '#resources' do
     time = Time.now
     mkdir_p 'target/resources'
     write 'target/resources/foo', 'Foo'
-    File.utime(time-1, time-1, 'target/resources')
-    File.utime(time-1, time-1, 'target/resources/foo')
+    File.utime(time-10, time-10, 'target/resources')
+    File.utime(time-10, time-10, 'target/resources/foo')
 
     write 'src/main/resources/foo', 'Foo2'
     define('foo')
