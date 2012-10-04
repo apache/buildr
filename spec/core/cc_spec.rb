@@ -72,7 +72,7 @@ describe Buildr::CCTask do
       foo.cc.invoke
     end
 
-    sleep 1
+    wait_while { foo.test.compile.run_count != 1 }
 
     foo.compile.run_count.should == 1
     foo.test.compile.run_count.should == 1
@@ -96,25 +96,15 @@ describe Buildr::CCTask do
       end
     end
 
-    #Ick! Try to get the sleeping enough on each platform that the tests reliably pass
-    sleep 1 if RUBY_VERSION >= '1.9' && !RUBY_PLATFORM[/java/]
-    sleep 5 if RUBY_VERSION >= '1.8.7' && !RUBY_PLATFORM[/java/]
-    sleep 1 if RUBY_PLATFORM[/java/]
+    wait_while { foo.test.compile.run_count != 1 }
 
     foo.compile.run_count.should == 1
     foo.test.compile.run_count.should == 1
     foo.resources.run_count.should == 1
 
-    # Wait some time as the timestamp needs to be different on files.
-    sleep 3 if Buildr::Util.win_os?
-    sleep 1 unless Buildr::Util.win_os?
+    modify_file_times(File.join(Dir.pwd, 'src/main/java/Example.java'))
 
-    touch File.join(Dir.pwd, 'src/main/java/Example.java')
-
-    #Ick! Try to get the sleeping enough on each platform that the tests reliably pass
-    sleep 1 if RUBY_VERSION >= '1.9' && !RUBY_PLATFORM[/java/]
-    sleep 5 if RUBY_VERSION >= '1.8.7' && !RUBY_PLATFORM[/java/]
-    sleep 1 if RUBY_PLATFORM[/java/]
+    wait_while { foo.test.compile.run_count != 2 }
 
     foo.compile.run_count.should == 2
     foo.test.compile.run_count.should == 2
@@ -142,17 +132,18 @@ describe Buildr::CCTask do
       end
     end
 
-    sleep 1
+    wait_while { foo.test.compile.run_count != 1 }
 
     foo.compile.run_count.should == 1
     foo.test.compile.run_count.should == 1
     foo.resources.run_count.should == 1
 
     file("foo/target/classes/Example.class").should exist
-    tstamp = File.mtime("foo/target/classes/Example.class")
-    touch File.join(Dir.pwd, 'foo/src/main/java/Example.java')
 
-    sleep 1
+    tstamp = File.mtime("foo/target/classes/Example.class")
+
+    modify_file_times(File.join(Dir.pwd, 'foo/src/main/java/Example.java'))
+    wait_while { foo.test.compile.run_count != 2 }
 
     foo.compile.run_count.should == 2
     foo.test.compile.run_count.should == 2
@@ -160,6 +151,23 @@ describe Buildr::CCTask do
     File.mtime("foo/target/classes/Example.class").should_not == tstamp
 
     thread.exit
+  end
+
+  def modify_file_times(filename)
+    # Sleep prior to touch so works with filesystems with low resolutions
+    t1 = File.mtime(filename)
+    while t1 == File.mtime(filename)
+      sleep 1
+      touch filename
+    end
+  end
+
+  def wait_while(&block)
+    sleep_count = 0
+    while block.call && sleep_count < 15
+      sleep 1
+      sleep_count += 1
+    end
   end
 
   it 'should support parent and subprojects' do |spec|
@@ -179,6 +187,8 @@ describe Buildr::CCTask do
       define('bar')
     end
 
+    time = Time.now
+
     all = projects("container", "container:foo", "container:bar")
     all.each { |p| instrument_project(p) }
 
@@ -191,7 +201,7 @@ describe Buildr::CCTask do
       end
     end
 
-    sleep 2
+    wait_while { all.any? { |p| p.test.compile.run_count != 1 } }
 
     all.each do |p|
       p.compile.run_count.should == 1
@@ -202,14 +212,17 @@ describe Buildr::CCTask do
     file("foo/target/classes/Example.class").should exist
     tstamp = File.mtime("foo/target/classes/Example.class")
 
-    touch 'foo/src/main/java/Example.java'
-    sleep 2
+    modify_file_times('foo/src/main/java/Example.java')
+    wait_while { project("container:foo").test.compile.run_count != 2 }
 
     project("container:foo").tap do |p|
       p.compile.run_count.should == 2
       p.test.compile.run_count.should == 2
       p.resources.run_count.should == 2
     end
+
+    wait_while { project("container").resources.run_count != 2 }
+
     project("container").tap do |p|
       p.compile.run_count.should == 1 # not_needed
       p.test.compile.run_count.should == 1  # not_needed
@@ -217,8 +230,9 @@ describe Buildr::CCTask do
     end
     File.mtime("foo/target/classes/Example.class").should_not == tstamp
 
-    touch 'src/main/java/Example.java'
-    sleep 2
+    modify_file_times('src/main/java/Example.java')
+
+    wait_while { project("container").resources.run_count != 3 }
 
     project("container").tap do |p|
       p.compile.run_count.should == 2
