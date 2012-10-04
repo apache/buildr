@@ -45,9 +45,9 @@ fi
 # Select the Ruby virtual machine and default to 1.9.3 if not specified
 if [ "X$BUILD_RVM" == "X1.9.2" ]; then
   export BUILDR_RUBY_VERSION=ruby-1.9.2-p320
-elif [ "X$BUILD_JVM" == "X1.8.7" ]; then
+elif [ "X$BUILD_RVM" == "X1.8.7" ]; then
   export BUILDR_RUBY_VERSION=ruby-1.8.7-p358
-elif [ "X$BUILD_JVM" == "Xjruby" ]; then
+elif [ "X$BUILD_RVM" == "Xjruby" ]; then
   export BUILDR_RUBY_VERSION=jruby-1.6.7
 else
   export BUILDR_RUBY_VERSION=ruby-1.9.3-p0
