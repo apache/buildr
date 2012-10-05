@@ -16,21 +16,6 @@ elif [ "X$JOB_NAME" == "XBuildr-website-build" ]; then
   export PATH=$PATH:/home/toulmean/prince/bin
 elif [ "X$JOB_NAME" == "XBuildr-omnibus-build" ]; then
   export BUILD_RAKE_TASK=all-in-one
-elif [ "X$JOB_NAME" == "XBuildr-ci-build-1.9" ]; then
-  export BUILD_RVM=1.9.2
-elif [ "X$JOB_NAME" == "XBuildr-ci-build-1.9.3" ]; then
-  export BUILD_RVM=1.9.3
-elif [ "X$JOB_NAME" == "XBuildr-ci-build-1.8" ]; then
-  export BUILD_RVM=1.8.7
-elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.5" ]; then
-  export BUILD_RVM=jruby
-  export BUILD_JVM=1.5
-elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.6" ]; then
-  export BUILD_RVM=jruby
-  export BUILD_JVM=1.6
-elif [ "X$JOB_NAME" == "XBuildr-ci-build-jruby-jdk1.7" ]; then
-  export BUILD_RVM=jruby
-  export BUILD_JVM=1.7
 fi
 
 # Select the JVM and default to 1.7 if not specified
