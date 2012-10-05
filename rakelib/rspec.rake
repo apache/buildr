@@ -63,7 +63,7 @@ begin
   end
 
   desc 'Run all specs with CI reporter'
-  task :ci=>[:load_ci_reporter, :spec]
+  task :ci=>[:clobber, :load_ci_reporter, :spec]
 
   def rvm_run_in(version, command)
     if !(Config::CONFIG['host_os'] =~ /mswin|win32|dos/i)
