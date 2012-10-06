@@ -63,6 +63,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'json_pure',            '1.7.5'
   spec.add_dependency 'rubyforge',            '2.0.4'
   spec.add_dependency 'hoe',                  '3.1.0'
+  # TODO: See note in rjb.rb when upgrading rjb
   spec.add_dependency 'rjb',                  '1.4.1' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
   spec.add_dependency 'atoulme-Antwrap',      '~> 0.7.2'
   spec.add_dependency 'diff-lcs',             '1.1.3'
