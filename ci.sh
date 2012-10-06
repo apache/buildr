@@ -9,13 +9,16 @@ export BUILD_RAKE_TASK=ci
 if [ "X$JOB_NAME" == "XBuildr-metrics-build" ]; then
   export BUILD_RVM=1.9.2
   export BUILD_RAKE_TASK="coverage metrics"
+  export BUILDR_GEMSET=$JOB_NAME
 elif [ "X$JOB_NAME" == "XBuildr-website-build" ]; then
   export BUILD_RVM=1.8.7
   export BUILD_JVM=1.6
   export BUILD_RAKE_TASK=jekyll
   export PATH=$PATH:/home/toulmean/prince/bin
+  export BUILDR_GEMSET=$JOB_NAME
 elif [ "X$JOB_NAME" == "XBuildr-omnibus-build" ]; then
   export BUILD_RAKE_TASK=all-in-one
+  export BUILDR_GEMSET=$JOB_NAME
 fi
 
 # Select the JVM and default to 1.7 if not specified
@@ -52,17 +55,13 @@ elif mkdir "$HOME/.rvm_lock"; then
   fi
   if test `find $HOME/.rvm_ci_update -mmin +7200`; then
     source "$HOME/.rvm/scripts/rvm"
-    rvm get stable
+    rvm get stable --auto
     touch "$HOME/.rvm_ci_update"
   fi
   rmdir "$HOME/.rvm_lock"
 fi
 
-# Consider updating RVM to the latest version.
-# Get a lock on the directory prior to this action
-#rvm get stable --auto
-
-export BUILDR_GEMSET=$JOB_NAME
+export BUILDR_GEMSET=${BUILDR_GEMSET-CI_$BUILD_JVM}
 
 rvm ${BUILDR_RUBY_VERSION} --force gemset delete ${BUILDR_GEMSET} 2>&1 > /dev/null
 
