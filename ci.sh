@@ -38,6 +38,25 @@ else
   export BUILDR_RUBY_VERSION=ruby-1.9.3-p0
 fi
 
+# TODO: Use traps to remove lock files
+# See http://stackoverflow.com/questions/169964/how-to-prevent-a-script-from-running-simultaneously
+
+if [[ ! -s "$HOME/.rvm/scripts/rvm" ]]; then
+  curl -L https://get.rvm.io | bash -s stable
+  source "$HOME/.rvm/scripts/rvm"
+  touch "$HOME/.rvm_ci_update"
+elif mkdir "$HOME/.rvm_lock"; then
+  if [[ ! -s "$HOME/.rvm_ci_update" ]]; then
+    touch "$HOME/.rvm_ci_update"
+  fi
+  if test `find $HOME/.rvm_ci_update -mmin +7200`; then
+    source "$HOME/.rvm/scripts/rvm"
+    rvm get stable
+    touch "$HOME/.rvm_ci_update"
+  fi
+  rmdir "$HOME/.rvm_lock"
+fi
+
 # Consider updating RVM to the latest version.
 # Get a lock on the directory prior to this action
 #rvm get stable --auto
