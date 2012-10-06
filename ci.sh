@@ -38,7 +38,7 @@ elif [ "X$BUILD_RVM" == "X1.8.7" ]; then
 elif [ "X$BUILD_RVM" == "Xjruby" ]; then
   export BUILDR_RUBY_VERSION=jruby-1.6.7
 else
-  export BUILDR_RUBY_VERSION=ruby-1.9.3-p0
+  export BUILDR_RUBY_VERSION=ruby-1.9.3-p194
 fi
 
 # TODO: Use traps to remove lock files
