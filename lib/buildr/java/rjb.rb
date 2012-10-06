@@ -22,6 +22,7 @@ if RbConfig::CONFIG['host_os'] =~ /darwin/i
     # For JDK1.7 this file exists. We need to ensure JVM_LIB is set before loading rjb
     # As RJB uses it to determine which library to load.
     # SEE https://github.com/arton/rjb/issues/12#issuecomment-9179415
+    # TODO: Remove this after upgrade to RJB > 1.4.1 as it should be built in.
     if File.exist?("#{ENV['JAVA_HOME']}/jre/lib/server/libjvm.dylib")
       ENV['JVM_LIB'] = "#{ENV['JAVA_HOME']}/jre/lib/server/libjvm.dylib"
     end
