@@ -32,6 +32,9 @@ def open_main_manifest_section(file = 'target/foo-2.1.3.jar')
 end
 
 describe Buildr::Bnd do
+  before do
+    repositories.remote << Buildr::Bnd.remote_repository
+  end
 
   describe "project.bnd version (assure backward compatibility)" do
 
