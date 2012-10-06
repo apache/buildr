@@ -41,6 +41,7 @@ fi
 # TODO: Use traps to remove lock files
 # See http://stackoverflow.com/questions/169964/how-to-prevent-a-script-from-running-simultaneously
 
+export PATH=$PATH:$HOME/.rvm/bin
 if [[ ! -s "$HOME/.rvm/scripts/rvm" ]]; then
   curl -L https://get.rvm.io | bash -s stable
   source "$HOME/.rvm/scripts/rvm"
