@@ -42,15 +42,57 @@ else
   export BUILDR_RUBY_VERSION=ruby-1.9.3-p194
 fi
 
-# TODO: Use traps to remove lock files
-# See http://stackoverflow.com/questions/169964/how-to-prevent-a-script-from-running-simultaneously
+function __sig_exit {
+  echo "Cleaing up locks"
+  rm -rf mkdir "$HOME/.rvm_lock"
+}
 
+function __sig_int {
+    echo "WARNING: SIGINT caught"
+    exit 1002
+}
+
+function __sig_quit {
+    echo "SIGQUIT caught"
+    exit 1003
+}
+
+function __sig_term {
+    echo "WARNING: SIGTERM caught"
+    exit 1015
+}
+
+function __sig_noop {
+	true
+}
+
+while ! `mkdir "$HOME/.rvm_lock" 2> /dev/null`; do
+  echo "Waiting"
+  sleep 1
+done
+
+trap __sig_exit EXIT    # SIGEXIT
+trap __sig_int INT      # SIGINT
+trap __sig_quit QUIT    # SIGQUIT
+trap __sig_term TERM    # SIGTERM
+
+export BUILDR_GEMSET=${BUILDR_GEMSET-CI_$BUILD_JVM}
+export PATH=$JAVA_HOME/bin:$PATH
 export PATH=$PATH:$HOME/.rvm/bin
+
+export EXPECTED_RVM=random_value
+export CURRENT_RVM=`cat "$HOME/.rvm_install" 2> /dev/null`
+if [ "X$CURRENT_RVM" != "X$EXPECTED_RVM" ]; then
+  echo Removing old RVM version
+  rm -rf "$HOME/.rvm"
+fi
+
 if [[ ! -s "$HOME/.rvm/scripts/rvm" ]]; then
-  curl -L https://get.rvm.io | bash -s stable
+  curl -L https://get.rvm.io | bash -s stable --auto
+  echo $EXPECTED_RVM > "$HOME/.rvm_install"
   source "$HOME/.rvm/scripts/rvm"
   touch "$HOME/.rvm_ci_update"
-elif mkdir "$HOME/.rvm_lock"; then
+else
   if [[ ! -s "$HOME/.rvm_ci_update" ]]; then
     touch "$HOME/.rvm_ci_update"
   fi
@@ -59,11 +101,15 @@ elif mkdir "$HOME/.rvm_lock"; then
     rvm get stable --auto
     touch "$HOME/.rvm_ci_update"
   fi
-  rmdir "$HOME/.rvm_lock"
 fi
 
-export BUILDR_GEMSET=${BUILDR_GEMSET-CI_$BUILD_JVM}
-export PATH=$JAVA_HOME/bin:$PATH
+rmdir "$HOME/.rvm_lock"
+
+trap __sig_noop EXIT    # SIGEXIT
+trap __sig_noop INT      # SIGINT
+trap __sig_noop QUIT    # SIGQUIT
+trap __sig_noop TERM    # SIGTERM
+
 source "$HOME/.rvm/scripts/rvm"
 
 rvm ${BUILDR_RUBY_VERSION} --force gemset delete ${BUILDR_GEMSET} 2>&1 > /dev/null
