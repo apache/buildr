@@ -18,21 +18,21 @@ export BUILDR_GEMSET=${BUILDR_GEMSET-`basename "$project_dir"`}
 detected_version=`rvm list strings | grep ${BUILDR_RUBY_VERSION}`
 if [ "X" == "X${detected_version}" ]; then
   echo "${BUILDR_RUBY_VERSION} was not found, running 'rvm install ${BUILDR_RUBY_VERSION}'..."
-  rvm install ${BUILDR_RUBY_VERSION}
+  bash rvm install ${BUILDR_RUBY_VERSION}
 fi
 
 # Force the creation of the gemset
-rvm use "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" --create
+bash rvm use "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" --create
 
 export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx1024M"
 export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=312m"
 
 if [ -f Gemfile ]; then
-  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem list | grep 'bundler' &> /dev/null
+  bash rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem list | grep 'bundler' &> /dev/null
   if [ $? -gt 0 ]; then
     echo "Installing bundler..."
-    rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem install bundler
+    bash rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem install bundler
   fi
   rm -f Gemfile.lock
-  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec bundle install --no-binstubs  | grep -v 'Using' | grep -v 'complete' | sed '/^$/d'
+  bash rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec bundle install --no-binstubs
 fi
