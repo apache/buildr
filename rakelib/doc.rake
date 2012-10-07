@@ -14,18 +14,18 @@
 # the License.
 
 if (RUBY_PLATFORM[/java/] and JRUBY_VERSION < '1.6.6')
-  puts "Running jekyll under jruby < 1.6.6 would never complete!"
+  puts 'Running jekyll under jruby < 1.6.6 would never complete!'
 else
   gem 'rdoc'
   require 'rdoc/task'
-  desc "Creates a symlink to rake's lib directory to support combined rdoc generation"
-  file "rake/lib" do
-    rake_path = $LOAD_PATH.find { |p| File.exist? File.join(p, "rake.rb") }
-    mkdir_p "rake"
-    File.symlink(rake_path, "rake/lib")
+  desc 'Creates a symlink to rake''s lib directory to support combined rdoc generation'
+  file 'rake/lib' do
+    rake_path = $LOAD_PATH.find { |p| File.exist? File.join(p, 'rake.rb') }
+    mkdir_p 'rake'
+    File.symlink(rake_path, 'rake/lib')
   end
 
-  desc "Generate RDoc documentation in rdoc/"
+  desc 'Generate RDoc documentation in rdoc/'
   RDoc::Task.new :rdoc do |rdoc|
     rdoc.rdoc_dir = 'rdoc'
     rdoc.title = spec.name
@@ -36,7 +36,7 @@ else
       # include rake source for better inheritance rdoc
     rdoc.rdoc_files.include('rake/lib/**.rb')
   end
-  task :rdoc => ["rake/lib"]
+  task :rdoc => %w(rake/lib)
 
   begin
     require 'jekylltask'
@@ -58,21 +58,21 @@ else
     end
     Liquid::Template.register_filter(TocFilter)
 
-    desc "Generate Buildr documentation in _site/"
+    desc 'Generate Buildr documentation in _site/'
     JekyllTask.new :jekyll do |task|
       task.source = 'doc'
       task.target = '_site'
     end
 
   rescue LoadError
-    puts "Buildr uses the jekyll gem to generate the Web site. You can install it by running bundler"
+    puts 'Buildr uses the jekyll gem to generate the Web site. You can install it by running bundler'
   end
 
-  if 0 == system("pygmentize -V > /dev/null 2> /dev/null")
-    puts "Buildr uses the Pygments python library. You can install it by running 'sudo easy_install Pygments' or 'sudo apt-get install python-pygments'"
+  if 0 == system('pygmentize -V > /dev/null 2> /dev/null')
+    puts 'Buildr uses the Pygments python library. You can install it by running ''sudo easy_install Pygments'' or ''sudo apt-get install python-pygments'''
   end
 
-  desc "Generate Buildr documentation as buildr.pdf"
+  desc 'Generate Buildr documentation as buildr.pdf'
   file 'buildr.pdf'=>'_site' do |task|
     pages = File.read('_site/preface.html').scan(/<li><a href=['"]([^'"]+)/).flatten.map { |f| "_site/#{f}" }
     sh 'prince', '--input=html', '--no-network', '--log=prince_errors.log', "--output=#{task.name}", '_site/preface.html', *pages
@@ -108,7 +108,7 @@ ForceType 'text/plain; charset=UTF-8'
   end
 
 # Update HTML + PDF documentation (but not entire site; no specs, coverage, etc.)
-  task 'publish-doc' => ['buildr.pdf', '_site'] do
+  task 'publish-doc' => %w(buildr.pdf _site) do
     cp 'buildr.pdf', '_site'
     target = "people.apache.org:/www/#{spec.name}.apache.org/"
     puts "Uploading new site to #{target} ..."
@@ -117,7 +117,7 @@ ForceType 'text/plain; charset=UTF-8'
     puts "Done"
   end
 
-  task :clobber do
+  task 'clobber' do
     rm_rf '_site'
     rm_f 'buildr.pdf'
     rm_f 'prince_errors.log'

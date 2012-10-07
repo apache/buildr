@@ -17,10 +17,10 @@ def workspace_dir
   "#{File.expand_path(File.join(File.dirname(__FILE__), ".."))}"
 end
 
-desc "Create JRuby all-in-one distribution"
-task "all-in-one" => 'all-in-one:all-in-one'
+desc 'Create JRuby all-in-one distribution'
+task 'all-in-one' => 'all-in-one:all-in-one'
 
-namespace :'all-in-one' do
+namespace 'all-in-one' do
 
   version = "1.6.7"
   jruby_distro = "jruby-bin-#{version}.tar.gz"
@@ -59,24 +59,24 @@ namespace :'all-in-one' do
           saved_file.write(read_file.read)
         end
       end
-      puts "[X] Downloaded JRuby"
+      puts '[X] Downloaded JRuby'
     end
 
     rm_rf dir if File.exist? dir
 
     puts "Extracting JRuby to #{dir} ..."
     sh 'tar', 'xzf', jruby_distro
-    puts "[X] Extracted JRuby"
+    puts '[X] Extracted JRuby'
     cd dir
   end
 
   desc 'Cleanup JRuby distribution'
-  task :clean_dist do
+  task 'clean_dist' do
     puts 'Cleaning...'
     rm_rf 'docs'
     mkpath 'jruby-docs'
-    mv Dir["COPYING*"], 'jruby-docs'
-    mv Dir["LICENSE*"], 'jruby-docs'
+    mv Dir['COPYING*'], 'jruby-docs'
+    mv Dir['LICENSE*'], 'jruby-docs'
     mv 'README', 'jruby-docs'
     rm_rf 'lib/ruby/1.9'
     rm_rf 'lib/ruby/gems/1.8/doc'
@@ -85,24 +85,24 @@ namespace :'all-in-one' do
   end
 
   desc 'Install Buildr gem and dependencies'
-  task :install_dependencies do
-    puts "Install ffi-ncurses"
-    sh "bin/jruby -S gem install -b ffi-ncurses --version 0.4.0"
+  task 'install_dependencies' do
+    puts 'Install ffi-ncurses'
+    sh 'bin/jruby -S gem install -b ffi-ncurses --version 0.4.0'
 
-    puts "Install rubygems-update"
-    sh "bin/jruby -S gem install -b rubygems-update"
+    puts 'Install rubygems-update'
+    sh 'bin/jruby -S gem install -b rubygems-update'
 
-    puts "Upgrade Rubygems"
-    sh "bin/jruby -S gem update --system"
+    puts 'Upgrade Rubygems'
+    sh 'bin/jruby -S gem update --system'
 
-    puts "Install Buildr gem ..."
-    sh "bin/jruby", '-S', 'gem', 'install', FileList['../../pkg/*-java.gem'].first,
+    puts 'Install Buildr gem ...'
+    sh 'bin/jruby', '-S', 'gem', 'install', FileList['../../pkg/*-java.gem'].first,
        '--no-rdoc', '--no-ri'
-    puts "[X] Install Buildr gem"
+    puts '[X] Install Buildr gem'
   end
 
   desc 'Add Buildr executables/scripts'
-  task :add_execs do
+  task 'add_execs' do
     cp 'bin/jruby.exe', 'bin/_buildr.exe'
     cp "#{workspace_dir}/all-in-one/buildr", 'bin/buildr'
     cp "#{workspace_dir}/all-in-one/_buildr", 'bin/_buildr'
@@ -111,27 +111,27 @@ namespace :'all-in-one' do
   end
 
   desc 'Package distribution'
-  task :package do
+  task 'package' do
     pkg_dir = "#{workspace_dir}/pkg"
     mkpath pkg_dir
-    puts "Zipping distribution ..."
+    puts 'Zipping distribution ...'
     cd '..'
     new_dir  = "#{spec.name}-all-in-one-#{spec.version}"
     mv dir, new_dir
     zip = "#{pkg_dir}/#{new_dir}.zip"
     rm zip if File.exist? zip
     sh 'zip', '-q', '-r', zip, new_dir
-    puts "[X] Zipped distribution"
+    puts '[X] Zipped distribution'
 
-    puts "Tarring distribution ..."
+    puts 'Tarring distribution ...'
     tar = "#{pkg_dir}/#{new_dir}.tar.gz"
     rm tar if File.exist? tar
     sh 'tar', 'czf', tar, new_dir
-    puts "[X] Tarred distribution"
+    puts '[X] Tarred distribution'
 
     rm_rf new_dir
   end
 
 end
 
-task(:clobber) { rm_rf '_all-in-one' }
+task('clobber') { rm_rf '_all-in-one' }
