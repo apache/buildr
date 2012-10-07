@@ -22,17 +22,17 @@ if [ "X" == "X${detected_version}" ]; then
 fi
 
 # Force the creation of the gemset
-bash rvm use "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" --create
+rvm use "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" --create
 
 export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx1024M"
 export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=312m"
 
 if [ -f Gemfile ]; then
-  bash rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem list | grep 'bundler' &> /dev/null
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem list | grep 'bundler' &> /dev/null
   if [ $? -gt 0 ]; then
     echo "Installing bundler..."
     bash rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem install bundler
   fi
   rm -f Gemfile.lock
-  bash rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec bundle install --no-binstubs
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec bundle install --no-binstubs
 fi
