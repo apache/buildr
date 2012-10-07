@@ -210,8 +210,6 @@ The following changes were made since #{previous_version}:
     puts '[X] Created release vote email template in ''vote-email.txt'''
     puts email
   end.call
-
 end
-
 
 task('clobber') { rm_rf '_staged' }

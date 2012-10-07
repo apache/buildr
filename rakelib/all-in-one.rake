@@ -22,34 +22,21 @@ task 'all-in-one' => 'all-in-one:all-in-one'
 
 namespace 'all-in-one' do
 
-  version = "1.6.7"
+  version = '1.6.7'
   jruby_distro = "jruby-bin-#{version}.tar.gz"
   url = "http://jruby.org.s3.amazonaws.com/downloads/#{version}/#{jruby_distro}"
   dir = "jruby-#{version}"
 
-  task "all-in-one" => [:gem,
-      # Prepare to run
-      :prepare,
-      # Download and extract JRuby
-      :download_and_extract,
-      # Cleanup JRuby distribution
-      :clean_dist,
-      # Install Buildr gem and dependencies
-      :install_dependencies,
-      # Add Buildr executables/scripts
-      :add_execs,
-      # Package distribution
-      :package
-    ]
+  task 'all-in-one' => %w(gem prepare download_and_extract clean_dist install_dependencies add_execs package)
 
   desc 'Prepare to run'
-  task :prepare do
+  task 'prepare' do
     mkpath '_all-in-one'
     cd '_all-in-one'
   end
 
   desc 'Download and extract JRuby'
-  task :download_and_extract do
+  task 'download_and_extract' do
     unless File.exist?(jruby_distro)
       puts "Downloading JRuby from #{url} ..."
       require 'open-uri'
