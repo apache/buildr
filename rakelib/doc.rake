@@ -33,7 +33,7 @@ RDoc::Task.new :rdoc do |rdoc|
   # include rake source for better inheritance rdoc
   rdoc.rdoc_files.include('rake/lib/**.rb')
 end
-task :rdoc => %w(rake/lib)
+task 'rdoc' => %w(rake/lib)
 
 require 'jekylltask'
 module TocFilter
@@ -48,14 +48,14 @@ module TocFilter
         output << %{<li>#{title}</li>}
       end
     end
-    output << "</ol>"
+    output << '</ol>'
     output
   end
 end
 Liquid::Template.register_filter(TocFilter)
 
 desc 'Generate Buildr documentation in _site/'
-JekyllTask.new :jekyll do |task|
+JekyllTask.new 'jekyll' do |task|
   task.source = 'doc'
   task.target = '_site'
 end
@@ -70,15 +70,15 @@ file 'buildr.pdf' => '_site' do |task|
   sh 'prince', '--input=html', '--no-network', '--log=prince_errors.log', "--output=#{task.name}", '_site/preface.html', *pages
 end
 
-desc "Build a copy of the Web site in the ./_site"
-task :site => ['_site', :rdoc, '_reports/specs.html', '_reports/coverage', 'buildr.pdf'] do
+desc 'Build a copy of the Web site in the ./_site'
+task 'site' => ['_site', :rdoc, '_reports/specs.html', '_reports/coverage', 'buildr.pdf'] do
   cp_r 'rdoc', '_site'
   fail 'No RDocs in site directory' unless File.exist?('_site/rdoc/lib/buildr_rb.html')
   cp '_reports/specs.html', '_site'
   cp_r '_reports/coverage', '_site'
   fail 'No coverage report in site directory' unless File.exist?('_site/coverage/index.html')
   cp 'CHANGELOG', '_site'
-  open("_site/.htaccess", "w") do |htaccess|
+  open('_site/.htaccess', 'w') do |htaccess|
     htaccess << %Q{
 <FilesMatch "CHANGELOG">
 ForceType 'text/plain; charset=UTF-8'
@@ -91,12 +91,12 @@ ForceType 'text/plain; charset=UTF-8'
 end
 
 # Publish prerequisites to Web site.
-task 'publish' => :site do
+task 'publish' => 'site' do
   target = "people.apache.org:/www/#{spec.name}.apache.org/"
   puts "Uploading new site to #{target} ..."
   sh 'rsync', '--progress', '--recursive', '--delete', '_site/', target
   sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
-  puts "Done"
+  puts 'Done'
 end
 
 # Update HTML + PDF documentation (but not entire site; no specs, coverage, etc.)
@@ -106,7 +106,7 @@ task 'publish-doc' => %w(buildr.pdf _site) do
   puts "Uploading new site to #{target} ..."
   sh 'rsync', '--progress', '--recursive', '_site/', target # Note: no --delete
   sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
-  puts "Done"
+  puts 'Done'
 end
 
 task 'clobber' do

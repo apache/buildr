@@ -14,7 +14,7 @@
 # the License.
 
 
-task :release do
+task 'release' do
   # First, we need to get all the staged files from Apache to _release.
   mkpath '_release'
   lambda do
@@ -98,7 +98,7 @@ task :release do
     File.open 'CHANGELOG', 'w' do |file|
       file.write modified
     end
-    puts "[X] Updated CHANGELOG and added entry for next release"
+    puts '[X] Updated CHANGELOG and added entry for next release'
   end.call
 
 
@@ -155,6 +155,5 @@ The Apache Buildr Team
   end
 
 end
-
 
 task('clobber') { rm_rf '_release' }
