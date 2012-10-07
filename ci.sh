@@ -63,6 +63,7 @@ elif mkdir "$HOME/.rvm_lock"; then
 fi
 
 export BUILDR_GEMSET=${BUILDR_GEMSET-CI_$BUILD_JVM}
+export PATH=$JAVA_HOME/bin:$PATH
 source "$HOME/.rvm/scripts/rvm"
 
 rvm ${BUILDR_RUBY_VERSION} --force gemset delete ${BUILDR_GEMSET} 2>&1 > /dev/null
