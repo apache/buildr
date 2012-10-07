@@ -66,7 +66,7 @@ function __sig_noop {
 	true
 }
 
-while ! `mkdir "$HOME/.rvm_lock" 2> /dev/null`; do
+while ! `mkdir "$HOME/.rvm_lock" 2>&1 > /dev/null`; do
   echo "Waiting"
   sleep 1
 done
@@ -81,7 +81,7 @@ export PATH=$JAVA_HOME/bin:$PATH
 export PATH=$PATH:$HOME/.rvm/bin
 
 export EXPECTED_RVM=random_value
-export CURRENT_RVM=`cat "$HOME/.rvm_install" 2> /dev/null`
+export CURRENT_RVM=`cat "$HOME/.rvm_install" 2>&1`
 if [ "X$CURRENT_RVM" != "X$EXPECTED_RVM" ]; then
   echo Removing old RVM version
   rm -rf "$HOME/.rvm"
@@ -90,13 +90,9 @@ fi
 if [[ ! -s "$HOME/.rvm/scripts/rvm" ]]; then
   curl -L https://get.rvm.io | bash -s stable --auto
   echo $EXPECTED_RVM > "$HOME/.rvm_install"
-  source "$HOME/.rvm/scripts/rvm"
   touch "$HOME/.rvm_ci_update"
 else
-  if [[ ! -s "$HOME/.rvm_ci_update" ]]; then
-    touch "$HOME/.rvm_ci_update"
-  fi
-  if test `find $HOME/.rvm_ci_update -mmin +7200`; then
+  if test `find "$HOME/.rvm_ci_update" -mmin +7200 2>&1 > /dev/null`; then
     source "$HOME/.rvm/scripts/rvm"
     rvm get stable --auto
     touch "$HOME/.rvm_ci_update"
