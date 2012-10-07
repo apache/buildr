@@ -1,13 +1,13 @@
 1.4.8 (Pending)
 * Added:  Experimental support for jacoco code coverage tool.
-* Fixed:  BUILDR-655 - Support JDK1.5 under OSX
+* Fixed:  BUILDR-655 - Support JDK1.7 under OSX
 * Change: Updated dependency versions;
           - builder (3.1.3)
           - highline (1.6.15)
           - rubyforge (2.0.4)
           - net-ssh (2.6.0)
           - hoe (3.1.0)
-          - rjb (1.4.1)
+          - rjb (1.4.2)
           - rdoc (3.12)
           - xml-simple (1.1.1)
           - rspec-expectations (2.11.3)
