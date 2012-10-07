@@ -94,7 +94,7 @@ namespace 'spec' do
   end
 
   desc 'Run all specs across various rubies'
-  task 'all' => ['jruby', 'ruby_1_8', 'ruby_1_9']
+  task 'all' => %w(jruby ruby_1_8 ruby_1_9)
 end
 
 task 'clobber' do
