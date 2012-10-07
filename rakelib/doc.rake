@@ -35,34 +35,29 @@ RDoc::Task.new :rdoc do |rdoc|
 end
 task :rdoc => %w(rake/lib)
 
-begin
-  require 'jekylltask'
-  module TocFilter
-    def toc(input)
-      output = "<ol class=\"toc\">"
-      input.scan(/<(h2)(?:>|\s+(.*?)>)([^<]*)<\/\1\s*>/mi).each do |entry|
-        id = (entry[1][/^id=(['"])(.*)\1$/, 2] rescue nil)
-        title = entry[2].gsub(/<(\w*).*?>(.*?)<\/\1\s*>/m, '\2').strip
-        if id
-          output << %{<li><a href="##{id}">#{title}</a></li>}
-        else
-          output << %{<li>#{title}</li>}
-        end
+require 'jekylltask'
+module TocFilter
+  def toc(input)
+    output = "<ol class=\"toc\">"
+    input.scan(/<(h2)(?:>|\s+(.*?)>)([^<]*)<\/\1\s*>/mi).each do |entry|
+      id = (entry[1][/^id=(['"])(.*)\1$/, 2] rescue nil)
+      title = entry[2].gsub(/<(\w*).*?>(.*?)<\/\1\s*>/m, '\2').strip
+      if id
+        output << %{<li><a href="##{id}">#{title}</a></li>}
+      else
+        output << %{<li>#{title}</li>}
       end
-      output << "</ol>"
-      output
     end
+    output << "</ol>"
+    output
   end
-  Liquid::Template.register_filter(TocFilter)
+end
+Liquid::Template.register_filter(TocFilter)
 
-  desc 'Generate Buildr documentation in _site/'
-  JekyllTask.new :jekyll do |task|
-    task.source = 'doc'
-    task.target = '_site'
-  end
-
-rescue LoadError
-  puts 'Buildr uses the jekyll gem to generate the Web site. You can install it by running bundler'
+desc 'Generate Buildr documentation in _site/'
+JekyllTask.new :jekyll do |task|
+  task.source = 'doc'
+  task.target = '_site'
 end
 
 if 0 == system('pygmentize -V > /dev/null 2> /dev/null')
