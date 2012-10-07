@@ -17,16 +17,6 @@ if RbConfig::CONFIG['host_os'] =~ /darwin/i
   # On OS X we attempt to guess where JAVA_HOME is, if not set
   # We set JAVA_HOME early so we can use it without calling Java.load first.
   ENV['JAVA_HOME'] ||= '/System/Library/Frameworks/JavaVM.framework/Home'
-
-  if ENV['JAVA_HOME']
-    # For JDK1.7 this file exists. We need to ensure JVM_LIB is set before loading rjb
-    # As RJB uses it to determine which library to load.
-    # SEE https://github.com/arton/rjb/issues/12#issuecomment-9179415
-    # TODO: Remove this after upgrade to RJB > 1.4.1 as it should be built in.
-    if File.exist?("#{ENV['JAVA_HOME']}/jre/lib/server/libjvm.dylib")
-      ENV['JVM_LIB'] = "#{ENV['JAVA_HOME']}/jre/lib/server/libjvm.dylib"
-    end
-  end
 end
 
 require 'rjb'
