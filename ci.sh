@@ -80,7 +80,7 @@ export BUILDR_GEMSET=${BUILDR_GEMSET-CI_$BUILD_JVM}
 export PATH=$JAVA_HOME/bin:$PATH
 export PATH=$PATH:$HOME/.rvm/bin
 
-export EXPECTED_RVM=random_value
+export EXPECTED_RVM=random_value1
 export CURRENT_RVM=`cat "$HOME/.rvm_install" 2>&1`
 if [ "X$CURRENT_RVM" != "X$EXPECTED_RVM" ]; then
   echo Removing old RVM version
