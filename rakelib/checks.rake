@@ -14,9 +14,9 @@
 # the License.
 
 
-desc "Check that source files contain the Apache license"
-task :license=>FileList["**/*.{rb,rake,java,gemspec,buildfile}", 'Rakefile'] do |task|
-  puts "Checking that files contain the Apache license ... "
+desc 'Check that source files contain the Apache license'
+task 'license' => FileList['**/*.{rb,rake,java,gemspec,buildfile}', 'Rakefile'] do |task|
+  puts 'Checking that files contain the Apache license ... '
   required = task.prerequisites.select { |fn| File.file?(fn) }
   missing = required.reject { |fn|
     comments = File.read(fn).scan(/(\/\*(.*?)\*\/)|^#\s+(.*?)$|^-#\s+(.*?)$|<!--(.*?)-->/m).
@@ -24,5 +24,5 @@ task :license=>FileList["**/*.{rb,rake,java,gemspec,buildfile}", 'Rakefile'] do 
     comments =~ /Licensed to the Apache Software Foundation/ && comments =~ /http:\/\/www.apache.org\/licenses\/LICENSE-2.0/
   }
   fail "#{missing.join(', ')} missing Apache License, please add it before making a release!" unless missing.empty?
-  puts "[x] Source files contain the Apache license"
+  puts '[x] Source files contain the Apache license'
 end

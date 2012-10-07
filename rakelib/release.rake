@@ -21,19 +21,19 @@ task :release do
     url = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
     puts "Populating _release directory from #{url} ..."
     sh 'rsync', '--progress', '--recursive', url, '_release'
-    puts "[X] Staged files are now in _release"
+    puts '[X] Staged files are now in _release'
   end.call
 
 
   # Upload binary and source packages and new Web site
   lambda do
     target = "people.apache.org:/www/www.apache.org/dist/#{spec.name}/#{spec.version}"
-    puts "Uploading packages to www.apache.org/dist ..."
+    puts 'Uploading packages to www.apache.org/dist ...'
     host, remote_dir = target.split(':')
     sh 'ssh', host, 'rm', '-rf', remote_dir rescue nil
     sh 'ssh', host, 'mkdir', remote_dir
     sh 'rsync', '--progress', '--recursive', "_release/#{spec.version}/dist/", target
-    puts "[X] Uploaded packages to www.apache.org/dist"
+    puts '[X] Uploaded packages to www.apache.org/dist'
 
     target = "people.apache.org:/www/#{spec.name}.apache.org/"
     puts "Uploading new site to #{spec.name}.apache.org ..."
@@ -54,7 +54,7 @@ task :release do
     rubyforge.userconfig.merge!('release_changes'=>"_release/#{spec.version}/CHANGES",  'preformatted' => true)
     rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version.to_s, *files
 
-    puts "Posting news to RubyForge ... "
+    puts 'Posting news to RubyForge ...'
     changes = File.read("_release/#{spec.version}/CHANGES")[/.*?\n(.*)/m, 1]
     rubyforge.post_news spec.rubyforge_project.downcase, "Buildr #{spec.version} released",
       "#{spec.description}\n\nNew in Buildr #{spec.version}:\n#{changes.gsub(/^/, '  ')}\n"
@@ -68,7 +68,7 @@ task :release do
       puts "Push gem #{f} to RubyForge.org / Gemcutter ... "
       `gem push #{f}`
     end
-    puts "[X] Pushed gems to Rubyforge.org / Gemcutter"
+    puts '[X] Pushed gems to Rubyforge.org / Gemcutter'
   end.call
 
   # Create an SVN tag for this release.
@@ -81,7 +81,7 @@ task :release do
           if ok
             puts "[X] Tagged this release as tags/#{spec.version} ... "
           else
-            puts "Could not create tag, please do it yourself!"
+            puts 'Could not create tag, please do it yourself!'
             puts %{  svn copy #{url} #{new_url} -m "Release #{spec.version}"}
           end
         end
@@ -150,11 +150,11 @@ The Apache Buildr Team
     File.open 'announce-email.txt', 'w' do |file|
       file.write email
     end
-    puts "[X] Created release announce email template in 'announce-email.txt'"
+    puts '[X] Created release announce email template in ''announce-email.txt'''
     puts email
   end
 
 end
 
 
-task(:clobber) { rm_rf '_release' }
+task('clobber') { rm_rf '_release' }

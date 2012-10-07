@@ -19,31 +19,31 @@ require 'digest/sha1'
 
 gpg_cmd = 'gpg2'
 
-task :prepare do |task, args|
+task 'prepare' do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
   
   # Make sure we're doing a release from checked code.
   lambda do
-    puts "Checking there are no local changes ... "
+    puts 'Checking there are no local changes ... '
     svn = `svn status`
     fail "Cannot release unless all local changes are in SVN:\n#{svn}" unless svn.empty?
     git = `git status -s`
     fail "Cannot release unless all local changes are in Git:\n#{git}" if git[/^ M/] && ENV["IGNORE_GIT"].nil?
-    puts "[X] There are no local changes, everything is in source control"
+    puts '[X] There are no local changes, everything is in source control'
   end.call
 
   # Make sure we have a valid CHANGELOG entry for this release.
   lambda do
-    puts "Checking that CHANGELOG indicates most recent version and today's date ... "
+    puts 'Checking that CHANGELOG indicates most recent version and today''s date ... '
     expecting = "#{spec.version} (#{Time.now.strftime('%Y-%m-%d')})"
     header = File.readlines('CHANGELOG').first.chomp
     fail "Expecting CHANGELOG to start with #{expecting}, but found #{header} instead" unless expecting == header
-    puts "[x] CHANGELOG indicates most recent version and today's date"
+    puts '[x] CHANGELOG indicates most recent version and today''s date'
   end.call
 
   # Need GPG to sign the packages.
   lambda do
-    gpg_arg or fail "Please run with gpg=<argument for gpg --local-user>"
+    gpg_arg or fail 'Please run with gpg=<argument for gpg --local-user>'
     gpg_ok = `gpg2 --list-keys #{gpg_arg}` rescue nil
     if !$?.success?
       gpg_ok = `gpg --list-keys #{gpg_arg}`
@@ -52,27 +52,27 @@ task :prepare do |task, args|
     fail "No GPG user #{gpg_arg}" if gpg_ok.empty?
   end.call
 
-  task(:license).invoke
+  task('license').invoke
 
   # Need JRuby, Scala and Groovy installed to run all the specs.
   lambda do
-    puts "Checking that we have Scala and Groovy available ... "
+    puts 'Checking that we have Scala and Groovy available ... '
     `scala -version`
-    $?.exitstatus == 1 or fail "Scala is not installed"
+    $?.exitstatus == 1 or fail 'Scala is not installed'
     sh 'groovy -version'
-    puts "[X] We have Scala and Groovy"
+    puts '[X] We have Scala and Groovy'
   end.call
 
   # Need Prince to generate PDF
   lambda do
-    puts "Checking that we have prince available ... "
+    puts 'Checking that we have prince available ... '
     sh 'prince --version'
-    puts "[X] We have prince available"
+    puts '[X] We have prince available'
   end.call
 
   # Need RubyForge to upload new release files.
   lambda do
-    puts "[!] Make sure you have admin privileges to make a release on RubyForge"
+    puts '[!] Make sure you have admin privileges to make a release on RubyForge'
     rubyforge = RubyForge.new.configure
     rubyforge.login
     rubyforge.scrape_project(spec.name)
@@ -84,13 +84,13 @@ task :prepare do |task, args|
   task('spec:jruby').invoke unless RUBY_PLATFORM[/java/]
 end
 
-task :stage=>[:clobber, :prepare] do |task, args|
+task 'stage' => %w(clobber prepare) do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
   mkpath '_staged'
 
   # Start by figuring out what has changed.
   lambda do
-    puts "Looking for changes between this release and previous one ..."
+    puts 'Looking for changes between this release and previous one ...'
     pattern = /(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/
     changes = File.read('CHANGELOG').scan(pattern).inject({}) { |hash, set| hash[set[1]] = set[2] ; hash }
     current = changes[spec.version.to_s]
@@ -99,14 +99,14 @@ task :stage=>[:clobber, :prepare] do |task, args|
       file.write "#{spec.version} (#{Time.now.strftime('%Y-%m-%d')})\n"
       file.write current
     end
-    puts "[X] Listed most recent changed in _staged/CHANGES"
+    puts '[X] Listed most recent changed in _staged/CHANGES'
   end.call
 
   # Create the packages (gem, tarball) and sign them. This requires user
   # intervention so the earlier we do it the better.
   lambda do
-    puts "Creating and signing release packages ..."
-    task(:package).invoke
+    puts 'Creating and signing release packages ...'
+    task('package').invoke
     mkpath '_staged/dist'
     FileList['pkg/*.{gem,zip,tgz}'].each do |source|
       pkg = source.pathmap('_staged/dist/%n%x')
@@ -117,13 +117,13 @@ task :stage=>[:clobber, :prepare] do |task, args|
       sh gpg_cmd, '--local-user', gpg_arg, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
     end
     cp 'etc/KEYS', '_staged/dist'
-    puts "[X] Created and signed release packages in _staged/dist"
+    puts '[X] Created and signed release packages in _staged/dist'
   end.call
 
   # The download page should link to the new binaries/sources, and we
   # want to do that before generating the site/documentation.
   lambda do
-    puts "Updating download page with links to release packages ... "
+    puts 'Updating download page with links to release packages ... '
     mirror = "http://www.apache.org/dyn/closer.cgi/#{spec.name}/#{spec.version}"
     official = "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
     rows = FileList['_staged/dist/*.{gem,tgz,zip}'].map { |pkg|
@@ -151,10 +151,10 @@ p>. ("Release signing keys":#{official}/KEYS)
   # Now we can create the Web site, this includes running specs, coverage report, etc.
   # This will take a while, so we want to do it as last step before upload.
   lambda do
-    puts "Creating new Web site"
+    puts 'Creating new Web site'
     task(:site).invoke
     cp_r '_site', '_staged/site'
-    puts "[X] Created new Web site in _staged/site"
+    puts '[X] Created new Web site in _staged/site'
   end.call
 
 
@@ -207,11 +207,11 @@ The following changes were made since #{previous_version}:
     File.open 'vote-email.txt', 'w' do |file|
       file.write email
     end
-    puts "[X] Created release vote email template in 'vote-email.txt'"
+    puts '[X] Created release vote email template in ''vote-email.txt'''
     puts email
   end.call
 
 end
 
 
-task(:clobber) { rm_rf '_staged' }
+task('clobber') { rm_rf '_staged' }

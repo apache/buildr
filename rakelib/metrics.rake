@@ -13,15 +13,15 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-namespace :metrics do
+namespace 'metrics' do
   desc 'run Saikuro reports'
-  task :saikuro do
+  task 'saikuro' do
     gem 'atoulme-Saikuro'
     require 'saikuro'
-    output_dir = File.expand_path(File.join(File.dirname(__FILE__), "..", "_reports", "saikuro"))
-    base_dir = Pathname.new(File.expand_path(File.join(File.dirname(__FILE__), "..")))
-    rb_files = ["lib", "addon"].collect { |folder| 
-      FileList[File.expand_path(File.join(File.dirname(__FILE__), "..", folder, "**", "*.rb"))]
+    output_dir = File.expand_path(File.join(File.dirname(__FILE__), '..', '_reports', 'saikuro'))
+    base_dir = Pathname.new(File.expand_path(File.join(File.dirname(__FILE__), '..')))
+    rb_files = %w(lib addon).collect { |folder|
+      FileList[File.expand_path(File.join(File.dirname(__FILE__), '..', folder, '**', '*.rb'))]
     }.flatten.collect {|path| 
       Pathname.new(path).relative_path_from(base_dir).to_s
     }
@@ -29,11 +29,11 @@ namespace :metrics do
   end
   
   desc 'generate ccn treemap'
-  task :ccn_treemap do
+  task 'ccn_treemap' do
     require 'saikuro_treemap'
-    SaikuroTreemap.generate_treemap :code_dirs => ['lib', 'addon'], :output_file => "_reports/saikuro_treemap.html"
+    SaikuroTreemap.generate_treemap :code_dirs => %w(lib addon), :output_file => '_reports/saikuro_treemap.html'
   end
 end
 
 desc 'Run all metrics tools'
-task :metrics => ["metrics:saikuro", "metrics:ccn_treemap"]
+task 'metrics' => %w(metrics:saikuro metrics:ccn_treemap)
