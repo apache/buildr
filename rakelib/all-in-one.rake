@@ -86,14 +86,14 @@ namespace :'all-in-one' do
 
   desc 'Install Buildr gem and dependencies'
   task :install_dependencies do
+    puts "Install ffi-ncurses"
+    sh "bin/jruby -S gem install -b ffi-ncurses --version 0.4.0"
+
     puts "Install rubygems-update"
-    sh "bin/jruby -S gem install rubygems-update"
+    sh "bin/jruby -S gem install -b rubygems-update"
 
     puts "Upgrade Rubygems"
     sh "bin/jruby -S gem update --system"
-
-    puts "Install ffi-ncurses"
-    sh "bin/jruby -S gem install ffi-ncurses"
 
     puts "Install Buildr gem ..."
     sh "bin/jruby", '-S', 'gem', 'install', FileList['../../pkg/*-java.gem'].first,
