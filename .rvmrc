@@ -34,5 +34,5 @@ if [ -f Gemfile ]; then
     rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec gem install bundler
   fi
   rm -f Gemfile.lock
-  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec bundle install --no-binstubs
+  rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec bundle install --no-binstubs  | grep -v 'Using' | grep -v 'complete' | sed '/^$/d'
 fi
