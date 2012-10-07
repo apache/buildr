@@ -166,7 +166,7 @@ Build settings can be retreived using the @Buildr.settings.build@ accessor.
 
 h2(#variable). Non constant settings
 
-Before loading the Buildfile, Buildr will attempt to load two other files: the @buildr.rb@ file in the @.buildr@ directory under your home directory, followed by the @buildr.rb@ file it finds in the build directory.
+Before loading the Buildfile, Buildr will attempt to load two other files: the @buildr.rb@ file in the @.buildr@ directory under your home directory, followed by the @_buildr.rb@ (or @.buildr.rb@) file it finds in the build directory.
 
 The loading order allows you to place global settings that affect all your builds in your @buildr.rb@, but also over-ride those with settings for a given project.
 
