@@ -13,6 +13,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# These libraries do not work on our CI infrastructure as the native libraries
+# are not compatible with version of the C++ library we are running there
+begin
+
 gem 'rdoc'
 require 'rdoc/task'
 desc 'Creates a symlink to rake' 's lib directory to support combined rdoc generation'
@@ -113,4 +117,9 @@ task 'clobber' do
   rm_rf '_site'
   rm_f 'buildr.pdf'
   rm_f 'prince_errors.log'
+end
+
+rescue Exception => e
+# The doc tasks do not work on our CI infrastructure with jruby as the native libraries
+# are not compatible with version of the C++ library we are running there
 end
