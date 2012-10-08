@@ -8,11 +8,11 @@ export BUILD_RAKE_TASK=ci
 # Override any specific settings for particular jobs
 if [ "X$JOB_NAME" == "XBuildr-metrics-build" ]; then
   export BUILD_RVM=1.9.2
-  export BUILD_RAKE_TASK="coverage metrics"
+  export BUILD_RAKE_TASK="coverage metrics:saikuro"
   export BUILDR_GEMSET=$JOB_NAME
 elif [ "X$JOB_NAME" == "XBuildr-website-build" ]; then
-  export BUILD_RVM=1.8.7
-  export BUILD_JVM=1.6
+  export BUILD_RVM=1.9.3
+  export BUILD_JVM=1.7
   export BUILD_RAKE_TASK=jekyll
   export PATH=$PATH:/home/toulmean/prince/bin
   export BUILDR_GEMSET=$JOB_NAME
