@@ -42,6 +42,7 @@ else
   export BUILDR_RUBY_VERSION=ruby-1.9.3-p194
 fi
 
+export LD_LIBRARY_PATH=/home/hudson/.rvm/usr/lib
 source "$HOME/.rvm/scripts/rvm"
 
 rvm ${BUILDR_RUBY_VERSION} --force gemset delete ${BUILDR_GEMSET} 2>&1 > /dev/null
