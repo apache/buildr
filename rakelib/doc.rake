@@ -13,8 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# These libraries do not work on our CI infrastructure as the native libraries
-# are not compatible with version of the C++ library we are running there
 begin
 
 gem 'rdoc'
