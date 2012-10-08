@@ -11,13 +11,13 @@ if [ "X$JOB_NAME" == "XBuildr-metrics-build" ]; then
   export BUILD_RAKE_TASK="coverage metrics:saikuro"
   export BUILDR_GEMSET=$JOB_NAME
 elif [ "X$JOB_NAME" == "XBuildr-website-build" ]; then
-  export BUILD_RVM=1.9.3
+  export BUILD_RVM=1.8.7
   export BUILD_JVM=1.7
   export BUILD_RAKE_TASK=jekyll
   export PATH=$PATH:/home/toulmean/prince/bin
   export BUILDR_GEMSET=$JOB_NAME
 elif [ "X$JOB_NAME" == "XBuildr-omnibus-build" ]; then
-  export BUILD_RVM=1.8.7
+  export BUILD_RVM=jruby
   export BUILD_RAKE_TASK=all-in-one
   export BUILDR_GEMSET=$JOB_NAME
 fi
@@ -49,4 +49,4 @@ rvm ${BUILDR_RUBY_VERSION} --force gemset delete ${BUILDR_GEMSET} 2>&1 > /dev/nu
 
 source .rvmrc
 
-rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake $BUILD_RAKE_TASK --trace 2>&1
+rvm "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" exec rake clobber $BUILD_RAKE_TASK --trace 2>&1
