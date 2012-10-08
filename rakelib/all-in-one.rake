@@ -79,8 +79,9 @@ namespace 'all-in-one' do
     puts 'Install rubygems-update'
     sh 'bin/jruby -S gem install -b rubygems-update'
 
-    puts 'Upgrade Rubygems'
-    sh 'bin/jruby -S gem update --system'
+    # Disabled until we can figure out why it does not work in the CI
+    #puts 'Upgrade Rubygems'
+    #sh 'bin/jruby -S gem update --system'
 
     puts 'Install Buildr gem ...'
     sh 'bin/jruby', '-S', 'gem', 'install', FileList['../../pkg/*-java.gem'].first,
