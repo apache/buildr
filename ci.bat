@@ -14,8 +14,8 @@ IF "X%BUILD_JVM%" EQ "X1.7" SET JAVA_HOME=F:\hudson\tools\java\jdk1.7.0
 SET GEM_HOME=.gems
 SET PATH=%JAVA_HOME%\bin;%RUBY_HOME%\bin;%GEM_HOME%\bin;%PATH%
 
-gem install bundler
-bundle install --path vendor/bundle
+CALL gem install bundler
+CALL bundle install
 
 SET BUILD_RAKE_TASK=ci
-rem rake clobber %BUILD_RAKE_TASK% --trace
+CALL rake clobber %BUILD_RAKE_TASK% --trace
