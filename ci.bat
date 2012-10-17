@@ -12,7 +12,7 @@ IF "X%BUILD_JVM%" EQ "X1.6" SET JAVA_HOME=F:\hudson\tools\java\jdk1.6.0_27-64
 IF "X%BUILD_JVM%" EQ "X1.7" SET JAVA_HOME=F:\hudson\tools\java\jdk1.7.0
 
 SET GEM_HOME=.gems
-SET PATH=%PATH%;%JAVA_HOME%\bin;%RUBY_HOME%\bin
+SET PATH=%JAVA_HOME%\bin;%RUBY_HOME%\bin;%GEM_HOME%\bin;%PATH%
 
 gem install bundler
 bundle install --path vendor/bundle
