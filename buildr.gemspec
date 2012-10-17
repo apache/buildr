@@ -74,11 +74,14 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'minitar',              '0.5.3'
   spec.add_dependency 'jruby-openssl',        '>= 0.7' if $platform.to_s == 'java'
 
-  spec.add_development_dependency 'jekyll', '0.11.2'
-  spec.add_development_dependency 'RedCloth', '4.2.9'
-  spec.add_development_dependency 'jekylltask', '1.1.0'
-  spec.add_development_dependency 'rdoc', '3.12'
-  spec.add_development_dependency 'rcov', '0.9.9'
+  # Unable to get this consistently working under jruby on windows
+  unless $platform.to_s == 'java'
+    spec.add_development_dependency 'jekyll', '0.11.2'
+    spec.add_development_dependency 'RedCloth', '4.2.9'
+    spec.add_development_dependency 'jekylltask', '1.1.0'
+    spec.add_development_dependency 'rdoc', '3.12'
+    spec.add_development_dependency 'rcov', '0.9.9'
+  end
 
   spec.add_development_dependency 'ci_reporter', '1.7.2'
 
