@@ -24,6 +24,9 @@ fi
 # Force the creation of the gemset
 rvm use "${BUILDR_RUBY_VERSION}@${BUILDR_GEMSET}" --create
 
+# TODO: Consider the user of do notation ala rvm 1.8.7-p334 do rvm gemset create my_gemset
+# as documented at https://rvm.io/workflow/scripting/
+
 export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx1024M"
 export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=312m"
 
