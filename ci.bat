@@ -18,4 +18,4 @@ CALL gem install bundler
 CALL bundle install
 
 SET BUILD_RAKE_TASK=ci
-CALL bundle exec rake clobber %BUILD_RAKE_TASK% --trace
+CALL rake clobber %BUILD_RAKE_TASK% --trace
