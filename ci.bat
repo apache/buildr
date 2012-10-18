@@ -11,7 +11,7 @@ IF "X%BUILD_JVM%" == "X1.5" SET JAVA_HOME=F:\hudson\tools\java\jdk1.5.0_22-64
 IF "X%BUILD_JVM%" == "X1.6" SET JAVA_HOME=F:\hudson\tools\java\jdk1.6.0_27-64
 IF "X%BUILD_JVM%" == "X1.7" SET JAVA_HOME=F:\hudson\tools\java\jdk1.7.0
 
-SET GEM_HOME=.gems
+SET GEM_HOME=%HOMEPATH%\.buildr_gems_%JOB_NAME%
 SET PATH=%GEM_HOME%\bin;%JAVA_HOME%\bin;%RUBY_HOME%\bin;%PATH%
 
 CALL gem install bundler
