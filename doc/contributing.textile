@@ -242,6 +242,53 @@ The care and feeding of the "CI Jobs":https://builds.apache.org/view/A-F/view/Bu
 
 You may also need to coordinate with the Apache infrastructure team to get accounts on the actual slave hosts that run the CI jobs. This access may be required to install tools and gems required to run the CI jobs. The main slave host to get access to is vesta.apache.org at the time of writing. You can also log on to the slave host, impersonate hudson and manually run tasks when you are attempting to track down build problems. Of course to impersonate hudson you will need to learn how to use "OPIE.":http://apache.org/dev/freebsd-jails
 
+h3(#cilinux).  Linux Setup
+
+The tests on the Linux hosts rely on "RVM":https://rvm.io/ to setup the ruby environment. At the time of writing the Linux/x86 nodes that Apache uses for CI are based of the old "Ubuntu 10.04.4 LTS (Lucid Lynx)" operating system. As it is a relatively old operating system, it requires a little bit of manual intervention to install RVM on the node. We have installed the required tools on vesta.apache.org manually. The script looks something like;
+
+{% highlight sh %}
+ssh my_username@vesta.apache.org
+sudo su - hudson
+
+curl -L https://get.rvm.io | bash -s stable
+rvm reload
+rvm pkg install readline
+rvm pkg install iconv
+rvm pkg install curl
+rvm pkg install openssl
+rvm pkg install zlib
+rvm pkg install autoconf
+rvm pkg install ncurses
+rvm pkg install pkgconfig
+rvm pkg install gettext
+rvm pkg install glib
+rvm pkg install mono
+rvm pkg install llvm
+rvm pkg install libxml2
+rvm pkg install libxslt
+rvm pkg install libyaml
+rvm install ruby-1.8.7-p358
+rvm install ruby-1.9.2-p320
+rvm install jruby-1.6.7
+rvm install ruby-1.9.3-p194
+{% endhighlight %}
+
+It should also be noted that jruby-1.6.7 release has a native library that is compiled using a more modern version of libc than is available on this variant of the operating system. We could download the source release and recompile the library but instead we have just avoided the need for any use of the ruby native interface library in our CI infrastructure.
+
+h3(#ciwindows).  Windows Setup
+
+The ci infrastructure on the windows host (hudson-win.apache.org) is a little fragile. First you need to RDP in and download the support libraries. We have manually installed the tools in the following locations. Note: it is important to make the locations read-write access to the hudson user.
+
+{% highlight sh %}
+F:\hudson\tools\Ruby193-p194
+F:\hudson\tools\Ruby192-p290
+F:\hudson\tools\Ruby187-p370
+F:\hudson\tools\jruby-1.6.7
+F:\hudson\tools\scala-2.9.0.1
+{% endhighlight %}
+
+WARNING: Several attempts were made to use GEM_HOME to install the dependent gems for each test in a separate location but we were unable to figure out the mechanisms via which sub-shells would inherit the paths and the ability to run tools such as rspec.
+
 h2(#contributors).  Contributors
 
 Here is the list of people who are actively working and committing on Buildr:
