@@ -70,7 +70,7 @@ module Buildr
         srcs.each do |a|
           if File.directory? a
             Dir.glob("#{a}/**/*").map { |f| times[f] = File.mtime f }
-          else
+          elsif File.exist? a
             times[a] = File.mtime a
           end
         end
