@@ -62,7 +62,7 @@ module Java
             # If our cmd line is longer, we create a batch file and execute it instead.
           if Util.win_os? &&  cmd_args.map(&:inspect).join(' ').size > 2048
             # remove '-classpath' and the classpath itself from the cmd line.
-            cp_i = cmd_args.index{|x| x.starts_with('-classpath')}
+            cp_i = cmd_args.index{|x| x.to_s =~ /^-classpath/}
             2.times do
               cmd_args.delete_at cp_i unless cp_i.nil?
             end
