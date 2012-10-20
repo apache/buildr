@@ -542,10 +542,11 @@ describe Buildr::Filter do
 
   it 'should preserve mode bits except readable' do
     # legacy: pending "Pending the release of the fix for JRUBY-4927" if RUBY_PLATFORM =~ /java/
-    Dir['src/*'].each { |file| File.chmod(0o755, file) }
+    mode = 0o600
+    Dir['src/*'].each { |file| File.chmod(mode, file) }
     @filter.from('src').into('target').run
     Dir['target/*'].sort.each do |file|
-      (File.stat(file).mode & 0o755).should == 0o755
+      (File.stat(file).mode & mode).should == mode
     end
   end
 end
