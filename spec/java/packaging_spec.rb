@@ -204,7 +204,8 @@ shared_examples_for 'package with manifest' do
     package.invoke
     Zip::ZipFile.open(package.to_s) do |zip|
       permissions = format("%o", zip.file.stat('META-INF/MANIFEST.MF').mode)
-      permissions.should match /644$/
+      expected_mode = Buildr::Util.win_os? ? /666$/ : /644$/
+      permissions.should match expected_mode
     end
   end
 
