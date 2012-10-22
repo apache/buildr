@@ -54,15 +54,6 @@ task 'prepare' do |task, args|
 
   task('license').invoke
 
-  # Need JRuby, Scala and Groovy installed to run all the specs.
-  lambda do
-    puts 'Checking that we have Scala and Groovy available ... '
-    `scala -version`
-    $?.exitstatus == 1 or fail 'Scala is not installed'
-    sh 'groovy -version'
-    puts '[X] We have Scala and Groovy'
-  end.call
-
   # Need Prince to generate PDF
   lambda do
     puts 'Checking that we have prince available ... '
@@ -77,11 +68,6 @@ task 'prepare' do |task, args|
     rubyforge.login
     rubyforge.scrape_project(spec.name)
   end.call
-
-  # We will be speccing in one platform, so also spec the other one.
-  task('spec:ruby_1_9').invoke unless RUBY_VERSION >= '1.9' && !RUBY_PLATFORM[/java/]
-  task('spec:ruby_1_8').invoke unless RUBY_VERSION >= '1.8.7' && !RUBY_PLATFORM[/java/]
-  task('spec:jruby').invoke unless RUBY_PLATFORM[/java/]
 end
 
 task 'stage' => %w(clobber prepare) do |task, args|
