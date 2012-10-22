@@ -68,6 +68,9 @@ task 'prepare' do |task, args|
     rubyforge.login
     rubyforge.scrape_project(spec.name)
   end.call
+
+  raise "Can not run stage process under jruby" if RUBY_PLATFORM[/java/]
+  raise "Can not run staging process under older rubies" unless RUBY_VERSION >= '1.9'
 end
 
 task 'stage' => %w(clobber prepare) do |task, args|
