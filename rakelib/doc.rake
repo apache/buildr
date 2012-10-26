@@ -73,12 +73,9 @@ file 'buildr.pdf' => '_site' do |task|
 end
 
 desc 'Build a copy of the Web site in the ./_site'
-task 'site' => ['_site', :rdoc, '_reports/specs.html', '_reports/coverage', 'buildr.pdf'] do
+task 'site' => ['_site', :rdoc, 'buildr.pdf'] do
   cp_r 'rdoc', '_site'
   fail 'No RDocs in site directory' unless File.exist?('_site/rdoc/lib/buildr_rb.html')
-  cp '_reports/specs.html', '_site'
-  cp_r '_reports/coverage', '_site'
-  fail 'No coverage report in site directory' unless File.exist?('_site/coverage/index.html')
   cp 'CHANGELOG', '_site'
   open('_site/.htaccess', 'w') do |htaccess|
     htaccess << %Q{
