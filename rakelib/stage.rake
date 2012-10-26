@@ -21,7 +21,7 @@ gpg_cmd = 'gpg2'
 
 task 'prepare' do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
-  
+
   # Make sure we're doing a release from checked code.
   lambda do
     puts 'Checking there are no local changes ... '
@@ -59,14 +59,6 @@ task 'prepare' do |task, args|
     puts 'Checking that we have prince available ... '
     sh 'prince --version'
     puts '[X] We have prince available'
-  end.call
-
-  # Need RubyForge to upload new release files.
-  lambda do
-    puts '[!] Make sure you have admin privileges to make a release on RubyForge'
-    rubyforge = RubyForge.new.configure
-    rubyforge.login
-    rubyforge.scrape_project(spec.name)
   end.call
 
   raise "Can not run stage process under jruby" if RUBY_PLATFORM[/java/]
