@@ -174,13 +174,6 @@ The documentation generated for this release is available here:
 #{base_url}/site/
 #{base_url}/site/buildr.pdf
 
-The official specification against which this release was tested:
-#{base_url}/site/specs.html
-
-Test coverage report:
-#{base_url}/site/coverage/index.html
-
-
 The following changes were made since #{previous_version}:
 
 #{changes.gsub(/^/, '  ')}
