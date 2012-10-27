@@ -308,7 +308,7 @@ if Buildr::Util.java_platform?
 
   module RakeFileUtils #:nodoc:
     def rake_merge_option(args, defaults)
-      defaults[:verbose] = false if defaults[:verbose] == :default
+      defaults[:verbose] = false if defaults[:verbose] == Rake::FileUtilsExt::DEFAULT
 
       if Hash === args.last
         defaults.update(args.last)
@@ -396,7 +396,7 @@ if Buildr::Util.java_platform?
           ok or fail "Command failed with status (#{status.exitstatus}): [#{show_command}]"
         }
       end
-      if RakeFileUtils.verbose_flag == :default
+      if RakeFileUtils.verbose_flag == Rake::FileUtilsExt::DEFAULT
         options[:verbose] = false
       else
         options[:verbose] ||= RakeFileUtils.verbose_flag
@@ -440,7 +440,7 @@ else
           ok or fail "Command failed with status (#{status.exitstatus}): [#{show_command}]"
         }
       end
-      if RakeFileUtils.verbose_flag == :default
+      if RakeFileUtils.verbose_flag == Rake::FileUtilsExt::DEFAULT
         options[:verbose] = false
       else
         options[:verbose] ||= RakeFileUtils.verbose_flag

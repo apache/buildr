@@ -20,7 +20,6 @@ end
 require 'rake'
 include Rake::DSL
 Rake::TaskManager.record_task_metadata = true
-Rake::FileUtilsExt.verbose_flag = false
 
 require 'rbconfig'
 require 'pathname'
