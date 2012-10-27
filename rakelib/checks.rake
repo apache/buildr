@@ -15,7 +15,7 @@
 
 
 desc 'Check that source files contain the Apache license'
-task 'license' => FileList['**/*.{rb,rake,java,gemspec,buildfile}', 'Rakefile'] do |task|
+task 'license' => FileList['{addond,lib,doc,rakelib}/**/*.{rb,rake,java}', 'buildr.gemspec', 'Rakefile'] do |task|
   puts 'Checking that files contain the Apache license ... '
   required = task.prerequisites.select { |fn| File.file?(fn) }
   missing = required.reject { |fn|
