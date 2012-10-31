@@ -388,7 +388,7 @@ module Buildr
 
     def ask_generate_buildfile
       source, fromEclipse = choose do |menu|
-        menu.header = "ngng: To use Buildr you need a buildfile. Do you want me to create one?"
+        menu.header = "To use Buildr you need a buildfile. Do you want me to create one?"
         menu.choice("From eclipse .project files") { [Dir.pwd, true] } if Generate.has_eclipse_project?
         menu.choice("From Maven2 POM file") { ['pom.xml', false] } if File.exist?('pom.xml')
         menu.choice("From directory structure") { [Dir.pwd, false] }
