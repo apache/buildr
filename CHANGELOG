@@ -1,4 +1,4 @@
-1.4.8 (2012-10-28)
+1.4.8 (2012-11-01)
 * Change: Revert to importing non-verbose FileUtils utility methods to match buildr 1.4.6 release and earlier.
 * Added:  Experimental support for jacoco code coverage tool.
 * Fixed:  BUILDR-655 - Support JDK1.7 under OSX
