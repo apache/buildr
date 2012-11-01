@@ -697,3 +697,21 @@ module RakeFileUtils #:nodoc:
     EOS
   end
 end
+
+module Rake::DSL #:nodoc:
+  FileUtils::OPT_TABLE.each do |name, opts|
+    default_options = []
+    if opts.include?(:verbose) || opts.include?("verbose")
+      default_options << ':verbose => RakeFileUtils.verbose_flag == true'
+    end
+    next if default_options.empty?
+    module_eval(<<-EOS, __FILE__, __LINE__ + 1)
+    def #{name}( *args, &block )
+      super(
+        *rake_merge_option(args,
+          #{default_options.join(', ')}
+          ), &block)
+    end
+    EOS
+  end
+end
