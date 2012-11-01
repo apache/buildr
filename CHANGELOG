@@ -4,7 +4,6 @@
 * Fixed:  BUILDR-655 - Support JDK1.7 under OSX
 * Change: Updated dependency versions;
           - builder (3.1.3)
-          - highline (1.6.2 on Windows, 1.6.15 on other platforms)
           - rubyforge (2.0.4)
           - net-ssh (2.6.0)
           - hoe (3.1.0)
