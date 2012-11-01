@@ -698,6 +698,11 @@ module RakeFileUtils #:nodoc:
   end
 end
 
+
+# It is unclear why this needs to be included on windows but it does seem to be needed.
+# But it can not be included under linux as it rewrites the install command
+if Buildr::Util.win_os?
+
 module Rake::DSL #:nodoc:
   FileUtils::OPT_TABLE.each do |name, opts|
     default_options = []
@@ -714,4 +719,6 @@ module Rake::DSL #:nodoc:
     end
     EOS
   end
+end
+
 end
