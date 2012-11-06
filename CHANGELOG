@@ -1,3 +1,5 @@
+1.4.9 (Pending)
+
 1.4.8 (2012-11-01)
 * Change: Revert to importing non-verbose FileUtils utility methods to match buildr 1.4.6 release and earlier.
 * Added:  Experimental support for jacoco code coverage tool.
