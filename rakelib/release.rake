@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
+desc "Release the next version of buildr from existing staged repository"
 task 'release' do
   # First, we need to get all the staged files from Apache to _release.
   mkpath '_release'
@@ -23,7 +23,6 @@ task 'release' do
     sh 'rsync', '--progress', '--recursive', url, '_release'
     puts '[X] Staged files are now in _release'
   end.call
-
 
   # Upload binary and source packages and new Web site
   lambda do
@@ -40,25 +39,6 @@ task 'release' do
     sh 'rsync', '--progress', '--recursive', '--delete', "_release/#{spec.version}/site/", target
     sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
     puts "[X] Uploaded new site to #{spec.name}.apache.org"
-  end.call
-
-
-  # Upload binary and source packages to RubyForge.
-  lambda do
-    # update rubyforge projects, processors, etc. in local config
-    sh 'rubyforge', 'config'
-    files = FileList["_release/#{spec.version}/dist/*.{gem,tgz,zip}"]
-    puts "Uploading #{spec.version} to RubyForge ... "
-    rubyforge = RubyForge.new.configure
-    rubyforge.login
-    rubyforge.userconfig.merge!('release_changes'=>"_release/#{spec.version}/CHANGES",  'preformatted' => true)
-    rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version.to_s, *files
-
-    puts 'Posting news to RubyForge ...'
-    changes = File.read("_release/#{spec.version}/CHANGES")[/.*?\n(.*)/m, 1]
-    rubyforge.post_news spec.rubyforge_project.downcase, "Buildr #{spec.version} released",
-      "#{spec.description}\n\nNew in Buildr #{spec.version}:\n#{changes.gsub(/^/, '  ')}\n"
-    puts "[X] Uploaded gems and source files to #{spec.name}.rubyforge.org"
   end.call
 
   # Push gems to Rubyforge.org / Gemcutter
