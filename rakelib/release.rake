@@ -81,13 +81,12 @@ task 'release' do
     puts '[X] Updated CHANGELOG and added entry for next release'
   end.call
 
-
   # Update source files to next release number.
   lambda do
     next_version = spec.version.to_s.split('.').map { |v| v.to_i }.
       zip([0, 0, 1]).map { |a| a.inject(0) { |t,i| t + i } }.join('.')
 
-    ver_file = "lib/#{spec.name}.rb"
+    ver_file = "lib/#{spec.name}/version.rb"
     if File.exist?(ver_file)
       modified = File.read(ver_file).sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" }
       File.open ver_file, 'w' do |file|
@@ -95,17 +94,7 @@ task 'release' do
       end
       puts "[X] Updated #{ver_file} to next release"
     end
-
-    spec_file = "#{spec.name}.gemspec"
-    if File.exist?(spec_file)
-      modified = File.read(spec_file).sub(/(s(?:pec)?\.version\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" }
-      File.open spec_file, 'w' do |file|
-        file.write modified
-      end
-      puts "[X] Updated #{spec_file} to next release"
-    end
   end.call
-
 
   # Prepare release announcement email.
   lambda do
@@ -132,8 +121,7 @@ The Apache Buildr Team
     end
     puts '[X] Created release announce email template in ''announce-email.txt'''
     puts email
-  end
-
+  end.call
 end
 
 task('clobber') { rm_rf '_release' }
