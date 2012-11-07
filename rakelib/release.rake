@@ -31,7 +31,7 @@ task 'release' do
     host, remote_dir = target.split(':')
     sh 'ssh', host, 'rm', '-rf', remote_dir rescue nil
     sh 'ssh', host, 'mkdir', remote_dir
-    sh 'rsync', '--progress', '--recursive', "_release/#{spec.version}/dist/", target
+    sh 'rsync', '--progress', '--recursive', '--delete', "_release/#{spec.version}/dist/", target
     puts '[X] Uploaded packages to www.apache.org/dist'
 
     target = "people.apache.org:/www/#{spec.name}.apache.org/"
