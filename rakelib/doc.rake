@@ -90,20 +90,11 @@ ForceType 'text/plain; charset=UTF-8'
 end
 
 # Publish prerequisites to Web site.
+desc "Publish web site "
 task 'publish' => 'site' do
   target = "people.apache.org:/www/#{spec.name}.apache.org/"
   puts "Uploading new site to #{target} ..."
   sh 'rsync', '--progress', '--recursive', '--delete', '_site/', target
-  sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
-  puts 'Done'
-end
-
-# Update HTML + PDF documentation (but not entire site; no specs, coverage, etc.)
-task 'publish-doc' => %w(buildr.pdf _site) do
-  cp 'buildr.pdf', '_site'
-  target = "people.apache.org:/www/#{spec.name}.apache.org/"
-  puts "Uploading new site to #{target} ..."
-  sh 'rsync', '--progress', '--recursive', '_site/', target # Note: no --delete
   sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
   puts 'Done'
 end
