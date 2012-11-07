@@ -121,7 +121,10 @@ p>. ("Release signing keys":#{official}/KEYS)
     TEXTILE
     file_name = 'doc/download.textile'
     print "Adding download links to #{file_name} ... "
-    modified = File.read(file_name).sub(/^h2\(#dist\).*$/) { |header| "#{header}\n\n#{textile}" }
+    modified = File.read(file_name).
+      gsub('http://www.apache.org/dist','http://archive.apache.org/dist').
+      gsub('http://www.apache.org/dyn/closer.cgi','http://archive.apache.org/dist').
+      sub(/^h2\(#dist\).*$/) { |header| "#{header}\n\n#{textile}" }
     File.open file_name, 'w' do |file|
       file.write modified
     end
