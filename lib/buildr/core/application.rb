@@ -679,46 +679,15 @@ module Rake #:nodoc
   end
 end
 
-
-module RakeFileUtils #:nodoc:
-  FileUtils::OPT_TABLE.each do |name, opts|
-    default_options = []
-    if opts.include?(:verbose) || opts.include?("verbose")
-      default_options << ':verbose => RakeFileUtils.verbose_flag == true'
+module FileUtils
+  def fu_output_message(msg)   #:nodoc:
+    if Rake::FileUtilsExt::DEFAULT == RakeFileUtils.verbose_flag
+      # Swallow the default output
+    elsif RakeFileUtils.verbose_flag
+      @fileutils_output ||= $stderr
+      @fileutils_label ||= ''
+      @fileutils_output.puts @fileutils_label + msg
     end
-    next if default_options.empty?
-    module_eval(<<-EOS, __FILE__, __LINE__ + 1)
-    def #{name}( *args, &block )
-      super(
-        *rake_merge_option(args,
-          #{default_options.join(', ')}
-          ), &block)
-    end
-    EOS
   end
-end
-
-
-# It is unclear why this needs to be included on windows but it does seem to be needed.
-# But it can not be included under linux as it rewrites the install command
-if Buildr::Util.win_os?
-
-module Rake::DSL #:nodoc:
-  FileUtils::OPT_TABLE.each do |name, opts|
-    default_options = []
-    if opts.include?(:verbose) || opts.include?("verbose")
-      default_options << ':verbose => RakeFileUtils.verbose_flag == true'
-    end
-    next if default_options.empty?
-    module_eval(<<-EOS, __FILE__, __LINE__ + 1)
-    def #{name}( *args, &block )
-      super(
-        *rake_merge_option(args,
-          #{default_options.join(', ')}
-          ), &block)
-    end
-    EOS
-  end
-end
-
+  private_module_function :fu_output_message
 end

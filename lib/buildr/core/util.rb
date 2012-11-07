@@ -285,20 +285,6 @@ if Buildr::Util.java_platform?
     remove_method :error if method_defined?(:error)
   end
 
-  module RakeFileUtils #:nodoc:
-    def rake_merge_option(args, defaults)
-      defaults[:verbose] = false if defaults[:verbose] == Rake::FileUtilsExt::DEFAULT
-
-      if Hash === args.last
-        defaults.update(args.last)
-        args.pop
-      end
-      args.push defaults
-      args
-    end
-    private :rake_merge_option
-  end
-
   module Buildr
     class ProcessStatus
       attr_reader :pid, :termsig, :stopsig, :exitstatus
