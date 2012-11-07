@@ -89,7 +89,7 @@ task 'release' do
 
     ver_file = "lib/#{spec.name}/version.rb"
     if File.exist?(ver_file)
-      modified = File.read(ver_file).sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}#{$2}" }
+      modified = File.read(ver_file).sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{next_version}.dev#{$2}" }
       File.open ver_file, 'w' do |file|
         file.write modified
       end
