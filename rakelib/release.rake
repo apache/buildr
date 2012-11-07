@@ -32,6 +32,7 @@ task 'release' do
     sh 'ssh', host, 'rm', '-rf', remote_dir rescue nil
     sh 'ssh', host, 'mkdir', remote_dir
     sh 'rsync', '--progress', '--recursive', '--delete', "_release/#{spec.version}/dist/", target
+    sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "#{remote_dir}/*"
     puts '[X] Uploaded packages to www.apache.org/dist'
 
     target = "people.apache.org:/www/#{spec.name}.apache.org/"
