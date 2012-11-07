@@ -22,6 +22,21 @@ gpg_cmd = 'gpg2'
 task 'prepare' do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
 
+  # Update source files to next release number.
+  lambda do
+    current_version = spec.version.to_s.split('.').map { |v| v.to_i }.
+      zip([0, 0, 0]).map { |a| a.inject(0) { |t,i| i.nil? ? nil : t + i } }.compact.join('.')
+
+    ver_file = "lib/#{spec.name}/version.rb"
+    if File.exist?(ver_file)
+      modified = File.read(ver_file).sub(/(VERSION\s*=\s*)(['"])(.*)\2/) { |line| "#{$1}#{$2}#{current_version}#{$2}" }
+      File.open ver_file, 'w' do |file|
+        file.write modified
+      end
+      puts "[X] Removed dev suffix from version in #{ver_file}"
+    end
+  end.call
+
   # Make sure we're doing a release from checked code.
   lambda do
     puts 'Checking there are no local changes ... '
