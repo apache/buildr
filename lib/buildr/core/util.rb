@@ -285,27 +285,6 @@ if Buildr::Util.java_platform?
     remove_method :error if method_defined?(:error)
   end
 
-  # Fix for BUILDR-292.
-  # JRuby fails to rename a file on different devices
-  # this monkey-patch wont be needed when JRUBY-3381 gets resolved.
-  module FileUtils #:nodoc:
-    alias_method :__mv_native, :mv
-
-    def mv(from, to, options = nil)
-      dir_to = File.directory?(to) ? to : File.dirname(to)
-      Array(from).each do |from|
-        dir_from = File.dirname(from)
-        if File.stat(dir_from).dev != File.stat(dir_to).dev
-          cp from, to, options
-          rm from, options
-        else
-          __mv_native from, to, options
-        end
-      end
-    end
-    private :mv
-  end
-
   module RakeFileUtils #:nodoc:
     def rake_merge_option(args, defaults)
       defaults[:verbose] = false if defaults[:verbose] == Rake::FileUtilsExt::DEFAULT
