@@ -132,7 +132,7 @@ task 'release' do
       </Version>
     </release>
 DOAP
-    modified = File.read(doap_file).sub(/^    \<category.* \/\>$/) { |category_line| "#{category_line}\n#{textile}" }
+    modified = File.read(doap_file).sub(/^    \<category.* \/\>$/) { |category_line| "#{category_line}\n#{doap_entry}" }
     File.open doap_file, 'w' do |file|
       file.write modified
     end
