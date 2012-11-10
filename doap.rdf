@@ -37,6 +37,20 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.9</name>
+        <created>2012-11-08</created>
+        <revision>1.4.9</revision>
+        <dc:description>
+* Fixed:  Fixed the interaction with the FileUtils classes. The last release
+          introduced a non-deterministic bug that sometimes caused logging
+          preferences to be ignored and the install method to be
+          inadvertently overwritten.
+
+        </dc:description>
+      </Version>
+    </release>
+    <release>
+      <Version>
         <name>1.4.8</name>
         <created>2012-11-01</created>
         <revision>1.4.8</revision>
