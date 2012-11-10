@@ -46,7 +46,14 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-Highlights from Buildr 1.4.8 (Nov 11th, 2012)
+Highlights from Buildr 1.4.9 (Nov 8th, 2012)
+
+* Fixed:  Fixed the interaction with the FileUtils classes. The last release
+          introduced a non-deterministic bug that sometimes caused logging
+          preferences to be ignored and the install method to be
+          inadvertently overwritten.
+
+Highlights from Buildr 1.4.8 (Nov 1st, 2012)
 
 * Change: Revert to importing non-verbose FileUtils utility methods to match buildr 1.4.6 release and earlier.
 * Added:  Experimental support for jacoco code coverage tool.
