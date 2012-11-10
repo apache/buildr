@@ -1,3 +1,5 @@
+1.4.10 (Pending)
+
 1.4.9 (2012-11-08)
 * Fixed:  Fixed the interaction with the FileUtils classes. The last release
           introduced a non-deterministic bug that sometimes caused logging
