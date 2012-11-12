@@ -1,1 +1,1 @@
-@%~dp0\_buildr.exe %*
+@%~dp0\..\embedded\jruby.exe %*
