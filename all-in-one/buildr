@@ -23,4 +23,4 @@ done
 
 BUILDR_HOME=`dirname "$PRG"`
 
-$BUILDR_HOME/../embedded/bin/jruby -S buildr $*
+$BUILDR_HOME/../embedded/bin/jruby -S buildr "$@"
