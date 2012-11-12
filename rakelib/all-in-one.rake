@@ -22,12 +22,12 @@ task 'all-in-one' => 'all-in-one:all-in-one'
 
 namespace 'all-in-one' do
 
-  version = '1.6.7'
+  version = '1.7.0'
   jruby_distro = "jruby-bin-#{version}.tar.gz"
   url = "http://jruby.org.s3.amazonaws.com/downloads/#{version}/#{jruby_distro}"
   dir = "jruby-#{version}"
 
-  task 'all-in-one' => %w(gem prepare download_and_extract clean_dist install_dependencies add_execs package)
+  task 'all-in-one' => %w(gem prepare download_and_extract install_dependencies clean_dist package)
 
   desc 'Prepare to run'
   task 'prepare' do
@@ -60,42 +60,22 @@ namespace 'all-in-one' do
   desc 'Cleanup JRuby distribution'
   task 'clean_dist' do
     puts 'Cleaning...'
+    mv 'tool/nailgun/ng.exe', 'bin'
+    rm_rf 'tool'
     rm_rf 'docs'
-    mkpath 'jruby-docs'
-    mv Dir['COPYING*'], 'jruby-docs'
-    mv Dir['LICENSE*'], 'jruby-docs'
-    mv 'README', 'jruby-docs'
-    rm_rf 'lib/ruby/1.9'
-    rm_rf 'lib/ruby/gems/1.8/doc'
+    rm_rf 'lib/ruby/1.8'
+    rm_rf 'lib/ruby/gems/1.9/doc'
+    rm_rf 'lib/ruby/gems/shared/doc'
     rm_rf 'samples'
-    rm_rf 'share'
   end
 
   desc 'Install Buildr gem and dependencies'
   task 'install_dependencies' do
-    puts 'Install ffi-ncurses'
-    sh 'bin/jruby -S gem install -b ffi-ncurses --version 0.4.0'
-
-    puts 'Install rubygems-update'
-    sh 'bin/jruby -S gem install -b rubygems-update'
-
-    # Disabled until we can figure out why it does not work in the CI
-    #puts 'Upgrade Rubygems'
-    #sh 'bin/jruby -S gem update --system'
-
     puts 'Install Buildr gem ...'
-    sh 'bin/jruby', '-S', 'gem', 'install', FileList['../../pkg/*-java.gem'].first,
-       '--no-rdoc', '--no-ri'
+    java_gem = FileList["../../pkg/buildr-#{spec.version}-java.gem"].first
+    command = ['bin/jruby', '-S', 'gem', 'install', java_gem, '--no-rdoc', '--no-ri', '--env-shebang']
+    sh({'GEM_HOME' => nil, 'GEM_PATH' => nil, 'MY_RUBY_HOME' => nil, 'RUBYOPT' => nil}, *command)
     puts '[X] Install Buildr gem'
-  end
-
-  desc 'Add Buildr executables/scripts'
-  task 'add_execs' do
-    cp 'bin/jruby.exe', 'bin/_buildr.exe'
-    cp "#{workspace_dir}/all-in-one/buildr", 'bin/buildr'
-    cp "#{workspace_dir}/all-in-one/_buildr", 'bin/_buildr'
-    cp "#{workspace_dir}/all-in-one/buildr.cmd", 'bin/buildr.cmd'
-    File.chmod(0500, 'bin/_buildr', 'bin/buildr')
   end
 
   desc 'Package distribution'
@@ -105,7 +85,13 @@ namespace 'all-in-one' do
     puts 'Zipping distribution ...'
     cd '..'
     new_dir  = "#{spec.name}-all-in-one-#{spec.version}"
-    mv dir, new_dir
+    rm_rf new_dir
+    mkdir new_dir
+    mv dir, "#{new_dir}/embedded"
+    mkdir "#{new_dir}/bin"
+    cp "#{workspace_dir}/all-in-one/buildr", "#{new_dir}/bin/buildr"
+    cp "#{workspace_dir}/all-in-one/buildr.cmd", "#{new_dir}/bin/buildr.cmd"
+    File.chmod(0500, "#{new_dir}/bin/buildr", "#{new_dir}/bin/buildr.cmd")
     zip = "#{pkg_dir}/#{new_dir}.zip"
     rm zip if File.exist? zip
     sh 'zip', '-q', '-r', zip, new_dir
