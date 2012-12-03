@@ -1,5 +1,7 @@
 1.4.10 (Pending)
-* Fixed:  BUILDR-633 - Remove hardcoded shebang lines in all-in-one release.
+* Fixed: BUILDR-633 - Remove hardcoded shebang lines in all-in-one release.
+* Added: Create a simple extension that modifies the project layout to place
+         generated files at the top level.
 
 1.4.9 (2012-11-08)
 * Fixed:  Fixed the interaction with the FileUtils classes. The last release
