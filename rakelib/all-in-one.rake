@@ -74,7 +74,7 @@ namespace 'all-in-one' do
     puts 'Install Buildr gem ...'
     java_gem = FileList["../../pkg/buildr-#{spec.version}-java.gem"].first
     command = ['bin/jruby', '-S', 'gem', 'install', java_gem, '--no-rdoc', '--no-ri', '--env-shebang']
-    sh({'GEM_HOME' => nil, 'GEM_PATH' => nil, 'MY_RUBY_HOME' => nil, 'RUBYOPT' => nil}, *command)
+    system({'GEM_HOME' => nil, 'GEM_PATH' => nil, 'MY_RUBY_HOME' => nil, 'RUBYOPT' => nil}, *command)
     puts '[X] Install Buildr gem'
   end
 
