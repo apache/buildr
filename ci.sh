@@ -17,7 +17,7 @@ elif [ "X$JOB_NAME" == "XBuildr-website-build" ]; then
   export PATH=$PATH:/home/toulmean/prince/bin
   export BUILDR_GEMSET=$JOB_NAME
 elif [ "X$JOB_NAME" == "XBuildr-omnibus-build" ]; then
-  export BUILD_RVM=jruby
+  export BUILD_RVM=1.8.7
   export BUILD_RAKE_TASK=all-in-one
   export BUILDR_GEMSET=$JOB_NAME
 fi
