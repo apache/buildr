@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Added: Add FrameworkDetectionExcludesConfiguration facet to Idea project
+         file creation by default.
 * Fixed: In the IntelliJ extension, defer the materialization of the
          default_components until expansion time to avoid loss of sub-
          components added after an add_component call.
