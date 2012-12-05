@@ -97,7 +97,7 @@ module Buildr
       end
 
       def components
-        @components ||= self.default_components.compact
+        @components ||= []
       end
 
       def create_composite_component(name, components)
@@ -135,7 +135,7 @@ module Buildr
             inject_component(doc, element)
           end
         end
-        inject_components(doc, self.components)
+        inject_components(doc, self.default_components.compact + self.components)
         doc
       end
 
