@@ -725,8 +725,15 @@ module Buildr
           lambda { modules_component },
           vcs_component,
           artifacts_component,
-          configurations_component
+          configurations_component,
+          lambda { framework_detection_exclusion_component }
         ]
+      end
+
+      def framework_detection_exclusion_component
+        create_component('FrameworkDetectionExcludesConfiguration') do |xml|
+          xml.file :url => file_path(buildr_project._(:artifacts))
+        end
       end
 
       def initial_components
