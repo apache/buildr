@@ -18,7 +18,7 @@ require 'fileutils'
 
 describe Buildr::POM do
   before do
-    repositories.remote = 'http://example.com'
+    repositories.remote = 'http://buildr.apache.org/repository/noexist'
     @app = 'group:pomapp:jar:1.0'
     write artifact(@app).pom.to_s, <<-XML
 <project>
@@ -70,7 +70,7 @@ end
 
 describe Buildr::POM do
   before do
-    repositories.remote = 'http://example.com'
+    repositories.remote = 'http://buildr.apache.org/repository/noexist'
     @app = 'group:app:jar:1.0'
     write artifact(@app).pom.to_s, <<-XML
 <project>
