@@ -99,15 +99,14 @@ module Buildr
             apply = managed(spec)
             spec = apply.merge(spec) if apply
 
+            next if options[:exclusions] && options[:exclusions].any? { |ex| dep['groupId'] == ex['groupId'] && dep['artifactId'] == ex['artifactId'] }
+
             # calculate transitive dependencies
             if options[:scopes].include?(spec[:scope])
               spec.delete(:scope)
 
               exclusions = dep["exclusions"].first["exclusion"] rescue nil
-              transitive_deps = POM.load(spec).dependencies(options[:scopes_transitive] || SCOPES_TRANSITIVE)
-              transitive_deps = transitive_deps.reject{|dep|
-                exclusions.find {|ex| dep.index("#{ex['groupId'].first}:#{ex['artifactId'].first}:") == 0}
-              } if exclusions
+              transitive_deps = POM.load(spec).dependencies(:exclusions => exclusions, :scopes => (options[:scopes_transitive] || SCOPES_TRANSITIVE) ) rescue []
 
               [Artifact.to_spec(spec)] + transitive_deps
             end
