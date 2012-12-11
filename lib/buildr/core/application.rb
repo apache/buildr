@@ -492,8 +492,9 @@ module Buildr
       end
 
       files.each do |file|
+        file = File.expand_path(file)
         unless $LOADED_FEATURES.include?(file)
-          load File.expand_path(file)
+          load file
           $LOADED_FEATURES << file
         end
       end

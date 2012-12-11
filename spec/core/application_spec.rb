@@ -296,7 +296,7 @@ describe Buildr::Application do
     it 'should not load files from the rakelib more than once' do
       write_task 'tasks/new_one.rake'
       write_task 'tasks/already.rake'
-      $LOADED_FEATURES << 'tasks/already.rake'
+      $LOADED_FEATURES << File.expand_path('tasks/already.rake')
 
       loaded_tasks.should have(1).task
       loaded_tasks.first.should =~ %r{tasks/new_one\.rake$}
