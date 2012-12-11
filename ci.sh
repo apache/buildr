@@ -37,7 +37,7 @@ if [ "X$BUILD_RVM" == "X1.9.2" ]; then
 elif [ "X$BUILD_RVM" == "X1.8.7" ]; then
   export BUILDR_RUBY_VERSION=ruby-1.8.7-p358
 elif [ "X$BUILD_RVM" == "Xjruby" ]; then
-  export BUILDR_RUBY_VERSION=jruby-1.6.7
+  export BUILDR_RUBY_VERSION=jruby-1.7.1
 else
   export BUILDR_RUBY_VERSION=ruby-1.9.3-p194
 fi
