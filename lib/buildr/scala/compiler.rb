@@ -140,7 +140,7 @@ module Buildr::Scala
 
         zinc_dependencies = ZINC_REQUIRES.artifacts.map(&:to_s)
 
-        scala_dependencies + zinc_dependencies
+        (scala_dependencies + zinc_dependencies).compact
       end
 
       def use_fsc
@@ -239,8 +239,6 @@ module Buildr::Scala
 
     def compile_with_zinc(sources, target, dependencies) #:nodoc:
 
-      java_sources = java_sources(sources)
-
       dependencies.unshift target
 
       cmd_args = []
@@ -262,9 +260,8 @@ module Buildr::Scala
       unless Buildr.application.options.dryrun
         trace((['com.typesafe.zinc.Main.main'] + cmd_args).join(' '))
 
-        Java.load
         begin
-          Java.com.typesafe.zinc.Main.main(cmd_args.to_java(Java.java.lang.String))
+          Java::Commands.java 'com.typesafe.zinc.Main', *(cmd_args + [{ :classpath => Scalac.dependencies}])
         rescue => e
           fail "Zinc compiler crashed:\n#{e.inspect}\n#{e.backtrace.join("\n")}"
         end
