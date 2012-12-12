@@ -74,7 +74,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'rspec',                '2.11.0'
   spec.add_dependency 'xml-simple',           '1.1.1'
   spec.add_dependency 'minitar',              '0.5.3'
-  spec.add_dependency 'jruby-openssl',        '>= 0.7' if $platform.to_s == 'java'
+  spec.add_dependency 'jruby-openssl',        '~> 0.8.2' if $platform.to_s == 'java'
   spec.add_dependency 'bundler'
 
   # Unable to get this consistently working under jruby on windows
