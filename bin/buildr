@@ -15,5 +15,6 @@
 # the License.
 
 require 'rubygems'
+require 'bundler/setup'
 require 'buildr'
 Buildr.application.run
