@@ -225,7 +225,6 @@ describe Buildr::CCTask do
 
     project("container").tap do |p|
       p.compile.run_count.should == 1 # not_needed
-      p.test.compile.run_count.should == 1  # not_needed
       p.resources.run_count.should == 2
     end
     File.mtime("foo/target/classes/Example.class").should_not == tstamp
@@ -236,7 +235,6 @@ describe Buildr::CCTask do
 
     project("container").tap do |p|
       p.compile.run_count.should == 2
-      p.test.compile.run_count.should == 2
       p.resources.run_count.should == 3
     end
 
