@@ -42,6 +42,9 @@ else
   export BUILDR_RUBY_VERSION=ruby-1.9.3-p194
 fi
 
+# Scala when forked seems to require javac to be on the path
+export PATH=$JAVA_HOME/bin:$PATH
+
 export LD_LIBRARY_PATH=/home/hudson/.rvm/usr/lib
 source "$HOME/.rvm/scripts/rvm"
 
