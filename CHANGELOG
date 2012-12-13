@@ -1,6 +1,7 @@
 1.4.10 (Pending)
 * Change: Updated dependency versions;
           - jruby-openssl (0.8.2)
+          - atoulme-Antwrap (0.7.4)
 * Change: Require 'bundler/setup' as part of buildr startup to ensure that
           buildr always runs with up to date dependencies if a Gemfile is
           present.
