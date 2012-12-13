@@ -66,7 +66,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'rubyforge',            '2.0.4'
   spec.add_dependency 'hoe',                  '3.1.0'
   spec.add_dependency 'rjb',                  '1.4.2' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
-  spec.add_dependency 'atoulme-Antwrap',      '~> 0.7.2'
+  spec.add_dependency 'atoulme-Antwrap',      '~> 0.7.4'
   spec.add_dependency 'diff-lcs',             '1.1.3'
   spec.add_dependency 'rspec-expectations',   '2.11.3'
   spec.add_dependency 'rspec-mocks',          '2.11.3'
