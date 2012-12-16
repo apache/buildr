@@ -52,10 +52,9 @@ module Buildr
       end
 
       def sign_and_upload(project, pkg)
-        sign = sign_task(pkg)
-        project.task(:upload).enhance([sign.name]) do
+        project.task(:upload).enhance do
           artifact = Buildr.artifact(pkg.to_spec_hash.merge(:type => "#{pkg.type}.asc"))
-          artifact.from(sign)
+          artifact.from(sign_task(pkg))
           artifact.invoke
           artifact.upload
         end
