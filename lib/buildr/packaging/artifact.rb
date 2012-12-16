@@ -386,7 +386,6 @@ module Buildr
     # and not a string, it will be converted to a string using to_s
     def content(string = nil)
       unless string
-        puts @content.class.name
         @content = @content.call if @content.is_a?(Proc)
         return @content
       end
