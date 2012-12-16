@@ -139,14 +139,16 @@ module Buildr
     #
     # Creates POM XML for this artifact.
     def pom_xml
-      xml = Builder::XmlMarkup.new(:indent=>2)
-      xml.instruct!
-      xml.project do
-        xml.modelVersion  '4.0.0'
-        xml.groupId       group
-        xml.artifactId    id
-        xml.version       version
-        xml.classifier    classifier if classifier
+      Proc.new do
+        xml = Builder::XmlMarkup.new(:indent=>2)
+        xml.instruct!
+        xml.project do
+          xml.modelVersion  '4.0.0'
+          xml.groupId       group
+          xml.artifactId    id
+          xml.version       version
+          xml.classifier    classifier if classifier
+        end
       end
     end
 
