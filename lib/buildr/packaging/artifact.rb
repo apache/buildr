@@ -392,7 +392,7 @@ module Buildr
 
       unless @content
         enhance do
-          write name, @content
+          write name, self.content
         end
 
         class << self
