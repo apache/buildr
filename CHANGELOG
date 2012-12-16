@@ -1,4 +1,7 @@
 1.4.10 (Pending)
+* Change: Rework Artifact.content(value) method to accept a Proc that
+          will be called before the artifact is written rather than
+          requiring a string.
 * Added:  Create a 'buildr/gpg' addon that signs and uploads signatures
           when uploading artifacts. Inspired by a similar extension in
           the Apache ODE project by Tammo van Lessen.

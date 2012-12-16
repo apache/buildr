@@ -372,6 +372,7 @@ module Buildr
 
     # :call-seq:
     #   content(string) => self
+    #   content(Proc) => self
     #
     # Use this when you want to install or upload an artifact from a given content, for example:
     #   readme = artifact('com.example:readme:txt:1.0').content(<<-EOF
@@ -379,9 +380,14 @@ module Buildr
     #   <<EOF
     #   install readme
     #
-    # If the argument is not a string, it will be converted to a string using to_s
+    # If the argument is a Proc the it will be called when the artifact is written out. If the result is not a proc
+    # and not a string, it will be converted to a string using to_s
     def content(string = nil)
-      return @content unless string
+      unless string
+        puts @content.class.name
+        @content = @content.call if @content.is_a?(Proc)
+        return @content
+      end
 
       unless @content
         enhance do
