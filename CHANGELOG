@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Change: Defer the expansion of generated poms by wrapping the generation
+          in a Proc.
 * Change: Rework Artifact.content(value) method to accept a Proc that
           will be called before the artifact is written rather than
           requiring a string.
