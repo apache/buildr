@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Added:  Created an addon 'buildr/wsgen' for generating wsdls from java
+          and java from wsdls using the underlying wsgen tool.
 * Change: Defer the expansion of generated poms by wrapping the generation
           in a Proc.
 * Change: Rework Artifact.content(value) method to accept a Proc that
