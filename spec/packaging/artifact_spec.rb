@@ -106,7 +106,7 @@ describe Artifact do
 
   it 'should pass if POM provided' do
     repositories.remote = 'http://buildr.apache.org/repository/noexist'
-    @artifact.pom.enhance { |task| write task.name, @artifact.pom_xml }
+    @artifact.pom.enhance { |task| write task.name, @artifact.pom_xml.call }
     write repositories.locate(@artifact)
     lambda { @artifact.invoke }.should_not raise_error
   end
@@ -1009,7 +1009,7 @@ describe Buildr, '#transitive' do
   before do
     repositories.remote = 'http://buildr.apache.org/repository/noexist'
     @simple = [ 'saxon:saxon:jar:8.4', 'saxon:saxon-dom:jar:8.4', 'saxon:saxon-xpath:jar:8.4' ]
-    @simple.map { |spec| artifact(spec).pom }.each { |task| write task.name, task.pom_xml }
+    @simple.map { |spec| artifact(spec).pom }.each { |task| write task.name, task.pom_xml.call }
     @provided = @simple.first
     @complex = 'group:app:jar:1.0'
     write artifact(@complex).pom.to_s, <<-XML
