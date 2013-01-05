@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Fixed:  Checkstyle addon correctly handles String dependencies
+          (vs task dependencies)
 * Added:  Created an addon 'buildr/wsgen' for generating wsdls from java
           and java from wsdls using the underlying wsgen tool.
 * Change: Defer the expansion of generated poms by wrapping the generation
