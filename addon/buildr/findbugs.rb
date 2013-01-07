@@ -46,7 +46,7 @@ module Buildr
 
       def findbugs(output_file, source_paths, analyze_paths, options = { })
         dependencies = (options[:dependencies] || []) + self.dependencies
-        cp = Buildr.artifacts(dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
+        cp = Buildr.artifacts(dependencies).each { |a| a.invoke() if a.respond_to?(:invoke) }.map(&:to_s).join(File::PATH_SEPARATOR)
 
         args = {
             :output => "xml:withMessages",
@@ -79,7 +79,7 @@ module Buildr
             end
             if options[:extra_dependencies]
               ant.auxClasspath do |aux|
-                Buildr.artifacts(options[:extra_dependencies]).each(&:invoke).each do |dep|
+                Buildr.artifacts(options[:extra_dependencies]).each { |a| a.invoke() if a.respond_to?(:invoke) }.each do |dep|
                   aux.pathelement :location => dep.to_s
                 end
               end

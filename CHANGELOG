@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Fixed:  Findbugs addon correctly handles String dependencies
+          (vs task dependencies)
 * Fixed:  Checkstyle addon correctly handles String dependencies
           (vs task dependencies)
 * Added:  Created an addon 'buildr/wsgen' for generating wsdls from java
