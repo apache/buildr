@@ -169,6 +169,7 @@ module Buildr
       attr_accessor :type
       attr_accessor :group
       attr_reader :facets
+      attr_writer :jdk_version
 
       def initialize
         super()
@@ -180,6 +181,10 @@ module Buildr
         @facets = []
         @skip_content = false
         @buildr_project = buildr_project
+      end
+
+      def jdk_version
+        @jdk_version || buildr_project.compile.options.source || "1.6"
       end
 
       def extension
@@ -482,7 +487,7 @@ module Buildr
 
       def generate_initial_order_entries(xml)
         xml.orderEntry :type => "sourceFolder", :forTests => "false"
-        xml.orderEntry :type => "inheritedJdk"
+        xml.orderEntry :type => "jdk", :jdkName => jdk_version, :jdkType => "JavaSDK"
       end
 
       def generate_project_dependency(xml, other_project, export, test = false)
