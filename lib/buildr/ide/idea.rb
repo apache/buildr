@@ -729,7 +729,7 @@ module Buildr
 
       def base_document
         target = StringIO.new
-        Builder::XmlMarkup.new(:target => target).project(:version => "4", :relativePaths => "false")
+        Builder::XmlMarkup.new(:target => target).project(:version => "4")
         Buildr::IntellijIdea.new_document(target.string)
       end
 
