@@ -90,7 +90,7 @@ module Buildr
 
       def create_component(name, attrs = {})
         target = StringIO.new
-        Builder::XmlMarkup.new(:target => target, :indent => 2).component(attrs.merge({:name => name})) do |xml|
+        Builder::XmlMarkup.new(:target => target, :indent => 2).component({:name => name}.merge(attrs)) do |xml|
           yield xml if block_given?
         end
         Buildr::IntellijIdea.new_document(target.string).root
