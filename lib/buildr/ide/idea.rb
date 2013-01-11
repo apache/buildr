@@ -136,6 +136,14 @@ module Buildr
           end
         end
         inject_components(doc, self.default_components.compact + self.components)
+
+        # Sort the components in the same order the idea sorts them
+        sorted = doc.root.get_elements('//component').sort { |s1, s2| s1.attribute('name').value <=> s2.attribute('name').value }
+        doc = base_document
+        sorted.each do |element|
+          doc.root.add_element element
+        end
+
         doc
       end
 

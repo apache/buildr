@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Change: Sort the components in IDEA project files in the same
+          order the idea sorts them.
 * Fixed:  Findbugs addon correctly handles String dependencies
           (vs task dependencies)
 * Fixed:  Checkstyle addon correctly handles String dependencies
