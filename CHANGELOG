@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Added:  BUILDR-599 - Support the passing of arguments to testng
+          test runner.
 * Fixed:  Observer the per-project source version when generating
           IDEA module files.
 * Change: Sort the components in IDEA project files in the same

@@ -293,6 +293,7 @@ module Buildr
   # Support the following options:
   # * :properties -- Hash of properties passed to the test suite.
   # * :java_args -- Arguments passed to the JVM.
+  # * :args -- Arguments passed to the TestNG command line runner.
   class TestNG < TestFramework::Java
 
     VERSION = '5.10'
@@ -333,6 +334,8 @@ module Buildr
       end
       # run all tests in the same suite
       cmd_args << '-testclass' << tests
+
+      cmd_args += options[:args] if options[:args]
 
       cmd_options = { :properties=>options[:properties], :java_args=>options[:java_args],
         :classpath=>dependencies, :name => "TestNG in #{task.send(:project).name}" }
