@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Change: BUILDR-612 - Support the TestNG 6.x versions and default
+          to 6.8.
 * Added:  BUILDR-599 - Support the passing of arguments to testng
           test runner.
 * Fixed:  Observer the per-project source version when generating

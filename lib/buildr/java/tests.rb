@@ -296,7 +296,7 @@ module Buildr
   # * :args -- Arguments passed to the TestNG command line runner.
   class TestNG < TestFramework::Java
 
-    VERSION = '5.10'
+    VERSION = '6.8'
 
     class << self
       def version
@@ -304,7 +304,8 @@ module Buildr
       end
 
       def dependencies
-        ["org.testng:testng:jar:jdk15:#{version}"]+ JMock.dependencies
+        return ["org.testng:testng:jar:jdk15:#{version}"] + JMock.dependencies if version < "6.0"
+        ["org.testng:testng:jar:#{version}",'com.beust:jcommander:jar:1.27'] + JMock.dependencies
       end
 
     private
@@ -322,7 +323,10 @@ module Buildr
     end
 
     def run(tests, dependencies) #:nodoc:
-      cmd_args = ['-log', '2', '-sourcedir', task.compile.sources.join(';'), '-suitename', task.project.id ]
+      cmd_args = []
+      cmd_args << '-suitename' << task.project.id
+      cmd_args << '-sourcedir' << task.compile.sources.join(';') if TestNG.version < "6.0"
+      cmd_args << '-log' << '2'
       cmd_args << '-d' << task.report_to.to_s
       exclude_args = options[:excludegroups] || []
       if !exclude_args.empty?
