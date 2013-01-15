@@ -368,13 +368,26 @@ describe Buildr::TestNG do
     project('foo:bar').test.framework.should eql(:testng)
   end
 
-  it 'should include TestNG dependencies' do
-    define('foo') { test.using :testng }
-    project('foo').test.compile.dependencies.should include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
-    project('foo').test.dependencies.should include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
+  it 'should include TestNG dependencies for old version' do
+    begin
+      Buildr.settings.build['testng'] = '5.10'
+      define('foo') { test.using :testng }
+      project('foo').test.compile.dependencies.should include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
+      project('foo').test.dependencies.should include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
+    ensure
+      Buildr.settings.build['testng'] = nil
+    end
   end
 
-  it 'should include TestNG dependencies' do
+  it 'should include TestNG dependencies for old version' do
+    define('foo') { test.using :testng }
+    project('foo').test.compile.dependencies.should include(artifact("org.testng:testng:jar:#{TestNG.version}"))
+    project('foo').test.compile.dependencies.should include(artifact("com.beust:jcommander:jar:1.27"))
+    project('foo').test.dependencies.should include(artifact("org.testng:testng:jar:#{TestNG.version}"))
+    project('foo').test.dependencies.should include(artifact("com.beust:jcommander:jar:1.27"))
+  end
+
+  it 'should include jmock dependencies' do
     define('foo') { test.using :testng }
     two_or_later = JMock.version[0,1].to_i >= 2
     group = two_or_later ? "org.jmock" : "jmock"
@@ -492,7 +505,7 @@ describe Buildr::TestNG do
       }
     JAVA
     define('foo') { test.using(:testng) }
-    lambda { project('foo').test.invoke }.should change { File.exist?('reports/testng/foo/index.html') }.to(true)
+    lambda { project('foo').test.invoke }.should change { File.exist?('reports/testng/index.html') }.to(true)
   end
 
   it 'should include classes using TestNG annotations marked with a specific group' do
@@ -547,9 +560,9 @@ describe Buildr::MultiTest do
   it 'should include dependencies of whichever test framework(s) are selected' do
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ] }
     project('foo').test.compile.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
-    project('foo').test.compile.dependencies.should include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
+    project('foo').test.compile.dependencies.should include(artifact("org.testng:testng:jar:#{TestNG.version}"))
     project('foo').test.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
-    project('foo').test.dependencies.should include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
+    project('foo').test.dependencies.should include(artifact("org.testng:testng:jar:#{TestNG.version}"))
   end
 
   it 'should include classes of given test framework(s)' do
@@ -636,8 +649,7 @@ describe Buildr::MultiTest do
     JAVA
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ] }
     lambda { project('foo').test.invoke }.should change {
-      p Dir['./**/*'].inspect
-    File.exist?('reports/multitest/foo/index.html') }.to(true)
+    File.exist?('reports/multitest/index.html') }.to(true)
   end
 
   it 'should include classes using TestNG annotations marked with a specific group' do
