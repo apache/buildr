@@ -88,7 +88,7 @@ module Buildr
             args << classname
 
             command = "wsgen #{args.join(' ')}"
-            puts command
+            trace command
             sh command
             if $? != 0
               raise "Problem building wsdl"
