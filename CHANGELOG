@@ -1,4 +1,5 @@
 1.4.10 (Pending)
+* Added:  Add an addon for NSIS.
 * Change: BUILDR-612 - Support the TestNG 6.x versions and default
           to 6.8.
 * Added:  BUILDR-599 - Support the passing of arguments to testng
