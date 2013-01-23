@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Fixed:  Scala 2.10 support - compiler now uses additional/separate jars
+          introduced in 2.10 such as scala-reflect.jar and scala-actor.jar
 * Added:  Add an addon for NSIS.
 * Change: BUILDR-612 - Support the TestNG 6.x versions and default
           to 6.8.
