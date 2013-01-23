@@ -95,6 +95,11 @@ module Buildr::Scala
       version = Buildr.settings.build['scala.version'] || DEFAULT_VERSION
       ns.library!      'org.scala-lang:scala-library:jar:>=' + version
       ns.compiler!     'org.scala-lang:scala-compiler:jar:>=' + version
+      unless ::Buildr::Scala.version?(2.7, 2.8, 2.9)
+        # added in Scala 2.10
+        ns.reflect!      'org.scala-lang:scala-reflect:jar:>=' + version
+        ns.actors!       'org.scala-lang:scala-actors:jar:>=' + version
+      end
     end
 
     ZINC_REQUIRES = ArtifactNamespace.for(self) do |ns|

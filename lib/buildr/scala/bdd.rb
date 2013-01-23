@@ -137,7 +137,7 @@ module Buildr::Scala
       when Buildr::Scala.version?("2.9")
         '1.11'
       else
-        fail "No default specs2 version for Scala #{Scala.version_without_build}"
+        '1.12.3' # default for Scala 2.10 and beyond
     end
 
     class << self
