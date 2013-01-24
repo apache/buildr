@@ -84,35 +84,6 @@ module Buildr::Scala
     DEFAULT_SBT_VERSION   = '0.12.0'
     DEFAULT_JLINE_VERSION = '1.0'
 
-    # The scalac compiler jars are added to classpath at load time,
-    # if you want to customize artifact versions, you must set them on the
-    #
-    #      artifact_ns['Buildr::Compiler::Scalac'].library = '2.7.5'
-    #
-    # namespace before this file is required.  This is of course, only
-    # if SCALA_HOME is not set or invalid.
-    REQUIRES = ArtifactNamespace.for(self) do |ns|
-      version = Buildr.settings.build['scala.version'] || DEFAULT_VERSION
-      ns.library!      'org.scala-lang:scala-library:jar:>=' + version
-      ns.compiler!     'org.scala-lang:scala-compiler:jar:>=' + version
-      unless ::Buildr::Scala.version?(2.7, 2.8, 2.9)
-        # added in Scala 2.10
-        ns.reflect!      'org.scala-lang:scala-reflect:jar:>=' + version
-        ns.actors!       'org.scala-lang:scala-actors:jar:>=' + version
-      end
-    end
-
-    ZINC_REQUIRES = ArtifactNamespace.for(self) do |ns|
-      zinc_version  = Buildr.settings.build['zinc.version']  || DEFAULT_ZINC_VERSION
-      sbt_version   = Buildr.settings.build['sbt.version']   || DEFAULT_SBT_VERSION
-      jline_version = Buildr.settings.build['jline.version'] || DEFAULT_JLINE_VERSION
-      ns.zinc!          "com.typesafe.zinc:zinc:jar:>=#{zinc_version}"
-      ns.sbt_interface! "com.typesafe.sbt:sbt-interface:jar:>=#{sbt_version}"
-      ns.incremental!   "com.typesafe.sbt:incremental-compiler:jar:>=#{sbt_version}"
-      ns.compiler_interface_sources! "com.typesafe.sbt:compiler-interface:jar:sources:>=#{sbt_version}"
-      ns.jline!        "jline:jline:jar:>=#{jline_version}"
-    end
-
     class << self
       def scala_home
         env_home = ENV['SCALA_HOME']
@@ -159,6 +130,35 @@ module Buildr::Scala
         # Just select if we find .scala files
         paths.any? { |path| !Dir["#{path}/**/*.scala"].empty? }
       end
+    end
+
+    # The scalac compiler jars are added to classpath at load time,
+    # if you want to customize artifact versions, you must set them on the
+    #
+    #      artifact_ns['Buildr::Compiler::Scalac'].library = '2.7.5'
+    #
+    # namespace before this file is required.  This is of course, only
+    # if SCALA_HOME is not set or invalid.
+    REQUIRES = ArtifactNamespace.for(self) do |ns|
+      version = Buildr.settings.build['scala.version'] || DEFAULT_VERSION
+      ns.library!      'org.scala-lang:scala-library:jar:>=' + version
+      ns.compiler!     'org.scala-lang:scala-compiler:jar:>=' + version
+      unless Buildr::Scala.version?(2.7, 2.8, 2.9)
+        # added in Scala 2.10
+        ns.reflect!      'org.scala-lang:scala-reflect:jar:>=' + version
+        ns.actors!       'org.scala-lang:scala-actors:jar:>=' + version
+      end
+    end
+
+    ZINC_REQUIRES = ArtifactNamespace.for(self) do |ns|
+      zinc_version  = Buildr.settings.build['zinc.version']  || DEFAULT_ZINC_VERSION
+      sbt_version   = Buildr.settings.build['sbt.version']   || DEFAULT_SBT_VERSION
+      jline_version = Buildr.settings.build['jline.version'] || DEFAULT_JLINE_VERSION
+      ns.zinc!          "com.typesafe.zinc:zinc:jar:>=#{zinc_version}"
+      ns.sbt_interface! "com.typesafe.sbt:sbt-interface:jar:>=#{sbt_version}"
+      ns.incremental!   "com.typesafe.sbt:incremental-compiler:jar:>=#{sbt_version}"
+      ns.compiler_interface_sources! "com.typesafe.sbt:compiler-interface:jar:sources:>=#{sbt_version}"
+      ns.jline!        "jline:jline:jar:>=#{jline_version}"
     end
 
     Javac = Buildr::Compiler::Javac
