@@ -33,6 +33,7 @@ module Java
       #       "-o", "src/main/webapp/styles/styles-all-min.css")
       #
       # The last argument may be a Hash with additional options:
+      # * :dir -- The working directory from which to execute task..
       # * :classpath -- One or more file names, tasks or artifact specifications.
       #   These are all expanded into artifacts, and all tasks are invoked.
       # * :java_args -- Any additional arguments to pass (e.g. -hotspot, -xms)
@@ -49,7 +50,18 @@ module Java
           name = "java #{args.first}"
         end
 
-        cmd_args = [path_to_bin('java')]
+        cmd_args = []
+        if options[:dir]
+          pwd = options[:dir]
+          if Buildr::Util.win_os?
+            # Ruby uses forward slashes regardless of platform,
+            # unfortunately cd c:/some/path fails on Windows
+            cmd_args << "cd /d \"#{pwd.gsub(%r{/}, '\\')}\" && "
+          else
+            cmd_args << "cd '#{pwd}' && "
+          end
+        end
+        cmd_args << path_to_bin('java')
         cp = classpath_from(options)
         cmd_args << '-classpath' << cp.join(File::PATH_SEPARATOR) unless cp.empty?
         options[:properties].each { |k, v| cmd_args << "-D#{k}=#{v}" } if options[:properties]
