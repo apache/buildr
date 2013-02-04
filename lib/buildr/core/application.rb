@@ -91,7 +91,7 @@ module Buildr
     def load_from(name, path = nil)
       unless path
         fail "Internal error: attempting to access local setting before buildfile located" unless @application.rakefile
-        path = File.dirname(@application.rakefile)
+        path = File.expand_path(File.dirname(@application.rakefile))
       end
       file_name = ['yaml', 'yml'].map { |ext| File.join(path, "#{name}.#{ext}") }.find { |fn| File.exist?(fn) }
       return {} unless file_name
@@ -483,7 +483,7 @@ module Buildr
       files = [ File.exist?(new) ? new : old, 'buildr.rb' ].select { |file| File.exist?(file) }
       files += [ File.expand_path('buildr.rake', ENV['HOME']), File.expand_path('buildr.rake') ].
         select { |file| File.exist?(file) }.each { |file| warn "Please use '#{file.ext('rb')}' instead of '#{file}'" }
-      files += (options.rakelib || []).collect { |rlib| Dir["#{rlib}/*.rake"] }.flatten
+      files += (options.rakelib || []).collect { |rlib| Dir["#{File.expand_path(rlib)}/*.rake"] }.flatten
 
       # Load .buildr/_buildr.rb same directory as buildfile
       %w{.buildr.rb _buildr.rb}.each do |f|

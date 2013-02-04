@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Fixed:  BUILDR-660 possible build issue when using build.yaml and tasks/*.rake
+          (Félix Enrique Llorente Pastora)
 * Added:  Support the :dir option in the Java::Commands.java method.
 * Fixed:  Scala 2.10 support - compiler now uses additional/separate jars
           introduced in 2.10 such as scala-reflect.jar and scala-actor.jar
