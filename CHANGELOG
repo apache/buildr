@@ -1,4 +1,6 @@
 1.4.10 (Pending)
+* Added:  Support a single intermediate directory for each project hierarchy
+          through an addon 'buildr/single_intermediate_layout'.
 * Fixed:  BUILDR-660 possible build issue when using build.yaml and tasks/*.rake
           (Félix Enrique Llorente Pastora)
 * Added:  Support the :dir option in the Java::Commands.java method.
