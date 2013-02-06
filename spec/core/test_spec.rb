@@ -671,22 +671,22 @@ describe Buildr::TestTask, '#invoke' do
     end
 
     it 'should not run tests if nothing changed' do
-      lambda { test_task.invoke }.should_not run_task('foo:test')
+      lambda { test_task.invoke; sleep 1 }.should_not run_task('foo:test')
     end
 
     it 'should run tests if options.test is :all' do
       Buildr.options.test = :all
-      lambda { test_task.invoke }.should run_task('foo:test')
+      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
     end
 
     it 'should run tests if main compile target changed' do
       touch project('foo').compile.target.to_s
-      lambda { test_task.invoke }.should run_task('foo:test')
+      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
     end
 
     it 'should run tests if test compile target changed' do
       touch test_task.compile.target.to_s
-      lambda { test_task.invoke }.should run_task('foo:test')
+      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
     end
 
     it 'should run tests if main resources changed' do
@@ -696,27 +696,27 @@ describe Buildr::TestTask, '#invoke' do
 
     it 'should run tests if test resources changed' do
       touch test_task.resources.target.to_s
-      lambda { test_task.invoke }.should run_task('foo:test')
+      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
     end
 
     it 'should run tests if compile-dependent project changed' do
       write 'bar/src/main/java/Bar.java', 'public class Bar {}'
       define('bar', :version=>'1.0', :base_dir=>'bar') { package :jar }
       project('foo').compile.with project('bar')
-      lambda { test_task.invoke }.should run_task('foo:test')
+      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
     end
 
     it 'should run tests if test-dependent project changed' do
       write 'bar/src/main/java/Bar.java', 'public class Bar {}'
       define('bar', :version=>'1.0', :base_dir=>'bar') { package :jar }
       test_task.with project('bar')
-      lambda { test_task.invoke }.should run_task('foo:test')
+      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
     end
 
     it 'should run tests if buildfile changed' do
       touch 'buildfile'
       test_task.should_receive(:run_tests)
-      lambda { test_task.invoke }.should run_task('foo:test')
+      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
     end
 
     it 'should not run tests if buildfile changed but IGNORE_BUILDFILE is true' do
