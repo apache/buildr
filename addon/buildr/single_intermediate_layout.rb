@@ -30,10 +30,12 @@ module Buildr #nodoc
         parent = parent_name.empty? ? nil : Buildr.application.lookup(parent_name.join(':'))
 
         # Follow the same algorithm as in project code
-        if parent
+        if properties[:base_dir]
+          base_dir = properties[:base_dir]
+        elsif parent
           base_dir = File.expand_path(name.split(':').last, parent.base_dir)
         else
-          base_dir = properties[:base_dir] || Dir.pwd
+          base_dir = Dir.pwd
         end
 
         # The top directory is the base directory of the root project
