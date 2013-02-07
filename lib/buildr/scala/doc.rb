@@ -88,7 +88,6 @@ module Buildr
             when Buildr::Scala.version?("2.7")
               [ "org.scala-tools:vscaladoc:jar:#{VERSION}" ]
             else
-              warn "VScaladoc does not support Scala 2.8+"
               []
           end
         end
