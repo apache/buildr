@@ -55,7 +55,14 @@ module Buildr #nodoc
         properties[:layout][:reports] = reports_dir
         properties[:layout][:target, :main] = target_dir
 
-        Project.original_define(name, properties, &block)
+        Project.original_define(name, properties) do
+          project.instance_eval &block
+          if top_dir == base_dir && project.iml?
+            project.iml.excluded_directories << "#{base_dir}/target"
+            project.iml.excluded_directories << "#{base_dir}/reports"
+          end
+          project
+        end
       end
     end
   end
