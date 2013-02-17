@@ -92,6 +92,13 @@ task 'stage' => %w(clobber prepare) do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
   mkpath '_staged'
 
+  lambda do
+    puts 'Ensuring all files have appropraite group and other permissions...'
+    sh 'find . -type f | xargs chmod go+r'
+    sh 'find . -type d | xargs chmod go+rx'
+    puts '[X] File permissions updated/validted.'
+  end.call
+
   # Start by figuring out what has changed.
   lambda do
     puts 'Looking for changes between this release and previous one ...'
