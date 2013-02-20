@@ -37,6 +37,61 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.10</name>
+        <created>2013-02-17</created>
+        <revision>1.4.10</revision>
+        <dc:description>
+* Added:  Support a single intermediate directory for each project hierarchy
+          through an addon 'buildr/single_intermediate_layout'.
+* Fixed:  BUILDR-660 possible build issue when using build.yaml and tasks/*.rake
+          (Félix Enrique Llorente Pastora)
+* Added:  Support the :dir option in the Java::Commands.java method.
+* Fixed:  Scala 2.10 support - compiler now uses additional/separate jars
+          introduced in 2.10 such as scala-reflect.jar and scala-actor.jar
+* Added:  Add an addon for NSIS.
+* Change: BUILDR-612 - Support the TestNG 6.x versions and default
+          to 6.8.
+* Added:  BUILDR-599 - Support the passing of arguments to testng
+          test runner.
+* Fixed:  Observer the per-project source version when generating
+          IDEA module files.
+* Change: Sort the components in IDEA project files in the same
+          order the idea sorts them.
+* Fixed:  Findbugs addon correctly handles String dependencies
+          (vs task dependencies)
+* Fixed:  Checkstyle addon correctly handles String dependencies
+          (vs task dependencies)
+* Added:  Created an addon 'buildr/wsgen' for generating wsdls from java
+          and java from wsdls using the underlying wsgen tool.
+* Change: Defer the expansion of generated poms by wrapping the generation
+          in a Proc.
+* Change: Rework Artifact.content(value) method to accept a Proc that
+          will be called before the artifact is written rather than
+          requiring a string.
+* Added:  Create a 'buildr/gpg' addon that signs and uploads signatures
+          when uploading artifacts. Inspired by a similar extension in
+          the Apache ODE project by Tammo van Lessen.
+* Change: Updated dependency versions;
+          - jruby-openssl (0.8.2)
+          - atoulme-Antwrap (0.7.4)
+* Change: Require 'bundler/setup' as part of buildr startup to ensure that
+          buildr always runs with up to date dependencies if a Gemfile is
+          present.
+* Added:  Add FrameworkDetectionExcludesConfiguration facet to Idea project
+          file creation by default.
+* Fixed:  In the IntelliJ extension, defer the materialization of the
+          default_components until expansion time to avoid loss of sub-
+          components added after an add_component call.
+* Fixed:  BUILDR-633 - Remove hardcoded shebang lines in all-in-one release.
+* Added:  Create a simple extension that modifies the project layout to place
+          generated files at the top level.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.9</name>
         <created>2012-11-08</created>
         <revision>1.4.9</revision>
