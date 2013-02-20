@@ -1,3 +1,5 @@
+1.4.11 (Pending)
+
 1.4.10 (2013-02-10)
 * Added:  Support a single intermediate directory for each project hierarchy
           through an addon 'buildr/single_intermediate_layout'.
