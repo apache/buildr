@@ -46,9 +46,8 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-Highlights from Buildr 1.4.9 (Nov 8th, 2012)
+Highlights from Buildr 1.4.10 (2013-02-10)
 
-1.4.10 (2013-02-10)
 * Added:  Support a single intermediate directory for each project hierarchy through an addon 'buildr/single_intermediate_layout'.
 * Fixed:  Scala 2.10 support - compiler now uses additional/separate jars introduced in 2.10 such as scala-reflect.jar and scala-actor.jar
 * Added:  Add an addon for NSIS.
