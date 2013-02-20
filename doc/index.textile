@@ -48,52 +48,18 @@ h2(#news).  What's New
 
 Highlights from Buildr 1.4.9 (Nov 8th, 2012)
 
-* Fixed:  Fixed the interaction with the FileUtils classes. The last release
-          introduced a non-deterministic bug that sometimes caused logging
-          preferences to be ignored and the install method to be
-          inadvertently overwritten.
-
-Highlights from Buildr 1.4.8 (Nov 1st, 2012)
-
-* Change: Revert to importing non-verbose FileUtils utility methods to match buildr 1.4.6 release and earlier.
-* Added:  Experimental support for jacoco code coverage tool.
-* Fixed:  BUILDR-655 - Support JDK1.7 under OSX
-* Change: Updated dependency versions;
-          - builder (3.1.3)
-          - rubyforge (2.0.4)
-          - net-ssh (2.6.0)
-          - hoe (3.1.0)
-          - rjb (1.4.2)
-          - rdoc (3.12)
-          - xml-simple (1.1.1)
-          - rspec-expectations (2.11.3)
-          - rspec-mocks (2.11.3)
-          - rspec-core (2.11.1)
-          - rspec (2.11.0)
-          - rubyzip (0.9.9)
-* Added:  BUILDR-652 Generate buildfile from Eclipse workspace. (Niklaus Giger)
-* Fixed:  BUILDR-627 Support explicitly listed source files in buildr cc task. (Christopher Tiwald)
-* Fixed:  BUILDR-606 Transitive artifact resolution should not include artifacts in 'provided' scope in poms to
-          match maven behaviour. (Julio Arias)
-* Change: BUILDR-640 Enable building jekyll and rdoc under more rubies. (Niklaus Giger)
-* Change: Mark Buildr:Bnd.remote_repository as deprecated as dependencies appear in maven central.
-* Added:  BUILDR-654 Add the ability to configure the version of BND used by bnd addon. (Niklaus Giger)
-* Added:  Create the git_auto_version addon that automatically specifies a version for a git project based
-          on git describe.
-* Added:  Integrate with Zinc (incremental compilation wrapper for scalac 2.9+)
-* Change: Default to Scala 2.9.2, ScalaTest 1.8, Scala Specs2 1.11,
-          ScalaCheck 1.10.0.
-* Change: Scala artifact repository changed to
-          http://oss.sonatype.org/content/repositories/releases
-* Added:  BUILDR-645 Support Mercurial as a version control system (Tan Quach)
-* Fixed:  BUILDR-646 TGZ files do not keep their permissions when extracted
-          via Buildr::Unzip#extract
-* Added:  Add add_exploded_ear_artifact and add_exploded_ejb_artifact to the idea project extension.
-* Change: Default to using Checkstyle 5.5 in the checkstyle addon.
-* Fixed:  Fix the add_exploded_war_artifact method on the idea project by adding in missing method
-          `partition_dependencies`.
-* Fixed:  Fix the extension of the gwt plugin so that it can be required as an addon.
-* Fixed:  Fix the undefined default_web_xml variable in the add_web_facet method on the idea project.
+1.4.10 (2013-02-10)
+* Added:  Support a single intermediate directory for each project hierarchy through an addon 'buildr/single_intermediate_layout'.
+* Fixed:  Scala 2.10 support - compiler now uses additional/separate jars introduced in 2.10 such as scala-reflect.jar and scala-actor.jar
+* Added:  Add an addon for NSIS.
+* Change: BUILDR-612 - Support the TestNG 6.x versions and default to 6.8.
+* Added:  BUILDR-599 - Support the passing of arguments to testng test runner.
+* Fixed:  Observer the per-project source version when generating IDEA module files.
+* Change: Sort the components in IDEA project files in the same order the idea sorts them.
+* Added:  Created an addon 'buildr/wsgen' for generating wsdls from java and java from wsdls using the underlying wsgen tool.
+* Added:  Create a 'buildr/gpg' addon that signs and uploads signatures when uploading artifacts. Inspired by a similar extension in the Apache ODE project by Tammo van Lessen.
+* Change: Require 'bundler/setup' as part of buildr startup to ensure that buildr always runs with up to date dependencies if a Gemfile is present.
+* Added:  Create a simple extension that modifies the project layout to place generated files at the top level.
 
 This is a partial list -- see the "CHANGELOG":CHANGELOG for full details.
 
