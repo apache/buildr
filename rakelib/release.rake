@@ -14,7 +14,7 @@
 # the License.
 
 desc "Release the next version of buildr from existing staged repository"
-task 'release' do
+task 'release' => %w{setup-local-site-svn} do
   # First, we need to get all the staged files from Apache to _release.
   mkpath '_release'
   lambda do
@@ -35,10 +35,9 @@ task 'release' do
     sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "#{remote_dir}/*"
     puts '[X] Uploaded packages to www.apache.org/dist'
 
-    target = "people.apache.org:/www/#{spec.name}.apache.org/"
     puts "Uploading new site to #{spec.name}.apache.org ..."
-    sh 'rsync', '--progress', '--recursive', '--delete', "_release/#{spec.version}/site/", target
-    sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
+    sh 'rsync', '--progress', '--recursive', '--delete', "_release/#{spec.version}/site/", 'site'
+    task('publish-site-svn').invoke
     puts "[X] Uploaded new site to #{spec.name}.apache.org"
   end.call
 
