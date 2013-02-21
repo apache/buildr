@@ -1,4 +1,0 @@
-
-<FilesMatch "CHANGELOG">
-ForceType 'text/plain; charset=UTF-8'
-</FilesMatch>
