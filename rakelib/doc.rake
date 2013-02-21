@@ -111,7 +111,7 @@ end
 
 task 'publish-site-svn' do
   sh 'svn', 'add', '--force', 'site'
-  sh 'svn', 'commit', 'site', '-m', '"Publish latest site"'
+  sh 'svn', 'commit', 'site', '-m', 'Publish latest site'
 end
 
 desc 'Checkout or update site to local directory'
