@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class Buildr::IntellijIdea::IdeaModule - buildr</title>
+
+<link type="text/css" media="screen" href="../../rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../../";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="../../index.html">Home</a>
+    <a href="../../table_of_contents.html#classes">Classes</a>
+    <a href="../../table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/buildr/ide/idea.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link"><a href="IdeaFile.html">Buildr::IntellijIdea::IdeaFile</a>
+  
+</nav>
+
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-new">::new</a>
+    
+    <li><a href="#method-i-add_ejb_facet">#add_ejb_facet</a>
+    
+    <li><a href="#method-i-add_facet">#add_facet</a>
+    
+    <li><a href="#method-i-add_gwt_facet">#add_gwt_facet</a>
+    
+    <li><a href="#method-i-add_jpa_facet">#add_jpa_facet</a>
+    
+    <li><a href="#method-i-add_jruby_facet">#add_jruby_facet</a>
+    
+    <li><a href="#method-i-add_web_facet">#add_web_facet</a>
+    
+    <li><a href="#method-i-base_document">#base_document</a>
+    
+    <li><a href="#method-i-buildr_project-3D">#buildr_project=</a>
+    
+    <li><a href="#method-i-default_components">#default_components</a>
+    
+    <li><a href="#method-i-excluded_directories">#excluded_directories</a>
+    
+    <li><a href="#method-i-extension">#extension</a>
+    
+    <li><a href="#method-i-facet_component">#facet_component</a>
+    
+    <li><a href="#method-i-generate_compile_output">#generate_compile_output</a>
+    
+    <li><a href="#method-i-generate_content">#generate_content</a>
+    
+    <li><a href="#method-i-generate_initial_order_entries">#generate_initial_order_entries</a>
+    
+    <li><a href="#method-i-generate_lib">#generate_lib</a>
+    
+    <li><a href="#method-i-generate_module_lib">#generate_module_lib</a>
+    
+    <li><a href="#method-i-generate_project_dependency">#generate_project_dependency</a>
+    
+    <li><a href="#method-i-initial_components">#initial_components</a>
+    
+    <li><a href="#method-i-jar_path">#jar_path</a>
+    
+    <li><a href="#method-i-jdk_version">#jdk_version</a>
+    
+    <li><a href="#method-i-main_dependencies">#main_dependencies</a>
+    
+    <li><a href="#method-i-main_output_dir">#main_output_dir</a>
+    
+    <li><a href="#method-i-main_source_directories">#main_source_directories</a>
+    
+    <li><a href="#method-i-module_root_component">#module_root_component</a>
+    
+    <li><a href="#method-i-net_excluded_directories">#net_excluded_directories</a>
+    
+    <li><a href="#method-i-relative_dir_inside_dir-3F">#relative_dir_inside_dir?</a>
+    
+    <li><a href="#method-i-resolve_path">#resolve_path</a>
+    
+    <li><a href="#method-i-skip_content-21">#skip_content!</a>
+    
+    <li><a href="#method-i-skip_content-3F">#skip_content?</a>
+    
+    <li><a href="#method-i-test_dependencies">#test_dependencies</a>
+    
+    <li><a href="#method-i-test_dependency_details">#test_dependency_details</a>
+    
+    <li><a href="#method-i-test_output_dir">#test_output_dir</a>
+    
+    <li><a href="#method-i-test_source_directories">#test_source_directories</a>
+    
+    <li><a href="#method-i-url_for_path">#url_for_path</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="../../CHANGELOG.html">CHANGELOG</a>
+  
+    <li class="file"><a href="../../LICENSE.html">LICENSE</a>
+  
+    <li class="file"><a href="../../NOTICE.html">NOTICE</a>
+  
+    <li class="file"><a href="../../README_rdoc.html">README</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="../../Buildr.html">Buildr</a>
+  
+    <li><a href="../../Buildr/ActsAsArtifact.html">Buildr::ActsAsArtifact</a>
+  
+    <li><a href="../../Buildr/Ant.html">Buildr::Ant</a>
+  
+    <li><a href="../../Buildr/Apt.html">Buildr::Apt</a>
+  
+    <li><a href="../../Buildr/ArchiveTask.html">Buildr::ArchiveTask</a>
+  
+    <li><a href="../../Buildr/ArchiveTask/Merge.html">Buildr::ArchiveTask::Merge</a>
+  
+    <li><a href="../../Buildr/Artifact.html">Buildr::Artifact</a>
+  
+    <li><a href="../../Buildr/ArtifactNamespace.html">Buildr::ArtifactNamespace</a>
+  
+    <li><a href="../../Buildr/ArtifactNamespace/ArtifactRequirement.html">Buildr::ArtifactNamespace::ArtifactRequirement</a>
+  
+    <li><a href="../../Buildr/ArtifactSearch.html">Buildr::ArtifactSearch</a>
+  
+    <li><a href="../../Buildr/Build.html">Buildr::Build</a>
+  
+    <li><a href="../../Buildr/CC.html">Buildr::CC</a>
+  
+    <li><a href="../../Buildr/CCTask.html">Buildr::CCTask</a>
+  
+    <li><a href="../../Buildr/Checks.html">Buildr::Checks</a>
+  
+    <li><a href="../../Buildr/Checks/Expectation.html">Buildr::Checks::Expectation</a>
+  
+    <li><a href="../../Buildr/Clojure.html">Buildr::Clojure</a>
+  
+    <li><a href="../../Buildr/Cobertura.html">Buildr::Cobertura</a>
+  
+    <li><a href="../../Buildr/Cobertura/CoberturaCheck.html">Buildr::Cobertura::CoberturaCheck</a>
+  
+    <li><a href="../../Buildr/Compile.html">Buildr::Compile</a>
+  
+    <li><a href="../../Buildr/CompileTask.html">Buildr::CompileTask</a>
+  
+    <li><a href="../../Buildr/Compiler.html">Buildr::Compiler</a>
+  
+    <li><a href="../../Buildr/Compiler/Ecj.html">Buildr::Compiler::Ecj</a>
+  
+    <li><a href="../../Buildr/Compiler/ExternalJavac.html">Buildr::Compiler::ExternalJavac</a>
+  
+    <li><a href="../../Buildr/Compiler/Javac.html">Buildr::Compiler::Javac</a>
+  
+    <li><a href="../../Buildr/ConcatTask.html">Buildr::ConcatTask</a>
+  
+    <li><a href="../../Buildr/Doc.html">Buildr::Doc</a>
+  
+    <li><a href="../../Buildr/Doc/Base.html">Buildr::Doc::Base</a>
+  
+    <li><a href="../../Buildr/Doc/DocTask.html">Buildr::Doc::DocTask</a>
+  
+    <li><a href="../../Buildr/Doc/Groovydoc.html">Buildr::Doc::Groovydoc</a>
+  
+    <li><a href="../../Buildr/Doc/GroovydocDefaults.html">Buildr::Doc::GroovydocDefaults</a>
+  
+    <li><a href="../../Buildr/Doc/Javadoc.html">Buildr::Doc::Javadoc</a>
+  
+    <li><a href="../../Buildr/Doc/JavadocDefaults.html">Buildr::Doc::JavadocDefaults</a>
+  
+    <li><a href="../../Buildr/Doc/Scaladoc.html">Buildr::Doc::Scaladoc</a>
+  
+    <li><a href="../../Buildr/Doc/ScaladocDefaults.html">Buildr::Doc::ScaladocDefaults</a>
+  
+    <li><a href="../../Buildr/Doc/VScaladoc.html">Buildr::Doc::VScaladoc</a>
+  
+    <li><a href="../../Buildr/Eclipse.html">Buildr::Eclipse</a>
+  
+    <li><a href="../../Buildr/Eclipse/Eclipse.html">Buildr::Eclipse::Eclipse</a>
+  
+    <li><a href="../../Buildr/Eclipse/Java.html">Buildr::Eclipse::Java</a>
+  
+    <li><a href="../../Buildr/Eclipse/Options.html">Buildr::Eclipse::Options</a>
+  
+    <li><a href="../../Buildr/Eclipse/Plugin.html">Buildr::Eclipse::Plugin</a>
+  
+    <li><a href="../../Buildr/Eclipse/Scala.html">Buildr::Eclipse::Scala</a>
+  
+    <li><a href="../../Buildr/Emma.html">Buildr::Emma</a>
+  
+    <li><a href="../../Buildr/Extension.html">Buildr::Extension</a>
+  
+    <li><a href="../../Buildr/Extension/ClassMethods.html">Buildr::Extension::ClassMethods</a>
+  
+    <li><a href="../../Buildr/Filter.html">Buildr::Filter</a>
+  
+    <li><a href="../../Buildr/Filter/Mapper.html">Buildr::Filter::Mapper</a>
+  
+    <li><a href="../../Buildr/GitRelease.html">Buildr::GitRelease</a>
+  
+    <li><a href="../../Buildr/Groovy.html">Buildr::Groovy</a>
+  
+    <li><a href="../../Buildr/Groovy/EasyB.html">Buildr::Groovy::EasyB</a>
+  
+    <li><a href="../../Buildr/Groovy/GroovySH.html">Buildr::Groovy::GroovySH</a>
+  
+    <li><a href="../../Buildr/Groovy/Groovyc.html">Buildr::Groovy::Groovyc</a>
+  
+    <li><a href="../../Buildr/HgRelease.html">Buildr::HgRelease</a>
+  
+    <li><a href="../../Buildr/IntegrationTestsTask.html">Buildr::IntegrationTestsTask</a>
+  
+    <li><a href="../../Buildr/IntellijIdea.html">Buildr::IntellijIdea</a>
+  
+    <li><a href="../../Buildr/IntellijIdea/IdeaFile.html">Buildr::IntellijIdea::IdeaFile</a>
+  
+    <li><a href="../../Buildr/IntellijIdea/IdeaModule.html">Buildr::IntellijIdea::IdeaModule</a>
+  
+    <li><a href="../../Buildr/IntellijIdea/IdeaProject.html">Buildr::IntellijIdea::IdeaProject</a>
+  
+    <li><a href="../../Buildr/IntellijIdea/ProjectExtension.html">Buildr::IntellijIdea::ProjectExtension</a>
+  
+    <li><a href="../../Buildr/JBehave.html">Buildr::JBehave</a>
+  
+    <li><a href="../../Buildr/JMock.html">Buildr::JMock</a>
+  
+    <li><a href="../../Buildr/JRebel.html">Buildr::JRebel</a>
+  
+    <li><a href="../../Buildr/JUnit.html">Buildr::JUnit</a>
+  
+    <li><a href="../../Buildr/JUnit/Report.html">Buildr::JUnit::Report</a>
+  
+    <li><a href="../../Buildr/Layout.html">Buildr::Layout</a>
+  
+    <li><a href="../../Buildr/Layout/Default.html">Buildr::Layout::Default</a>
+  
+    <li><a href="../../Buildr/MultiTest.html">Buildr::MultiTest</a>
+  
+    <li><a href="../../Buildr/OptionalArtifact.html">Buildr::OptionalArtifact</a>
+  
+    <li><a href="../../Buildr/Options.html">Buildr::Options</a>
+  
+    <li><a href="../../Buildr/Options/Proxies.html">Buildr::Options::Proxies</a>
+  
+    <li><a href="../../Buildr/POM.html">Buildr::POM</a>
+  
+    <li><a href="../../Buildr/Package.html">Buildr::Package</a>
+  
+    <li><a href="../../Buildr/PackageGemTask.html">Buildr::PackageGemTask</a>
+  
+    <li><a href="../../Buildr/Packaging.html">Buildr::Packaging</a>
+  
+    <li><a href="../../Buildr/Packaging/Java.html">Buildr::Packaging::Java</a>
+  
+    <li><a href="../../Buildr/Packaging/Java/AarTask.html">Buildr::Packaging::Java::AarTask</a>
+  
+    <li><a href="../../Buildr/Packaging/Java/EarTask.html">Buildr::Packaging::Java::EarTask</a>
+  
+    <li><a href="../../Buildr/Packaging/Java/JarTask.html">Buildr::Packaging::Java::JarTask</a>
+  
+    <li><a href="../../Buildr/Packaging/Java/Manifest.html">Buildr::Packaging::Java::Manifest</a>
+  
+    <li><a href="../../Buildr/Packaging/Java/WarTask.html">Buildr::Packaging::Java::WarTask</a>
+  
+    <li><a href="../../Buildr/Packaging/Scala.html">Buildr::Packaging::Scala</a>
+  
+    <li><a href="../../Buildr/ProcessStatus.html">Buildr::ProcessStatus</a>
+  
+    <li><a href="../../Buildr/Project.html">Buildr::Project</a>
+  
+    <li><a href="../../Buildr/RSpec.html">Buildr::RSpec</a>
+  
+    <li><a href="../../Buildr/Repositories.html">Buildr::Repositories</a>
+  
+    <li><a href="../../Buildr/ResourcesTask.html">Buildr::ResourcesTask</a>
+  
+    <li><a href="../../Buildr/Run.html">Buildr::Run</a>
+  
+    <li><a href="../../Buildr/Run/Base.html">Buildr::Run::Base</a>
+  
+    <li><a href="../../Buildr/Run/JavaRunner.html">Buildr::Run::JavaRunner</a>
+  
+    <li><a href="../../Buildr/Run/RunTask.html">Buildr::Run::RunTask</a>
+  
+    <li><a href="../../Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="../../Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="../../Buildr/Scala/Check.html">Buildr::Scala::Check</a>
+  
+    <li><a href="../../Buildr/Scala/Mockito.html">Buildr::Scala::Mockito</a>
+  
+    <li><a href="../../Buildr/Scala/ProjectExtension.html">Buildr::Scala::ProjectExtension</a>
+  
+    <li><a href="../../Buildr/Scala/ScalaShell.html">Buildr::Scala::ScalaShell</a>
+  
+    <li><a href="../../Buildr/Scala/ScalaTest.html">Buildr::Scala::ScalaTest</a>
+  
+    <li><a href="../../Buildr/Scala/Scalac.html">Buildr::Scala::Scalac</a>
+  
+    <li><a href="../../Buildr/Compiler/Javac.html">Buildr::Scala::Scalac::Javac</a>
+  
+    <li><a href="../../Buildr/Scala/ScalacOptions.html">Buildr::Scala::ScalacOptions</a>
+  
+    <li><a href="../../Buildr/Scala/Specs.html">Buildr::Scala::Specs</a>
+  
+    <li><a href="../../Buildr/Scala/Specs2.html">Buildr::Scala::Specs2</a>
+  
+    <li><a href="../../Buildr/Settings.html">Buildr::Settings</a>
+  
+    <li><a href="../../Buildr/Shell.html">Buildr::Shell</a>
+  
+    <li><a href="../../Buildr/Shell/Base.html">Buildr::Shell::Base</a>
+  
+    <li><a href="../../Buildr/Shell/BeanShell.html">Buildr::Shell::BeanShell</a>
+  
+    <li><a href="../../Buildr/Shell/Clojure.html">Buildr::Shell::Clojure</a>
+  
+    <li><a href="../../Buildr/Shell/JIRB.html">Buildr::Shell::JIRB</a>
+  
+    <li><a href="../../Buildr/Shell/ShellTask.html">Buildr::Shell::ShellTask</a>
+  
+    <li><a href="../../Buildr/SvnRelease.html">Buildr::SvnRelease</a>
+  
+    <li><a href="../../Buildr/TarTask.html">Buildr::TarTask</a>
+  
+    <li><a href="../../Buildr/Test.html">Buildr::Test</a>
+  
+    <li><a href="../../Buildr/Test/SkipIfNoTest.html">Buildr::Test::SkipIfNoTest</a>
+  
+    <li><a href="../../Buildr/TestFramework.html">Buildr::TestFramework</a>
+  
+    <li><a href="../../Buildr/TestFramework/Base.html">Buildr::TestFramework::Base</a>
+  
+    <li><a href="../../Buildr/TestFramework/JRubyBased.html">Buildr::TestFramework::JRubyBased</a>
+  
+    <li><a href="../../Buildr/TestFramework/JRubyBased/ClassMethods.html">Buildr::TestFramework::JRubyBased::ClassMethods</a>
+  
+    <li><a href="../../Buildr/TestFramework/Java.html">Buildr::TestFramework::Java</a>
+  
+    <li><a href="../../Buildr/TestFramework/TestResult.html">Buildr::TestFramework::TestResult</a>
+  
+    <li><a href="../../Buildr/TestFramework/TestResult/Error.html">Buildr::TestFramework::TestResult::Error</a>
+  
+    <li><a href="../../Buildr/TestFramework/TestResult/YamlFormatter.html">Buildr::TestFramework::TestResult::YamlFormatter</a>
+  
+    <li><a href="../../Buildr/TestNG.html">Buildr::TestNG</a>
+  
+    <li><a href="../../Buildr/TestTask.html">Buildr::TestTask</a>
+  
+    <li><a href="../../Buildr/Unzip.html">Buildr::Unzip</a>
+  
+    <li><a href="../../Buildr/Util.html">Buildr::Util</a>
+  
+    <li><a href="../../Buildr/VersionRequirement.html">Buildr::VersionRequirement</a>
+  
+    <li><a href="../../Buildr/ZipTask.html">Buildr::ZipTask</a>
+  
+    <li><a href="../../Resolv.html">Resolv</a>
+  
+    <li><a href="../../Resolv/DNS.html">Resolv::DNS</a>
+  
+    <li><a href="../../Resolv/DNS/Config.html">Resolv::DNS::Config</a>
+  
+    <li><a href="../../Resolv/DNS/Config/NXDomain.html">Resolv::DNS::Config::NXDomain</a>
+  
+    <li><a href="../../Resolv/DNS/Config/OtherResolvError.html">Resolv::DNS::Config::OtherResolvError</a>
+  
+    <li><a href="../../Resolv/DNS/DecodeError.html">Resolv::DNS::DecodeError</a>
+  
+    <li><a href="../../Resolv/DNS/EncodeError.html">Resolv::DNS::EncodeError</a>
+  
+    <li><a href="../../Resolv/DNS/Name.html">Resolv::DNS::Name</a>
+  
+    <li><a href="../../Resolv/DNS/Query.html">Resolv::DNS::Query</a>
+  
+    <li><a href="../../Resolv/DNS/Requester.html">Resolv::DNS::Requester</a>
+  
+    <li><a href="../../Resolv/DNS/Requester/RequestError.html">Resolv::DNS::Requester::RequestError</a>
+  
+    <li><a href="../../Resolv/DNS/Resource.html">Resolv::DNS::Resource</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/ANY.html">Resolv::DNS::Resource::ANY</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/CNAME.html">Resolv::DNS::Resource::CNAME</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/DomainName.html">Resolv::DNS::Resource::DomainName</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/Generic.html">Resolv::DNS::Resource::Generic</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/HINFO.html">Resolv::DNS::Resource::HINFO</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/IN.html">Resolv::DNS::Resource::IN</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/IN/A.html">Resolv::DNS::Resource::IN::A</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/IN/AAAA.html">Resolv::DNS::Resource::IN::AAAA</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/IN/SRV.html">Resolv::DNS::Resource::IN::SRV</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/IN/WKS.html">Resolv::DNS::Resource::IN::WKS</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/MINFO.html">Resolv::DNS::Resource::MINFO</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/MX.html">Resolv::DNS::Resource::MX</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/NS.html">Resolv::DNS::Resource::NS</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/PTR.html">Resolv::DNS::Resource::PTR</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/SOA.html">Resolv::DNS::Resource::SOA</a>
+  
+    <li><a href="../../Resolv/DNS/Resource/TXT.html">Resolv::DNS::Resource::TXT</a>
+  
+    <li><a href="../../Resolv/Hosts.html">Resolv::Hosts</a>
+  
+    <li><a href="../../Resolv/IPv4.html">Resolv::IPv4</a>
+  
+    <li><a href="../../Resolv/IPv6.html">Resolv::IPv6</a>
+  
+    <li><a href="../../Resolv/ResolvError.html">Resolv::ResolvError</a>
+  
+    <li><a href="../../Resolv/ResolvTimeout.html">Resolv::ResolvTimeout</a>
+  
+    <li><a href="../../OptionParser.html">OptionParser</a>
+  
+    <li><a href="../../OptionParser/Acceptables.html">OptionParser::Acceptables</a>
+  
+    <li><a href="../../OptionParser/AmbiguousArgument.html">OptionParser::AmbiguousArgument</a>
+  
+    <li><a href="../../OptionParser/AmbiguousOption.html">OptionParser::AmbiguousOption</a>
+  
+    <li><a href="../../OptionParser/Arguable.html">OptionParser::Arguable</a>
+  
+    <li><a href="../../OptionParser/CompletingHash.html">OptionParser::CompletingHash</a>
+  
+    <li><a href="../../OptionParser/Completion.html">OptionParser::Completion</a>
+  
+    <li><a href="../../OptionParser/InvalidArgument.html">OptionParser::InvalidArgument</a>
+  
+    <li><a href="../../OptionParser/InvalidOption.html">OptionParser::InvalidOption</a>
+  
+    <li><a href="../../OptionParser/List.html">OptionParser::List</a>
+  
+    <li><a href="../../OptionParser/MissingArgument.html">OptionParser::MissingArgument</a>
+  
+    <li><a href="../../OptionParser/NeedlessArgument.html">OptionParser::NeedlessArgument</a>
+  
+    <li><a href="../../OptionParser/OptionMap.html">OptionParser::OptionMap</a>
+  
+    <li><a href="../../OptionParser/ParseError.html">OptionParser::ParseError</a>
+  
+    <li><a href="../../OptionParser/Switch.html">OptionParser::Switch</a>
+  
+    <li><a href="../../OptionParser/Switch/NoArgument.html">OptionParser::Switch::NoArgument</a>
+  
+    <li><a href="../../OptionParser/Switch/OptionalArgument.html">OptionParser::Switch::OptionalArgument</a>
+  
+    <li><a href="../../OptionParser/Switch/PlacedArgument.html">OptionParser::Switch::PlacedArgument</a>
+  
+    <li><a href="../../OptionParser/Switch/RequiredArgument.html">OptionParser::Switch::RequiredArgument</a>
+  
+    <li><a href="../../Prime.html">Prime</a>
+  
+    <li><a href="../../Prime/EratosthenesGenerator.html">Prime::EratosthenesGenerator</a>
+  
+    <li><a href="../../Prime/EratosthenesSieve.html">Prime::EratosthenesSieve</a>
+  
+    <li><a href="../../Prime/Generator23.html">Prime::Generator23</a>
+  
+    <li><a href="../../Prime/OldCompatibility.html">Prime::OldCompatibility</a>
+  
+    <li><a href="../../Prime/PseudoPrimeGenerator.html">Prime::PseudoPrimeGenerator</a>
+  
+    <li><a href="../../Prime/TrialDivision.html">Prime::TrialDivision</a>
+  
+    <li><a href="../../Prime/TrialDivisionGenerator.html">Prime::TrialDivisionGenerator</a>
+  
+    <li><a href="../../FileUtils.html">FileUtils</a>
+  
+    <li><a href="../../FileUtils/DryRun.html">FileUtils::DryRun</a>
+  
+    <li><a href="../../FileUtils/LowMethods.html">FileUtils::LowMethods</a>
+  
+    <li><a href="../../FileUtils/NoWrite.html">FileUtils::NoWrite</a>
+  
+    <li><a href="../../FileUtils/StreamUtils_.html">FileUtils::StreamUtils_</a>
+  
+    <li><a href="../../FileUtils/Verbose.html">FileUtils::Verbose</a>
+  
+    <li><a href="../../GetoptLong.html">GetoptLong</a>
+  
+    <li><a href="../../GetoptLong/AmbiguousOption.html">GetoptLong::AmbiguousOption</a>
+  
+    <li><a href="../../GetoptLong/Error.html">GetoptLong::Error</a>
+  
+    <li><a href="../../GetoptLong/InvalidOption.html">GetoptLong::InvalidOption</a>
+  
+    <li><a href="../../GetoptLong/MissingArgument.html">GetoptLong::MissingArgument</a>
+  
+    <li><a href="../../GetoptLong/NeedlessArgument.html">GetoptLong::NeedlessArgument</a>
+  
+    <li><a href="../../Logger.html">Logger</a>
+  
+    <li><a href="../../Logger/Application.html">Logger::Application</a>
+  
+    <li><a href="../../Logger/Formatter.html">Logger::Formatter</a>
+  
+    <li><a href="../../Logger/LogDevice.html">Logger::LogDevice</a>
+  
+    <li><a href="../../Logger/LogDevice/LogDeviceMutex.html">Logger::LogDevice::LogDeviceMutex</a>
+  
+    <li><a href="../../Logger/Severity.html">Logger::Severity</a>
+  
+    <li><a href="../../Object.html">Object</a>
+  
+    <li><a href="../../Buildr/Scala.html">Object::Scala</a>
+  
+    <li><a href="../../Sync.html">Object::Synchronizer</a>
+  
+    <li><a href="../../Sync_m.html">Object::Synchronizer_m</a>
+  
+    <li><a href="../../ThreadsWait.html">Object::ThWait</a>
+  
+    <li><a href="../../Timeout/Error.html">Object::TimeoutError</a>
+  
+    <li><a href="../../PrettyPrint.html">PrettyPrint</a>
+  
+    <li><a href="../../PrettyPrint/Breakable.html">PrettyPrint::Breakable</a>
+  
+    <li><a href="../../PrettyPrint/Group.html">PrettyPrint::Group</a>
+  
+    <li><a href="../../PrettyPrint/GroupQueue.html">PrettyPrint::GroupQueue</a>
+  
+    <li><a href="../../PrettyPrint/SingleLine.html">PrettyPrint::SingleLine</a>
+  
+    <li><a href="../../PrettyPrint/Text.html">PrettyPrint::Text</a>
+  
+    <li><a href="../../URI.html">URI</a>
+  
+    <li><a href="../../URI/FILE.html">URI::FILE</a>
+  
+    <li><a href="../../URI/FTP.html">URI::FTP</a>
+  
+    <li><a href="../../URI/Generic.html">URI::Generic</a>
+  
+    <li><a href="../../URI/HTTP.html">URI::HTTP</a>
+  
+    <li><a href="../../URI/NotFoundError.html">URI::NotFoundError</a>
+  
+    <li><a href="../../OpenURI.html">OpenURI</a>
+  
+    <li><a href="../../OpenURI/HTTPError.html">OpenURI::HTTPError</a>
+  
+    <li><a href="../../OpenURI/HTTPRedirect.html">OpenURI::HTTPRedirect</a>
+  
+    <li><a href="../../OpenURI/Meta.html">OpenURI::Meta</a>
+  
+    <li><a href="../../OpenURI/OpenRead.html">OpenURI::OpenRead</a>
+  
+    <li><a href="../../Sync_m.html">Sync_m</a>
+  
+    <li><a href="../../Sync_m.html">Sync_m</a>
+  
+    <li><a href="../../Sync_m/Err.html">Sync_m::Err</a>
+  
+    <li><a href="../../Sync_m/Err/LockModeFailer.html">Sync_m::Err::LockModeFailer</a>
+  
+    <li><a href="../../Sync_m/Err/UnknownLocker.html">Sync_m::Err::UnknownLocker</a>
+  
+    <li><a href="../../CSV.html">CSV</a>
+  
+    <li><a href="../../CSV/MalformedCSVError.html">CSV::MalformedCSVError</a>
+  
+    <li><a href="../../CSV/Row.html">CSV::Row</a>
+  
+    <li><a href="../../CSV/Table.html">CSV::Table</a>
+  
+    <li><a href="../../Java.html">Java</a>
+  
+    <li><a href="../../Java/Commands.html">Java::Commands</a>
+  
+    <li><a href="../../Java/JavaWrapper.html">Java::JavaWrapper</a>
+  
+    <li><a href="../../Java/Options.html">Java::Options</a>
+  
+    <li><a href="../../PP.html">PP</a>
+  
+    <li><a href="../../PP/ObjectMixin.html">PP::ObjectMixin</a>
+  
+    <li><a href="../../PP/PPMethods.html">PP::PPMethods</a>
+  
+    <li><a href="../../PP/SingleLine.html">PP::SingleLine</a>
+  
+    <li><a href="../../Digest.html">Digest</a>
+  
+    <li><a href="../../Digest/Class.html">Digest::Class</a>
+  
+    <li><a href="../../Digest/Instance.html">Digest::Instance</a>
+  
+    <li><a href="../../ERB.html">ERB</a>
+  
+    <li><a href="../../ERB/DefMethod.html">ERB::DefMethod</a>
+  
+    <li><a href="../../ERB/Util.html">ERB::Util</a>
+  
+    <li><a href="../../Gem.html">Gem</a>
+  
+    <li><a href="../../Gem/LoadError.html">Gem::LoadError</a>
+  
+    <li><a href="../../Gem/Version.html">Gem::Version</a>
+  
+    <li><a href="../../IRB.html">IRB</a>
+  
+    <li><a href="../../IRB/Abort.html">IRB::Abort</a>
+  
+    <li><a href="../../IRB/Irb.html">IRB::Irb</a>
+  
+    <li><a href="../../MonitorMixin.html">MonitorMixin</a>
+  
+    <li><a href="../../MonitorMixin/ConditionVariable.html">MonitorMixin::ConditionVariable</a>
+  
+    <li><a href="../../MonitorMixin/ConditionVariable/Timeout.html">MonitorMixin::ConditionVariable::Timeout</a>
+  
+    <li><a href="../../Psych.html">Psych</a>
+  
+    <li><a href="../../Psych/BadAlias.html">Psych::BadAlias</a>
+  
+    <li><a href="../../Psych/Exception.html">Psych::Exception</a>
+  
+    <li><a href="../../Scanf.html">Scanf</a>
+  
+    <li><a href="../../Timeout.html">Timeout</a>
+  
+    <li><a href="../../Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="../../Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="../../TkComm.html">TkComm</a>
+  
+    <li><a href="../../TkComm/Tk_CMDTBL.html">TkComm::Tk_CMDTBL</a>
+  
+    <li><a href="../../TkComm/Tk_WINDOWS.html">TkComm::Tk_WINDOWS</a>
+  
+    <li><a href="../../TkCore.html">TkCore</a>
+  
+    <li><a href="../../MultiTkIp.html">TkCore::INTERP</a>
+  
+    <li><a href="../../TkCore/Tk_OBJECT_TABLE.html">TkCore::Tk_OBJECT_TABLE</a>
+  
+    <li><a href="../../Zip.html">Zip</a>
+  
+    <li><a href="../../Zip/ZipEntry.html">Zip::ZipEntry</a>
+  
+    <li><a href="../../Zip/ZipEntrySet.html">Zip::ZipEntrySet</a>
+  
+    <li><a href="../../Benchmark.html">Benchmark</a>
+  
+    <li><a href="../../Benchmark/Tms.html">Benchmark::Tms</a>
+  
+    <li><a href="../../DEBUGGER__.html">DEBUGGER__</a>
+  
+    <li><a href="../../DEBUGGER__/Context.html">DEBUGGER__::Context</a>
+  
+    <li><a href="../../Exception2MessageMapper.html">Exception2MessageMapper</a>
+  
+    <li><a href="../../Exception2MessageMapper.html">Exception2MessageMapper::E2MM</a>
+  
+    <li><a href="../../File.html">File</a>
+  
+    <li><a href="../../File/Stat.html">File::Stat</a>
+  
+    <li><a href="../../MultiTkIp.html">MultiTkIp</a>
+  
+    <li><a href="../../MultiTkIp/Command_Queue.html">MultiTkIp::Command_Queue</a>
+  
+    <li><a href="../../PStore.html">PStore</a>
+  
+    <li><a href="../../PStore/Error.html">PStore::Error</a>
+  
+    <li><a href="../../RDoc.html">RDoc</a>
+  
+    <li><a href="../../RDoc/Error.html">RDoc::Error</a>
+  
+    <li><a href="../../Rake.html">Rake</a>
+  
+    <li><a href="../../Rake/FileTask.html">Rake::FileTask</a>
+  
+    <li><a href="../../Socket.html">Socket</a>
+  
+    <li><a href="../../Socket/UDPSource.html">Socket::UDPSource</a>
+  
+    <li><a href="../../Sync.html">Sync</a>
+  
+    <li><a href="../../Sync.html">Sync</a>
+  
+    <li><a href="../../TSort.html">TSort</a>
+  
+    <li><a href="../../TSort/Cyclic.html">TSort::Cyclic</a>
+  
+    <li><a href="../../Tempfile.html">Tempfile</a>
+  
+    <li><a href="../../ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="../../ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="../../Vector.html">Vector</a>
+  
+    <li><a href="../../Vector/ZeroVectorError.html">Vector::ZeroVectorError</a>
+  
+    <li><a href="../../WeakRef.html">WeakRef</a>
+  
+    <li><a href="../../WeakRef/RefError.html">WeakRef::RefError</a>
+  
+    <li><a href="../../Abbrev.html">Abbrev</a>
+  
+    <li><a href="../../Addrinfo.html">Addrinfo</a>
+  
+    <li><a href="../../Base64.html">Base64</a>
+  
+    <li><a href="../../BasicSocket.html">BasicSocket</a>
+  
+    <li><a href="../../CGI.html">CGI</a>
+  
+    <li><a href="../../CMath.html">CMath</a>
+  
+    <li><a href="../../ConditionVariable.html">ConditionVariable</a>
+  
+    <li><a href="../../DL.html">DL</a>
+  
+    <li><a href="../../Date.html">Date</a>
+  
+    <li><a href="../../Delegator.html">Delegator</a>
+  
+    <li><a href="../../Dir.html">Dir</a>
+  
+    <li><a href="../../ENV.html">ENV</a>
+  
+    <li><a href="../../Enumerable.html">Enumerable</a>
+  
+    <li><a href="../../Fiddle.html">Fiddle</a>
+  
+    <li><a href="../../Find.html">Find</a>
+  
+    <li><a href="../../Float.html">Float</a>
+  
+    <li><a href="../../Forwardable.html">Forwardable</a>
+  
+    <li><a href="../../GServer.html">GServer</a>
+  
+    <li><a href="../../Hash.html">Hash</a>
+  
+    <li><a href="../../IO.html">IO</a>
+  
+    <li><a href="../../IPAddr.html">IPAddr</a>
+  
+    <li><a href="../../IPSocket.html">IPSocket</a>
+  
+    <li><a href="../../Integer.html">Integer</a>
+  
+    <li><a href="../../JSON.html">JSON</a>
+  
+    <li><a href="../../Kconv.html">Kconv</a>
+  
+    <li><a href="../../Kernel.html">Kernel</a>
+  
+    <li><a href="../../MatchData.html">MatchData</a>
+  
+    <li><a href="../../Math.html">Math</a>
+  
+    <li><a href="../../Matrix.html">Matrix</a>
+  
+    <li><a href="../../Module.html">Module</a>
+  
+    <li><a href="../../Monitor.html">Monitor</a>
+  
+    <li><a href="../../MultiTkIp_OK.html">MultiTkIp_OK</a>
+  
+    <li><a href="../../MultiTkIp_PseudoToplevel_Evaluable.html">MultiTkIp_PseudoToplevel_Evaluable</a>
+  
+    <li><a href="../../Mutex_m.html">Mutex_m</a>
+  
+    <li><a href="../../Numeric.html">Numeric</a>
+  
+    <li><a href="../../Observable.html">Observable</a>
+  
+    <li><a href="../../Open3.html">Open3</a>
+  
+    <li><a href="../../OpenObject.html">OpenObject</a>
+  
+    <li><a href="../../OpenStruct.html">OpenStruct</a>
+  
+    <li><a href="../../Pathname.html">Pathname</a>
+  
+    <li><a href="../../Profiler__.html">Profiler__</a>
+  
+    <li><a href="../../ProgressBar.html">ProgressBar</a>
+  
+    <li><a href="../../Queue.html">Queue</a>
+  
+    <li><a href="../../RSS.html">RSS</a>
+  
+    <li><a href="../../Range.html">Range</a>
+  
+    <li><a href="../../Rational.html">Rational</a>
+  
+    <li><a href="../../RemoteTkIp.html">RemoteTkIp</a>
+  
+    <li><a href="../../SOCKSSocket.html">SOCKSSocket</a>
+  
+    <li><a href="../../STRING_OR_FAILED_FORMAT.html">STRING_OR_FAILED_FORMAT</a>
+  
+    <li><a href="../../SecureRandom.html">SecureRandom</a>
+  
+    <li><a href="../../Set.html">Set</a>
+  
+    <li><a href="../../Shell.html">Shell</a>
+  
+    <li><a href="../../Shellwords.html">Shellwords</a>
+  
+    <li><a href="../../SimpleDelegator.html">SimpleDelegator</a>
+  
+    <li><a href="../../SingleForwardable.html">SingleForwardable</a>
+  
+    <li><a href="../../Singleton.html">Singleton</a>
+  
+    <li><a href="../../SizedQueue.html">SizedQueue</a>
+  
+    <li><a href="../../SortedSet.html">SortedSet</a>
+  
+    <li><a href="../../Struct.html">Struct</a>
+  
+    <li><a href="../../Syck.html">Syck</a>
+  
+    <li><a href="../../TCPSocket.html">TCPSocket</a>
+  
+    <li><a href="../../TclTkIp.html">TclTkIp</a>
+  
+    <li><a href="../../TclTkLib.html">TclTkLib</a>
+  
+    <li><a href="../../ThreadError.html">ThreadError</a>
+  
+    <li><a href="../../Time.html">Time</a>
+  
+    <li><a href="../../Tracer.html">Tracer</a>
+  
+    <li><a href="../../UDPSocket.html">UDPSocket</a>
+  
+    <li><a href="../../WEBrick.html">WEBrick</a>
+  
+    <li><a href="../../YAML.html">YAML</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class Buildr::IntellijIdea::IdeaModule</h1>
+
+  <div id="description" class="description">
+    
+<p><a href="IdeaModule.html">IdeaModule</a> represents an .iml file</p>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="DEFAULT_TYPE">DEFAULT_TYPE
+        
+        <dd class="description">
+        
+      
+      </dl>
+    </section>
+    
+
+    
+    <!-- Attributes -->
+    <section id="attribute-method-details" class="method-section section">
+      <h3 class="section-header">Attributes</h3>
+
+      
+      <div id="attribute-i-facets" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">facets</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-group" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">group</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-jdk_version" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">jdk_version</span><span
+            class="attribute-access-type">[W]</span>
+        </div>
+
+        <div class="method-description">
+        
+        
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-main_output_dir" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">main_output_dir</span><span
+            class="attribute-access-type">[W]</span>
+        </div>
+
+        <div class="method-description">
+        
+        
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-test_output_dir" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">test_output_dir</span><span
+            class="attribute-access-type">[W]</span>
+        </div>
+
+        <div class="method-description">
+        
+        
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-type" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">type</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        
+        
+        </div>
+      </div>
+      
+    </section><!-- attribute-method-details -->
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 174</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>
+  <span class="ruby-keyword">super</span>()
+  <span class="ruby-ivar">@type</span> = <span class="ruby-constant">DEFAULT_TYPE</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- new-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- new-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-add_ejb_facet" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add_ejb_facet</span><span
+            class="method-args">(options = {})</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="add_ejb_facet-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 340</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_ejb_facet</span>(<span class="ruby-identifier">options</span> = {})
+  <span class="ruby-identifier">name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:name</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;EJB&quot;</span>
+  <span class="ruby-identifier">default_ejb_xml</span> = <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">_</span>(<span class="ruby-value">:source</span>, <span class="ruby-value">:main</span>, <span class="ruby-value">:resources</span>, <span class="ruby-string">&quot;WEB-INF/ejb-jar.xml&quot;</span>)
+  <span class="ruby-identifier">ejb_xml</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:ejb_xml</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">default_ejb_xml</span>
+  <span class="ruby-identifier">ejb_roots</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:ejb_roots</span>] <span class="ruby-operator">||</span> [<span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">sources</span>, <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">resources</span>.<span class="ruby-identifier">sources</span>].<span class="ruby-identifier">flatten</span>
+
+  <span class="ruby-identifier">add_facet</span>(<span class="ruby-identifier">name</span>, <span class="ruby-string">&quot;ejb&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">facet</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">facet</span>.<span class="ruby-identifier">configuration</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">c</span>.<span class="ruby-identifier">descriptors</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">ejb_xml</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">default_ejb_xml</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">ejb_xml</span>
+          <span class="ruby-identifier">d</span>.<span class="ruby-identifier">deploymentDescriptor</span> <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'ejb-jar.xml'</span>, <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file_path</span>(<span class="ruby-identifier">ejb_xml</span>)
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">c</span>.<span class="ruby-identifier">ejbRoots</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">ejb_roots</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ejb_root</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">e</span>.<span class="ruby-identifier">root</span> <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file_path</span>(<span class="ruby-identifier">ejb_root</span>)
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- add_ejb_facet-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- add_ejb_facet-method -->
+
+    
+      <div id="method-i-add_facet" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add_facet</span><span
+            class="method-args">(name, type) { |xml| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="add_facet-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 238</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_facet</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">type</span>)
+  <span class="ruby-identifier">add_to_composite_component</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">facets</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">xml</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">facet</span>(<span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">name</span>, <span class="ruby-value">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">type</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">xml</span><span class="ruby-operator">|</span>
+      <span class="ruby-keyword">yield</span> <span class="ruby-identifier">xml</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">block_given?</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- add_facet-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- add_facet-method -->
+
+    
+      <div id="method-i-add_gwt_facet" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add_gwt_facet</span><span
+            class="method-args">(modules = {}, options = {})</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="add_gwt_facet-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 254</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_gwt_facet</span>(<span class="ruby-identifier">modules</span> = {}, <span class="ruby-identifier">options</span> = {})
+  <span class="ruby-identifier">name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:name</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;GWT&quot;</span>
+  <span class="ruby-identifier">settings</span> =
+    {
+      <span class="ruby-value">:webFacet</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;Web&quot;</span>,
+      <span class="ruby-value">:compilerMaxHeapSize</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;512&quot;</span>,
+      <span class="ruby-value">:compilerParameters</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;-draftCompile -localWorkers 2 -strict&quot;</span>,
+      <span class="ruby-value">:gwtSdkUrl</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;file://$GWT_TOOLS$&quot;</span>,
+      <span class="ruby-value">:gwtScriptOutputStyle</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;PRETTY&quot;</span>
+    }.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:settings</span>] <span class="ruby-operator">||</span> {})
+
+  <span class="ruby-identifier">add_facet</span>(<span class="ruby-identifier">name</span>, <span class="ruby-string">&quot;gwt&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">f</span>.<span class="ruby-identifier">configuration</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">settings</span>.<span class="ruby-identifier">each_pair</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">c</span>.<span class="ruby-identifier">setting</span> <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">k</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-value">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">v</span>.<span class="ruby-identifier">to_s</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">c</span>.<span class="ruby-identifier">packaging</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">modules</span>.<span class="ruby-identifier">each_pair</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">d</span>.<span class="ruby-identifier">module</span> <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">k</span>, <span class="ruby-value">:enabled</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">v</span>
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- add_gwt_facet-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- add_gwt_facet-method -->
+
+    
+      <div id="method-i-add_jpa_facet" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add_jpa_facet</span><span
+            class="method-args">(options = {})</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="add_jpa_facet-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 314</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_jpa_facet</span>(<span class="ruby-identifier">options</span> = {})
+  <span class="ruby-identifier">name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:name</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;JPA&quot;</span>
+  <span class="ruby-identifier">factory_entry</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:factory_entry</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>
+  <span class="ruby-identifier">validation_enabled</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:validation_enabled</span>].<span class="ruby-identifier">nil?</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">true</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:validation_enabled</span>]
+  <span class="ruby-identifier">provider_enabled</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:provider_enabled</span>] <span class="ruby-operator">||</span> <span class="ruby-string">'Hibernate'</span>
+  <span class="ruby-identifier">default_persistence_xml</span> = <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">_</span>(<span class="ruby-value">:source</span>, <span class="ruby-value">:main</span>, <span class="ruby-value">:resources</span>, <span class="ruby-string">&quot;META-INF/persistence.xml&quot;</span>)
+  <span class="ruby-identifier">persistence_xml</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:persistence_xml</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">default_persistence_xml</span>
+  <span class="ruby-identifier">default_orm_xml</span> = <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">_</span>(<span class="ruby-value">:source</span>, <span class="ruby-value">:main</span>, <span class="ruby-value">:resources</span>, <span class="ruby-string">&quot;META-INF/orm.xml&quot;</span>)
+  <span class="ruby-identifier">orm_xml</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:orm_xml</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">default_orm_xml</span>
+  <span class="ruby-identifier">add_facet</span>(<span class="ruby-identifier">name</span>, <span class="ruby-string">&quot;jpa&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">f</span>.<span class="ruby-identifier">configuration</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">c</span>.<span class="ruby-identifier">setting</span> <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;validation-enabled&quot;</span>, <span class="ruby-value">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">validation_enabled</span>
+      <span class="ruby-identifier">c</span>.<span class="ruby-identifier">setting</span> <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;provider-name&quot;</span>, <span class="ruby-value">:value</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">provider_enabled</span>
+      <span class="ruby-identifier">c</span>.<span class="ruby-identifier">tag!</span>(<span class="ruby-string">'datasource-mapping'</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ds</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">ds</span>.<span class="ruby-identifier">tag!</span>(<span class="ruby-string">'factory-entry'</span>, <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">factory_entry</span>)
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">persistence_xml</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">default_persistence_xml</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">persistence_xml</span>
+        <span class="ruby-identifier">c</span>.<span class="ruby-identifier">deploymentDescriptor</span> <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'persistence.xml'</span>, <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file_path</span>(<span class="ruby-identifier">persistence_xml</span>)
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">orm_xml</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">default_orm_xml</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">orm_xml</span>
+        <span class="ruby-identifier">c</span>.<span class="ruby-identifier">deploymentDescriptor</span> <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'orm.xml'</span>, <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file_path</span>(<span class="ruby-identifier">orm_xml</span>)
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- add_jpa_facet-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- add_jpa_facet-method -->
+
+    
+      <div id="method-i-add_jruby_facet" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add_jruby_facet</span><span
+            class="method-args">(options = {})</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="add_jruby_facet-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 304</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_jruby_facet</span>(<span class="ruby-identifier">options</span> = {})
+  <span class="ruby-identifier">name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:name</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;JRuby&quot;</span>
+  <span class="ruby-identifier">jruby_version</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:jruby_version</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;jruby-1.5.2-p249&quot;</span>
+  <span class="ruby-identifier">add_facet</span>(<span class="ruby-identifier">name</span>, <span class="ruby-string">&quot;JRUBY&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">f</span>.<span class="ruby-identifier">configuration</span>(<span class="ruby-value">:number</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">c</span>.<span class="ruby-constant">JRUBY_FACET_CONFIG_ID</span> <span class="ruby-value">:NAME</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;JRUBY_SDK_NAME&quot;</span>, <span class="ruby-value">:VALUE</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">jruby_version</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- add_jruby_facet-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- add_jruby_facet-method -->
+
+    
+      <div id="method-i-add_web_facet" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add_web_facet</span><span
+            class="method-args">(options = {})</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="add_web_facet-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 279</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add_web_facet</span>(<span class="ruby-identifier">options</span> = {})
+  <span class="ruby-identifier">name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:name</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;Web&quot;</span>
+  <span class="ruby-identifier">url_base</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:url_base</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;/&quot;</span>
+  <span class="ruby-identifier">default_webroots</span> = [<span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">_</span>(<span class="ruby-value">:source</span>, <span class="ruby-value">:main</span>, <span class="ruby-value">:webapp</span>)]
+  <span class="ruby-identifier">webroots</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:webroots</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">default_webroots</span>
+  <span class="ruby-identifier">default_web_xml</span> = <span class="ruby-node">&quot;#{buildr_project._(:source, :main, :webapp)}/WEB-INF/web.xml&quot;</span>
+  <span class="ruby-identifier">web_xml</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:web_xml</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">default_web_xml</span>
+  <span class="ruby-identifier">version</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:version</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;3.0&quot;</span>
+
+  <span class="ruby-identifier">add_facet</span>(<span class="ruby-identifier">name</span>, <span class="ruby-string">&quot;web&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">f</span>.<span class="ruby-identifier">configuration</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">c</span>.<span class="ruby-identifier">descriptors</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">web_xml</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">default_web_xml</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">web_xml</span>
+          <span class="ruby-identifier">d</span>.<span class="ruby-identifier">deploymentDescriptor</span> <span class="ruby-value">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'web.xml'</span>, <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file_path</span>(<span class="ruby-identifier">web_xml</span>), <span class="ruby-value">:optional</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;true&quot;</span>, <span class="ruby-value">:version</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">version</span>
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">c</span>.<span class="ruby-identifier">webroots</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">w</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">webroots</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">webroot</span><span class="ruby-operator">|</span>
+          <span class="ruby-identifier">w</span>.<span class="ruby-identifier">root</span> <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file_path</span>(<span class="ruby-identifier">webroot</span>), <span class="ruby-value">:relative</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">url_base</span>
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- add_web_facet-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- add_web_facet-method -->
+
+    
+      <div id="method-i-buildr_project-3D" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">buildr_project=</span><span
+            class="method-args">(buildr_project)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="buildr_project-3D-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 179</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">buildr_project=</span>(<span class="ruby-identifier">buildr_project</span>)
+  <span class="ruby-ivar">@id</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-ivar">@facets</span> = []
+  <span class="ruby-ivar">@skip_content</span> = <span class="ruby-keyword">false</span>
+  <span class="ruby-ivar">@buildr_project</span> = <span class="ruby-identifier">buildr_project</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- buildr_project-3D-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- buildr_project-3D-method -->
+
+    
+      <div id="method-i-excluded_directories" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">excluded_directories</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="excluded_directories-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 208</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">excluded_directories</span>
+  <span class="ruby-ivar">@excluded_directories</span> <span class="ruby-operator">||=</span> [
+    <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">resources</span>.<span class="ruby-identifier">target</span>,
+    <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">test</span>.<span class="ruby-identifier">resources</span>.<span class="ruby-identifier">target</span>,
+    <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">path_to</span>(<span class="ruby-value">:target</span>, <span class="ruby-value">:main</span>),
+    <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">path_to</span>(<span class="ruby-value">:target</span>, <span class="ruby-value">:test</span>),
+    <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">path_to</span>(<span class="ruby-value">:reports</span>)
+  ].<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">compact</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- excluded_directories-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- excluded_directories-method -->
+
+    
+      <div id="method-i-extension" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">extension</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="extension-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 190</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">extension</span>
+  <span class="ruby-string">&quot;iml&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- extension-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- extension-method -->
+
+    
+      <div id="method-i-jdk_version" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">jdk_version</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="jdk_version-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 186</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">jdk_version</span>
+  <span class="ruby-ivar">@jdk_version</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">options</span>.<span class="ruby-identifier">source</span> <span class="ruby-operator">||</span> <span class="ruby-string">&quot;1.6&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- jdk_version-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- jdk_version-method -->
+
+    
+      <div id="method-i-main_dependencies" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">main_dependencies</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="main_dependencies-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 230</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">main_dependencies</span>
+  <span class="ruby-ivar">@main_dependencies</span> <span class="ruby-operator">||=</span>  <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">dependencies</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- main_dependencies-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- main_dependencies-method -->
+
+    
+      <div id="method-i-main_output_dir" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">main_output_dir</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="main_output_dir-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 220</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">main_output_dir</span>
+  <span class="ruby-ivar">@main_output_dir</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">_</span>(<span class="ruby-value">:target</span>, <span class="ruby-value">:main</span>, <span class="ruby-value">:idea</span>, <span class="ruby-value">:classes</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- main_output_dir-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- main_output_dir-method -->
+
+    
+      <div id="method-i-main_source_directories" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">main_source_directories</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="main_source_directories-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 194</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">main_source_directories</span>
+  <span class="ruby-ivar">@main_source_directories</span> <span class="ruby-operator">||=</span> [
+    <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">sources</span>,
+    <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">resources</span>.<span class="ruby-identifier">sources</span>
+  ].<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">compact</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- main_source_directories-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- main_source_directories-method -->
+
+    
+      <div id="method-i-skip_content-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">skip_content!</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="skip_content-21-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 250</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">skip_content!</span>
+  <span class="ruby-ivar">@skip_content</span> = <span class="ruby-keyword">true</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- skip_content-21-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- skip_content-21-method -->
+
+    
+      <div id="method-i-skip_content-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">skip_content?</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="skip_content-3F-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 246</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">skip_content?</span>
+  <span class="ruby-operator">!</span><span class="ruby-operator">!</span><span class="ruby-ivar">@skip_content</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- skip_content-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- skip_content-3F-method -->
+
+    
+      <div id="method-i-test_dependencies" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">test_dependencies</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="test_dependencies-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 234</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">test_dependencies</span>
+  <span class="ruby-ivar">@test_dependencies</span> <span class="ruby-operator">||=</span>  <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">test</span>.<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">dependencies</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- test_dependencies-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- test_dependencies-method -->
+
+    
+      <div id="method-i-test_output_dir" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">test_output_dir</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="test_output_dir-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 226</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">test_output_dir</span>
+  <span class="ruby-ivar">@test_output_dir</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">_</span>(<span class="ruby-value">:target</span>, <span class="ruby-value">:test</span>, <span class="ruby-value">:idea</span>, <span class="ruby-value">:classes</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- test_output_dir-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- test_output_dir-method -->
+
+    
+      <div id="method-i-test_source_directories" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">test_source_directories</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="test_source_directories-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 201</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">test_source_directories</span>
+  <span class="ruby-ivar">@test_source_directories</span> <span class="ruby-operator">||=</span> [
+    <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">test</span>.<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">sources</span>,
+    <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">test</span>.<span class="ruby-identifier">resources</span>.<span class="ruby-identifier">sources</span>
+  ].<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">compact</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- test_source_directories-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- test_source_directories-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+     <section id="protected-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Protected Instance Methods</h3>
+
+    
+      <div id="method-i-base_document" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">base_document</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="base_document-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 380</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">base_document</span>
+  <span class="ruby-identifier">target</span> = <span class="ruby-constant">StringIO</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-constant">Builder</span><span class="ruby-operator">::</span><span class="ruby-constant">XmlMarkup</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">:target</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">target</span>).<span class="ruby-identifier">module</span>(<span class="ruby-value">:version</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;4&quot;</span>, <span class="ruby-value">:relativePaths</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;true&quot;</span>, <span class="ruby-value">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">type</span>)
+  <span class="ruby-constant">Buildr</span><span class="ruby-operator">::</span><span class="ruby-constant">IntellijIdea</span>.<span class="ruby-identifier">new_document</span>(<span class="ruby-identifier">target</span>.<span class="ruby-identifier">string</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- base_document-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- base_document-method -->
+
+    
+      <div id="method-i-default_components" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">default_components</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="default_components-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 390</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">default_components</span>
+  [
+    <span class="ruby-identifier">lambda</span> { <span class="ruby-identifier">module_root_component</span> },
+    <span class="ruby-identifier">lambda</span> { <span class="ruby-identifier">facet_component</span> }
+  ]
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- default_components-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- default_components-method -->
+
+    
+      <div id="method-i-facet_component" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">facet_component</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="facet_component-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 397</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">facet_component</span>
+  <span class="ruby-identifier">create_composite_component</span>(<span class="ruby-string">&quot;FacetManager&quot;</span>, <span class="ruby-keyword">self</span>.<span class="ruby-identifier">facets</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- facet_component-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- facet_component-method -->
+
+    
+      <div id="method-i-generate_compile_output" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">generate_compile_output</span><span
+            class="method-args">(xml)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="generate_compile_output-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 456</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">generate_compile_output</span>(<span class="ruby-identifier">xml</span>)
+  <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">output</span>(<span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file_path</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">main_output_dir</span>.<span class="ruby-identifier">to_s</span>))
+  <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">tag!</span>(<span class="ruby-string">&quot;output-test&quot;</span>, <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file_path</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">test_output_dir</span>.<span class="ruby-identifier">to_s</span>))
+  <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">tag!</span>(<span class="ruby-string">&quot;exclude-output&quot;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- generate_compile_output-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- generate_compile_output-method -->
+
+    
+      <div id="method-i-generate_content" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">generate_content</span><span
+            class="method-args">(xml)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="generate_content-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 462</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">generate_content</span>(<span class="ruby-identifier">xml</span>)
+  <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">content</span>(<span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;file://$MODULE_DIR$&quot;</span>) <span class="ruby-keyword">do</span>
+    <span class="ruby-comment"># Source folders</span>
+    {
+      <span class="ruby-value">:main</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">main_source_directories</span>,
+      <span class="ruby-value">:test</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">test_source_directories</span>
+    }.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">kind</span>, <span class="ruby-identifier">directories</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">directories</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">dir</span><span class="ruby-operator">|</span> <span class="ruby-identifier">dir</span>.<span class="ruby-identifier">to_s</span> }.<span class="ruby-identifier">compact</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">uniq</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dir</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">sourceFolder</span> <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">file_path</span>(<span class="ruby-identifier">dir</span>), <span class="ruby-value">:isTestSource</span> =<span class="ruby-operator">&gt;</span> (<span class="ruby-identifier">kind</span> <span class="ruby-operator">==</span> <span class="ruby-value">:test</span> <span class="ruby-operator">?</span> <span class="ruby-string">'true'</span> <span class="ruby-operator">:</span> <span class="ruby-string">'false'</span>)
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+
+    <span class="ruby-comment"># Exclude target directories</span>
+    <span class="ruby-keyword">self</span>.<span class="ruby-identifier">net_excluded_directories</span>.
+      <span class="ruby-identifier">collect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">dir</span><span class="ruby-operator">|</span> <span class="ruby-identifier">file_path</span>(<span class="ruby-identifier">dir</span>) }.
+      <span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">dir</span><span class="ruby-operator">|</span> <span class="ruby-identifier">relative_dir_inside_dir?</span>(<span class="ruby-identifier">dir</span>) }.
+      <span class="ruby-identifier">sort</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dir</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">excludeFolder</span> <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">dir</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- generate_content-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- generate_content-method -->
+
+    
+      <div id="method-i-generate_initial_order_entries" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">generate_initial_order_entries</span><span
+            class="method-args">(xml)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="generate_initial_order_entries-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 488</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">generate_initial_order_entries</span>(<span class="ruby-identifier">xml</span>)
+  <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">orderEntry</span> <span class="ruby-value">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;sourceFolder&quot;</span>, <span class="ruby-value">:forTests</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;false&quot;</span>
+  <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">orderEntry</span> <span class="ruby-value">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;jdk&quot;</span>, <span class="ruby-value">:jdkName</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">jdk_version</span>, <span class="ruby-value">:jdkType</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;JavaSDK&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- generate_initial_order_entries-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- generate_initial_order_entries-method -->
+
+    
+      <div id="method-i-generate_lib" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">generate_lib</span><span
+            class="method-args">(xml, dependency_path, export, source_path, project_dependencies)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="generate_lib-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 423</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">generate_lib</span>(<span class="ruby-identifier">xml</span>, <span class="ruby-identifier">dependency_path</span>, <span class="ruby-identifier">export</span>, <span class="ruby-identifier">source_path</span>, <span class="ruby-identifier">project_dependencies</span>)
+  <span class="ruby-identifier">project_for_dependency</span> = <span class="ruby-constant">Buildr</span>.<span class="ruby-identifier">projects</span>.<span class="ruby-identifier">detect</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">project</span><span class="ruby-operator">|</span>
+    [<span class="ruby-identifier">project</span>.<span class="ruby-identifier">packages</span>, <span class="ruby-identifier">project</span>.<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">target</span>, <span class="ruby-identifier">project</span>.<span class="ruby-identifier">resources</span>.<span class="ruby-identifier">target</span>, <span class="ruby-identifier">project</span>.<span class="ruby-identifier">test</span>.<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">target</span>, <span class="ruby-identifier">project</span>.<span class="ruby-identifier">test</span>.<span class="ruby-identifier">resources</span>.<span class="ruby-identifier">target</span>].<span class="ruby-identifier">flatten</span>.
+      <span class="ruby-identifier">detect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">artifact</span><span class="ruby-operator">|</span> <span class="ruby-identifier">artifact</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">dependency_path</span> }
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">project_for_dependency</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">project_for_dependency</span>.<span class="ruby-identifier">iml?</span> <span class="ruby-operator">&amp;&amp;</span>
+      <span class="ruby-operator">!</span><span class="ruby-identifier">project_dependencies</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">project_for_dependency</span>) <span class="ruby-operator">&amp;&amp;</span>
+      <span class="ruby-identifier">project_for_dependency</span> <span class="ruby-operator">!=</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">buildr_project</span>
+      <span class="ruby-identifier">generate_project_dependency</span>(<span class="ruby-identifier">xml</span>, <span class="ruby-identifier">project_for_dependency</span>.<span class="ruby-identifier">iml</span>.<span class="ruby-identifier">name</span>, <span class="ruby-identifier">export</span>, <span class="ruby-operator">!</span><span class="ruby-identifier">export</span>)
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">project_dependencies</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">project_for_dependency</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">generate_module_lib</span>(<span class="ruby-identifier">xml</span>, <span class="ruby-identifier">url_for_path</span>(<span class="ruby-identifier">dependency_path</span>), <span class="ruby-identifier">export</span>, (<span class="ruby-identifier">source_path</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">url_for_path</span>(<span class="ruby-identifier">source_path</span>) <span class="ruby-operator">:</span> <span class="ruby-keyword">nil</span>), <span class="ruby-operator">!</span><span class="ruby-identifier">export</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- generate_lib-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- generate_lib-method -->
+
+    
+      <div id="method-i-generate_module_lib" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">generate_module_lib</span><span
+            class="method-args">(xml, path, export, source_path, test = false)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="generate_module_lib-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 500</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">generate_module_lib</span>(<span class="ruby-identifier">xml</span>, <span class="ruby-identifier">path</span>, <span class="ruby-identifier">export</span>, <span class="ruby-identifier">source_path</span>, <span class="ruby-identifier">test</span> = <span class="ruby-keyword">false</span>)
+  <span class="ruby-identifier">attribs</span> = {<span class="ruby-value">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'module-library'</span>}
+  <span class="ruby-identifier">attribs</span>[<span class="ruby-value">:exported</span>] = <span class="ruby-string">''</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">export</span>
+  <span class="ruby-identifier">attribs</span>[<span class="ruby-value">:scope</span>] = <span class="ruby-string">'TEST'</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">test</span>
+  <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">orderEntry</span> <span class="ruby-identifier">attribs</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">library</span> <span class="ruby-keyword">do</span>
+      <span class="ruby-identifier">xml</span>.<span class="ruby-constant">CLASSES</span> <span class="ruby-keyword">do</span>
+        <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">root</span> <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">path</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">xml</span>.<span class="ruby-constant">JAVADOC</span>
+      <span class="ruby-identifier">xml</span>.<span class="ruby-constant">SOURCES</span> <span class="ruby-keyword">do</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">source_path</span>
+          <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">root</span> <span class="ruby-value">:url</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">source_path</span>
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- generate_module_lib-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- generate_module_lib-method -->
+
+    
+      <div id="method-i-generate_project_dependency" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">generate_project_dependency</span><span
+            class="method-args">(xml, other_project, export, test = false)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="generate_project_dependency-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 493</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">generate_project_dependency</span>(<span class="ruby-identifier">xml</span>, <span class="ruby-identifier">other_project</span>, <span class="ruby-identifier">export</span>, <span class="ruby-identifier">test</span> = <span class="ruby-keyword">false</span>)
+  <span class="ruby-identifier">attribs</span> = {<span class="ruby-value">:type</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'module'</span>, <span class="ruby-string">&quot;module-name&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">other_project</span>}
+  <span class="ruby-identifier">attribs</span>[<span class="ruby-value">:exported</span>] = <span class="ruby-string">''</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">export</span>
+  <span class="ruby-identifier">attribs</span>[<span class="ruby-value">:scope</span>] = <span class="ruby-string">'TEST'</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">test</span>
+  <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">orderEntry</span> <span class="ruby-identifier">attribs</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- generate_project_dependency-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- generate_project_dependency-method -->
+
+    
+      <div id="method-i-initial_components" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">initial_components</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="initial_components-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 386</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initial_components</span>
+  []
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- initial_components-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- initial_components-method -->
+
+    
+      <div id="method-i-jar_path" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">jar_path</span><span
+            class="method-args">(path)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="jar_path-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 440</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">jar_path</span>(<span class="ruby-identifier">path</span>)
+  <span class="ruby-node">&quot;jar://#{resolve_path(path)}!/&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- jar_path-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- jar_path-method -->
+
+    
+      <div id="method-i-module_root_component" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">module_root_component</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="module_root_component-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 401</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">module_root_component</span>
+  <span class="ruby-identifier">create_component</span>(<span class="ruby-string">&quot;NewModuleRootManager&quot;</span>, <span class="ruby-string">&quot;inherit-compiler-output&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;false&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">xml</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">generate_compile_output</span>(<span class="ruby-identifier">xml</span>)
+    <span class="ruby-identifier">generate_content</span>(<span class="ruby-identifier">xml</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">skip_content?</span>
+    <span class="ruby-identifier">generate_initial_order_entries</span>(<span class="ruby-identifier">xml</span>)
+    <span class="ruby-identifier">project_dependencies</span> = []
+
+
+    <span class="ruby-keyword">self</span>.<span class="ruby-identifier">test_dependency_details</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dependency_path</span>, <span class="ruby-identifier">export</span>, <span class="ruby-identifier">source_path</span><span class="ruby-operator">|</span>
+      <span class="ruby-keyword">next</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">export</span>
+      <span class="ruby-identifier">generate_lib</span>(<span class="ruby-identifier">xml</span>, <span class="ruby-identifier">dependency_path</span>, <span class="ruby-identifier">export</span>, <span class="ruby-identifier">source_path</span>, <span class="ruby-identifier">project_dependencies</span>)
+    <span class="ruby-keyword">end</span>
+
+    <span class="ruby-keyword">self</span>.<span class="ruby-identifier">test_dependency_details</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dependency_path</span>, <span class="ruby-identifier">export</span>, <span class="ruby-identifier">source_path</span><span class="ruby-operator">|</span>
+      <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">export</span>
+      <span class="ruby-identifier">generate_lib</span>(<span class="ruby-identifier">xml</span>, <span class="ruby-identifier">dependency_path</span>, <span class="ruby-identifier">export</span>, <span class="ruby-identifier">source_path</span>, <span class="ruby-identifier">project_dependencies</span>)
+    <span class="ruby-keyword">end</span>
+
+    <span class="ruby-identifier">xml</span>.<span class="ruby-identifier">orderEntryProperties</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- module_root_component-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- module_root_component-method -->
+
+    
+      <div id="method-i-net_excluded_directories" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">net_excluded_directories</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Don’t exclude things that are subdirectories of other excluded things</p>
+          
+
+          
+          <div class="method-source-code" id="net_excluded_directories-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 520</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">net_excluded_directories</span>
+  <span class="ruby-identifier">net</span> = []
+  <span class="ruby-identifier">all</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">excluded_directories</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">dir</span><span class="ruby-operator">|</span> <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">_</span>(<span class="ruby-identifier">dir</span>.<span class="ruby-identifier">to_s</span>) }.<span class="ruby-identifier">sort_by</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span> <span class="ruby-identifier">d</span>.<span class="ruby-identifier">size</span> }
+  <span class="ruby-identifier">all</span>.<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">dir</span>, <span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">unless</span> <span class="ruby-identifier">all</span>[<span class="ruby-value">0</span> <span class="ruby-operator">...</span> <span class="ruby-identifier">i</span>].<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">other</span><span class="ruby-operator">|</span> <span class="ruby-identifier">dir</span> <span class="ruby-operator">=~</span> <span class="ruby-node">%r^#{other}/</span> }
+      <span class="ruby-identifier">net</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dir</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">net</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- net_excluded_directories-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- net_excluded_directories-method -->
+
+    
+      <div id="method-i-relative_dir_inside_dir-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">relative_dir_inside_dir?</span><span
+            class="method-args">(dir)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="relative_dir_inside_dir-3F-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 484</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">relative_dir_inside_dir?</span>(<span class="ruby-identifier">dir</span>)
+  <span class="ruby-operator">!</span><span class="ruby-identifier">dir</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">&quot;../&quot;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- relative_dir_inside_dir-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- relative_dir_inside_dir-3F-method -->
+
+    
+      <div id="method-i-resolve_path" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">resolve_path</span><span
+            class="method-args">(path)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="resolve_path-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 452</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">resolve_path</span>(<span class="ruby-identifier">path</span>)
+  <span class="ruby-identifier">resolve_path_from_base</span>(<span class="ruby-identifier">path</span>, <span class="ruby-string">&quot;$MODULE_DIR$&quot;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- resolve_path-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- resolve_path-method -->
+
+    
+      <div id="method-i-test_dependency_details" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">test_dependency_details</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="test_dependency_details-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 364</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">test_dependency_details</span>
+  <span class="ruby-identifier">main_dependencies_paths</span> = <span class="ruby-identifier">main_dependencies</span>.<span class="ruby-identifier">map</span>(&amp;<span class="ruby-value">:to_s</span>)
+  <span class="ruby-identifier">target_dir</span> = <span class="ruby-identifier">buildr_project</span>.<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">target</span>.<span class="ruby-identifier">to_s</span>
+  <span class="ruby-identifier">test_dependencies</span>.<span class="ruby-identifier">select</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span> <span class="ruby-identifier">d</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">target_dir</span> }.<span class="ruby-identifier">collect</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">d</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">dependency_path</span> = <span class="ruby-identifier">d</span>.<span class="ruby-identifier">to_s</span>
+    <span class="ruby-identifier">export</span> = <span class="ruby-identifier">main_dependencies_paths</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">dependency_path</span>)
+    <span class="ruby-identifier">source_path</span> = <span class="ruby-keyword">nil</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">d</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:to_spec_hash</span>)
+      <span class="ruby-identifier">source_spec</span> = <span class="ruby-identifier">d</span>.<span class="ruby-identifier">to_spec_hash</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-value">:classifier</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">'sources'</span>)
+      <span class="ruby-identifier">source_path</span> = <span class="ruby-constant">Buildr</span>.<span class="ruby-identifier">artifact</span>(<span class="ruby-identifier">source_spec</span>).<span class="ruby-identifier">to_s</span>
+      <span class="ruby-identifier">source_path</span> = <span class="ruby-keyword">nil</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">source_path</span>)
+    <span class="ruby-keyword">end</span>
+    [<span class="ruby-identifier">dependency_path</span>, <span class="ruby-identifier">export</span>, <span class="ruby-identifier">source_path</span>]
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- test_dependency_details-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- test_dependency_details-method -->
+
+    
+      <div id="method-i-url_for_path" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">url_for_path</span><span
+            class="method-args">(path)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="url_for_path-source">
+            <pre><span class="ruby-comment"># File lib/buildr/ide/idea.rb, line 444</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">url_for_path</span>(<span class="ruby-identifier">path</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">path</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">%rjar$/</span>
+    <span class="ruby-identifier">jar_path</span>(<span class="ruby-identifier">path</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">file_path</span>(<span class="ruby-identifier">path</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- url_for_path-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- url_for_path-method -->
+
+    
+    </section><!-- protected-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

@@ -1,0 +1,2904 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class DEBUGGER__ - buildr</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>rake/lib/debug.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link"><a href="Object.html">Object</a>
+  
+</nav>
+
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-break_points">::break_points</a>
+    
+    <li><a href="#method-c-context">::context</a>
+    
+    <li><a href="#method-c-debug_thread_info">::debug_thread_info</a>
+    
+    <li><a href="#method-c-display">::display</a>
+    
+    <li><a href="#method-c-get_thread">::get_thread</a>
+    
+    <li><a href="#method-c-interrupt">::interrupt</a>
+    
+    <li><a href="#method-c-make_thread_list">::make_thread_list</a>
+    
+    <li><a href="#method-c-resume">::resume</a>
+    
+    <li><a href="#method-c-set_last_thread">::set_last_thread</a>
+    
+    <li><a href="#method-c-set_trace">::set_trace</a>
+    
+    <li><a href="#method-c-stdout">::stdout</a>
+    
+    <li><a href="#method-c-stdout-3D">::stdout=</a>
+    
+    <li><a href="#method-c-suspend">::suspend</a>
+    
+    <li><a href="#method-c-thread_list">::thread_list</a>
+    
+    <li><a href="#method-c-thread_list_all">::thread_list_all</a>
+    
+    <li><a href="#method-c-waiting">::waiting</a>
+    
+    <li><a href="#method-i-break_points">#break_points</a>
+    
+    <li><a href="#method-i-check_break_points">#check_break_points</a>
+    
+    <li><a href="#method-i-context">#context</a>
+    
+    <li><a href="#method-i-debug_command">#debug_command</a>
+    
+    <li><a href="#method-i-debug_eval">#debug_eval</a>
+    
+    <li><a href="#method-i-debug_funcname">#debug_funcname</a>
+    
+    <li><a href="#method-i-debug_method_info">#debug_method_info</a>
+    
+    <li><a href="#method-i-debug_print_help">#debug_print_help</a>
+    
+    <li><a href="#method-i-debug_silent_eval">#debug_silent_eval</a>
+    
+    <li><a href="#method-i-debug_variable_info">#debug_variable_info</a>
+    
+    <li><a href="#method-i-display">#display</a>
+    
+    <li><a href="#method-i-display_expression">#display_expression</a>
+    
+    <li><a href="#method-i-display_expressions">#display_expressions</a>
+    
+    <li><a href="#method-i-display_frames">#display_frames</a>
+    
+    <li><a href="#method-i-display_list">#display_list</a>
+    
+    <li><a href="#method-i-excn_handle">#excn_handle</a>
+    
+    <li><a href="#method-i-format_frame">#format_frame</a>
+    
+    <li><a href="#method-i-frame_set_pos">#frame_set_pos</a>
+    
+    <li><a href="#method-i-line_at">#line_at</a>
+    
+    <li><a href="#method-i-set_last_thread">#set_last_thread</a>
+    
+    <li><a href="#method-i-set_trace">#set_trace</a>
+    
+    <li><a href="#method-i-set_trace_all">#set_trace_all</a>
+    
+    <li><a href="#method-i-stdout">#stdout</a>
+    
+    <li><a href="#method-i-thnum">#thnum</a>
+    
+    <li><a href="#method-i-trace-3F">#trace?</a>
+    
+    <li><a href="#method-i-trace_func">#trace_func</a>
+    
+    <li><a href="#method-i-var_list">#var_list</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./CHANGELOG.html">CHANGELOG</a>
+  
+    <li class="file"><a href="./LICENSE.html">LICENSE</a>
+  
+    <li class="file"><a href="./NOTICE.html">NOTICE</a>
+  
+    <li class="file"><a href="./README_rdoc.html">README</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./Buildr.html">Buildr</a>
+  
+    <li><a href="./Buildr/ActsAsArtifact.html">Buildr::ActsAsArtifact</a>
+  
+    <li><a href="./Buildr/Ant.html">Buildr::Ant</a>
+  
+    <li><a href="./Buildr/Apt.html">Buildr::Apt</a>
+  
+    <li><a href="./Buildr/ArchiveTask.html">Buildr::ArchiveTask</a>
+  
+    <li><a href="./Buildr/ArchiveTask/Merge.html">Buildr::ArchiveTask::Merge</a>
+  
+    <li><a href="./Buildr/Artifact.html">Buildr::Artifact</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace.html">Buildr::ArtifactNamespace</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace/ArtifactRequirement.html">Buildr::ArtifactNamespace::ArtifactRequirement</a>
+  
+    <li><a href="./Buildr/ArtifactSearch.html">Buildr::ArtifactSearch</a>
+  
+    <li><a href="./Buildr/Build.html">Buildr::Build</a>
+  
+    <li><a href="./Buildr/CC.html">Buildr::CC</a>
+  
+    <li><a href="./Buildr/CCTask.html">Buildr::CCTask</a>
+  
+    <li><a href="./Buildr/Checks.html">Buildr::Checks</a>
+  
+    <li><a href="./Buildr/Checks/Expectation.html">Buildr::Checks::Expectation</a>
+  
+    <li><a href="./Buildr/Clojure.html">Buildr::Clojure</a>
+  
+    <li><a href="./Buildr/Cobertura.html">Buildr::Cobertura</a>
+  
+    <li><a href="./Buildr/Cobertura/CoberturaCheck.html">Buildr::Cobertura::CoberturaCheck</a>
+  
+    <li><a href="./Buildr/Compile.html">Buildr::Compile</a>
+  
+    <li><a href="./Buildr/CompileTask.html">Buildr::CompileTask</a>
+  
+    <li><a href="./Buildr/Compiler.html">Buildr::Compiler</a>
+  
+    <li><a href="./Buildr/Compiler/Ecj.html">Buildr::Compiler::Ecj</a>
+  
+    <li><a href="./Buildr/Compiler/ExternalJavac.html">Buildr::Compiler::ExternalJavac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Compiler::Javac</a>
+  
+    <li><a href="./Buildr/ConcatTask.html">Buildr::ConcatTask</a>
+  
+    <li><a href="./Buildr/Doc.html">Buildr::Doc</a>
+  
+    <li><a href="./Buildr/Doc/Base.html">Buildr::Doc::Base</a>
+  
+    <li><a href="./Buildr/Doc/DocTask.html">Buildr::Doc::DocTask</a>
+  
+    <li><a href="./Buildr/Doc/Groovydoc.html">Buildr::Doc::Groovydoc</a>
+  
+    <li><a href="./Buildr/Doc/GroovydocDefaults.html">Buildr::Doc::GroovydocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Javadoc.html">Buildr::Doc::Javadoc</a>
+  
+    <li><a href="./Buildr/Doc/JavadocDefaults.html">Buildr::Doc::JavadocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Scaladoc.html">Buildr::Doc::Scaladoc</a>
+  
+    <li><a href="./Buildr/Doc/ScaladocDefaults.html">Buildr::Doc::ScaladocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/VScaladoc.html">Buildr::Doc::VScaladoc</a>
+  
+    <li><a href="./Buildr/Eclipse.html">Buildr::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Eclipse.html">Buildr::Eclipse::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Java.html">Buildr::Eclipse::Java</a>
+  
+    <li><a href="./Buildr/Eclipse/Options.html">Buildr::Eclipse::Options</a>
+  
+    <li><a href="./Buildr/Eclipse/Plugin.html">Buildr::Eclipse::Plugin</a>
+  
+    <li><a href="./Buildr/Eclipse/Scala.html">Buildr::Eclipse::Scala</a>
+  
+    <li><a href="./Buildr/Emma.html">Buildr::Emma</a>
+  
+    <li><a href="./Buildr/Extension.html">Buildr::Extension</a>
+  
+    <li><a href="./Buildr/Extension/ClassMethods.html">Buildr::Extension::ClassMethods</a>
+  
+    <li><a href="./Buildr/Filter.html">Buildr::Filter</a>
+  
+    <li><a href="./Buildr/Filter/Mapper.html">Buildr::Filter::Mapper</a>
+  
+    <li><a href="./Buildr/GitRelease.html">Buildr::GitRelease</a>
+  
+    <li><a href="./Buildr/Groovy.html">Buildr::Groovy</a>
+  
+    <li><a href="./Buildr/Groovy/EasyB.html">Buildr::Groovy::EasyB</a>
+  
+    <li><a href="./Buildr/Groovy/GroovySH.html">Buildr::Groovy::GroovySH</a>
+  
+    <li><a href="./Buildr/Groovy/Groovyc.html">Buildr::Groovy::Groovyc</a>
+  
+    <li><a href="./Buildr/HgRelease.html">Buildr::HgRelease</a>
+  
+    <li><a href="./Buildr/IntegrationTestsTask.html">Buildr::IntegrationTestsTask</a>
+  
+    <li><a href="./Buildr/IntellijIdea.html">Buildr::IntellijIdea</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaFile.html">Buildr::IntellijIdea::IdeaFile</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaModule.html">Buildr::IntellijIdea::IdeaModule</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaProject.html">Buildr::IntellijIdea::IdeaProject</a>
+  
+    <li><a href="./Buildr/IntellijIdea/ProjectExtension.html">Buildr::IntellijIdea::ProjectExtension</a>
+  
+    <li><a href="./Buildr/JBehave.html">Buildr::JBehave</a>
+  
+    <li><a href="./Buildr/JMock.html">Buildr::JMock</a>
+  
+    <li><a href="./Buildr/JRebel.html">Buildr::JRebel</a>
+  
+    <li><a href="./Buildr/JUnit.html">Buildr::JUnit</a>
+  
+    <li><a href="./Buildr/JUnit/Report.html">Buildr::JUnit::Report</a>
+  
+    <li><a href="./Buildr/Layout.html">Buildr::Layout</a>
+  
+    <li><a href="./Buildr/Layout/Default.html">Buildr::Layout::Default</a>
+  
+    <li><a href="./Buildr/MultiTest.html">Buildr::MultiTest</a>
+  
+    <li><a href="./Buildr/OptionalArtifact.html">Buildr::OptionalArtifact</a>
+  
+    <li><a href="./Buildr/Options.html">Buildr::Options</a>
+  
+    <li><a href="./Buildr/Options/Proxies.html">Buildr::Options::Proxies</a>
+  
+    <li><a href="./Buildr/POM.html">Buildr::POM</a>
+  
+    <li><a href="./Buildr/Package.html">Buildr::Package</a>
+  
+    <li><a href="./Buildr/PackageGemTask.html">Buildr::PackageGemTask</a>
+  
+    <li><a href="./Buildr/Packaging.html">Buildr::Packaging</a>
+  
+    <li><a href="./Buildr/Packaging/Java.html">Buildr::Packaging::Java</a>
+  
+    <li><a href="./Buildr/Packaging/Java/AarTask.html">Buildr::Packaging::Java::AarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/EarTask.html">Buildr::Packaging::Java::EarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/JarTask.html">Buildr::Packaging::Java::JarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/Manifest.html">Buildr::Packaging::Java::Manifest</a>
+  
+    <li><a href="./Buildr/Packaging/Java/WarTask.html">Buildr::Packaging::Java::WarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Scala.html">Buildr::Packaging::Scala</a>
+  
+    <li><a href="./Buildr/ProcessStatus.html">Buildr::ProcessStatus</a>
+  
+    <li><a href="./Buildr/Project.html">Buildr::Project</a>
+  
+    <li><a href="./Buildr/RSpec.html">Buildr::RSpec</a>
+  
+    <li><a href="./Buildr/Repositories.html">Buildr::Repositories</a>
+  
+    <li><a href="./Buildr/ResourcesTask.html">Buildr::ResourcesTask</a>
+  
+    <li><a href="./Buildr/Run.html">Buildr::Run</a>
+  
+    <li><a href="./Buildr/Run/Base.html">Buildr::Run::Base</a>
+  
+    <li><a href="./Buildr/Run/JavaRunner.html">Buildr::Run::JavaRunner</a>
+  
+    <li><a href="./Buildr/Run/RunTask.html">Buildr::Run::RunTask</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala/Check.html">Buildr::Scala::Check</a>
+  
+    <li><a href="./Buildr/Scala/Mockito.html">Buildr::Scala::Mockito</a>
+  
+    <li><a href="./Buildr/Scala/ProjectExtension.html">Buildr::Scala::ProjectExtension</a>
+  
+    <li><a href="./Buildr/Scala/ScalaShell.html">Buildr::Scala::ScalaShell</a>
+  
+    <li><a href="./Buildr/Scala/ScalaTest.html">Buildr::Scala::ScalaTest</a>
+  
+    <li><a href="./Buildr/Scala/Scalac.html">Buildr::Scala::Scalac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Scala::Scalac::Javac</a>
+  
+    <li><a href="./Buildr/Scala/ScalacOptions.html">Buildr::Scala::ScalacOptions</a>
+  
+    <li><a href="./Buildr/Scala/Specs.html">Buildr::Scala::Specs</a>
+  
+    <li><a href="./Buildr/Scala/Specs2.html">Buildr::Scala::Specs2</a>
+  
+    <li><a href="./Buildr/Settings.html">Buildr::Settings</a>
+  
+    <li><a href="./Buildr/Shell.html">Buildr::Shell</a>
+  
+    <li><a href="./Buildr/Shell/Base.html">Buildr::Shell::Base</a>
+  
+    <li><a href="./Buildr/Shell/BeanShell.html">Buildr::Shell::BeanShell</a>
+  
+    <li><a href="./Buildr/Shell/Clojure.html">Buildr::Shell::Clojure</a>
+  
+    <li><a href="./Buildr/Shell/JIRB.html">Buildr::Shell::JIRB</a>
+  
+    <li><a href="./Buildr/Shell/ShellTask.html">Buildr::Shell::ShellTask</a>
+  
+    <li><a href="./Buildr/SvnRelease.html">Buildr::SvnRelease</a>
+  
+    <li><a href="./Buildr/TarTask.html">Buildr::TarTask</a>
+  
+    <li><a href="./Buildr/Test.html">Buildr::Test</a>
+  
+    <li><a href="./Buildr/Test/SkipIfNoTest.html">Buildr::Test::SkipIfNoTest</a>
+  
+    <li><a href="./Buildr/TestFramework.html">Buildr::TestFramework</a>
+  
+    <li><a href="./Buildr/TestFramework/Base.html">Buildr::TestFramework::Base</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased.html">Buildr::TestFramework::JRubyBased</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased/ClassMethods.html">Buildr::TestFramework::JRubyBased::ClassMethods</a>
+  
+    <li><a href="./Buildr/TestFramework/Java.html">Buildr::TestFramework::Java</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult.html">Buildr::TestFramework::TestResult</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/Error.html">Buildr::TestFramework::TestResult::Error</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/YamlFormatter.html">Buildr::TestFramework::TestResult::YamlFormatter</a>
+  
+    <li><a href="./Buildr/TestNG.html">Buildr::TestNG</a>
+  
+    <li><a href="./Buildr/TestTask.html">Buildr::TestTask</a>
+  
+    <li><a href="./Buildr/Unzip.html">Buildr::Unzip</a>
+  
+    <li><a href="./Buildr/Util.html">Buildr::Util</a>
+  
+    <li><a href="./Buildr/VersionRequirement.html">Buildr::VersionRequirement</a>
+  
+    <li><a href="./Buildr/ZipTask.html">Buildr::ZipTask</a>
+  
+    <li><a href="./Resolv.html">Resolv</a>
+  
+    <li><a href="./Resolv/DNS.html">Resolv::DNS</a>
+  
+    <li><a href="./Resolv/DNS/Config.html">Resolv::DNS::Config</a>
+  
+    <li><a href="./Resolv/DNS/Config/NXDomain.html">Resolv::DNS::Config::NXDomain</a>
+  
+    <li><a href="./Resolv/DNS/Config/OtherResolvError.html">Resolv::DNS::Config::OtherResolvError</a>
+  
+    <li><a href="./Resolv/DNS/DecodeError.html">Resolv::DNS::DecodeError</a>
+  
+    <li><a href="./Resolv/DNS/EncodeError.html">Resolv::DNS::EncodeError</a>
+  
+    <li><a href="./Resolv/DNS/Name.html">Resolv::DNS::Name</a>
+  
+    <li><a href="./Resolv/DNS/Query.html">Resolv::DNS::Query</a>
+  
+    <li><a href="./Resolv/DNS/Requester.html">Resolv::DNS::Requester</a>
+  
+    <li><a href="./Resolv/DNS/Requester/RequestError.html">Resolv::DNS::Requester::RequestError</a>
+  
+    <li><a href="./Resolv/DNS/Resource.html">Resolv::DNS::Resource</a>
+  
+    <li><a href="./Resolv/DNS/Resource/ANY.html">Resolv::DNS::Resource::ANY</a>
+  
+    <li><a href="./Resolv/DNS/Resource/CNAME.html">Resolv::DNS::Resource::CNAME</a>
+  
+    <li><a href="./Resolv/DNS/Resource/DomainName.html">Resolv::DNS::Resource::DomainName</a>
+  
+    <li><a href="./Resolv/DNS/Resource/Generic.html">Resolv::DNS::Resource::Generic</a>
+  
+    <li><a href="./Resolv/DNS/Resource/HINFO.html">Resolv::DNS::Resource::HINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN.html">Resolv::DNS::Resource::IN</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/A.html">Resolv::DNS::Resource::IN::A</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/AAAA.html">Resolv::DNS::Resource::IN::AAAA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/SRV.html">Resolv::DNS::Resource::IN::SRV</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/WKS.html">Resolv::DNS::Resource::IN::WKS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MINFO.html">Resolv::DNS::Resource::MINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MX.html">Resolv::DNS::Resource::MX</a>
+  
+    <li><a href="./Resolv/DNS/Resource/NS.html">Resolv::DNS::Resource::NS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/PTR.html">Resolv::DNS::Resource::PTR</a>
+  
+    <li><a href="./Resolv/DNS/Resource/SOA.html">Resolv::DNS::Resource::SOA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/TXT.html">Resolv::DNS::Resource::TXT</a>
+  
+    <li><a href="./Resolv/Hosts.html">Resolv::Hosts</a>
+  
+    <li><a href="./Resolv/IPv4.html">Resolv::IPv4</a>
+  
+    <li><a href="./Resolv/IPv6.html">Resolv::IPv6</a>
+  
+    <li><a href="./Resolv/ResolvError.html">Resolv::ResolvError</a>
+  
+    <li><a href="./Resolv/ResolvTimeout.html">Resolv::ResolvTimeout</a>
+  
+    <li><a href="./OptionParser.html">OptionParser</a>
+  
+    <li><a href="./OptionParser/Acceptables.html">OptionParser::Acceptables</a>
+  
+    <li><a href="./OptionParser/AmbiguousArgument.html">OptionParser::AmbiguousArgument</a>
+  
+    <li><a href="./OptionParser/AmbiguousOption.html">OptionParser::AmbiguousOption</a>
+  
+    <li><a href="./OptionParser/Arguable.html">OptionParser::Arguable</a>
+  
+    <li><a href="./OptionParser/CompletingHash.html">OptionParser::CompletingHash</a>
+  
+    <li><a href="./OptionParser/Completion.html">OptionParser::Completion</a>
+  
+    <li><a href="./OptionParser/InvalidArgument.html">OptionParser::InvalidArgument</a>
+  
+    <li><a href="./OptionParser/InvalidOption.html">OptionParser::InvalidOption</a>
+  
+    <li><a href="./OptionParser/List.html">OptionParser::List</a>
+  
+    <li><a href="./OptionParser/MissingArgument.html">OptionParser::MissingArgument</a>
+  
+    <li><a href="./OptionParser/NeedlessArgument.html">OptionParser::NeedlessArgument</a>
+  
+    <li><a href="./OptionParser/OptionMap.html">OptionParser::OptionMap</a>
+  
+    <li><a href="./OptionParser/ParseError.html">OptionParser::ParseError</a>
+  
+    <li><a href="./OptionParser/Switch.html">OptionParser::Switch</a>
+  
+    <li><a href="./OptionParser/Switch/NoArgument.html">OptionParser::Switch::NoArgument</a>
+  
+    <li><a href="./OptionParser/Switch/OptionalArgument.html">OptionParser::Switch::OptionalArgument</a>
+  
+    <li><a href="./OptionParser/Switch/PlacedArgument.html">OptionParser::Switch::PlacedArgument</a>
+  
+    <li><a href="./OptionParser/Switch/RequiredArgument.html">OptionParser::Switch::RequiredArgument</a>
+  
+    <li><a href="./Prime.html">Prime</a>
+  
+    <li><a href="./Prime/EratosthenesGenerator.html">Prime::EratosthenesGenerator</a>
+  
+    <li><a href="./Prime/EratosthenesSieve.html">Prime::EratosthenesSieve</a>
+  
+    <li><a href="./Prime/Generator23.html">Prime::Generator23</a>
+  
+    <li><a href="./Prime/OldCompatibility.html">Prime::OldCompatibility</a>
+  
+    <li><a href="./Prime/PseudoPrimeGenerator.html">Prime::PseudoPrimeGenerator</a>
+  
+    <li><a href="./Prime/TrialDivision.html">Prime::TrialDivision</a>
+  
+    <li><a href="./Prime/TrialDivisionGenerator.html">Prime::TrialDivisionGenerator</a>
+  
+    <li><a href="./FileUtils.html">FileUtils</a>
+  
+    <li><a href="./FileUtils/DryRun.html">FileUtils::DryRun</a>
+  
+    <li><a href="./FileUtils/LowMethods.html">FileUtils::LowMethods</a>
+  
+    <li><a href="./FileUtils/NoWrite.html">FileUtils::NoWrite</a>
+  
+    <li><a href="./FileUtils/StreamUtils_.html">FileUtils::StreamUtils_</a>
+  
+    <li><a href="./FileUtils/Verbose.html">FileUtils::Verbose</a>
+  
+    <li><a href="./GetoptLong.html">GetoptLong</a>
+  
+    <li><a href="./GetoptLong/AmbiguousOption.html">GetoptLong::AmbiguousOption</a>
+  
+    <li><a href="./GetoptLong/Error.html">GetoptLong::Error</a>
+  
+    <li><a href="./GetoptLong/InvalidOption.html">GetoptLong::InvalidOption</a>
+  
+    <li><a href="./GetoptLong/MissingArgument.html">GetoptLong::MissingArgument</a>
+  
+    <li><a href="./GetoptLong/NeedlessArgument.html">GetoptLong::NeedlessArgument</a>
+  
+    <li><a href="./Logger.html">Logger</a>
+  
+    <li><a href="./Logger/Application.html">Logger::Application</a>
+  
+    <li><a href="./Logger/Formatter.html">Logger::Formatter</a>
+  
+    <li><a href="./Logger/LogDevice.html">Logger::LogDevice</a>
+  
+    <li><a href="./Logger/LogDevice/LogDeviceMutex.html">Logger::LogDevice::LogDeviceMutex</a>
+  
+    <li><a href="./Logger/Severity.html">Logger::Severity</a>
+  
+    <li><a href="./Object.html">Object</a>
+  
+    <li><a href="./Buildr/Scala.html">Object::Scala</a>
+  
+    <li><a href="./Sync.html">Object::Synchronizer</a>
+  
+    <li><a href="./Sync_m.html">Object::Synchronizer_m</a>
+  
+    <li><a href="./ThreadsWait.html">Object::ThWait</a>
+  
+    <li><a href="./Timeout/Error.html">Object::TimeoutError</a>
+  
+    <li><a href="./PrettyPrint.html">PrettyPrint</a>
+  
+    <li><a href="./PrettyPrint/Breakable.html">PrettyPrint::Breakable</a>
+  
+    <li><a href="./PrettyPrint/Group.html">PrettyPrint::Group</a>
+  
+    <li><a href="./PrettyPrint/GroupQueue.html">PrettyPrint::GroupQueue</a>
+  
+    <li><a href="./PrettyPrint/SingleLine.html">PrettyPrint::SingleLine</a>
+  
+    <li><a href="./PrettyPrint/Text.html">PrettyPrint::Text</a>
+  
+    <li><a href="./URI.html">URI</a>
+  
+    <li><a href="./URI/FILE.html">URI::FILE</a>
+  
+    <li><a href="./URI/FTP.html">URI::FTP</a>
+  
+    <li><a href="./URI/Generic.html">URI::Generic</a>
+  
+    <li><a href="./URI/HTTP.html">URI::HTTP</a>
+  
+    <li><a href="./URI/NotFoundError.html">URI::NotFoundError</a>
+  
+    <li><a href="./OpenURI.html">OpenURI</a>
+  
+    <li><a href="./OpenURI/HTTPError.html">OpenURI::HTTPError</a>
+  
+    <li><a href="./OpenURI/HTTPRedirect.html">OpenURI::HTTPRedirect</a>
+  
+    <li><a href="./OpenURI/Meta.html">OpenURI::Meta</a>
+  
+    <li><a href="./OpenURI/OpenRead.html">OpenURI::OpenRead</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m/Err.html">Sync_m::Err</a>
+  
+    <li><a href="./Sync_m/Err/LockModeFailer.html">Sync_m::Err::LockModeFailer</a>
+  
+    <li><a href="./Sync_m/Err/UnknownLocker.html">Sync_m::Err::UnknownLocker</a>
+  
+    <li><a href="./CSV.html">CSV</a>
+  
+    <li><a href="./CSV/MalformedCSVError.html">CSV::MalformedCSVError</a>
+  
+    <li><a href="./CSV/Row.html">CSV::Row</a>
+  
+    <li><a href="./CSV/Table.html">CSV::Table</a>
+  
+    <li><a href="./Java.html">Java</a>
+  
+    <li><a href="./Java/Commands.html">Java::Commands</a>
+  
+    <li><a href="./Java/JavaWrapper.html">Java::JavaWrapper</a>
+  
+    <li><a href="./Java/Options.html">Java::Options</a>
+  
+    <li><a href="./PP.html">PP</a>
+  
+    <li><a href="./PP/ObjectMixin.html">PP::ObjectMixin</a>
+  
+    <li><a href="./PP/PPMethods.html">PP::PPMethods</a>
+  
+    <li><a href="./PP/SingleLine.html">PP::SingleLine</a>
+  
+    <li><a href="./Digest.html">Digest</a>
+  
+    <li><a href="./Digest/Class.html">Digest::Class</a>
+  
+    <li><a href="./Digest/Instance.html">Digest::Instance</a>
+  
+    <li><a href="./ERB.html">ERB</a>
+  
+    <li><a href="./ERB/DefMethod.html">ERB::DefMethod</a>
+  
+    <li><a href="./ERB/Util.html">ERB::Util</a>
+  
+    <li><a href="./Gem.html">Gem</a>
+  
+    <li><a href="./Gem/LoadError.html">Gem::LoadError</a>
+  
+    <li><a href="./Gem/Version.html">Gem::Version</a>
+  
+    <li><a href="./IRB.html">IRB</a>
+  
+    <li><a href="./IRB/Abort.html">IRB::Abort</a>
+  
+    <li><a href="./IRB/Irb.html">IRB::Irb</a>
+  
+    <li><a href="./MonitorMixin.html">MonitorMixin</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable.html">MonitorMixin::ConditionVariable</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable/Timeout.html">MonitorMixin::ConditionVariable::Timeout</a>
+  
+    <li><a href="./Psych.html">Psych</a>
+  
+    <li><a href="./Psych/BadAlias.html">Psych::BadAlias</a>
+  
+    <li><a href="./Psych/Exception.html">Psych::Exception</a>
+  
+    <li><a href="./Scanf.html">Scanf</a>
+  
+    <li><a href="./Timeout.html">Timeout</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./TkComm.html">TkComm</a>
+  
+    <li><a href="./TkComm/Tk_CMDTBL.html">TkComm::Tk_CMDTBL</a>
+  
+    <li><a href="./TkComm/Tk_WINDOWS.html">TkComm::Tk_WINDOWS</a>
+  
+    <li><a href="./TkCore.html">TkCore</a>
+  
+    <li><a href="./MultiTkIp.html">TkCore::INTERP</a>
+  
+    <li><a href="./TkCore/Tk_OBJECT_TABLE.html">TkCore::Tk_OBJECT_TABLE</a>
+  
+    <li><a href="./Zip.html">Zip</a>
+  
+    <li><a href="./Zip/ZipEntry.html">Zip::ZipEntry</a>
+  
+    <li><a href="./Zip/ZipEntrySet.html">Zip::ZipEntrySet</a>
+  
+    <li><a href="./Benchmark.html">Benchmark</a>
+  
+    <li><a href="./Benchmark/Tms.html">Benchmark::Tms</a>
+  
+    <li><a href="./DEBUGGER__.html">DEBUGGER__</a>
+  
+    <li><a href="./DEBUGGER__/Context.html">DEBUGGER__::Context</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper::E2MM</a>
+  
+    <li><a href="./File.html">File</a>
+  
+    <li><a href="./File/Stat.html">File::Stat</a>
+  
+    <li><a href="./MultiTkIp.html">MultiTkIp</a>
+  
+    <li><a href="./MultiTkIp/Command_Queue.html">MultiTkIp::Command_Queue</a>
+  
+    <li><a href="./PStore.html">PStore</a>
+  
+    <li><a href="./PStore/Error.html">PStore::Error</a>
+  
+    <li><a href="./RDoc.html">RDoc</a>
+  
+    <li><a href="./RDoc/Error.html">RDoc::Error</a>
+  
+    <li><a href="./Rake.html">Rake</a>
+  
+    <li><a href="./Rake/FileTask.html">Rake::FileTask</a>
+  
+    <li><a href="./Socket.html">Socket</a>
+  
+    <li><a href="./Socket/UDPSource.html">Socket::UDPSource</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./TSort.html">TSort</a>
+  
+    <li><a href="./TSort/Cyclic.html">TSort::Cyclic</a>
+  
+    <li><a href="./Tempfile.html">Tempfile</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./Vector.html">Vector</a>
+  
+    <li><a href="./Vector/ZeroVectorError.html">Vector::ZeroVectorError</a>
+  
+    <li><a href="./WeakRef.html">WeakRef</a>
+  
+    <li><a href="./WeakRef/RefError.html">WeakRef::RefError</a>
+  
+    <li><a href="./Abbrev.html">Abbrev</a>
+  
+    <li><a href="./Addrinfo.html">Addrinfo</a>
+  
+    <li><a href="./Base64.html">Base64</a>
+  
+    <li><a href="./BasicSocket.html">BasicSocket</a>
+  
+    <li><a href="./CGI.html">CGI</a>
+  
+    <li><a href="./CMath.html">CMath</a>
+  
+    <li><a href="./ConditionVariable.html">ConditionVariable</a>
+  
+    <li><a href="./DL.html">DL</a>
+  
+    <li><a href="./Date.html">Date</a>
+  
+    <li><a href="./Delegator.html">Delegator</a>
+  
+    <li><a href="./Dir.html">Dir</a>
+  
+    <li><a href="./ENV.html">ENV</a>
+  
+    <li><a href="./Enumerable.html">Enumerable</a>
+  
+    <li><a href="./Fiddle.html">Fiddle</a>
+  
+    <li><a href="./Find.html">Find</a>
+  
+    <li><a href="./Float.html">Float</a>
+  
+    <li><a href="./Forwardable.html">Forwardable</a>
+  
+    <li><a href="./GServer.html">GServer</a>
+  
+    <li><a href="./Hash.html">Hash</a>
+  
+    <li><a href="./IO.html">IO</a>
+  
+    <li><a href="./IPAddr.html">IPAddr</a>
+  
+    <li><a href="./IPSocket.html">IPSocket</a>
+  
+    <li><a href="./Integer.html">Integer</a>
+  
+    <li><a href="./JSON.html">JSON</a>
+  
+    <li><a href="./Kconv.html">Kconv</a>
+  
+    <li><a href="./Kernel.html">Kernel</a>
+  
+    <li><a href="./MatchData.html">MatchData</a>
+  
+    <li><a href="./Math.html">Math</a>
+  
+    <li><a href="./Matrix.html">Matrix</a>
+  
+    <li><a href="./Module.html">Module</a>
+  
+    <li><a href="./Monitor.html">Monitor</a>
+  
+    <li><a href="./MultiTkIp_OK.html">MultiTkIp_OK</a>
+  
+    <li><a href="./MultiTkIp_PseudoToplevel_Evaluable.html">MultiTkIp_PseudoToplevel_Evaluable</a>
+  
+    <li><a href="./Mutex_m.html">Mutex_m</a>
+  
+    <li><a href="./Numeric.html">Numeric</a>
+  
+    <li><a href="./Observable.html">Observable</a>
+  
+    <li><a href="./Open3.html">Open3</a>
+  
+    <li><a href="./OpenObject.html">OpenObject</a>
+  
+    <li><a href="./OpenStruct.html">OpenStruct</a>
+  
+    <li><a href="./Pathname.html">Pathname</a>
+  
+    <li><a href="./Profiler__.html">Profiler__</a>
+  
+    <li><a href="./ProgressBar.html">ProgressBar</a>
+  
+    <li><a href="./Queue.html">Queue</a>
+  
+    <li><a href="./RSS.html">RSS</a>
+  
+    <li><a href="./Range.html">Range</a>
+  
+    <li><a href="./Rational.html">Rational</a>
+  
+    <li><a href="./RemoteTkIp.html">RemoteTkIp</a>
+  
+    <li><a href="./SOCKSSocket.html">SOCKSSocket</a>
+  
+    <li><a href="./STRING_OR_FAILED_FORMAT.html">STRING_OR_FAILED_FORMAT</a>
+  
+    <li><a href="./SecureRandom.html">SecureRandom</a>
+  
+    <li><a href="./Set.html">Set</a>
+  
+    <li><a href="./Shell.html">Shell</a>
+  
+    <li><a href="./Shellwords.html">Shellwords</a>
+  
+    <li><a href="./SimpleDelegator.html">SimpleDelegator</a>
+  
+    <li><a href="./SingleForwardable.html">SingleForwardable</a>
+  
+    <li><a href="./Singleton.html">Singleton</a>
+  
+    <li><a href="./SizedQueue.html">SizedQueue</a>
+  
+    <li><a href="./SortedSet.html">SortedSet</a>
+  
+    <li><a href="./Struct.html">Struct</a>
+  
+    <li><a href="./Syck.html">Syck</a>
+  
+    <li><a href="./TCPSocket.html">TCPSocket</a>
+  
+    <li><a href="./TclTkIp.html">TclTkIp</a>
+  
+    <li><a href="./TclTkLib.html">TclTkLib</a>
+  
+    <li><a href="./ThreadError.html">ThreadError</a>
+  
+    <li><a href="./Time.html">Time</a>
+  
+    <li><a href="./Tracer.html">Tracer</a>
+  
+    <li><a href="./UDPSocket.html">UDPSocket</a>
+  
+    <li><a href="./WEBrick.html">WEBrick</a>
+  
+    <li><a href="./YAML.html">YAML</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class DEBUGGER__</h1>
+
+  <div id="description" class="description">
+    
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="MUTEX">MUTEX
+        
+        <dd class="description">
+        
+      
+      </dl>
+    </section>
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-break_points" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">break_points</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="break_points-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 744</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">break_points</span>
+  <span class="ruby-ivar">@break_points</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- break_points-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- break_points-method -->
+
+    
+      <div id="method-c-context" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">context</span><span
+            class="method-args">(thread=Thread.current)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="context-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 794</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">context</span>(<span class="ruby-identifier">thread</span>=<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>)
+  <span class="ruby-identifier">c</span> = <span class="ruby-identifier">thread</span>[<span class="ruby-value">:__debugger_data__</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">c</span>
+    <span class="ruby-identifier">thread</span>[<span class="ruby-value">:__debugger_data__</span>] = <span class="ruby-identifier">c</span> = <span class="ruby-constant">Context</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">c</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- context-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- context-method -->
+
+    
+      <div id="method-c-debug_thread_info" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">debug_thread_info</span><span
+            class="method-args">(input, binding)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="debug_thread_info-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 850</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">debug_thread_info</span>(<span class="ruby-identifier">input</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">input</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^l(?:ist)?/</span>
+    <span class="ruby-identifier">make_thread_list</span>
+    <span class="ruby-identifier">thread_list_all</span>
+
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^c(?:ur(?:rent)?)?$/</span>
+    <span class="ruby-identifier">make_thread_list</span>
+    <span class="ruby-identifier">thread_list</span>(<span class="ruby-ivar">@thread_list</span>[<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>])
+
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^(?:sw(?:itch)?\s+)?(\d+)/</span>
+    <span class="ruby-identifier">make_thread_list</span>
+    <span class="ruby-identifier">th</span> = <span class="ruby-identifier">get_thread</span>(<span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>)
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">th</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+      <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;It's the current thread.\n&quot;</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">thread_list</span>(<span class="ruby-ivar">@thread_list</span>[<span class="ruby-identifier">th</span>])
+      <span class="ruby-identifier">context</span>(<span class="ruby-identifier">th</span>).<span class="ruby-identifier">stop_next</span>
+      <span class="ruby-identifier">th</span>.<span class="ruby-identifier">run</span>
+      <span class="ruby-keyword">return</span> <span class="ruby-value">:cont</span>
+    <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^stop\s+(\d+)/</span>
+    <span class="ruby-identifier">make_thread_list</span>
+    <span class="ruby-identifier">th</span> = <span class="ruby-identifier">get_thread</span>(<span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>)
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">th</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+      <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;It's the current thread.\n&quot;</span>
+    <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">th</span>.<span class="ruby-identifier">stop?</span>
+      <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;Already stopped.\n&quot;</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">thread_list</span>(<span class="ruby-ivar">@thread_list</span>[<span class="ruby-identifier">th</span>])
+      <span class="ruby-identifier">context</span>(<span class="ruby-identifier">th</span>).<span class="ruby-identifier">suspend</span>
+    <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^resume\s+(\d+)/</span>
+    <span class="ruby-identifier">make_thread_list</span>
+    <span class="ruby-identifier">th</span> = <span class="ruby-identifier">get_thread</span>(<span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>)
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">th</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+      <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;It's the current thread.\n&quot;</span>
+    <span class="ruby-keyword">elsif</span> <span class="ruby-operator">!</span><span class="ruby-identifier">th</span>.<span class="ruby-identifier">stop?</span>
+      <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;Already running.&quot;</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">thread_list</span>(<span class="ruby-ivar">@thread_list</span>[<span class="ruby-identifier">th</span>])
+      <span class="ruby-identifier">th</span>.<span class="ruby-identifier">run</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- debug_thread_info-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- debug_thread_info-method -->
+
+    
+      <div id="method-c-display" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">display</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="display-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 740</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">display</span>
+  <span class="ruby-ivar">@display</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- display-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- display-method -->
+
+    
+      <div id="method-c-get_thread" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">get_thread</span><span
+            class="method-args">(num)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="get_thread-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 806</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">get_thread</span>(<span class="ruby-identifier">num</span>)
+  <span class="ruby-identifier">th</span> = <span class="ruby-ivar">@thread_list</span>.<span class="ruby-identifier">key</span>(<span class="ruby-identifier">num</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">th</span>
+    <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-node">&quot;No thread ##{num}\n&quot;</span>
+    <span class="ruby-identifier">throw</span> <span class="ruby-value">:debug_error</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">th</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- get_thread-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- get_thread-method -->
+
+    
+      <div id="method-c-interrupt" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">interrupt</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="interrupt-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 802</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">interrupt</span>
+  <span class="ruby-identifier">context</span>(<span class="ruby-ivar">@last_thread</span>).<span class="ruby-identifier">stop_next</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- interrupt-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- interrupt-method -->
+
+    
+      <div id="method-c-make_thread_list" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">make_thread_list</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="make_thread_list-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 837</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">make_thread_list</span>
+  <span class="ruby-identifier">hash</span> = {}
+  <span class="ruby-keyword">for</span> <span class="ruby-identifier">th</span> <span class="ruby-keyword">in</span> <span class="ruby-constant">Thread</span><span class="ruby-operator">::</span><span class="ruby-identifier">list</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-ivar">@thread_list</span>.<span class="ruby-identifier">key?</span> <span class="ruby-identifier">th</span>
+      <span class="ruby-identifier">hash</span>[<span class="ruby-identifier">th</span>] = <span class="ruby-ivar">@thread_list</span>[<span class="ruby-identifier">th</span>]
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-ivar">@max_thread</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+      <span class="ruby-identifier">hash</span>[<span class="ruby-identifier">th</span>] = <span class="ruby-ivar">@max_thread</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@thread_list</span> = <span class="ruby-identifier">hash</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- make_thread_list-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- make_thread_list-method -->
+
+    
+      <div id="method-c-resume" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">resume</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="resume-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 778</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">resume</span>
+  <span class="ruby-constant">MUTEX</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">make_thread_list</span>
+    <span class="ruby-ivar">@thread_list</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">th</span>,<span class="ruby-operator">|</span>
+      <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">th</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+      <span class="ruby-identifier">context</span>(<span class="ruby-identifier">th</span>).<span class="ruby-identifier">clear_suspend</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">waiting</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">th</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">th</span>.<span class="ruby-identifier">run</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">waiting</span>.<span class="ruby-identifier">clear</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-comment"># Schedule other threads to restart as soon as possible.</span>
+  <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">pass</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- resume-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- resume-method -->
+
+    
+      <div id="method-c-set_last_thread" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">set_last_thread</span><span
+            class="method-args">(th)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="set_last_thread-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 762</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">set_last_thread</span>(<span class="ruby-identifier">th</span>)
+  <span class="ruby-ivar">@last_thread</span> = <span class="ruby-identifier">th</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- set_last_thread-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- set_last_thread-method -->
+
+    
+      <div id="method-c-set_trace" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">set_trace</span><span
+            class="method-args">( arg )</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="set_trace-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 752</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">set_trace</span>( <span class="ruby-identifier">arg</span> )
+  <span class="ruby-constant">MUTEX</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">make_thread_list</span>
+    <span class="ruby-keyword">for</span> <span class="ruby-identifier">th</span>, <span class="ruby-keyword">in</span> <span class="ruby-ivar">@thread_list</span>
+      <span class="ruby-identifier">context</span>(<span class="ruby-identifier">th</span>).<span class="ruby-identifier">set_trace</span> <span class="ruby-identifier">arg</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">arg</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- set_trace-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- set_trace-method -->
+
+    
+      <div id="method-c-stdout" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">stdout</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="stdout-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 732</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">stdout</span>
+  <span class="ruby-ivar">@stdout</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- stdout-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- stdout-method -->
+
+    
+      <div id="method-c-stdout-3D" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">stdout=</span><span
+            class="method-args">(s)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="stdout-3D-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 736</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">stdout=</span>(<span class="ruby-identifier">s</span>)
+  <span class="ruby-ivar">@stdout</span> = <span class="ruby-identifier">s</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- stdout-3D-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- stdout-3D-method -->
+
+    
+      <div id="method-c-suspend" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">suspend</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="suspend-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 766</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">suspend</span>
+  <span class="ruby-constant">MUTEX</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">make_thread_list</span>
+    <span class="ruby-keyword">for</span> <span class="ruby-identifier">th</span>, <span class="ruby-keyword">in</span> <span class="ruby-ivar">@thread_list</span>
+      <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">th</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+      <span class="ruby-identifier">context</span>(<span class="ruby-identifier">th</span>).<span class="ruby-identifier">set_suspend</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-comment"># Schedule other threads to suspend as soon as possible.</span>
+  <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">pass</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- suspend-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- suspend-method -->
+
+    
+      <div id="method-c-thread_list" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">thread_list</span><span
+            class="method-args">(num)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="thread_list-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 815</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">thread_list</span>(<span class="ruby-identifier">num</span>)
+  <span class="ruby-identifier">th</span> = <span class="ruby-identifier">get_thread</span>(<span class="ruby-identifier">num</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">th</span> <span class="ruby-operator">==</span> <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+    <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;+&quot;</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot; &quot;</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;%d &quot;</span>, <span class="ruby-identifier">num</span>
+  <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">th</span>.<span class="ruby-identifier">inspect</span>, <span class="ruby-string">&quot;\t&quot;</span>
+  <span class="ruby-identifier">file</span> = <span class="ruby-identifier">context</span>(<span class="ruby-identifier">th</span>).<span class="ruby-identifier">instance_eval</span>{<span class="ruby-ivar">@file</span>}
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>
+    <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">file</span>,<span class="ruby-string">&quot;:&quot;</span>,<span class="ruby-identifier">context</span>(<span class="ruby-identifier">th</span>).<span class="ruby-identifier">instance_eval</span>{<span class="ruby-ivar">@line</span>}
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;\n&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- thread_list-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- thread_list-method -->
+
+    
+      <div id="method-c-thread_list_all" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">thread_list_all</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="thread_list_all-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 831</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">thread_list_all</span>
+  <span class="ruby-keyword">for</span> <span class="ruby-identifier">th</span> <span class="ruby-keyword">in</span> <span class="ruby-ivar">@thread_list</span>.<span class="ruby-identifier">values</span>.<span class="ruby-identifier">sort</span>
+    <span class="ruby-identifier">thread_list</span>(<span class="ruby-identifier">th</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- thread_list_all-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- thread_list_all-method -->
+
+    
+      <div id="method-c-waiting" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">waiting</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="waiting-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 748</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">waiting</span>
+  <span class="ruby-ivar">@waiting</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- waiting-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- waiting-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-break_points" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">break_points</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="break_points-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 106</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">break_points</span>
+  <span class="ruby-constant">DEBUGGER__</span>.<span class="ruby-identifier">break_points</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- break_points-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- break_points-method -->
+
+    
+      <div id="method-i-check_break_points" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">check_break_points</span><span
+            class="method-args">(file, klass, pos, binding, id)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="check_break_points-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 629</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">check_break_points</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">klass</span>, <span class="ruby-identifier">pos</span>, <span class="ruby-identifier">binding</span>, <span class="ruby-identifier">id</span>)
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">empty?</span>
+  <span class="ruby-identifier">n</span> = <span class="ruby-value">1</span>
+  <span class="ruby-keyword">for</span> <span class="ruby-identifier">b</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">break_points</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">0</span>]           <span class="ruby-comment"># valid</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">0</span>    <span class="ruby-comment"># breakpoint</span>
+        <span class="ruby-keyword">if</span> (<span class="ruby-identifier">b</span>[<span class="ruby-value">2</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">file</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">3</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">pos</span>) <span class="ruby-keyword">or</span>
+            (<span class="ruby-identifier">klass</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">2</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">klass</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">3</span>] <span class="ruby-operator">==</span> <span class="ruby-identifier">pos</span>)
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;Breakpoint %d, %s at %s:%s\n&quot;</span>, <span class="ruby-identifier">n</span>, <span class="ruby-identifier">debug_funcname</span>(<span class="ruby-identifier">id</span>), <span class="ruby-identifier">file</span>, <span class="ruby-identifier">pos</span>
+          <span class="ruby-keyword">return</span> <span class="ruby-keyword">true</span>
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-comment"># watchpoint</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">debug_silent_eval</span>(<span class="ruby-identifier">b</span>[<span class="ruby-value">2</span>], <span class="ruby-identifier">binding</span>)
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;Watchpoint %d, %s at %s:%s\n&quot;</span>, <span class="ruby-identifier">n</span>, <span class="ruby-identifier">debug_funcname</span>(<span class="ruby-identifier">id</span>), <span class="ruby-identifier">file</span>, <span class="ruby-identifier">pos</span>
+          <span class="ruby-keyword">return</span> <span class="ruby-keyword">true</span>
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">n</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- check_break_points-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- check_break_points-method -->
+
+    
+      <div id="method-i-context" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">context</span><span
+            class="method-args">(th)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="context-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 114</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">context</span>(<span class="ruby-identifier">th</span>)
+  <span class="ruby-constant">DEBUGGER__</span>.<span class="ruby-identifier">context</span>(<span class="ruby-identifier">th</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- context-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- context-method -->
+
+    
+      <div id="method-i-debug_command" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">debug_command</span><span
+            class="method-args">(file, line, id, binding)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="debug_command-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 220</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">debug_command</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-constant">MUTEX</span>.<span class="ruby-identifier">lock</span>
+  <span class="ruby-keyword">unless</span> <span class="ruby-keyword">defined?</span>(<span class="ruby-identifier">$debugger_restart</span>) <span class="ruby-keyword">and</span> <span class="ruby-identifier">$debugger_restart</span>
+    <span class="ruby-identifier">callcc</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">$debugger_restart</span> = <span class="ruby-identifier">c</span>}
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">set_last_thread</span>(<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>)
+  <span class="ruby-identifier">frame_pos</span> = <span class="ruby-value">0</span>
+  <span class="ruby-identifier">binding_file</span> = <span class="ruby-identifier">file</span>
+  <span class="ruby-identifier">binding_line</span> = <span class="ruby-identifier">line</span>
+  <span class="ruby-identifier">previous_line</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-constant">ENV</span>[<span class="ruby-string">'EMACS'</span>]
+    <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;\0032\0032%s:%d:\n&quot;</span>, <span class="ruby-identifier">binding_file</span>, <span class="ruby-identifier">binding_line</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;%s:%d:%s&quot;</span>, <span class="ruby-identifier">binding_file</span>, <span class="ruby-identifier">binding_line</span>,
+      <span class="ruby-identifier">line_at</span>(<span class="ruby-identifier">binding_file</span>, <span class="ruby-identifier">binding_line</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@frames</span>[<span class="ruby-value">0</span>] = [<span class="ruby-identifier">binding</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>]
+  <span class="ruby-identifier">display_expressions</span>(<span class="ruby-identifier">binding</span>)
+  <span class="ruby-identifier">prompt</span> = <span class="ruby-keyword">true</span>
+  <span class="ruby-keyword">while</span> <span class="ruby-identifier">prompt</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">input</span> = <span class="ruby-identifier">readline</span>(<span class="ruby-string">&quot;(rdb:%d) &quot;</span><span class="ruby-operator">%</span><span class="ruby-identifier">thnum</span>(), <span class="ruby-keyword">true</span>)
+    <span class="ruby-identifier">catch</span>(<span class="ruby-value">:debug_error</span>) <span class="ruby-keyword">do</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">input</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;&quot;</span>
+        <span class="ruby-keyword">next</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">DEBUG_LAST_CMD</span>[<span class="ruby-value">0</span>]
+        <span class="ruby-identifier">input</span> = <span class="ruby-constant">DEBUG_LAST_CMD</span>[<span class="ruby-value">0</span>]
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">input</span>, <span class="ruby-string">&quot;\n&quot;</span>
+      <span class="ruby-keyword">else</span>
+        <span class="ruby-constant">DEBUG_LAST_CMD</span>[<span class="ruby-value">0</span>] = <span class="ruby-identifier">input</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-keyword">case</span> <span class="ruby-identifier">input</span>
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*tr(?:ace)?(?:\s+(on|off))?(?:\s+(all))?$/</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-keyword">defined?</span>( <span class="ruby-node">$2</span> )
+          <span class="ruby-keyword">if</span> <span class="ruby-node">$1</span> <span class="ruby-operator">==</span> <span class="ruby-string">'on'</span>
+            <span class="ruby-identifier">set_trace_all</span> <span class="ruby-keyword">true</span>
+          <span class="ruby-keyword">else</span>
+            <span class="ruby-identifier">set_trace_all</span> <span class="ruby-keyword">false</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">elsif</span> <span class="ruby-keyword">defined?</span>( <span class="ruby-node">$1</span> )
+          <span class="ruby-keyword">if</span> <span class="ruby-node">$1</span> <span class="ruby-operator">==</span> <span class="ruby-string">'on'</span>
+            <span class="ruby-identifier">set_trace</span> <span class="ruby-keyword">true</span>
+          <span class="ruby-keyword">else</span>
+            <span class="ruby-identifier">set_trace</span> <span class="ruby-keyword">false</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">trace?</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;Trace on.\n&quot;</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;Trace off.\n&quot;</span>
+        <span class="ruby-keyword">end</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*b(?:reak)?\s+(?:(.+):)?([^.:]+)$/</span>
+        <span class="ruby-identifier">pos</span> = <span class="ruby-node">$2</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-node">$1</span>
+          <span class="ruby-identifier">klass</span> = <span class="ruby-identifier">debug_silent_eval</span>(<span class="ruby-node">$1</span>, <span class="ruby-identifier">binding</span>)
+          <span class="ruby-identifier">file</span> = <span class="ruby-node">$1</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">pos</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">%r^\d+$/</span>
+          <span class="ruby-identifier">pname</span> = <span class="ruby-identifier">pos</span>
+          <span class="ruby-identifier">pos</span> = <span class="ruby-identifier">pos</span>.<span class="ruby-identifier">to_i</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">pname</span> = <span class="ruby-identifier">pos</span> = <span class="ruby-identifier">pos</span>.<span class="ruby-identifier">intern</span>.<span class="ruby-identifier">id2name</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">push</span> [<span class="ruby-keyword">true</span>, <span class="ruby-value">0</span>, <span class="ruby-identifier">klass</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">file</span>, <span class="ruby-identifier">pos</span>]
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;Set breakpoint %d at %s:%s\n&quot;</span>, <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">size</span>, <span class="ruby-identifier">klass</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">file</span>, <span class="ruby-identifier">pname</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-node">%r^\s*b(?:reak)?\s+(.+)[#.]([^.:]+)$/</span>
+        <span class="ruby-identifier">pos</span> = <span class="ruby-node">$2</span>.<span class="ruby-identifier">intern</span>.<span class="ruby-identifier">id2name</span>
+        <span class="ruby-identifier">klass</span> = <span class="ruby-identifier">debug_eval</span>(<span class="ruby-node">$1</span>, <span class="ruby-identifier">binding</span>)
+        <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">push</span> [<span class="ruby-keyword">true</span>, <span class="ruby-value">0</span>, <span class="ruby-identifier">klass</span>, <span class="ruby-identifier">pos</span>]
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;Set breakpoint %d at %s.%s\n&quot;</span>, <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">size</span>, <span class="ruby-identifier">klass</span>, <span class="ruby-identifier">pos</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*wat(?:ch)?\s+(.+)$/</span>
+        <span class="ruby-identifier">exp</span> = <span class="ruby-node">$1</span>
+        <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">push</span> [<span class="ruby-keyword">true</span>, <span class="ruby-value">1</span>, <span class="ruby-identifier">exp</span>]
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;Set watchpoint %d:%s\n&quot;</span>, <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">size</span>, <span class="ruby-identifier">exp</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*b(?:reak)?$/</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">find</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">b</span><span class="ruby-operator">|</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">0</span>}
+          <span class="ruby-identifier">n</span> = <span class="ruby-value">1</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;Breakpoints:\n&quot;</span>
+          <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">b</span><span class="ruby-operator">|</span>
+            <span class="ruby-keyword">if</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">0</span>] <span class="ruby-keyword">and</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+              <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;  %d %s:%s\n&quot;</span>, <span class="ruby-identifier">n</span>, <span class="ruby-identifier">b</span>[<span class="ruby-value">2</span>], <span class="ruby-identifier">b</span>[<span class="ruby-value">3</span>]
+            <span class="ruby-keyword">end</span>
+            <span class="ruby-identifier">n</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">find</span>{<span class="ruby-operator">|</span><span class="ruby-identifier">b</span><span class="ruby-operator">|</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">1</span>}
+          <span class="ruby-identifier">n</span> = <span class="ruby-value">1</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;\n&quot;</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;Watchpoints:\n&quot;</span>
+          <span class="ruby-keyword">for</span> <span class="ruby-identifier">b</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">break_points</span>
+            <span class="ruby-keyword">if</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">0</span>] <span class="ruby-keyword">and</span> <span class="ruby-identifier">b</span>[<span class="ruby-value">1</span>] <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+              <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;  %d %s\n&quot;</span>, <span class="ruby-identifier">n</span>, <span class="ruby-identifier">b</span>[<span class="ruby-value">2</span>]
+            <span class="ruby-keyword">end</span>
+            <span class="ruby-identifier">n</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">break_points</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;No breakpoints\n&quot;</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;\n&quot;</span>
+        <span class="ruby-keyword">end</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*del(?:ete)?(?:\s+(\d+))?$/</span>
+        <span class="ruby-identifier">pos</span> = <span class="ruby-node">$1</span>
+        <span class="ruby-keyword">unless</span> <span class="ruby-identifier">pos</span>
+          <span class="ruby-identifier">input</span> = <span class="ruby-identifier">readline</span>(<span class="ruby-string">&quot;Clear all breakpoints? (y/n) &quot;</span>, <span class="ruby-keyword">false</span>)
+          <span class="ruby-keyword">if</span> <span class="ruby-identifier">input</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;y&quot;</span>
+            <span class="ruby-keyword">for</span> <span class="ruby-identifier">b</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">break_points</span>
+              <span class="ruby-identifier">b</span>[<span class="ruby-value">0</span>] = <span class="ruby-keyword">false</span>
+            <span class="ruby-keyword">end</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">pos</span> = <span class="ruby-identifier">pos</span>.<span class="ruby-identifier">to_i</span>
+          <span class="ruby-keyword">if</span> <span class="ruby-identifier">break_points</span>[<span class="ruby-identifier">pos</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>]
+            <span class="ruby-identifier">break_points</span>[<span class="ruby-identifier">pos</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>][<span class="ruby-value">0</span>] = <span class="ruby-keyword">false</span>
+          <span class="ruby-keyword">else</span>
+            <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;Breakpoint %d is not defined\n&quot;</span>, <span class="ruby-identifier">pos</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">end</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*disp(?:lay)?\s+(.+)$/</span>
+        <span class="ruby-identifier">exp</span> = <span class="ruby-node">$1</span>
+        <span class="ruby-identifier">display</span>.<span class="ruby-identifier">push</span> [<span class="ruby-keyword">true</span>, <span class="ruby-identifier">exp</span>]
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;%d: &quot;</span>, <span class="ruby-identifier">display</span>.<span class="ruby-identifier">size</span>
+        <span class="ruby-identifier">display_expression</span>(<span class="ruby-identifier">exp</span>, <span class="ruby-identifier">binding</span>)
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*disp(?:lay)?$/</span>
+        <span class="ruby-identifier">display_expressions</span>(<span class="ruby-identifier">binding</span>)
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*undisp(?:lay)?(?:\s+(\d+))?$/</span>
+        <span class="ruby-identifier">pos</span> = <span class="ruby-node">$1</span>
+        <span class="ruby-keyword">unless</span> <span class="ruby-identifier">pos</span>
+          <span class="ruby-identifier">input</span> = <span class="ruby-identifier">readline</span>(<span class="ruby-string">&quot;Clear all expressions? (y/n) &quot;</span>, <span class="ruby-keyword">false</span>)
+          <span class="ruby-keyword">if</span> <span class="ruby-identifier">input</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;y&quot;</span>
+            <span class="ruby-keyword">for</span> <span class="ruby-identifier">d</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">display</span>
+              <span class="ruby-identifier">d</span>[<span class="ruby-value">0</span>] = <span class="ruby-keyword">false</span>
+            <span class="ruby-keyword">end</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">pos</span> = <span class="ruby-identifier">pos</span>.<span class="ruby-identifier">to_i</span>
+          <span class="ruby-keyword">if</span> <span class="ruby-identifier">display</span>[<span class="ruby-identifier">pos</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>]
+            <span class="ruby-identifier">display</span>[<span class="ruby-identifier">pos</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>][<span class="ruby-value">0</span>] = <span class="ruby-keyword">false</span>
+          <span class="ruby-keyword">else</span>
+            <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;Display expression %d is not defined\n&quot;</span>, <span class="ruby-identifier">pos</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">end</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*c(?:ont)?$/</span>
+        <span class="ruby-identifier">prompt</span> = <span class="ruby-keyword">false</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*s(?:tep)?(?:\s+(\d+))?$/</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-node">$1</span>
+          <span class="ruby-identifier">lev</span> = <span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">lev</span> = <span class="ruby-value">1</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-ivar">@stop_next</span> = <span class="ruby-identifier">lev</span>
+        <span class="ruby-identifier">prompt</span> = <span class="ruby-keyword">false</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*n(?:ext)?(?:\s+(\d+))?$/</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-node">$1</span>
+          <span class="ruby-identifier">lev</span> = <span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">lev</span> = <span class="ruby-value">1</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-ivar">@stop_next</span> = <span class="ruby-identifier">lev</span>
+        <span class="ruby-ivar">@no_step</span> = <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">frame_pos</span>
+        <span class="ruby-identifier">prompt</span> = <span class="ruby-keyword">false</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*w(?:here)?$/</span>, <span class="ruby-regexp">%r^\s*f(?:rame)?$/</span>
+        <span class="ruby-identifier">display_frames</span>(<span class="ruby-identifier">frame_pos</span>)
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*l(?:ist)?(?:\s+(.+))?$/</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-keyword">not</span> <span class="ruby-node">$1</span>
+          <span class="ruby-identifier">b</span> = <span class="ruby-identifier">previous_line</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">previous_line</span> <span class="ruby-operator">+</span> <span class="ruby-value">10</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">binding_line</span> <span class="ruby-operator">-</span> <span class="ruby-value">5</span>
+          <span class="ruby-identifier">e</span> = <span class="ruby-identifier">b</span> <span class="ruby-operator">+</span> <span class="ruby-value">9</span>
+        <span class="ruby-keyword">elsif</span> <span class="ruby-node">$1</span> <span class="ruby-operator">==</span> <span class="ruby-string">'-'</span>
+          <span class="ruby-identifier">b</span> = <span class="ruby-identifier">previous_line</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">previous_line</span> <span class="ruby-operator">-</span> <span class="ruby-value">10</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">binding_line</span> <span class="ruby-operator">-</span> <span class="ruby-value">5</span>
+          <span class="ruby-identifier">e</span> = <span class="ruby-identifier">b</span> <span class="ruby-operator">+</span> <span class="ruby-value">9</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">b</span>, <span class="ruby-identifier">e</span> = <span class="ruby-node">$1</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp">%r[-,]/</span>)
+          <span class="ruby-keyword">if</span> <span class="ruby-identifier">e</span>
+            <span class="ruby-identifier">b</span> = <span class="ruby-identifier">b</span>.<span class="ruby-identifier">to_i</span>
+            <span class="ruby-identifier">e</span> = <span class="ruby-identifier">e</span>.<span class="ruby-identifier">to_i</span>
+          <span class="ruby-keyword">else</span>
+            <span class="ruby-identifier">b</span> = <span class="ruby-identifier">b</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">-</span> <span class="ruby-value">5</span>
+            <span class="ruby-identifier">e</span> = <span class="ruby-identifier">b</span> <span class="ruby-operator">+</span> <span class="ruby-value">9</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">previous_line</span> = <span class="ruby-identifier">b</span>
+        <span class="ruby-identifier">display_list</span>(<span class="ruby-identifier">b</span>, <span class="ruby-identifier">e</span>, <span class="ruby-identifier">binding_file</span>, <span class="ruby-identifier">binding_line</span>)
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*up(?:\s+(\d+))?$/</span>
+        <span class="ruby-identifier">previous_line</span> = <span class="ruby-keyword">nil</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-node">$1</span>
+          <span class="ruby-identifier">lev</span> = <span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">lev</span> = <span class="ruby-value">1</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">frame_pos</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">lev</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">frame_pos</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">size</span>
+          <span class="ruby-identifier">frame_pos</span> = <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;At toplevel\n&quot;</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">binding</span>, <span class="ruby-identifier">binding_file</span>, <span class="ruby-identifier">binding_line</span> = <span class="ruby-ivar">@frames</span>[<span class="ruby-identifier">frame_pos</span>]
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">format_frame</span>(<span class="ruby-identifier">frame_pos</span>)
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*down(?:\s+(\d+))?$/</span>
+        <span class="ruby-identifier">previous_line</span> = <span class="ruby-keyword">nil</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-node">$1</span>
+          <span class="ruby-identifier">lev</span> = <span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">lev</span> = <span class="ruby-value">1</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">frame_pos</span> <span class="ruby-operator">-=</span> <span class="ruby-identifier">lev</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">frame_pos</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span>
+          <span class="ruby-identifier">frame_pos</span> = <span class="ruby-value">0</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;At stack bottom\n&quot;</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">binding</span>, <span class="ruby-identifier">binding_file</span>, <span class="ruby-identifier">binding_line</span> = <span class="ruby-ivar">@frames</span>[<span class="ruby-identifier">frame_pos</span>]
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">format_frame</span>(<span class="ruby-identifier">frame_pos</span>)
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*fin(?:ish)?$/</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">frame_pos</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">size</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;\&quot;finish\&quot; not meaningful in the outermost frame.\n&quot;</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-ivar">@finish_pos</span> = <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">frame_pos</span>
+          <span class="ruby-identifier">frame_pos</span> = <span class="ruby-value">0</span>
+          <span class="ruby-identifier">prompt</span> = <span class="ruby-keyword">false</span>
+        <span class="ruby-keyword">end</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*cat(?:ch)?(?:\s+(.+))?$/</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-node">$1</span>
+          <span class="ruby-identifier">excn</span> = <span class="ruby-node">$1</span>
+          <span class="ruby-keyword">if</span> <span class="ruby-identifier">excn</span> <span class="ruby-operator">==</span> <span class="ruby-string">'off'</span>
+            <span class="ruby-ivar">@catch</span> = <span class="ruby-keyword">nil</span>
+            <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;Clear catchpoint.\n&quot;</span>
+          <span class="ruby-keyword">else</span>
+            <span class="ruby-ivar">@catch</span> = <span class="ruby-identifier">excn</span>
+            <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;Set catchpoint %s.\n&quot;</span>, <span class="ruby-ivar">@catch</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-keyword">if</span> <span class="ruby-ivar">@catch</span>
+            <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;Catchpoint %s.\n&quot;</span>, <span class="ruby-ivar">@catch</span>
+          <span class="ruby-keyword">else</span>
+            <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;No catchpoint.\n&quot;</span>
+          <span class="ruby-keyword">end</span>
+        <span class="ruby-keyword">end</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*q(?:uit)?$/</span>
+        <span class="ruby-identifier">input</span> = <span class="ruby-identifier">readline</span>(<span class="ruby-string">&quot;Really quit? (y/n) &quot;</span>, <span class="ruby-keyword">false</span>)
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">input</span> <span class="ruby-operator">==</span> <span class="ruby-string">&quot;y&quot;</span>
+          <span class="ruby-identifier">exit!</span>  <span class="ruby-comment"># exit -&gt; exit!: No graceful way to stop threads...</span>
+        <span class="ruby-keyword">end</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*v(?:ar)?\s+/</span>
+        <span class="ruby-identifier">debug_variable_info</span>(<span class="ruby-node">$'</span>, <span class="ruby-identifier">binding</span>)
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*m(?:ethod)?\s+/</span>
+        <span class="ruby-identifier">debug_method_info</span>(<span class="ruby-node">$'</span>, <span class="ruby-identifier">binding</span>)
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*th(?:read)?\s+/</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-constant">DEBUGGER__</span>.<span class="ruby-identifier">debug_thread_info</span>(<span class="ruby-node">$'</span>, <span class="ruby-identifier">binding</span>) <span class="ruby-operator">==</span> <span class="ruby-value">:cont</span>
+          <span class="ruby-identifier">prompt</span> = <span class="ruby-keyword">false</span>
+        <span class="ruby-keyword">end</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*pp\s+/</span>
+        <span class="ruby-constant">PP</span>.<span class="ruby-identifier">pp</span>(<span class="ruby-identifier">debug_eval</span>(<span class="ruby-node">$'</span>, <span class="ruby-identifier">binding</span>), <span class="ruby-identifier">stdout</span>)
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*p\s+/</span>
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;%s\n&quot;</span>, <span class="ruby-identifier">debug_eval</span>(<span class="ruby-node">$'</span>, <span class="ruby-identifier">binding</span>).<span class="ruby-identifier">inspect</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*r(?:estart)?$/</span>
+        <span class="ruby-identifier">$debugger_restart</span>.<span class="ruby-identifier">call</span>
+
+      <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*h(?:elp)?$/</span>
+        <span class="ruby-identifier">debug_print_help</span>()
+
+      <span class="ruby-keyword">else</span>
+        <span class="ruby-identifier">v</span> = <span class="ruby-identifier">debug_eval</span>(<span class="ruby-identifier">input</span>, <span class="ruby-identifier">binding</span>)
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;%s\n&quot;</span>, <span class="ruby-identifier">v</span>.<span class="ruby-identifier">inspect</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-constant">MUTEX</span>.<span class="ruby-identifier">unlock</span>
+  <span class="ruby-identifier">resume_all</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- debug_command-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- debug_command-method -->
+
+    
+      <div id="method-i-debug_eval" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">debug_eval</span><span
+            class="method-args">(str, binding)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="debug_eval-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 126</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">debug_eval</span>(<span class="ruby-identifier">str</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">str</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span>, <span class="ruby-constant">ScriptError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+    <span class="ruby-identifier">at</span> = <span class="ruby-identifier">eval</span>(<span class="ruby-string">&quot;caller(1)&quot;</span>, <span class="ruby-identifier">binding</span>)
+    <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;%s:%s\n&quot;</span>, <span class="ruby-identifier">at</span>.<span class="ruby-identifier">shift</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">to_s</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp">%r\(eval\):1:(in `.*?':)?/</span>, <span class="ruby-string">''</span>)
+    <span class="ruby-keyword">for</span> <span class="ruby-identifier">i</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">at</span>
+      <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;\tfrom %s\n&quot;</span>, <span class="ruby-identifier">i</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">throw</span> <span class="ruby-value">:debug_error</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- debug_eval-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- debug_eval-method -->
+
+    
+      <div id="method-i-debug_funcname" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">debug_funcname</span><span
+            class="method-args">(id)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="debug_funcname-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 621</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">debug_funcname</span>(<span class="ruby-identifier">id</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-string">&quot;toplevel&quot;</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">id</span>.<span class="ruby-identifier">id2name</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- debug_funcname-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- debug_funcname-method -->
+
+    
+      <div id="method-i-debug_method_info" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">debug_method_info</span><span
+            class="method-args">(input, binding)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="debug_method_info-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 176</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">debug_method_info</span>(<span class="ruby-identifier">input</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">input</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^i(:?nstance)?\s+/</span>
+    <span class="ruby-identifier">obj</span> = <span class="ruby-identifier">debug_eval</span>(<span class="ruby-node">$'</span>, <span class="ruby-identifier">binding</span>)
+
+    <span class="ruby-identifier">len</span> = <span class="ruby-value">0</span>
+    <span class="ruby-keyword">for</span> <span class="ruby-identifier">v</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">methods</span>.<span class="ruby-identifier">sort</span>
+      <span class="ruby-identifier">len</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">v</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">len</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">70</span>
+        <span class="ruby-identifier">len</span> = <span class="ruby-identifier">v</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;\n&quot;</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">v</span>, <span class="ruby-string">&quot; &quot;</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;\n&quot;</span>
+
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">obj</span> = <span class="ruby-identifier">debug_eval</span>(<span class="ruby-identifier">input</span>, <span class="ruby-identifier">binding</span>)
+    <span class="ruby-keyword">unless</span> <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">kind_of?</span> <span class="ruby-constant">Module</span>
+      <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;Should be Class/Module: &quot;</span>, <span class="ruby-identifier">input</span>, <span class="ruby-string">&quot;\n&quot;</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">len</span> = <span class="ruby-value">0</span>
+      <span class="ruby-keyword">for</span> <span class="ruby-identifier">v</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">instance_methods</span>(<span class="ruby-keyword">false</span>).<span class="ruby-identifier">sort</span>
+        <span class="ruby-identifier">len</span> <span class="ruby-operator">+=</span> <span class="ruby-identifier">v</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">len</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">70</span>
+          <span class="ruby-identifier">len</span> = <span class="ruby-identifier">v</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;\n&quot;</span>
+        <span class="ruby-keyword">end</span>
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">v</span>, <span class="ruby-string">&quot; &quot;</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;\n&quot;</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- debug_method_info-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- debug_method_info-method -->
+
+    
+      <div id="method-i-debug_print_help" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">debug_print_help</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="debug_print_help-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 510</span>
+    <span class="ruby-keyword">def</span> <span class="ruby-identifier">debug_print_help</span>
+      <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;Debugger help v.-0.002b
+Commands
+  b[reak] [file:|class:]&lt;line|method&gt;
+  b[reak] [class.]&lt;line|method&gt;
+                             set breakpoint to some position
+  wat[ch] &lt;expression&gt;       set watchpoint to some expression
+  cat[ch] (&lt;exception&gt;|off)  set catchpoint to an exception
+  b[reak]                    list breakpoints
+  cat[ch]                    show catchpoint
+  del[ete][ nnn]             delete some or all breakpoints
+  disp[lay] &lt;expression&gt;     add expression into display expression list
+  undisp[lay][ nnn]          delete one particular or all display expressions
+  c[ont]                     run until program ends or hit breakpoint
+  s[tep][ nnn]               step (into methods) one line or till line nnn
+  n[ext][ nnn]               go over one line or till line nnn
+  w[here]                    display frames
+  f[rame]                    alias for where
+  l[ist][ (-|nn-mm)]         list program, - lists backwards
+                             nn-mm lists given lines
+  up[ nn]                    move to higher frame
+  down[ nn]                  move to lower frame
+  fin[ish]                   return to outer frame
+  tr[ace] (on|off)           set trace mode of current thread
+  tr[ace] (on|off) all       set trace mode of all threads
+  q[uit]                     exit from debugger
+  v[ar] g[lobal]             show global variables
+  v[ar] l[ocal]              show local variables
+  v[ar] i[nstance] &lt;object&gt;  show instance variables of object
+  v[ar] c[onst] &lt;object&gt;     show constants of object
+  m[ethod] i[nstance] &lt;obj&gt;  show methods of object
+  m[ethod] &lt;class|module&gt;    show instance methods of class or module
+  th[read] l[ist]            list all threads
+  th[read] c[ur[rent]]       show current thread
+  th[read] [sw[itch]] &lt;nnn&gt;  switch thread context to nnn
+  th[read] stop &lt;nnn&gt;        stop thread nnn
+  th[read] resume &lt;nnn&gt;      resume thread nnn
+  p expression               evaluate expression and print its value
+  h[elp]                     print this help
+  &lt;everything else&gt;          evaluate
+&quot;</span>
+    <span class="ruby-keyword">end</span></pre>
+          </div><!-- debug_print_help-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- debug_print_help-method -->
+
+    
+      <div id="method-i-debug_silent_eval" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">debug_silent_eval</span><span
+            class="method-args">(str, binding)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="debug_silent_eval-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 139</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">debug_silent_eval</span>(<span class="ruby-identifier">str</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">str</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">StandardError</span>, <span class="ruby-constant">ScriptError</span>
+    <span class="ruby-keyword">nil</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- debug_silent_eval-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- debug_silent_eval-method -->
+
+    
+      <div id="method-i-debug_variable_info" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">debug_variable_info</span><span
+            class="method-args">(input, binding)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="debug_variable_info-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 154</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">debug_variable_info</span>(<span class="ruby-identifier">input</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">input</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*g(?:lobal)?\s*$/</span>
+    <span class="ruby-identifier">var_list</span>(<span class="ruby-identifier">global_variables</span>, <span class="ruby-identifier">binding</span>)
+
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*l(?:ocal)?\s*$/</span>
+    <span class="ruby-identifier">var_list</span>(<span class="ruby-identifier">eval</span>(<span class="ruby-string">&quot;local_variables&quot;</span>, <span class="ruby-identifier">binding</span>), <span class="ruby-identifier">binding</span>)
+
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*i(?:nstance)?\s+/</span>
+    <span class="ruby-identifier">obj</span> = <span class="ruby-identifier">debug_eval</span>(<span class="ruby-node">$'</span>, <span class="ruby-identifier">binding</span>)
+    <span class="ruby-identifier">var_list</span>(<span class="ruby-identifier">obj</span>.<span class="ruby-identifier">instance_variables</span>, <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">instance_eval</span>{<span class="ruby-identifier">binding</span>()})
+
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^\s*c(?:onst(?:ant)?)?\s+/</span>
+    <span class="ruby-identifier">obj</span> = <span class="ruby-identifier">debug_eval</span>(<span class="ruby-node">$'</span>, <span class="ruby-identifier">binding</span>)
+    <span class="ruby-keyword">unless</span> <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">kind_of?</span> <span class="ruby-constant">Module</span>
+      <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;Should be Class/Module: &quot;</span>, <span class="ruby-node">$'</span>, <span class="ruby-string">&quot;\n&quot;</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">var_list</span>(<span class="ruby-identifier">obj</span>.<span class="ruby-identifier">constants</span>, <span class="ruby-identifier">obj</span>.<span class="ruby-identifier">module_eval</span>{<span class="ruby-identifier">binding</span>()})
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- debug_variable_info-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- debug_variable_info-method -->
+
+    
+      <div id="method-i-display" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">display</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="display-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 110</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">display</span>
+  <span class="ruby-constant">DEBUGGER__</span>.<span class="ruby-identifier">display</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- display-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- display-method -->
+
+    
+      <div id="method-i-display_expression" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">display_expression</span><span
+            class="method-args">(exp, binding)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="display_expression-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 565</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">display_expression</span>(<span class="ruby-identifier">exp</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;%s = %s\n&quot;</span>, <span class="ruby-identifier">exp</span>, <span class="ruby-identifier">debug_silent_eval</span>(<span class="ruby-identifier">exp</span>, <span class="ruby-identifier">binding</span>).<span class="ruby-identifier">to_s</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- display_expression-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- display_expression-method -->
+
+    
+      <div id="method-i-display_expressions" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">display_expressions</span><span
+            class="method-args">(binding)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="display_expressions-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 554</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">display_expressions</span>(<span class="ruby-identifier">binding</span>)
+  <span class="ruby-identifier">n</span> = <span class="ruby-value">1</span>
+  <span class="ruby-keyword">for</span> <span class="ruby-identifier">d</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">display</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">d</span>[<span class="ruby-value">0</span>]
+      <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;%d: &quot;</span>, <span class="ruby-identifier">n</span>
+      <span class="ruby-identifier">display_expression</span>(<span class="ruby-identifier">d</span>[<span class="ruby-value">1</span>], <span class="ruby-identifier">binding</span>)
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">n</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- display_expressions-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- display_expressions-method -->
+
+    
+      <div id="method-i-display_frames" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">display_frames</span><span
+            class="method-args">(pos)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="display_frames-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 576</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">display_frames</span>(<span class="ruby-identifier">pos</span>)
+  <span class="ruby-value">0</span>.<span class="ruby-identifier">upto</span>(<span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">n</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">n</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">pos</span>
+      <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;--&gt; &quot;</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-string">&quot;    &quot;</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">print</span> <span class="ruby-identifier">format_frame</span>(<span class="ruby-identifier">n</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- display_frames-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- display_frames-method -->
+
+    
+      <div id="method-i-display_list" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">display_list</span><span
+            class="method-args">(b, e, file, line)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="display_list-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 593</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">display_list</span>(<span class="ruby-identifier">b</span>, <span class="ruby-identifier">e</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>)
+  <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;[%d, %d] in %s\n&quot;</span>, <span class="ruby-identifier">b</span>, <span class="ruby-identifier">e</span>, <span class="ruby-identifier">file</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">lines</span> = <span class="ruby-constant">SCRIPT_LINES__</span>[<span class="ruby-identifier">file</span>] <span class="ruby-keyword">and</span> <span class="ruby-identifier">lines</span> <span class="ruby-operator">!=</span> <span class="ruby-keyword">true</span>
+    <span class="ruby-identifier">b</span>.<span class="ruby-identifier">upto</span>(<span class="ruby-identifier">e</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">n</span><span class="ruby-operator">|</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">n</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">lines</span>[<span class="ruby-identifier">n</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>]
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">n</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">line</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;=&gt; %d  %s\n&quot;</span>, <span class="ruby-identifier">n</span>, <span class="ruby-identifier">lines</span>[<span class="ruby-identifier">n</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>].<span class="ruby-identifier">chomp</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;   %d  %s\n&quot;</span>, <span class="ruby-identifier">n</span>, <span class="ruby-identifier">lines</span>[<span class="ruby-identifier">n</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>].<span class="ruby-identifier">chomp</span>
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;No sourcefile available for %s\n&quot;</span>, <span class="ruby-identifier">file</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- display_list-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- display_list-method -->
+
+    
+      <div id="method-i-excn_handle" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">excn_handle</span><span
+            class="method-args">(file, line, id, binding)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="excn_handle-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 652</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">excn_handle</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">$!</span>.<span class="ruby-identifier">class</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-constant">SystemExit</span>
+    <span class="ruby-identifier">set_trace_func</span> <span class="ruby-keyword">nil</span>
+    <span class="ruby-identifier">exit</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">if</span> <span class="ruby-ivar">@catch</span> <span class="ruby-keyword">and</span> (<span class="ruby-identifier">$!</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">ancestors</span>.<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@catch</span> })
+    <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;%s:%d: `%s' (%s)\n&quot;</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">$!</span>, <span class="ruby-identifier">$!</span>.<span class="ruby-identifier">class</span>
+    <span class="ruby-identifier">fs</span> = <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">size</span>
+    <span class="ruby-identifier">tb</span> = <span class="ruby-identifier">caller</span>(<span class="ruby-value">0</span>)[<span class="ruby-operator">-</span><span class="ruby-identifier">fs</span><span class="ruby-operator">..</span><span class="ruby-value">-1</span>]
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">tb</span>
+      <span class="ruby-keyword">for</span> <span class="ruby-identifier">i</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">tb</span>
+        <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;\tfrom %s\n&quot;</span>, <span class="ruby-identifier">i</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">suspend_all</span>
+    <span class="ruby-identifier">debug_command</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- excn_handle-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- excn_handle-method -->
+
+    
+      <div id="method-i-format_frame" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">format_frame</span><span
+            class="method-args">(pos)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="format_frame-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 587</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">format_frame</span>(<span class="ruby-identifier">pos</span>)
+  <span class="ruby-identifier">_</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span> = <span class="ruby-ivar">@frames</span>[<span class="ruby-identifier">pos</span>]
+  <span class="ruby-identifier">sprintf</span> <span class="ruby-node">&quot;#%d %s:%s%s\n&quot;</span>, <span class="ruby-identifier">pos</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>,
+    (<span class="ruby-identifier">id</span> <span class="ruby-operator">?</span> <span class="ruby-node">&quot;:in `#{id.id2name}'&quot;</span> <span class="ruby-operator">:</span> <span class="ruby-string">&quot;&quot;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- format_frame-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- format_frame-method -->
+
+    
+      <div id="method-i-frame_set_pos" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">frame_set_pos</span><span
+            class="method-args">(file, line)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="frame_set_pos-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 569</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">frame_set_pos</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-ivar">@frames</span>[<span class="ruby-value">0</span>]
+    <span class="ruby-ivar">@frames</span>[<span class="ruby-value">0</span>][<span class="ruby-value">1</span>] = <span class="ruby-identifier">file</span>
+    <span class="ruby-ivar">@frames</span>[<span class="ruby-value">0</span>][<span class="ruby-value">2</span>] = <span class="ruby-identifier">line</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- frame_set_pos-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- frame_set_pos-method -->
+
+    
+      <div id="method-i-line_at" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">line_at</span><span
+            class="method-args">(file, line)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="line_at-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 610</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">line_at</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>)
+  <span class="ruby-identifier">lines</span> = <span class="ruby-constant">SCRIPT_LINES__</span>[<span class="ruby-identifier">file</span>]
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">lines</span>
+    <span class="ruby-keyword">return</span> <span class="ruby-string">&quot;\n&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">lines</span> <span class="ruby-operator">==</span> <span class="ruby-keyword">true</span>
+    <span class="ruby-identifier">line</span> = <span class="ruby-identifier">lines</span>[<span class="ruby-identifier">line</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>]
+    <span class="ruby-keyword">return</span> <span class="ruby-string">&quot;\n&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">line</span>
+    <span class="ruby-keyword">return</span> <span class="ruby-identifier">line</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-string">&quot;\n&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- line_at-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- line_at-method -->
+
+    
+      <div id="method-i-set_last_thread" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">set_last_thread</span><span
+            class="method-args">(th)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="set_last_thread-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 122</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">set_last_thread</span>(<span class="ruby-identifier">th</span>)
+  <span class="ruby-constant">DEBUGGER__</span>.<span class="ruby-identifier">set_last_thread</span>(<span class="ruby-identifier">th</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- set_last_thread-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- set_last_thread-method -->
+
+    
+      <div id="method-i-set_trace" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">set_trace</span><span
+            class="method-args">(arg)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="set_trace-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 98</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">set_trace</span>(<span class="ruby-identifier">arg</span>)
+  <span class="ruby-ivar">@trace</span> = <span class="ruby-identifier">arg</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- set_trace-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- set_trace-method -->
+
+    
+      <div id="method-i-set_trace_all" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">set_trace_all</span><span
+            class="method-args">(arg)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="set_trace_all-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 118</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">set_trace_all</span>(<span class="ruby-identifier">arg</span>)
+  <span class="ruby-constant">DEBUGGER__</span>.<span class="ruby-identifier">set_trace</span>(<span class="ruby-identifier">arg</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- set_trace_all-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- set_trace_all-method -->
+
+    
+      <div id="method-i-stdout" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">stdout</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="stdout-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 102</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">stdout</span>
+  <span class="ruby-constant">DEBUGGER__</span>.<span class="ruby-identifier">stdout</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- stdout-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- stdout-method -->
+
+    
+      <div id="method-i-thnum" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">thnum</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="thnum-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 211</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">thnum</span>
+  <span class="ruby-identifier">num</span> = <span class="ruby-constant">DEBUGGER__</span>.<span class="ruby-identifier">instance_eval</span>{<span class="ruby-ivar">@thread_list</span>[<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>]}
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">num</span>
+    <span class="ruby-constant">DEBUGGER__</span>.<span class="ruby-identifier">make_thread_list</span>
+    <span class="ruby-identifier">num</span> = <span class="ruby-constant">DEBUGGER__</span>.<span class="ruby-identifier">instance_eval</span>{<span class="ruby-ivar">@thread_list</span>[<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>]}
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">num</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- thnum-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- thnum-method -->
+
+    
+      <div id="method-i-trace-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">trace?</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="trace-3F-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 94</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">trace?</span>
+  <span class="ruby-ivar">@trace</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- trace-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- trace-3F-method -->
+
+    
+      <div id="method-i-trace_func" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">trace_func</span><span
+            class="method-args">(event, file, line, id, binding, klass)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="trace_func-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 672</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">trace_func</span>(<span class="ruby-identifier">event</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>, <span class="ruby-identifier">binding</span>, <span class="ruby-identifier">klass</span>)
+  <span class="ruby-constant">Tracer</span>.<span class="ruby-identifier">trace_func</span>(<span class="ruby-identifier">event</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>, <span class="ruby-identifier">binding</span>, <span class="ruby-identifier">klass</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">trace?</span>
+  <span class="ruby-identifier">context</span>(<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>).<span class="ruby-identifier">check_suspend</span>
+  <span class="ruby-ivar">@file</span> = <span class="ruby-identifier">file</span>
+  <span class="ruby-ivar">@line</span> = <span class="ruby-identifier">line</span>
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">event</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-string">'line'</span>
+    <span class="ruby-identifier">frame_set_pos</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>)
+    <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@no_step</span> <span class="ruby-keyword">or</span> <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@no_step</span>
+      <span class="ruby-ivar">@stop_next</span> <span class="ruby-operator">-=</span> <span class="ruby-value">1</span>
+      <span class="ruby-ivar">@stop_next</span> = <span class="ruby-value">-1</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@stop_next</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span>
+    <span class="ruby-keyword">elsif</span> <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-ivar">@no_step</span>
+      <span class="ruby-ivar">@stop_next</span> = <span class="ruby-value">0</span>          <span class="ruby-comment"># break here before leaving...</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-comment"># nothing to do. skipped.</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-ivar">@stop_next</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span> <span class="ruby-keyword">or</span> <span class="ruby-identifier">check_break_points</span>(<span class="ruby-identifier">file</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">binding</span>, <span class="ruby-identifier">id</span>)
+      <span class="ruby-ivar">@no_step</span> = <span class="ruby-keyword">nil</span>
+      <span class="ruby-identifier">suspend_all</span>
+      <span class="ruby-identifier">debug_command</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>, <span class="ruby-identifier">binding</span>)
+    <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">when</span> <span class="ruby-string">'call'</span>
+    <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">unshift</span> [<span class="ruby-identifier">binding</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>]
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">check_break_points</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">klass</span>, <span class="ruby-identifier">id</span>.<span class="ruby-identifier">id2name</span>, <span class="ruby-identifier">binding</span>, <span class="ruby-identifier">id</span>)
+      <span class="ruby-identifier">suspend_all</span>
+      <span class="ruby-identifier">debug_command</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>, <span class="ruby-identifier">binding</span>)
+    <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">when</span> <span class="ruby-string">'c-call'</span>
+    <span class="ruby-identifier">frame_set_pos</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>)
+
+  <span class="ruby-keyword">when</span> <span class="ruby-string">'class'</span>
+    <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">unshift</span> [<span class="ruby-identifier">binding</span>, <span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>]
+
+  <span class="ruby-keyword">when</span> <span class="ruby-string">'return'</span>, <span class="ruby-string">'end'</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-ivar">@finish_pos</span>
+      <span class="ruby-ivar">@stop_next</span> = <span class="ruby-value">1</span>
+      <span class="ruby-ivar">@finish_pos</span> = <span class="ruby-value">0</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-ivar">@frames</span>.<span class="ruby-identifier">shift</span>
+
+  <span class="ruby-keyword">when</span> <span class="ruby-string">'raise'</span>
+    <span class="ruby-identifier">excn_handle</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">line</span>, <span class="ruby-identifier">id</span>, <span class="ruby-identifier">binding</span>)
+
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@last_file</span> = <span class="ruby-identifier">file</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- trace_func-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- trace_func-method -->
+
+    
+      <div id="method-i-var_list" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">var_list</span><span
+            class="method-args">(ary, binding)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="var_list-source">
+            <pre><span class="ruby-comment"># File rake/lib/debug.rb, line 147</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">var_list</span>(<span class="ruby-identifier">ary</span>, <span class="ruby-identifier">binding</span>)
+  <span class="ruby-identifier">ary</span>.<span class="ruby-identifier">sort!</span>
+  <span class="ruby-keyword">for</span> <span class="ruby-identifier">v</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">ary</span>
+    <span class="ruby-identifier">stdout</span>.<span class="ruby-identifier">printf</span> <span class="ruby-string">&quot;  %s =&gt; %s\n&quot;</span>, <span class="ruby-identifier">v</span>, <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">v</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-identifier">binding</span>).<span class="ruby-identifier">inspect</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- var_list-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- var_list-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

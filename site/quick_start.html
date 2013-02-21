@@ -1,0 +1,234 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'>
+    <title>buildr &mdash; Quick Start</title>
+    <style type='text/css'>
+      @import 'css/default.css';
+      @import 'css/syntax.css';
+    </style>
+    <style media='print' type='text/css'>
+      @import 'css/print.css';
+    </style>
+    <meta content='Official Buildr documentation from the people in the know' name='subject'>
+    <link href='images/favicon.png' rel='shortcut icon'>
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <a href='http://buildr.apache.org/' title="Build like you code"><img alt='buildr' src='images/buildr.png'></a>
+        <div class='tagline'>Build like you code</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>Start Here
+            <ol class="toc">
+              <li><a href='index.html'>Welcome</a></li>
+              <li><a href='quick_start.html'>Quick Start</a></li>
+              <li><a href='installing.html'>Installing & Running</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Index'>Community Wiki</a></li>
+            </ol>
+          </li>
+          <li>Using Buildr
+            <ol class="toc">
+              <li><a href='buildr.pdf'>This Guide (PDF)</a></li>
+              <li><a href='projects.html'>Projects</a></li>
+              <li><a href='building.html'>Building</a></li>
+              <li><a href='artifacts.html'>Artifacts</a></li>
+              <li><a href='packaging.html'>Packaging</a></li>
+              <li><a href='testing.html'>Testing</a></li>
+              <li><a href='releasing.html'>Releasing</a></li>
+              <li><a href='settings_profiles.html'>Settings/Profiles</a></li>
+              <li><a href='languages.html'>Languages</a></li>
+              <li><a href='more_stuff.html'>More Stuff</a></li>
+              <li><a href='extending.html'>Extending Buildr</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Buildr+HowTos'>How-Tos</a></li>
+            </ol>
+          </li>
+          <li>Reference
+            <ol class="toc">
+              <li><a href='rdoc'>API</a></li>
+              <li><a href='http://docs.rubyrake.org'>Rake</a></li>
+              <li><a href='http://antwrap.rubyforge.org'>Antwrap</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Common+Problems+and+Solutions'>Troubleshooting</a></li>
+            </ol>
+          </li>
+          <li>Get Involved
+            <ol class="toc">
+              <li><a href='download.html'>Download</a></li>
+              <li><a href='mailing_lists.html'>Mailing Lists</a></li>
+              <li><a href='http://www.twitter.com/buildr'>Twitter</a></li>
+              <li><a href='http://issues.apache.org/jira/browse/Buildr'>Issues/Bugs</a></li>
+              <li><a href='https://builds.apache.org/view/A-F/view/Buildr'>CI Jobs</a></li>
+              <li><a href='contributing.html'>Contributing</a></li>
+            </ol>
+          </li>
+          <li>
+            <form action='http://www.google.com/cse' id='searchbox_003673095760649043902:ogcgrzu0l2y'>
+              <input name='cx' type='hidden' value='003673095760649043902:ogcgrzu0l2y'>
+              <input name='cof' type='hidden' value='FORID:0'>
+              <input name='q' size='20' type='text'>
+              <input name='sa' type='submit' value='Search'>
+              <img alt='Google Custom Search' src='http://www.google.com/coop/images/google_custom_search_smnar.gif'>
+            </form>
+          </li>
+          <li>The Buildr Book
+            <p><a href='http://www.amazon.com/Buildr/dp/1442160942/'><img src='images/1442160941-frontcover.jpg' style='width:120px'></a></p>
+            <p>Based on the Buildr documentation, available from <a href='http://www.amazon.com/Buildr/dp/1442160942/'>Amazon</a> and
+            <a href='http://www.createspace.com/3382199'>CreateSpace</a></p>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1 id='quick start'>Quick Start</h1>
+        <ol class="toc"><li><a href="#first-project">Your First Project</a></li><li><a href="#dependencies">Dependencies</a></li><li><a href="#testing">Testing</a></li><li><a href="#custom-tasks">Custom Tasks</a></li><li><a href="#summary">Summary</a></li></ol>
+        <p>This quick start guide is meant to be a <em>very</em> simple introduction to Buildr and its most basic concepts.  However, despite its basic level, we will still cover most of the concepts you will ever need to be productive with Buildr.  We will leave out some important things (like <a href="projects.html">sub-projects</a>), and we will over-simplify some other concepts (such as <a href="artifacts.html">artifacts</a>).  Nevertheless, most Buildr projects never need to go beyond the techniques contained within these pages.</p>
+<p><strong>No knowledge of Ruby is assumed.</strong>  Buildr is designed to be a very intuitive, very easy-to-use tool.  You can create buildfiles which describe incredibly intricate projects, write custom tasks which do things far beyond Ant, and still never need to pick up more than a smattering of Ruby syntax.  With that said, if you do know Ruby, Buildr&#8217;s <span class="caps">DSL</span> will seem very natural and welcoming.  We do assume that you have already <a href="installing.html">downloaded and installed</a> Buildr and are ready to put the tool to good use.</p>
+<h2 id="first-project">Your First Project</h2>
+<p>Much like Maven, Buildr is oriented around projects and tasks.  You define your project in a concise, declarative fashion and most common tasks (such as compilation and testing) will be made available to you &#8220;at no extra charge&#8221;.  Most of the project definition is contained within the <em>buildfile</em> &#8212; or <em>Buildfile</em>, if you&#8217;re really in love with the Make convention &#8212; a single file sitting at the root of your project.  A project definition does not need to be any more complicated than the following:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span>
+</code></pre>
+</div>
+<h3>Compiling</h3>
+<p>Of course, this isn&#8217;t really giving Buildr much information.  What it can&#8217;t learn from the buildfile, Buildr will figure out by inspecting your directory structure.  Java sources are expected to exist within the <code>src/main/java/</code> directory.  If Buildr finds these sources, it will automatically configure the compilation to source that directory, depositing the results in the <code>target/classes/</code> directory (all under the project directory of course).  We can run this compilation using the following command:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr compile
+</code></pre>
+</div>
+<p>Information about the classpath and dependencies is described <a href="#dependencies">later on</a>.</p>
+<p class="tip">By default, Buildr projects assume the Java language and the <code>src/main/java/</code> source directory.  You can also have projects in the Scala or Groovy language (both languages support joint compilation with Java).  To use Scala, place your <code>.scala</code> files in the <code>src/main/scala/</code> directory and include the following invocation at the head of your buildfile: <code>require 'buildr/scala'</code>  Similarly, Groovy expects sources in the <code>src/main/groovy/</code> directory and necessitates <code>require 'buildr/groovy'</code> (see <a href="languages.html">languages</a> for more information).</p>
+<p>The <code>compile</code> task will also detect <em>any</em> files which exist under the <code>src/main/resources/</code> directory.  These resources are copied verbatim to the <code>target/resources/</code> directory as part of the compilation task.  Buildr also performs some basic change detection to minimize compilation.  If your source files haven&#8217;t changed since the last compile, then they will not be recompiled.</p>
+<h3>Packaging</h3>
+<p>At some point, we&#8217;re going to want to wrap up our classes and produce a single <span class="caps">JAR</span> file for distribution.  Buildr can certainly help us with this, but we are going to need to provide it with a little bit more information.  Specifically, we need to say the type of package to produce (e.g. <code>:jar</code>, <code>:war</code>, etc) as well as the current version of our project.  This information is placed within the buildfile:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;0.1.0&#39;</span>
+  <span class="n">package</span> <span class="ss">:jar</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>The <code>project.version</code> attribute can be any value you like.  Even non-numeric versions are perfectly acceptable (e.g. <code>'ikj-0.3.1-E'</code>).  This version &#8212; coupled with the packaging information &#8212; will be used to generate a <span class="caps">JAR</span> file: <code>killer-app-0.1.0.jar</code>.  As would be expected, this file is placed within the <code>target/</code> directory when the following command is run:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr package
+</code></pre>
+</div>
+<p>The <code>package</code> task depends upon the <code>compile</code> task, so if a rebuild is necessary prior to the creation of the <span class="caps">JAR</span>, Buildr will see to it.</p>
+<p>We can also chain tasks together in a single invocation.  For example, we may want to clean all of the old compilation results prior to recompiling and generating a packaged result:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr clean package
+</code></pre>
+</div>
+<p>The <code>clean</code> task simply removes the <code>target/</code> directory, effectively wiping out any compilation results like class files or resources.</p>
+<h3>Directory Structure</h3>
+<p>As you may have noticed, Buildr does have some default notions about what a project should look like and how it should be organized.  We think that these defaults are quite nice and make for a more navigable project.  However, we do understand that not all projects are exactly alike.  Buildr&#8217;s <a href="extending.html#layouts">layouts</a> make it possible for any project to easily change these defaults.  For example, this would allow you to easily migrate a project that had been based on a different directory structure, such as the <code>src/</code> and <code>bin/</code> convention often used by Ant.</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>So far, we have seen how Buildr can automatically infer what amounts to dozens of lines of <code>build.xml</code> contents, all based on a buildfile and a directory structure.  However, the best is yet to come.  Buildr also provides Maven-style dependency management (but without the long loading times!).  In other words, you specify each dependent library using a string descriptor and Buildr figures out how to download and configure your classpath (the library descriptors are just a Ruby array, therefore they are separated by commas (<code>,</code>)).  You must specify at least one remote repository so that Buildr knows from where to download these libraries.  For example, we can configure our project to reference the <a href="http://commons.apache.org/cli/">Apache Commons <span class="caps">CLI</span></a> library and download libraries from the Ibiblio repository:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">repositories</span><span class="o">.</span><span class="n">remote</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;http://www.ibiblio.org/maven2&#39;</span>
+
+<span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;0.1.0&#39;</span>
+  <span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="s1">&#39;commons-cli:commons-cli:jar:1.2&#39;</span>
+  <span class="n">package</span> <span class="ss">:jar</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>This sort of dependency declaration should look quite familiar if you are at all familiar with Maven.  The general format for an artifact descriptor is <em>groupId:artifactId:packageType:version</em>.  Any Maven artifacts included in this fashion will be retrieved from the <a href="artifacts.html#repositories">list of remote repositories</a> (in this case, Ibiblio) and installed in your local repository at <code>~/.m2/repository/</code>.</p>
+<p class="tip">You can search the global repository of artifacts at sites like <a href="http://www.mvnbrowser.com">MvnBrowser</a>.  Simply enter the name of the library you are looking for, and the search should pull up the groupId, artifactId and a list of available versions.</p>
+<p>Unfortunately, not all libraries are quite as simple as Commons <span class="caps">CLI</span>.  Many libraries (such as Apache Wicket) have dependencies of their own.  While we may be able to <em>compile</em> against Apache Wicket without these extra libraries on our classpath, we cannot actually <em>run</em> our application without its transitive dependencies. To avoid tracking down each of these dependencies and adding them manually, we can simply use the <code>transitive</code> directive (this is how Maven behaves by default):</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">repositories</span><span class="o">.</span><span class="n">remote</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;http://www.ibiblio.org/maven2&#39;</span>
+
+<span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;0.1.0&#39;</span>
+  <span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="n">transitive</span><span class="p">(</span><span class="s1">&#39;org.apache.wicket:wicket:jar:1.4-rc6&#39;</span><span class="p">)</span>
+  <span class="n">package</span> <span class="ss">:jar</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>The <code>compile.with</code> property accepts a full array of comma-separated artifacts, making it possible to specify any number of dependencies as necessary.  Of course, such a long list of verbose string descriptors could get very tiresome and messy.  For this reason, it is conventional to assign each dependency to a constant (e.g. <code>WICKET</code>) which is declared just above the project in the buildfile and passed to <code>compile.with</code> in a clean, easy-to-read style:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">repositories</span><span class="o">.</span><span class="n">remote</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;http://www.ibiblio.org/maven2&#39;</span>
+
+<span class="no">WICKET</span> <span class="o">=</span> <span class="n">transitive</span><span class="p">(</span><span class="s1">&#39;org.apache.wicket:wicket:jar:1.4-rc6&#39;</span><span class="p">)</span>
+<span class="no">SLF4J</span> <span class="o">=</span> <span class="s1">&#39;org.slf4j:slf4j-jdk14:jar:1.5.8&#39;</span>
+
+<span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;0.1.0&#39;</span>
+  <span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="no">WICKET</span><span class="p">,</span> <span class="no">SLF4J</span>
+  <span class="n">package</span> <span class="ss">:jar</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>Unfortunate as it may seem, not all libraries are available in Maven repositories.  While most of the major libraries (e.g. Hibernate, Spring, etc) are kept updated by intrepid volunteers, some of the more obscure frameworks are left out in the cold.  An example of one such framework is <a href="http://www.snaq.net/java/DBPool">DBPool</a>, a very fast connection pool designed to integrate with <span class="caps">JDBC</span>.  However, like most Java libraries, DBPool does provide a zip archive which contains the <span class="caps">JAR</span> file, as well as some documentation and perhaps a license or two.</p>
+<p>Almost magically, we can instruct Buildr to get the DBPool artifact from this <span class="caps">URL</span>.  Buildr will treat this download just like any other artifact, retrieving it when requried by the <code>compile</code> task.  However, unlike a normal Maven artifact, Buildr will do some extra processing once the download is complete.  It will actually dig into the downloaded archive, detect and extract the <span class="caps">JAR</span> file, installing it into the local repository just like any other artifact:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">DBPOOL</span> <span class="o">=</span> <span class="s1">&#39;net.snaq:dbpool:jar:4.8.3&#39;</span>
+<span class="n">download</span> <span class="n">artifact</span><span class="p">(</span><span class="no">DBPOOL</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="s1">&#39;http://www.snaq.net/java/DBPool/DBPool_v4.8.3.zip&#39;</span>
+
+<span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="s1">&#39;0.1.0&#39;</span>
+  <span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="no">DBPool</span>
+  <span class="n">package</span> <span class="ss">:jar</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>This is one area where Buildr&#8217;s dependency management vastly excedes Maven&#8217;s.  With Maven, you would have to install the DBPool dependency manually.  Buildr&#8217;s auto-magical download and extraction keeps the dependency definitions centralized within the buildfile, available to your entire team and automatically resolved as needed by the compilation tasks.</p>
+<h2 id="testing">Testing</h2>
+<p>Buildr supports auto-magical integration with a number of mainstream testing frameworks.  For Java, this includes the ubiquitus JUnit4, as well as TestNG and a number of others.  Scala supports Specs and ScalaTest, while Groovy supports EasyB.  Configuration is as simple as placing your test sources in the appropriate directory.  In the case of JUnit or TestNG, this would be <code>src/test/java/</code>.  Once these tests are in place, we can run them using the <code>test</code> task:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr <span class="nb">test</span>
+</code></pre>
+</div>
+<p>When the <code>test</code> task runs, it will ensure that your main sources are compiled, as well as the tests themselves.  In the case of JUnit4, test classes are auto-detected based on which base class they extend (<code>TestCase</code>).  These tests will be invoked using the special test classpath.  This classpath includes all of the dependencies passed to <code>compile.with</code> along with the dependencies required for testing.  Thus, Buildr will actually go out and download JUnit 4.5 (if necessary) and place that <span class="caps">JAR</span> on the classpath in order to run your tests.  It is also possible to add artifacts specifically required for testing.  So, if your tests make use of the Commons Collections library, but your main sources do not, you can include that dependency only for the tests by using the <code>test.with</code> property.  This functions identically to <code>compile.with</code>:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;0.1.0&#39;</span>
+  <span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="s1">&#39;commons-cli:commons-cli:jar:1.2&#39;</span>
+  <span class="nb">test</span><span class="o">.</span><span class="n">with</span> <span class="s1">&#39;commons-collections:commons-collections:jar:3.2&#39;</span>
+  <span class="n">package</span> <span class="ss">:jar</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>Of course, not everyone <em>likes</em> JUnit4.  As mentioned previously, Buildr supports a number of test frameworks.  It is possible to use TestNG instead of JUnit4 by setting the <code>test.using</code> property to <code>:testng</code>:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;0.1.0&#39;</span>
+  <span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="s1">&#39;commons-cli:commons-cli:jar:1.2&#39;</span>
+  <span class="nb">test</span><span class="o">.</span><span class="n">with</span> <span class="s1">&#39;commons-collections:commons-collections:jar:3.2&#39;</span>
+  <span class="nb">test</span><span class="o">.</span><span class="n">using</span> <span class="ss">:testng</span>
+  <span class="n">package</span> <span class="ss">:jar</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>Note that only one test framework per-project may be used.  This may seem like an obvious restriction given that both frameworks introduced so far have used the same directory, but other frameworks such as Specs and EasyB do not follow the same convention.  In cases of ambiguity (for example, when tests are present in both <code>src/test/java/</code> <em>and</em> <code>src/spec/scala/</code>), only one test framework will be chosen, but this choice is not well-defined.  When in doubt, explicitly specify the test framework with the <code>test.using</code> property.  This overrides Buildr&#8217;s auto-detection and ensures sane behavior.</p>
+<p>Other test frameworks are documented <a href="testing.html">here</a> and <a href="languages.html">here</a>.</p>
+<h2 id="custom-tasks">Custom Tasks</h2>
+<p>If there is one area in which Buildr excels, it is defining custom tasks.  This is something which is notoriously difficult in both Ant and Maven, often requiring separate Java plugins and mountains of code simply to perform basic tasks.  For example, let&#8217;s imagine that we wanted to define a <code>run</code> task which would compile and run our &#8220;killer-app&#8221; project.  This is a simple matter of invoking the <code>java</code> command against our main class:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="s1">&#39;0.1.0&#39;</span>
+  <span class="n">package</span> <span class="ss">:jar</span>
+
+  <span class="n">task</span> <span class="ss">:run</span> <span class="o">=&gt;</span> <span class="ss">:compile</span> <span class="k">do</span>
+    <span class="nb">system</span> <span class="s1">&#39;java -cp target/classes org.apache.killer.Main&#39;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>This code defines a new task, <code>run</code>, which depends upon the <code>compile</code> task.  This task only performs a single operation: it invokes the <code>system</code> method, passing the relevant command as a string.  Note that the <code>system</code> method documentation may be found <a href="http://www.ruby-doc.org/core/classes/Kernel.html#M005971">here</a>.  Tasks use real Ruby (actually, the entire buildfile is real Ruby too), so if you are familiar with that language, then you should be right at home writing custom tasks in Buildr.  We can invoke this task in the following way:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr killer-app:run
+</code></pre>
+</div>
+<p>This works, but it&#8217;s clumsy.  The reason we had to give the &#8220;<code>killer-app:</code>&#8221; prefix is because we defined the <code>run</code> task <em>within</em> our project, rather than outside of the <code>define</code> block.  However, if we define <code>run</code> outside of the project, then we don&#8217;t really have access to the <code>compile</code> task (which is project-specific).  The solution here is a bit of magic known as <code>local_task</code>.  This is how tasks like <code>compile</code> and <code>test</code>, which are technically project-specific (think: instance methods) can be invoked without the fully-qualified project name:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">Project</span><span class="o">.</span><span class="n">local_task</span> <span class="ss">:run</span>
+
+<span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="s1">&#39;0.1.0&#39;</span>
+
+  <span class="n">package</span> <span class="ss">:jar</span>
+
+  <span class="n">task</span> <span class="ss">:run</span> <span class="o">=&gt;</span> <span class="ss">:compile</span> <span class="k">do</span>
+    <span class="nb">system</span> <span class="s1">&#39;java -cp target/classes org.apache.killer.Main&#39;</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>Now, we can invoke <code>run</code> exactly the way we want, with a minimum of wasted characters:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr run
+</code></pre>
+</div>
+<h2 id="summary">Summary</h2>
+<p>As long as this guide was, we have barely even scratched the surface of Buildr&#8217;s true power.  This was meant only to get you up and running as quickly as possible, exploiting some of Buildr&#8217;s unique features to ease your build process.  For more comprehensive documentation, start reading about <a href="projects.html">projects in Buildr</a> and work your way from there.</p>
+      </div>
+      <div id='footer'>Copyright &copy; 2007-2010 The Apache Software Foundation</div>
+    </div>
+  </body>
+</html>

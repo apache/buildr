@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class PStore - buildr</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>rake/lib/pstore.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link"><a href="Object.html">Object</a>
+  
+</nav>
+
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-new">::new</a>
+    
+    <li><a href="#method-i-5B-5D">#[]</a>
+    
+    <li><a href="#method-i-5B-5D-3D">#[]=</a>
+    
+    <li><a href="#method-i-abort">#abort</a>
+    
+    <li><a href="#method-i-commit">#commit</a>
+    
+    <li><a href="#method-i-delete">#delete</a>
+    
+    <li><a href="#method-i-fetch">#fetch</a>
+    
+    <li><a href="#method-i-path">#path</a>
+    
+    <li><a href="#method-i-root-3F">#root?</a>
+    
+    <li><a href="#method-i-roots">#roots</a>
+    
+    <li><a href="#method-i-transaction">#transaction</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./CHANGELOG.html">CHANGELOG</a>
+  
+    <li class="file"><a href="./LICENSE.html">LICENSE</a>
+  
+    <li class="file"><a href="./NOTICE.html">NOTICE</a>
+  
+    <li class="file"><a href="./README_rdoc.html">README</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./Buildr.html">Buildr</a>
+  
+    <li><a href="./Buildr/ActsAsArtifact.html">Buildr::ActsAsArtifact</a>
+  
+    <li><a href="./Buildr/Ant.html">Buildr::Ant</a>
+  
+    <li><a href="./Buildr/Apt.html">Buildr::Apt</a>
+  
+    <li><a href="./Buildr/ArchiveTask.html">Buildr::ArchiveTask</a>
+  
+    <li><a href="./Buildr/ArchiveTask/Merge.html">Buildr::ArchiveTask::Merge</a>
+  
+    <li><a href="./Buildr/Artifact.html">Buildr::Artifact</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace.html">Buildr::ArtifactNamespace</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace/ArtifactRequirement.html">Buildr::ArtifactNamespace::ArtifactRequirement</a>
+  
+    <li><a href="./Buildr/ArtifactSearch.html">Buildr::ArtifactSearch</a>
+  
+    <li><a href="./Buildr/Build.html">Buildr::Build</a>
+  
+    <li><a href="./Buildr/CC.html">Buildr::CC</a>
+  
+    <li><a href="./Buildr/CCTask.html">Buildr::CCTask</a>
+  
+    <li><a href="./Buildr/Checks.html">Buildr::Checks</a>
+  
+    <li><a href="./Buildr/Checks/Expectation.html">Buildr::Checks::Expectation</a>
+  
+    <li><a href="./Buildr/Clojure.html">Buildr::Clojure</a>
+  
+    <li><a href="./Buildr/Cobertura.html">Buildr::Cobertura</a>
+  
+    <li><a href="./Buildr/Cobertura/CoberturaCheck.html">Buildr::Cobertura::CoberturaCheck</a>
+  
+    <li><a href="./Buildr/Compile.html">Buildr::Compile</a>
+  
+    <li><a href="./Buildr/CompileTask.html">Buildr::CompileTask</a>
+  
+    <li><a href="./Buildr/Compiler.html">Buildr::Compiler</a>
+  
+    <li><a href="./Buildr/Compiler/Ecj.html">Buildr::Compiler::Ecj</a>
+  
+    <li><a href="./Buildr/Compiler/ExternalJavac.html">Buildr::Compiler::ExternalJavac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Compiler::Javac</a>
+  
+    <li><a href="./Buildr/ConcatTask.html">Buildr::ConcatTask</a>
+  
+    <li><a href="./Buildr/Doc.html">Buildr::Doc</a>
+  
+    <li><a href="./Buildr/Doc/Base.html">Buildr::Doc::Base</a>
+  
+    <li><a href="./Buildr/Doc/DocTask.html">Buildr::Doc::DocTask</a>
+  
+    <li><a href="./Buildr/Doc/Groovydoc.html">Buildr::Doc::Groovydoc</a>
+  
+    <li><a href="./Buildr/Doc/GroovydocDefaults.html">Buildr::Doc::GroovydocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Javadoc.html">Buildr::Doc::Javadoc</a>
+  
+    <li><a href="./Buildr/Doc/JavadocDefaults.html">Buildr::Doc::JavadocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Scaladoc.html">Buildr::Doc::Scaladoc</a>
+  
+    <li><a href="./Buildr/Doc/ScaladocDefaults.html">Buildr::Doc::ScaladocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/VScaladoc.html">Buildr::Doc::VScaladoc</a>
+  
+    <li><a href="./Buildr/Eclipse.html">Buildr::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Eclipse.html">Buildr::Eclipse::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Java.html">Buildr::Eclipse::Java</a>
+  
+    <li><a href="./Buildr/Eclipse/Options.html">Buildr::Eclipse::Options</a>
+  
+    <li><a href="./Buildr/Eclipse/Plugin.html">Buildr::Eclipse::Plugin</a>
+  
+    <li><a href="./Buildr/Eclipse/Scala.html">Buildr::Eclipse::Scala</a>
+  
+    <li><a href="./Buildr/Emma.html">Buildr::Emma</a>
+  
+    <li><a href="./Buildr/Extension.html">Buildr::Extension</a>
+  
+    <li><a href="./Buildr/Extension/ClassMethods.html">Buildr::Extension::ClassMethods</a>
+  
+    <li><a href="./Buildr/Filter.html">Buildr::Filter</a>
+  
+    <li><a href="./Buildr/Filter/Mapper.html">Buildr::Filter::Mapper</a>
+  
+    <li><a href="./Buildr/GitRelease.html">Buildr::GitRelease</a>
+  
+    <li><a href="./Buildr/Groovy.html">Buildr::Groovy</a>
+  
+    <li><a href="./Buildr/Groovy/EasyB.html">Buildr::Groovy::EasyB</a>
+  
+    <li><a href="./Buildr/Groovy/GroovySH.html">Buildr::Groovy::GroovySH</a>
+  
+    <li><a href="./Buildr/Groovy/Groovyc.html">Buildr::Groovy::Groovyc</a>
+  
+    <li><a href="./Buildr/HgRelease.html">Buildr::HgRelease</a>
+  
+    <li><a href="./Buildr/IntegrationTestsTask.html">Buildr::IntegrationTestsTask</a>
+  
+    <li><a href="./Buildr/IntellijIdea.html">Buildr::IntellijIdea</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaFile.html">Buildr::IntellijIdea::IdeaFile</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaModule.html">Buildr::IntellijIdea::IdeaModule</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaProject.html">Buildr::IntellijIdea::IdeaProject</a>
+  
+    <li><a href="./Buildr/IntellijIdea/ProjectExtension.html">Buildr::IntellijIdea::ProjectExtension</a>
+  
+    <li><a href="./Buildr/JBehave.html">Buildr::JBehave</a>
+  
+    <li><a href="./Buildr/JMock.html">Buildr::JMock</a>
+  
+    <li><a href="./Buildr/JRebel.html">Buildr::JRebel</a>
+  
+    <li><a href="./Buildr/JUnit.html">Buildr::JUnit</a>
+  
+    <li><a href="./Buildr/JUnit/Report.html">Buildr::JUnit::Report</a>
+  
+    <li><a href="./Buildr/Layout.html">Buildr::Layout</a>
+  
+    <li><a href="./Buildr/Layout/Default.html">Buildr::Layout::Default</a>
+  
+    <li><a href="./Buildr/MultiTest.html">Buildr::MultiTest</a>
+  
+    <li><a href="./Buildr/OptionalArtifact.html">Buildr::OptionalArtifact</a>
+  
+    <li><a href="./Buildr/Options.html">Buildr::Options</a>
+  
+    <li><a href="./Buildr/Options/Proxies.html">Buildr::Options::Proxies</a>
+  
+    <li><a href="./Buildr/POM.html">Buildr::POM</a>
+  
+    <li><a href="./Buildr/Package.html">Buildr::Package</a>
+  
+    <li><a href="./Buildr/PackageGemTask.html">Buildr::PackageGemTask</a>
+  
+    <li><a href="./Buildr/Packaging.html">Buildr::Packaging</a>
+  
+    <li><a href="./Buildr/Packaging/Java.html">Buildr::Packaging::Java</a>
+  
+    <li><a href="./Buildr/Packaging/Java/AarTask.html">Buildr::Packaging::Java::AarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/EarTask.html">Buildr::Packaging::Java::EarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/JarTask.html">Buildr::Packaging::Java::JarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/Manifest.html">Buildr::Packaging::Java::Manifest</a>
+  
+    <li><a href="./Buildr/Packaging/Java/WarTask.html">Buildr::Packaging::Java::WarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Scala.html">Buildr::Packaging::Scala</a>
+  
+    <li><a href="./Buildr/ProcessStatus.html">Buildr::ProcessStatus</a>
+  
+    <li><a href="./Buildr/Project.html">Buildr::Project</a>
+  
+    <li><a href="./Buildr/RSpec.html">Buildr::RSpec</a>
+  
+    <li><a href="./Buildr/Repositories.html">Buildr::Repositories</a>
+  
+    <li><a href="./Buildr/ResourcesTask.html">Buildr::ResourcesTask</a>
+  
+    <li><a href="./Buildr/Run.html">Buildr::Run</a>
+  
+    <li><a href="./Buildr/Run/Base.html">Buildr::Run::Base</a>
+  
+    <li><a href="./Buildr/Run/JavaRunner.html">Buildr::Run::JavaRunner</a>
+  
+    <li><a href="./Buildr/Run/RunTask.html">Buildr::Run::RunTask</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala/Check.html">Buildr::Scala::Check</a>
+  
+    <li><a href="./Buildr/Scala/Mockito.html">Buildr::Scala::Mockito</a>
+  
+    <li><a href="./Buildr/Scala/ProjectExtension.html">Buildr::Scala::ProjectExtension</a>
+  
+    <li><a href="./Buildr/Scala/ScalaShell.html">Buildr::Scala::ScalaShell</a>
+  
+    <li><a href="./Buildr/Scala/ScalaTest.html">Buildr::Scala::ScalaTest</a>
+  
+    <li><a href="./Buildr/Scala/Scalac.html">Buildr::Scala::Scalac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Scala::Scalac::Javac</a>
+  
+    <li><a href="./Buildr/Scala/ScalacOptions.html">Buildr::Scala::ScalacOptions</a>
+  
+    <li><a href="./Buildr/Scala/Specs.html">Buildr::Scala::Specs</a>
+  
+    <li><a href="./Buildr/Scala/Specs2.html">Buildr::Scala::Specs2</a>
+  
+    <li><a href="./Buildr/Settings.html">Buildr::Settings</a>
+  
+    <li><a href="./Buildr/Shell.html">Buildr::Shell</a>
+  
+    <li><a href="./Buildr/Shell/Base.html">Buildr::Shell::Base</a>
+  
+    <li><a href="./Buildr/Shell/BeanShell.html">Buildr::Shell::BeanShell</a>
+  
+    <li><a href="./Buildr/Shell/Clojure.html">Buildr::Shell::Clojure</a>
+  
+    <li><a href="./Buildr/Shell/JIRB.html">Buildr::Shell::JIRB</a>
+  
+    <li><a href="./Buildr/Shell/ShellTask.html">Buildr::Shell::ShellTask</a>
+  
+    <li><a href="./Buildr/SvnRelease.html">Buildr::SvnRelease</a>
+  
+    <li><a href="./Buildr/TarTask.html">Buildr::TarTask</a>
+  
+    <li><a href="./Buildr/Test.html">Buildr::Test</a>
+  
+    <li><a href="./Buildr/Test/SkipIfNoTest.html">Buildr::Test::SkipIfNoTest</a>
+  
+    <li><a href="./Buildr/TestFramework.html">Buildr::TestFramework</a>
+  
+    <li><a href="./Buildr/TestFramework/Base.html">Buildr::TestFramework::Base</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased.html">Buildr::TestFramework::JRubyBased</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased/ClassMethods.html">Buildr::TestFramework::JRubyBased::ClassMethods</a>
+  
+    <li><a href="./Buildr/TestFramework/Java.html">Buildr::TestFramework::Java</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult.html">Buildr::TestFramework::TestResult</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/Error.html">Buildr::TestFramework::TestResult::Error</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/YamlFormatter.html">Buildr::TestFramework::TestResult::YamlFormatter</a>
+  
+    <li><a href="./Buildr/TestNG.html">Buildr::TestNG</a>
+  
+    <li><a href="./Buildr/TestTask.html">Buildr::TestTask</a>
+  
+    <li><a href="./Buildr/Unzip.html">Buildr::Unzip</a>
+  
+    <li><a href="./Buildr/Util.html">Buildr::Util</a>
+  
+    <li><a href="./Buildr/VersionRequirement.html">Buildr::VersionRequirement</a>
+  
+    <li><a href="./Buildr/ZipTask.html">Buildr::ZipTask</a>
+  
+    <li><a href="./Resolv.html">Resolv</a>
+  
+    <li><a href="./Resolv/DNS.html">Resolv::DNS</a>
+  
+    <li><a href="./Resolv/DNS/Config.html">Resolv::DNS::Config</a>
+  
+    <li><a href="./Resolv/DNS/Config/NXDomain.html">Resolv::DNS::Config::NXDomain</a>
+  
+    <li><a href="./Resolv/DNS/Config/OtherResolvError.html">Resolv::DNS::Config::OtherResolvError</a>
+  
+    <li><a href="./Resolv/DNS/DecodeError.html">Resolv::DNS::DecodeError</a>
+  
+    <li><a href="./Resolv/DNS/EncodeError.html">Resolv::DNS::EncodeError</a>
+  
+    <li><a href="./Resolv/DNS/Name.html">Resolv::DNS::Name</a>
+  
+    <li><a href="./Resolv/DNS/Query.html">Resolv::DNS::Query</a>
+  
+    <li><a href="./Resolv/DNS/Requester.html">Resolv::DNS::Requester</a>
+  
+    <li><a href="./Resolv/DNS/Requester/RequestError.html">Resolv::DNS::Requester::RequestError</a>
+  
+    <li><a href="./Resolv/DNS/Resource.html">Resolv::DNS::Resource</a>
+  
+    <li><a href="./Resolv/DNS/Resource/ANY.html">Resolv::DNS::Resource::ANY</a>
+  
+    <li><a href="./Resolv/DNS/Resource/CNAME.html">Resolv::DNS::Resource::CNAME</a>
+  
+    <li><a href="./Resolv/DNS/Resource/DomainName.html">Resolv::DNS::Resource::DomainName</a>
+  
+    <li><a href="./Resolv/DNS/Resource/Generic.html">Resolv::DNS::Resource::Generic</a>
+  
+    <li><a href="./Resolv/DNS/Resource/HINFO.html">Resolv::DNS::Resource::HINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN.html">Resolv::DNS::Resource::IN</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/A.html">Resolv::DNS::Resource::IN::A</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/AAAA.html">Resolv::DNS::Resource::IN::AAAA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/SRV.html">Resolv::DNS::Resource::IN::SRV</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/WKS.html">Resolv::DNS::Resource::IN::WKS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MINFO.html">Resolv::DNS::Resource::MINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MX.html">Resolv::DNS::Resource::MX</a>
+  
+    <li><a href="./Resolv/DNS/Resource/NS.html">Resolv::DNS::Resource::NS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/PTR.html">Resolv::DNS::Resource::PTR</a>
+  
+    <li><a href="./Resolv/DNS/Resource/SOA.html">Resolv::DNS::Resource::SOA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/TXT.html">Resolv::DNS::Resource::TXT</a>
+  
+    <li><a href="./Resolv/Hosts.html">Resolv::Hosts</a>
+  
+    <li><a href="./Resolv/IPv4.html">Resolv::IPv4</a>
+  
+    <li><a href="./Resolv/IPv6.html">Resolv::IPv6</a>
+  
+    <li><a href="./Resolv/ResolvError.html">Resolv::ResolvError</a>
+  
+    <li><a href="./Resolv/ResolvTimeout.html">Resolv::ResolvTimeout</a>
+  
+    <li><a href="./OptionParser.html">OptionParser</a>
+  
+    <li><a href="./OptionParser/Acceptables.html">OptionParser::Acceptables</a>
+  
+    <li><a href="./OptionParser/AmbiguousArgument.html">OptionParser::AmbiguousArgument</a>
+  
+    <li><a href="./OptionParser/AmbiguousOption.html">OptionParser::AmbiguousOption</a>
+  
+    <li><a href="./OptionParser/Arguable.html">OptionParser::Arguable</a>
+  
+    <li><a href="./OptionParser/CompletingHash.html">OptionParser::CompletingHash</a>
+  
+    <li><a href="./OptionParser/Completion.html">OptionParser::Completion</a>
+  
+    <li><a href="./OptionParser/InvalidArgument.html">OptionParser::InvalidArgument</a>
+  
+    <li><a href="./OptionParser/InvalidOption.html">OptionParser::InvalidOption</a>
+  
+    <li><a href="./OptionParser/List.html">OptionParser::List</a>
+  
+    <li><a href="./OptionParser/MissingArgument.html">OptionParser::MissingArgument</a>
+  
+    <li><a href="./OptionParser/NeedlessArgument.html">OptionParser::NeedlessArgument</a>
+  
+    <li><a href="./OptionParser/OptionMap.html">OptionParser::OptionMap</a>
+  
+    <li><a href="./OptionParser/ParseError.html">OptionParser::ParseError</a>
+  
+    <li><a href="./OptionParser/Switch.html">OptionParser::Switch</a>
+  
+    <li><a href="./OptionParser/Switch/NoArgument.html">OptionParser::Switch::NoArgument</a>
+  
+    <li><a href="./OptionParser/Switch/OptionalArgument.html">OptionParser::Switch::OptionalArgument</a>
+  
+    <li><a href="./OptionParser/Switch/PlacedArgument.html">OptionParser::Switch::PlacedArgument</a>
+  
+    <li><a href="./OptionParser/Switch/RequiredArgument.html">OptionParser::Switch::RequiredArgument</a>
+  
+    <li><a href="./Prime.html">Prime</a>
+  
+    <li><a href="./Prime/EratosthenesGenerator.html">Prime::EratosthenesGenerator</a>
+  
+    <li><a href="./Prime/EratosthenesSieve.html">Prime::EratosthenesSieve</a>
+  
+    <li><a href="./Prime/Generator23.html">Prime::Generator23</a>
+  
+    <li><a href="./Prime/OldCompatibility.html">Prime::OldCompatibility</a>
+  
+    <li><a href="./Prime/PseudoPrimeGenerator.html">Prime::PseudoPrimeGenerator</a>
+  
+    <li><a href="./Prime/TrialDivision.html">Prime::TrialDivision</a>
+  
+    <li><a href="./Prime/TrialDivisionGenerator.html">Prime::TrialDivisionGenerator</a>
+  
+    <li><a href="./FileUtils.html">FileUtils</a>
+  
+    <li><a href="./FileUtils/DryRun.html">FileUtils::DryRun</a>
+  
+    <li><a href="./FileUtils/LowMethods.html">FileUtils::LowMethods</a>
+  
+    <li><a href="./FileUtils/NoWrite.html">FileUtils::NoWrite</a>
+  
+    <li><a href="./FileUtils/StreamUtils_.html">FileUtils::StreamUtils_</a>
+  
+    <li><a href="./FileUtils/Verbose.html">FileUtils::Verbose</a>
+  
+    <li><a href="./GetoptLong.html">GetoptLong</a>
+  
+    <li><a href="./GetoptLong/AmbiguousOption.html">GetoptLong::AmbiguousOption</a>
+  
+    <li><a href="./GetoptLong/Error.html">GetoptLong::Error</a>
+  
+    <li><a href="./GetoptLong/InvalidOption.html">GetoptLong::InvalidOption</a>
+  
+    <li><a href="./GetoptLong/MissingArgument.html">GetoptLong::MissingArgument</a>
+  
+    <li><a href="./GetoptLong/NeedlessArgument.html">GetoptLong::NeedlessArgument</a>
+  
+    <li><a href="./Logger.html">Logger</a>
+  
+    <li><a href="./Logger/Application.html">Logger::Application</a>
+  
+    <li><a href="./Logger/Formatter.html">Logger::Formatter</a>
+  
+    <li><a href="./Logger/LogDevice.html">Logger::LogDevice</a>
+  
+    <li><a href="./Logger/LogDevice/LogDeviceMutex.html">Logger::LogDevice::LogDeviceMutex</a>
+  
+    <li><a href="./Logger/Severity.html">Logger::Severity</a>
+  
+    <li><a href="./Object.html">Object</a>
+  
+    <li><a href="./Buildr/Scala.html">Object::Scala</a>
+  
+    <li><a href="./Sync.html">Object::Synchronizer</a>
+  
+    <li><a href="./Sync_m.html">Object::Synchronizer_m</a>
+  
+    <li><a href="./ThreadsWait.html">Object::ThWait</a>
+  
+    <li><a href="./Timeout/Error.html">Object::TimeoutError</a>
+  
+    <li><a href="./PrettyPrint.html">PrettyPrint</a>
+  
+    <li><a href="./PrettyPrint/Breakable.html">PrettyPrint::Breakable</a>
+  
+    <li><a href="./PrettyPrint/Group.html">PrettyPrint::Group</a>
+  
+    <li><a href="./PrettyPrint/GroupQueue.html">PrettyPrint::GroupQueue</a>
+  
+    <li><a href="./PrettyPrint/SingleLine.html">PrettyPrint::SingleLine</a>
+  
+    <li><a href="./PrettyPrint/Text.html">PrettyPrint::Text</a>
+  
+    <li><a href="./URI.html">URI</a>
+  
+    <li><a href="./URI/FILE.html">URI::FILE</a>
+  
+    <li><a href="./URI/FTP.html">URI::FTP</a>
+  
+    <li><a href="./URI/Generic.html">URI::Generic</a>
+  
+    <li><a href="./URI/HTTP.html">URI::HTTP</a>
+  
+    <li><a href="./URI/NotFoundError.html">URI::NotFoundError</a>
+  
+    <li><a href="./OpenURI.html">OpenURI</a>
+  
+    <li><a href="./OpenURI/HTTPError.html">OpenURI::HTTPError</a>
+  
+    <li><a href="./OpenURI/HTTPRedirect.html">OpenURI::HTTPRedirect</a>
+  
+    <li><a href="./OpenURI/Meta.html">OpenURI::Meta</a>
+  
+    <li><a href="./OpenURI/OpenRead.html">OpenURI::OpenRead</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m/Err.html">Sync_m::Err</a>
+  
+    <li><a href="./Sync_m/Err/LockModeFailer.html">Sync_m::Err::LockModeFailer</a>
+  
+    <li><a href="./Sync_m/Err/UnknownLocker.html">Sync_m::Err::UnknownLocker</a>
+  
+    <li><a href="./CSV.html">CSV</a>
+  
+    <li><a href="./CSV/MalformedCSVError.html">CSV::MalformedCSVError</a>
+  
+    <li><a href="./CSV/Row.html">CSV::Row</a>
+  
+    <li><a href="./CSV/Table.html">CSV::Table</a>
+  
+    <li><a href="./Java.html">Java</a>
+  
+    <li><a href="./Java/Commands.html">Java::Commands</a>
+  
+    <li><a href="./Java/JavaWrapper.html">Java::JavaWrapper</a>
+  
+    <li><a href="./Java/Options.html">Java::Options</a>
+  
+    <li><a href="./PP.html">PP</a>
+  
+    <li><a href="./PP/ObjectMixin.html">PP::ObjectMixin</a>
+  
+    <li><a href="./PP/PPMethods.html">PP::PPMethods</a>
+  
+    <li><a href="./PP/SingleLine.html">PP::SingleLine</a>
+  
+    <li><a href="./Digest.html">Digest</a>
+  
+    <li><a href="./Digest/Class.html">Digest::Class</a>
+  
+    <li><a href="./Digest/Instance.html">Digest::Instance</a>
+  
+    <li><a href="./ERB.html">ERB</a>
+  
+    <li><a href="./ERB/DefMethod.html">ERB::DefMethod</a>
+  
+    <li><a href="./ERB/Util.html">ERB::Util</a>
+  
+    <li><a href="./Gem.html">Gem</a>
+  
+    <li><a href="./Gem/LoadError.html">Gem::LoadError</a>
+  
+    <li><a href="./Gem/Version.html">Gem::Version</a>
+  
+    <li><a href="./IRB.html">IRB</a>
+  
+    <li><a href="./IRB/Abort.html">IRB::Abort</a>
+  
+    <li><a href="./IRB/Irb.html">IRB::Irb</a>
+  
+    <li><a href="./MonitorMixin.html">MonitorMixin</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable.html">MonitorMixin::ConditionVariable</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable/Timeout.html">MonitorMixin::ConditionVariable::Timeout</a>
+  
+    <li><a href="./Psych.html">Psych</a>
+  
+    <li><a href="./Psych/BadAlias.html">Psych::BadAlias</a>
+  
+    <li><a href="./Psych/Exception.html">Psych::Exception</a>
+  
+    <li><a href="./Scanf.html">Scanf</a>
+  
+    <li><a href="./Timeout.html">Timeout</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./TkComm.html">TkComm</a>
+  
+    <li><a href="./TkComm/Tk_CMDTBL.html">TkComm::Tk_CMDTBL</a>
+  
+    <li><a href="./TkComm/Tk_WINDOWS.html">TkComm::Tk_WINDOWS</a>
+  
+    <li><a href="./TkCore.html">TkCore</a>
+  
+    <li><a href="./MultiTkIp.html">TkCore::INTERP</a>
+  
+    <li><a href="./TkCore/Tk_OBJECT_TABLE.html">TkCore::Tk_OBJECT_TABLE</a>
+  
+    <li><a href="./Zip.html">Zip</a>
+  
+    <li><a href="./Zip/ZipEntry.html">Zip::ZipEntry</a>
+  
+    <li><a href="./Zip/ZipEntrySet.html">Zip::ZipEntrySet</a>
+  
+    <li><a href="./Benchmark.html">Benchmark</a>
+  
+    <li><a href="./Benchmark/Tms.html">Benchmark::Tms</a>
+  
+    <li><a href="./DEBUGGER__.html">DEBUGGER__</a>
+  
+    <li><a href="./DEBUGGER__/Context.html">DEBUGGER__::Context</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper::E2MM</a>
+  
+    <li><a href="./File.html">File</a>
+  
+    <li><a href="./File/Stat.html">File::Stat</a>
+  
+    <li><a href="./MultiTkIp.html">MultiTkIp</a>
+  
+    <li><a href="./MultiTkIp/Command_Queue.html">MultiTkIp::Command_Queue</a>
+  
+    <li><a href="./PStore.html">PStore</a>
+  
+    <li><a href="./PStore/Error.html">PStore::Error</a>
+  
+    <li><a href="./RDoc.html">RDoc</a>
+  
+    <li><a href="./RDoc/Error.html">RDoc::Error</a>
+  
+    <li><a href="./Rake.html">Rake</a>
+  
+    <li><a href="./Rake/FileTask.html">Rake::FileTask</a>
+  
+    <li><a href="./Socket.html">Socket</a>
+  
+    <li><a href="./Socket/UDPSource.html">Socket::UDPSource</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./TSort.html">TSort</a>
+  
+    <li><a href="./TSort/Cyclic.html">TSort::Cyclic</a>
+  
+    <li><a href="./Tempfile.html">Tempfile</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./Vector.html">Vector</a>
+  
+    <li><a href="./Vector/ZeroVectorError.html">Vector::ZeroVectorError</a>
+  
+    <li><a href="./WeakRef.html">WeakRef</a>
+  
+    <li><a href="./WeakRef/RefError.html">WeakRef::RefError</a>
+  
+    <li><a href="./Abbrev.html">Abbrev</a>
+  
+    <li><a href="./Addrinfo.html">Addrinfo</a>
+  
+    <li><a href="./Base64.html">Base64</a>
+  
+    <li><a href="./BasicSocket.html">BasicSocket</a>
+  
+    <li><a href="./CGI.html">CGI</a>
+  
+    <li><a href="./CMath.html">CMath</a>
+  
+    <li><a href="./ConditionVariable.html">ConditionVariable</a>
+  
+    <li><a href="./DL.html">DL</a>
+  
+    <li><a href="./Date.html">Date</a>
+  
+    <li><a href="./Delegator.html">Delegator</a>
+  
+    <li><a href="./Dir.html">Dir</a>
+  
+    <li><a href="./ENV.html">ENV</a>
+  
+    <li><a href="./Enumerable.html">Enumerable</a>
+  
+    <li><a href="./Fiddle.html">Fiddle</a>
+  
+    <li><a href="./Find.html">Find</a>
+  
+    <li><a href="./Float.html">Float</a>
+  
+    <li><a href="./Forwardable.html">Forwardable</a>
+  
+    <li><a href="./GServer.html">GServer</a>
+  
+    <li><a href="./Hash.html">Hash</a>
+  
+    <li><a href="./IO.html">IO</a>
+  
+    <li><a href="./IPAddr.html">IPAddr</a>
+  
+    <li><a href="./IPSocket.html">IPSocket</a>
+  
+    <li><a href="./Integer.html">Integer</a>
+  
+    <li><a href="./JSON.html">JSON</a>
+  
+    <li><a href="./Kconv.html">Kconv</a>
+  
+    <li><a href="./Kernel.html">Kernel</a>
+  
+    <li><a href="./MatchData.html">MatchData</a>
+  
+    <li><a href="./Math.html">Math</a>
+  
+    <li><a href="./Matrix.html">Matrix</a>
+  
+    <li><a href="./Module.html">Module</a>
+  
+    <li><a href="./Monitor.html">Monitor</a>
+  
+    <li><a href="./MultiTkIp_OK.html">MultiTkIp_OK</a>
+  
+    <li><a href="./MultiTkIp_PseudoToplevel_Evaluable.html">MultiTkIp_PseudoToplevel_Evaluable</a>
+  
+    <li><a href="./Mutex_m.html">Mutex_m</a>
+  
+    <li><a href="./Numeric.html">Numeric</a>
+  
+    <li><a href="./Observable.html">Observable</a>
+  
+    <li><a href="./Open3.html">Open3</a>
+  
+    <li><a href="./OpenObject.html">OpenObject</a>
+  
+    <li><a href="./OpenStruct.html">OpenStruct</a>
+  
+    <li><a href="./Pathname.html">Pathname</a>
+  
+    <li><a href="./Profiler__.html">Profiler__</a>
+  
+    <li><a href="./ProgressBar.html">ProgressBar</a>
+  
+    <li><a href="./Queue.html">Queue</a>
+  
+    <li><a href="./RSS.html">RSS</a>
+  
+    <li><a href="./Range.html">Range</a>
+  
+    <li><a href="./Rational.html">Rational</a>
+  
+    <li><a href="./RemoteTkIp.html">RemoteTkIp</a>
+  
+    <li><a href="./SOCKSSocket.html">SOCKSSocket</a>
+  
+    <li><a href="./STRING_OR_FAILED_FORMAT.html">STRING_OR_FAILED_FORMAT</a>
+  
+    <li><a href="./SecureRandom.html">SecureRandom</a>
+  
+    <li><a href="./Set.html">Set</a>
+  
+    <li><a href="./Shell.html">Shell</a>
+  
+    <li><a href="./Shellwords.html">Shellwords</a>
+  
+    <li><a href="./SimpleDelegator.html">SimpleDelegator</a>
+  
+    <li><a href="./SingleForwardable.html">SingleForwardable</a>
+  
+    <li><a href="./Singleton.html">Singleton</a>
+  
+    <li><a href="./SizedQueue.html">SizedQueue</a>
+  
+    <li><a href="./SortedSet.html">SortedSet</a>
+  
+    <li><a href="./Struct.html">Struct</a>
+  
+    <li><a href="./Syck.html">Syck</a>
+  
+    <li><a href="./TCPSocket.html">TCPSocket</a>
+  
+    <li><a href="./TclTkIp.html">TclTkIp</a>
+  
+    <li><a href="./TclTkLib.html">TclTkLib</a>
+  
+    <li><a href="./ThreadError.html">ThreadError</a>
+  
+    <li><a href="./Time.html">Time</a>
+  
+    <li><a href="./Tracer.html">Tracer</a>
+  
+    <li><a href="./UDPSocket.html">UDPSocket</a>
+  
+    <li><a href="./WEBrick.html">WEBrick</a>
+  
+    <li><a href="./YAML.html">YAML</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class PStore</h1>
+
+  <div id="description" class="description">
+    
+<p><a href="PStore.html">PStore</a> implements a file based persistence
+mechanism based on a <a href="Hash.html">Hash</a>.  User code can store
+hierarchies of Ruby objects (values) into the data store file by name
+(keys).  An object hierarchy may be just a single object.  User code may
+later read values back from the data store or even update data, as needed.</p>
+
+<p>The transactional behavior ensures that any changes succeed or fail
+together. This can be used to ensure that the data store is not left in a
+transitory state, where some values were updated but others were not.</p>
+
+<p>Behind the scenes, Ruby objects are stored to the data store file with
+Marshal.  That carries the usual limitations.  Proc objects cannot be
+marshalled, for example.</p>
+
+<h2 id="label-Usage+example%3A">Usage example:</h2>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;pstore&quot;</span>
+
+<span class="ruby-comment"># a mock wiki object...</span>
+<span class="ruby-keyword">class</span> <span class="ruby-constant">WikiPage</span>
+  <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>( <span class="ruby-identifier">page_name</span>, <span class="ruby-identifier">author</span>, <span class="ruby-identifier">contents</span> )
+    <span class="ruby-ivar">@page_name</span> = <span class="ruby-identifier">page_name</span>
+    <span class="ruby-ivar">@revisions</span> = <span class="ruby-constant">Array</span>.<span class="ruby-identifier">new</span>
+
+    <span class="ruby-identifier">add_revision</span>(<span class="ruby-identifier">author</span>, <span class="ruby-identifier">contents</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">attr_reader</span> :<span class="ruby-identifier">page_name</span>
+
+  <span class="ruby-keyword">def</span> <span class="ruby-identifier">add_revision</span>( <span class="ruby-identifier">author</span>, <span class="ruby-identifier">contents</span> )
+    <span class="ruby-ivar">@revisions</span> <span class="ruby-operator">&lt;&lt;</span> { :<span class="ruby-identifier">created</span>  =<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>,
+                    :<span class="ruby-identifier">author</span>   =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">author</span>,
+                    :<span class="ruby-identifier">contents</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">contents</span> }
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">def</span> <span class="ruby-identifier">wiki_page_references</span>
+    [<span class="ruby-ivar">@page_name</span>] <span class="ruby-operator">+</span> <span class="ruby-ivar">@revisions</span>.<span class="ruby-identifier">last</span>[:<span class="ruby-identifier">contents</span>].<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">%r\b(?:[A-Z]+[a-z]+){2,}/</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-comment"># ...</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-comment"># create a new page...</span>
+<span class="ruby-identifier">home_page</span> = <span class="ruby-constant">WikiPage</span>.<span class="ruby-identifier">new</span>( <span class="ruby-string">&quot;HomePage&quot;</span>, <span class="ruby-string">&quot;James Edward Gray II&quot;</span>,
+                          <span class="ruby-string">&quot;A page about the JoysOfDocumentation...&quot;</span> )
+
+<span class="ruby-comment"># then we want to update page data and the index together, or not at all...</span>
+<span class="ruby-identifier">wiki</span> = <span class="ruby-constant">PStore</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;wiki_pages.pstore&quot;</span>)
+<span class="ruby-identifier">wiki</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword">do</span>  <span class="ruby-comment"># begin transaction; do all of this or none of it</span>
+  <span class="ruby-comment"># store page...</span>
+  <span class="ruby-identifier">wiki</span>[<span class="ruby-identifier">home_page</span>.<span class="ruby-identifier">page_name</span>] = <span class="ruby-identifier">home_page</span>
+  <span class="ruby-comment"># ensure that an index has been created...</span>
+  <span class="ruby-identifier">wiki</span>[:<span class="ruby-identifier">wiki_index</span>] <span class="ruby-operator">||=</span> <span class="ruby-constant">Array</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-comment"># update wiki index...</span>
+  <span class="ruby-identifier">wiki</span>[:<span class="ruby-identifier">wiki_index</span>].<span class="ruby-identifier">push</span>(*<span class="ruby-identifier">home_page</span>.<span class="ruby-identifier">wiki_page_references</span>)
+<span class="ruby-keyword">end</span>                   <span class="ruby-comment"># commit changes to wiki data store file</span>
+
+<span class="ruby-comment">### Some time later... ###</span>
+
+<span class="ruby-comment"># read wiki data...</span>
+<span class="ruby-identifier">wiki</span>.<span class="ruby-identifier">transaction</span>(<span class="ruby-keyword">true</span>) <span class="ruby-keyword">do</span>  <span class="ruby-comment"># begin read-only transaction, no changes allowed</span>
+  <span class="ruby-identifier">wiki</span>.<span class="ruby-identifier">roots</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">data_root_name</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">p</span> <span class="ruby-identifier">data_root_name</span>
+    <span class="ruby-identifier">p</span> <span class="ruby-identifier">wiki</span>[<span class="ruby-identifier">data_root_name</span>]
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<h2 id="label-Transaction+modes">Transaction modes</h2>
+
+<p>By default, file integrity is only ensured as long as the operating system
+(and the underlying hardware) doesn’t raise any unexpected I/O errors. If
+an I/O error occurs while <a href="PStore.html">PStore</a> is writing to
+its file, then the file will become corrupted.</p>
+
+<p>You can prevent this by setting <em>pstore.ultra_safe = true</em>. However,
+this results in a minor performance loss, and only works on platforms that
+support atomic file renames. Please consult the documentation for
+<code>ultra_safe</code> for details.</p>
+
+<p>Needless to say, if you’re storing valuable data with <a
+href="PStore.html">PStore</a>, then you should backup the <a
+href="PStore.html">PStore</a> files from time to time.</p>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="EMPTY_MARSHAL_CHECKSUM">EMPTY_MARSHAL_CHECKSUM
+        
+        <dd class="description">
+        
+      
+        <dt id="EMPTY_MARSHAL_DATA">EMPTY_MARSHAL_DATA
+        
+        <dd class="description">
+        
+      
+        <dt id="EMPTY_STRING">EMPTY_STRING
+        
+        <dd class="description"><p>Constant for relieving Ruby’s garbage collector.</p>
+        
+      
+        <dt id="RDWR_ACCESS">RDWR_ACCESS
+        
+        <dd class="description">
+        
+      
+        <dt id="RD_ACCESS">RD_ACCESS
+        
+        <dd class="description">
+        
+      
+        <dt id="WR_ACCESS">WR_ACCESS
+        
+        <dd class="description">
+        
+      
+      </dl>
+    </section>
+    
+
+    
+    <!-- Attributes -->
+    <section id="attribute-method-details" class="method-section section">
+      <h3 class="section-header">Attributes</h3>
+
+      
+      <div id="attribute-i-ultra_safe" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">ultra_safe</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Whether <a href="PStore.html">PStore</a> should do its best to prevent file
+corruptions, even when under unlikely-to-occur error conditions such as
+out-of-space conditions and other unusual OS filesystem errors. Setting
+this flag comes at the price in the form of a performance loss.</p>
+
+<p>This flag only has effect on platforms on which file renames are atomic
+(e.g. all POSIX platforms: Linux, MacOS X, FreeBSD, etc). The default value
+is false.</p>
+        
+        </div>
+      </div>
+      
+    </section><!-- attribute-method-details -->
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(file, thread_safe = false)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>To construct a <a href="PStore.html">PStore</a> object, pass in the
+<em>file</em> path where you would like the data to be stored.</p>
+
+<p><a href="PStore.html">PStore</a> objects are always reentrant. But if
+<em>thread_safe</em> is set to true, then it will become thread-safe at the
+cost of a minor performance hit.</p>
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 121</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">thread_safe</span> = <span class="ruby-keyword">false</span>)
+  <span class="ruby-identifier">dir</span> = <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">dirname</span>(<span class="ruby-identifier">file</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">directory?</span> <span class="ruby-identifier">dir</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-identifier">format</span>(<span class="ruby-string">&quot;directory %s does not exist&quot;</span>, <span class="ruby-identifier">dir</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">exist?</span> <span class="ruby-identifier">file</span> <span class="ruby-keyword">and</span> <span class="ruby-keyword">not</span> <span class="ruby-constant">File</span><span class="ruby-operator">::</span><span class="ruby-identifier">readable?</span> <span class="ruby-identifier">file</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-identifier">format</span>(<span class="ruby-string">&quot;file %s not readable&quot;</span>, <span class="ruby-identifier">file</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@filename</span> = <span class="ruby-identifier">file</span>
+  <span class="ruby-ivar">@abort</span> = <span class="ruby-keyword">false</span>
+  <span class="ruby-ivar">@ultra_safe</span> = <span class="ruby-keyword">false</span>
+  <span class="ruby-ivar">@thread_safe</span> = <span class="ruby-identifier">thread_safe</span>
+  <span class="ruby-ivar">@lock</span> = <span class="ruby-constant">Mutex</span>.<span class="ruby-identifier">new</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- new-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- new-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-5B-5D" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">[]</span><span
+            class="method-args">(name)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Retrieves a value from the <a href="PStore.html">PStore</a> file data, by
+<em>name</em>.  The hierarchy of Ruby objects stored under that root
+<em>name</em> will be returned.</p>
+
+<p><strong>WARNING</strong>:  This method is only valid in a <a
+href="PStore.html#method-i-transaction">#transaction</a>.  It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.</p>
+          
+
+          
+          <div class="method-source-code" id="5B-5D-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 157</span>
+<span class="ruby-keyword">def</span> <span class="ruby-operator">[]</span>(<span class="ruby-identifier">name</span>)
+  <span class="ruby-identifier">in_transaction</span>
+  <span class="ruby-ivar">@table</span>[<span class="ruby-identifier">name</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- 5B-5D-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- 5B-5D-method -->
+
+    
+      <div id="method-i-5B-5D-3D" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">[]=</span><span
+            class="method-args">(name, value)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Stores an individual Ruby object or a hierarchy of Ruby objects in the data
+store file under the root <em>name</em>.  Assigning to a <em>name</em>
+already in the data store clobbers the old data.</p>
+
+<h2 id="method-i-5B-5D-3D-label-Example%3A">Example:</h2>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;pstore&quot;</span>
+
+<span class="ruby-identifier">store</span> = <span class="ruby-constant">PStore</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;data_file.pstore&quot;</span>)
+<span class="ruby-identifier">store</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword">do</span>  <span class="ruby-comment"># begin transaction</span>
+  <span class="ruby-comment"># load some data into the store...</span>
+  <span class="ruby-identifier">store</span>[:<span class="ruby-identifier">single_object</span>] = <span class="ruby-string">&quot;My data...&quot;</span>
+  <span class="ruby-identifier">store</span>[:<span class="ruby-identifier">obj_heirarchy</span>] = { <span class="ruby-string">&quot;Kev Jackson&quot;</span> =<span class="ruby-operator">&gt;</span> [<span class="ruby-string">&quot;rational.rb&quot;</span>, <span class="ruby-string">&quot;pstore.rb&quot;</span>],
+                            <span class="ruby-string">&quot;James Gray&quot;</span>  =<span class="ruby-operator">&gt;</span> [<span class="ruby-string">&quot;erb.rb&quot;</span>, <span class="ruby-string">&quot;pstore.rb&quot;</span>] }
+<span class="ruby-keyword">end</span>                   <span class="ruby-comment"># commit changes to data store file</span>
+</pre>
+
+<p><strong>WARNING</strong>:  This method is only valid in a <a
+href="PStore.html#method-i-transaction">#transaction</a> and it cannot be
+read-only.  It will raise <a href="PStore/Error.html">PStore::Error</a> if
+called at any other time.</p>
+          
+
+          
+          <div class="method-source-code" id="5B-5D-3D-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 202</span>
+<span class="ruby-keyword">def</span> <span class="ruby-operator">[]=</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">in_transaction_wr</span>()
+  <span class="ruby-ivar">@table</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-identifier">value</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- 5B-5D-3D-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- 5B-5D-3D-method -->
+
+    
+      <div id="method-i-abort" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">abort</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Ends the current <a
+href="PStore.html#method-i-transaction">#transaction</a>, discarding any
+changes to the data store.</p>
+
+<h2 id="method-i-abort-label-Example%3A">Example:</h2>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;pstore&quot;</span>
+
+<span class="ruby-identifier">store</span> = <span class="ruby-constant">PStore</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;data_file.pstore&quot;</span>)
+<span class="ruby-identifier">store</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword">do</span>  <span class="ruby-comment"># begin transaction</span>
+  <span class="ruby-identifier">store</span>[:<span class="ruby-identifier">one</span>] = <span class="ruby-value">1</span>     <span class="ruby-comment"># this change is not applied, see below...</span>
+  <span class="ruby-identifier">store</span>[:<span class="ruby-identifier">two</span>] = <span class="ruby-value">2</span>     <span class="ruby-comment"># this change is not applied, see below...</span>
+
+  <span class="ruby-identifier">store</span>.<span class="ruby-identifier">abort</span>         <span class="ruby-comment"># end transaction here, discard all changes</span>
+
+  <span class="ruby-identifier">store</span>[:<span class="ruby-identifier">three</span>] = <span class="ruby-value">3</span>   <span class="ruby-comment"># this change is never reached</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p><strong>WARNING</strong>:  This method is only valid in a <a
+href="PStore.html#method-i-transaction">#transaction</a>.  It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.</p>
+          
+
+          
+          <div class="method-source-code" id="abort-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 290</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">abort</span>
+  <span class="ruby-identifier">in_transaction</span>
+  <span class="ruby-ivar">@abort</span> = <span class="ruby-keyword">true</span>
+  <span class="ruby-identifier">throw</span> <span class="ruby-value">:pstore_abort_transaction</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- abort-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- abort-method -->
+
+    
+      <div id="method-i-commit" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">commit</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Ends the current <a
+href="PStore.html#method-i-transaction">#transaction</a>, committing any
+changes to the data store immediately.</p>
+
+<h2 id="method-i-commit-label-Example%3A">Example:</h2>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;pstore&quot;</span>
+
+<span class="ruby-identifier">store</span> = <span class="ruby-constant">PStore</span>.<span class="ruby-identifier">new</span>(<span class="ruby-string">&quot;data_file.pstore&quot;</span>)
+<span class="ruby-identifier">store</span>.<span class="ruby-identifier">transaction</span> <span class="ruby-keyword">do</span>  <span class="ruby-comment"># begin transaction</span>
+  <span class="ruby-comment"># load some data into the store...</span>
+  <span class="ruby-identifier">store</span>[:<span class="ruby-identifier">one</span>] = <span class="ruby-value">1</span>
+  <span class="ruby-identifier">store</span>[:<span class="ruby-identifier">two</span>] = <span class="ruby-value">2</span>
+
+  <span class="ruby-identifier">store</span>.<span class="ruby-identifier">commit</span>        <span class="ruby-comment"># end transaction here, committing changes</span>
+
+  <span class="ruby-identifier">store</span>[:<span class="ruby-identifier">three</span>] = <span class="ruby-value">3</span>   <span class="ruby-comment"># this change is never reached</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p><strong>WARNING</strong>:  This method is only valid in a <a
+href="PStore.html#method-i-transaction">#transaction</a>.  It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.</p>
+          
+
+          
+          <div class="method-source-code" id="commit-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 264</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">commit</span>
+  <span class="ruby-identifier">in_transaction</span>
+  <span class="ruby-ivar">@abort</span> = <span class="ruby-keyword">false</span>
+  <span class="ruby-identifier">throw</span> <span class="ruby-value">:pstore_abort_transaction</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- commit-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- commit-method -->
+
+    
+      <div id="method-i-delete" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">delete</span><span
+            class="method-args">(name)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Removes an object hierarchy from the data store, by <em>name</em>.</p>
+
+<p><strong>WARNING</strong>:  This method is only valid in a <a
+href="PStore.html#method-i-transaction">#transaction</a> and it cannot be
+read-only.  It will raise <a href="PStore/Error.html">PStore::Error</a> if
+called at any other time.</p>
+          
+
+          
+          <div class="method-source-code" id="delete-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 212</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">name</span>)
+  <span class="ruby-identifier">in_transaction_wr</span>()
+  <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">delete</span> <span class="ruby-identifier">name</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- delete-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- delete-method -->
+
+    
+      <div id="method-i-fetch" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">fetch</span><span
+            class="method-args">(name, default=PStore::Error)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>This method is just like PStore#[], save that you may also provide a
+<em>default</em> value for the object.  In the event the specified
+<em>name</em> is not found in the data store, your <em>default</em> will be
+returned instead.  If you do not specify a default, <a
+href="PStore/Error.html">PStore::Error</a> will be raised if the object is
+not found.</p>
+
+<p><strong>WARNING</strong>:  This method is only valid in a <a
+href="PStore.html#method-i-transaction">#transaction</a>.  It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.</p>
+          
+
+          
+          <div class="method-source-code" id="fetch-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 171</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">fetch</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">default</span>=<span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>)
+  <span class="ruby-identifier">in_transaction</span>
+  <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">key?</span> <span class="ruby-identifier">name</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">default</span> <span class="ruby-operator">==</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-identifier">format</span>(<span class="ruby-string">&quot;undefined root name `%s'&quot;</span>, <span class="ruby-identifier">name</span>)
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-keyword">return</span> <span class="ruby-identifier">default</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@table</span>[<span class="ruby-identifier">name</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- fetch-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- fetch-method -->
+
+    
+      <div id="method-i-path" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">path</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the path to the data store file.</p>
+          
+
+          
+          <div class="method-source-code" id="path-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 238</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">path</span>
+  <span class="ruby-ivar">@filename</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- path-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- path-method -->
+
+    
+      <div id="method-i-root-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">root?</span><span
+            class="method-args">(name)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns true if the supplied <em>name</em> is currently in the data store.</p>
+
+<p><strong>WARNING</strong>:  This method is only valid in a <a
+href="PStore.html#method-i-transaction">#transaction</a>.  It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.</p>
+          
+
+          
+          <div class="method-source-code" id="root-3F-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 233</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">root?</span>(<span class="ruby-identifier">name</span>)
+  <span class="ruby-identifier">in_transaction</span>
+  <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">key?</span> <span class="ruby-identifier">name</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- root-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- root-3F-method -->
+
+    
+      <div id="method-i-roots" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">roots</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the names of all object hierarchies currently in the store.</p>
+
+<p><strong>WARNING</strong>:  This method is only valid in a <a
+href="PStore.html#method-i-transaction">#transaction</a>.  It will raise <a
+href="PStore/Error.html">PStore::Error</a> if called at any other time.</p>
+          
+
+          
+          <div class="method-source-code" id="roots-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 223</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">roots</span>
+  <span class="ruby-identifier">in_transaction</span>
+  <span class="ruby-ivar">@table</span>.<span class="ruby-identifier">keys</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- roots-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- roots-method -->
+
+    
+      <div id="method-i-transaction" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">transaction</span><span
+            class="method-args">(read_only = false) { |pstore| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Opens a new transaction for the data store.  Code executed inside a block
+passed to this method may read and write data to and from the data store
+file.</p>
+
+<p>At the end of the block, changes are committed to the data store
+automatically.  You may exit the transaction early with a call to either <a
+href="PStore.html#method-i-commit">#commit</a> or <a
+href="PStore.html#method-i-abort">#abort</a>.  See those methods for
+details about how changes are handled.  Raising an uncaught Exception in
+the block is equivalent to calling <a
+href="PStore.html#method-i-abort">#abort</a>.</p>
+
+<p>If <em>read_only</em> is set to <code>true</code>, you will only be allowed
+to read from the data store during the transaction and any attempts to
+change the data will raise a <a href="PStore/Error.html">PStore::Error</a>.</p>
+
+<p>Note that <a href="PStore.html">PStore</a> does not support nested
+transactions.</p>
+          
+
+          
+          <div class="method-source-code" id="transaction-source">
+            <pre><span class="ruby-comment"># File rake/lib/pstore.rb, line 313</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">transaction</span>(<span class="ruby-identifier">read_only</span> = <span class="ruby-keyword">false</span>, &amp;<span class="ruby-identifier">block</span>)  <span class="ruby-comment"># :yields:  pstore</span>
+  <span class="ruby-identifier">value</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&quot;nested transaction&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@thread_safe</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@lock</span>.<span class="ruby-identifier">locked?</span>
+  <span class="ruby-ivar">@lock</span>.<span class="ruby-identifier">synchronize</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-ivar">@rdonly</span> = <span class="ruby-identifier">read_only</span>
+    <span class="ruby-ivar">@abort</span> = <span class="ruby-keyword">false</span>
+    <span class="ruby-identifier">file</span> = <span class="ruby-identifier">open_and_lock_file</span>(<span class="ruby-ivar">@filename</span>, <span class="ruby-identifier">read_only</span>)
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">file</span>
+      <span class="ruby-keyword">begin</span>
+        <span class="ruby-ivar">@table</span>, <span class="ruby-identifier">checksum</span>, <span class="ruby-identifier">original_data_size</span> = <span class="ruby-identifier">load_data</span>(<span class="ruby-identifier">file</span>, <span class="ruby-identifier">read_only</span>)
+
+        <span class="ruby-identifier">catch</span>(<span class="ruby-value">:pstore_abort_transaction</span>) <span class="ruby-keyword">do</span>
+          <span class="ruby-identifier">value</span> = <span class="ruby-keyword">yield</span>(<span class="ruby-keyword">self</span>)
+        <span class="ruby-keyword">end</span>
+
+        <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-ivar">@abort</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">read_only</span>
+          <span class="ruby-identifier">save_data</span>(<span class="ruby-identifier">checksum</span>, <span class="ruby-identifier">original_data_size</span>, <span class="ruby-identifier">file</span>)
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">ensure</span>
+        <span class="ruby-identifier">file</span>.<span class="ruby-identifier">close</span> <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">file</span>.<span class="ruby-identifier">closed?</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-comment"># This can only occur if read_only == true.</span>
+      <span class="ruby-ivar">@table</span> = {}
+      <span class="ruby-identifier">catch</span>(<span class="ruby-value">:pstore_abort_transaction</span>) <span class="ruby-keyword">do</span>
+        <span class="ruby-identifier">value</span> = <span class="ruby-keyword">yield</span>(<span class="ruby-keyword">self</span>)
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">value</span>
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">ThreadError</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">PStore</span><span class="ruby-operator">::</span><span class="ruby-constant">Error</span>, <span class="ruby-string">&quot;nested transaction&quot;</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- transaction-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- transaction-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

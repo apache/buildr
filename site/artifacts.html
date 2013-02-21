@@ -1,0 +1,225 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'>
+    <title>buildr &mdash; Artifacts</title>
+    <style type='text/css'>
+      @import 'css/default.css';
+      @import 'css/syntax.css';
+    </style>
+    <style media='print' type='text/css'>
+      @import 'css/print.css';
+    </style>
+    <meta content='Official Buildr documentation from the people in the know' name='subject'>
+    <link href='images/favicon.png' rel='shortcut icon'>
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <a href='http://buildr.apache.org/' title="Build like you code"><img alt='buildr' src='images/buildr.png'></a>
+        <div class='tagline'>Build like you code</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>Start Here
+            <ol class="toc">
+              <li><a href='index.html'>Welcome</a></li>
+              <li><a href='quick_start.html'>Quick Start</a></li>
+              <li><a href='installing.html'>Installing & Running</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Index'>Community Wiki</a></li>
+            </ol>
+          </li>
+          <li>Using Buildr
+            <ol class="toc">
+              <li><a href='buildr.pdf'>This Guide (PDF)</a></li>
+              <li><a href='projects.html'>Projects</a></li>
+              <li><a href='building.html'>Building</a></li>
+              <li><a href='artifacts.html'>Artifacts</a></li>
+              <li><a href='packaging.html'>Packaging</a></li>
+              <li><a href='testing.html'>Testing</a></li>
+              <li><a href='releasing.html'>Releasing</a></li>
+              <li><a href='settings_profiles.html'>Settings/Profiles</a></li>
+              <li><a href='languages.html'>Languages</a></li>
+              <li><a href='more_stuff.html'>More Stuff</a></li>
+              <li><a href='extending.html'>Extending Buildr</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Buildr+HowTos'>How-Tos</a></li>
+            </ol>
+          </li>
+          <li>Reference
+            <ol class="toc">
+              <li><a href='rdoc'>API</a></li>
+              <li><a href='http://docs.rubyrake.org'>Rake</a></li>
+              <li><a href='http://antwrap.rubyforge.org'>Antwrap</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Common+Problems+and+Solutions'>Troubleshooting</a></li>
+            </ol>
+          </li>
+          <li>Get Involved
+            <ol class="toc">
+              <li><a href='download.html'>Download</a></li>
+              <li><a href='mailing_lists.html'>Mailing Lists</a></li>
+              <li><a href='http://www.twitter.com/buildr'>Twitter</a></li>
+              <li><a href='http://issues.apache.org/jira/browse/Buildr'>Issues/Bugs</a></li>
+              <li><a href='https://builds.apache.org/view/A-F/view/Buildr'>CI Jobs</a></li>
+              <li><a href='contributing.html'>Contributing</a></li>
+            </ol>
+          </li>
+          <li>
+            <form action='http://www.google.com/cse' id='searchbox_003673095760649043902:ogcgrzu0l2y'>
+              <input name='cx' type='hidden' value='003673095760649043902:ogcgrzu0l2y'>
+              <input name='cof' type='hidden' value='FORID:0'>
+              <input name='q' size='20' type='text'>
+              <input name='sa' type='submit' value='Search'>
+              <img alt='Google Custom Search' src='http://www.google.com/coop/images/google_custom_search_smnar.gif'>
+            </form>
+          </li>
+          <li>The Buildr Book
+            <p><a href='http://www.amazon.com/Buildr/dp/1442160942/'><img src='images/1442160941-frontcover.jpg' style='width:120px'></a></p>
+            <p>Based on the Buildr documentation, available from <a href='http://www.amazon.com/Buildr/dp/1442160942/'>Amazon</a> and
+            <a href='http://www.createspace.com/3382199'>CreateSpace</a></p>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1 id='artifacts'>Artifacts</h1>
+        <ol class="toc"><li><a href="#specifying">Specifying Artifacts</a></li><li><a href="#repositories">Specifying Repositories</a></li><li><a href="#downloading">Downloading Artifacts</a></li><li><a href="#install_upload">Install and Upload</a></li></ol>
+        <p>In Buildr, almost everything is a file or a file task. You compile source files that come from the file system using dependencies found on the file system, generating even more files. But how do you get these dependencies to start with, and how do you share them with others?</p>
+<p>Artifacts. We designed Buildr to work as a drop-in replacement for Maven 2.0, and share artifacts through the same local and remote repositories. Artifact tasks know how to download a file from one of the remote repositories, and install it in the local repository, where Buildr can find it. Packages know how to create files and upload them to remote repositories.</p>
+<p>We&#8217;ll get into all of that in a second, but first, let&#8217;s introduce the artifact specification. It&#8217;s a simple string that takes one of two forms:</p>
+<div class="highlight"><pre><code class="text">group:id:type:version
+group:id:type:classifier:version
+</code></pre>
+</div>
+<p>For example, <code>'org.apache.axis2:axis2:jar:1.2'</code> refers to an artifact with group identifier org.apache.axis2, artifact identifier axis2, a <span class="caps">JAR</span> file with version 1.2.  Classifiers are typically used to distinguish between similar file types, for example, a source distribution and a binary distribution that otherwise have the same identifier and are both <span class="caps">ZIP</span> files.</p>
+<h2 id="specifying">Specifying Artifacts</h2>
+<p>If your Buildfile spells out <code>'org.apache.axis2:axis2:jar:1.2'</code> more than once, you&#8217;re doing something wrong.  Repeating the same string over and over will make your code harder to maintain.  You&#8217;ll know that when you upgrade to a new version in one place, forget to do it in another, and end up with a mismatch.</p>
+<p>You can use Ruby&#8217;s syntax to do simple string substitution, for example:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">AXIS_VERSION</span> <span class="o">=</span> <span class="s1">&#39;1.2&#39;</span>
+
+<span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="s2">&quot;org.apache.axis2:axis2:jar:</span><span class="si">#{</span><span class="no">AXIS_VERSION</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre>
+</div>
+<p>Better yet, you can define all your artifacts at the top of the Buildfile and use constants to reference them in your project definition.  For example:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">AXIS2</span> <span class="o">=</span> <span class="s1">&#39;org.apache.axis2:axis2:jar:1.2&#39;</span>
+
+<span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="no">AXIS2</span>
+</code></pre>
+</div>
+<p>Note that we&#8217;re not using a separate constant for the version number.  In our experience, it&#8217;s unnecessary.  The version number intentionally appears at the end of the string, where it stands out easily.</p>
+<p>If you have a set of artifacts that belong to the same group and version, and that&#8217;s quite common, you can use the <code>group</code> shortcut:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">AXIOM</span>  <span class="o">=</span> <span class="n">group</span><span class="p">(</span><span class="s1">&#39;axiom-api&#39;</span><span class="p">,</span> <span class="s1">&#39;axiom-impl&#39;</span><span class="p">,</span> <span class="s1">&#39;axiom-dom&#39;</span><span class="p">,</span>
+  <span class="ss">:under</span><span class="o">=&gt;</span><span class="s1">&#39;org.apache.ws.commons.axiom&#39;</span><span class="p">,</span> <span class="ss">:version</span><span class="o">=&gt;</span><span class="s1">&#39;1.2.4&#39;</span><span class="p">)</span>
+</code></pre>
+</div>
+<p class="note">Buildr projects also define a <code>group</code> attribute which can lead to some confusion.  If you want to define an artifact group within a project definition, you should use the explicit qualifier <code>Buildr::group</code>.</p>
+<p>If you have several artifacts you always use together, consider placing them in an array.  Methods that accept lists of artifacts also accept arrays.  For example:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">OPENJPA</span> <span class="o">=</span> <span class="o">[</span><span class="s1">&#39;org.apache.openjpa:openjpa:jar:1.2.1&#39;</span><span class="p">,</span>
+  <span class="s1">&#39;net.sourceforge.serp:serp:jar:1.12.0&#39;</span><span class="o">]</span>
+<span class="no">AXIS_OF_WS</span> <span class="o">=</span> <span class="o">[</span><span class="no">AXIS2</span><span class="p">,</span> <span class="no">AXIOM</span><span class="o">]</span>
+
+<span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="no">OPENJPA</span><span class="p">,</span> <span class="no">AXIS_OF_WS</span>
+</code></pre>
+</div>
+<p>Another way to group related artifacts together and access them individually is using the <code>struct</code> shortcut.  For example:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">JAVAX</span> <span class="o">=</span> <span class="n">struct</span><span class="p">(</span>
+  <span class="ss">:activation</span>  <span class="o">=&gt;</span><span class="s1">&#39;javax.activation:activation:jar:1.1&#39;</span><span class="p">,</span>
+  <span class="ss">:persistence</span> <span class="o">=&gt;</span><span class="s1">&#39;javax.persistence:persistence-api:jar:1.0&#39;</span><span class="p">,</span>
+  <span class="ss">:stream</span>      <span class="o">=&gt;</span><span class="s1">&#39;stax:stax-api:jar:1.0.1&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="no">JAVAX</span><span class="o">.</span><span class="n">persistence</span><span class="p">,</span> <span class="no">OPENJPA</span>
+</code></pre>
+</div>
+<p>In our experience, using constants in this manner makes your Buildfile much easier to write and maintain.</p>
+<p>And, of course, you can always place your artifact specifications in a separate file and require it into your Buildfile.  For example, if you&#8217;re working on several different projects that all share the same artifacts:</p>
+<div class="highlight"><pre><code class="ruby"><span class="nb">require</span> <span class="s1">&#39;../shared/artifacts&#39;</span>
+</code></pre>
+</div>
+<p>When you use <code>require</code>, Ruby always looks for a filename with the <code>.rb</code> extension, so in this case it expects to find <code>artifacts.rb</code> in the <code>shared</code> directory.</p>
+<p>One last thing.  You can also treat artifact specifications as hashes.  For example:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">AXIS</span> <span class="o">=</span> <span class="p">{</span> <span class="ss">:group</span><span class="o">=&gt;</span><span class="s1">&#39;org.apache.axis2&#39;</span><span class="p">,</span> <span class="ss">:id</span><span class="o">=&gt;</span><span class="s1">&#39;axis2&#39;</span><span class="p">,</span> <span class="ss">:version</span><span class="o">=&gt;</span><span class="s1">&#39;1.2&#39;</span> <span class="p">}</span>
+<span class="n">compile</span><span class="o">.</span><span class="n">with</span> <span class="no">AXIS</span>
+<span class="nb">puts</span> <span class="n">compile</span><span class="o">.</span><span class="n">dependencies</span><span class="o">.</span><span class="n">first</span><span class="o">.</span><span class="n">to_hash</span>
+<span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:group</span><span class="o">=&gt;</span><span class="s1">&#39;org.apache.axis2&#39;</span><span class="p">,</span> <span class="ss">:id</span><span class="o">=&gt;</span><span class="s1">&#39;axis2&#39;</span><span class="p">,</span>
+     <span class="ss">:version</span><span class="o">=&gt;</span><span class="s1">&#39;1.2&#39;</span><span class="p">,</span> <span class="ss">:type</span><span class="o">=&gt;</span><span class="ss">:jar</span> <span class="p">}</span>
+</code></pre>
+</div>
+<h2 id="repositories">Specifying Repositories</h2>
+<p>Buildr can download artifacts for you, but only if you tell it where to find them.  You need to specify at least one remote repository, from which to download these artifacts.</p>
+<p>When you call <code>repositories.remote</code>, you get an array of URLs for the various remote repositories.  Initially, it&#8217;s an empty array, to which you can add new repositories.  For example:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">repositories</span><span class="o">.</span><span class="n">remote</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;http://www.ibiblio.org/maven2/&#39;</span>
+</code></pre>
+</div>
+<p>If your repository requires <span class="caps">HTTP</span> authentication, you can write,</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">repositories</span><span class="o">.</span><span class="n">remote</span> <span class="o">&lt;&lt;</span> <span class="no">URI</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s2">&quot;http://user:password@repository.example.com&quot;</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>If you need to use a proxy server to access remote repositories, you can set the environment variable <code>HTTP_PROXY</code> to the proxy server <span class="caps">URL</span> (use <code>HTTPS_PROXY</code> for proxying <span class="caps">HTTPS</span> connections).  You can also work without a proxy for certain hosts by specifying the <code>NO_PROXY</code> environment variable.  For example:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span><span class="nb">export </span><span class="nv">HTTP_PROXY</span> <span class="o">=</span> <span class="s1">&#39;http://myproxy:8080&#39;</span>
+<span class="nv">$ </span><span class="nb">export </span><span class="nv">NO_PROXY</span> <span class="o">=</span> <span class="s1">&#39;*.mycompany.com,localhost,special:800&#39;</span>
+</code></pre>
+</div>
+<p>Alternatively you can use the Buildr options <code>proxy.http</code> and <code>proxy.exclude</code>:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">options</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">http</span> <span class="o">=</span> <span class="s1">&#39;http://myproxy:8080&#39;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">exclude</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;*.mycompany.com&#39;</span>
+<span class="n">options</span><span class="o">.</span><span class="n">proxy</span><span class="o">.</span><span class="n">exclude</span> <span class="o">&lt;&lt;</span> <span class="s1">&#39;localhost&#39;</span>
+</code></pre>
+</div>
+<p>All the artifacts download into the local repository.  Since all your projects share the same local repository, you only need to download each artifact once. Buildr was designed to be used alongside Maven 2.0, for example, when migrating projects from Maven 2.0 over to Buildr.  By default it will share the same local repository, expecting the repository to be the <code>.m2/repository</code> directory inside your home directory.</p>
+<p>You can choose to relocate the local repository by giving it a different path, for example:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">repositories</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="s1">&#39;/usr/local/maven/repository&#39;</span>
+</code></pre>
+</div>
+<p>That&#8217;s one change you don&#8217;t want to commit into the Buildfile, so the best place to do it is in the <code>buildr.rb</code> file in the <code>.buildr</code> directory under your home directory.</p>
+<p>Buildr downloads artifacts when it needs to use them, for example, to compile a project.  You don&#8217;t need to download artifacts directly.  Except when you do, for example, if you want to download all the latest artifacts and then go off-line.  It&#8217;s as simple as:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr artifacts
+</code></pre>
+</div>
+<h2 id="downloading">Downloading Artifacts</h2>
+<p>Within your buildfile you can download artifacts directly by invoking them, for example:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">artifact</span><span class="p">(</span><span class="s1">&#39;org.apache.openjpa:openjpa:jar:1.2.1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">invoke</span>
+<span class="n">artifacts</span><span class="p">(</span><span class="no">OPENJPA</span><span class="p">)</span><span class="o">.</span><span class="n">each</span><span class="p">(</span><span class="o">&amp;</span><span class="ss">:invoke</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>When you let Buildr download artifacts for you, or by invoking the artifact task yourself, it scans through the remote repositories assuming each repository follows the Maven 2 structure.  Starting from the root repository <span class="caps">URL</span>, it will look for each artifact using the path <code>group/id/version/id-version.type</code> (or &#8230;<code>/id-version-classifier.type</code>).  The group identifier becomes a path by turning periods (<code>.</code>) into slashes (<code>/</code>). So to find <code>org.apache.axis2:axis2:jar:1.2</code>, we&#8217;re going to look for <code>org/apache/axis2/axis2/1.2/axis2-1.2.jar</code>.</p>
+<p>You&#8217;ll find a lot of open source Java libraries in public repositories that support this structure (for example, the <a href="http://www.ibiblio.org/maven2/">Ibiblio Maven</a> repository).  And, of course, every remote repository you setup for your projects.</p>
+<p>But there are exceptions to the rule.  Say we want to download the Dojo widget library and use it in our project.  It&#8217;s available from the Dojo Web site, but that site doesn&#8217;t follow the Maven repository conventions, so our feeble attempt to use existing remote repositories will fail.</p>
+<p>We can still treat Dojo as an artifact, by telling Buildr where to download it from:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">DOJO</span> <span class="o">=</span> <span class="s1">&#39;0.2.2&#39;</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://download.dojotoolkit.org/release-</span><span class="si">#{</span><span class="no">DOJO</span><span class="si">}</span><span class="s2">/dojo-</span><span class="si">#{</span><span class="no">DOJO</span><span class="si">}</span><span class="s2">-widget.zip&quot;</span>
+<span class="n">download</span><span class="p">(</span><span class="n">artifact</span><span class="p">(</span><span class="s2">&quot;dojo:dojo:zip:widget:</span><span class="si">#{</span><span class="no">DOJO</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">=&gt;</span><span class="n">url</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>Explaining how it works is tricky, skip if you don&#8217;t care for the details.  On the other hand, it will give you a better understanding of Buildr/Rake, so if not now, come back and read it later.</p>
+<p>We use the <code>artifact</code> method to create an <code>Artifact</code> task that references the Dojo widget in our local repository.  The <code>Artifact</code> task is a file task with some additional behavior added by Buildr.  When you call <code>compile.with</code>, that&#8217;s exactly what it does internally, turning each of your artifact specifications into an <code>Artifact</code> task.</p>
+<p>But the <code>Artifact</code> task doesn&#8217;t know how to download the Dojo widget, only how to handle conventional repositories.  So we&#8217;re going to create a download task as well.  We use the <code>download</code> method to create a file task that downloads the file from a remote <span class="caps">URL</span>.  (Of course, it will only download the file if it doesn&#8217;t already exist.)</p>
+<p>But which task gets used when?  We could have defined these tasks separately and used some glue code to make one use the other.  Instead, we call <code>download</code> with the results of <code>artifact</code>.  Essentially, we&#8217;re telling <code>download</code> to use the same file path as <code>artifact</code>.  So now we have two file tasks that point to the very same file.  We wired them together.</p>
+<p>You can&#8217;t have more than one task pointing to the same file.  Rake&#8217;s rule of the road.  What Rake does is merge the tasks together, creating a single file task for <code>artifact</code>, and then enhancing it with another action from <code>download</code>. One task, two actions.  Statistically, we&#8217;ve doubled the odds that at least one of these actions will manage to download the Dojo widget and install it in the local repository.</p>
+<p>Since we ordered the calls to <code>artifact</code> first and <code>download</code> second, we know the actions will execute in that order.  But <code>artifact</code> is slightly devilish: when its action runs, it adds another action to the end of the list.  So the <code>artifact</code> action runs first, adds an action at the end, the <code>download</code> action runs second, and downloads the Dojo widget for us.  The second <code>artifact</code> action runs last, but checks that the file already exist and doesn&#8217;t try to download it again.</p>
+<p>Magic.</p>
+<h2 id="install_upload">Install and Upload</h2>
+<p>Generally you use artifacts that download from remote repositories into the local repository, or artifacts packaged by the project itself (see <a href="packaging.html">Packaging</a>), which are then installed into the local repository and uploaded to the release server.</p>
+<p>Some artifacts do not fall into either category.  In this example we&#8217;re going to download a <span class="caps">ZIP</span> file, extract a <span class="caps">JAR</span> file from it, and use that <span class="caps">JAR</span> file as an artifact.  We would then expect to install this <span class="caps">JAR</span> in the local repository and upload it to the release server, where it can be shared with other projects.</p>
+<p>So let&#8217;s start by creating a task that downloads the <span class="caps">ZIP</span>, and another one to extract it and create the <span class="caps">JAR</span> file:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">app_zip</span> <span class="o">=</span> <span class="n">download</span><span class="p">(</span><span class="s1">&#39;target/app.zip&#39;</span><span class="o">=&gt;</span><span class="n">url</span><span class="p">)</span>
+<span class="n">bean_jar</span> <span class="o">=</span> <span class="n">file</span><span class="p">(</span><span class="s1">&#39;target/app/bean.jar&#39;</span><span class="o">=&gt;</span><span class="n">unzip</span><span class="p">(</span><span class="s1">&#39;target/app&#39;</span><span class="o">=&gt;</span><span class="n">app_zip</span><span class="p">))</span>
+</code></pre>
+</div>
+<p>When you call <code>artifact</code>, it returns an <code>Artifact</code> task that points to the artifact file in the local repository, downloading the file if it doesn&#8217;t already exist.  You can override this behavior by enhancing the task and creating the file yourself (you may also want to create a <span class="caps">POM</span> file).  Or much simpler, call the <code>from</code> method on the artifact and tell it where to find the source file.</p>
+<p>So the next step is to specify the artifact and tell it to use the extracted <span class="caps">JAR</span> file:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">bean</span> <span class="o">=</span> <span class="n">artifact</span><span class="p">(</span><span class="s1">&#39;example.com:beans:jar:1.0&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">from</span><span class="p">(</span><span class="n">bean_jar</span><span class="p">)</span>
+</code></pre>
+</div>
+<p>The artifact still points to the local repository, but when we invoke the task it copies the source file over to the local repository, instead of attempting a download.</p>
+<p>Use the <code>install</code> method if you want the artifact and its <span class="caps">POM</span> installed in the local repository when you run the <code>install</code> task.  Likewise, use the <code>upload</code> method if you want the artifact uploaded to the release server when you run the <code>upload</code> task.  You do not need to do this on artifacts downloaded from a remote server, or created with the <code>package</code> method, the later are automatically added to the list of installed/uploaded artifacts.</p>
+<p>Our example ends by including the artifact in the <code>install</code> and <code>upload</code> tasks:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">install</span> <span class="n">bean</span>
+<span class="n">upload</span> <span class="n">bean</span>
+</code></pre>
+</div>
+<p class="tip">Calling the <code>install</code> (and likewise <code>upload</code>) method on an artifact run <code>buildr install</code>.  If you need to download and install an artifact, invoke the task directly with <code>install(&lt;artifact&gt;).invoke</code>.</p>
+<p>We&#8217;ll talk more about installing and uploading in the next chapter, but right now we&#8217;re going to <a href="packaging.html">package some artifacts</a>.</p>
+      </div>
+      <div id='footer'>Copyright &copy; 2007-2010 The Apache Software Foundation</div>
+    </div>
+  </body>
+</html>
