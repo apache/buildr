@@ -36,7 +36,7 @@ task 'release' => %w{setup-local-site-svn} do
     puts '[X] Uploaded packages to www.apache.org/dist'
 
     puts "Uploading new site to #{spec.name}.apache.org ..."
-    sh 'rsync', '--progress', '--recursive', '--delete', "_release/#{spec.version}/site/", 'site'
+    sh 'rsync', '--progress', '--recursive', '--exclude', '.svn', '--delete', "_release/#{spec.version}/site/", 'site'
     task('publish-site-svn').invoke
     puts "[X] Uploaded new site to #{spec.name}.apache.org"
   end.call
