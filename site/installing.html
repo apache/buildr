@@ -1,0 +1,306 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'>
+    <title>buildr &mdash; Installing and Running</title>
+    <style type='text/css'>
+      @import 'css/default.css';
+      @import 'css/syntax.css';
+    </style>
+    <style media='print' type='text/css'>
+      @import 'css/print.css';
+    </style>
+    <meta content='Official Buildr documentation from the people in the know' name='subject'>
+    <link href='images/favicon.png' rel='shortcut icon'>
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <a href='http://buildr.apache.org/' title="Build like you code"><img alt='buildr' src='images/buildr.png'></a>
+        <div class='tagline'>Build like you code</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>Start Here
+            <ol class="toc">
+              <li><a href='index.html'>Welcome</a></li>
+              <li><a href='quick_start.html'>Quick Start</a></li>
+              <li><a href='installing.html'>Installing & Running</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Index'>Community Wiki</a></li>
+            </ol>
+          </li>
+          <li>Using Buildr
+            <ol class="toc">
+              <li><a href='buildr.pdf'>This Guide (PDF)</a></li>
+              <li><a href='projects.html'>Projects</a></li>
+              <li><a href='building.html'>Building</a></li>
+              <li><a href='artifacts.html'>Artifacts</a></li>
+              <li><a href='packaging.html'>Packaging</a></li>
+              <li><a href='testing.html'>Testing</a></li>
+              <li><a href='releasing.html'>Releasing</a></li>
+              <li><a href='settings_profiles.html'>Settings/Profiles</a></li>
+              <li><a href='languages.html'>Languages</a></li>
+              <li><a href='more_stuff.html'>More Stuff</a></li>
+              <li><a href='extending.html'>Extending Buildr</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Buildr+HowTos'>How-Tos</a></li>
+            </ol>
+          </li>
+          <li>Reference
+            <ol class="toc">
+              <li><a href='rdoc'>API</a></li>
+              <li><a href='http://docs.rubyrake.org'>Rake</a></li>
+              <li><a href='http://antwrap.rubyforge.org'>Antwrap</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Common+Problems+and+Solutions'>Troubleshooting</a></li>
+            </ol>
+          </li>
+          <li>Get Involved
+            <ol class="toc">
+              <li><a href='download.html'>Download</a></li>
+              <li><a href='mailing_lists.html'>Mailing Lists</a></li>
+              <li><a href='http://www.twitter.com/buildr'>Twitter</a></li>
+              <li><a href='http://issues.apache.org/jira/browse/Buildr'>Issues/Bugs</a></li>
+              <li><a href='https://builds.apache.org/view/A-F/view/Buildr'>CI Jobs</a></li>
+              <li><a href='contributing.html'>Contributing</a></li>
+            </ol>
+          </li>
+          <li>
+            <form action='http://www.google.com/cse' id='searchbox_003673095760649043902:ogcgrzu0l2y'>
+              <input name='cx' type='hidden' value='003673095760649043902:ogcgrzu0l2y'>
+              <input name='cof' type='hidden' value='FORID:0'>
+              <input name='q' size='20' type='text'>
+              <input name='sa' type='submit' value='Search'>
+              <img alt='Google Custom Search' src='http://www.google.com/coop/images/google_custom_search_smnar.gif'>
+            </form>
+          </li>
+          <li>The Buildr Book
+            <p><a href='http://www.amazon.com/Buildr/dp/1442160942/'><img src='images/1442160941-frontcover.jpg' style='width:120px'></a></p>
+            <p>Based on the Buildr documentation, available from <a href='http://www.amazon.com/Buildr/dp/1442160942/'>Amazon</a> and
+            <a href='http://www.createspace.com/3382199'>CreateSpace</a></p>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1 id='installing and running'>Installing and Running</h1>
+        <ol class="toc"><li><a href="#linux">Installing on Linux</a></li><li><a href="#osx">Installing on OS X</a></li><li><a href="#windows">Installing on Windows</a></li><li><a href="#jruby">Installing for JRuby</a></li><li>Using multiple versions of Buildr</li><li><a href="#running">Running Buildr</a></li><li><a href="#help">Help Tasks</a></li><li><a href="#more">Learning More</a></li></ol>
+        <h1 id="all-in-one">All In One Bundle</h1>
+<p>Contributors to this project maintain a separate distribution over on <a href="http://rubyforge.org/projects/buildr">RubyForge</a>. Using this distribution, it is possible to install Buildr just like you would install Apache Ant or Apache Maven. It comes bundled with JRuby and distributed as a cross-platform zip or tar.gz file.</p>
+<p>The RubyForge distribution is <strong>not</strong> an official Apache distribution. The all-in-one bundles are hosted on the <a href="http://rubyforge.org/frs/?group_id=3180">Files page</a>.</p>
+<p><strong>In details:</strong> Navigate to <a href="http://rubyforge.org/frs/?group_id=3180">Rubyforge&#8217;s buildr&#8217;s Files page</a> and download the all-in-one bundle for the latest version available.</p>
+<p>Unzip the bundle in a convenient location.</p>
+<p>You can execute the buildr executable under the bin directory directly.</p>
+<p>You should consider adding the bin directory of the result to the <code>PATH</code> global environment variable. See <a href="#jruby">Installing Buildr for JRuby</a> for instructions to update it.</p>
+<h1 id="the-gem">Installing the gem</h1>
+<p><strong>The easy way:</strong>  We recommend you pick the platform you want to run Buildr on and then follow the <em>easy way</em> instructions for that platform.  It could save you an hour or two struggling to install all the right dependencies.</p>
+<p><a href="#jruby">Installing Buildr for JRuby</a> is the same on all operating systems.  Choose JRuby if you&#8217;re working with Java 6 on OS X, developing with multiple JDKs, or just like JRuby better.</p>
+<p>If you are running behind a proxy server, make sure the environment variable <code>HTTP_PROXY</code> is set, as many of these steps require <span class="caps">HTTP</span> access.</p>
+<p><br></p>
+<p><strong>In details:</strong> The <code>gem install</code> and <code>gem update</code> commands install Buildr from a binary distribution provided through <a href="http://rubyforge.org/projects/buildr">RubyForge</a>. This distribution is maintained by contributors to this project, but is <strong>not</strong> an official Apache distribution.  You can obtain the official Apache distribution files from the <a href="download.html">download page</a>.</p>
+<p>Older versions of RubyGems are all kind of fail.  You want to avoid these unless you have the patience to install each Buildr dependency manually.  Get RubyGems 1.3.1 or later, and when using Debian packages (e.g. Ubuntu), make sure to get the unmolested RubyGems straight form the source.</p>
+<p>The Ruby interpreter and <span class="caps">JVM</span> must use compatible architectures.  For example, OS X comes with 32-bit version of Ruby, Java 1.5 in both 32-bit and 64-bit flavors, and 64-bit Java 6.  As a result you can run Ruby with Java 1.5 (32-bit), but to use Java 6 you either need to build Ruby from source for 64-bit, or use <a href="#jruby">Buildr for JRuby</a>.</p>
+<h2 id="linux">Installing on Linux</h2>
+<p><strong>The easy way:</strong> Use this bash script to <a href="scripts/install-linux.sh">install Buildr on Linux</a>.  This script will install the most recent version of Buildr, or if already installed, upgrade to the most recent version.  It will also install Ruby 1.8.6 if not already installed (requires <code>apt-get</code>, <code>yum</code> or <code>urpmi</code>) and upgrade to RubyGems 1.3.1 or later.</p>
+<p><br></p>
+<p><strong>In details:</strong> To get started you will need a recent version of Ruby, Ruby Gems and build tools for compiling native libraries (<code>make</code>, <code>gcc</code> and standard headers).</p>
+<p>On <strong>RedHat/Fedora</strong> you can use yum to install Ruby and RubyGems, and then upgrade to the most recent version of RubyGems:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>sudo yum install ruby rubygems ruby-devel gcc
+<span class="nv">$ </span>sudo gem update --system
+</code></pre>
+</div>
+<p>On <strong>Ubuntu</strong> you have to install several packages:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>sudo apt-get install ruby-full ruby1.8-dev libopenssl-ruby build-essential
+</code></pre>
+</div>
+<p>If using Ubuntu 9.10 or earlier, the Debian package for <code>rubygems</code> will not allow you to install Buildr, so you need to install RubyGems from source:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>wget http://rubyforge.org/frs/download.php/45905/rubygems-1.3.1.tgz
+<span class="nv">$ </span>tar xzf rubygems-1.3.1.tgz
+<span class="nv">$ </span><span class="nb">cd </span>rubygems-1.3.1
+<span class="nv">$ </span>sudo ruby setup.rb
+<span class="nv">$ </span>sudo ln -s /usr/bin/gem1.8 /usr/bin/gem
+</code></pre>
+</div>
+<p>Before installing Buildr, please set the <code>JAVA_HOME</code> environment variable to point to your <span class="caps">JDK</span> distribution.  Next, use Ruby Gem to install Buildr:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>sudo env <span class="nv">JAVA_HOME</span><span class="o">=</span><span class="nv">$JAVA_HOME</span> gem install buildr
+</code></pre>
+</div>
+<p>To upgrade to a new version or install a specific version:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>sudo env <span class="nv">JAVA_HOME</span><span class="o">=</span><span class="nv">$JAVA_HOME</span> gem update buildr
+<span class="nv">$ </span>sudo env <span class="nv">JAVA_HOME</span><span class="o">=</span><span class="nv">$JAVA_HOME</span> gem install buildr -v 1.4.3
+</code></pre>
+</div>
+<h2 id="osx">Installing on OS X</h2>
+<p><strong>The easy way:</strong> Use this script to <a href="scripts/install-osx.sh">install Buildr on OS X</a>.  This script will install the most recent version of Buildr, or if already installed, upgrade to the most recent version.  It will also install Ruby 1.8.6 if not already installed (using MacPorts/Fink) and upgrage RubyGems to 1.3.1 or later.</p>
+<p>You need to have the Apple Development Tools installed.  They are available on the Mac <span class="caps">OSX</span> installation CD.</p>
+<p class="note">Java Update 3 for Snow Leopard removes header files necessary to compile the native Ruby-Java Bridge (<span class="caps">RJB</span>) gem, so installing rjb gem may fail on OS X.  The solution is to install Java for Mac OS X 10.6 Update 3 Developer Package from http://connect.apple.com before <code>gem install</code>.</p>
+<p><strong>Using <span class="caps">RVM</span>?</strong> If you&#8217;re not using the built-in ruby on OS X (e.g., if you&#8217;re using <span class="caps">RVM</span>), you&#8217;ll need to force-install the platform-independent <span class="caps">RJB</span>:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>gem install rjb -v 1.3.3 --platform ruby
+</code></pre>
+</div>
+<p>The darwin pre-built binary seems to only work with the built-in ruby.</p>
+<p><br></p>
+<p><strong>In details:</strong> OS X 10.5 (Leopard) comes with a recent version of Ruby 1.8.6.  You do not need to install a different version of Ruby when running OS X 10.5.</p>
+<p>OS X 10.4 (Tiger) includes an older version of Ruby that is not compatible with Buildr.  You can install Ruby 1.8.6 using MacPorts (<code>sudo port install ruby rb-rubygems</code>), Fink or the <a href="http://rubyosx.rubyforge.org/">Ruby One-Click Installer for OS X</a>.</p>
+<p>We recommend you first upgrade to the latest version of Ruby gems:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>sudo gem update --system
+</code></pre>
+</div>
+<p>Before installing Buildr, please set the <code>JAVA_HOME</code> environment variable to point to your <span class="caps">JDK</span> distribution:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span><span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span>/Library/Java/Home
+</code></pre>
+</div>
+<p>To install Buildr:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>sudo env <span class="nv">JAVA_HOME</span><span class="o">=</span><span class="nv">$JAVA_HOME</span> gem install buildr
+</code></pre>
+</div>
+<p>To upgrade to a new version or install a specific version:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>sudo env <span class="nv">JAVA_HOME</span><span class="o">=</span><span class="nv">$JAVA_HOME</span> gem update buildr
+<span class="nv">$ </span>sudo env <span class="nv">JAVA_HOME</span><span class="o">=</span><span class="nv">$JAVA_HOME</span> gem install buildr -v 1.3.4
+</code></pre>
+</div>
+<h2 id="windows">Installing on Windows</h2>
+<p><strong>The easy way:</strong>  The easiest way to install Ruby is using the <a href="http://rubyinstaller.rubyforge.org/">one-click installer</a>.  Be sure to install Ruby 1.8.6; support for Ruby 1.9.x is still a work in progress.  Once installed, set the <code>JAVA_HOME</code> environment variable and run <code>gem install buildr --platform mswin32</code>.</p>
+<p><br></p>
+<p><strong>In details:</strong> Before installing Buildr, please set the <code>JAVA_HOME</code> environment variable to point to your <span class="caps">JDK</span> distribution.  Next, use Ruby Gem to install Buildr:</p>
+<div class="highlight"><pre><code class="sh">&gt; gem install buildr --platform mswin32
+</code></pre>
+</div>
+<p>To upgrade to a new version or install a specific version:</p>
+<div class="highlight"><pre><code class="sh">&gt; gem update buildr
+&gt; gem install buildr -v 1.3.4 --platform mswin32
+</code></pre>
+</div>
+<h2 id="jruby">Installing for JRuby</h2>
+<p><strong>The easy way:</strong> Use this bash script to <a href="scripts/install-jruby.sh">install Buildr on JRuby</a>.  This script will install the most recent version of Buildr, or if already installed, upgrade to the most recent version.  If necessary, it will also install JRuby 1.6.1 in <code>/opt/jruby</code> and update the <code>PATH</code> variable in <code>~/.bash_profile</code> or <code>~/.profile</code>.</p>
+<p><br></p>
+<p><strong>In details:</strong> If you don&#8217;t already have JRuby 1.5.1 or later installed, you can download it from the <a href="http://www.jruby.org/download">JRuby site</a>.</p>
+<p>After uncompressing JRuby, update your <code>PATH</code> to include both <code>java</code> and <code>jruby</code> executables.</p>
+<p>For Linux and OS X:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span><span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:<span class="o">[</span>path to JRuby<span class="o">]</span>/bin:<span class="nv">$JAVA_HOME</span>/bin
+<span class="nv">$ </span>jruby -S gem install buildr
+</code></pre>
+</div>
+<p>For Windows:</p>
+<div class="highlight"><pre><code class="sh">&gt; <span class="nb">set </span><span class="nv">PATH</span><span class="o">=</span>%PATH%;<span class="o">[</span>path to JRuby<span class="o">]</span>/bin;%JAVA_HOME%/bin
+&gt; jruby -S gem install buildr
+</code></pre>
+</div>
+<p>To upgrade to a new version or install a specific version:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>jruby -S gem update buildr
+<span class="nv">$ </span>jruby -S gem install buildr -v 1.3.4
+</code></pre>
+</div>
+<p><strong>Important: Running JRuby and Ruby side by side</strong></p>
+<p>Ruby and JRuby maintain separate Gem repositories, and in fact install slightly different versions of the Buildr Gem (same functionality, different dependencies).  Installing Buildr for Ruby does not install it for JRuby and vice versa.</p>
+<p>If you have JRuby installed but not Ruby, the <code>gem</code> and <code>buildr</code> commands will use JRuby.  If you have both JRuby and Ruby installed, follow the instructions below.  To find out if you have Ruby installed (some operating systems include it by default), run <code>ruby --version</code> from the command line.</p>
+<p>To work exclusively with JRuby, make sure it shows first on the path, for example, by setting <code>PATH=/opt/jruby/bin:$PATH</code>.</p>
+<p>You can use JRuby and Ruby side by side, by running scripts with the <code>-S</code> command line argument.  For example:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span><span class="c"># with Ruby</span>
+<span class="nv">$ </span>ruby -S gem install buildr
+<span class="nv">$ </span>ruby -S buildr
+<span class="nv">$ </span><span class="c"># with JRuby</span>
+<span class="nv">$ </span>jruby -S gem install buildr
+<span class="nv">$ </span>jruby -S buildr
+</code></pre>
+</div>
+<p>Run <code>buildr --version</code> from the command line to find which version of Buildr you are using by default.  If you see <code>(JRuby ...)</code>, Buildr is running on that version of JRuby.</p>
+<h2>Using multiple versions of Buildr</h2>
+<p>Rubygems makes it possible to install several versions of Buildr side-by-side on the same system.  If you want to run a specific version, you can do so by adding the version number between underscores (&#8216;_&#8217;) as the first command-line parameter.  For example,</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr _1.3.4_ clean   <span class="c"># runs Buildr v1.3.4</span>
+
+<span class="nv">$ </span>buildr _1.4.4_ clean   <span class="c"># runs Buildr v1.4.4</span>
+</code></pre>
+</div>
+<p class="note">There are two `buildr` executables installed by Rubygems.  One script serves to select the specified (or default) version of Buildr and is typically found under `/usr/bin/buildr` or `/var/lib/gems/1.8/bin/buildr`. The exact location will vary depending on your system.   The other script is the Buildr bootstrap per se and can be found under the specific version of Buildr, e.g, `/var/lib/gems/1.8/gems/buildr-1.4.0/bin/buildr`.   The first script should be on your `<span class="caps">PATH</span>`.   The second script should not be called directly and should not be on your `<span class="caps">PATH</span>`.</p>
+<h2 id="running">Running Buildr</h2>
+<p>You need a <strong>Buildfile</strong>, a build script that tells Buildr all about the projects it&#8217;s building, what they contain, what to produce, and so on.  The Buildfile resides in the root directory of your project.  We&#8217;ll talk more about it in <a href="projects.html">the next chapter</a>.  If you don&#8217;t already have one, ask Buildr to create it by running <code>buildr</code>.</p>
+<p class="tip">You&#8217;ll notice that Buildr creates a file called <code>buildfile</code>.  It&#8217;s case sensitive, but Buildr will look for either <code>buildfile</code> or <code>Buildfile</code>.</p>
+<p>You use Buildr by running the <code>buildr</code> command:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr <span class="o">[</span>options<span class="o">]</span> <span class="o">[</span>tasks<span class="o">]</span> <span class="o">[</span><span class="nv">name</span><span class="o">=</span>value<span class="o">]</span>
+</code></pre>
+</div>
+<p>There are several options you can use, for a full list of options type <code>buildr --help</code>:</p>
+<table>
+	<tr>
+		<th>Option                  </th>
+		<th>Usage </th>
+	</tr>
+	<tr>
+		<td> <code>-f/--buildfile [file]</code>   </td>
+		<td> Specify the buildfile.                                  </td>
+	</tr>
+	<tr>
+		<td> <code>-e/--environment [name]</code> </td>
+		<td> Environment name (e.g. development, test, production).  </td>
+	</tr>
+	<tr>
+		<td> <code>-h/--help</code>               </td>
+		<td> Display this help message.                              </td>
+	</tr>
+	<tr>
+		<td> <code>-n/--nosearch</code>           </td>
+		<td> Do not search parent directories for the buildfile.     </td>
+	</tr>
+	<tr>
+		<td> <code>-q/--quiet</code>              </td>
+		<td> Do not log messages to standard output.                 </td>
+	</tr>
+	<tr>
+		<td> <code>-r/--require [file]</code>     </td>
+		<td> Require <span class="caps">MODULE</span> before executing buildfile.              </td>
+	</tr>
+	<tr>
+		<td> <code>-t/--trace</code>              </td>
+		<td> Turn on invoke/execute tracing, enable full backtrace.  </td>
+	</tr>
+	<tr>
+		<td> <code>-v/--verbose</code>            </td>
+		<td> Log message to standard output                          </td>
+	</tr>
+	<tr>
+		<td> <code>-V/--version</code>            </td>
+		<td> Display the program version.                            </td>
+	</tr>
+	<tr>
+		<td> <code>-P/--prereqs</code>            </td>
+		<td> Display tasks and dependencies, then exit.              </td>
+	</tr>
+</table>
+<p>You can tell Buildr to run specific tasks and the order to run them.  For example:</p>
+<div class="highlight"><pre><code class="sh"><span class="c"># Clean and rebuild</span>
+buildr clean build
+<span class="c"># Package and install</span>
+buildr install
+</code></pre>
+</div>
+<p>If you don&#8217;t specify a task, Buildr will run the <a href="building.html"><code>build</code> task</a>, compiling source code and running test cases.  Running a task may run other tasks as well, for example, running the <code>install</code> task will also run <code>package</code>.</p>
+<p>There are several <a href="settings_profiles.html#env_vars">environment variables</a> that let you control how Buildr works, for example, to skip test cases during a build, or specify options for the <span class="caps">JVM</span>.  Depending on the variable, you may want to set it once in your environment, or set a different value each time you run Buildr.</p>
+<p>For example:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span><span class="nb">export </span><span class="nv">JAVA_OPTS</span><span class="o">=</span><span class="s1">&#39;-Xms1g -Xmx1g&#39;</span>
+<span class="nv">$ </span>buildr <span class="nv">TEST</span><span class="o">=</span>no
+</code></pre>
+</div>
+<h2 id="help">Help Tasks</h2>
+<p>Buildr includes a number of informative tasks.  Currently that number stands at two, but we&#8217;ll be adding more tasks in future releases.  These tasks report information from the Buildfile, so you need one to run them.  For more general help (version number, command line arguments, etc) use <code>buildr --help</code>.</p>
+<p>To start with, type:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr <span class="nb">help</span>
+</code></pre>
+</div>
+<p>You can list the name and description of all your projects using the <code>help:projects</code> task.  For example:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr <span class="nb">help</span>:projects
+killer-app                 <span class="c"># Code. Build. ??? Profit!</span>
+killer-app:teh-api         <span class="c"># Abstract classes and interfaces</span>
+killer-app:teh-impl        <span class="c"># All those implementation details</span>
+killer-app:la-web          <span class="c"># What our users see</span>
+</code></pre>
+</div>
+<p>You are, of course, describing your projects for the sake of those who will maintain your code, right?  To describe a project, or a task, call the <code>desc</code> method before the project or task definition.</p>
+<p>So next let&#8217;s talk about <a href="projects.html">projects</a>.</p>
+<h2 id="more">Learning More</h2>
+<p><strong>Ruby</strong>  It pays to pick up Ruby as a second (or first) programming language. It&#8217;s fun, powerful and slightly addictive.  If you&#8217;re interested in learning Ruby the language, a good place to start is <a href="http://www.pragprog.com/titles/ruby/programming-ruby">Programming Ruby: The Pragmatic Programmer&#8217;s Guide</a>, fondly known as the <em>Pickaxe book</em>.</p>
+<p>For a quicker read (and much more humor), <a href="http://poignantguide.net/ruby/">Why’s (Poignant) Guide to Ruby</a> is available online.  More resources are listed on the <a href="http://www.ruby-lang.org/en/documentation/">ruby-lang web site</a>.</p>
+<p><strong>Rake</strong> Buildr is based on Rake, a Ruby build system that handles tasks and dependencies.  Check out the <a href="http://docs.rubyrake.org/">Rake documentation</a> for more information.</p>
+<p><strong>AntWrap</strong> Buildr uses AntWrap, for configuring and running Ant tasks.  You can learn more from the <a href="http://antwrap.rubyforge.org/">Antwrap documentation</a>.</p>
+<p><strong><span class="caps">YAML</span></strong> Buildr uses <span class="caps">YAML</span> for its profiles.  You can <a href="http://www.yaml.org">learn more about <span class="caps">YAML</span> here</a>, and use this handy <a href="http://www.yaml.org/refcard.html"><span class="caps">YAML</span> quick reference</a>.</p>
+      </div>
+      <div id='footer'>Copyright &copy; 2007-2010 The Apache Software Foundation</div>
+    </div>
+  </body>
+</html>

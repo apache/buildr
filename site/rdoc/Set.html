@@ -1,0 +1,2490 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class Set - buildr</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>rake/lib/set.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link"><a href="Object.html">Object</a>
+  
+</nav>
+
+    <!-- Included Modules -->
+<nav id="includes-section" class="section">
+  <h3 class="section-header">Included Modules</h3>
+
+  <ul class="link-list">
+  
+  
+    <li><a class="include" href="Enumerable.html">Enumerable</a>
+  
+  
+  </ul>
+</nav>
+
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-5B-5D">::[]</a>
+    
+    <li><a href="#method-c-new">::new</a>
+    
+    <li><a href="#method-i-26">#&amp;</a>
+    
+    <li><a href="#method-i-2B">#+</a>
+    
+    <li><a href="#method-i-2D">#-</a>
+    
+    <li><a href="#method-i-3C-3C">#&lt;&lt;</a>
+    
+    <li><a href="#method-i-3D-3D">#==</a>
+    
+    <li><a href="#method-i-5E">#^</a>
+    
+    <li><a href="#method-i-add">#add</a>
+    
+    <li><a href="#method-i-add-3F">#add?</a>
+    
+    <li><a href="#method-i-classify">#classify</a>
+    
+    <li><a href="#method-i-clear">#clear</a>
+    
+    <li><a href="#method-i-collect-21">#collect!</a>
+    
+    <li><a href="#method-i-delete">#delete</a>
+    
+    <li><a href="#method-i-delete-3F">#delete?</a>
+    
+    <li><a href="#method-i-delete_if">#delete_if</a>
+    
+    <li><a href="#method-i-difference">#difference</a>
+    
+    <li><a href="#method-i-divide">#divide</a>
+    
+    <li><a href="#method-i-each">#each</a>
+    
+    <li><a href="#method-i-empty-3F">#empty?</a>
+    
+    <li><a href="#method-i-flatten">#flatten</a>
+    
+    <li><a href="#method-i-flatten-21">#flatten!</a>
+    
+    <li><a href="#method-i-include-3F">#include?</a>
+    
+    <li><a href="#method-i-initialize_copy">#initialize_copy</a>
+    
+    <li><a href="#method-i-inspect">#inspect</a>
+    
+    <li><a href="#method-i-intersection">#intersection</a>
+    
+    <li><a href="#method-i-keep_if">#keep_if</a>
+    
+    <li><a href="#method-i-length">#length</a>
+    
+    <li><a href="#method-i-map-21">#map!</a>
+    
+    <li><a href="#method-i-member-3F">#member?</a>
+    
+    <li><a href="#method-i-merge">#merge</a>
+    
+    <li><a href="#method-i-proper_subset-3F">#proper_subset?</a>
+    
+    <li><a href="#method-i-proper_superset-3F">#proper_superset?</a>
+    
+    <li><a href="#method-i-reject-21">#reject!</a>
+    
+    <li><a href="#method-i-replace">#replace</a>
+    
+    <li><a href="#method-i-select-21">#select!</a>
+    
+    <li><a href="#method-i-size">#size</a>
+    
+    <li><a href="#method-i-subset-3F">#subset?</a>
+    
+    <li><a href="#method-i-subtract">#subtract</a>
+    
+    <li><a href="#method-i-superset-3F">#superset?</a>
+    
+    <li><a href="#method-i-to_a">#to_a</a>
+    
+    <li><a href="#method-i-union">#union</a>
+    
+    <li><a href="#method-i-7C">#|</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./CHANGELOG.html">CHANGELOG</a>
+  
+    <li class="file"><a href="./LICENSE.html">LICENSE</a>
+  
+    <li class="file"><a href="./NOTICE.html">NOTICE</a>
+  
+    <li class="file"><a href="./README_rdoc.html">README</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./Buildr.html">Buildr</a>
+  
+    <li><a href="./Buildr/ActsAsArtifact.html">Buildr::ActsAsArtifact</a>
+  
+    <li><a href="./Buildr/Ant.html">Buildr::Ant</a>
+  
+    <li><a href="./Buildr/Apt.html">Buildr::Apt</a>
+  
+    <li><a href="./Buildr/ArchiveTask.html">Buildr::ArchiveTask</a>
+  
+    <li><a href="./Buildr/ArchiveTask/Merge.html">Buildr::ArchiveTask::Merge</a>
+  
+    <li><a href="./Buildr/Artifact.html">Buildr::Artifact</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace.html">Buildr::ArtifactNamespace</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace/ArtifactRequirement.html">Buildr::ArtifactNamespace::ArtifactRequirement</a>
+  
+    <li><a href="./Buildr/ArtifactSearch.html">Buildr::ArtifactSearch</a>
+  
+    <li><a href="./Buildr/Build.html">Buildr::Build</a>
+  
+    <li><a href="./Buildr/CC.html">Buildr::CC</a>
+  
+    <li><a href="./Buildr/CCTask.html">Buildr::CCTask</a>
+  
+    <li><a href="./Buildr/Checks.html">Buildr::Checks</a>
+  
+    <li><a href="./Buildr/Checks/Expectation.html">Buildr::Checks::Expectation</a>
+  
+    <li><a href="./Buildr/Clojure.html">Buildr::Clojure</a>
+  
+    <li><a href="./Buildr/Cobertura.html">Buildr::Cobertura</a>
+  
+    <li><a href="./Buildr/Cobertura/CoberturaCheck.html">Buildr::Cobertura::CoberturaCheck</a>
+  
+    <li><a href="./Buildr/Compile.html">Buildr::Compile</a>
+  
+    <li><a href="./Buildr/CompileTask.html">Buildr::CompileTask</a>
+  
+    <li><a href="./Buildr/Compiler.html">Buildr::Compiler</a>
+  
+    <li><a href="./Buildr/Compiler/Ecj.html">Buildr::Compiler::Ecj</a>
+  
+    <li><a href="./Buildr/Compiler/ExternalJavac.html">Buildr::Compiler::ExternalJavac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Compiler::Javac</a>
+  
+    <li><a href="./Buildr/ConcatTask.html">Buildr::ConcatTask</a>
+  
+    <li><a href="./Buildr/Doc.html">Buildr::Doc</a>
+  
+    <li><a href="./Buildr/Doc/Base.html">Buildr::Doc::Base</a>
+  
+    <li><a href="./Buildr/Doc/DocTask.html">Buildr::Doc::DocTask</a>
+  
+    <li><a href="./Buildr/Doc/Groovydoc.html">Buildr::Doc::Groovydoc</a>
+  
+    <li><a href="./Buildr/Doc/GroovydocDefaults.html">Buildr::Doc::GroovydocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Javadoc.html">Buildr::Doc::Javadoc</a>
+  
+    <li><a href="./Buildr/Doc/JavadocDefaults.html">Buildr::Doc::JavadocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Scaladoc.html">Buildr::Doc::Scaladoc</a>
+  
+    <li><a href="./Buildr/Doc/ScaladocDefaults.html">Buildr::Doc::ScaladocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/VScaladoc.html">Buildr::Doc::VScaladoc</a>
+  
+    <li><a href="./Buildr/Eclipse.html">Buildr::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Eclipse.html">Buildr::Eclipse::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Java.html">Buildr::Eclipse::Java</a>
+  
+    <li><a href="./Buildr/Eclipse/Options.html">Buildr::Eclipse::Options</a>
+  
+    <li><a href="./Buildr/Eclipse/Plugin.html">Buildr::Eclipse::Plugin</a>
+  
+    <li><a href="./Buildr/Eclipse/Scala.html">Buildr::Eclipse::Scala</a>
+  
+    <li><a href="./Buildr/Emma.html">Buildr::Emma</a>
+  
+    <li><a href="./Buildr/Extension.html">Buildr::Extension</a>
+  
+    <li><a href="./Buildr/Extension/ClassMethods.html">Buildr::Extension::ClassMethods</a>
+  
+    <li><a href="./Buildr/Filter.html">Buildr::Filter</a>
+  
+    <li><a href="./Buildr/Filter/Mapper.html">Buildr::Filter::Mapper</a>
+  
+    <li><a href="./Buildr/GitRelease.html">Buildr::GitRelease</a>
+  
+    <li><a href="./Buildr/Groovy.html">Buildr::Groovy</a>
+  
+    <li><a href="./Buildr/Groovy/EasyB.html">Buildr::Groovy::EasyB</a>
+  
+    <li><a href="./Buildr/Groovy/GroovySH.html">Buildr::Groovy::GroovySH</a>
+  
+    <li><a href="./Buildr/Groovy/Groovyc.html">Buildr::Groovy::Groovyc</a>
+  
+    <li><a href="./Buildr/HgRelease.html">Buildr::HgRelease</a>
+  
+    <li><a href="./Buildr/IntegrationTestsTask.html">Buildr::IntegrationTestsTask</a>
+  
+    <li><a href="./Buildr/IntellijIdea.html">Buildr::IntellijIdea</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaFile.html">Buildr::IntellijIdea::IdeaFile</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaModule.html">Buildr::IntellijIdea::IdeaModule</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaProject.html">Buildr::IntellijIdea::IdeaProject</a>
+  
+    <li><a href="./Buildr/IntellijIdea/ProjectExtension.html">Buildr::IntellijIdea::ProjectExtension</a>
+  
+    <li><a href="./Buildr/JBehave.html">Buildr::JBehave</a>
+  
+    <li><a href="./Buildr/JMock.html">Buildr::JMock</a>
+  
+    <li><a href="./Buildr/JRebel.html">Buildr::JRebel</a>
+  
+    <li><a href="./Buildr/JUnit.html">Buildr::JUnit</a>
+  
+    <li><a href="./Buildr/JUnit/Report.html">Buildr::JUnit::Report</a>
+  
+    <li><a href="./Buildr/Layout.html">Buildr::Layout</a>
+  
+    <li><a href="./Buildr/Layout/Default.html">Buildr::Layout::Default</a>
+  
+    <li><a href="./Buildr/MultiTest.html">Buildr::MultiTest</a>
+  
+    <li><a href="./Buildr/OptionalArtifact.html">Buildr::OptionalArtifact</a>
+  
+    <li><a href="./Buildr/Options.html">Buildr::Options</a>
+  
+    <li><a href="./Buildr/Options/Proxies.html">Buildr::Options::Proxies</a>
+  
+    <li><a href="./Buildr/POM.html">Buildr::POM</a>
+  
+    <li><a href="./Buildr/Package.html">Buildr::Package</a>
+  
+    <li><a href="./Buildr/PackageGemTask.html">Buildr::PackageGemTask</a>
+  
+    <li><a href="./Buildr/Packaging.html">Buildr::Packaging</a>
+  
+    <li><a href="./Buildr/Packaging/Java.html">Buildr::Packaging::Java</a>
+  
+    <li><a href="./Buildr/Packaging/Java/AarTask.html">Buildr::Packaging::Java::AarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/EarTask.html">Buildr::Packaging::Java::EarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/JarTask.html">Buildr::Packaging::Java::JarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/Manifest.html">Buildr::Packaging::Java::Manifest</a>
+  
+    <li><a href="./Buildr/Packaging/Java/WarTask.html">Buildr::Packaging::Java::WarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Scala.html">Buildr::Packaging::Scala</a>
+  
+    <li><a href="./Buildr/ProcessStatus.html">Buildr::ProcessStatus</a>
+  
+    <li><a href="./Buildr/Project.html">Buildr::Project</a>
+  
+    <li><a href="./Buildr/RSpec.html">Buildr::RSpec</a>
+  
+    <li><a href="./Buildr/Repositories.html">Buildr::Repositories</a>
+  
+    <li><a href="./Buildr/ResourcesTask.html">Buildr::ResourcesTask</a>
+  
+    <li><a href="./Buildr/Run.html">Buildr::Run</a>
+  
+    <li><a href="./Buildr/Run/Base.html">Buildr::Run::Base</a>
+  
+    <li><a href="./Buildr/Run/JavaRunner.html">Buildr::Run::JavaRunner</a>
+  
+    <li><a href="./Buildr/Run/RunTask.html">Buildr::Run::RunTask</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala/Check.html">Buildr::Scala::Check</a>
+  
+    <li><a href="./Buildr/Scala/Mockito.html">Buildr::Scala::Mockito</a>
+  
+    <li><a href="./Buildr/Scala/ProjectExtension.html">Buildr::Scala::ProjectExtension</a>
+  
+    <li><a href="./Buildr/Scala/ScalaShell.html">Buildr::Scala::ScalaShell</a>
+  
+    <li><a href="./Buildr/Scala/ScalaTest.html">Buildr::Scala::ScalaTest</a>
+  
+    <li><a href="./Buildr/Scala/Scalac.html">Buildr::Scala::Scalac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Scala::Scalac::Javac</a>
+  
+    <li><a href="./Buildr/Scala/ScalacOptions.html">Buildr::Scala::ScalacOptions</a>
+  
+    <li><a href="./Buildr/Scala/Specs.html">Buildr::Scala::Specs</a>
+  
+    <li><a href="./Buildr/Scala/Specs2.html">Buildr::Scala::Specs2</a>
+  
+    <li><a href="./Buildr/Settings.html">Buildr::Settings</a>
+  
+    <li><a href="./Buildr/Shell.html">Buildr::Shell</a>
+  
+    <li><a href="./Buildr/Shell/Base.html">Buildr::Shell::Base</a>
+  
+    <li><a href="./Buildr/Shell/BeanShell.html">Buildr::Shell::BeanShell</a>
+  
+    <li><a href="./Buildr/Shell/Clojure.html">Buildr::Shell::Clojure</a>
+  
+    <li><a href="./Buildr/Shell/JIRB.html">Buildr::Shell::JIRB</a>
+  
+    <li><a href="./Buildr/Shell/ShellTask.html">Buildr::Shell::ShellTask</a>
+  
+    <li><a href="./Buildr/SvnRelease.html">Buildr::SvnRelease</a>
+  
+    <li><a href="./Buildr/TarTask.html">Buildr::TarTask</a>
+  
+    <li><a href="./Buildr/Test.html">Buildr::Test</a>
+  
+    <li><a href="./Buildr/Test/SkipIfNoTest.html">Buildr::Test::SkipIfNoTest</a>
+  
+    <li><a href="./Buildr/TestFramework.html">Buildr::TestFramework</a>
+  
+    <li><a href="./Buildr/TestFramework/Base.html">Buildr::TestFramework::Base</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased.html">Buildr::TestFramework::JRubyBased</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased/ClassMethods.html">Buildr::TestFramework::JRubyBased::ClassMethods</a>
+  
+    <li><a href="./Buildr/TestFramework/Java.html">Buildr::TestFramework::Java</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult.html">Buildr::TestFramework::TestResult</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/Error.html">Buildr::TestFramework::TestResult::Error</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/YamlFormatter.html">Buildr::TestFramework::TestResult::YamlFormatter</a>
+  
+    <li><a href="./Buildr/TestNG.html">Buildr::TestNG</a>
+  
+    <li><a href="./Buildr/TestTask.html">Buildr::TestTask</a>
+  
+    <li><a href="./Buildr/Unzip.html">Buildr::Unzip</a>
+  
+    <li><a href="./Buildr/Util.html">Buildr::Util</a>
+  
+    <li><a href="./Buildr/VersionRequirement.html">Buildr::VersionRequirement</a>
+  
+    <li><a href="./Buildr/ZipTask.html">Buildr::ZipTask</a>
+  
+    <li><a href="./Resolv.html">Resolv</a>
+  
+    <li><a href="./Resolv/DNS.html">Resolv::DNS</a>
+  
+    <li><a href="./Resolv/DNS/Config.html">Resolv::DNS::Config</a>
+  
+    <li><a href="./Resolv/DNS/Config/NXDomain.html">Resolv::DNS::Config::NXDomain</a>
+  
+    <li><a href="./Resolv/DNS/Config/OtherResolvError.html">Resolv::DNS::Config::OtherResolvError</a>
+  
+    <li><a href="./Resolv/DNS/DecodeError.html">Resolv::DNS::DecodeError</a>
+  
+    <li><a href="./Resolv/DNS/EncodeError.html">Resolv::DNS::EncodeError</a>
+  
+    <li><a href="./Resolv/DNS/Name.html">Resolv::DNS::Name</a>
+  
+    <li><a href="./Resolv/DNS/Query.html">Resolv::DNS::Query</a>
+  
+    <li><a href="./Resolv/DNS/Requester.html">Resolv::DNS::Requester</a>
+  
+    <li><a href="./Resolv/DNS/Requester/RequestError.html">Resolv::DNS::Requester::RequestError</a>
+  
+    <li><a href="./Resolv/DNS/Resource.html">Resolv::DNS::Resource</a>
+  
+    <li><a href="./Resolv/DNS/Resource/ANY.html">Resolv::DNS::Resource::ANY</a>
+  
+    <li><a href="./Resolv/DNS/Resource/CNAME.html">Resolv::DNS::Resource::CNAME</a>
+  
+    <li><a href="./Resolv/DNS/Resource/DomainName.html">Resolv::DNS::Resource::DomainName</a>
+  
+    <li><a href="./Resolv/DNS/Resource/Generic.html">Resolv::DNS::Resource::Generic</a>
+  
+    <li><a href="./Resolv/DNS/Resource/HINFO.html">Resolv::DNS::Resource::HINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN.html">Resolv::DNS::Resource::IN</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/A.html">Resolv::DNS::Resource::IN::A</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/AAAA.html">Resolv::DNS::Resource::IN::AAAA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/SRV.html">Resolv::DNS::Resource::IN::SRV</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/WKS.html">Resolv::DNS::Resource::IN::WKS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MINFO.html">Resolv::DNS::Resource::MINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MX.html">Resolv::DNS::Resource::MX</a>
+  
+    <li><a href="./Resolv/DNS/Resource/NS.html">Resolv::DNS::Resource::NS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/PTR.html">Resolv::DNS::Resource::PTR</a>
+  
+    <li><a href="./Resolv/DNS/Resource/SOA.html">Resolv::DNS::Resource::SOA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/TXT.html">Resolv::DNS::Resource::TXT</a>
+  
+    <li><a href="./Resolv/Hosts.html">Resolv::Hosts</a>
+  
+    <li><a href="./Resolv/IPv4.html">Resolv::IPv4</a>
+  
+    <li><a href="./Resolv/IPv6.html">Resolv::IPv6</a>
+  
+    <li><a href="./Resolv/ResolvError.html">Resolv::ResolvError</a>
+  
+    <li><a href="./Resolv/ResolvTimeout.html">Resolv::ResolvTimeout</a>
+  
+    <li><a href="./OptionParser.html">OptionParser</a>
+  
+    <li><a href="./OptionParser/Acceptables.html">OptionParser::Acceptables</a>
+  
+    <li><a href="./OptionParser/AmbiguousArgument.html">OptionParser::AmbiguousArgument</a>
+  
+    <li><a href="./OptionParser/AmbiguousOption.html">OptionParser::AmbiguousOption</a>
+  
+    <li><a href="./OptionParser/Arguable.html">OptionParser::Arguable</a>
+  
+    <li><a href="./OptionParser/CompletingHash.html">OptionParser::CompletingHash</a>
+  
+    <li><a href="./OptionParser/Completion.html">OptionParser::Completion</a>
+  
+    <li><a href="./OptionParser/InvalidArgument.html">OptionParser::InvalidArgument</a>
+  
+    <li><a href="./OptionParser/InvalidOption.html">OptionParser::InvalidOption</a>
+  
+    <li><a href="./OptionParser/List.html">OptionParser::List</a>
+  
+    <li><a href="./OptionParser/MissingArgument.html">OptionParser::MissingArgument</a>
+  
+    <li><a href="./OptionParser/NeedlessArgument.html">OptionParser::NeedlessArgument</a>
+  
+    <li><a href="./OptionParser/OptionMap.html">OptionParser::OptionMap</a>
+  
+    <li><a href="./OptionParser/ParseError.html">OptionParser::ParseError</a>
+  
+    <li><a href="./OptionParser/Switch.html">OptionParser::Switch</a>
+  
+    <li><a href="./OptionParser/Switch/NoArgument.html">OptionParser::Switch::NoArgument</a>
+  
+    <li><a href="./OptionParser/Switch/OptionalArgument.html">OptionParser::Switch::OptionalArgument</a>
+  
+    <li><a href="./OptionParser/Switch/PlacedArgument.html">OptionParser::Switch::PlacedArgument</a>
+  
+    <li><a href="./OptionParser/Switch/RequiredArgument.html">OptionParser::Switch::RequiredArgument</a>
+  
+    <li><a href="./Prime.html">Prime</a>
+  
+    <li><a href="./Prime/EratosthenesGenerator.html">Prime::EratosthenesGenerator</a>
+  
+    <li><a href="./Prime/EratosthenesSieve.html">Prime::EratosthenesSieve</a>
+  
+    <li><a href="./Prime/Generator23.html">Prime::Generator23</a>
+  
+    <li><a href="./Prime/OldCompatibility.html">Prime::OldCompatibility</a>
+  
+    <li><a href="./Prime/PseudoPrimeGenerator.html">Prime::PseudoPrimeGenerator</a>
+  
+    <li><a href="./Prime/TrialDivision.html">Prime::TrialDivision</a>
+  
+    <li><a href="./Prime/TrialDivisionGenerator.html">Prime::TrialDivisionGenerator</a>
+  
+    <li><a href="./FileUtils.html">FileUtils</a>
+  
+    <li><a href="./FileUtils/DryRun.html">FileUtils::DryRun</a>
+  
+    <li><a href="./FileUtils/LowMethods.html">FileUtils::LowMethods</a>
+  
+    <li><a href="./FileUtils/NoWrite.html">FileUtils::NoWrite</a>
+  
+    <li><a href="./FileUtils/StreamUtils_.html">FileUtils::StreamUtils_</a>
+  
+    <li><a href="./FileUtils/Verbose.html">FileUtils::Verbose</a>
+  
+    <li><a href="./GetoptLong.html">GetoptLong</a>
+  
+    <li><a href="./GetoptLong/AmbiguousOption.html">GetoptLong::AmbiguousOption</a>
+  
+    <li><a href="./GetoptLong/Error.html">GetoptLong::Error</a>
+  
+    <li><a href="./GetoptLong/InvalidOption.html">GetoptLong::InvalidOption</a>
+  
+    <li><a href="./GetoptLong/MissingArgument.html">GetoptLong::MissingArgument</a>
+  
+    <li><a href="./GetoptLong/NeedlessArgument.html">GetoptLong::NeedlessArgument</a>
+  
+    <li><a href="./Logger.html">Logger</a>
+  
+    <li><a href="./Logger/Application.html">Logger::Application</a>
+  
+    <li><a href="./Logger/Formatter.html">Logger::Formatter</a>
+  
+    <li><a href="./Logger/LogDevice.html">Logger::LogDevice</a>
+  
+    <li><a href="./Logger/LogDevice/LogDeviceMutex.html">Logger::LogDevice::LogDeviceMutex</a>
+  
+    <li><a href="./Logger/Severity.html">Logger::Severity</a>
+  
+    <li><a href="./Object.html">Object</a>
+  
+    <li><a href="./Buildr/Scala.html">Object::Scala</a>
+  
+    <li><a href="./Sync.html">Object::Synchronizer</a>
+  
+    <li><a href="./Sync_m.html">Object::Synchronizer_m</a>
+  
+    <li><a href="./ThreadsWait.html">Object::ThWait</a>
+  
+    <li><a href="./Timeout/Error.html">Object::TimeoutError</a>
+  
+    <li><a href="./PrettyPrint.html">PrettyPrint</a>
+  
+    <li><a href="./PrettyPrint/Breakable.html">PrettyPrint::Breakable</a>
+  
+    <li><a href="./PrettyPrint/Group.html">PrettyPrint::Group</a>
+  
+    <li><a href="./PrettyPrint/GroupQueue.html">PrettyPrint::GroupQueue</a>
+  
+    <li><a href="./PrettyPrint/SingleLine.html">PrettyPrint::SingleLine</a>
+  
+    <li><a href="./PrettyPrint/Text.html">PrettyPrint::Text</a>
+  
+    <li><a href="./URI.html">URI</a>
+  
+    <li><a href="./URI/FILE.html">URI::FILE</a>
+  
+    <li><a href="./URI/FTP.html">URI::FTP</a>
+  
+    <li><a href="./URI/Generic.html">URI::Generic</a>
+  
+    <li><a href="./URI/HTTP.html">URI::HTTP</a>
+  
+    <li><a href="./URI/NotFoundError.html">URI::NotFoundError</a>
+  
+    <li><a href="./OpenURI.html">OpenURI</a>
+  
+    <li><a href="./OpenURI/HTTPError.html">OpenURI::HTTPError</a>
+  
+    <li><a href="./OpenURI/HTTPRedirect.html">OpenURI::HTTPRedirect</a>
+  
+    <li><a href="./OpenURI/Meta.html">OpenURI::Meta</a>
+  
+    <li><a href="./OpenURI/OpenRead.html">OpenURI::OpenRead</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m/Err.html">Sync_m::Err</a>
+  
+    <li><a href="./Sync_m/Err/LockModeFailer.html">Sync_m::Err::LockModeFailer</a>
+  
+    <li><a href="./Sync_m/Err/UnknownLocker.html">Sync_m::Err::UnknownLocker</a>
+  
+    <li><a href="./CSV.html">CSV</a>
+  
+    <li><a href="./CSV/MalformedCSVError.html">CSV::MalformedCSVError</a>
+  
+    <li><a href="./CSV/Row.html">CSV::Row</a>
+  
+    <li><a href="./CSV/Table.html">CSV::Table</a>
+  
+    <li><a href="./Java.html">Java</a>
+  
+    <li><a href="./Java/Commands.html">Java::Commands</a>
+  
+    <li><a href="./Java/JavaWrapper.html">Java::JavaWrapper</a>
+  
+    <li><a href="./Java/Options.html">Java::Options</a>
+  
+    <li><a href="./PP.html">PP</a>
+  
+    <li><a href="./PP/ObjectMixin.html">PP::ObjectMixin</a>
+  
+    <li><a href="./PP/PPMethods.html">PP::PPMethods</a>
+  
+    <li><a href="./PP/SingleLine.html">PP::SingleLine</a>
+  
+    <li><a href="./Digest.html">Digest</a>
+  
+    <li><a href="./Digest/Class.html">Digest::Class</a>
+  
+    <li><a href="./Digest/Instance.html">Digest::Instance</a>
+  
+    <li><a href="./ERB.html">ERB</a>
+  
+    <li><a href="./ERB/DefMethod.html">ERB::DefMethod</a>
+  
+    <li><a href="./ERB/Util.html">ERB::Util</a>
+  
+    <li><a href="./Gem.html">Gem</a>
+  
+    <li><a href="./Gem/LoadError.html">Gem::LoadError</a>
+  
+    <li><a href="./Gem/Version.html">Gem::Version</a>
+  
+    <li><a href="./IRB.html">IRB</a>
+  
+    <li><a href="./IRB/Abort.html">IRB::Abort</a>
+  
+    <li><a href="./IRB/Irb.html">IRB::Irb</a>
+  
+    <li><a href="./MonitorMixin.html">MonitorMixin</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable.html">MonitorMixin::ConditionVariable</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable/Timeout.html">MonitorMixin::ConditionVariable::Timeout</a>
+  
+    <li><a href="./Psych.html">Psych</a>
+  
+    <li><a href="./Psych/BadAlias.html">Psych::BadAlias</a>
+  
+    <li><a href="./Psych/Exception.html">Psych::Exception</a>
+  
+    <li><a href="./Scanf.html">Scanf</a>
+  
+    <li><a href="./Timeout.html">Timeout</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./TkComm.html">TkComm</a>
+  
+    <li><a href="./TkComm/Tk_CMDTBL.html">TkComm::Tk_CMDTBL</a>
+  
+    <li><a href="./TkComm/Tk_WINDOWS.html">TkComm::Tk_WINDOWS</a>
+  
+    <li><a href="./TkCore.html">TkCore</a>
+  
+    <li><a href="./MultiTkIp.html">TkCore::INTERP</a>
+  
+    <li><a href="./TkCore/Tk_OBJECT_TABLE.html">TkCore::Tk_OBJECT_TABLE</a>
+  
+    <li><a href="./Zip.html">Zip</a>
+  
+    <li><a href="./Zip/ZipEntry.html">Zip::ZipEntry</a>
+  
+    <li><a href="./Zip/ZipEntrySet.html">Zip::ZipEntrySet</a>
+  
+    <li><a href="./Benchmark.html">Benchmark</a>
+  
+    <li><a href="./Benchmark/Tms.html">Benchmark::Tms</a>
+  
+    <li><a href="./DEBUGGER__.html">DEBUGGER__</a>
+  
+    <li><a href="./DEBUGGER__/Context.html">DEBUGGER__::Context</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper::E2MM</a>
+  
+    <li><a href="./File.html">File</a>
+  
+    <li><a href="./File/Stat.html">File::Stat</a>
+  
+    <li><a href="./MultiTkIp.html">MultiTkIp</a>
+  
+    <li><a href="./MultiTkIp/Command_Queue.html">MultiTkIp::Command_Queue</a>
+  
+    <li><a href="./PStore.html">PStore</a>
+  
+    <li><a href="./PStore/Error.html">PStore::Error</a>
+  
+    <li><a href="./RDoc.html">RDoc</a>
+  
+    <li><a href="./RDoc/Error.html">RDoc::Error</a>
+  
+    <li><a href="./Rake.html">Rake</a>
+  
+    <li><a href="./Rake/FileTask.html">Rake::FileTask</a>
+  
+    <li><a href="./Socket.html">Socket</a>
+  
+    <li><a href="./Socket/UDPSource.html">Socket::UDPSource</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./TSort.html">TSort</a>
+  
+    <li><a href="./TSort/Cyclic.html">TSort::Cyclic</a>
+  
+    <li><a href="./Tempfile.html">Tempfile</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./Vector.html">Vector</a>
+  
+    <li><a href="./Vector/ZeroVectorError.html">Vector::ZeroVectorError</a>
+  
+    <li><a href="./WeakRef.html">WeakRef</a>
+  
+    <li><a href="./WeakRef/RefError.html">WeakRef::RefError</a>
+  
+    <li><a href="./Abbrev.html">Abbrev</a>
+  
+    <li><a href="./Addrinfo.html">Addrinfo</a>
+  
+    <li><a href="./Base64.html">Base64</a>
+  
+    <li><a href="./BasicSocket.html">BasicSocket</a>
+  
+    <li><a href="./CGI.html">CGI</a>
+  
+    <li><a href="./CMath.html">CMath</a>
+  
+    <li><a href="./ConditionVariable.html">ConditionVariable</a>
+  
+    <li><a href="./DL.html">DL</a>
+  
+    <li><a href="./Date.html">Date</a>
+  
+    <li><a href="./Delegator.html">Delegator</a>
+  
+    <li><a href="./Dir.html">Dir</a>
+  
+    <li><a href="./ENV.html">ENV</a>
+  
+    <li><a href="./Enumerable.html">Enumerable</a>
+  
+    <li><a href="./Fiddle.html">Fiddle</a>
+  
+    <li><a href="./Find.html">Find</a>
+  
+    <li><a href="./Float.html">Float</a>
+  
+    <li><a href="./Forwardable.html">Forwardable</a>
+  
+    <li><a href="./GServer.html">GServer</a>
+  
+    <li><a href="./Hash.html">Hash</a>
+  
+    <li><a href="./IO.html">IO</a>
+  
+    <li><a href="./IPAddr.html">IPAddr</a>
+  
+    <li><a href="./IPSocket.html">IPSocket</a>
+  
+    <li><a href="./Integer.html">Integer</a>
+  
+    <li><a href="./JSON.html">JSON</a>
+  
+    <li><a href="./Kconv.html">Kconv</a>
+  
+    <li><a href="./Kernel.html">Kernel</a>
+  
+    <li><a href="./MatchData.html">MatchData</a>
+  
+    <li><a href="./Math.html">Math</a>
+  
+    <li><a href="./Matrix.html">Matrix</a>
+  
+    <li><a href="./Module.html">Module</a>
+  
+    <li><a href="./Monitor.html">Monitor</a>
+  
+    <li><a href="./MultiTkIp_OK.html">MultiTkIp_OK</a>
+  
+    <li><a href="./MultiTkIp_PseudoToplevel_Evaluable.html">MultiTkIp_PseudoToplevel_Evaluable</a>
+  
+    <li><a href="./Mutex_m.html">Mutex_m</a>
+  
+    <li><a href="./Numeric.html">Numeric</a>
+  
+    <li><a href="./Observable.html">Observable</a>
+  
+    <li><a href="./Open3.html">Open3</a>
+  
+    <li><a href="./OpenObject.html">OpenObject</a>
+  
+    <li><a href="./OpenStruct.html">OpenStruct</a>
+  
+    <li><a href="./Pathname.html">Pathname</a>
+  
+    <li><a href="./Profiler__.html">Profiler__</a>
+  
+    <li><a href="./ProgressBar.html">ProgressBar</a>
+  
+    <li><a href="./Queue.html">Queue</a>
+  
+    <li><a href="./RSS.html">RSS</a>
+  
+    <li><a href="./Range.html">Range</a>
+  
+    <li><a href="./Rational.html">Rational</a>
+  
+    <li><a href="./RemoteTkIp.html">RemoteTkIp</a>
+  
+    <li><a href="./SOCKSSocket.html">SOCKSSocket</a>
+  
+    <li><a href="./STRING_OR_FAILED_FORMAT.html">STRING_OR_FAILED_FORMAT</a>
+  
+    <li><a href="./SecureRandom.html">SecureRandom</a>
+  
+    <li><a href="./Set.html">Set</a>
+  
+    <li><a href="./Shell.html">Shell</a>
+  
+    <li><a href="./Shellwords.html">Shellwords</a>
+  
+    <li><a href="./SimpleDelegator.html">SimpleDelegator</a>
+  
+    <li><a href="./SingleForwardable.html">SingleForwardable</a>
+  
+    <li><a href="./Singleton.html">Singleton</a>
+  
+    <li><a href="./SizedQueue.html">SizedQueue</a>
+  
+    <li><a href="./SortedSet.html">SortedSet</a>
+  
+    <li><a href="./Struct.html">Struct</a>
+  
+    <li><a href="./Syck.html">Syck</a>
+  
+    <li><a href="./TCPSocket.html">TCPSocket</a>
+  
+    <li><a href="./TclTkIp.html">TclTkIp</a>
+  
+    <li><a href="./TclTkLib.html">TclTkLib</a>
+  
+    <li><a href="./ThreadError.html">ThreadError</a>
+  
+    <li><a href="./Time.html">Time</a>
+  
+    <li><a href="./Tracer.html">Tracer</a>
+  
+    <li><a href="./UDPSocket.html">UDPSocket</a>
+  
+    <li><a href="./WEBrick.html">WEBrick</a>
+  
+    <li><a href="./YAML.html">YAML</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class Set</h1>
+
+  <div id="description" class="description">
+    
+<p><a href="Set.html">Set</a> implements a collection of unordered values with
+no duplicates. This is a hybrid of Array's intuitive inter-operation
+facilities and Hash's fast lookup.</p>
+
+<p>The equality of each couple of elements is determined according to
+Object#eql? and Object#hash, since <a href="Set.html">Set</a> uses <a
+href="Hash.html">Hash</a> as storage.</p>
+
+<p><a href="Set.html">Set</a> is easy to use with <a
+href="Enumerable.html">Enumerable</a> objects (implementing
+<code>each</code>). Most of the initializer methods and binary operators
+accept generic <a href="Enumerable.html">Enumerable</a> objects besides
+sets and arrays.  An <a href="Enumerable.html">Enumerable</a> object can be
+converted to <a href="Set.html">Set</a> using the <code>to_set</code>
+method.</p>
+
+<h2 id="label-Example">Example</h2>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'set'</span>
+<span class="ruby-identifier">s1</span> = <span class="ruby-constant">Set</span>.<span class="ruby-identifier">new</span> [<span class="ruby-value">1</span>, <span class="ruby-value">2</span>]                   <span class="ruby-comment"># -&gt; #&lt;Set: {1, 2}&gt;</span>
+<span class="ruby-identifier">s2</span> = [<span class="ruby-value">1</span>, <span class="ruby-value">2</span>].<span class="ruby-identifier">to_set</span>                    <span class="ruby-comment"># -&gt; #&lt;Set: {1, 2}&gt;</span>
+<span class="ruby-identifier">s1</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">s2</span>                              <span class="ruby-comment"># -&gt; true</span>
+<span class="ruby-identifier">s1</span>.<span class="ruby-identifier">add</span>(<span class="ruby-string">&quot;foo&quot;</span>)                         <span class="ruby-comment"># -&gt; #&lt;Set: {1, 2, &quot;foo&quot;}&gt;</span>
+<span class="ruby-identifier">s1</span>.<span class="ruby-identifier">merge</span>([<span class="ruby-value">2</span>, <span class="ruby-value">6</span>])                      <span class="ruby-comment"># -&gt; #&lt;Set: {6, 1, 2, &quot;foo&quot;}&gt;</span>
+<span class="ruby-identifier">s1</span>.<span class="ruby-identifier">subset?</span> <span class="ruby-identifier">s2</span>                         <span class="ruby-comment"># -&gt; false</span>
+<span class="ruby-identifier">s2</span>.<span class="ruby-identifier">subset?</span> <span class="ruby-identifier">s1</span>                         <span class="ruby-comment"># -&gt; true</span>
+</pre>
+
+<h2 id="label-Contact">Contact</h2>
+
+<pre>- Akinori MUSHA &lt;knu@iDaemons.org&gt; (current maintainer)</pre>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-5B-5D" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">[]</span><span
+            class="method-args">(*ary)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Creates a new set containing the given objects.</p>
+          
+
+          
+          <div class="method-source-code" id="5B-5D-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 58</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-operator">[]</span>(*<span class="ruby-identifier">ary</span>)
+  <span class="ruby-identifier">new</span>(<span class="ruby-identifier">ary</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- 5B-5D-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- 5B-5D-method -->
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(enum = nil) { |o| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Creates a new set containing the elements of the given enumerable object.</p>
+
+<p>If a block is given, the elements of enum are preprocessed by the given
+block.</p>
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 67</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">enum</span> = <span class="ruby-keyword">nil</span>, &amp;<span class="ruby-identifier">block</span>) <span class="ruby-comment"># :yields: o</span>
+  <span class="ruby-ivar">@hash</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>
+
+  <span class="ruby-identifier">enum</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword">and</span> <span class="ruby-keyword">return</span>
+
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">block</span>
+    <span class="ruby-identifier">do_with_enum</span>(<span class="ruby-identifier">enum</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-identifier">add</span>(<span class="ruby-identifier">block</span>[<span class="ruby-identifier">o</span>]) }
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">merge</span>(<span class="ruby-identifier">enum</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- new-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- new-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-26" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">&amp;</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns a new set containing elements common to the set and the given
+enumerable object.</p>
+          
+
+          
+          <div class="method-source-code" id="26-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 340</span>
+<span class="ruby-keyword">def</span> &amp;(<span class="ruby-identifier">enum</span>)
+  <span class="ruby-identifier">n</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-identifier">do_with_enum</span>(<span class="ruby-identifier">enum</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-identifier">n</span>.<span class="ruby-identifier">add</span>(<span class="ruby-identifier">o</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>) }
+  <span class="ruby-identifier">n</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- 26-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Set.html#method-i-intersection">intersection</a>
+        </div>
+        
+
+        
+      </div><!-- 26-method -->
+
+    
+      <div id="method-i-2B" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">+</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Set.html#method-i-7C">|</a>
+        </div>
+        
+      </div><!-- 2B-method -->
+
+    
+      <div id="method-i-2D" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">-</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns a new set built by duplicating the set, removing every element that
+appears in the given enumerable object.</p>
+          
+
+          
+          <div class="method-source-code" id="2D-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 333</span>
+<span class="ruby-keyword">def</span> <span class="ruby-operator">-</span>(<span class="ruby-identifier">enum</span>)
+  <span class="ruby-identifier">dup</span>.<span class="ruby-identifier">subtract</span>(<span class="ruby-identifier">enum</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- 2D-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Set.html#method-i-difference">difference</a>
+        </div>
+        
+
+        
+      </div><!-- 2D-method -->
+
+    
+      <div id="method-i-3C-3C" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">&lt;&lt;</span><span
+            class="method-args">(o)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Set.html#method-i-add">add</a>
+        </div>
+        
+      </div><!-- 3C-3C-method -->
+
+    
+      <div id="method-i-3D-3D" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">==</span><span
+            class="method-args">(other)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns true if two sets are equal.  The equality of each couple of
+elements is defined according to Object#eql?.</p>
+          
+
+          
+          <div class="method-source-code" id="3D-3D-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 358</span>
+<span class="ruby-keyword">def</span> <span class="ruby-operator">==</span>(<span class="ruby-identifier">other</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">equal?</span>(<span class="ruby-identifier">other</span>)
+    <span class="ruby-keyword">true</span>
+  <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">instance_of?</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>)
+    <span class="ruby-ivar">@hash</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-value">:@hash</span>)
+  <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Set</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">other</span>.<span class="ruby-identifier">size</span>
+    <span class="ruby-identifier">other</span>.<span class="ruby-identifier">all?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>) }
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-keyword">false</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- 3D-3D-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- 3D-3D-method -->
+
+    
+      <div id="method-i-5E" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">^</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns a new set containing elements exclusive between the set and the
+given enumerable object.  (set ^ enum) is equivalent to ((set | enum) -
+(set &amp; enum)).</p>
+          
+
+          
+          <div class="method-source-code" id="5E-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 350</span>
+<span class="ruby-keyword">def</span> <span class="ruby-operator">^</span>(<span class="ruby-identifier">enum</span>)
+  <span class="ruby-identifier">n</span> = <span class="ruby-constant">Set</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">enum</span>)
+  <span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">n</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>) <span class="ruby-keyword">then</span> <span class="ruby-identifier">n</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">o</span>) <span class="ruby-keyword">else</span> <span class="ruby-identifier">n</span>.<span class="ruby-identifier">add</span>(<span class="ruby-identifier">o</span>) <span class="ruby-keyword">end</span> }
+  <span class="ruby-identifier">n</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- 5E-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- 5E-method -->
+
+    
+      <div id="method-i-add" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add</span><span
+            class="method-args">(o)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Adds the given object to the set and returns self.  Use <code>merge</code>
+to add many elements at once.</p>
+          
+
+          
+          <div class="method-source-code" id="add-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 228</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add</span>(<span class="ruby-identifier">o</span>)
+  <span class="ruby-ivar">@hash</span>[<span class="ruby-identifier">o</span>] = <span class="ruby-keyword">true</span>
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- add-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Set.html#method-i-3C-3C">&lt;&lt;</a>
+        </div>
+        
+
+        
+      </div><!-- add-method -->
+
+    
+      <div id="method-i-add-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">add?</span><span
+            class="method-args">(o)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Adds the given object to the set and returns self.  If the object is
+already in the set, returns nil.</p>
+          
+
+          
+          <div class="method-source-code" id="add-3F-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 236</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">add?</span>(<span class="ruby-identifier">o</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>)
+    <span class="ruby-keyword">nil</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">add</span>(<span class="ruby-identifier">o</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- add-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- add-3F-method -->
+
+    
+      <div id="method-i-classify" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">classify</span><span
+            class="method-args">() { |o| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Classifies the set by the return value of the given block and returns a
+hash of {value =&gt; set of elements} pairs.  The block is called once for
+each element of the set, passing the element as parameter.</p>
+
+<p>e.g.:</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'set'</span>
+<span class="ruby-identifier">files</span> = <span class="ruby-constant">Set</span>.<span class="ruby-identifier">new</span>(<span class="ruby-constant">Dir</span>.<span class="ruby-identifier">glob</span>(<span class="ruby-string">&quot;*.rb&quot;</span>))
+<span class="ruby-identifier">hash</span> = <span class="ruby-identifier">files</span>.<span class="ruby-identifier">classify</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">mtime</span>(<span class="ruby-identifier">f</span>).<span class="ruby-identifier">year</span> }
+<span class="ruby-identifier">p</span> <span class="ruby-identifier">hash</span>    <span class="ruby-comment"># =&gt; {2000=&gt;#&lt;Set: {&quot;a.rb&quot;, &quot;b.rb&quot;}&gt;,</span>
+          <span class="ruby-comment">#     2001=&gt;#&lt;Set: {&quot;c.rb&quot;, &quot;d.rb&quot;, &quot;e.rb&quot;}&gt;,</span>
+          <span class="ruby-comment">#     2002=&gt;#&lt;Set: {&quot;f.rb&quot;}&gt;}</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="classify-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 392</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">classify</span> <span class="ruby-comment"># :yields: o</span>
+  <span class="ruby-identifier">block_given?</span> <span class="ruby-keyword">or</span> <span class="ruby-keyword">return</span> <span class="ruby-identifier">enum_for</span>(<span class="ruby-identifier">__method__</span>)
+
+  <span class="ruby-identifier">h</span> = {}
+
+  <span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">x</span> = <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">i</span>)
+    (<span class="ruby-identifier">h</span>[<span class="ruby-identifier">x</span>] <span class="ruby-operator">||=</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">new</span>).<span class="ruby-identifier">add</span>(<span class="ruby-identifier">i</span>)
+  }
+
+  <span class="ruby-identifier">h</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- classify-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- classify-method -->
+
+    
+      <div id="method-i-clear" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">clear</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Removes all elements and returns self.</p>
+          
+
+          
+          <div class="method-source-code" id="clear-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 125</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">clear</span>
+  <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">clear</span>
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- clear-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- clear-method -->
+
+    
+      <div id="method-i-collect-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">collect!</span><span
+            class="method-args">() { |o| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Replaces the elements with ones returned by collect().</p>
+          
+
+          
+          <div class="method-source-code" id="collect-21-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 278</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">collect!</span>
+  <span class="ruby-identifier">block_given?</span> <span class="ruby-keyword">or</span> <span class="ruby-keyword">return</span> <span class="ruby-identifier">enum_for</span>(<span class="ruby-identifier">__method__</span>)
+  <span class="ruby-identifier">set</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">new</span>
+  <span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-identifier">set</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">o</span>) }
+  <span class="ruby-identifier">replace</span>(<span class="ruby-identifier">set</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- collect-21-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Set.html#method-i-map-21">map!</a>
+        </div>
+        
+
+        
+      </div><!-- collect-21-method -->
+
+    
+      <div id="method-i-delete" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">delete</span><span
+            class="method-args">(o)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Deletes the given object from the set and returns self.  Use
+<code>subtract</code> to delete many items at once.</p>
+          
+
+          
+          <div class="method-source-code" id="delete-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 246</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">o</span>)
+  <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">o</span>)
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- delete-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- delete-method -->
+
+    
+      <div id="method-i-delete-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">delete?</span><span
+            class="method-args">(o)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Deletes the given object from the set and returns self.  If the object is
+not in the set, returns nil.</p>
+          
+
+          
+          <div class="method-source-code" id="delete-3F-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 253</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">delete?</span>(<span class="ruby-identifier">o</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>)
+    <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">o</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-keyword">nil</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- delete-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- delete-3F-method -->
+
+    
+      <div id="method-i-delete_if" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">delete_if</span><span
+            class="method-args">() { |o| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Deletes every element of the set for which block evaluates to true, and
+returns self.</p>
+          
+
+          
+          <div class="method-source-code" id="delete_if-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 263</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">delete_if</span>
+  <span class="ruby-identifier">block_given?</span> <span class="ruby-keyword">or</span> <span class="ruby-keyword">return</span> <span class="ruby-identifier">enum_for</span>(<span class="ruby-identifier">__method__</span>)
+  <span class="ruby-identifier">to_a</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">o</span>) <span class="ruby-keyword">if</span> <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">o</span>) }
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- delete_if-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- delete_if-method -->
+
+    
+      <div id="method-i-difference" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">difference</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Set.html#method-i-2D">-</a>
+        </div>
+        
+      </div><!-- difference-method -->
+
+    
+      <div id="method-i-divide" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">divide</span><span
+            class="method-args">(&func)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Divides the set into a set of subsets according to the commonality defined
+by the given block.</p>
+
+<p>If the arity of the block is 2, elements o1 and o2 are in common if
+block.call(o1, o2) is true.  Otherwise, elements o1 and o2 are in common if
+block.call(o1) == block.call(o2).</p>
+
+<p>e.g.:</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'set'</span>
+<span class="ruby-identifier">numbers</span> = <span class="ruby-constant">Set</span>[<span class="ruby-value">1</span>, <span class="ruby-value">3</span>, <span class="ruby-value">4</span>, <span class="ruby-value">6</span>, <span class="ruby-value">9</span>, <span class="ruby-value">10</span>, <span class="ruby-value">11</span>]
+<span class="ruby-identifier">set</span> = <span class="ruby-identifier">numbers</span>.<span class="ruby-identifier">divide</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">i</span>,<span class="ruby-identifier">j</span><span class="ruby-operator">|</span> (<span class="ruby-identifier">i</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">j</span>).<span class="ruby-identifier">abs</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> }
+<span class="ruby-identifier">p</span> <span class="ruby-identifier">set</span>     <span class="ruby-comment"># =&gt; #&lt;Set: {#&lt;Set: {1}&gt;,</span>
+          <span class="ruby-comment">#            #&lt;Set: {11, 9, 10}&gt;,</span>
+          <span class="ruby-comment">#            #&lt;Set: {3, 4}&gt;,</span>
+          <span class="ruby-comment">#            #&lt;Set: {6}&gt;}&gt;</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="divide-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 421</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">divide</span>(&amp;<span class="ruby-identifier">func</span>)
+  <span class="ruby-identifier">func</span> <span class="ruby-keyword">or</span> <span class="ruby-keyword">return</span> <span class="ruby-identifier">enum_for</span>(<span class="ruby-identifier">__method__</span>)
+
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">func</span>.<span class="ruby-identifier">arity</span> <span class="ruby-operator">==</span> <span class="ruby-value">2</span>
+    <span class="ruby-identifier">require</span> <span class="ruby-string">'tsort'</span>
+
+    <span class="ruby-keyword">class</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">dig</span> = {}         <span class="ruby-comment"># :nodoc:</span>
+      <span class="ruby-identifier">include</span> <span class="ruby-constant">TSort</span>
+
+      <span class="ruby-keyword">alias</span> <span class="ruby-identifier">tsort_each_node</span> <span class="ruby-identifier">each_key</span>
+      <span class="ruby-keyword">def</span> <span class="ruby-identifier">tsort_each_child</span>(<span class="ruby-identifier">node</span>, &amp;<span class="ruby-identifier">block</span>)
+        <span class="ruby-identifier">fetch</span>(<span class="ruby-identifier">node</span>).<span class="ruby-identifier">each</span>(&amp;<span class="ruby-identifier">block</span>)
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+
+    <span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">u</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">dig</span>[<span class="ruby-identifier">u</span>] = <span class="ruby-identifier">a</span> = []
+      <span class="ruby-identifier">each</span>{ <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">func</span>.<span class="ruby-identifier">call</span>(<span class="ruby-identifier">u</span>, <span class="ruby-identifier">v</span>) <span class="ruby-keyword">and</span> <span class="ruby-identifier">a</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">v</span> }
+    }
+
+    <span class="ruby-identifier">set</span> = <span class="ruby-constant">Set</span>.<span class="ruby-identifier">new</span>()
+    <span class="ruby-identifier">dig</span>.<span class="ruby-identifier">each_strongly_connected_component</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">css</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">set</span>.<span class="ruby-identifier">add</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">css</span>))
+    }
+    <span class="ruby-identifier">set</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-constant">Set</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">classify</span>(&amp;<span class="ruby-identifier">func</span>).<span class="ruby-identifier">values</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- divide-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- divide-method -->
+
+    
+      <div id="method-i-each" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">each</span><span
+            class="method-args">() { |o| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Calls the given block once for each element in the set, passing the element
+as parameter.  Returns an enumerator if no block is given.</p>
+          
+
+          
+          <div class="method-source-code" id="each-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 220</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">each</span>
+  <span class="ruby-identifier">block_given?</span> <span class="ruby-keyword">or</span> <span class="ruby-keyword">return</span> <span class="ruby-identifier">enum_for</span>(<span class="ruby-identifier">__method__</span>)
+  <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">each_key</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">o</span>) }
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- each-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- each-method -->
+
+    
+      <div id="method-i-empty-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">empty?</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns true if the set contains no elements.</p>
+          
+
+          
+          <div class="method-source-code" id="empty-3F-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 120</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">empty?</span>
+  <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">empty?</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- empty-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- empty-3F-method -->
+
+    
+      <div id="method-i-flatten" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">flatten</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns a new set that is a copy of the set, flattening each containing set
+recursively.</p>
+          
+
+          
+          <div class="method-source-code" id="flatten-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 169</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">flatten</span>
+  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">new</span>.<span class="ruby-identifier">flatten_merge</span>(<span class="ruby-keyword">self</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- flatten-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- flatten-method -->
+
+    
+      <div id="method-i-flatten-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">flatten!</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Equivalent to <a href="Set.html#method-i-flatten">#flatten</a>, but
+replaces the receiver with the result in place.  Returns nil if no
+modifications were made.</p>
+          
+
+          
+          <div class="method-source-code" id="flatten-21-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 175</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">flatten!</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">detect</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">e</span><span class="ruby-operator">|</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Set</span>) }
+    <span class="ruby-identifier">replace</span>(<span class="ruby-identifier">flatten</span>())
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-keyword">nil</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- flatten-21-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- flatten-21-method -->
+
+    
+      <div id="method-i-include-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">include?</span><span
+            class="method-args">(o)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns true if the set contains the given object.</p>
+          
+
+          
+          <div class="method-source-code" id="include-3F-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 184</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>)
+  <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- include-3F-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Set.html#method-i-member-3F">member?</a>
+        </div>
+        
+
+        
+      </div><!-- include-3F-method -->
+
+    
+      <div id="method-i-initialize_copy" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">initialize_copy</span><span
+            class="method-args">(orig)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Copy internal hash.</p>
+          
+
+          
+          <div class="method-source-code" id="initialize_copy-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 91</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize_copy</span>(<span class="ruby-identifier">orig</span>)
+  <span class="ruby-ivar">@hash</span> = <span class="ruby-identifier">orig</span>.<span class="ruby-identifier">instance_eval</span>{<span class="ruby-ivar">@hash</span>}.<span class="ruby-identifier">dup</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- initialize_copy-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- initialize_copy-method -->
+
+    
+      <div id="method-i-inspect" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">inspect</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns a string containing a human-readable representation of the set.
+(“#&lt;Set: {element1, element2, …}&gt;”)</p>
+          
+
+          
+          <div class="method-source-code" id="inspect-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 455</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">inspect</span>
+  <span class="ruby-identifier">ids</span> = (<span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>[<span class="ruby-constant">InspectKey</span>] <span class="ruby-operator">||=</span> [])
+
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">ids</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">object_id</span>)
+    <span class="ruby-keyword">return</span> <span class="ruby-identifier">sprintf</span>(<span class="ruby-string">'#&lt;%s: {...}&gt;'</span>, <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">name</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">ids</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">object_id</span>
+    <span class="ruby-keyword">return</span> <span class="ruby-identifier">sprintf</span>(<span class="ruby-string">'#&lt;%s: {%s}&gt;'</span>, <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>, <span class="ruby-identifier">to_a</span>.<span class="ruby-identifier">inspect</span>[<span class="ruby-value">1</span><span class="ruby-operator">..</span><span class="ruby-value">-2</span>])
+  <span class="ruby-keyword">ensure</span>
+    <span class="ruby-identifier">ids</span>.<span class="ruby-identifier">pop</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- inspect-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- inspect-method -->
+
+    
+      <div id="method-i-intersection" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">intersection</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Set.html#method-i-26">&amp;</a>
+        </div>
+        
+      </div><!-- intersection-method -->
+
+    
+      <div id="method-i-keep_if" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">keep_if</span><span
+            class="method-args">() { |o| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Deletes every element of the set for which block evaluates to false, and
+returns self.</p>
+          
+
+          
+          <div class="method-source-code" id="keep_if-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 271</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">keep_if</span>
+  <span class="ruby-identifier">block_given?</span> <span class="ruby-keyword">or</span> <span class="ruby-keyword">return</span> <span class="ruby-identifier">enum_for</span>(<span class="ruby-identifier">__method__</span>)
+  <span class="ruby-identifier">to_a</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">delete</span>(<span class="ruby-identifier">o</span>) <span class="ruby-keyword">unless</span> <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">o</span>) }
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- keep_if-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- keep_if-method -->
+
+    
+      <div id="method-i-length" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">length</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Set.html#method-i-size">size</a>
+        </div>
+        
+      </div><!-- length-method -->
+
+    
+      <div id="method-i-map-21" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">map!</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Set.html#method-i-collect-21">collect!</a>
+        </div>
+        
+      </div><!-- map-21-method -->
+
+    
+      <div id="method-i-member-3F" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">member?</span><span
+            class="method-args">(o)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Set.html#method-i-include-3F">include?</a>
+        </div>
+        
+      </div><!-- member-3F-method -->
+
+    
+      <div id="method-i-merge" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">merge</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Merges the elements of the given enumerable object to the set and returns
+self.</p>
+          
+
+          
+          <div class="method-source-code" id="merge-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 306</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">merge</span>(<span class="ruby-identifier">enum</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">enum</span>.<span class="ruby-identifier">instance_of?</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>)
+    <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">update</span>(<span class="ruby-identifier">enum</span>.<span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-value">:@hash</span>))
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">do_with_enum</span>(<span class="ruby-identifier">enum</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-identifier">add</span>(<span class="ruby-identifier">o</span>) }
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- merge-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- merge-method -->
+
+    
+      <div id="method-i-proper_subset-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">proper_subset?</span><span
+            class="method-args">(set)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns true if the set is a proper subset of the given set.</p>
+          
+
+          
+          <div class="method-source-code" id="proper_subset-3F-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 211</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">proper_subset?</span>(<span class="ruby-identifier">set</span>)
+  <span class="ruby-identifier">set</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Set</span>) <span class="ruby-keyword">or</span> <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&quot;value must be a set&quot;</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">set</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-identifier">size</span>
+  <span class="ruby-identifier">all?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-identifier">set</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>) }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- proper_subset-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- proper_subset-3F-method -->
+
+    
+      <div id="method-i-proper_superset-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">proper_superset?</span><span
+            class="method-args">(set)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns true if the set is a proper superset of the given set.</p>
+          
+
+          
+          <div class="method-source-code" id="proper_superset-3F-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 197</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">proper_superset?</span>(<span class="ruby-identifier">set</span>)
+  <span class="ruby-identifier">set</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Set</span>) <span class="ruby-keyword">or</span> <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&quot;value must be a set&quot;</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-identifier">set</span>.<span class="ruby-identifier">size</span>
+  <span class="ruby-identifier">set</span>.<span class="ruby-identifier">all?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>) }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- proper_superset-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- proper_superset-3F-method -->
+
+    
+      <div id="method-i-reject-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">reject!</span><span
+            class="method-args">() { |o| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Equivalent to <a href="Set.html#method-i-delete_if">#delete_if</a>, but
+returns nil if no changes were made.</p>
+          
+
+          
+          <div class="method-source-code" id="reject-21-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 288</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">reject!</span>
+  <span class="ruby-identifier">block_given?</span> <span class="ruby-keyword">or</span> <span class="ruby-keyword">return</span> <span class="ruby-identifier">enum_for</span>(<span class="ruby-identifier">__method__</span>)
+  <span class="ruby-identifier">n</span> = <span class="ruby-identifier">size</span>
+  <span class="ruby-identifier">delete_if</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">o</span>) }
+  <span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">n</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- reject-21-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- reject-21-method -->
+
+    
+      <div id="method-i-replace" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">replace</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Replaces the contents of the set with the contents of the given enumerable
+object and returns self.</p>
+          
+
+          
+          <div class="method-source-code" id="replace-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 132</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">replace</span>(<span class="ruby-identifier">enum</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">enum</span>.<span class="ruby-identifier">instance_of?</span>(<span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>)
+    <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">replace</span>(<span class="ruby-identifier">enum</span>.<span class="ruby-identifier">instance_variable_get</span>(<span class="ruby-value">:@hash</span>))
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">clear</span>
+    <span class="ruby-identifier">merge</span>(<span class="ruby-identifier">enum</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- replace-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- replace-method -->
+
+    
+      <div id="method-i-select-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">select!</span><span
+            class="method-args">() { |o| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Equivalent to <a href="Set.html#method-i-keep_if">#keep_if</a>, but returns
+nil if no changes were made.</p>
+          
+
+          
+          <div class="method-source-code" id="select-21-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 297</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">select!</span>
+  <span class="ruby-identifier">block_given?</span> <span class="ruby-keyword">or</span> <span class="ruby-keyword">return</span> <span class="ruby-identifier">enum_for</span>(<span class="ruby-identifier">__method__</span>)
+  <span class="ruby-identifier">n</span> = <span class="ruby-identifier">size</span>
+  <span class="ruby-identifier">keep_if</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">o</span>) }
+  <span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">n</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- select-21-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- select-21-method -->
+
+    
+      <div id="method-i-size" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">size</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the number of elements.</p>
+          
+
+          
+          <div class="method-source-code" id="size-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 114</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">size</span>
+  <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">size</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- size-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Set.html#method-i-length">length</a>
+        </div>
+        
+
+        
+      </div><!-- size-method -->
+
+    
+      <div id="method-i-subset-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">subset?</span><span
+            class="method-args">(set)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns true if the set is a subset of the given set.</p>
+          
+
+          
+          <div class="method-source-code" id="subset-3F-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 204</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">subset?</span>(<span class="ruby-identifier">set</span>)
+  <span class="ruby-identifier">set</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Set</span>) <span class="ruby-keyword">or</span> <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&quot;value must be a set&quot;</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">set</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">size</span>
+  <span class="ruby-identifier">all?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-identifier">set</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>) }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- subset-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- subset-3F-method -->
+
+    
+      <div id="method-i-subtract" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">subtract</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Deletes every element that appears in the given enumerable object and
+returns self.</p>
+          
+
+          
+          <div class="method-source-code" id="subtract-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 318</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">subtract</span>(<span class="ruby-identifier">enum</span>)
+  <span class="ruby-identifier">do_with_enum</span>(<span class="ruby-identifier">enum</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-identifier">delete</span>(<span class="ruby-identifier">o</span>) }
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- subtract-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- subtract-method -->
+
+    
+      <div id="method-i-superset-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">superset?</span><span
+            class="method-args">(set)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns true if the set is a superset of the given set.</p>
+          
+
+          
+          <div class="method-source-code" id="superset-3F-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 190</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">superset?</span>(<span class="ruby-identifier">set</span>)
+  <span class="ruby-identifier">set</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Set</span>) <span class="ruby-keyword">or</span> <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&quot;value must be a set&quot;</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-identifier">set</span>.<span class="ruby-identifier">size</span>
+  <span class="ruby-identifier">set</span>.<span class="ruby-identifier">all?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span> <span class="ruby-identifier">include?</span>(<span class="ruby-identifier">o</span>) }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- superset-3F-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- superset-3F-method -->
+
+    
+      <div id="method-i-to_a" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">to_a</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Converts the set to an array.  The order of elements is uncertain.</p>
+          
+
+          
+          <div class="method-source-code" id="to_a-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 144</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">to_a</span>
+  <span class="ruby-ivar">@hash</span>.<span class="ruby-identifier">keys</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- to_a-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- to_a-method -->
+
+    
+      <div id="method-i-union" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">union</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Set.html#method-i-7C">|</a>
+        </div>
+        
+      </div><!-- union-method -->
+
+    
+      <div id="method-i-7C" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">|</span><span
+            class="method-args">(enum)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns a new set built by merging the set and the elements of the given
+enumerable object.</p>
+          
+
+          
+          <div class="method-source-code" id="7C-source">
+            <pre><span class="ruby-comment"># File rake/lib/set.rb, line 325</span>
+<span class="ruby-keyword">def</span> <span class="ruby-operator">|</span>(<span class="ruby-identifier">enum</span>)
+  <span class="ruby-identifier">dup</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">enum</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- 7C-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Set.html#method-i-2B">+</a>, <a href="Set.html#method-i-union">union</a>
+        </div>
+        
+
+        
+      </div><!-- 7C-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

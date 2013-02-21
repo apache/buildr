@@ -1,0 +1,3033 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>module Buildr - buildr</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="module">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/buildr/core/application.rb
+    <li>lib/buildr/core/build.rb
+    <li>lib/buildr/core/cc.rb
+    <li>lib/buildr/core/checks.rb
+    <li>lib/buildr/core/common.rb
+    <li>lib/buildr/core/compile.rb
+    <li>lib/buildr/core/doc.rb
+    <li>lib/buildr/core/environment.rb
+    <li>lib/buildr/core/filter.rb
+    <li>lib/buildr/core/generate.rb
+    <li>lib/buildr/core/help.rb
+    <li>lib/buildr/core/jrebel.rb
+    <li>lib/buildr/core/project.rb
+    <li>lib/buildr/core/run.rb
+    <li>lib/buildr/core/shell.rb
+    <li>lib/buildr/core/test.rb
+    <li>lib/buildr/core/util.rb
+    <li>lib/buildr/groovy/doc.rb
+    <li>lib/buildr/groovy/shell.rb
+    <li>lib/buildr/ide/eclipse.rb
+    <li>lib/buildr/ide/idea.rb
+    <li>lib/buildr/java/ant.rb
+    <li>lib/buildr/java/bdd.rb
+    <li>lib/buildr/java/cobertura.rb
+    <li>lib/buildr/java/compiler.rb
+    <li>lib/buildr/java/doc.rb
+    <li>lib/buildr/java/ecj.rb
+    <li>lib/buildr/java/emma.rb
+    <li>lib/buildr/java/external.rb
+    <li>lib/buildr/java/packaging.rb
+    <li>lib/buildr/java/pom.rb
+    <li>lib/buildr/java/test_result.rb
+    <li>lib/buildr/java/tests.rb
+    <li>lib/buildr/java/version_requirement.rb
+    <li>lib/buildr/packaging/archive.rb
+    <li>lib/buildr/packaging/artifact.rb
+    <li>lib/buildr/packaging/artifact_namespace.rb
+    <li>lib/buildr/packaging/artifact_search.rb
+    <li>lib/buildr/packaging/gems.rb
+    <li>lib/buildr/packaging/package.rb
+    <li>lib/buildr/packaging/tar.rb
+    <li>lib/buildr/packaging/version_requirement.rb
+    <li>lib/buildr/packaging/ziptask.rb
+    <li>lib/buildr/run.rb
+    <li>lib/buildr/scala/bdd.rb
+    <li>lib/buildr/scala/doc.rb
+    <li>lib/buildr/scala/shell.rb
+    <li>lib/buildr/scala/tests.rb
+    <li>lib/buildr/shell.rb
+    <li>lib/buildr/version.rb
+    <li>lib/buildr.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    
+    <!-- Included Modules -->
+<nav id="includes-section" class="section">
+  <h3 class="section-header">Included Modules</h3>
+
+  <ul class="link-list">
+  
+  
+    <li><a class="include" href="Buildr/Ant.html">Buildr::Ant</a>
+  
+  
+  </ul>
+</nav>
+
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-application">::application</a>
+    
+    <li><a href="#method-c-environment">::environment</a>
+    
+    <li><a href="#method-c-help">::help</a>
+    
+    <li><a href="#method-c-options">::options</a>
+    
+    <li><a href="#method-c-settings">::settings</a>
+    
+    <li><a href="#method-i-artifact">#artifact</a>
+    
+    <li><a href="#method-i-artifact_ns">#artifact_ns</a>
+    
+    <li><a href="#method-i-artifacts">#artifacts</a>
+    
+    <li><a href="#method-i-concat">#concat</a>
+    
+    <li><a href="#method-i-define">#define</a>
+    
+    <li><a href="#method-i-download">#download</a>
+    
+    <li><a href="#method-i-filter">#filter</a>
+    
+    <li><a href="#method-i-group">#group</a>
+    
+    <li><a href="#method-i-help">#help</a>
+    
+    <li><a href="#method-i-install">#install</a>
+    
+    <li><a href="#method-i-integration">#integration</a>
+    
+    <li><a href="#method-i-options">#options</a>
+    
+    <li><a href="#method-i-project">#project</a>
+    
+    <li><a href="#method-i-projects">#projects</a>
+    
+    <li><a href="#method-i-read">#read</a>
+    
+    <li><a href="#method-i-repositories">#repositories</a>
+    
+    <li><a href="#method-i-struct">#struct</a>
+    
+    <li><a href="#method-i-transitive">#transitive</a>
+    
+    <li><a href="#method-i-unzip">#unzip</a>
+    
+    <li><a href="#method-i-upload">#upload</a>
+    
+    <li><a href="#method-i-write">#write</a>
+    
+    <li><a href="#method-i-zip">#zip</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./CHANGELOG.html">CHANGELOG</a>
+  
+    <li class="file"><a href="./LICENSE.html">LICENSE</a>
+  
+    <li class="file"><a href="./NOTICE.html">NOTICE</a>
+  
+    <li class="file"><a href="./README_rdoc.html">README</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./Buildr.html">Buildr</a>
+  
+    <li><a href="./Buildr/ActsAsArtifact.html">Buildr::ActsAsArtifact</a>
+  
+    <li><a href="./Buildr/Ant.html">Buildr::Ant</a>
+  
+    <li><a href="./Buildr/Apt.html">Buildr::Apt</a>
+  
+    <li><a href="./Buildr/ArchiveTask.html">Buildr::ArchiveTask</a>
+  
+    <li><a href="./Buildr/ArchiveTask/Merge.html">Buildr::ArchiveTask::Merge</a>
+  
+    <li><a href="./Buildr/Artifact.html">Buildr::Artifact</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace.html">Buildr::ArtifactNamespace</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace/ArtifactRequirement.html">Buildr::ArtifactNamespace::ArtifactRequirement</a>
+  
+    <li><a href="./Buildr/ArtifactSearch.html">Buildr::ArtifactSearch</a>
+  
+    <li><a href="./Buildr/Build.html">Buildr::Build</a>
+  
+    <li><a href="./Buildr/CC.html">Buildr::CC</a>
+  
+    <li><a href="./Buildr/CCTask.html">Buildr::CCTask</a>
+  
+    <li><a href="./Buildr/Checks.html">Buildr::Checks</a>
+  
+    <li><a href="./Buildr/Checks/Expectation.html">Buildr::Checks::Expectation</a>
+  
+    <li><a href="./Buildr/Clojure.html">Buildr::Clojure</a>
+  
+    <li><a href="./Buildr/Cobertura.html">Buildr::Cobertura</a>
+  
+    <li><a href="./Buildr/Cobertura/CoberturaCheck.html">Buildr::Cobertura::CoberturaCheck</a>
+  
+    <li><a href="./Buildr/Compile.html">Buildr::Compile</a>
+  
+    <li><a href="./Buildr/CompileTask.html">Buildr::CompileTask</a>
+  
+    <li><a href="./Buildr/Compiler.html">Buildr::Compiler</a>
+  
+    <li><a href="./Buildr/Compiler/Ecj.html">Buildr::Compiler::Ecj</a>
+  
+    <li><a href="./Buildr/Compiler/ExternalJavac.html">Buildr::Compiler::ExternalJavac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Compiler::Javac</a>
+  
+    <li><a href="./Buildr/ConcatTask.html">Buildr::ConcatTask</a>
+  
+    <li><a href="./Buildr/Doc.html">Buildr::Doc</a>
+  
+    <li><a href="./Buildr/Doc/Base.html">Buildr::Doc::Base</a>
+  
+    <li><a href="./Buildr/Doc/DocTask.html">Buildr::Doc::DocTask</a>
+  
+    <li><a href="./Buildr/Doc/Groovydoc.html">Buildr::Doc::Groovydoc</a>
+  
+    <li><a href="./Buildr/Doc/GroovydocDefaults.html">Buildr::Doc::GroovydocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Javadoc.html">Buildr::Doc::Javadoc</a>
+  
+    <li><a href="./Buildr/Doc/JavadocDefaults.html">Buildr::Doc::JavadocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Scaladoc.html">Buildr::Doc::Scaladoc</a>
+  
+    <li><a href="./Buildr/Doc/ScaladocDefaults.html">Buildr::Doc::ScaladocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/VScaladoc.html">Buildr::Doc::VScaladoc</a>
+  
+    <li><a href="./Buildr/Eclipse.html">Buildr::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Eclipse.html">Buildr::Eclipse::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Java.html">Buildr::Eclipse::Java</a>
+  
+    <li><a href="./Buildr/Eclipse/Options.html">Buildr::Eclipse::Options</a>
+  
+    <li><a href="./Buildr/Eclipse/Plugin.html">Buildr::Eclipse::Plugin</a>
+  
+    <li><a href="./Buildr/Eclipse/Scala.html">Buildr::Eclipse::Scala</a>
+  
+    <li><a href="./Buildr/Emma.html">Buildr::Emma</a>
+  
+    <li><a href="./Buildr/Extension.html">Buildr::Extension</a>
+  
+    <li><a href="./Buildr/Extension/ClassMethods.html">Buildr::Extension::ClassMethods</a>
+  
+    <li><a href="./Buildr/Filter.html">Buildr::Filter</a>
+  
+    <li><a href="./Buildr/Filter/Mapper.html">Buildr::Filter::Mapper</a>
+  
+    <li><a href="./Buildr/GitRelease.html">Buildr::GitRelease</a>
+  
+    <li><a href="./Buildr/Groovy.html">Buildr::Groovy</a>
+  
+    <li><a href="./Buildr/Groovy/EasyB.html">Buildr::Groovy::EasyB</a>
+  
+    <li><a href="./Buildr/Groovy/GroovySH.html">Buildr::Groovy::GroovySH</a>
+  
+    <li><a href="./Buildr/Groovy/Groovyc.html">Buildr::Groovy::Groovyc</a>
+  
+    <li><a href="./Buildr/HgRelease.html">Buildr::HgRelease</a>
+  
+    <li><a href="./Buildr/IntegrationTestsTask.html">Buildr::IntegrationTestsTask</a>
+  
+    <li><a href="./Buildr/IntellijIdea.html">Buildr::IntellijIdea</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaFile.html">Buildr::IntellijIdea::IdeaFile</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaModule.html">Buildr::IntellijIdea::IdeaModule</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaProject.html">Buildr::IntellijIdea::IdeaProject</a>
+  
+    <li><a href="./Buildr/IntellijIdea/ProjectExtension.html">Buildr::IntellijIdea::ProjectExtension</a>
+  
+    <li><a href="./Buildr/JBehave.html">Buildr::JBehave</a>
+  
+    <li><a href="./Buildr/JMock.html">Buildr::JMock</a>
+  
+    <li><a href="./Buildr/JRebel.html">Buildr::JRebel</a>
+  
+    <li><a href="./Buildr/JUnit.html">Buildr::JUnit</a>
+  
+    <li><a href="./Buildr/JUnit/Report.html">Buildr::JUnit::Report</a>
+  
+    <li><a href="./Buildr/Layout.html">Buildr::Layout</a>
+  
+    <li><a href="./Buildr/Layout/Default.html">Buildr::Layout::Default</a>
+  
+    <li><a href="./Buildr/MultiTest.html">Buildr::MultiTest</a>
+  
+    <li><a href="./Buildr/OptionalArtifact.html">Buildr::OptionalArtifact</a>
+  
+    <li><a href="./Buildr/Options.html">Buildr::Options</a>
+  
+    <li><a href="./Buildr/Options/Proxies.html">Buildr::Options::Proxies</a>
+  
+    <li><a href="./Buildr/POM.html">Buildr::POM</a>
+  
+    <li><a href="./Buildr/Package.html">Buildr::Package</a>
+  
+    <li><a href="./Buildr/PackageGemTask.html">Buildr::PackageGemTask</a>
+  
+    <li><a href="./Buildr/Packaging.html">Buildr::Packaging</a>
+  
+    <li><a href="./Buildr/Packaging/Java.html">Buildr::Packaging::Java</a>
+  
+    <li><a href="./Buildr/Packaging/Java/AarTask.html">Buildr::Packaging::Java::AarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/EarTask.html">Buildr::Packaging::Java::EarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/JarTask.html">Buildr::Packaging::Java::JarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/Manifest.html">Buildr::Packaging::Java::Manifest</a>
+  
+    <li><a href="./Buildr/Packaging/Java/WarTask.html">Buildr::Packaging::Java::WarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Scala.html">Buildr::Packaging::Scala</a>
+  
+    <li><a href="./Buildr/ProcessStatus.html">Buildr::ProcessStatus</a>
+  
+    <li><a href="./Buildr/Project.html">Buildr::Project</a>
+  
+    <li><a href="./Buildr/RSpec.html">Buildr::RSpec</a>
+  
+    <li><a href="./Buildr/Repositories.html">Buildr::Repositories</a>
+  
+    <li><a href="./Buildr/ResourcesTask.html">Buildr::ResourcesTask</a>
+  
+    <li><a href="./Buildr/Run.html">Buildr::Run</a>
+  
+    <li><a href="./Buildr/Run/Base.html">Buildr::Run::Base</a>
+  
+    <li><a href="./Buildr/Run/JavaRunner.html">Buildr::Run::JavaRunner</a>
+  
+    <li><a href="./Buildr/Run/RunTask.html">Buildr::Run::RunTask</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala/Check.html">Buildr::Scala::Check</a>
+  
+    <li><a href="./Buildr/Scala/Mockito.html">Buildr::Scala::Mockito</a>
+  
+    <li><a href="./Buildr/Scala/ProjectExtension.html">Buildr::Scala::ProjectExtension</a>
+  
+    <li><a href="./Buildr/Scala/ScalaShell.html">Buildr::Scala::ScalaShell</a>
+  
+    <li><a href="./Buildr/Scala/ScalaTest.html">Buildr::Scala::ScalaTest</a>
+  
+    <li><a href="./Buildr/Scala/Scalac.html">Buildr::Scala::Scalac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Scala::Scalac::Javac</a>
+  
+    <li><a href="./Buildr/Scala/ScalacOptions.html">Buildr::Scala::ScalacOptions</a>
+  
+    <li><a href="./Buildr/Scala/Specs.html">Buildr::Scala::Specs</a>
+  
+    <li><a href="./Buildr/Scala/Specs2.html">Buildr::Scala::Specs2</a>
+  
+    <li><a href="./Buildr/Settings.html">Buildr::Settings</a>
+  
+    <li><a href="./Buildr/Shell.html">Buildr::Shell</a>
+  
+    <li><a href="./Buildr/Shell/Base.html">Buildr::Shell::Base</a>
+  
+    <li><a href="./Buildr/Shell/BeanShell.html">Buildr::Shell::BeanShell</a>
+  
+    <li><a href="./Buildr/Shell/Clojure.html">Buildr::Shell::Clojure</a>
+  
+    <li><a href="./Buildr/Shell/JIRB.html">Buildr::Shell::JIRB</a>
+  
+    <li><a href="./Buildr/Shell/ShellTask.html">Buildr::Shell::ShellTask</a>
+  
+    <li><a href="./Buildr/SvnRelease.html">Buildr::SvnRelease</a>
+  
+    <li><a href="./Buildr/TarTask.html">Buildr::TarTask</a>
+  
+    <li><a href="./Buildr/Test.html">Buildr::Test</a>
+  
+    <li><a href="./Buildr/Test/SkipIfNoTest.html">Buildr::Test::SkipIfNoTest</a>
+  
+    <li><a href="./Buildr/TestFramework.html">Buildr::TestFramework</a>
+  
+    <li><a href="./Buildr/TestFramework/Base.html">Buildr::TestFramework::Base</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased.html">Buildr::TestFramework::JRubyBased</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased/ClassMethods.html">Buildr::TestFramework::JRubyBased::ClassMethods</a>
+  
+    <li><a href="./Buildr/TestFramework/Java.html">Buildr::TestFramework::Java</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult.html">Buildr::TestFramework::TestResult</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/Error.html">Buildr::TestFramework::TestResult::Error</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/YamlFormatter.html">Buildr::TestFramework::TestResult::YamlFormatter</a>
+  
+    <li><a href="./Buildr/TestNG.html">Buildr::TestNG</a>
+  
+    <li><a href="./Buildr/TestTask.html">Buildr::TestTask</a>
+  
+    <li><a href="./Buildr/Unzip.html">Buildr::Unzip</a>
+  
+    <li><a href="./Buildr/Util.html">Buildr::Util</a>
+  
+    <li><a href="./Buildr/VersionRequirement.html">Buildr::VersionRequirement</a>
+  
+    <li><a href="./Buildr/ZipTask.html">Buildr::ZipTask</a>
+  
+    <li><a href="./Resolv.html">Resolv</a>
+  
+    <li><a href="./Resolv/DNS.html">Resolv::DNS</a>
+  
+    <li><a href="./Resolv/DNS/Config.html">Resolv::DNS::Config</a>
+  
+    <li><a href="./Resolv/DNS/Config/NXDomain.html">Resolv::DNS::Config::NXDomain</a>
+  
+    <li><a href="./Resolv/DNS/Config/OtherResolvError.html">Resolv::DNS::Config::OtherResolvError</a>
+  
+    <li><a href="./Resolv/DNS/DecodeError.html">Resolv::DNS::DecodeError</a>
+  
+    <li><a href="./Resolv/DNS/EncodeError.html">Resolv::DNS::EncodeError</a>
+  
+    <li><a href="./Resolv/DNS/Name.html">Resolv::DNS::Name</a>
+  
+    <li><a href="./Resolv/DNS/Query.html">Resolv::DNS::Query</a>
+  
+    <li><a href="./Resolv/DNS/Requester.html">Resolv::DNS::Requester</a>
+  
+    <li><a href="./Resolv/DNS/Requester/RequestError.html">Resolv::DNS::Requester::RequestError</a>
+  
+    <li><a href="./Resolv/DNS/Resource.html">Resolv::DNS::Resource</a>
+  
+    <li><a href="./Resolv/DNS/Resource/ANY.html">Resolv::DNS::Resource::ANY</a>
+  
+    <li><a href="./Resolv/DNS/Resource/CNAME.html">Resolv::DNS::Resource::CNAME</a>
+  
+    <li><a href="./Resolv/DNS/Resource/DomainName.html">Resolv::DNS::Resource::DomainName</a>
+  
+    <li><a href="./Resolv/DNS/Resource/Generic.html">Resolv::DNS::Resource::Generic</a>
+  
+    <li><a href="./Resolv/DNS/Resource/HINFO.html">Resolv::DNS::Resource::HINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN.html">Resolv::DNS::Resource::IN</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/A.html">Resolv::DNS::Resource::IN::A</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/AAAA.html">Resolv::DNS::Resource::IN::AAAA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/SRV.html">Resolv::DNS::Resource::IN::SRV</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/WKS.html">Resolv::DNS::Resource::IN::WKS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MINFO.html">Resolv::DNS::Resource::MINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MX.html">Resolv::DNS::Resource::MX</a>
+  
+    <li><a href="./Resolv/DNS/Resource/NS.html">Resolv::DNS::Resource::NS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/PTR.html">Resolv::DNS::Resource::PTR</a>
+  
+    <li><a href="./Resolv/DNS/Resource/SOA.html">Resolv::DNS::Resource::SOA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/TXT.html">Resolv::DNS::Resource::TXT</a>
+  
+    <li><a href="./Resolv/Hosts.html">Resolv::Hosts</a>
+  
+    <li><a href="./Resolv/IPv4.html">Resolv::IPv4</a>
+  
+    <li><a href="./Resolv/IPv6.html">Resolv::IPv6</a>
+  
+    <li><a href="./Resolv/ResolvError.html">Resolv::ResolvError</a>
+  
+    <li><a href="./Resolv/ResolvTimeout.html">Resolv::ResolvTimeout</a>
+  
+    <li><a href="./OptionParser.html">OptionParser</a>
+  
+    <li><a href="./OptionParser/Acceptables.html">OptionParser::Acceptables</a>
+  
+    <li><a href="./OptionParser/AmbiguousArgument.html">OptionParser::AmbiguousArgument</a>
+  
+    <li><a href="./OptionParser/AmbiguousOption.html">OptionParser::AmbiguousOption</a>
+  
+    <li><a href="./OptionParser/Arguable.html">OptionParser::Arguable</a>
+  
+    <li><a href="./OptionParser/CompletingHash.html">OptionParser::CompletingHash</a>
+  
+    <li><a href="./OptionParser/Completion.html">OptionParser::Completion</a>
+  
+    <li><a href="./OptionParser/InvalidArgument.html">OptionParser::InvalidArgument</a>
+  
+    <li><a href="./OptionParser/InvalidOption.html">OptionParser::InvalidOption</a>
+  
+    <li><a href="./OptionParser/List.html">OptionParser::List</a>
+  
+    <li><a href="./OptionParser/MissingArgument.html">OptionParser::MissingArgument</a>
+  
+    <li><a href="./OptionParser/NeedlessArgument.html">OptionParser::NeedlessArgument</a>
+  
+    <li><a href="./OptionParser/OptionMap.html">OptionParser::OptionMap</a>
+  
+    <li><a href="./OptionParser/ParseError.html">OptionParser::ParseError</a>
+  
+    <li><a href="./OptionParser/Switch.html">OptionParser::Switch</a>
+  
+    <li><a href="./OptionParser/Switch/NoArgument.html">OptionParser::Switch::NoArgument</a>
+  
+    <li><a href="./OptionParser/Switch/OptionalArgument.html">OptionParser::Switch::OptionalArgument</a>
+  
+    <li><a href="./OptionParser/Switch/PlacedArgument.html">OptionParser::Switch::PlacedArgument</a>
+  
+    <li><a href="./OptionParser/Switch/RequiredArgument.html">OptionParser::Switch::RequiredArgument</a>
+  
+    <li><a href="./Prime.html">Prime</a>
+  
+    <li><a href="./Prime/EratosthenesGenerator.html">Prime::EratosthenesGenerator</a>
+  
+    <li><a href="./Prime/EratosthenesSieve.html">Prime::EratosthenesSieve</a>
+  
+    <li><a href="./Prime/Generator23.html">Prime::Generator23</a>
+  
+    <li><a href="./Prime/OldCompatibility.html">Prime::OldCompatibility</a>
+  
+    <li><a href="./Prime/PseudoPrimeGenerator.html">Prime::PseudoPrimeGenerator</a>
+  
+    <li><a href="./Prime/TrialDivision.html">Prime::TrialDivision</a>
+  
+    <li><a href="./Prime/TrialDivisionGenerator.html">Prime::TrialDivisionGenerator</a>
+  
+    <li><a href="./FileUtils.html">FileUtils</a>
+  
+    <li><a href="./FileUtils/DryRun.html">FileUtils::DryRun</a>
+  
+    <li><a href="./FileUtils/LowMethods.html">FileUtils::LowMethods</a>
+  
+    <li><a href="./FileUtils/NoWrite.html">FileUtils::NoWrite</a>
+  
+    <li><a href="./FileUtils/StreamUtils_.html">FileUtils::StreamUtils_</a>
+  
+    <li><a href="./FileUtils/Verbose.html">FileUtils::Verbose</a>
+  
+    <li><a href="./GetoptLong.html">GetoptLong</a>
+  
+    <li><a href="./GetoptLong/AmbiguousOption.html">GetoptLong::AmbiguousOption</a>
+  
+    <li><a href="./GetoptLong/Error.html">GetoptLong::Error</a>
+  
+    <li><a href="./GetoptLong/InvalidOption.html">GetoptLong::InvalidOption</a>
+  
+    <li><a href="./GetoptLong/MissingArgument.html">GetoptLong::MissingArgument</a>
+  
+    <li><a href="./GetoptLong/NeedlessArgument.html">GetoptLong::NeedlessArgument</a>
+  
+    <li><a href="./Logger.html">Logger</a>
+  
+    <li><a href="./Logger/Application.html">Logger::Application</a>
+  
+    <li><a href="./Logger/Formatter.html">Logger::Formatter</a>
+  
+    <li><a href="./Logger/LogDevice.html">Logger::LogDevice</a>
+  
+    <li><a href="./Logger/LogDevice/LogDeviceMutex.html">Logger::LogDevice::LogDeviceMutex</a>
+  
+    <li><a href="./Logger/Severity.html">Logger::Severity</a>
+  
+    <li><a href="./Object.html">Object</a>
+  
+    <li><a href="./Buildr/Scala.html">Object::Scala</a>
+  
+    <li><a href="./Sync.html">Object::Synchronizer</a>
+  
+    <li><a href="./Sync_m.html">Object::Synchronizer_m</a>
+  
+    <li><a href="./ThreadsWait.html">Object::ThWait</a>
+  
+    <li><a href="./Timeout/Error.html">Object::TimeoutError</a>
+  
+    <li><a href="./PrettyPrint.html">PrettyPrint</a>
+  
+    <li><a href="./PrettyPrint/Breakable.html">PrettyPrint::Breakable</a>
+  
+    <li><a href="./PrettyPrint/Group.html">PrettyPrint::Group</a>
+  
+    <li><a href="./PrettyPrint/GroupQueue.html">PrettyPrint::GroupQueue</a>
+  
+    <li><a href="./PrettyPrint/SingleLine.html">PrettyPrint::SingleLine</a>
+  
+    <li><a href="./PrettyPrint/Text.html">PrettyPrint::Text</a>
+  
+    <li><a href="./URI.html">URI</a>
+  
+    <li><a href="./URI/FILE.html">URI::FILE</a>
+  
+    <li><a href="./URI/FTP.html">URI::FTP</a>
+  
+    <li><a href="./URI/Generic.html">URI::Generic</a>
+  
+    <li><a href="./URI/HTTP.html">URI::HTTP</a>
+  
+    <li><a href="./URI/NotFoundError.html">URI::NotFoundError</a>
+  
+    <li><a href="./OpenURI.html">OpenURI</a>
+  
+    <li><a href="./OpenURI/HTTPError.html">OpenURI::HTTPError</a>
+  
+    <li><a href="./OpenURI/HTTPRedirect.html">OpenURI::HTTPRedirect</a>
+  
+    <li><a href="./OpenURI/Meta.html">OpenURI::Meta</a>
+  
+    <li><a href="./OpenURI/OpenRead.html">OpenURI::OpenRead</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m/Err.html">Sync_m::Err</a>
+  
+    <li><a href="./Sync_m/Err/LockModeFailer.html">Sync_m::Err::LockModeFailer</a>
+  
+    <li><a href="./Sync_m/Err/UnknownLocker.html">Sync_m::Err::UnknownLocker</a>
+  
+    <li><a href="./CSV.html">CSV</a>
+  
+    <li><a href="./CSV/MalformedCSVError.html">CSV::MalformedCSVError</a>
+  
+    <li><a href="./CSV/Row.html">CSV::Row</a>
+  
+    <li><a href="./CSV/Table.html">CSV::Table</a>
+  
+    <li><a href="./Java.html">Java</a>
+  
+    <li><a href="./Java/Commands.html">Java::Commands</a>
+  
+    <li><a href="./Java/JavaWrapper.html">Java::JavaWrapper</a>
+  
+    <li><a href="./Java/Options.html">Java::Options</a>
+  
+    <li><a href="./PP.html">PP</a>
+  
+    <li><a href="./PP/ObjectMixin.html">PP::ObjectMixin</a>
+  
+    <li><a href="./PP/PPMethods.html">PP::PPMethods</a>
+  
+    <li><a href="./PP/SingleLine.html">PP::SingleLine</a>
+  
+    <li><a href="./Digest.html">Digest</a>
+  
+    <li><a href="./Digest/Class.html">Digest::Class</a>
+  
+    <li><a href="./Digest/Instance.html">Digest::Instance</a>
+  
+    <li><a href="./ERB.html">ERB</a>
+  
+    <li><a href="./ERB/DefMethod.html">ERB::DefMethod</a>
+  
+    <li><a href="./ERB/Util.html">ERB::Util</a>
+  
+    <li><a href="./Gem.html">Gem</a>
+  
+    <li><a href="./Gem/LoadError.html">Gem::LoadError</a>
+  
+    <li><a href="./Gem/Version.html">Gem::Version</a>
+  
+    <li><a href="./IRB.html">IRB</a>
+  
+    <li><a href="./IRB/Abort.html">IRB::Abort</a>
+  
+    <li><a href="./IRB/Irb.html">IRB::Irb</a>
+  
+    <li><a href="./MonitorMixin.html">MonitorMixin</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable.html">MonitorMixin::ConditionVariable</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable/Timeout.html">MonitorMixin::ConditionVariable::Timeout</a>
+  
+    <li><a href="./Psych.html">Psych</a>
+  
+    <li><a href="./Psych/BadAlias.html">Psych::BadAlias</a>
+  
+    <li><a href="./Psych/Exception.html">Psych::Exception</a>
+  
+    <li><a href="./Scanf.html">Scanf</a>
+  
+    <li><a href="./Timeout.html">Timeout</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./TkComm.html">TkComm</a>
+  
+    <li><a href="./TkComm/Tk_CMDTBL.html">TkComm::Tk_CMDTBL</a>
+  
+    <li><a href="./TkComm/Tk_WINDOWS.html">TkComm::Tk_WINDOWS</a>
+  
+    <li><a href="./TkCore.html">TkCore</a>
+  
+    <li><a href="./MultiTkIp.html">TkCore::INTERP</a>
+  
+    <li><a href="./TkCore/Tk_OBJECT_TABLE.html">TkCore::Tk_OBJECT_TABLE</a>
+  
+    <li><a href="./Zip.html">Zip</a>
+  
+    <li><a href="./Zip/ZipEntry.html">Zip::ZipEntry</a>
+  
+    <li><a href="./Zip/ZipEntrySet.html">Zip::ZipEntrySet</a>
+  
+    <li><a href="./Benchmark.html">Benchmark</a>
+  
+    <li><a href="./Benchmark/Tms.html">Benchmark::Tms</a>
+  
+    <li><a href="./DEBUGGER__.html">DEBUGGER__</a>
+  
+    <li><a href="./DEBUGGER__/Context.html">DEBUGGER__::Context</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper::E2MM</a>
+  
+    <li><a href="./File.html">File</a>
+  
+    <li><a href="./File/Stat.html">File::Stat</a>
+  
+    <li><a href="./MultiTkIp.html">MultiTkIp</a>
+  
+    <li><a href="./MultiTkIp/Command_Queue.html">MultiTkIp::Command_Queue</a>
+  
+    <li><a href="./PStore.html">PStore</a>
+  
+    <li><a href="./PStore/Error.html">PStore::Error</a>
+  
+    <li><a href="./RDoc.html">RDoc</a>
+  
+    <li><a href="./RDoc/Error.html">RDoc::Error</a>
+  
+    <li><a href="./Rake.html">Rake</a>
+  
+    <li><a href="./Rake/FileTask.html">Rake::FileTask</a>
+  
+    <li><a href="./Socket.html">Socket</a>
+  
+    <li><a href="./Socket/UDPSource.html">Socket::UDPSource</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./TSort.html">TSort</a>
+  
+    <li><a href="./TSort/Cyclic.html">TSort::Cyclic</a>
+  
+    <li><a href="./Tempfile.html">Tempfile</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./Vector.html">Vector</a>
+  
+    <li><a href="./Vector/ZeroVectorError.html">Vector::ZeroVectorError</a>
+  
+    <li><a href="./WeakRef.html">WeakRef</a>
+  
+    <li><a href="./WeakRef/RefError.html">WeakRef::RefError</a>
+  
+    <li><a href="./Abbrev.html">Abbrev</a>
+  
+    <li><a href="./Addrinfo.html">Addrinfo</a>
+  
+    <li><a href="./Base64.html">Base64</a>
+  
+    <li><a href="./BasicSocket.html">BasicSocket</a>
+  
+    <li><a href="./CGI.html">CGI</a>
+  
+    <li><a href="./CMath.html">CMath</a>
+  
+    <li><a href="./ConditionVariable.html">ConditionVariable</a>
+  
+    <li><a href="./DL.html">DL</a>
+  
+    <li><a href="./Date.html">Date</a>
+  
+    <li><a href="./Delegator.html">Delegator</a>
+  
+    <li><a href="./Dir.html">Dir</a>
+  
+    <li><a href="./ENV.html">ENV</a>
+  
+    <li><a href="./Enumerable.html">Enumerable</a>
+  
+    <li><a href="./Fiddle.html">Fiddle</a>
+  
+    <li><a href="./Find.html">Find</a>
+  
+    <li><a href="./Float.html">Float</a>
+  
+    <li><a href="./Forwardable.html">Forwardable</a>
+  
+    <li><a href="./GServer.html">GServer</a>
+  
+    <li><a href="./Hash.html">Hash</a>
+  
+    <li><a href="./IO.html">IO</a>
+  
+    <li><a href="./IPAddr.html">IPAddr</a>
+  
+    <li><a href="./IPSocket.html">IPSocket</a>
+  
+    <li><a href="./Integer.html">Integer</a>
+  
+    <li><a href="./JSON.html">JSON</a>
+  
+    <li><a href="./Kconv.html">Kconv</a>
+  
+    <li><a href="./Kernel.html">Kernel</a>
+  
+    <li><a href="./MatchData.html">MatchData</a>
+  
+    <li><a href="./Math.html">Math</a>
+  
+    <li><a href="./Matrix.html">Matrix</a>
+  
+    <li><a href="./Module.html">Module</a>
+  
+    <li><a href="./Monitor.html">Monitor</a>
+  
+    <li><a href="./MultiTkIp_OK.html">MultiTkIp_OK</a>
+  
+    <li><a href="./MultiTkIp_PseudoToplevel_Evaluable.html">MultiTkIp_PseudoToplevel_Evaluable</a>
+  
+    <li><a href="./Mutex_m.html">Mutex_m</a>
+  
+    <li><a href="./Numeric.html">Numeric</a>
+  
+    <li><a href="./Observable.html">Observable</a>
+  
+    <li><a href="./Open3.html">Open3</a>
+  
+    <li><a href="./OpenObject.html">OpenObject</a>
+  
+    <li><a href="./OpenStruct.html">OpenStruct</a>
+  
+    <li><a href="./Pathname.html">Pathname</a>
+  
+    <li><a href="./Profiler__.html">Profiler__</a>
+  
+    <li><a href="./ProgressBar.html">ProgressBar</a>
+  
+    <li><a href="./Queue.html">Queue</a>
+  
+    <li><a href="./RSS.html">RSS</a>
+  
+    <li><a href="./Range.html">Range</a>
+  
+    <li><a href="./Rational.html">Rational</a>
+  
+    <li><a href="./RemoteTkIp.html">RemoteTkIp</a>
+  
+    <li><a href="./SOCKSSocket.html">SOCKSSocket</a>
+  
+    <li><a href="./STRING_OR_FAILED_FORMAT.html">STRING_OR_FAILED_FORMAT</a>
+  
+    <li><a href="./SecureRandom.html">SecureRandom</a>
+  
+    <li><a href="./Set.html">Set</a>
+  
+    <li><a href="./Shell.html">Shell</a>
+  
+    <li><a href="./Shellwords.html">Shellwords</a>
+  
+    <li><a href="./SimpleDelegator.html">SimpleDelegator</a>
+  
+    <li><a href="./SingleForwardable.html">SingleForwardable</a>
+  
+    <li><a href="./Singleton.html">Singleton</a>
+  
+    <li><a href="./SizedQueue.html">SizedQueue</a>
+  
+    <li><a href="./SortedSet.html">SortedSet</a>
+  
+    <li><a href="./Struct.html">Struct</a>
+  
+    <li><a href="./Syck.html">Syck</a>
+  
+    <li><a href="./TCPSocket.html">TCPSocket</a>
+  
+    <li><a href="./TclTkIp.html">TclTkIp</a>
+  
+    <li><a href="./TclTkLib.html">TclTkLib</a>
+  
+    <li><a href="./ThreadError.html">ThreadError</a>
+  
+    <li><a href="./Time.html">Time</a>
+  
+    <li><a href="./Tracer.html">Tracer</a>
+  
+    <li><a href="./UDPSocket.html">UDPSocket</a>
+  
+    <li><a href="./WEBrick.html">WEBrick</a>
+  
+    <li><a href="./YAML.html">YAML</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="module">module Buildr</h1>
+
+  <div id="description" class="description">
+    
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Backwards compatibility stuff.  Remove in 1.5.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Backwards compatibility stuff.  Remove in 1.5.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the <a href="NOTICE.html">NOTICE</a>
+file distributed with this work for additional information regarding
+copyright ownership.  The ASF licenses this file to you under the Apache
+License, Version 2.0 (the “License”); you may not use this file except in
+compliance with the License. You may obtain a copy of the License at</p>
+
+<pre>http://www.apache.org/licenses/LICENSE-2.0</pre>
+
+<p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an “AS IS” BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+License for the specific language governing permissions and limitations
+under the License.</p>
+
+<p>Methods defined in <a href="Buildr.html">Buildr</a> are both instance
+methods (e.g. when included in <a href="Buildr/Project.html">Project</a>)
+and class methods when invoked like <a
+href="Buildr.html#method-i-artifacts">#artifacts</a>.</p>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="ScalaCheck">ScalaCheck
+        
+        <dd class="description">
+        
+      
+        <dt id="ScalaSpecs">ScalaSpecs
+        
+        <dd class="description">
+        
+      
+        <dt id="ScalaTest">ScalaTest
+        
+        <dd class="description">
+        
+      
+        <dt id="VERSION">VERSION
+        
+        <dd class="description">
+        
+      
+      </dl>
+    </section>
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-application" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">application</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the Buildr::Application object.</p>
+          
+
+          
+          <div class="method-source-code" id="application-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/application.rb, line 576</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">application</span>
+  <span class="ruby-constant">Rake</span>.<span class="ruby-identifier">application</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- application-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- application-method -->
+
+    
+      <div id="method-c-environment" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">environment</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Copied from BUILD_ENV.</p>
+          
+
+          
+          <div class="method-source-code" id="environment-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/application.rb, line 590</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">environment</span>
+  <span class="ruby-constant">Buildr</span>.<span class="ruby-identifier">application</span>.<span class="ruby-identifier">environment</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- environment-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- environment-method -->
+
+    
+      <div id="method-c-help" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">help</span><span
+            class="method-args">(&block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="help-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/help.rb, line 42</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">help</span>(&amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-constant">Help</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">block</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-constant">Help</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- help-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- help-method -->
+
+    
+      <div id="method-c-options" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            options &rarr; Options
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Returns the <a href="Buildr.html">Buildr</a> options. See <a
+href="Buildr/Options.html">Options</a>.</p>
+          
+
+          
+          <div class="method-source-code" id="options-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/environment.rb, line 114</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">options</span>
+  <span class="ruby-ivar">@options</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">Options</span>.<span class="ruby-identifier">new</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- options-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- options-method -->
+
+    
+      <div id="method-c-settings" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">settings</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns the <a href="Buildr/Settings.html">Settings</a> associated with
+this build.</p>
+          
+
+          
+          <div class="method-source-code" id="settings-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/application.rb, line 585</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">settings</span>
+  <span class="ruby-constant">Buildr</span>.<span class="ruby-identifier">application</span>.<span class="ruby-identifier">settings</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- settings-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- settings-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-artifact" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            artifact(spec) &rarr; Artifact
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            artifact(spec) { |task| ... } &rarr; Artifact
+          </span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Creates a file task to download and install the specified artifact in the
+local repository.</p>
+
+<p>You can use a String or a <a href="Hash.html">Hash</a> for the artifact
+specification. The file task will point at the artifact’s path inside the
+local repository. You can then use this tasks as a prerequisite for other
+tasks.</p>
+
+<p>This task will download and install the artifact only once. In fact, it
+will download and install the artifact if the artifact does not already
+exist. You can enhance it if you have a different way of creating the
+artifact in the local repository. See <a
+href="Buildr/Artifact.html">Artifact</a> for more details.</p>
+
+<p>For example, to specify an artifact:</p>
+
+<pre>artifact('log4j:log4j:jar:1.1')</pre>
+
+<p>To use the artifact in a task:</p>
+
+<pre>compile.with artifact('log4j:log4j:jar:1.1')</pre>
+
+<p>To specify an artifact and the means for creating it:</p>
+
+<pre class="ruby"><span class="ruby-identifier">download</span>(<span class="ruby-identifier">artifact</span>(<span class="ruby-string">'dojo:dojo-widget:zip:2.0'</span>)=<span class="ruby-operator">&gt;</span>
+  <span class="ruby-string">'http://download.dojotoolkit.org/release-2.0/dojo-2.0-widget.zip'</span>)
+</pre>
+          
+
+          
+          <div class="method-source-code" id="artifact-source">
+            <pre><span class="ruby-comment"># File lib/buildr/packaging/artifact.rb, line 754</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">artifact</span>(<span class="ruby-identifier">spec</span>, <span class="ruby-identifier">path</span> = <span class="ruby-keyword">nil</span>, &amp;<span class="ruby-identifier">block</span>) <span class="ruby-comment">#:yields:task</span>
+  <span class="ruby-identifier">spec</span> = <span class="ruby-identifier">artifact_ns</span>.<span class="ruby-identifier">fetch</span>(<span class="ruby-identifier">spec</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Symbol</span>)
+  <span class="ruby-identifier">spec</span> = <span class="ruby-constant">Artifact</span>.<span class="ruby-identifier">to_hash</span>(<span class="ruby-identifier">spec</span>)
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">task</span> = <span class="ruby-constant">Artifact</span>.<span class="ruby-identifier">lookup</span>(<span class="ruby-identifier">spec</span>)
+    <span class="ruby-identifier">task</span> = <span class="ruby-constant">Artifact</span>.<span class="ruby-identifier">define_task</span>(<span class="ruby-identifier">path</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">repositories</span>.<span class="ruby-identifier">locate</span>(<span class="ruby-identifier">spec</span>))
+    <span class="ruby-identifier">task</span>.<span class="ruby-identifier">send</span> <span class="ruby-value">:apply_spec</span>, <span class="ruby-identifier">spec</span>
+    <span class="ruby-constant">Rake</span><span class="ruby-operator">::</span><span class="ruby-constant">Task</span>[<span class="ruby-string">'rake:artifacts'</span>].<span class="ruby-identifier">enhance</span> [<span class="ruby-identifier">task</span>]
+    <span class="ruby-constant">Artifact</span>.<span class="ruby-identifier">register</span>(<span class="ruby-identifier">task</span>)
+    <span class="ruby-keyword">unless</span> <span class="ruby-identifier">spec</span>[<span class="ruby-value">:type</span>] <span class="ruby-operator">==</span> <span class="ruby-value">:pom</span>
+      <span class="ruby-constant">Rake</span><span class="ruby-operator">::</span><span class="ruby-constant">Task</span>[<span class="ruby-string">'artifacts:sources'</span>].<span class="ruby-identifier">enhance</span> [<span class="ruby-identifier">task</span>.<span class="ruby-identifier">sources_artifact</span>]
+      <span class="ruby-constant">Rake</span><span class="ruby-operator">::</span><span class="ruby-constant">Task</span>[<span class="ruby-string">'artifacts:javadoc'</span>].<span class="ruby-identifier">enhance</span> [<span class="ruby-identifier">task</span>.<span class="ruby-identifier">javadoc_artifact</span>]
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">task</span>.<span class="ruby-identifier">enhance</span> &amp;<span class="ruby-identifier">block</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- artifact-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- artifact-method -->
+
+    
+      <div id="method-i-artifact_ns" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            artifact_ns &rarr; ArtifactNamespace
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            artifact_ns(name) &rarr; ArtifactNamespace
+          </span>
+          
+        </div>
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            artifact_ns &rarr; ArtifactNamespace for the currently running Project
+          </span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Open an <a href="Buildr/ArtifactNamespace.html">ArtifactNamespace</a>. If a
+block is provided, the namespace is yielded to it.</p>
+
+<p>See also <a
+href="Buildr/ArtifactNamespace.html#method-c-instance">Buildr::ArtifactNamespace.instance</a></p>
+          
+
+          
+          <div class="method-source-code" id="artifact_ns-source">
+            <pre><span class="ruby-comment"># File lib/buildr/packaging/artifact_namespace.rb, line 1004</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">artifact_ns</span>(<span class="ruby-identifier">name</span> = <span class="ruby-keyword">nil</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">name</span> = <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">name</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">kind_of?</span>(<span class="ruby-constant">Project</span>)
+  <span class="ruby-constant">ArtifactNamespace</span>.<span class="ruby-identifier">instance</span>(<span class="ruby-identifier">name</span>, &amp;<span class="ruby-identifier">block</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- artifact_ns-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- artifact_ns-method -->
+
+    
+      <div id="method-i-artifacts" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            artifacts(*spec) &rarr; artifacts
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Handles multiple artifacts at a time. This method is the plural equivalent
+of <a href="Buildr.html#method-i-artifact">artifact</a>, but can do more
+things.</p>
+
+<p>Returns an array of artifacts built using the supplied specifications, each
+of which can be:</p>
+<ul><li>
+<p>An artifact specification (String or <a href="Hash.html">Hash</a>). Returns
+the appropriate <a href="Buildr/Artifact.html">Artifact</a> task.</p>
+</li><li>
+<p>An artifact of any other task. Returns the task as is.</p>
+</li><li>
+<p>A project. Returns all artifacts created (packaged) by that project.</p>
+</li><li>
+<p>A string. Returns that string, assumed to be a file name.</p>
+</li><li>
+<p>An array of artifacts or a <a href="Struct.html">Struct</a>.</p>
+</li><li>
+<p>A symbol. Returns the named artifact from the current <a
+href="Buildr/ArtifactNamespace.html">ArtifactNamespace</a></p>
+</li></ul>
+
+<p>For example, handling a collection of artifacts:</p>
+
+<pre>xml = [ xerces, xalan, jaxp ]
+ws = [ axis, jax-ws, jaxb ]
+db = [ jpa, mysql, sqltools ]
+artifacts(xml, ws, db)</pre>
+
+<p>Using artifacts created by a project:</p>
+
+<pre>artifacts project('my-app')               # All packages
+artifacts project('my-app').package(:war) # Only the WAR</pre>
+          
+
+          
+          <div class="method-source-code" id="artifacts-source">
+            <pre><span class="ruby-comment"># File lib/buildr/packaging/artifact.rb, line 794</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">artifacts</span>(*<span class="ruby-identifier">specs</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">inject</span>([]) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">set</span>, <span class="ruby-identifier">spec</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">case</span> <span class="ruby-identifier">spec</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">ArtifactNamespace</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">artifacts</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Symbol</span>, <span class="ruby-constant">Hash</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> [<span class="ruby-identifier">artifact</span>(<span class="ruby-identifier">spec</span>)]
+    <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r([^:]+:){2,4}/</span> <span class="ruby-comment"># A spec as opposed to a file name.</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> [<span class="ruby-identifier">artifact</span>(<span class="ruby-identifier">spec</span>)]
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">String</span> <span class="ruby-comment"># Must always expand path.</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> [<span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">spec</span>)]
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Project</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">artifacts</span>(<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">packages</span>)
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Rake</span><span class="ruby-operator">::</span><span class="ruby-constant">Task</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> [<span class="ruby-identifier">spec</span>]
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Struct</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">artifacts</span>(<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">values</span>)
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">respond_to?</span> <span class="ruby-value">:to_spec</span>
+        <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">artifacts</span>(<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">to_spec</span>)
+      <span class="ruby-keyword">else</span>
+        <span class="ruby-identifier">fail</span> <span class="ruby-node">&quot;Invalid artifact specification in #{specs.inspect}&quot;</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- artifacts-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- artifacts-method -->
+
+    
+      <div id="method-i-concat" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            concat(target=&gt;files) &rarr; task
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Creates and returns a file task that concatenates all its prerequisites to
+create a new file. See #<a href="Buildr/ConcatTask.html">ConcatTask</a>.</p>
+
+<p>For example:</p>
+
+<pre class="ruby"><span class="ruby-identifier">concat</span>(<span class="ruby-string">&quot;master.sql&quot;</span>=<span class="ruby-operator">&gt;</span>[<span class="ruby-string">&quot;users.sql&quot;</span>, <span class="ruby-string">&quot;orders.sql&quot;</span>, <span class="ruby-identifier">reports</span>.<span class="ruby-identifier">sql</span><span class="ruby-string">&quot;]
+</span></pre>
+          
+
+          
+          <div class="method-source-code" id="concat-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/common.rb, line 141</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">concat</span>(<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">file</span>, <span class="ruby-identifier">arg_names</span>, <span class="ruby-identifier">deps</span> = <span class="ruby-constant">Buildr</span>.<span class="ruby-identifier">application</span>.<span class="ruby-identifier">resolve_args</span>([<span class="ruby-identifier">args</span>])
+  <span class="ruby-constant">ConcatTask</span>.<span class="ruby-identifier">define_task</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">file</span>)=<span class="ruby-operator">&gt;</span><span class="ruby-identifier">deps</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- concat-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- concat-method -->
+
+    
+      <div id="method-i-define" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            define(name, properties?) { |project| ... } &rarr; project
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Defines a new project.</p>
+
+<p>The first argument is the project name. Each project must have a unique
+name. For a sub-project, the actual project name is created by prefixing
+the parent project’s name.</p>
+
+<p>The second argument is optional and contains a hash or properties that are
+set on the project. You can only use properties that are supported by the
+project definition, e.g. :group and :version. You can also set these
+properties from the project definition.</p>
+
+<p>You pass a block that is executed in the context of the project definition.
+This block is used to define the project and tasks that are part of the
+project. Do not perform any work inside the project itself, as it will
+execute each time the Buildfile is loaded. Instead, use it to create and
+extend tasks that are related to the project.</p>
+
+<p>For example:</p>
+
+<pre class="ruby"><span class="ruby-identifier">define</span> <span class="ruby-string">'foo'</span>, :<span class="ruby-identifier">version=</span><span class="ruby-operator">&gt;</span><span class="ruby-string">'1.0'</span> <span class="ruby-keyword">do</span>
+
+  <span class="ruby-identifier">define</span> <span class="ruby-string">'bar'</span> <span class="ruby-keyword">do</span>
+    <span class="ruby-identifier">compile</span>.<span class="ruby-identifier">with</span> <span class="ruby-string">'org.apache.axis2:axis2:jar:1.1'</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-identifier">puts</span> <span class="ruby-identifier">project</span>(<span class="ruby-string">'foo'</span>).<span class="ruby-identifier">version</span>
+=<span class="ruby-operator">&gt;</span> <span class="ruby-string">'1.0'</span>
+<span class="ruby-identifier">puts</span> <span class="ruby-identifier">project</span>(<span class="ruby-string">'foo:bar'</span>).<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">classpath</span>.<span class="ruby-identifier">map</span>(&amp;:<span class="ruby-identifier">to_spec</span>)
+=<span class="ruby-operator">&gt;</span> <span class="ruby-string">'org.apache.axis2:axis2:jar:1.1'</span>
+<span class="ruby-string">%Qbuildr </span><span class="ruby-identifier">build</span>
+=<span class="ruby-operator">&gt;</span> <span class="ruby-constant">Compiling</span> <span class="ruby-value">14</span> <span class="ruby-identifier">source</span> <span class="ruby-identifier">files</span> <span class="ruby-keyword">in</span> <span class="ruby-identifier">foo</span>:<span class="ruby-identifier">bar</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="define-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/project.rb, line 905</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">define</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">properties</span> = <span class="ruby-keyword">nil</span>, &amp;<span class="ruby-identifier">block</span>) <span class="ruby-comment">#:yields:project</span>
+  <span class="ruby-constant">Project</span>.<span class="ruby-identifier">define</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">properties</span>, &amp;<span class="ruby-identifier">block</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- define-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- define-method -->
+
+    
+      <div id="method-i-download" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            download(url_or_uri) &rarr; task
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            download(path=&gt;url_or_uri) &rarr;task
+          </span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Create a task that will download a file from a URL.</p>
+
+<p>Takes a single argument, a hash with one pair. The key is the file being
+created, the value if the URL to download. The task executes only if the
+file does not exist; the URL is not checked for updates.</p>
+
+<p>The task will show download progress on the console; if there are MD5/SHA1
+checksums on the server it will verify the download before saving it.</p>
+
+<p>For example:</p>
+
+<pre class="ruby"><span class="ruby-identifier">download</span> <span class="ruby-string">'image.jpg'</span>=<span class="ruby-operator">&gt;</span><span class="ruby-string">'http://example.com/theme/image.jpg'</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="download-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/common.rb, line 90</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">download</span>(<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">args</span> = <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">args</span>) <span class="ruby-keyword">if</span> <span class="ruby-constant">String</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">args</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-constant">URI</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">args</span>
+    <span class="ruby-comment"># Given only a download URL, download into a temporary file.</span>
+    <span class="ruby-comment"># You can infer the file from task name.</span>
+    <span class="ruby-identifier">temp</span> = <span class="ruby-constant">Tempfile</span>.<span class="ruby-identifier">open</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">args</span>.<span class="ruby-identifier">to_s</span>))
+    <span class="ruby-identifier">file</span>(<span class="ruby-identifier">temp</span>.<span class="ruby-identifier">path</span>).<span class="ruby-identifier">tap</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">task</span><span class="ruby-operator">|</span>
+      <span class="ruby-comment"># Since temporary file exists, force a download.</span>
+      <span class="ruby-keyword">class</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">task</span> ; <span class="ruby-keyword">def</span> <span class="ruby-identifier">needed?</span> ; <span class="ruby-keyword">true</span> ; <span class="ruby-keyword">end</span> ; <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">task</span>.<span class="ruby-identifier">sources</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">args</span>
+      <span class="ruby-identifier">task</span>.<span class="ruby-identifier">enhance</span> { <span class="ruby-identifier">args</span>.<span class="ruby-identifier">download</span> <span class="ruby-identifier">temp</span> }
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-comment"># Download to a file created by the task.</span>
+    <span class="ruby-identifier">fail</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
+    <span class="ruby-identifier">uri</span> = <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">args</span>.<span class="ruby-identifier">values</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">to_s</span>)
+    <span class="ruby-identifier">file</span>(<span class="ruby-identifier">args</span>.<span class="ruby-identifier">keys</span>.<span class="ruby-identifier">first</span>.<span class="ruby-identifier">to_s</span>).<span class="ruby-identifier">tap</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">task</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">task</span>.<span class="ruby-identifier">sources</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">uri</span>
+      <span class="ruby-identifier">task</span>.<span class="ruby-identifier">enhance</span> { <span class="ruby-identifier">uri</span>.<span class="ruby-identifier">download</span> <span class="ruby-identifier">task</span>.<span class="ruby-identifier">name</span> }
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- download-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- download-method -->
+
+    
+      <div id="method-i-filter" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            filter(*source) &rarr; Filter
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Creates a filter that will copy files from the source directory(ies) into
+the target directory. You can extend the filter to modify files by mapping
+<code>${key}</code> into values in each of the copied files, and by
+including or excluding specific files.</p>
+
+<p>A filter is not a task, you must call the <a
+href="Buildr/Filter.html#method-i-run">Buildr::Filter#run</a> method to
+execute it.</p>
+
+<p>For example, to copy all files from one directory to another:</p>
+
+<pre>filter('src/files').into('target/classes').run</pre>
+
+<p>To include only the text files, and replace each instance of
+<code>${build}</code> with the current date/time:</p>
+
+<pre class="ruby"><span class="ruby-identifier">filter</span>(<span class="ruby-string">'src/files'</span>).<span class="ruby-identifier">into</span>(<span class="ruby-string">'target/classes'</span>).<span class="ruby-identifier">include</span>(<span class="ruby-string">'*.txt'</span>).<span class="ruby-identifier">using</span>(<span class="ruby-string">'build'</span>=<span class="ruby-operator">&gt;</span><span class="ruby-constant">Time</span>.<span class="ruby-identifier">now</span>).<span class="ruby-identifier">run</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="filter-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/filter.rb, line 395</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">filter</span>(*<span class="ruby-identifier">sources</span>)
+  <span class="ruby-constant">Filter</span>.<span class="ruby-identifier">new</span>.<span class="ruby-identifier">from</span>(*<span class="ruby-identifier">sources</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- filter-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- filter-method -->
+
+    
+      <div id="method-i-group" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            group(ids, :under=&gt;group_name, :version=&gt;number) &rarr; artifacts
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Convenience method for defining multiple artifacts that belong to the same
+group, type and version. Accepts multiple artifact identifiers followed by
+two or three hash values:</p>
+<ul><li>
+<p>:under – The group identifier</p>
+</li><li>
+<p>:version – The version number</p>
+</li><li>
+<p>:type – The artifact type (optional)</p>
+</li><li>
+<p>:classifier – The artifact classifier (optional)</p>
+</li></ul>
+
+<p>For example:</p>
+
+<pre class="ruby"><span class="ruby-identifier">group</span> <span class="ruby-string">'xbean'</span>, <span class="ruby-string">'xbean_xpath'</span>, <span class="ruby-string">'xmlpublic'</span>, :<span class="ruby-identifier">under=</span><span class="ruby-operator">&gt;</span><span class="ruby-string">'xmlbeans'</span>, :<span class="ruby-identifier">version=</span><span class="ruby-operator">&gt;</span><span class="ruby-string">'2.1.0'</span>
+</pre>
+
+<p>Or:</p>
+
+<pre class="ruby"><span class="ruby-identifier">group</span> <span class="ruby-node">%w{xbean xbean_xpath xmlpublic}</span>, :<span class="ruby-identifier">under=</span><span class="ruby-operator">&gt;</span><span class="ruby-string">'xmlbeans'</span>, :<span class="ruby-identifier">version=</span><span class="ruby-operator">&gt;</span><span class="ruby-string">'2.1.0'</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="group-source">
+            <pre><span class="ruby-comment"># File lib/buildr/packaging/artifact.rb, line 864</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">group</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">hash</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span>
+  <span class="ruby-identifier">args</span>.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">map</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">id</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">artifact</span> <span class="ruby-value">:group</span>   =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">hash</span>[<span class="ruby-value">:under</span>],
+             <span class="ruby-value">:type</span>    =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">hash</span>[<span class="ruby-value">:type</span>],
+             <span class="ruby-value">:version</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">hash</span>[<span class="ruby-value">:version</span>],
+             <span class="ruby-value">:classifier</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">hash</span>[<span class="ruby-value">:classifier</span>],
+             <span class="ruby-value">:id</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">id</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- group-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- group-method -->
+
+    
+      <div id="method-i-help" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            help() { ... }
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Use this to enhance the help task, e.g. to print some important information
+about your build, configuration options, build instructions, etc.</p>
+          
+
+          
+          <div class="method-source-code" id="help-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/help.rb, line 86</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">help</span>(&amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-constant">Buildr</span>.<span class="ruby-identifier">help</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">block</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- help-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- help-method -->
+
+    
+      <div id="method-i-install" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            install(artifacts) &rarr; install_task
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Installs the specified artifacts in the local repository as part of the
+install task.</p>
+
+<p>You can use this to install various files in the local repository, for
+example:</p>
+
+<pre>install artifact('group:id:jar:1.0').from('some_jar.jar')
+$ buildr install</pre>
+          
+
+          
+          <div class="method-source-code" id="install-source">
+            <pre><span class="ruby-comment"># File lib/buildr/packaging/artifact.rb, line 883</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">install</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">artifacts</span> = <span class="ruby-identifier">artifacts</span>(<span class="ruby-identifier">args</span>).<span class="ruby-identifier">uniq</span>
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">'This method can only install artifacts'</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">artifacts</span>.<span class="ruby-identifier">all?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:to_spec</span>) }
+  <span class="ruby-identifier">task</span>(<span class="ruby-string">'install'</span>).<span class="ruby-identifier">tap</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">install</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">install</span>.<span class="ruby-identifier">enhance</span>(<span class="ruby-identifier">artifacts</span>) <span class="ruby-keyword">do</span>
+      <span class="ruby-identifier">artifacts</span>.<span class="ruby-identifier">each</span>(&amp;<span class="ruby-value">:install</span>)
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">install</span>.<span class="ruby-identifier">enhance</span> &amp;<span class="ruby-identifier">block</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">block</span>
+    <span class="ruby-identifier">task</span>(<span class="ruby-string">'uninstall'</span>) <span class="ruby-keyword">do</span>
+      <span class="ruby-identifier">artifacts</span>.<span class="ruby-identifier">map</span>(&amp;<span class="ruby-value">:to_s</span> ).<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span> <span class="ruby-identifier">rm</span> <span class="ruby-identifier">file</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exist?</span>(<span class="ruby-identifier">file</span>) }
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- install-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- install-method -->
+
+    
+      <div id="method-i-integration" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            integration { |task| .... }
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            integration &rarr; IntegrationTestTask
+          </span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Use this method to return the integration tests task.</p>
+          
+
+          
+          <div class="method-source-code" id="integration-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/test.rb, line 774</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">integration</span>(*<span class="ruby-identifier">deps</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-constant">Rake</span><span class="ruby-operator">::</span><span class="ruby-constant">Task</span>[<span class="ruby-string">'rake:integration'</span>].<span class="ruby-identifier">enhance</span> <span class="ruby-identifier">deps</span>, &amp;<span class="ruby-identifier">block</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- integration-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- integration-method -->
+
+    
+      <div id="method-i-options" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            options &rarr; Options
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Returns the <a href="Buildr.html">Buildr</a> options. See <a
+href="Buildr/Options.html">Options</a>.</p>
+          
+
+          
+          <div class="method-source-code" id="options-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/environment.rb, line 124</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">options</span>
+  <span class="ruby-constant">Buildr</span>.<span class="ruby-identifier">options</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- options-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- options-method -->
+
+    
+      <div id="method-i-project" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            project(name) &rarr; project
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Returns a project definition.</p>
+
+<p>When called from outside a project definition, must reference the project
+by its full name, e.g. ‘foo:bar’ to access the sub-project ‘bar’ in ‘foo’.
+When called from inside a project, relative names are sufficient, e.g.
+<code>project('foo').project('bar')</code> will find the sub-project ‘bar’
+in ‘foo’.</p>
+
+<p>You cannot reference a project before the project is defined. When working
+with sub-projects, the project definition is stored by calling <a
+href="Buildr.html#method-i-define">define</a>, and evaluated before a call
+to the parent project’s <a href="Buildr.html#method-i-define">define</a>
+method returns.</p>
+
+<p>However, if you call <a href="Buildr.html#method-i-project">project</a>
+with the name of another sub-project, its definition is evaluated
+immediately. So the returned project definition is always complete, and you
+can access its definition (e.g. to find files relative to the base
+directory, or packages created by that project).</p>
+
+<p>For example:</p>
+
+<pre>define 'myapp' do
+  self.version = '1.1'
+
+  define 'webapp' do
+    # webapp is defined first, but beans is evaluated first
+    compile.with project('beans')
+    package :war
+  end
+
+  define 'beans' do
+    package :jar
+  end
+end
+
+puts project('myapp:beans').version</pre>
+          
+
+          
+          <div class="method-source-code" id="project-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/project.rb, line 944</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">project</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-constant">Project</span>.<span class="ruby-identifier">project</span> *<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- project-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- project-method -->
+
+    
+      <div id="method-i-projects" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            projects(*names) &rarr; projects
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>With no arguments, returns a list of all projects defined so far. When
+called on a project, returns all its sub-projects (direct descendants).</p>
+
+<p>With arguments, returns a list of named projects, fails on any name that
+does not exist. As with <a href="Buildr.html#method-i-project">project</a>,
+you can use relative names when calling this method on a project.</p>
+
+<p>Like <a href="Buildr.html#method-i-project">project</a>, this method
+evaluates the definition of each project before returning it. Be advised of
+circular dependencies.</p>
+
+<p>For example:</p>
+
+<pre class="ruby"><span class="ruby-identifier">files</span> = <span class="ruby-identifier">projects</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">prj</span><span class="ruby-operator">|</span> <span class="ruby-constant">FileList</span>[<span class="ruby-identifier">prj</span>.<span class="ruby-identifier">path_to</span>(<span class="ruby-string">'src   /*.java'</span>) }.<span class="ruby-identifier">flatten</span>
+<span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;There are #{files.size} source files in #{projects.size} projects&quot;</span>
+
+<span class="ruby-identifier">puts</span> <span class="ruby-identifier">projects</span>(<span class="ruby-string">'myapp:beans'</span>, <span class="ruby-string">'myapp:webapp'</span>).<span class="ruby-identifier">map</span>(&amp;:<span class="ruby-identifier">name</span>)
+</pre>
+
+<p>Same as:</p>
+
+<pre>puts project('myapp').projects.map(&amp;:name)</pre>
+          
+
+          
+          <div class="method-source-code" id="projects-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/project.rb, line 967</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">projects</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-constant">Project</span>.<span class="ruby-identifier">projects</span> *<span class="ruby-identifier">args</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- projects-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- projects-method -->
+
+    
+      <div id="method-i-read" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            read(args) &rarr; string
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            read(args) { |string| ... } &rarr; result
+          </span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Reads and returns the contents of a file. The second form yields to the
+block and returns the result of the block. The args passed to read are
+passed on to File.open.</p>
+
+<p>For example:</p>
+
+<pre class="ruby"><span class="ruby-identifier">puts</span> <span class="ruby-identifier">read</span>(<span class="ruby-string">'README'</span>)
+<span class="ruby-identifier">read</span>(<span class="ruby-string">'README'</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">text</span><span class="ruby-operator">|</span> <span class="ruby-identifier">puts</span> <span class="ruby-identifier">text</span> }
+</pre>
+          
+
+          
+          <div class="method-source-code" id="read-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/common.rb, line 65</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">read</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>] = <span class="ruby-identifier">args</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">to_s</span>
+  <span class="ruby-identifier">contents</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(*<span class="ruby-identifier">args</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">read</span> }
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">block_given?</span>
+    <span class="ruby-keyword">yield</span> <span class="ruby-identifier">contents</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">contents</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- read-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- read-method -->
+
+    
+      <div id="method-i-repositories" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            repositories &rarr; Repositories
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Returns an object you can use for setting the local repository path, remote
+repositories URL and release server settings.</p>
+
+<p>See <a href="Buildr/Repositories.html">Repositories</a>.</p>
+          
+
+          
+          <div class="method-source-code" id="repositories-source">
+            <pre><span class="ruby-comment"># File lib/buildr/packaging/artifact.rb, line 727</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">repositories</span>
+  <span class="ruby-constant">Repositories</span>.<span class="ruby-identifier">instance</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- repositories-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- repositories-method -->
+
+    
+      <div id="method-i-struct" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            struct(hash) &rarr; Struct
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Convenience method for creating an anonymous <a
+href="Struct.html">Struct</a>.</p>
+
+<p>For example:</p>
+
+<pre class="ruby"><span class="ruby-constant">COMMONS</span>             = <span class="ruby-identifier">struct</span>(
+  :<span class="ruby-identifier">collections</span>      =<span class="ruby-operator">&gt;</span><span class="ruby-string">'commons-collections:commons-collections:jar:3.1'</span>,
+  :<span class="ruby-identifier">lang</span>             =<span class="ruby-operator">&gt;</span><span class="ruby-string">'commons-lang:commons-lang:jar:2.1'</span>,
+  :<span class="ruby-identifier">logging</span>          =<span class="ruby-operator">&gt;</span><span class="ruby-string">'commons-logging:commons-logging:jar:1.0.3'</span>,
+)
+
+<span class="ruby-identifier">compile</span>.<span class="ruby-identifier">with</span> <span class="ruby-constant">COMMONS</span>.<span class="ruby-identifier">logging</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="struct-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/common.rb, line 31</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">struct</span>(<span class="ruby-identifier">hash</span>)
+  <span class="ruby-constant">Struct</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword">nil</span>, *<span class="ruby-identifier">hash</span>.<span class="ruby-identifier">keys</span>).<span class="ruby-identifier">new</span>(*<span class="ruby-identifier">hash</span>.<span class="ruby-identifier">values</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- struct-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- struct-method -->
+
+    
+      <div id="method-i-transitive" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">transitive</span><span
+            class="method-args">(*args)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="transitive-source">
+            <pre><span class="ruby-comment"># File lib/buildr/packaging/artifact.rb, line 821</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">transitive</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">options</span> = <span class="ruby-constant">Hash</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">last</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">pop</span> <span class="ruby-operator">:</span> {}
+  <span class="ruby-identifier">dep_opts</span> = {
+    <span class="ruby-value">:scopes</span>   =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:scopes</span>] <span class="ruby-operator">||</span> [<span class="ruby-keyword">nil</span>, <span class="ruby-string">&quot;compile&quot;</span>, <span class="ruby-string">&quot;runtime&quot;</span>],
+    <span class="ruby-value">:optional</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:optional</span>]
+  }
+  <span class="ruby-identifier">specs</span> = <span class="ruby-identifier">args</span>.<span class="ruby-identifier">flatten</span>
+  <span class="ruby-identifier">specs</span>.<span class="ruby-identifier">inject</span>([]) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">set</span>, <span class="ruby-identifier">spec</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">case</span> <span class="ruby-identifier">spec</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r([^:]+:){2,4}/</span> <span class="ruby-comment"># A spec as opposed to a file name.</span>
+      <span class="ruby-identifier">artifact</span> = <span class="ruby-identifier">artifact</span>(<span class="ruby-identifier">spec</span>)
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> [<span class="ruby-identifier">artifact</span>] <span class="ruby-keyword">unless</span> <span class="ruby-identifier">artifact</span>.<span class="ruby-identifier">type</span> <span class="ruby-operator">==</span> <span class="ruby-value">:pom</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> <span class="ruby-constant">POM</span>.<span class="ruby-identifier">load</span>(<span class="ruby-identifier">artifact</span>.<span class="ruby-identifier">pom</span>).<span class="ruby-identifier">dependencies</span>(<span class="ruby-identifier">dep_opts</span>).<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">spec</span><span class="ruby-operator">|</span> <span class="ruby-identifier">artifact</span>(<span class="ruby-identifier">spec</span>) }
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Hash</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> [<span class="ruby-identifier">transitive</span>(<span class="ruby-identifier">spec</span>, <span class="ruby-identifier">options</span>)]
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">String</span> <span class="ruby-comment"># Must always expand path.</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">transitive</span>(<span class="ruby-identifier">file</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">spec</span>)), <span class="ruby-identifier">options</span>)
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Project</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">transitive</span>(<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">packages</span>, <span class="ruby-identifier">options</span>)
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Rake</span><span class="ruby-operator">::</span><span class="ruby-constant">Task</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">spec</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:to_spec</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">transitive</span>(<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">to_spec</span>, <span class="ruby-identifier">options</span>) <span class="ruby-operator">:</span> [<span class="ruby-identifier">spec</span>]
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Struct</span>
+      <span class="ruby-identifier">set</span> <span class="ruby-operator">|=</span> <span class="ruby-identifier">transitive</span>(<span class="ruby-identifier">spec</span>.<span class="ruby-identifier">values</span>, <span class="ruby-identifier">options</span>)
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">fail</span> <span class="ruby-node">&quot;Invalid artifact specification in: #{specs.to_s}&quot;</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- transitive-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- transitive-method -->
+
+    
+      <div id="method-i-unzip" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            unzip(to_dir=&gt;zip_file) &rarr; Zip
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Creates a task that will unzip a file into the target directory. The task
+name is the target directory, the prerequisite is the file to unzip.</p>
+
+<p>This method creates a file task to expand the zip file. It returns an <a
+href="Buildr/Unzip.html">Unzip</a> object that specifies how the file will
+be extracted. You can include or exclude specific files from within the
+zip, and map to different paths.</p>
+
+<p>The <a href="Buildr/Unzip.html">Unzip</a> object’s to_s method return the
+path to the target directory, so you can use it as a prerequisite. By
+keeping the <a href="Buildr/Unzip.html">Unzip</a> object separate from the
+file task, you overlay additional work on top of the file task.</p>
+
+<p>For example:</p>
+
+<pre class="ruby"><span class="ruby-identifier">unzip</span>(<span class="ruby-string">'all'</span>=<span class="ruby-operator">&gt;</span><span class="ruby-string">'test.zip'</span>)
+<span class="ruby-identifier">unzip</span>(<span class="ruby-string">'src'</span>=<span class="ruby-operator">&gt;</span><span class="ruby-string">'test.zip'</span>).<span class="ruby-identifier">include</span>(<span class="ruby-string">'README'</span>, <span class="ruby-string">'LICENSE'</span>)
+<span class="ruby-identifier">unzip</span>(<span class="ruby-string">'libs'</span>=<span class="ruby-operator">&gt;</span><span class="ruby-string">'test.zip'</span>).<span class="ruby-identifier">from_path</span>(<span class="ruby-string">'libs'</span>)
+</pre>
+          
+
+          
+          <div class="method-source-code" id="unzip-source">
+            <pre><span class="ruby-comment"># File lib/buildr/packaging/ziptask.rb, line 344</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">unzip</span>(<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">target</span>, <span class="ruby-identifier">arg_names</span>, <span class="ruby-identifier">zip_file</span> = <span class="ruby-constant">Buildr</span>.<span class="ruby-identifier">application</span>.<span class="ruby-identifier">resolve_args</span>([<span class="ruby-identifier">args</span>])
+  <span class="ruby-identifier">task</span> = <span class="ruby-identifier">file</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-identifier">target</span>.<span class="ruby-identifier">to_s</span>)=<span class="ruby-operator">&gt;</span><span class="ruby-identifier">zip_file</span>)
+  <span class="ruby-constant">Unzip</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">task</span>=<span class="ruby-operator">&gt;</span><span class="ruby-identifier">zip_file</span>).<span class="ruby-identifier">tap</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">setup</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">task</span>.<span class="ruby-identifier">enhance</span> { <span class="ruby-identifier">setup</span>.<span class="ruby-identifier">extract</span> }
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- unzip-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- unzip-method -->
+
+    
+      <div id="method-i-upload" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            upload(artifacts)
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Uploads the specified artifacts to the release server as part of the upload
+task.</p>
+
+<p>You can use this to upload various files to the release server, for
+example:</p>
+
+<pre>upload artifact('group:id:jar:1.0').from('some_jar.jar')
+$ buildr upload</pre>
+          
+
+          
+          <div class="method-source-code" id="upload-source">
+            <pre><span class="ruby-comment"># File lib/buildr/packaging/artifact.rb, line 905</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">upload</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">artifacts</span> = <span class="ruby-identifier">artifacts</span>(<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">'This method can only upload artifacts'</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">artifacts</span>.<span class="ruby-identifier">all?</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">f</span><span class="ruby-operator">|</span> <span class="ruby-identifier">f</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:to_spec</span>) }
+  <span class="ruby-identifier">upload_artifacts_tasks</span> = <span class="ruby-identifier">artifacts</span>.<span class="ruby-identifier">map</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">artifact</span><span class="ruby-operator">|</span> <span class="ruby-identifier">artifact</span>.<span class="ruby-identifier">upload_task</span> }
+  <span class="ruby-identifier">task</span>(<span class="ruby-string">'upload'</span>).<span class="ruby-identifier">tap</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">task</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">task</span>.<span class="ruby-identifier">enhance</span> &amp;<span class="ruby-identifier">block</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">block</span>
+    <span class="ruby-identifier">task</span>.<span class="ruby-identifier">enhance</span> <span class="ruby-identifier">upload_artifacts_tasks</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- upload-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- upload-method -->
+
+    
+      <div id="method-i-write" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            write(name, content)
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            write(name) { ... }
+          </span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>Write the contents into a file. The second form calls the block and writes
+the result.</p>
+
+<p>For example:</p>
+
+<pre>write 'TIMESTAMP', Time.now
+write('TIMESTAMP') { Time.now }</pre>
+
+<p>Yields to the block before writing the file, so you can chain read and
+write together. For example:</p>
+
+<pre>write('README') { read('README').sub(&quot;${build}&quot;, Time.now) }</pre>
+          
+
+          
+          <div class="method-source-code" id="write-source">
+            <pre><span class="ruby-comment"># File lib/buildr/core/common.rb, line 48</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">write</span>(<span class="ruby-identifier">name</span>, <span class="ruby-identifier">content</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-identifier">mkpath</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">dirname</span>(<span class="ruby-identifier">name</span>)
+  <span class="ruby-identifier">content</span> = <span class="ruby-keyword">yield</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">block_given?</span>
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>, <span class="ruby-string">'wb'</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">file</span><span class="ruby-operator">|</span> <span class="ruby-identifier">file</span>.<span class="ruby-identifier">write</span> <span class="ruby-identifier">content</span>.<span class="ruby-identifier">to_s</span> }
+  <span class="ruby-identifier">content</span>.<span class="ruby-identifier">to_s</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- write-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- write-method -->
+
+    
+      <div id="method-i-zip" class="method-detail ">
+        
+        
+        <div class="method-heading">
+          <span class="method-callseq">
+            zip(file) &rarr; ZipTask
+          </span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+        
+
+        <div class="method-description">
+          
+          <p>The <a href="Buildr/ZipTask.html">ZipTask</a> creates a new <a
+href="Zip.html">Zip</a> file. You can include any number of files and and
+directories, use exclusion patterns, and include files into specific
+directories.</p>
+
+<p>For example:</p>
+
+<pre class="ruby"><span class="ruby-identifier">zip</span>(<span class="ruby-string">'test.zip'</span>).<span class="ruby-identifier">tap</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">task</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">task</span>.<span class="ruby-identifier">include</span> <span class="ruby-string">'srcs'</span>
+  <span class="ruby-identifier">task</span>.<span class="ruby-identifier">include</span> <span class="ruby-string">'README'</span>, <span class="ruby-string">'LICENSE'</span>
+<span class="ruby-keyword">end</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="zip-source">
+            <pre><span class="ruby-comment"># File lib/buildr/packaging/ziptask.rb, line 102</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">zip</span>(<span class="ruby-identifier">file</span>)
+  <span class="ruby-constant">ZipTask</span>.<span class="ruby-identifier">define_task</span>(<span class="ruby-identifier">file</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- zip-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- zip-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

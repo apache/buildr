@@ -1,0 +1,3219 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class OptionParser - buildr</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>rake/lib/optparse.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link"><a href="Object.html">Object</a>
+  
+</nav>
+
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-accept">::accept</a>
+    
+    <li><a href="#method-c-getopts">::getopts</a>
+    
+    <li><a href="#method-c-inc">::inc</a>
+    
+    <li><a href="#method-c-new">::new</a>
+    
+    <li><a href="#method-c-reject">::reject</a>
+    
+    <li><a href="#method-c-terminate">::terminate</a>
+    
+    <li><a href="#method-c-top">::top</a>
+    
+    <li><a href="#method-c-with">::with</a>
+    
+    <li><a href="#method-i-abort">#abort</a>
+    
+    <li><a href="#method-i-accept">#accept</a>
+    
+    <li><a href="#method-i-banner">#banner</a>
+    
+    <li><a href="#method-i-base">#base</a>
+    
+    <li><a href="#method-i-candidate">#candidate</a>
+    
+    <li><a href="#method-i-def_head_option">#def_head_option</a>
+    
+    <li><a href="#method-i-def_option">#def_option</a>
+    
+    <li><a href="#method-i-def_tail_option">#def_tail_option</a>
+    
+    <li><a href="#method-i-define">#define</a>
+    
+    <li><a href="#method-i-define_head">#define_head</a>
+    
+    <li><a href="#method-i-define_tail">#define_tail</a>
+    
+    <li><a href="#method-i-environment">#environment</a>
+    
+    <li><a href="#method-i-getopts">#getopts</a>
+    
+    <li><a href="#method-i-help">#help</a>
+    
+    <li><a href="#method-i-inc">#inc</a>
+    
+    <li><a href="#method-i-load">#load</a>
+    
+    <li><a href="#method-i-make_switch">#make_switch</a>
+    
+    <li><a href="#method-i-new">#new</a>
+    
+    <li><a href="#method-i-on">#on</a>
+    
+    <li><a href="#method-i-on_head">#on_head</a>
+    
+    <li><a href="#method-i-on_tail">#on_tail</a>
+    
+    <li><a href="#method-i-order">#order</a>
+    
+    <li><a href="#method-i-order-21">#order!</a>
+    
+    <li><a href="#method-i-parse">#parse</a>
+    
+    <li><a href="#method-i-parse-21">#parse!</a>
+    
+    <li><a href="#method-i-permute">#permute</a>
+    
+    <li><a href="#method-i-permute-21">#permute!</a>
+    
+    <li><a href="#method-i-program_name">#program_name</a>
+    
+    <li><a href="#method-i-reject">#reject</a>
+    
+    <li><a href="#method-i-release">#release</a>
+    
+    <li><a href="#method-i-remove">#remove</a>
+    
+    <li><a href="#method-i-separator">#separator</a>
+    
+    <li><a href="#method-i-summarize">#summarize</a>
+    
+    <li><a href="#method-i-terminate">#terminate</a>
+    
+    <li><a href="#method-i-to_a">#to_a</a>
+    
+    <li><a href="#method-i-to_s">#to_s</a>
+    
+    <li><a href="#method-i-top">#top</a>
+    
+    <li><a href="#method-i-ver">#ver</a>
+    
+    <li><a href="#method-i-version">#version</a>
+    
+    <li><a href="#method-i-warn">#warn</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./CHANGELOG.html">CHANGELOG</a>
+  
+    <li class="file"><a href="./LICENSE.html">LICENSE</a>
+  
+    <li class="file"><a href="./NOTICE.html">NOTICE</a>
+  
+    <li class="file"><a href="./README_rdoc.html">README</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./Buildr.html">Buildr</a>
+  
+    <li><a href="./Buildr/ActsAsArtifact.html">Buildr::ActsAsArtifact</a>
+  
+    <li><a href="./Buildr/Ant.html">Buildr::Ant</a>
+  
+    <li><a href="./Buildr/Apt.html">Buildr::Apt</a>
+  
+    <li><a href="./Buildr/ArchiveTask.html">Buildr::ArchiveTask</a>
+  
+    <li><a href="./Buildr/ArchiveTask/Merge.html">Buildr::ArchiveTask::Merge</a>
+  
+    <li><a href="./Buildr/Artifact.html">Buildr::Artifact</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace.html">Buildr::ArtifactNamespace</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace/ArtifactRequirement.html">Buildr::ArtifactNamespace::ArtifactRequirement</a>
+  
+    <li><a href="./Buildr/ArtifactSearch.html">Buildr::ArtifactSearch</a>
+  
+    <li><a href="./Buildr/Build.html">Buildr::Build</a>
+  
+    <li><a href="./Buildr/CC.html">Buildr::CC</a>
+  
+    <li><a href="./Buildr/CCTask.html">Buildr::CCTask</a>
+  
+    <li><a href="./Buildr/Checks.html">Buildr::Checks</a>
+  
+    <li><a href="./Buildr/Checks/Expectation.html">Buildr::Checks::Expectation</a>
+  
+    <li><a href="./Buildr/Clojure.html">Buildr::Clojure</a>
+  
+    <li><a href="./Buildr/Cobertura.html">Buildr::Cobertura</a>
+  
+    <li><a href="./Buildr/Cobertura/CoberturaCheck.html">Buildr::Cobertura::CoberturaCheck</a>
+  
+    <li><a href="./Buildr/Compile.html">Buildr::Compile</a>
+  
+    <li><a href="./Buildr/CompileTask.html">Buildr::CompileTask</a>
+  
+    <li><a href="./Buildr/Compiler.html">Buildr::Compiler</a>
+  
+    <li><a href="./Buildr/Compiler/Ecj.html">Buildr::Compiler::Ecj</a>
+  
+    <li><a href="./Buildr/Compiler/ExternalJavac.html">Buildr::Compiler::ExternalJavac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Compiler::Javac</a>
+  
+    <li><a href="./Buildr/ConcatTask.html">Buildr::ConcatTask</a>
+  
+    <li><a href="./Buildr/Doc.html">Buildr::Doc</a>
+  
+    <li><a href="./Buildr/Doc/Base.html">Buildr::Doc::Base</a>
+  
+    <li><a href="./Buildr/Doc/DocTask.html">Buildr::Doc::DocTask</a>
+  
+    <li><a href="./Buildr/Doc/Groovydoc.html">Buildr::Doc::Groovydoc</a>
+  
+    <li><a href="./Buildr/Doc/GroovydocDefaults.html">Buildr::Doc::GroovydocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Javadoc.html">Buildr::Doc::Javadoc</a>
+  
+    <li><a href="./Buildr/Doc/JavadocDefaults.html">Buildr::Doc::JavadocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Scaladoc.html">Buildr::Doc::Scaladoc</a>
+  
+    <li><a href="./Buildr/Doc/ScaladocDefaults.html">Buildr::Doc::ScaladocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/VScaladoc.html">Buildr::Doc::VScaladoc</a>
+  
+    <li><a href="./Buildr/Eclipse.html">Buildr::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Eclipse.html">Buildr::Eclipse::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Java.html">Buildr::Eclipse::Java</a>
+  
+    <li><a href="./Buildr/Eclipse/Options.html">Buildr::Eclipse::Options</a>
+  
+    <li><a href="./Buildr/Eclipse/Plugin.html">Buildr::Eclipse::Plugin</a>
+  
+    <li><a href="./Buildr/Eclipse/Scala.html">Buildr::Eclipse::Scala</a>
+  
+    <li><a href="./Buildr/Emma.html">Buildr::Emma</a>
+  
+    <li><a href="./Buildr/Extension.html">Buildr::Extension</a>
+  
+    <li><a href="./Buildr/Extension/ClassMethods.html">Buildr::Extension::ClassMethods</a>
+  
+    <li><a href="./Buildr/Filter.html">Buildr::Filter</a>
+  
+    <li><a href="./Buildr/Filter/Mapper.html">Buildr::Filter::Mapper</a>
+  
+    <li><a href="./Buildr/GitRelease.html">Buildr::GitRelease</a>
+  
+    <li><a href="./Buildr/Groovy.html">Buildr::Groovy</a>
+  
+    <li><a href="./Buildr/Groovy/EasyB.html">Buildr::Groovy::EasyB</a>
+  
+    <li><a href="./Buildr/Groovy/GroovySH.html">Buildr::Groovy::GroovySH</a>
+  
+    <li><a href="./Buildr/Groovy/Groovyc.html">Buildr::Groovy::Groovyc</a>
+  
+    <li><a href="./Buildr/HgRelease.html">Buildr::HgRelease</a>
+  
+    <li><a href="./Buildr/IntegrationTestsTask.html">Buildr::IntegrationTestsTask</a>
+  
+    <li><a href="./Buildr/IntellijIdea.html">Buildr::IntellijIdea</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaFile.html">Buildr::IntellijIdea::IdeaFile</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaModule.html">Buildr::IntellijIdea::IdeaModule</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaProject.html">Buildr::IntellijIdea::IdeaProject</a>
+  
+    <li><a href="./Buildr/IntellijIdea/ProjectExtension.html">Buildr::IntellijIdea::ProjectExtension</a>
+  
+    <li><a href="./Buildr/JBehave.html">Buildr::JBehave</a>
+  
+    <li><a href="./Buildr/JMock.html">Buildr::JMock</a>
+  
+    <li><a href="./Buildr/JRebel.html">Buildr::JRebel</a>
+  
+    <li><a href="./Buildr/JUnit.html">Buildr::JUnit</a>
+  
+    <li><a href="./Buildr/JUnit/Report.html">Buildr::JUnit::Report</a>
+  
+    <li><a href="./Buildr/Layout.html">Buildr::Layout</a>
+  
+    <li><a href="./Buildr/Layout/Default.html">Buildr::Layout::Default</a>
+  
+    <li><a href="./Buildr/MultiTest.html">Buildr::MultiTest</a>
+  
+    <li><a href="./Buildr/OptionalArtifact.html">Buildr::OptionalArtifact</a>
+  
+    <li><a href="./Buildr/Options.html">Buildr::Options</a>
+  
+    <li><a href="./Buildr/Options/Proxies.html">Buildr::Options::Proxies</a>
+  
+    <li><a href="./Buildr/POM.html">Buildr::POM</a>
+  
+    <li><a href="./Buildr/Package.html">Buildr::Package</a>
+  
+    <li><a href="./Buildr/PackageGemTask.html">Buildr::PackageGemTask</a>
+  
+    <li><a href="./Buildr/Packaging.html">Buildr::Packaging</a>
+  
+    <li><a href="./Buildr/Packaging/Java.html">Buildr::Packaging::Java</a>
+  
+    <li><a href="./Buildr/Packaging/Java/AarTask.html">Buildr::Packaging::Java::AarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/EarTask.html">Buildr::Packaging::Java::EarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/JarTask.html">Buildr::Packaging::Java::JarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/Manifest.html">Buildr::Packaging::Java::Manifest</a>
+  
+    <li><a href="./Buildr/Packaging/Java/WarTask.html">Buildr::Packaging::Java::WarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Scala.html">Buildr::Packaging::Scala</a>
+  
+    <li><a href="./Buildr/ProcessStatus.html">Buildr::ProcessStatus</a>
+  
+    <li><a href="./Buildr/Project.html">Buildr::Project</a>
+  
+    <li><a href="./Buildr/RSpec.html">Buildr::RSpec</a>
+  
+    <li><a href="./Buildr/Repositories.html">Buildr::Repositories</a>
+  
+    <li><a href="./Buildr/ResourcesTask.html">Buildr::ResourcesTask</a>
+  
+    <li><a href="./Buildr/Run.html">Buildr::Run</a>
+  
+    <li><a href="./Buildr/Run/Base.html">Buildr::Run::Base</a>
+  
+    <li><a href="./Buildr/Run/JavaRunner.html">Buildr::Run::JavaRunner</a>
+  
+    <li><a href="./Buildr/Run/RunTask.html">Buildr::Run::RunTask</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala/Check.html">Buildr::Scala::Check</a>
+  
+    <li><a href="./Buildr/Scala/Mockito.html">Buildr::Scala::Mockito</a>
+  
+    <li><a href="./Buildr/Scala/ProjectExtension.html">Buildr::Scala::ProjectExtension</a>
+  
+    <li><a href="./Buildr/Scala/ScalaShell.html">Buildr::Scala::ScalaShell</a>
+  
+    <li><a href="./Buildr/Scala/ScalaTest.html">Buildr::Scala::ScalaTest</a>
+  
+    <li><a href="./Buildr/Scala/Scalac.html">Buildr::Scala::Scalac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Scala::Scalac::Javac</a>
+  
+    <li><a href="./Buildr/Scala/ScalacOptions.html">Buildr::Scala::ScalacOptions</a>
+  
+    <li><a href="./Buildr/Scala/Specs.html">Buildr::Scala::Specs</a>
+  
+    <li><a href="./Buildr/Scala/Specs2.html">Buildr::Scala::Specs2</a>
+  
+    <li><a href="./Buildr/Settings.html">Buildr::Settings</a>
+  
+    <li><a href="./Buildr/Shell.html">Buildr::Shell</a>
+  
+    <li><a href="./Buildr/Shell/Base.html">Buildr::Shell::Base</a>
+  
+    <li><a href="./Buildr/Shell/BeanShell.html">Buildr::Shell::BeanShell</a>
+  
+    <li><a href="./Buildr/Shell/Clojure.html">Buildr::Shell::Clojure</a>
+  
+    <li><a href="./Buildr/Shell/JIRB.html">Buildr::Shell::JIRB</a>
+  
+    <li><a href="./Buildr/Shell/ShellTask.html">Buildr::Shell::ShellTask</a>
+  
+    <li><a href="./Buildr/SvnRelease.html">Buildr::SvnRelease</a>
+  
+    <li><a href="./Buildr/TarTask.html">Buildr::TarTask</a>
+  
+    <li><a href="./Buildr/Test.html">Buildr::Test</a>
+  
+    <li><a href="./Buildr/Test/SkipIfNoTest.html">Buildr::Test::SkipIfNoTest</a>
+  
+    <li><a href="./Buildr/TestFramework.html">Buildr::TestFramework</a>
+  
+    <li><a href="./Buildr/TestFramework/Base.html">Buildr::TestFramework::Base</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased.html">Buildr::TestFramework::JRubyBased</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased/ClassMethods.html">Buildr::TestFramework::JRubyBased::ClassMethods</a>
+  
+    <li><a href="./Buildr/TestFramework/Java.html">Buildr::TestFramework::Java</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult.html">Buildr::TestFramework::TestResult</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/Error.html">Buildr::TestFramework::TestResult::Error</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/YamlFormatter.html">Buildr::TestFramework::TestResult::YamlFormatter</a>
+  
+    <li><a href="./Buildr/TestNG.html">Buildr::TestNG</a>
+  
+    <li><a href="./Buildr/TestTask.html">Buildr::TestTask</a>
+  
+    <li><a href="./Buildr/Unzip.html">Buildr::Unzip</a>
+  
+    <li><a href="./Buildr/Util.html">Buildr::Util</a>
+  
+    <li><a href="./Buildr/VersionRequirement.html">Buildr::VersionRequirement</a>
+  
+    <li><a href="./Buildr/ZipTask.html">Buildr::ZipTask</a>
+  
+    <li><a href="./Resolv.html">Resolv</a>
+  
+    <li><a href="./Resolv/DNS.html">Resolv::DNS</a>
+  
+    <li><a href="./Resolv/DNS/Config.html">Resolv::DNS::Config</a>
+  
+    <li><a href="./Resolv/DNS/Config/NXDomain.html">Resolv::DNS::Config::NXDomain</a>
+  
+    <li><a href="./Resolv/DNS/Config/OtherResolvError.html">Resolv::DNS::Config::OtherResolvError</a>
+  
+    <li><a href="./Resolv/DNS/DecodeError.html">Resolv::DNS::DecodeError</a>
+  
+    <li><a href="./Resolv/DNS/EncodeError.html">Resolv::DNS::EncodeError</a>
+  
+    <li><a href="./Resolv/DNS/Name.html">Resolv::DNS::Name</a>
+  
+    <li><a href="./Resolv/DNS/Query.html">Resolv::DNS::Query</a>
+  
+    <li><a href="./Resolv/DNS/Requester.html">Resolv::DNS::Requester</a>
+  
+    <li><a href="./Resolv/DNS/Requester/RequestError.html">Resolv::DNS::Requester::RequestError</a>
+  
+    <li><a href="./Resolv/DNS/Resource.html">Resolv::DNS::Resource</a>
+  
+    <li><a href="./Resolv/DNS/Resource/ANY.html">Resolv::DNS::Resource::ANY</a>
+  
+    <li><a href="./Resolv/DNS/Resource/CNAME.html">Resolv::DNS::Resource::CNAME</a>
+  
+    <li><a href="./Resolv/DNS/Resource/DomainName.html">Resolv::DNS::Resource::DomainName</a>
+  
+    <li><a href="./Resolv/DNS/Resource/Generic.html">Resolv::DNS::Resource::Generic</a>
+  
+    <li><a href="./Resolv/DNS/Resource/HINFO.html">Resolv::DNS::Resource::HINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN.html">Resolv::DNS::Resource::IN</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/A.html">Resolv::DNS::Resource::IN::A</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/AAAA.html">Resolv::DNS::Resource::IN::AAAA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/SRV.html">Resolv::DNS::Resource::IN::SRV</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/WKS.html">Resolv::DNS::Resource::IN::WKS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MINFO.html">Resolv::DNS::Resource::MINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MX.html">Resolv::DNS::Resource::MX</a>
+  
+    <li><a href="./Resolv/DNS/Resource/NS.html">Resolv::DNS::Resource::NS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/PTR.html">Resolv::DNS::Resource::PTR</a>
+  
+    <li><a href="./Resolv/DNS/Resource/SOA.html">Resolv::DNS::Resource::SOA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/TXT.html">Resolv::DNS::Resource::TXT</a>
+  
+    <li><a href="./Resolv/Hosts.html">Resolv::Hosts</a>
+  
+    <li><a href="./Resolv/IPv4.html">Resolv::IPv4</a>
+  
+    <li><a href="./Resolv/IPv6.html">Resolv::IPv6</a>
+  
+    <li><a href="./Resolv/ResolvError.html">Resolv::ResolvError</a>
+  
+    <li><a href="./Resolv/ResolvTimeout.html">Resolv::ResolvTimeout</a>
+  
+    <li><a href="./OptionParser.html">OptionParser</a>
+  
+    <li><a href="./OptionParser/Acceptables.html">OptionParser::Acceptables</a>
+  
+    <li><a href="./OptionParser/AmbiguousArgument.html">OptionParser::AmbiguousArgument</a>
+  
+    <li><a href="./OptionParser/AmbiguousOption.html">OptionParser::AmbiguousOption</a>
+  
+    <li><a href="./OptionParser/Arguable.html">OptionParser::Arguable</a>
+  
+    <li><a href="./OptionParser/CompletingHash.html">OptionParser::CompletingHash</a>
+  
+    <li><a href="./OptionParser/Completion.html">OptionParser::Completion</a>
+  
+    <li><a href="./OptionParser/InvalidArgument.html">OptionParser::InvalidArgument</a>
+  
+    <li><a href="./OptionParser/InvalidOption.html">OptionParser::InvalidOption</a>
+  
+    <li><a href="./OptionParser/List.html">OptionParser::List</a>
+  
+    <li><a href="./OptionParser/MissingArgument.html">OptionParser::MissingArgument</a>
+  
+    <li><a href="./OptionParser/NeedlessArgument.html">OptionParser::NeedlessArgument</a>
+  
+    <li><a href="./OptionParser/OptionMap.html">OptionParser::OptionMap</a>
+  
+    <li><a href="./OptionParser/ParseError.html">OptionParser::ParseError</a>
+  
+    <li><a href="./OptionParser/Switch.html">OptionParser::Switch</a>
+  
+    <li><a href="./OptionParser/Switch/NoArgument.html">OptionParser::Switch::NoArgument</a>
+  
+    <li><a href="./OptionParser/Switch/OptionalArgument.html">OptionParser::Switch::OptionalArgument</a>
+  
+    <li><a href="./OptionParser/Switch/PlacedArgument.html">OptionParser::Switch::PlacedArgument</a>
+  
+    <li><a href="./OptionParser/Switch/RequiredArgument.html">OptionParser::Switch::RequiredArgument</a>
+  
+    <li><a href="./Prime.html">Prime</a>
+  
+    <li><a href="./Prime/EratosthenesGenerator.html">Prime::EratosthenesGenerator</a>
+  
+    <li><a href="./Prime/EratosthenesSieve.html">Prime::EratosthenesSieve</a>
+  
+    <li><a href="./Prime/Generator23.html">Prime::Generator23</a>
+  
+    <li><a href="./Prime/OldCompatibility.html">Prime::OldCompatibility</a>
+  
+    <li><a href="./Prime/PseudoPrimeGenerator.html">Prime::PseudoPrimeGenerator</a>
+  
+    <li><a href="./Prime/TrialDivision.html">Prime::TrialDivision</a>
+  
+    <li><a href="./Prime/TrialDivisionGenerator.html">Prime::TrialDivisionGenerator</a>
+  
+    <li><a href="./FileUtils.html">FileUtils</a>
+  
+    <li><a href="./FileUtils/DryRun.html">FileUtils::DryRun</a>
+  
+    <li><a href="./FileUtils/LowMethods.html">FileUtils::LowMethods</a>
+  
+    <li><a href="./FileUtils/NoWrite.html">FileUtils::NoWrite</a>
+  
+    <li><a href="./FileUtils/StreamUtils_.html">FileUtils::StreamUtils_</a>
+  
+    <li><a href="./FileUtils/Verbose.html">FileUtils::Verbose</a>
+  
+    <li><a href="./GetoptLong.html">GetoptLong</a>
+  
+    <li><a href="./GetoptLong/AmbiguousOption.html">GetoptLong::AmbiguousOption</a>
+  
+    <li><a href="./GetoptLong/Error.html">GetoptLong::Error</a>
+  
+    <li><a href="./GetoptLong/InvalidOption.html">GetoptLong::InvalidOption</a>
+  
+    <li><a href="./GetoptLong/MissingArgument.html">GetoptLong::MissingArgument</a>
+  
+    <li><a href="./GetoptLong/NeedlessArgument.html">GetoptLong::NeedlessArgument</a>
+  
+    <li><a href="./Logger.html">Logger</a>
+  
+    <li><a href="./Logger/Application.html">Logger::Application</a>
+  
+    <li><a href="./Logger/Formatter.html">Logger::Formatter</a>
+  
+    <li><a href="./Logger/LogDevice.html">Logger::LogDevice</a>
+  
+    <li><a href="./Logger/LogDevice/LogDeviceMutex.html">Logger::LogDevice::LogDeviceMutex</a>
+  
+    <li><a href="./Logger/Severity.html">Logger::Severity</a>
+  
+    <li><a href="./Object.html">Object</a>
+  
+    <li><a href="./Buildr/Scala.html">Object::Scala</a>
+  
+    <li><a href="./Sync.html">Object::Synchronizer</a>
+  
+    <li><a href="./Sync_m.html">Object::Synchronizer_m</a>
+  
+    <li><a href="./ThreadsWait.html">Object::ThWait</a>
+  
+    <li><a href="./Timeout/Error.html">Object::TimeoutError</a>
+  
+    <li><a href="./PrettyPrint.html">PrettyPrint</a>
+  
+    <li><a href="./PrettyPrint/Breakable.html">PrettyPrint::Breakable</a>
+  
+    <li><a href="./PrettyPrint/Group.html">PrettyPrint::Group</a>
+  
+    <li><a href="./PrettyPrint/GroupQueue.html">PrettyPrint::GroupQueue</a>
+  
+    <li><a href="./PrettyPrint/SingleLine.html">PrettyPrint::SingleLine</a>
+  
+    <li><a href="./PrettyPrint/Text.html">PrettyPrint::Text</a>
+  
+    <li><a href="./URI.html">URI</a>
+  
+    <li><a href="./URI/FILE.html">URI::FILE</a>
+  
+    <li><a href="./URI/FTP.html">URI::FTP</a>
+  
+    <li><a href="./URI/Generic.html">URI::Generic</a>
+  
+    <li><a href="./URI/HTTP.html">URI::HTTP</a>
+  
+    <li><a href="./URI/NotFoundError.html">URI::NotFoundError</a>
+  
+    <li><a href="./OpenURI.html">OpenURI</a>
+  
+    <li><a href="./OpenURI/HTTPError.html">OpenURI::HTTPError</a>
+  
+    <li><a href="./OpenURI/HTTPRedirect.html">OpenURI::HTTPRedirect</a>
+  
+    <li><a href="./OpenURI/Meta.html">OpenURI::Meta</a>
+  
+    <li><a href="./OpenURI/OpenRead.html">OpenURI::OpenRead</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m/Err.html">Sync_m::Err</a>
+  
+    <li><a href="./Sync_m/Err/LockModeFailer.html">Sync_m::Err::LockModeFailer</a>
+  
+    <li><a href="./Sync_m/Err/UnknownLocker.html">Sync_m::Err::UnknownLocker</a>
+  
+    <li><a href="./CSV.html">CSV</a>
+  
+    <li><a href="./CSV/MalformedCSVError.html">CSV::MalformedCSVError</a>
+  
+    <li><a href="./CSV/Row.html">CSV::Row</a>
+  
+    <li><a href="./CSV/Table.html">CSV::Table</a>
+  
+    <li><a href="./Java.html">Java</a>
+  
+    <li><a href="./Java/Commands.html">Java::Commands</a>
+  
+    <li><a href="./Java/JavaWrapper.html">Java::JavaWrapper</a>
+  
+    <li><a href="./Java/Options.html">Java::Options</a>
+  
+    <li><a href="./PP.html">PP</a>
+  
+    <li><a href="./PP/ObjectMixin.html">PP::ObjectMixin</a>
+  
+    <li><a href="./PP/PPMethods.html">PP::PPMethods</a>
+  
+    <li><a href="./PP/SingleLine.html">PP::SingleLine</a>
+  
+    <li><a href="./Digest.html">Digest</a>
+  
+    <li><a href="./Digest/Class.html">Digest::Class</a>
+  
+    <li><a href="./Digest/Instance.html">Digest::Instance</a>
+  
+    <li><a href="./ERB.html">ERB</a>
+  
+    <li><a href="./ERB/DefMethod.html">ERB::DefMethod</a>
+  
+    <li><a href="./ERB/Util.html">ERB::Util</a>
+  
+    <li><a href="./Gem.html">Gem</a>
+  
+    <li><a href="./Gem/LoadError.html">Gem::LoadError</a>
+  
+    <li><a href="./Gem/Version.html">Gem::Version</a>
+  
+    <li><a href="./IRB.html">IRB</a>
+  
+    <li><a href="./IRB/Abort.html">IRB::Abort</a>
+  
+    <li><a href="./IRB/Irb.html">IRB::Irb</a>
+  
+    <li><a href="./MonitorMixin.html">MonitorMixin</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable.html">MonitorMixin::ConditionVariable</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable/Timeout.html">MonitorMixin::ConditionVariable::Timeout</a>
+  
+    <li><a href="./Psych.html">Psych</a>
+  
+    <li><a href="./Psych/BadAlias.html">Psych::BadAlias</a>
+  
+    <li><a href="./Psych/Exception.html">Psych::Exception</a>
+  
+    <li><a href="./Scanf.html">Scanf</a>
+  
+    <li><a href="./Timeout.html">Timeout</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./TkComm.html">TkComm</a>
+  
+    <li><a href="./TkComm/Tk_CMDTBL.html">TkComm::Tk_CMDTBL</a>
+  
+    <li><a href="./TkComm/Tk_WINDOWS.html">TkComm::Tk_WINDOWS</a>
+  
+    <li><a href="./TkCore.html">TkCore</a>
+  
+    <li><a href="./MultiTkIp.html">TkCore::INTERP</a>
+  
+    <li><a href="./TkCore/Tk_OBJECT_TABLE.html">TkCore::Tk_OBJECT_TABLE</a>
+  
+    <li><a href="./Zip.html">Zip</a>
+  
+    <li><a href="./Zip/ZipEntry.html">Zip::ZipEntry</a>
+  
+    <li><a href="./Zip/ZipEntrySet.html">Zip::ZipEntrySet</a>
+  
+    <li><a href="./Benchmark.html">Benchmark</a>
+  
+    <li><a href="./Benchmark/Tms.html">Benchmark::Tms</a>
+  
+    <li><a href="./DEBUGGER__.html">DEBUGGER__</a>
+  
+    <li><a href="./DEBUGGER__/Context.html">DEBUGGER__::Context</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper::E2MM</a>
+  
+    <li><a href="./File.html">File</a>
+  
+    <li><a href="./File/Stat.html">File::Stat</a>
+  
+    <li><a href="./MultiTkIp.html">MultiTkIp</a>
+  
+    <li><a href="./MultiTkIp/Command_Queue.html">MultiTkIp::Command_Queue</a>
+  
+    <li><a href="./PStore.html">PStore</a>
+  
+    <li><a href="./PStore/Error.html">PStore::Error</a>
+  
+    <li><a href="./RDoc.html">RDoc</a>
+  
+    <li><a href="./RDoc/Error.html">RDoc::Error</a>
+  
+    <li><a href="./Rake.html">Rake</a>
+  
+    <li><a href="./Rake/FileTask.html">Rake::FileTask</a>
+  
+    <li><a href="./Socket.html">Socket</a>
+  
+    <li><a href="./Socket/UDPSource.html">Socket::UDPSource</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./TSort.html">TSort</a>
+  
+    <li><a href="./TSort/Cyclic.html">TSort::Cyclic</a>
+  
+    <li><a href="./Tempfile.html">Tempfile</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./Vector.html">Vector</a>
+  
+    <li><a href="./Vector/ZeroVectorError.html">Vector::ZeroVectorError</a>
+  
+    <li><a href="./WeakRef.html">WeakRef</a>
+  
+    <li><a href="./WeakRef/RefError.html">WeakRef::RefError</a>
+  
+    <li><a href="./Abbrev.html">Abbrev</a>
+  
+    <li><a href="./Addrinfo.html">Addrinfo</a>
+  
+    <li><a href="./Base64.html">Base64</a>
+  
+    <li><a href="./BasicSocket.html">BasicSocket</a>
+  
+    <li><a href="./CGI.html">CGI</a>
+  
+    <li><a href="./CMath.html">CMath</a>
+  
+    <li><a href="./ConditionVariable.html">ConditionVariable</a>
+  
+    <li><a href="./DL.html">DL</a>
+  
+    <li><a href="./Date.html">Date</a>
+  
+    <li><a href="./Delegator.html">Delegator</a>
+  
+    <li><a href="./Dir.html">Dir</a>
+  
+    <li><a href="./ENV.html">ENV</a>
+  
+    <li><a href="./Enumerable.html">Enumerable</a>
+  
+    <li><a href="./Fiddle.html">Fiddle</a>
+  
+    <li><a href="./Find.html">Find</a>
+  
+    <li><a href="./Float.html">Float</a>
+  
+    <li><a href="./Forwardable.html">Forwardable</a>
+  
+    <li><a href="./GServer.html">GServer</a>
+  
+    <li><a href="./Hash.html">Hash</a>
+  
+    <li><a href="./IO.html">IO</a>
+  
+    <li><a href="./IPAddr.html">IPAddr</a>
+  
+    <li><a href="./IPSocket.html">IPSocket</a>
+  
+    <li><a href="./Integer.html">Integer</a>
+  
+    <li><a href="./JSON.html">JSON</a>
+  
+    <li><a href="./Kconv.html">Kconv</a>
+  
+    <li><a href="./Kernel.html">Kernel</a>
+  
+    <li><a href="./MatchData.html">MatchData</a>
+  
+    <li><a href="./Math.html">Math</a>
+  
+    <li><a href="./Matrix.html">Matrix</a>
+  
+    <li><a href="./Module.html">Module</a>
+  
+    <li><a href="./Monitor.html">Monitor</a>
+  
+    <li><a href="./MultiTkIp_OK.html">MultiTkIp_OK</a>
+  
+    <li><a href="./MultiTkIp_PseudoToplevel_Evaluable.html">MultiTkIp_PseudoToplevel_Evaluable</a>
+  
+    <li><a href="./Mutex_m.html">Mutex_m</a>
+  
+    <li><a href="./Numeric.html">Numeric</a>
+  
+    <li><a href="./Observable.html">Observable</a>
+  
+    <li><a href="./Open3.html">Open3</a>
+  
+    <li><a href="./OpenObject.html">OpenObject</a>
+  
+    <li><a href="./OpenStruct.html">OpenStruct</a>
+  
+    <li><a href="./Pathname.html">Pathname</a>
+  
+    <li><a href="./Profiler__.html">Profiler__</a>
+  
+    <li><a href="./ProgressBar.html">ProgressBar</a>
+  
+    <li><a href="./Queue.html">Queue</a>
+  
+    <li><a href="./RSS.html">RSS</a>
+  
+    <li><a href="./Range.html">Range</a>
+  
+    <li><a href="./Rational.html">Rational</a>
+  
+    <li><a href="./RemoteTkIp.html">RemoteTkIp</a>
+  
+    <li><a href="./SOCKSSocket.html">SOCKSSocket</a>
+  
+    <li><a href="./STRING_OR_FAILED_FORMAT.html">STRING_OR_FAILED_FORMAT</a>
+  
+    <li><a href="./SecureRandom.html">SecureRandom</a>
+  
+    <li><a href="./Set.html">Set</a>
+  
+    <li><a href="./Shell.html">Shell</a>
+  
+    <li><a href="./Shellwords.html">Shellwords</a>
+  
+    <li><a href="./SimpleDelegator.html">SimpleDelegator</a>
+  
+    <li><a href="./SingleForwardable.html">SingleForwardable</a>
+  
+    <li><a href="./Singleton.html">Singleton</a>
+  
+    <li><a href="./SizedQueue.html">SizedQueue</a>
+  
+    <li><a href="./SortedSet.html">SortedSet</a>
+  
+    <li><a href="./Struct.html">Struct</a>
+  
+    <li><a href="./Syck.html">Syck</a>
+  
+    <li><a href="./TCPSocket.html">TCPSocket</a>
+  
+    <li><a href="./TclTkIp.html">TclTkIp</a>
+  
+    <li><a href="./TclTkLib.html">TclTkLib</a>
+  
+    <li><a href="./ThreadError.html">ThreadError</a>
+  
+    <li><a href="./Time.html">Time</a>
+  
+    <li><a href="./Tracer.html">Tracer</a>
+  
+    <li><a href="./UDPSocket.html">UDPSocket</a>
+  
+    <li><a href="./WEBrick.html">WEBrick</a>
+  
+    <li><a href="./YAML.html">YAML</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class OptionParser</h1>
+
+  <div id="description" class="description">
+    
+<h2 id="label-Developer+Documentation+%28not+for+RDoc+output%29">Developer Documentation (not for <a href="RDoc.html">RDoc</a> output)</h2>
+
+<h3 id="label-Class+tree">Class tree</h3>
+<ul><li><dl class="rdoc-list note-list"><dt><a href="OptionParser.html">OptionParser</a>
+<dd>
+<p>front end</p>
+</dd></dl>
+</li><li><dl class="rdoc-list note-list"><dt><a href="OptionParser/Switch.html">OptionParser::Switch</a>
+<dd>
+<p>each switches</p>
+</dd></dl>
+</li><li><dl class="rdoc-list note-list"><dt><a href="OptionParser/List.html">OptionParser::List</a>
+<dd>
+<p>options list</p>
+</dd></dl>
+</li><li><dl class="rdoc-list note-list"><dt><a href="OptionParser/ParseError.html">OptionParser::ParseError</a>
+<dd>
+<p>errors on parsing</p>
+</dd></dl>
+<ul><li>
+<p><a
+href="OptionParser/AmbiguousOption.html">OptionParser::AmbiguousOption</a></p>
+</li><li>
+<p><a
+href="OptionParser/NeedlessArgument.html">OptionParser::NeedlessArgument</a></p>
+</li><li>
+<p><a
+href="OptionParser/MissingArgument.html">OptionParser::MissingArgument</a></p>
+</li><li>
+<p><a href="OptionParser/InvalidOption.html">OptionParser::InvalidOption</a></p>
+</li><li>
+<p><a
+href="OptionParser/InvalidArgument.html">OptionParser::InvalidArgument</a></p>
+<ul><li>
+<p><a
+href="OptionParser/AmbiguousArgument.html">OptionParser::AmbiguousArgument</a></p>
+</li></ul>
+</li></ul>
+</li></ul>
+
+<h3 id="label-Object+relationship+diagram"><a href="Object.html">Object</a> relationship diagram</h3>
+
+<pre class="ruby"><span class="ruby-operator">+</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">+</span>
+<span class="ruby-operator">|</span> <span class="ruby-constant">OptionParser</span> <span class="ruby-operator">|</span><span class="ruby-operator">&lt;</span><span class="ruby-operator">&gt;</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">+</span>
+<span class="ruby-operator">+</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">+</span>       <span class="ruby-operator">|</span>                      <span class="ruby-operator">+</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">+</span>
+                       <span class="ruby-operator">|</span>                    ,<span class="ruby-operator">-</span><span class="ruby-operator">|</span> <span class="ruby-constant">Switch</span> <span class="ruby-operator">|</span>
+     <span class="ruby-identifier">on_head</span> <span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">&gt;</span><span class="ruby-operator">+</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">+</span>    <span class="ruby-regexp">%r  +--------+
+     accept/</span><span class="ruby-identifier">reject</span> <span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">&gt;</span><span class="ruby-operator">|</span> <span class="ruby-constant">List</span>          <span class="ruby-operator">|</span><span class="ruby-operator">&lt;</span><span class="ruby-operator">|</span><span class="ruby-operator">&gt;</span><span class="ruby-operator">-</span>
+                      <span class="ruby-operator">|</span>               <span class="ruby-operator">|</span><span class="ruby-operator">&lt;</span><span class="ruby-operator">|</span><span class="ruby-operator">&gt;</span><span class="ruby-operator">-</span>  <span class="ruby-operator">+</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">+</span>
+     <span class="ruby-identifier">on</span> <span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">&gt;</span><span class="ruby-operator">+</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">-</span><span class="ruby-operator">+</span>    <span class="ruby-value">%x-| argument |
+                        :           :        |  class   |
+                      +---------------+      |==========|
+     on_tail --------&gt;|               |      |pattern   |
+                      +---------------+      |----------|
+OptionParser.accept -&gt;| DefaultList   |      |converter |
+             reject   |(shared between|      +----------+
+                      | all instances)|
+                      +---------------+
+</span></pre>
+
+<h2 id="label-OptionParser"><a href="OptionParser.html">OptionParser</a></h2>
+
+<h3 id="label-Introduction">Introduction</h3>
+
+<p><a href="OptionParser.html">OptionParser</a> is a class for command-line
+option analysis.  It is much more advanced, yet also easier to use, than <a
+href="GetoptLong.html">GetoptLong</a>, and is a more Ruby-oriented
+solution.</p>
+
+<h3 id="label-Features">Features</h3>
+<ol><li>
+<p>The argument specification and the code to handle it are written in the
+same place.</p>
+</li><li>
+<p>It can output an option summary; you don’t need to maintain this string
+separately.</p>
+</li><li>
+<p>Optional and mandatory arguments are specified very gracefully.</p>
+</li><li>
+<p>Arguments can be automatically converted to a specified class.</p>
+</li><li>
+<p>Arguments can be restricted to a certain set.</p>
+</li></ol>
+
+<p>All of these features are demonstrated in the examples below.  See <a
+href="OptionParser.html#method-i-make_switch">make_switch</a> for full
+documentation.</p>
+
+<h3 id="label-Minimal+example">Minimal example</h3>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'optparse'</span>
+
+<span class="ruby-identifier">options</span> = {}
+<span class="ruby-constant">OptionParser</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">opts</span><span class="ruby-operator">|</span>
+  <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">banner</span> = <span class="ruby-string">&quot;Usage: example.rb [options]&quot;</span>
+
+  <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;-v&quot;</span>, <span class="ruby-string">&quot;--[no-]verbose&quot;</span>, <span class="ruby-string">&quot;Run verbosely&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">options</span>[:<span class="ruby-identifier">verbose</span>] = <span class="ruby-identifier">v</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>.<span class="ruby-identifier">parse!</span>
+
+<span class="ruby-identifier">p</span> <span class="ruby-identifier">options</span>
+<span class="ruby-identifier">p</span> <span class="ruby-constant">ARGV</span>
+</pre>
+
+<h3 id="label-Complete+example">Complete example</h3>
+
+<p>The following example is a complete Ruby program.  You can run it and see
+the effect of specifying various options.  This is probably the best way to
+learn the features of <code>optparse</code>.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'optparse'</span>
+<span class="ruby-identifier">require</span> <span class="ruby-string">'optparse/time'</span>
+<span class="ruby-identifier">require</span> <span class="ruby-string">'ostruct'</span>
+<span class="ruby-identifier">require</span> <span class="ruby-string">'pp'</span>
+
+<span class="ruby-keyword">class</span> <span class="ruby-constant">OptparseExample</span>
+
+  <span class="ruby-constant">CODES</span> = <span class="ruby-node">%w[iso-2022-jp shift_jis euc-jp utf8 binary]</span>
+  <span class="ruby-constant">CODE_ALIASES</span> = { <span class="ruby-string">&quot;jis&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;iso-2022-jp&quot;</span>, <span class="ruby-string">&quot;sjis&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;shift_jis&quot;</span> }
+
+  <span class="ruby-comment">#</span>
+  <span class="ruby-comment"># Return a structure describing the options.</span>
+  <span class="ruby-comment">#</span>
+  <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">args</span>)
+    <span class="ruby-comment"># The options specified on the command line will be collected in *options*.</span>
+    <span class="ruby-comment"># We set default values here.</span>
+    <span class="ruby-identifier">options</span> = <span class="ruby-constant">OpenStruct</span>.<span class="ruby-identifier">new</span>
+    <span class="ruby-identifier">options</span>.<span class="ruby-identifier">library</span> = []
+    <span class="ruby-identifier">options</span>.<span class="ruby-identifier">inplace</span> = <span class="ruby-keyword">false</span>
+    <span class="ruby-identifier">options</span>.<span class="ruby-identifier">encoding</span> = <span class="ruby-string">&quot;utf8&quot;</span>
+    <span class="ruby-identifier">options</span>.<span class="ruby-identifier">transfer_type</span> = :<span class="ruby-identifier">auto</span>
+    <span class="ruby-identifier">options</span>.<span class="ruby-identifier">verbose</span> = <span class="ruby-keyword">false</span>
+
+    <span class="ruby-identifier">opts</span> = <span class="ruby-constant">OptionParser</span>.<span class="ruby-identifier">new</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">opts</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">banner</span> = <span class="ruby-string">&quot;Usage: example.rb [options]&quot;</span>
+
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">separator</span> <span class="ruby-string">&quot;&quot;</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">separator</span> <span class="ruby-string">&quot;Specific options:&quot;</span>
+
+      <span class="ruby-comment"># Mandatory argument.</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;-r&quot;</span>, <span class="ruby-string">&quot;--require LIBRARY&quot;</span>,
+              <span class="ruby-string">&quot;Require the LIBRARY before executing your script&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">lib</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">library</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">lib</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-comment"># Optional argument; multi-line description.</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;-i&quot;</span>, <span class="ruby-string">&quot;--inplace [EXTENSION]&quot;</span>,
+              <span class="ruby-string">&quot;Edit ARGV files in place&quot;</span>,
+              <span class="ruby-string">&quot;  (make backup if EXTENSION supplied)&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">ext</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">inplace</span> = <span class="ruby-keyword">true</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">extension</span> = <span class="ruby-identifier">ext</span> <span class="ruby-operator">||</span> <span class="ruby-string">''</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">extension</span>.<span class="ruby-identifier">sub!</span>(<span class="ruby-regexp">%r\A\.?(?=.)/</span>, <span class="ruby-string">&quot;.&quot;</span>)  <span class="ruby-comment"># Ensure extension begins with dot.</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-comment"># Cast 'delay' argument to a Float.</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;--delay N&quot;</span>, <span class="ruby-constant">Float</span>, <span class="ruby-string">&quot;Delay N seconds before executing&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">n</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">delay</span> = <span class="ruby-identifier">n</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-comment"># Cast 'time' argument to a Time object.</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;-t&quot;</span>, <span class="ruby-string">&quot;--time [TIME]&quot;</span>, <span class="ruby-constant">Time</span>, <span class="ruby-string">&quot;Begin execution at given time&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">time</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">time</span> = <span class="ruby-identifier">time</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-comment"># Cast to octal integer.</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;-F&quot;</span>, <span class="ruby-string">&quot;--irs [OCTAL]&quot;</span>, <span class="ruby-constant">OptionParser</span><span class="ruby-operator">::</span><span class="ruby-constant">OctalInteger</span>,
+              <span class="ruby-string">&quot;Specify record separator (default \\0)&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">rs</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">record_separator</span> = <span class="ruby-identifier">rs</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-comment"># List of arguments.</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;--list x,y,z&quot;</span>, <span class="ruby-constant">Array</span>, <span class="ruby-string">&quot;Example 'list' of arguments&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">list</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">list</span> = <span class="ruby-identifier">list</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-comment"># Keyword completion.  We are specifying a specific set of arguments (CODES</span>
+      <span class="ruby-comment"># and CODE_ALIASES - notice the latter is a Hash), and the user may provide</span>
+      <span class="ruby-comment"># the shortest unambiguous text.</span>
+      <span class="ruby-identifier">code_list</span> = (<span class="ruby-constant">CODE_ALIASES</span>.<span class="ruby-identifier">keys</span> <span class="ruby-operator">+</span> <span class="ruby-constant">CODES</span>).<span class="ruby-identifier">join</span>(<span class="ruby-string">','</span>)
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;--code CODE&quot;</span>, <span class="ruby-constant">CODES</span>, <span class="ruby-constant">CODE_ALIASES</span>, <span class="ruby-string">&quot;Select encoding&quot;</span>,
+              <span class="ruby-node">&quot;  (#{code_list})&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">encoding</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">encoding</span> = <span class="ruby-identifier">encoding</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-comment"># Optional argument with keyword completion.</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;--type [TYPE]&quot;</span>, [:<span class="ruby-identifier">text</span>, :<span class="ruby-identifier">binary</span>, :<span class="ruby-identifier">auto</span>],
+              <span class="ruby-string">&quot;Select transfer type (text, binary, auto)&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">t</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">transfer_type</span> = <span class="ruby-identifier">t</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-comment"># Boolean switch.</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on</span>(<span class="ruby-string">&quot;-v&quot;</span>, <span class="ruby-string">&quot;--[no-]verbose&quot;</span>, <span class="ruby-string">&quot;Run verbosely&quot;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">options</span>.<span class="ruby-identifier">verbose</span> = <span class="ruby-identifier">v</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">separator</span> <span class="ruby-string">&quot;&quot;</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">separator</span> <span class="ruby-string">&quot;Common options:&quot;</span>
+
+      <span class="ruby-comment"># No argument, shows at tail.  This will print an options summary.</span>
+      <span class="ruby-comment"># Try it and see!</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on_tail</span>(<span class="ruby-string">&quot;-h&quot;</span>, <span class="ruby-string">&quot;--help&quot;</span>, <span class="ruby-string">&quot;Show this message&quot;</span>) <span class="ruby-keyword">do</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-identifier">opts</span>
+        <span class="ruby-identifier">exit</span>
+      <span class="ruby-keyword">end</span>
+
+      <span class="ruby-comment"># Another typical switch to print the version.</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">on_tail</span>(<span class="ruby-string">&quot;--version&quot;</span>, <span class="ruby-string">&quot;Show version&quot;</span>) <span class="ruby-keyword">do</span>
+        <span class="ruby-identifier">puts</span> <span class="ruby-constant">OptionParser</span><span class="ruby-operator">::</span><span class="ruby-constant">Version</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">'.'</span>)
+        <span class="ruby-identifier">exit</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+
+    <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">parse!</span>(<span class="ruby-identifier">args</span>)
+    <span class="ruby-identifier">options</span>
+  <span class="ruby-keyword">end</span>  <span class="ruby-comment"># parse()</span>
+
+<span class="ruby-keyword">end</span>  <span class="ruby-comment"># class OptparseExample</span>
+
+<span class="ruby-identifier">options</span> = <span class="ruby-constant">OptparseExample</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-constant">ARGV</span>)
+<span class="ruby-identifier">pp</span> <span class="ruby-identifier">options</span>
+</pre>
+
+<h3 id="label-Shell+Completion"><a href="Shell.html">Shell</a> <a href="OptionParser/Completion.html">Completion</a></h3>
+
+<p>For modern shells (e.g. bash, zsh, etc.), you can use shell completion for
+command line options.</p>
+
+<h3 id="label-Further+documentation">Further documentation</h3>
+
+<p>The above examples should be enough to learn how to use this class.  If you
+have any questions, email me (gsinclair@soyabean.com.au) and I will update
+this document.</p>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="DecimalInteger">DecimalInteger
+        
+        <dd class="description"><p>Decimal integer format, to be converted to <a
+href="Integer.html">Integer</a>.</p>
+        
+      
+        <dt id="DecimalNumeric">DecimalNumeric
+        
+        <dd class="description"><p>Decimal integer/float number format, to be converted to <a
+href="Integer.html">Integer</a> for integer format, <a
+href="Float.html">Float</a> for float format.</p>
+        
+      
+        <dt id="OctalInteger">OctalInteger
+        
+        <dd class="description"><p>Ruby/C like octal/hexadecimal/binary integer format, to be converted to <a
+href="Integer.html">Integer</a>.</p>
+        
+      
+        <dt id="SPLAT_PROC">SPLAT_PROC
+        
+        <dd class="description">
+        
+      
+      </dl>
+    </section>
+    
+
+    
+    <!-- Attributes -->
+    <section id="attribute-method-details" class="method-section section">
+      <h3 class="section-header">Attributes</h3>
+
+      
+      <div id="attribute-i-banner" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">banner</span><span
+            class="attribute-access-type">[W]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Heading banner preceding summary.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-default_argv" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">default_argv</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Strings to be parsed in default.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-program_name" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">program_name</span><span
+            class="attribute-access-type">[W]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Program name to be emitted in error message and default banner, defaults to
+$0.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-release" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">release</span><span
+            class="attribute-access-type">[W]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Release code</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-set_banner" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">set_banner</span><span
+            class="attribute-access-type">[W]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Heading banner preceding summary.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-set_program_name" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">set_program_name</span><span
+            class="attribute-access-type">[W]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Program name to be emitted in error message and default banner, defaults to
+$0.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-set_summary_indent" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">set_summary_indent</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Indentation for summary. Must be String (or have + String method).</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-set_summary_width" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">set_summary_width</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Width for option list portion of summary. Must be <a
+href="Numeric.html">Numeric</a>.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-summary_indent" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">summary_indent</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Indentation for summary. Must be String (or have + String method).</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-summary_width" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">summary_width</span><span
+            class="attribute-access-type">[RW]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Width for option list portion of summary. Must be <a
+href="Numeric.html">Numeric</a>.</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-version" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">version</span><span
+            class="attribute-access-type">[W]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>Version</p>
+        
+        </div>
+      </div>
+      
+    </section><!-- attribute-method-details -->
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-accept" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">accept</span><span
+            class="method-args">(*args, &blk)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>See <a href="OptionParser.html#method-i-accept">accept</a>.</p>
+          
+
+          
+          <div class="method-source-code" id="accept-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 919</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">accept</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">blk</span>) <span class="ruby-identifier">top</span>.<span class="ruby-identifier">accept</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">blk</span>) <span class="ruby-keyword">end</span></pre>
+          </div><!-- accept-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- accept-method -->
+
+    
+      <div id="method-c-getopts" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">getopts</span><span
+            class="method-args">(*args)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>See <a href="OptionParser.html#method-i-getopts">getopts</a>.</p>
+          
+
+          
+          <div class="method-source-code" id="getopts-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1500</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">getopts</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">new</span>.<span class="ruby-identifier">getopts</span>(*<span class="ruby-identifier">args</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- getopts-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- getopts-method -->
+
+    
+      <div id="method-c-inc" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">inc</span><span
+            class="method-args">(arg, default = nil)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns an incremented value of <code>default</code> according to
+<code>arg</code>.</p>
+          
+
+          
+          <div class="method-source-code" id="inc-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 855</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">inc</span>(<span class="ruby-identifier">arg</span>, <span class="ruby-identifier">default</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">arg</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-constant">Integer</span>
+    <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">nonzero?</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-keyword">nil</span>
+    <span class="ruby-identifier">default</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">+</span> <span class="ruby-value">1</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- inc-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- inc-method -->
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(banner = nil, width = 32, indent = ' ' * 4) { |self| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Initializes the instance and yields itself if called with a block.</p>
+<dl class="rdoc-list note-list"><dt><code>banner</code>
+<dd>
+<p>Banner message.</p>
+</dd><dt><code>width</code>
+<dd>
+<p>Summary width.</p>
+</dd><dt><code>indent</code>
+<dd>
+<p>Summary indent.</p>
+</dd></dl>
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 874</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">banner</span> = <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">width</span> = <span class="ruby-value">32</span>, <span class="ruby-identifier">indent</span> = <span class="ruby-string">' '</span> * <span class="ruby-value">4</span>)
+  <span class="ruby-ivar">@stack</span> = [<span class="ruby-constant">DefaultList</span>, <span class="ruby-constant">List</span>.<span class="ruby-identifier">new</span>, <span class="ruby-constant">List</span>.<span class="ruby-identifier">new</span>]
+  <span class="ruby-ivar">@program_name</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-ivar">@banner</span> = <span class="ruby-identifier">banner</span>
+  <span class="ruby-ivar">@summary_width</span> = <span class="ruby-identifier">width</span>
+  <span class="ruby-ivar">@summary_indent</span> = <span class="ruby-identifier">indent</span>
+  <span class="ruby-ivar">@default_argv</span> = <span class="ruby-constant">ARGV</span>
+  <span class="ruby-identifier">add_officious</span>
+  <span class="ruby-keyword">yield</span> <span class="ruby-keyword">self</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">block_given?</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- new-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- new-method -->
+
+    
+      <div id="method-c-reject" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">reject</span><span
+            class="method-args">(*args, &blk)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>See <a href="OptionParser.html#method-i-reject">reject</a>.</p>
+          
+
+          
+          <div class="method-source-code" id="reject-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 932</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">reject</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">blk</span>) <span class="ruby-identifier">top</span>.<span class="ruby-identifier">reject</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">blk</span>) <span class="ruby-keyword">end</span></pre>
+          </div><!-- reject-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- reject-method -->
+
+    
+      <div id="method-c-terminate" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">terminate</span><span
+            class="method-args">(arg = nil)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="terminate-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 899</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">terminate</span>(<span class="ruby-identifier">arg</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-identifier">throw</span> <span class="ruby-value">:terminate</span>, <span class="ruby-identifier">arg</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- terminate-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- terminate-method -->
+
+    
+      <div id="method-c-top" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">top</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="top-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 904</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">top</span>() <span class="ruby-constant">DefaultList</span> <span class="ruby-keyword">end</span></pre>
+          </div><!-- top-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- top-method -->
+
+    
+      <div id="method-c-with" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">with</span><span
+            class="method-args">(*args, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Initializes a new instance and evaluates the optional block in context of
+the instance. Arguments <code>args</code> are passed to <a
+href="OptionParser.html#method-i-new">new</a>, see there for description of
+parameters.</p>
+
+<p>This method is <strong>deprecated</strong>, its behavior corresponds to the
+older <a href="OptionParser.html#method-i-new">new</a> method.</p>
+          
+
+          
+          <div class="method-source-code" id="with-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 846</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">with</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">opts</span> = <span class="ruby-identifier">new</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">instance_eval</span>(&amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">opts</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- with-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- with-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-abort" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">abort</span><span
+            class="method-args">(mesg = $!)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="abort-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1013</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">abort</span>(<span class="ruby-identifier">mesg</span> = <span class="ruby-identifier">$!</span>)
+  <span class="ruby-keyword">super</span>(<span class="ruby-node">&quot;#{program_name}: #{mesg}&quot;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- abort-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- abort-method -->
+
+    
+      <div id="method-i-accept" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">accept</span><span
+            class="method-args">(*args, &blk)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Directs to accept specified class <code>t</code>. The argument string is
+passed to the block in which it should be converted to the desired class.</p>
+<dl class="rdoc-list note-list"><dt><code>t</code>
+<dd>
+<p>Argument class specifier, any object including Class.</p>
+</dd><dt><code>pat</code>
+<dd>
+<p>Pattern for argument, defaults to <code>t</code> if it responds to match.</p>
+</dd></dl>
+
+<pre>accept(t, pat, &amp;block)</pre>
+          
+
+          
+          <div class="method-source-code" id="accept-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 915</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">accept</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">blk</span>) <span class="ruby-identifier">top</span>.<span class="ruby-identifier">accept</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">blk</span>) <span class="ruby-keyword">end</span></pre>
+          </div><!-- accept-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- accept-method -->
+
+    
+      <div id="method-i-banner" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">banner</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Heading banner preceding summary.</p>
+          
+
+          
+          <div class="method-source-code" id="banner-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 957</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">banner</span>
+  <span class="ruby-keyword">unless</span> <span class="ruby-ivar">@banner</span>
+    <span class="ruby-ivar">@banner</span> = <span class="ruby-node">&quot;Usage: #{program_name} [options]&quot;</span>
+    <span class="ruby-identifier">visit</span>(<span class="ruby-value">:add_banner</span>, <span class="ruby-ivar">@banner</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-ivar">@banner</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- banner-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- banner-method -->
+
+    
+      <div id="method-i-base" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">base</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Subject of <a href="OptionParser.html#method-i-on_tail">on_tail</a>.</p>
+          
+
+          
+          <div class="method-source-code" id="base-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1027</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">base</span>
+  <span class="ruby-ivar">@stack</span>[<span class="ruby-value">1</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- base-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- base-method -->
+
+    
+      <div id="method-i-candidate" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">candidate</span><span
+            class="method-args">(word)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="candidate-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1547</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">candidate</span>(<span class="ruby-identifier">word</span>)
+  <span class="ruby-identifier">list</span> = []
+  <span class="ruby-keyword">case</span> <span class="ruby-identifier">word</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r\A--/</span>
+    <span class="ruby-identifier">word</span>, <span class="ruby-identifier">arg</span> = <span class="ruby-identifier">word</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp">%r=/</span>, <span class="ruby-value">2</span>)
+    <span class="ruby-identifier">argpat</span> = <span class="ruby-constant">Completion</span>.<span class="ruby-identifier">regexp</span>(<span class="ruby-identifier">arg</span>, <span class="ruby-keyword">false</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">arg</span> <span class="ruby-keyword">and</span> <span class="ruby-operator">!</span><span class="ruby-identifier">arg</span>.<span class="ruby-identifier">empty?</span>
+    <span class="ruby-identifier">long</span> = <span class="ruby-keyword">true</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r\A-(!-)/</span>
+    <span class="ruby-identifier">short</span> = <span class="ruby-keyword">true</span>
+  <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r\A-/</span>
+    <span class="ruby-identifier">long</span> = <span class="ruby-identifier">short</span> = <span class="ruby-keyword">true</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">pat</span> = <span class="ruby-constant">Completion</span>.<span class="ruby-identifier">regexp</span>(<span class="ruby-identifier">word</span>, <span class="ruby-keyword">true</span>)
+  <span class="ruby-identifier">visit</span>(<span class="ruby-value">:each_option</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">opt</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">next</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">Switch</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">opt</span>
+    <span class="ruby-identifier">opts</span> = (<span class="ruby-identifier">long</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">opt</span>.<span class="ruby-identifier">long</span> <span class="ruby-operator">:</span> []) <span class="ruby-operator">+</span> (<span class="ruby-identifier">short</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">opt</span>.<span class="ruby-identifier">short</span> <span class="ruby-operator">:</span> [])
+    <span class="ruby-identifier">opts</span> = <span class="ruby-constant">Completion</span>.<span class="ruby-identifier">candidate</span>(<span class="ruby-identifier">word</span>, <span class="ruby-keyword">true</span>, <span class="ruby-identifier">pat</span>, &amp;<span class="ruby-identifier">opts</span>.<span class="ruby-identifier">method</span>(<span class="ruby-value">:each</span>)).<span class="ruby-identifier">map</span>(&amp;<span class="ruby-value">:first</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">pat</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-regexp">%r\A=/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">opt</span>.<span class="ruby-identifier">arg</span>
+      <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">map!</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">sw</span><span class="ruby-operator">|</span> <span class="ruby-identifier">sw</span> <span class="ruby-operator">+</span> <span class="ruby-string">&quot;=&quot;</span>}
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">arg</span> <span class="ruby-keyword">and</span> <span class="ruby-constant">CompletingHash</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">opt</span>.<span class="ruby-identifier">pattern</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-identifier">opts</span> = <span class="ruby-identifier">opt</span>.<span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">candidate</span>(<span class="ruby-identifier">arg</span>, <span class="ruby-keyword">false</span>, <span class="ruby-identifier">argpat</span>)
+          <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">map!</span>(&amp;<span class="ruby-value">:last</span>)
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">list</span>.<span class="ruby-identifier">concat</span>(<span class="ruby-identifier">opts</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">list</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- candidate-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- candidate-method -->
+
+    
+      <div id="method-i-def_head_option" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">def_head_option</span><span
+            class="method-args">(*opts, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="OptionParser.html#method-i-define_head">define_head</a>
+        </div>
+        
+      </div><!-- def_head_option-method -->
+
+    
+      <div id="method-i-def_option" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">def_option</span><span
+            class="method-args">(*opts, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="OptionParser.html#method-i-define">define</a>
+        </div>
+        
+      </div><!-- def_option-method -->
+
+    
+      <div id="method-i-def_tail_option" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">def_tail_option</span><span
+            class="method-args">(*opts, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="OptionParser.html#method-i-define_tail">define_tail</a>
+        </div>
+        
+      </div><!-- def_tail_option-method -->
+
+    
+      <div id="method-i-define" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">define</span><span
+            class="method-args">(*opts, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="define-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1276</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">define</span>(*<span class="ruby-identifier">opts</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">top</span>.<span class="ruby-identifier">append</span>(*(<span class="ruby-identifier">sw</span> = <span class="ruby-identifier">make_switch</span>(<span class="ruby-identifier">opts</span>, <span class="ruby-identifier">block</span>)))
+  <span class="ruby-identifier">sw</span>[<span class="ruby-value">0</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- define-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="OptionParser.html#method-i-def_option">def_option</a>
+        </div>
+        
+
+        
+      </div><!-- define-method -->
+
+    
+      <div id="method-i-define_head" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">define_head</span><span
+            class="method-args">(*opts, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="define_head-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1291</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">define_head</span>(*<span class="ruby-identifier">opts</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">top</span>.<span class="ruby-identifier">prepend</span>(*(<span class="ruby-identifier">sw</span> = <span class="ruby-identifier">make_switch</span>(<span class="ruby-identifier">opts</span>, <span class="ruby-identifier">block</span>)))
+  <span class="ruby-identifier">sw</span>[<span class="ruby-value">0</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- define_head-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="OptionParser.html#method-i-def_head_option">def_head_option</a>
+        </div>
+        
+
+        
+      </div><!-- define_head-method -->
+
+    
+      <div id="method-i-define_tail" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">define_tail</span><span
+            class="method-args">(*opts, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="define_tail-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1305</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">define_tail</span>(*<span class="ruby-identifier">opts</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">base</span>.<span class="ruby-identifier">append</span>(*(<span class="ruby-identifier">sw</span> = <span class="ruby-identifier">make_switch</span>(<span class="ruby-identifier">opts</span>, <span class="ruby-identifier">block</span>)))
+  <span class="ruby-identifier">sw</span>[<span class="ruby-value">0</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- define_tail-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="OptionParser.html#method-i-def_tail_option">def_tail_option</a>
+        </div>
+        
+
+        
+      </div><!-- define_tail-method -->
+
+    
+      <div id="method-i-environment" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">environment</span><span
+            class="method-args">(env = File.basename($0, '.*'))</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses environment variable <code>env</code> or its uppercase with
+splitting like a shell.</p>
+
+<p><code>env</code> defaults to the basename of the program.</p>
+          
+
+          
+          <div class="method-source-code" id="environment-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1604</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">environment</span>(<span class="ruby-identifier">env</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">$0</span>, <span class="ruby-string">'.*'</span>))
+  <span class="ruby-identifier">env</span> = <span class="ruby-constant">ENV</span>[<span class="ruby-identifier">env</span>] <span class="ruby-operator">||</span> <span class="ruby-constant">ENV</span>[<span class="ruby-identifier">env</span>.<span class="ruby-identifier">upcase</span>] <span class="ruby-keyword">or</span> <span class="ruby-keyword">return</span>
+  <span class="ruby-identifier">require</span> <span class="ruby-string">'shellwords'</span>
+  <span class="ruby-identifier">parse</span>(*<span class="ruby-constant">Shellwords</span>.<span class="ruby-identifier">shellwords</span>(<span class="ruby-identifier">env</span>))
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- environment-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- environment-method -->
+
+    
+      <div id="method-i-getopts" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">getopts</span><span
+            class="method-args">(*args)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Wrapper method for getopts.rb.</p>
+
+<pre>params = ARGV.getopts(&quot;ab:&quot;, &quot;foo&quot;, &quot;bar:&quot;)
+# params[:a] = true   # -a
+# params[:b] = &quot;1&quot;    # -b1
+# params[:foo] = &quot;1&quot;  # --foo
+# params[:bar] = &quot;x&quot;  # --bar x</pre>
+          
+
+          
+          <div class="method-source-code" id="getopts-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1466</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">getopts</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-identifier">argv</span> = <span class="ruby-constant">Array</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">first</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">args</span>.<span class="ruby-identifier">shift</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">default_argv</span>
+  <span class="ruby-identifier">single_options</span>, *<span class="ruby-identifier">long_options</span> = *<span class="ruby-identifier">args</span>
+
+  <span class="ruby-identifier">result</span> = {}
+
+  <span class="ruby-identifier">single_options</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">%r(.)(:)?/</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">opt</span>, <span class="ruby-identifier">val</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">val</span>
+      <span class="ruby-identifier">result</span>[<span class="ruby-identifier">opt</span>] = <span class="ruby-keyword">nil</span>
+      <span class="ruby-identifier">define</span>(<span class="ruby-node">&quot;-#{opt} VAL&quot;</span>)
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">result</span>[<span class="ruby-identifier">opt</span>] = <span class="ruby-keyword">false</span>
+      <span class="ruby-identifier">define</span>(<span class="ruby-node">&quot;-#{opt}&quot;</span>)
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">single_options</span>
+
+  <span class="ruby-identifier">long_options</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">arg</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">opt</span>, <span class="ruby-identifier">val</span> = <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">':'</span>, <span class="ruby-value">2</span>)
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">val</span>
+      <span class="ruby-identifier">result</span>[<span class="ruby-identifier">opt</span>] = <span class="ruby-identifier">val</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-operator">?</span> <span class="ruby-keyword">nil</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">val</span>
+      <span class="ruby-identifier">define</span>(<span class="ruby-node">&quot;--#{opt} VAL&quot;</span>)
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">result</span>[<span class="ruby-identifier">opt</span>] = <span class="ruby-keyword">false</span>
+      <span class="ruby-identifier">define</span>(<span class="ruby-node">&quot;--#{opt}&quot;</span>)
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">parse_in_order</span>(<span class="ruby-identifier">argv</span>, <span class="ruby-identifier">result</span>.<span class="ruby-identifier">method</span>(<span class="ruby-value">:[]=</span>))
+  <span class="ruby-identifier">result</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- getopts-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- getopts-method -->
+
+    
+      <div id="method-i-help" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">help</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns option summary string.</p>
+          
+
+          
+          <div class="method-source-code" id="help-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1068</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">help</span>; <span class="ruby-identifier">summarize</span>(<span class="ruby-node">&quot;#{banner}&quot;</span>.<span class="ruby-identifier">sub</span>(<span class="ruby-regexp">%r\n?\z/</span>, <span class="ruby-string">&quot;\n&quot;</span>)) <span class="ruby-keyword">end</span></pre>
+          </div><!-- help-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="OptionParser.html#method-i-to_s">to_s</a>
+        </div>
+        
+
+        
+      </div><!-- help-method -->
+
+    
+      <div id="method-i-inc" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">inc</span><span
+            class="method-args">(*args)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="inc-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 863</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">inc</span>(*<span class="ruby-identifier">args</span>)
+  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">inc</span>(*<span class="ruby-identifier">args</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- inc-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- inc-method -->
+
+    
+      <div id="method-i-load" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">load</span><span
+            class="method-args">(filename = nil)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Loads options from file names as <code>filename</code>. Does nothing when
+the file is not present. Returns whether successfully loaded.</p>
+
+<p><code>filename</code> defaults to basename of the program without suffix in
+a directory ~/.options.</p>
+          
+
+          
+          <div class="method-source-code" id="load-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1584</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">load</span>(<span class="ruby-identifier">filename</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">filename</span> <span class="ruby-operator">||=</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">expand_path</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">$0</span>, <span class="ruby-string">'.*'</span>), <span class="ruby-string">'~/.options'</span>)
+  <span class="ruby-keyword">rescue</span>
+    <span class="ruby-keyword">return</span> <span class="ruby-keyword">false</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">begin</span>
+    <span class="ruby-identifier">parse</span>(*<span class="ruby-constant">IO</span>.<span class="ruby-identifier">readlines</span>(<span class="ruby-identifier">filename</span>).<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span> <span class="ruby-identifier">s</span>.<span class="ruby-identifier">chomp!</span>})
+    <span class="ruby-keyword">true</span>
+  <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ENOENT</span>, <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ENOTDIR</span>
+    <span class="ruby-keyword">false</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- load-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- load-method -->
+
+    
+      <div id="method-i-make_switch" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">make_switch</span><span
+            class="method-args">(opts, block = nil)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Creates an <a href="OptionParser/Switch.html">OptionParser::Switch</a> from
+the parameters. The parsed argument value is passed to the given block,
+where it can be processed.</p>
+
+<p>See at the beginning of <a href="OptionParser.html">OptionParser</a> for
+some full examples.</p>
+
+<p><code>opts</code> can include the following elements:</p>
+<dl class="rdoc-list label-list"><dt>Argument style:
+<dd>
+<p>One of the following:</p>
+
+<pre>:NONE, :REQUIRED, :OPTIONAL</pre>
+</dd><dt>Argument pattern:
+<dd>
+<p>Acceptable option argument format, must be pre-defined with <a
+href="OptionParser.html#method-i-accept">#accept</a> or <a
+href="OptionParser.html#method-i-accept">#accept</a>, or Regexp. This can
+appear once or assigned as String if not present, otherwise causes an
+ArgumentError. Examples:</p>
+
+<pre>Float, Time, Array</pre>
+</dd><dt>Possible argument values:
+<dd>
+<p><a href="Hash.html">Hash</a> or Array.</p>
+
+<pre class="ruby">[:<span class="ruby-identifier">text</span>, :<span class="ruby-identifier">binary</span>, :<span class="ruby-identifier">auto</span>]
+<span class="ruby-node">%w[iso-2022-jp shift_jis euc-jp utf8 binary]</span>
+{ <span class="ruby-string">&quot;jis&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;iso-2022-jp&quot;</span>, <span class="ruby-string">&quot;sjis&quot;</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-string">&quot;shift_jis&quot;</span> }
+</pre>
+</dd><dt>Long style switch:
+<dd>
+<p>Specifies a long style switch which takes a mandatory, optional or no
+argument. It’s a string of the following form:</p>
+
+<pre>&quot;--switch=MANDATORY&quot; or &quot;--switch MANDATORY&quot;
+&quot;--switch[=OPTIONAL]&quot;
+&quot;--switch&quot;</pre>
+</dd><dt>Short style switch:
+<dd>
+<p>Specifies short style switch which takes a mandatory, optional or no
+argument. It’s a string of the following form:</p>
+
+<pre>&quot;-xMANDATORY&quot;
+&quot;-x[OPTIONAL]&quot;
+&quot;-x&quot;</pre>
+
+<p>There is also a special form which matches character range (not full set of
+regular expression):</p>
+
+<pre>&quot;-[a-z]MANDATORY&quot;
+&quot;-[a-z][OPTIONAL]&quot;
+&quot;-[a-z]&quot;</pre>
+</dd><dt>Argument style and description:
+<dd>
+<p>Instead of specifying mandatory or optional arguments directly in the
+switch parameter, this separate parameter can be used.</p>
+
+<pre>&quot;=MANDATORY&quot;
+&quot;=[OPTIONAL]&quot;</pre>
+</dd><dt>Description:
+<dd>
+<p>Description string for the option.</p>
+
+<pre>&quot;Run verbosely&quot;</pre>
+</dd><dt>Handler:
+<dd>
+<p>Handler for the parsed argument value. Either give a block or pass a Proc
+or Method as an argument.</p>
+</dd></dl>
+          
+
+          
+          <div class="method-source-code" id="make_switch-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1152</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">make_switch</span>(<span class="ruby-identifier">opts</span>, <span class="ruby-identifier">block</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-identifier">short</span>, <span class="ruby-identifier">long</span>, <span class="ruby-identifier">nolong</span>, <span class="ruby-identifier">style</span>, <span class="ruby-identifier">pattern</span>, <span class="ruby-identifier">conv</span>, <span class="ruby-identifier">not_pattern</span>, <span class="ruby-identifier">not_conv</span>, <span class="ruby-identifier">not_style</span> = [], [], []
+  <span class="ruby-identifier">ldesc</span>, <span class="ruby-identifier">sdesc</span>, <span class="ruby-identifier">desc</span>, <span class="ruby-identifier">arg</span> = [], [], []
+  <span class="ruby-identifier">default_style</span> = <span class="ruby-constant">Switch</span><span class="ruby-operator">::</span><span class="ruby-constant">NoArgument</span>
+  <span class="ruby-identifier">default_pattern</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-identifier">klass</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-identifier">q</span>, <span class="ruby-identifier">a</span> = <span class="ruby-keyword">nil</span>
+
+  <span class="ruby-identifier">opts</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">o</span><span class="ruby-operator">|</span>
+    <span class="ruby-comment"># argument class</span>
+    <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">search</span>(<span class="ruby-value">:atype</span>, <span class="ruby-identifier">o</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pat</span>, <span class="ruby-identifier">c</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">klass</span> = <span class="ruby-identifier">notwice</span>(<span class="ruby-identifier">o</span>, <span class="ruby-identifier">klass</span>, <span class="ruby-string">'type'</span>)
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">not_style</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">not_style</span> <span class="ruby-operator">!=</span> <span class="ruby-constant">Switch</span><span class="ruby-operator">::</span><span class="ruby-constant">NoArgument</span>
+        <span class="ruby-identifier">not_pattern</span>, <span class="ruby-identifier">not_conv</span> = <span class="ruby-identifier">pat</span>, <span class="ruby-identifier">c</span>
+      <span class="ruby-keyword">else</span>
+        <span class="ruby-identifier">default_pattern</span>, <span class="ruby-identifier">conv</span> = <span class="ruby-identifier">pat</span>, <span class="ruby-identifier">c</span>
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">end</span>
+
+    <span class="ruby-comment"># directly specified pattern(any object possible to match)</span>
+    <span class="ruby-keyword">if</span> (<span class="ruby-operator">!</span>(<span class="ruby-constant">String</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">o</span> <span class="ruby-operator">||</span> <span class="ruby-constant">Symbol</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">o</span>)) <span class="ruby-keyword">and</span> <span class="ruby-identifier">o</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:match</span>)
+      <span class="ruby-identifier">pattern</span> = <span class="ruby-identifier">notwice</span>(<span class="ruby-identifier">o</span>, <span class="ruby-identifier">pattern</span>, <span class="ruby-string">'pattern'</span>)
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:convert</span>)
+        <span class="ruby-identifier">conv</span> = <span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">method</span>(<span class="ruby-value">:convert</span>).<span class="ruby-identifier">to_proc</span>
+      <span class="ruby-keyword">else</span>
+        <span class="ruby-identifier">conv</span> = <span class="ruby-constant">SPLAT_PROC</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">next</span>
+    <span class="ruby-keyword">end</span>
+
+    <span class="ruby-comment"># anything others</span>
+    <span class="ruby-keyword">case</span> <span class="ruby-identifier">o</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Proc</span>, <span class="ruby-constant">Method</span>
+      <span class="ruby-identifier">block</span> = <span class="ruby-identifier">notwice</span>(<span class="ruby-identifier">o</span>, <span class="ruby-identifier">block</span>, <span class="ruby-string">'block'</span>)
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Array</span>, <span class="ruby-constant">Hash</span>
+      <span class="ruby-keyword">case</span> <span class="ruby-identifier">pattern</span>
+      <span class="ruby-keyword">when</span> <span class="ruby-constant">CompletingHash</span>
+      <span class="ruby-keyword">when</span> <span class="ruby-keyword">nil</span>
+        <span class="ruby-identifier">pattern</span> = <span class="ruby-constant">CompletingHash</span>.<span class="ruby-identifier">new</span>
+        <span class="ruby-identifier">conv</span> = <span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">method</span>(<span class="ruby-value">:convert</span>).<span class="ruby-identifier">to_proc</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">respond_to?</span>(<span class="ruby-value">:convert</span>)
+      <span class="ruby-keyword">else</span>
+        <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&quot;argument pattern given twice&quot;</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">o</span>.<span class="ruby-identifier">each</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">pat</span>, *<span class="ruby-identifier">v</span><span class="ruby-operator">|</span> <span class="ruby-identifier">pattern</span>[<span class="ruby-identifier">pat</span>] = <span class="ruby-identifier">v</span>.<span class="ruby-identifier">fetch</span>(<span class="ruby-value">0</span>) {<span class="ruby-identifier">pat</span>}}
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Module</span>
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;unsupported argument type: #{o}&quot;</span>, <span class="ruby-constant">ParseError</span>.<span class="ruby-identifier">filter_backtrace</span>(<span class="ruby-identifier">caller</span>(<span class="ruby-value">4</span>))
+    <span class="ruby-keyword">when</span> *<span class="ruby-constant">ArgumentStyle</span>.<span class="ruby-identifier">keys</span>
+      <span class="ruby-identifier">style</span> = <span class="ruby-identifier">notwice</span>(<span class="ruby-constant">ArgumentStyle</span>[<span class="ruby-identifier">o</span>], <span class="ruby-identifier">style</span>, <span class="ruby-string">'style'</span>)
+    <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^--no-([^\[\]=\s]*)(.+)?/</span>
+      <span class="ruby-identifier">q</span>, <span class="ruby-identifier">a</span> = <span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>
+      <span class="ruby-identifier">o</span> = <span class="ruby-identifier">notwice</span>(<span class="ruby-identifier">a</span> <span class="ruby-operator">?</span> <span class="ruby-constant">Object</span> <span class="ruby-operator">:</span> <span class="ruby-constant">TrueClass</span>, <span class="ruby-identifier">klass</span>, <span class="ruby-string">'type'</span>)
+      <span class="ruby-identifier">not_pattern</span>, <span class="ruby-identifier">not_conv</span> = <span class="ruby-identifier">search</span>(<span class="ruby-value">:atype</span>, <span class="ruby-identifier">o</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">not_style</span>
+      <span class="ruby-identifier">not_style</span> = (<span class="ruby-identifier">not_style</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">default_style</span>).<span class="ruby-identifier">guess</span>(<span class="ruby-identifier">arg</span> = <span class="ruby-identifier">a</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">a</span>
+      <span class="ruby-identifier">default_style</span> = <span class="ruby-constant">Switch</span><span class="ruby-operator">::</span><span class="ruby-constant">NoArgument</span>
+      <span class="ruby-identifier">default_pattern</span>, <span class="ruby-identifier">conv</span> = <span class="ruby-identifier">search</span>(<span class="ruby-value">:atype</span>, <span class="ruby-constant">FalseClass</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">default_pattern</span>
+      <span class="ruby-identifier">ldesc</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;--no-#{q}&quot;</span>
+      <span class="ruby-identifier">long</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-string">'no-'</span> <span class="ruby-operator">+</span> (<span class="ruby-identifier">q</span> = <span class="ruby-identifier">q</span>.<span class="ruby-identifier">downcase</span>)
+      <span class="ruby-identifier">nolong</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">q</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^--\[no-\]([^\[\]=\s]*)(.+)?/</span>
+      <span class="ruby-identifier">q</span>, <span class="ruby-identifier">a</span> = <span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>
+      <span class="ruby-identifier">o</span> = <span class="ruby-identifier">notwice</span>(<span class="ruby-identifier">a</span> <span class="ruby-operator">?</span> <span class="ruby-constant">Object</span> <span class="ruby-operator">:</span> <span class="ruby-constant">TrueClass</span>, <span class="ruby-identifier">klass</span>, <span class="ruby-string">'type'</span>)
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">a</span>
+        <span class="ruby-identifier">default_style</span> = <span class="ruby-identifier">default_style</span>.<span class="ruby-identifier">guess</span>(<span class="ruby-identifier">arg</span> = <span class="ruby-identifier">a</span>)
+        <span class="ruby-identifier">default_pattern</span>, <span class="ruby-identifier">conv</span> = <span class="ruby-identifier">search</span>(<span class="ruby-value">:atype</span>, <span class="ruby-identifier">o</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">default_pattern</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">ldesc</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;--[no-]#{q}&quot;</span>
+      <span class="ruby-identifier">long</span> <span class="ruby-operator">&lt;&lt;</span> (<span class="ruby-identifier">o</span> = <span class="ruby-identifier">q</span>.<span class="ruby-identifier">downcase</span>)
+      <span class="ruby-identifier">not_pattern</span>, <span class="ruby-identifier">not_conv</span> = <span class="ruby-identifier">search</span>(<span class="ruby-value">:atype</span>, <span class="ruby-constant">FalseClass</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">not_style</span>
+      <span class="ruby-identifier">not_style</span> = <span class="ruby-constant">Switch</span><span class="ruby-operator">::</span><span class="ruby-constant">NoArgument</span>
+      <span class="ruby-identifier">nolong</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-string">'no-'</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">o</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^--([^\[\]=\s]*)(.+)?/</span>
+      <span class="ruby-identifier">q</span>, <span class="ruby-identifier">a</span> = <span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">a</span>
+        <span class="ruby-identifier">o</span> = <span class="ruby-identifier">notwice</span>(<span class="ruby-constant">NilClass</span>, <span class="ruby-identifier">klass</span>, <span class="ruby-string">'type'</span>)
+        <span class="ruby-identifier">default_style</span> = <span class="ruby-identifier">default_style</span>.<span class="ruby-identifier">guess</span>(<span class="ruby-identifier">arg</span> = <span class="ruby-identifier">a</span>)
+        <span class="ruby-identifier">default_pattern</span>, <span class="ruby-identifier">conv</span> = <span class="ruby-identifier">search</span>(<span class="ruby-value">:atype</span>, <span class="ruby-identifier">o</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">default_pattern</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">ldesc</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;--#{q}&quot;</span>
+      <span class="ruby-identifier">long</span> <span class="ruby-operator">&lt;&lt;</span> (<span class="ruby-identifier">o</span> = <span class="ruby-identifier">q</span>.<span class="ruby-identifier">downcase</span>)
+    <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^-(\[\^?\]?(?:[^\\\]]|\\.)*\])(.+)?/</span>
+      <span class="ruby-identifier">q</span>, <span class="ruby-identifier">a</span> = <span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>
+      <span class="ruby-identifier">o</span> = <span class="ruby-identifier">notwice</span>(<span class="ruby-constant">Object</span>, <span class="ruby-identifier">klass</span>, <span class="ruby-string">'type'</span>)
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">a</span>
+        <span class="ruby-identifier">default_style</span> = <span class="ruby-identifier">default_style</span>.<span class="ruby-identifier">guess</span>(<span class="ruby-identifier">arg</span> = <span class="ruby-identifier">a</span>)
+        <span class="ruby-identifier">default_pattern</span>, <span class="ruby-identifier">conv</span> = <span class="ruby-identifier">search</span>(<span class="ruby-value">:atype</span>, <span class="ruby-identifier">o</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">default_pattern</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">sdesc</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;-#{q}&quot;</span>
+      <span class="ruby-identifier">short</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-constant">Regexp</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">q</span>)
+    <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^-(.)(.+)?/</span>
+      <span class="ruby-identifier">q</span>, <span class="ruby-identifier">a</span> = <span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">a</span>
+        <span class="ruby-identifier">o</span> = <span class="ruby-identifier">notwice</span>(<span class="ruby-constant">NilClass</span>, <span class="ruby-identifier">klass</span>, <span class="ruby-string">'type'</span>)
+        <span class="ruby-identifier">default_style</span> = <span class="ruby-identifier">default_style</span>.<span class="ruby-identifier">guess</span>(<span class="ruby-identifier">arg</span> = <span class="ruby-identifier">a</span>)
+        <span class="ruby-identifier">default_pattern</span>, <span class="ruby-identifier">conv</span> = <span class="ruby-identifier">search</span>(<span class="ruby-value">:atype</span>, <span class="ruby-identifier">o</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">default_pattern</span>
+      <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">sdesc</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot;-#{q}&quot;</span>
+      <span class="ruby-identifier">short</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">q</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-regexp">%r^=/</span>
+      <span class="ruby-identifier">style</span> = <span class="ruby-identifier">notwice</span>(<span class="ruby-identifier">default_style</span>.<span class="ruby-identifier">guess</span>(<span class="ruby-identifier">arg</span> = <span class="ruby-identifier">o</span>), <span class="ruby-identifier">style</span>, <span class="ruby-string">'style'</span>)
+      <span class="ruby-identifier">default_pattern</span>, <span class="ruby-identifier">conv</span> = <span class="ruby-identifier">search</span>(<span class="ruby-value">:atype</span>, <span class="ruby-constant">Object</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">default_pattern</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">desc</span>.<span class="ruby-identifier">push</span>(<span class="ruby-identifier">o</span>)
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">default_pattern</span>, <span class="ruby-identifier">conv</span> = <span class="ruby-identifier">search</span>(<span class="ruby-value">:atype</span>, <span class="ruby-identifier">default_style</span>.<span class="ruby-identifier">pattern</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">default_pattern</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span>(<span class="ruby-identifier">short</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">long</span>.<span class="ruby-identifier">empty?</span>)
+    <span class="ruby-identifier">s</span> = (<span class="ruby-identifier">style</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">default_style</span>).<span class="ruby-identifier">new</span>(<span class="ruby-identifier">pattern</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">default_pattern</span>,
+                                     <span class="ruby-identifier">conv</span>, <span class="ruby-identifier">sdesc</span>, <span class="ruby-identifier">ldesc</span>, <span class="ruby-identifier">arg</span>, <span class="ruby-identifier">desc</span>, <span class="ruby-identifier">block</span>)
+  <span class="ruby-keyword">elsif</span> <span class="ruby-operator">!</span><span class="ruby-identifier">block</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">style</span> <span class="ruby-keyword">or</span> <span class="ruby-identifier">pattern</span>
+      <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-string">&quot;no switch given&quot;</span>, <span class="ruby-constant">ParseError</span>.<span class="ruby-identifier">filter_backtrace</span>(<span class="ruby-identifier">caller</span>)
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-identifier">s</span> = <span class="ruby-identifier">desc</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">short</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">pattern</span>
+    <span class="ruby-identifier">s</span> = (<span class="ruby-identifier">style</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">default_style</span>).<span class="ruby-identifier">new</span>(<span class="ruby-identifier">pattern</span>,
+                                     <span class="ruby-identifier">conv</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">arg</span>, <span class="ruby-identifier">desc</span>, <span class="ruby-identifier">block</span>)
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">s</span>, <span class="ruby-identifier">short</span>, <span class="ruby-identifier">long</span>,
+    (<span class="ruby-identifier">not_style</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">not_pattern</span>, <span class="ruby-identifier">not_conv</span>, <span class="ruby-identifier">sdesc</span>, <span class="ruby-identifier">ldesc</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-identifier">desc</span>, <span class="ruby-identifier">block</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">not_style</span>),
+    <span class="ruby-identifier">nolong</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- make_switch-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- make_switch-method -->
+
+    
+      <div id="method-i-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">() { |self| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Pushes a new <a href="OptionParser/List.html">List</a>.</p>
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1034</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">new</span>
+  <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">push</span>(<span class="ruby-constant">List</span>.<span class="ruby-identifier">new</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">block_given?</span>
+    <span class="ruby-keyword">yield</span> <span class="ruby-keyword">self</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-keyword">self</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- new-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- new-method -->
+
+    
+      <div id="method-i-on" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">on</span><span
+            class="method-args">(*opts, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Add option switch and handler. See <a
+href="OptionParser.html#method-i-make_switch">make_switch</a> for an
+explanation of parameters.</p>
+          
+
+          
+          <div class="method-source-code" id="on-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1285</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">on</span>(*<span class="ruby-identifier">opts</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">define</span>(*<span class="ruby-identifier">opts</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- on-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- on-method -->
+
+    
+      <div id="method-i-on_head" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">on_head</span><span
+            class="method-args">(*opts, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Add option switch like with <a href="OptionParser.html#method-i-on">on</a>,
+but at head of summary.</p>
+          
+
+          
+          <div class="method-source-code" id="on_head-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1299</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">on_head</span>(*<span class="ruby-identifier">opts</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">define_head</span>(*<span class="ruby-identifier">opts</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- on_head-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- on_head-method -->
+
+    
+      <div id="method-i-on_tail" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">on_tail</span><span
+            class="method-args">(*opts, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Add option switch like with <a href="OptionParser.html#method-i-on">on</a>,
+but at tail of summary.</p>
+          
+
+          
+          <div class="method-source-code" id="on_tail-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1313</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">on_tail</span>(*<span class="ruby-identifier">opts</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">define_tail</span>(*<span class="ruby-identifier">opts</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-keyword">self</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- on_tail-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- on_tail-method -->
+
+    
+      <div id="method-i-order" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">order</span><span
+            class="method-args">(*argv, &block)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses command line arguments <code>argv</code> in order. When a block is
+given, each non-option argument is yielded.</p>
+
+<p>Returns the rest of <code>argv</code> left unparsed.</p>
+          
+
+          
+          <div class="method-source-code" id="order-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1332</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">order</span>(*<span class="ruby-identifier">argv</span>, &amp;<span class="ruby-identifier">block</span>)
+  <span class="ruby-identifier">argv</span> = <span class="ruby-identifier">argv</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">dup</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">argv</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-keyword">and</span> <span class="ruby-constant">Array</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">argv</span>[<span class="ruby-value">0</span>]
+  <span class="ruby-identifier">order!</span>(<span class="ruby-identifier">argv</span>, &amp;<span class="ruby-identifier">block</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- order-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- order-method -->
+
+    
+      <div id="method-i-order-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">order!</span><span
+            class="method-args">(argv = default_argv, &nonopt)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Same as <a href="OptionParser.html#method-i-order">order</a>, but removes
+switches destructively.</p>
+          
+
+          
+          <div class="method-source-code" id="order-21-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1340</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">order!</span>(<span class="ruby-identifier">argv</span> = <span class="ruby-identifier">default_argv</span>, &amp;<span class="ruby-identifier">nonopt</span>)
+  <span class="ruby-identifier">parse_in_order</span>(<span class="ruby-identifier">argv</span>, &amp;<span class="ruby-identifier">nonopt</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- order-21-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- order-21-method -->
+
+    
+      <div id="method-i-parse" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">parse</span><span
+            class="method-args">(*argv)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses command line arguments <code>argv</code> in order when environment
+variable POSIXLY_CORRECT is set, and in permutation mode otherwise.</p>
+          
+
+          
+          <div class="method-source-code" id="parse-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1441</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">parse</span>(*<span class="ruby-identifier">argv</span>)
+  <span class="ruby-identifier">argv</span> = <span class="ruby-identifier">argv</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">dup</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">argv</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-keyword">and</span> <span class="ruby-constant">Array</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">argv</span>[<span class="ruby-value">0</span>]
+  <span class="ruby-identifier">parse!</span>(<span class="ruby-identifier">argv</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- parse-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- parse-method -->
+
+    
+      <div id="method-i-parse-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">parse!</span><span
+            class="method-args">(argv = default_argv)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Same as <a href="OptionParser.html#method-i-parse">parse</a>, but removes
+switches destructively.</p>
+          
+
+          
+          <div class="method-source-code" id="parse-21-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1449</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">parse!</span>(<span class="ruby-identifier">argv</span> = <span class="ruby-identifier">default_argv</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-constant">ENV</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-string">'POSIXLY_CORRECT'</span>)
+    <span class="ruby-identifier">order!</span>(<span class="ruby-identifier">argv</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">permute!</span>(<span class="ruby-identifier">argv</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- parse-21-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- parse-21-method -->
+
+    
+      <div id="method-i-permute" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">permute</span><span
+            class="method-args">(*argv)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses command line arguments <code>argv</code> in permutation mode and
+returns list of non-option arguments.</p>
+          
+
+          
+          <div class="method-source-code" id="permute-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1422</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">permute</span>(*<span class="ruby-identifier">argv</span>)
+  <span class="ruby-identifier">argv</span> = <span class="ruby-identifier">argv</span>[<span class="ruby-value">0</span>].<span class="ruby-identifier">dup</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">argv</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span> <span class="ruby-keyword">and</span> <span class="ruby-constant">Array</span> <span class="ruby-operator">===</span> <span class="ruby-identifier">argv</span>[<span class="ruby-value">0</span>]
+  <span class="ruby-identifier">permute!</span>(<span class="ruby-identifier">argv</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- permute-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- permute-method -->
+
+    
+      <div id="method-i-permute-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">permute!</span><span
+            class="method-args">(argv = default_argv)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Same as <a href="OptionParser.html#method-i-permute">permute</a>, but
+removes switches destructively.</p>
+          
+
+          
+          <div class="method-source-code" id="permute-21-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1430</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">permute!</span>(<span class="ruby-identifier">argv</span> = <span class="ruby-identifier">default_argv</span>)
+  <span class="ruby-identifier">nonopts</span> = []
+  <span class="ruby-identifier">order!</span>(<span class="ruby-identifier">argv</span>, &amp;<span class="ruby-identifier">nonopts</span>.<span class="ruby-identifier">method</span>(<span class="ruby-value">:&lt;&lt;</span>))
+  <span class="ruby-identifier">argv</span>[<span class="ruby-value">0</span>, <span class="ruby-value">0</span>] = <span class="ruby-identifier">nonopts</span>
+  <span class="ruby-identifier">argv</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- permute-21-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- permute-21-method -->
+
+    
+      <div id="method-i-program_name" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">program_name</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Program name to be emitted in error message and default banner, defaults to
+$0.</p>
+          
+
+          
+          <div class="method-source-code" id="program_name-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 969</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">program_name</span>
+  <span class="ruby-ivar">@program_name</span> <span class="ruby-operator">||</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">basename</span>(<span class="ruby-identifier">$0</span>, <span class="ruby-string">'.*'</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- program_name-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- program_name-method -->
+
+    
+      <div id="method-i-reject" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">reject</span><span
+            class="method-args">(*args, &blk)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Directs to reject specified class argument.</p>
+<dl class="rdoc-list note-list"><dt><code>t</code>
+<dd>
+<p>Argument class specifier, any object including Class.</p>
+</dd></dl>
+
+<pre>reject(t)</pre>
+          
+
+          
+          <div class="method-source-code" id="reject-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 928</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">reject</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">blk</span>) <span class="ruby-identifier">top</span>.<span class="ruby-identifier">reject</span>(*<span class="ruby-identifier">args</span>, &amp;<span class="ruby-identifier">blk</span>) <span class="ruby-keyword">end</span></pre>
+          </div><!-- reject-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- reject-method -->
+
+    
+      <div id="method-i-release" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">release</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Release code</p>
+          
+
+          
+          <div class="method-source-code" id="release-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 994</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">release</span>
+  <span class="ruby-ivar">@release</span> <span class="ruby-operator">||</span> (<span class="ruby-keyword">defined?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Release</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">::</span><span class="ruby-constant">Release</span>) <span class="ruby-operator">||</span> (<span class="ruby-keyword">defined?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">RELEASE</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">::</span><span class="ruby-constant">RELEASE</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- release-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- release-method -->
+
+    
+      <div id="method-i-remove" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">remove</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Removes the last <a href="OptionParser/List.html">List</a>.</p>
+          
+
+          
+          <div class="method-source-code" id="remove-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1046</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">remove</span>
+  <span class="ruby-ivar">@stack</span>.<span class="ruby-identifier">pop</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- remove-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- remove-method -->
+
+    
+      <div id="method-i-separator" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">separator</span><span
+            class="method-args">(string)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Add separator in summary.</p>
+          
+
+          
+          <div class="method-source-code" id="separator-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1322</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">separator</span>(<span class="ruby-identifier">string</span>)
+  <span class="ruby-identifier">top</span>.<span class="ruby-identifier">append</span>(<span class="ruby-identifier">string</span>, <span class="ruby-keyword">nil</span>, <span class="ruby-keyword">nil</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- separator-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- separator-method -->
+
+    
+      <div id="method-i-summarize" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">summarize</span><span
+            class="method-args">(to = [], width = @summary_width, max = width - 1, indent = @summary_indent, &blk)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Puts option summary into <code>to</code> and returns <code>to</code>.
+Yields each line if a block is given.</p>
+<dl class="rdoc-list note-list"><dt><code>to</code>
+<dd>
+<p>Output destination, which must have method &lt;&lt;. Defaults to [].</p>
+</dd><dt><code>width</code>
+<dd>
+<p>Width of left side, defaults to @summary_width.</p>
+</dd><dt><code>max</code>
+<dd>
+<p>Maximum length allowed for left side, defaults to <code>width</code> - 1.</p>
+</dd><dt><code>indent</code>
+<dd>
+<p>Indentation, defaults to @summary_indent.</p>
+</dd></dl>
+          
+
+          
+          <div class="method-source-code" id="summarize-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1059</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">summarize</span>(<span class="ruby-identifier">to</span> = [], <span class="ruby-identifier">width</span> = <span class="ruby-ivar">@summary_width</span>, <span class="ruby-identifier">max</span> = <span class="ruby-identifier">width</span> <span class="ruby-operator">-</span> <span class="ruby-value">1</span>, <span class="ruby-identifier">indent</span> = <span class="ruby-ivar">@summary_indent</span>, &amp;<span class="ruby-identifier">blk</span>)
+  <span class="ruby-identifier">blk</span> <span class="ruby-operator">||=</span> <span class="ruby-identifier">proc</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">l</span><span class="ruby-operator">|</span> <span class="ruby-identifier">to</span> <span class="ruby-operator">&lt;&lt;</span> (<span class="ruby-identifier">l</span>.<span class="ruby-identifier">index</span>(<span class="ruby-identifier">$/</span>, <span class="ruby-value">-1</span>) <span class="ruby-operator">?</span> <span class="ruby-identifier">l</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">l</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">$/</span>)}
+  <span class="ruby-identifier">visit</span>(<span class="ruby-value">:summarize</span>, {}, {}, <span class="ruby-identifier">width</span>, <span class="ruby-identifier">max</span>, <span class="ruby-identifier">indent</span>, &amp;<span class="ruby-identifier">blk</span>)
+  <span class="ruby-identifier">to</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- summarize-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- summarize-method -->
+
+    
+      <div id="method-i-terminate" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">terminate</span><span
+            class="method-args">(arg = nil)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Terminates option parsing. Optional parameter <code>arg</code> is a string
+pushed back to be the first non-option argument.</p>
+          
+
+          
+          <div class="method-source-code" id="terminate-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 896</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">terminate</span>(<span class="ruby-identifier">arg</span> = <span class="ruby-keyword">nil</span>)
+  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">terminate</span>(<span class="ruby-identifier">arg</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- terminate-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- terminate-method -->
+
+    
+      <div id="method-i-to_a" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">to_a</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns option summary list.</p>
+          
+
+          
+          <div class="method-source-code" id="to_a-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1074</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">to_a</span>; <span class="ruby-identifier">summarize</span>(<span class="ruby-node">&quot;#{banner}&quot;</span>.<span class="ruby-identifier">split</span>(<span class="ruby-regexp">%r^/</span>)) <span class="ruby-keyword">end</span></pre>
+          </div><!-- to_a-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- to_a-method -->
+
+    
+      <div id="method-i-to_s" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">to_s</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="OptionParser.html#method-i-help">help</a>
+        </div>
+        
+      </div><!-- to_s-method -->
+
+    
+      <div id="method-i-top" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">top</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Subject of <a href="OptionParser.html#method-i-on">on</a> / <a
+href="OptionParser.html#method-i-on_head">on_head</a>, <a
+href="OptionParser.html#method-i-accept">accept</a> / <a
+href="OptionParser.html#method-i-reject">reject</a></p>
+          
+
+          
+          <div class="method-source-code" id="top-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1020</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">top</span>
+  <span class="ruby-ivar">@stack</span>[<span class="ruby-value">-1</span>]
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- top-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- top-method -->
+
+    
+      <div id="method-i-ver" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">ver</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns version string from <a
+href="OptionParser.html#method-i-program_name">#program_name</a>, version
+and release.</p>
+          
+
+          
+          <div class="method-source-code" id="ver-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1001</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">ver</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">v</span> = <span class="ruby-identifier">version</span>
+    <span class="ruby-identifier">str</span> = <span class="ruby-node">&quot;#{program_name} #{[v].join('.')}&quot;</span>
+    <span class="ruby-identifier">str</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-node">&quot; (#{v})&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">v</span> = <span class="ruby-identifier">release</span>
+    <span class="ruby-identifier">str</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- ver-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- ver-method -->
+
+    
+      <div id="method-i-version" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">version</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Version</p>
+          
+
+          
+          <div class="method-source-code" id="version-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 987</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">version</span>
+  <span class="ruby-ivar">@version</span> <span class="ruby-operator">||</span> (<span class="ruby-keyword">defined?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Version</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">::</span><span class="ruby-constant">Version</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- version-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- version-method -->
+
+    
+      <div id="method-i-warn" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">warn</span><span
+            class="method-args">(mesg = $!)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="warn-source">
+            <pre><span class="ruby-comment"># File rake/lib/optparse.rb, line 1009</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">warn</span>(<span class="ruby-identifier">mesg</span> = <span class="ruby-identifier">$!</span>)
+  <span class="ruby-keyword">super</span>(<span class="ruby-node">&quot;#{program_name}: #{mesg}&quot;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- warn-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- warn-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

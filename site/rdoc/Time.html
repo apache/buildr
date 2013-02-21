@@ -1,0 +1,1647 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class Time - buildr</title>
+
+<link type="text/css" media="screen" href="./rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="./js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="./js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="./index.html">Home</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>rake/lib/time.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link"><a href="Object.html">Object</a>
+  
+</nav>
+
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-c-httpdate">::httpdate</a>
+    
+    <li><a href="#method-c-iso8601">::iso8601</a>
+    
+    <li><a href="#method-c-parse">::parse</a>
+    
+    <li><a href="#method-c-rfc2822">::rfc2822</a>
+    
+    <li><a href="#method-c-rfc822">::rfc822</a>
+    
+    <li><a href="#method-c-strptime">::strptime</a>
+    
+    <li><a href="#method-c-xmlschema">::xmlschema</a>
+    
+    <li><a href="#method-c-zone_offset">::zone_offset</a>
+    
+    <li><a href="#method-i-httpdate">#httpdate</a>
+    
+    <li><a href="#method-i-iso8601">#iso8601</a>
+    
+    <li><a href="#method-i-rfc2822">#rfc2822</a>
+    
+    <li><a href="#method-i-rfc822">#rfc822</a>
+    
+    <li><a href="#method-i-xmlschema">#xmlschema</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="./CHANGELOG.html">CHANGELOG</a>
+  
+    <li class="file"><a href="./LICENSE.html">LICENSE</a>
+  
+    <li class="file"><a href="./NOTICE.html">NOTICE</a>
+  
+    <li class="file"><a href="./README_rdoc.html">README</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="./Buildr.html">Buildr</a>
+  
+    <li><a href="./Buildr/ActsAsArtifact.html">Buildr::ActsAsArtifact</a>
+  
+    <li><a href="./Buildr/Ant.html">Buildr::Ant</a>
+  
+    <li><a href="./Buildr/Apt.html">Buildr::Apt</a>
+  
+    <li><a href="./Buildr/ArchiveTask.html">Buildr::ArchiveTask</a>
+  
+    <li><a href="./Buildr/ArchiveTask/Merge.html">Buildr::ArchiveTask::Merge</a>
+  
+    <li><a href="./Buildr/Artifact.html">Buildr::Artifact</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace.html">Buildr::ArtifactNamespace</a>
+  
+    <li><a href="./Buildr/ArtifactNamespace/ArtifactRequirement.html">Buildr::ArtifactNamespace::ArtifactRequirement</a>
+  
+    <li><a href="./Buildr/ArtifactSearch.html">Buildr::ArtifactSearch</a>
+  
+    <li><a href="./Buildr/Build.html">Buildr::Build</a>
+  
+    <li><a href="./Buildr/CC.html">Buildr::CC</a>
+  
+    <li><a href="./Buildr/CCTask.html">Buildr::CCTask</a>
+  
+    <li><a href="./Buildr/Checks.html">Buildr::Checks</a>
+  
+    <li><a href="./Buildr/Checks/Expectation.html">Buildr::Checks::Expectation</a>
+  
+    <li><a href="./Buildr/Clojure.html">Buildr::Clojure</a>
+  
+    <li><a href="./Buildr/Cobertura.html">Buildr::Cobertura</a>
+  
+    <li><a href="./Buildr/Cobertura/CoberturaCheck.html">Buildr::Cobertura::CoberturaCheck</a>
+  
+    <li><a href="./Buildr/Compile.html">Buildr::Compile</a>
+  
+    <li><a href="./Buildr/CompileTask.html">Buildr::CompileTask</a>
+  
+    <li><a href="./Buildr/Compiler.html">Buildr::Compiler</a>
+  
+    <li><a href="./Buildr/Compiler/Ecj.html">Buildr::Compiler::Ecj</a>
+  
+    <li><a href="./Buildr/Compiler/ExternalJavac.html">Buildr::Compiler::ExternalJavac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Compiler::Javac</a>
+  
+    <li><a href="./Buildr/ConcatTask.html">Buildr::ConcatTask</a>
+  
+    <li><a href="./Buildr/Doc.html">Buildr::Doc</a>
+  
+    <li><a href="./Buildr/Doc/Base.html">Buildr::Doc::Base</a>
+  
+    <li><a href="./Buildr/Doc/DocTask.html">Buildr::Doc::DocTask</a>
+  
+    <li><a href="./Buildr/Doc/Groovydoc.html">Buildr::Doc::Groovydoc</a>
+  
+    <li><a href="./Buildr/Doc/GroovydocDefaults.html">Buildr::Doc::GroovydocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Javadoc.html">Buildr::Doc::Javadoc</a>
+  
+    <li><a href="./Buildr/Doc/JavadocDefaults.html">Buildr::Doc::JavadocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/Scaladoc.html">Buildr::Doc::Scaladoc</a>
+  
+    <li><a href="./Buildr/Doc/ScaladocDefaults.html">Buildr::Doc::ScaladocDefaults</a>
+  
+    <li><a href="./Buildr/Doc/VScaladoc.html">Buildr::Doc::VScaladoc</a>
+  
+    <li><a href="./Buildr/Eclipse.html">Buildr::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Eclipse.html">Buildr::Eclipse::Eclipse</a>
+  
+    <li><a href="./Buildr/Eclipse/Java.html">Buildr::Eclipse::Java</a>
+  
+    <li><a href="./Buildr/Eclipse/Options.html">Buildr::Eclipse::Options</a>
+  
+    <li><a href="./Buildr/Eclipse/Plugin.html">Buildr::Eclipse::Plugin</a>
+  
+    <li><a href="./Buildr/Eclipse/Scala.html">Buildr::Eclipse::Scala</a>
+  
+    <li><a href="./Buildr/Emma.html">Buildr::Emma</a>
+  
+    <li><a href="./Buildr/Extension.html">Buildr::Extension</a>
+  
+    <li><a href="./Buildr/Extension/ClassMethods.html">Buildr::Extension::ClassMethods</a>
+  
+    <li><a href="./Buildr/Filter.html">Buildr::Filter</a>
+  
+    <li><a href="./Buildr/Filter/Mapper.html">Buildr::Filter::Mapper</a>
+  
+    <li><a href="./Buildr/GitRelease.html">Buildr::GitRelease</a>
+  
+    <li><a href="./Buildr/Groovy.html">Buildr::Groovy</a>
+  
+    <li><a href="./Buildr/Groovy/EasyB.html">Buildr::Groovy::EasyB</a>
+  
+    <li><a href="./Buildr/Groovy/GroovySH.html">Buildr::Groovy::GroovySH</a>
+  
+    <li><a href="./Buildr/Groovy/Groovyc.html">Buildr::Groovy::Groovyc</a>
+  
+    <li><a href="./Buildr/HgRelease.html">Buildr::HgRelease</a>
+  
+    <li><a href="./Buildr/IntegrationTestsTask.html">Buildr::IntegrationTestsTask</a>
+  
+    <li><a href="./Buildr/IntellijIdea.html">Buildr::IntellijIdea</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaFile.html">Buildr::IntellijIdea::IdeaFile</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaModule.html">Buildr::IntellijIdea::IdeaModule</a>
+  
+    <li><a href="./Buildr/IntellijIdea/IdeaProject.html">Buildr::IntellijIdea::IdeaProject</a>
+  
+    <li><a href="./Buildr/IntellijIdea/ProjectExtension.html">Buildr::IntellijIdea::ProjectExtension</a>
+  
+    <li><a href="./Buildr/JBehave.html">Buildr::JBehave</a>
+  
+    <li><a href="./Buildr/JMock.html">Buildr::JMock</a>
+  
+    <li><a href="./Buildr/JRebel.html">Buildr::JRebel</a>
+  
+    <li><a href="./Buildr/JUnit.html">Buildr::JUnit</a>
+  
+    <li><a href="./Buildr/JUnit/Report.html">Buildr::JUnit::Report</a>
+  
+    <li><a href="./Buildr/Layout.html">Buildr::Layout</a>
+  
+    <li><a href="./Buildr/Layout/Default.html">Buildr::Layout::Default</a>
+  
+    <li><a href="./Buildr/MultiTest.html">Buildr::MultiTest</a>
+  
+    <li><a href="./Buildr/OptionalArtifact.html">Buildr::OptionalArtifact</a>
+  
+    <li><a href="./Buildr/Options.html">Buildr::Options</a>
+  
+    <li><a href="./Buildr/Options/Proxies.html">Buildr::Options::Proxies</a>
+  
+    <li><a href="./Buildr/POM.html">Buildr::POM</a>
+  
+    <li><a href="./Buildr/Package.html">Buildr::Package</a>
+  
+    <li><a href="./Buildr/PackageGemTask.html">Buildr::PackageGemTask</a>
+  
+    <li><a href="./Buildr/Packaging.html">Buildr::Packaging</a>
+  
+    <li><a href="./Buildr/Packaging/Java.html">Buildr::Packaging::Java</a>
+  
+    <li><a href="./Buildr/Packaging/Java/AarTask.html">Buildr::Packaging::Java::AarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/EarTask.html">Buildr::Packaging::Java::EarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/JarTask.html">Buildr::Packaging::Java::JarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Java/Manifest.html">Buildr::Packaging::Java::Manifest</a>
+  
+    <li><a href="./Buildr/Packaging/Java/WarTask.html">Buildr::Packaging::Java::WarTask</a>
+  
+    <li><a href="./Buildr/Packaging/Scala.html">Buildr::Packaging::Scala</a>
+  
+    <li><a href="./Buildr/ProcessStatus.html">Buildr::ProcessStatus</a>
+  
+    <li><a href="./Buildr/Project.html">Buildr::Project</a>
+  
+    <li><a href="./Buildr/RSpec.html">Buildr::RSpec</a>
+  
+    <li><a href="./Buildr/Repositories.html">Buildr::Repositories</a>
+  
+    <li><a href="./Buildr/ResourcesTask.html">Buildr::ResourcesTask</a>
+  
+    <li><a href="./Buildr/Run.html">Buildr::Run</a>
+  
+    <li><a href="./Buildr/Run/Base.html">Buildr::Run::Base</a>
+  
+    <li><a href="./Buildr/Run/JavaRunner.html">Buildr::Run::JavaRunner</a>
+  
+    <li><a href="./Buildr/Run/RunTask.html">Buildr::Run::RunTask</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala.html">Buildr::Scala</a>
+  
+    <li><a href="./Buildr/Scala/Check.html">Buildr::Scala::Check</a>
+  
+    <li><a href="./Buildr/Scala/Mockito.html">Buildr::Scala::Mockito</a>
+  
+    <li><a href="./Buildr/Scala/ProjectExtension.html">Buildr::Scala::ProjectExtension</a>
+  
+    <li><a href="./Buildr/Scala/ScalaShell.html">Buildr::Scala::ScalaShell</a>
+  
+    <li><a href="./Buildr/Scala/ScalaTest.html">Buildr::Scala::ScalaTest</a>
+  
+    <li><a href="./Buildr/Scala/Scalac.html">Buildr::Scala::Scalac</a>
+  
+    <li><a href="./Buildr/Compiler/Javac.html">Buildr::Scala::Scalac::Javac</a>
+  
+    <li><a href="./Buildr/Scala/ScalacOptions.html">Buildr::Scala::ScalacOptions</a>
+  
+    <li><a href="./Buildr/Scala/Specs.html">Buildr::Scala::Specs</a>
+  
+    <li><a href="./Buildr/Scala/Specs2.html">Buildr::Scala::Specs2</a>
+  
+    <li><a href="./Buildr/Settings.html">Buildr::Settings</a>
+  
+    <li><a href="./Buildr/Shell.html">Buildr::Shell</a>
+  
+    <li><a href="./Buildr/Shell/Base.html">Buildr::Shell::Base</a>
+  
+    <li><a href="./Buildr/Shell/BeanShell.html">Buildr::Shell::BeanShell</a>
+  
+    <li><a href="./Buildr/Shell/Clojure.html">Buildr::Shell::Clojure</a>
+  
+    <li><a href="./Buildr/Shell/JIRB.html">Buildr::Shell::JIRB</a>
+  
+    <li><a href="./Buildr/Shell/ShellTask.html">Buildr::Shell::ShellTask</a>
+  
+    <li><a href="./Buildr/SvnRelease.html">Buildr::SvnRelease</a>
+  
+    <li><a href="./Buildr/TarTask.html">Buildr::TarTask</a>
+  
+    <li><a href="./Buildr/Test.html">Buildr::Test</a>
+  
+    <li><a href="./Buildr/Test/SkipIfNoTest.html">Buildr::Test::SkipIfNoTest</a>
+  
+    <li><a href="./Buildr/TestFramework.html">Buildr::TestFramework</a>
+  
+    <li><a href="./Buildr/TestFramework/Base.html">Buildr::TestFramework::Base</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased.html">Buildr::TestFramework::JRubyBased</a>
+  
+    <li><a href="./Buildr/TestFramework/JRubyBased/ClassMethods.html">Buildr::TestFramework::JRubyBased::ClassMethods</a>
+  
+    <li><a href="./Buildr/TestFramework/Java.html">Buildr::TestFramework::Java</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult.html">Buildr::TestFramework::TestResult</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/Error.html">Buildr::TestFramework::TestResult::Error</a>
+  
+    <li><a href="./Buildr/TestFramework/TestResult/YamlFormatter.html">Buildr::TestFramework::TestResult::YamlFormatter</a>
+  
+    <li><a href="./Buildr/TestNG.html">Buildr::TestNG</a>
+  
+    <li><a href="./Buildr/TestTask.html">Buildr::TestTask</a>
+  
+    <li><a href="./Buildr/Unzip.html">Buildr::Unzip</a>
+  
+    <li><a href="./Buildr/Util.html">Buildr::Util</a>
+  
+    <li><a href="./Buildr/VersionRequirement.html">Buildr::VersionRequirement</a>
+  
+    <li><a href="./Buildr/ZipTask.html">Buildr::ZipTask</a>
+  
+    <li><a href="./Resolv.html">Resolv</a>
+  
+    <li><a href="./Resolv/DNS.html">Resolv::DNS</a>
+  
+    <li><a href="./Resolv/DNS/Config.html">Resolv::DNS::Config</a>
+  
+    <li><a href="./Resolv/DNS/Config/NXDomain.html">Resolv::DNS::Config::NXDomain</a>
+  
+    <li><a href="./Resolv/DNS/Config/OtherResolvError.html">Resolv::DNS::Config::OtherResolvError</a>
+  
+    <li><a href="./Resolv/DNS/DecodeError.html">Resolv::DNS::DecodeError</a>
+  
+    <li><a href="./Resolv/DNS/EncodeError.html">Resolv::DNS::EncodeError</a>
+  
+    <li><a href="./Resolv/DNS/Name.html">Resolv::DNS::Name</a>
+  
+    <li><a href="./Resolv/DNS/Query.html">Resolv::DNS::Query</a>
+  
+    <li><a href="./Resolv/DNS/Requester.html">Resolv::DNS::Requester</a>
+  
+    <li><a href="./Resolv/DNS/Requester/RequestError.html">Resolv::DNS::Requester::RequestError</a>
+  
+    <li><a href="./Resolv/DNS/Resource.html">Resolv::DNS::Resource</a>
+  
+    <li><a href="./Resolv/DNS/Resource/ANY.html">Resolv::DNS::Resource::ANY</a>
+  
+    <li><a href="./Resolv/DNS/Resource/CNAME.html">Resolv::DNS::Resource::CNAME</a>
+  
+    <li><a href="./Resolv/DNS/Resource/DomainName.html">Resolv::DNS::Resource::DomainName</a>
+  
+    <li><a href="./Resolv/DNS/Resource/Generic.html">Resolv::DNS::Resource::Generic</a>
+  
+    <li><a href="./Resolv/DNS/Resource/HINFO.html">Resolv::DNS::Resource::HINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN.html">Resolv::DNS::Resource::IN</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/A.html">Resolv::DNS::Resource::IN::A</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/AAAA.html">Resolv::DNS::Resource::IN::AAAA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/SRV.html">Resolv::DNS::Resource::IN::SRV</a>
+  
+    <li><a href="./Resolv/DNS/Resource/IN/WKS.html">Resolv::DNS::Resource::IN::WKS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MINFO.html">Resolv::DNS::Resource::MINFO</a>
+  
+    <li><a href="./Resolv/DNS/Resource/MX.html">Resolv::DNS::Resource::MX</a>
+  
+    <li><a href="./Resolv/DNS/Resource/NS.html">Resolv::DNS::Resource::NS</a>
+  
+    <li><a href="./Resolv/DNS/Resource/PTR.html">Resolv::DNS::Resource::PTR</a>
+  
+    <li><a href="./Resolv/DNS/Resource/SOA.html">Resolv::DNS::Resource::SOA</a>
+  
+    <li><a href="./Resolv/DNS/Resource/TXT.html">Resolv::DNS::Resource::TXT</a>
+  
+    <li><a href="./Resolv/Hosts.html">Resolv::Hosts</a>
+  
+    <li><a href="./Resolv/IPv4.html">Resolv::IPv4</a>
+  
+    <li><a href="./Resolv/IPv6.html">Resolv::IPv6</a>
+  
+    <li><a href="./Resolv/ResolvError.html">Resolv::ResolvError</a>
+  
+    <li><a href="./Resolv/ResolvTimeout.html">Resolv::ResolvTimeout</a>
+  
+    <li><a href="./OptionParser.html">OptionParser</a>
+  
+    <li><a href="./OptionParser/Acceptables.html">OptionParser::Acceptables</a>
+  
+    <li><a href="./OptionParser/AmbiguousArgument.html">OptionParser::AmbiguousArgument</a>
+  
+    <li><a href="./OptionParser/AmbiguousOption.html">OptionParser::AmbiguousOption</a>
+  
+    <li><a href="./OptionParser/Arguable.html">OptionParser::Arguable</a>
+  
+    <li><a href="./OptionParser/CompletingHash.html">OptionParser::CompletingHash</a>
+  
+    <li><a href="./OptionParser/Completion.html">OptionParser::Completion</a>
+  
+    <li><a href="./OptionParser/InvalidArgument.html">OptionParser::InvalidArgument</a>
+  
+    <li><a href="./OptionParser/InvalidOption.html">OptionParser::InvalidOption</a>
+  
+    <li><a href="./OptionParser/List.html">OptionParser::List</a>
+  
+    <li><a href="./OptionParser/MissingArgument.html">OptionParser::MissingArgument</a>
+  
+    <li><a href="./OptionParser/NeedlessArgument.html">OptionParser::NeedlessArgument</a>
+  
+    <li><a href="./OptionParser/OptionMap.html">OptionParser::OptionMap</a>
+  
+    <li><a href="./OptionParser/ParseError.html">OptionParser::ParseError</a>
+  
+    <li><a href="./OptionParser/Switch.html">OptionParser::Switch</a>
+  
+    <li><a href="./OptionParser/Switch/NoArgument.html">OptionParser::Switch::NoArgument</a>
+  
+    <li><a href="./OptionParser/Switch/OptionalArgument.html">OptionParser::Switch::OptionalArgument</a>
+  
+    <li><a href="./OptionParser/Switch/PlacedArgument.html">OptionParser::Switch::PlacedArgument</a>
+  
+    <li><a href="./OptionParser/Switch/RequiredArgument.html">OptionParser::Switch::RequiredArgument</a>
+  
+    <li><a href="./Prime.html">Prime</a>
+  
+    <li><a href="./Prime/EratosthenesGenerator.html">Prime::EratosthenesGenerator</a>
+  
+    <li><a href="./Prime/EratosthenesSieve.html">Prime::EratosthenesSieve</a>
+  
+    <li><a href="./Prime/Generator23.html">Prime::Generator23</a>
+  
+    <li><a href="./Prime/OldCompatibility.html">Prime::OldCompatibility</a>
+  
+    <li><a href="./Prime/PseudoPrimeGenerator.html">Prime::PseudoPrimeGenerator</a>
+  
+    <li><a href="./Prime/TrialDivision.html">Prime::TrialDivision</a>
+  
+    <li><a href="./Prime/TrialDivisionGenerator.html">Prime::TrialDivisionGenerator</a>
+  
+    <li><a href="./FileUtils.html">FileUtils</a>
+  
+    <li><a href="./FileUtils/DryRun.html">FileUtils::DryRun</a>
+  
+    <li><a href="./FileUtils/LowMethods.html">FileUtils::LowMethods</a>
+  
+    <li><a href="./FileUtils/NoWrite.html">FileUtils::NoWrite</a>
+  
+    <li><a href="./FileUtils/StreamUtils_.html">FileUtils::StreamUtils_</a>
+  
+    <li><a href="./FileUtils/Verbose.html">FileUtils::Verbose</a>
+  
+    <li><a href="./GetoptLong.html">GetoptLong</a>
+  
+    <li><a href="./GetoptLong/AmbiguousOption.html">GetoptLong::AmbiguousOption</a>
+  
+    <li><a href="./GetoptLong/Error.html">GetoptLong::Error</a>
+  
+    <li><a href="./GetoptLong/InvalidOption.html">GetoptLong::InvalidOption</a>
+  
+    <li><a href="./GetoptLong/MissingArgument.html">GetoptLong::MissingArgument</a>
+  
+    <li><a href="./GetoptLong/NeedlessArgument.html">GetoptLong::NeedlessArgument</a>
+  
+    <li><a href="./Logger.html">Logger</a>
+  
+    <li><a href="./Logger/Application.html">Logger::Application</a>
+  
+    <li><a href="./Logger/Formatter.html">Logger::Formatter</a>
+  
+    <li><a href="./Logger/LogDevice.html">Logger::LogDevice</a>
+  
+    <li><a href="./Logger/LogDevice/LogDeviceMutex.html">Logger::LogDevice::LogDeviceMutex</a>
+  
+    <li><a href="./Logger/Severity.html">Logger::Severity</a>
+  
+    <li><a href="./Object.html">Object</a>
+  
+    <li><a href="./Buildr/Scala.html">Object::Scala</a>
+  
+    <li><a href="./Sync.html">Object::Synchronizer</a>
+  
+    <li><a href="./Sync_m.html">Object::Synchronizer_m</a>
+  
+    <li><a href="./ThreadsWait.html">Object::ThWait</a>
+  
+    <li><a href="./Timeout/Error.html">Object::TimeoutError</a>
+  
+    <li><a href="./PrettyPrint.html">PrettyPrint</a>
+  
+    <li><a href="./PrettyPrint/Breakable.html">PrettyPrint::Breakable</a>
+  
+    <li><a href="./PrettyPrint/Group.html">PrettyPrint::Group</a>
+  
+    <li><a href="./PrettyPrint/GroupQueue.html">PrettyPrint::GroupQueue</a>
+  
+    <li><a href="./PrettyPrint/SingleLine.html">PrettyPrint::SingleLine</a>
+  
+    <li><a href="./PrettyPrint/Text.html">PrettyPrint::Text</a>
+  
+    <li><a href="./URI.html">URI</a>
+  
+    <li><a href="./URI/FILE.html">URI::FILE</a>
+  
+    <li><a href="./URI/FTP.html">URI::FTP</a>
+  
+    <li><a href="./URI/Generic.html">URI::Generic</a>
+  
+    <li><a href="./URI/HTTP.html">URI::HTTP</a>
+  
+    <li><a href="./URI/NotFoundError.html">URI::NotFoundError</a>
+  
+    <li><a href="./OpenURI.html">OpenURI</a>
+  
+    <li><a href="./OpenURI/HTTPError.html">OpenURI::HTTPError</a>
+  
+    <li><a href="./OpenURI/HTTPRedirect.html">OpenURI::HTTPRedirect</a>
+  
+    <li><a href="./OpenURI/Meta.html">OpenURI::Meta</a>
+  
+    <li><a href="./OpenURI/OpenRead.html">OpenURI::OpenRead</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m.html">Sync_m</a>
+  
+    <li><a href="./Sync_m/Err.html">Sync_m::Err</a>
+  
+    <li><a href="./Sync_m/Err/LockModeFailer.html">Sync_m::Err::LockModeFailer</a>
+  
+    <li><a href="./Sync_m/Err/UnknownLocker.html">Sync_m::Err::UnknownLocker</a>
+  
+    <li><a href="./CSV.html">CSV</a>
+  
+    <li><a href="./CSV/MalformedCSVError.html">CSV::MalformedCSVError</a>
+  
+    <li><a href="./CSV/Row.html">CSV::Row</a>
+  
+    <li><a href="./CSV/Table.html">CSV::Table</a>
+  
+    <li><a href="./Java.html">Java</a>
+  
+    <li><a href="./Java/Commands.html">Java::Commands</a>
+  
+    <li><a href="./Java/JavaWrapper.html">Java::JavaWrapper</a>
+  
+    <li><a href="./Java/Options.html">Java::Options</a>
+  
+    <li><a href="./PP.html">PP</a>
+  
+    <li><a href="./PP/ObjectMixin.html">PP::ObjectMixin</a>
+  
+    <li><a href="./PP/PPMethods.html">PP::PPMethods</a>
+  
+    <li><a href="./PP/SingleLine.html">PP::SingleLine</a>
+  
+    <li><a href="./Digest.html">Digest</a>
+  
+    <li><a href="./Digest/Class.html">Digest::Class</a>
+  
+    <li><a href="./Digest/Instance.html">Digest::Instance</a>
+  
+    <li><a href="./ERB.html">ERB</a>
+  
+    <li><a href="./ERB/DefMethod.html">ERB::DefMethod</a>
+  
+    <li><a href="./ERB/Util.html">ERB::Util</a>
+  
+    <li><a href="./Gem.html">Gem</a>
+  
+    <li><a href="./Gem/LoadError.html">Gem::LoadError</a>
+  
+    <li><a href="./Gem/Version.html">Gem::Version</a>
+  
+    <li><a href="./IRB.html">IRB</a>
+  
+    <li><a href="./IRB/Abort.html">IRB::Abort</a>
+  
+    <li><a href="./IRB/Irb.html">IRB::Irb</a>
+  
+    <li><a href="./MonitorMixin.html">MonitorMixin</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable.html">MonitorMixin::ConditionVariable</a>
+  
+    <li><a href="./MonitorMixin/ConditionVariable/Timeout.html">MonitorMixin::ConditionVariable::Timeout</a>
+  
+    <li><a href="./Psych.html">Psych</a>
+  
+    <li><a href="./Psych/BadAlias.html">Psych::BadAlias</a>
+  
+    <li><a href="./Psych/Exception.html">Psych::Exception</a>
+  
+    <li><a href="./Scanf.html">Scanf</a>
+  
+    <li><a href="./Timeout.html">Timeout</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./Timeout/Error.html">Timeout::Error</a>
+  
+    <li><a href="./TkComm.html">TkComm</a>
+  
+    <li><a href="./TkComm/Tk_CMDTBL.html">TkComm::Tk_CMDTBL</a>
+  
+    <li><a href="./TkComm/Tk_WINDOWS.html">TkComm::Tk_WINDOWS</a>
+  
+    <li><a href="./TkCore.html">TkCore</a>
+  
+    <li><a href="./MultiTkIp.html">TkCore::INTERP</a>
+  
+    <li><a href="./TkCore/Tk_OBJECT_TABLE.html">TkCore::Tk_OBJECT_TABLE</a>
+  
+    <li><a href="./Zip.html">Zip</a>
+  
+    <li><a href="./Zip/ZipEntry.html">Zip::ZipEntry</a>
+  
+    <li><a href="./Zip/ZipEntrySet.html">Zip::ZipEntrySet</a>
+  
+    <li><a href="./Benchmark.html">Benchmark</a>
+  
+    <li><a href="./Benchmark/Tms.html">Benchmark::Tms</a>
+  
+    <li><a href="./DEBUGGER__.html">DEBUGGER__</a>
+  
+    <li><a href="./DEBUGGER__/Context.html">DEBUGGER__::Context</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper</a>
+  
+    <li><a href="./Exception2MessageMapper.html">Exception2MessageMapper::E2MM</a>
+  
+    <li><a href="./File.html">File</a>
+  
+    <li><a href="./File/Stat.html">File::Stat</a>
+  
+    <li><a href="./MultiTkIp.html">MultiTkIp</a>
+  
+    <li><a href="./MultiTkIp/Command_Queue.html">MultiTkIp::Command_Queue</a>
+  
+    <li><a href="./PStore.html">PStore</a>
+  
+    <li><a href="./PStore/Error.html">PStore::Error</a>
+  
+    <li><a href="./RDoc.html">RDoc</a>
+  
+    <li><a href="./RDoc/Error.html">RDoc::Error</a>
+  
+    <li><a href="./Rake.html">Rake</a>
+  
+    <li><a href="./Rake/FileTask.html">Rake::FileTask</a>
+  
+    <li><a href="./Socket.html">Socket</a>
+  
+    <li><a href="./Socket/UDPSource.html">Socket::UDPSource</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./Sync.html">Sync</a>
+  
+    <li><a href="./TSort.html">TSort</a>
+  
+    <li><a href="./TSort/Cyclic.html">TSort::Cyclic</a>
+  
+    <li><a href="./Tempfile.html">Tempfile</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./ThreadsWait.html">ThreadsWait</a>
+  
+    <li><a href="./Vector.html">Vector</a>
+  
+    <li><a href="./Vector/ZeroVectorError.html">Vector::ZeroVectorError</a>
+  
+    <li><a href="./WeakRef.html">WeakRef</a>
+  
+    <li><a href="./WeakRef/RefError.html">WeakRef::RefError</a>
+  
+    <li><a href="./Abbrev.html">Abbrev</a>
+  
+    <li><a href="./Addrinfo.html">Addrinfo</a>
+  
+    <li><a href="./Base64.html">Base64</a>
+  
+    <li><a href="./BasicSocket.html">BasicSocket</a>
+  
+    <li><a href="./CGI.html">CGI</a>
+  
+    <li><a href="./CMath.html">CMath</a>
+  
+    <li><a href="./ConditionVariable.html">ConditionVariable</a>
+  
+    <li><a href="./DL.html">DL</a>
+  
+    <li><a href="./Date.html">Date</a>
+  
+    <li><a href="./Delegator.html">Delegator</a>
+  
+    <li><a href="./Dir.html">Dir</a>
+  
+    <li><a href="./ENV.html">ENV</a>
+  
+    <li><a href="./Enumerable.html">Enumerable</a>
+  
+    <li><a href="./Fiddle.html">Fiddle</a>
+  
+    <li><a href="./Find.html">Find</a>
+  
+    <li><a href="./Float.html">Float</a>
+  
+    <li><a href="./Forwardable.html">Forwardable</a>
+  
+    <li><a href="./GServer.html">GServer</a>
+  
+    <li><a href="./Hash.html">Hash</a>
+  
+    <li><a href="./IO.html">IO</a>
+  
+    <li><a href="./IPAddr.html">IPAddr</a>
+  
+    <li><a href="./IPSocket.html">IPSocket</a>
+  
+    <li><a href="./Integer.html">Integer</a>
+  
+    <li><a href="./JSON.html">JSON</a>
+  
+    <li><a href="./Kconv.html">Kconv</a>
+  
+    <li><a href="./Kernel.html">Kernel</a>
+  
+    <li><a href="./MatchData.html">MatchData</a>
+  
+    <li><a href="./Math.html">Math</a>
+  
+    <li><a href="./Matrix.html">Matrix</a>
+  
+    <li><a href="./Module.html">Module</a>
+  
+    <li><a href="./Monitor.html">Monitor</a>
+  
+    <li><a href="./MultiTkIp_OK.html">MultiTkIp_OK</a>
+  
+    <li><a href="./MultiTkIp_PseudoToplevel_Evaluable.html">MultiTkIp_PseudoToplevel_Evaluable</a>
+  
+    <li><a href="./Mutex_m.html">Mutex_m</a>
+  
+    <li><a href="./Numeric.html">Numeric</a>
+  
+    <li><a href="./Observable.html">Observable</a>
+  
+    <li><a href="./Open3.html">Open3</a>
+  
+    <li><a href="./OpenObject.html">OpenObject</a>
+  
+    <li><a href="./OpenStruct.html">OpenStruct</a>
+  
+    <li><a href="./Pathname.html">Pathname</a>
+  
+    <li><a href="./Profiler__.html">Profiler__</a>
+  
+    <li><a href="./ProgressBar.html">ProgressBar</a>
+  
+    <li><a href="./Queue.html">Queue</a>
+  
+    <li><a href="./RSS.html">RSS</a>
+  
+    <li><a href="./Range.html">Range</a>
+  
+    <li><a href="./Rational.html">Rational</a>
+  
+    <li><a href="./RemoteTkIp.html">RemoteTkIp</a>
+  
+    <li><a href="./SOCKSSocket.html">SOCKSSocket</a>
+  
+    <li><a href="./STRING_OR_FAILED_FORMAT.html">STRING_OR_FAILED_FORMAT</a>
+  
+    <li><a href="./SecureRandom.html">SecureRandom</a>
+  
+    <li><a href="./Set.html">Set</a>
+  
+    <li><a href="./Shell.html">Shell</a>
+  
+    <li><a href="./Shellwords.html">Shellwords</a>
+  
+    <li><a href="./SimpleDelegator.html">SimpleDelegator</a>
+  
+    <li><a href="./SingleForwardable.html">SingleForwardable</a>
+  
+    <li><a href="./Singleton.html">Singleton</a>
+  
+    <li><a href="./SizedQueue.html">SizedQueue</a>
+  
+    <li><a href="./SortedSet.html">SortedSet</a>
+  
+    <li><a href="./Struct.html">Struct</a>
+  
+    <li><a href="./Syck.html">Syck</a>
+  
+    <li><a href="./TCPSocket.html">TCPSocket</a>
+  
+    <li><a href="./TclTkIp.html">TclTkIp</a>
+  
+    <li><a href="./TclTkLib.html">TclTkLib</a>
+  
+    <li><a href="./ThreadError.html">ThreadError</a>
+  
+    <li><a href="./Time.html">Time</a>
+  
+    <li><a href="./Tracer.html">Tracer</a>
+  
+    <li><a href="./UDPSocket.html">UDPSocket</a>
+  
+    <li><a href="./WEBrick.html">WEBrick</a>
+  
+    <li><a href="./YAML.html">YAML</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class Time</h1>
+
+  <div id="description" class="description">
+    
+<p>Implements the extensions to the <a href="Time.html">Time</a> class that
+are described in the documentation for the time.rb library.</p>
+
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="CommonYearMonthDays">CommonYearMonthDays
+        
+        <dd class="description">
+        
+      
+        <dt id="LeapYearMonthDays">LeapYearMonthDays
+        
+        <dd class="description">
+        
+      
+        <dt id="MonthValue">MonthValue
+        
+        <dd class="description">
+        
+      
+        <dt id="RFC2822_DAY_NAME">RFC2822_DAY_NAME
+        
+        <dd class="description">
+        
+      
+        <dt id="RFC2822_MONTH_NAME">RFC2822_MONTH_NAME
+        
+        <dd class="description">
+        
+      
+        <dt id="ZoneOffset">ZoneOffset
+        
+        <dd class="description">
+        
+      
+      </dl>
+    </section>
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-httpdate" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">httpdate</span><span
+            class="method-args">(date)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses <code>date</code> as HTTP-date defined by RFC 2616 and converts it
+to a <a href="Time.html">Time</a> object.</p>
+
+<p>ArgumentError is raised if <code>date</code> is not compliant with RFC 2616
+or <a href="Time.html">Time</a> class cannot represent specified date.</p>
+
+<p>See <a href="Time.html#method-i-httpdate">httpdate</a> for more information
+on this format.</p>
+
+<p>time library should be required to use this method as follows.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'time'</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="httpdate-source">
+            <pre><span class="ruby-comment"># File rake/lib/time.rb, line 365</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">httpdate</span>(<span class="ruby-identifier">date</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-regexp">%r\A\s*
+      (?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),\x20
+      (\d{2})\x20
+      (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\x20
+      (\d{4})\x20
+      (\d{2}):(\d{2}):(\d{2})\x20
+      GMT
+      \s*\z/</span><span class="ruby-identifier">x</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">date</span>
+    <span class="ruby-keyword">self</span>.<span class="ruby-identifier">rfc2822</span>(<span class="ruby-identifier">date</span>)
+  <span class="ruby-keyword">elsif</span> <span class="ruby-regexp">%r\A\s*
+         (?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\x20
+         (\d\d)-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d\d)\x20
+         (\d\d):(\d\d):(\d\d)\x20
+         GMT
+         \s*\z/</span><span class="ruby-identifier">x</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">date</span>
+    <span class="ruby-identifier">year</span> = <span class="ruby-node">$3</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">year</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">50</span>
+      <span class="ruby-identifier">year</span> <span class="ruby-operator">+=</span> <span class="ruby-value">2000</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">year</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1900</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">self</span>.<span class="ruby-identifier">utc</span>(<span class="ruby-identifier">year</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>, <span class="ruby-node">$4</span>.<span class="ruby-identifier">to_i</span>, <span class="ruby-node">$5</span>.<span class="ruby-identifier">to_i</span>, <span class="ruby-node">$6</span>.<span class="ruby-identifier">to_i</span>)
+  <span class="ruby-keyword">elsif</span> <span class="ruby-regexp">%r\A\s*
+         (?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\x20
+         (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\x20
+         (\d\d|\x20\d)\x20
+         (\d\d):(\d\d):(\d\d)\x20
+         (\d{4})
+         \s*\z/</span><span class="ruby-identifier">x</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">date</span>
+    <span class="ruby-keyword">self</span>.<span class="ruby-identifier">utc</span>(<span class="ruby-node">$6</span>.<span class="ruby-identifier">to_i</span>, <span class="ruby-constant">MonthValue</span>[<span class="ruby-node">$1</span>.<span class="ruby-identifier">upcase</span>], <span class="ruby-node">$2</span>.<span class="ruby-identifier">to_i</span>,
+             <span class="ruby-node">$3</span>.<span class="ruby-identifier">to_i</span>, <span class="ruby-node">$4</span>.<span class="ruby-identifier">to_i</span>, <span class="ruby-node">$5</span>.<span class="ruby-identifier">to_i</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;not RFC 2616 compliant date: #{date.inspect}&quot;</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- httpdate-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- httpdate-method -->
+
+    
+      <div id="method-c-iso8601" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">iso8601</span><span
+            class="method-args">(date)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Time.html#method-c-xmlschema">xmlschema</a>
+        </div>
+        
+      </div><!-- iso8601-method -->
+
+    
+      <div id="method-c-parse" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">parse</span><span
+            class="method-args">(date, now=self.now) { |year| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses <code>date</code> using <a href="Date.html">Date</a>._parse and
+converts it to a <a href="Time.html">Time</a> object.</p>
+
+<p>If a block is given, the year described in <code>date</code> is converted
+by the block.  For example:</p>
+
+<pre class="ruby"><span class="ruby-constant">Time</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-operator">...</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">y</span><span class="ruby-operator">|</span> <span class="ruby-value">0</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-identifier">y</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">y</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">100</span> <span class="ruby-operator">?</span> (<span class="ruby-identifier">y</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-value">69</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">y</span> <span class="ruby-operator">+</span> <span class="ruby-value">1900</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">y</span> <span class="ruby-operator">+</span> <span class="ruby-value">2000</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">y</span>}
+</pre>
+
+<p>If the upper components of the given time are broken or missing, they are
+supplied with those of <code>now</code>.  For the lower components, the
+minimum values (1 or 0) are assumed if broken or missing.  For example:</p>
+
+<pre class="ruby"><span class="ruby-comment"># Suppose it is &quot;Thu Nov 29 14:33:20 GMT 2001&quot; now and</span>
+<span class="ruby-comment"># your timezone is GMT:</span>
+<span class="ruby-identifier">now</span> = <span class="ruby-constant">Time</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-string">&quot;Thu Nov 29 14:33:20 GMT 2001&quot;</span>)
+<span class="ruby-constant">Time</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-string">&quot;16:30&quot;</span>, <span class="ruby-identifier">now</span>)     <span class="ruby-comment">#=&gt; 2001-11-29 16:30:00 +0900</span>
+<span class="ruby-constant">Time</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-string">&quot;7/23&quot;</span>, <span class="ruby-identifier">now</span>)      <span class="ruby-comment">#=&gt; 2001-07-23 00:00:00 +0900</span>
+<span class="ruby-constant">Time</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-string">&quot;Aug 31&quot;</span>, <span class="ruby-identifier">now</span>)    <span class="ruby-comment">#=&gt; 2001-08-31 00:00:00 +0900</span>
+<span class="ruby-constant">Time</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-string">&quot;Aug 2000&quot;</span>, <span class="ruby-identifier">now</span>)  <span class="ruby-comment">#=&gt; 2000-08-01 00:00:00 +0900</span>
+</pre>
+
+<p>Since there are numerous conflicts among locally defined timezone
+abbreviations all over the world, this method is not made to understand all
+of them.  For example, the abbreviation “CST” is used variously as:</p>
+
+<pre>-06:00 in America/Chicago,
+-05:00 in America/Havana,
++08:00 in Asia/Harbin,
++09:30 in Australia/Darwin,
++10:30 in Australia/Adelaide,
+etc.</pre>
+
+<p>Based on the fact, this method only understands the timezone abbreviations
+described in RFC 822 and the system timezone, in the order named. (i.e. a
+definition in RFC 822 overrides the system timezone definition.)  The
+system timezone is taken from <code>Time.local(year, 1, 1).zone</code> and
+<code>Time.local(year, 7, 1).zone</code>. If the extracted timezone
+abbreviation does not match any of them, it is ignored and the given time
+is regarded as a local time.</p>
+
+<p>ArgumentError is raised if <a href="Date.html">Date</a>._parse cannot
+extract information from <code>date</code> or <a href="Time.html">Time</a>
+class cannot represent specified date.</p>
+
+<p>This method can be used as fail-safe for other parsing methods as:</p>
+
+<pre>Time.rfc2822(date) rescue Time.parse(date)
+Time.httpdate(date) rescue Time.parse(date)
+Time.xmlschema(date) rescue Time.parse(date)</pre>
+
+<p>A failure for <a href="Time.html#method-c-parse">::parse</a> should be
+checked, though.</p>
+
+<p>time library should be required to use this method as follows.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'time'</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="parse-source">
+            <pre><span class="ruby-comment"># File rake/lib/time.rb, line 263</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">parse</span>(<span class="ruby-identifier">date</span>, <span class="ruby-identifier">now</span>=<span class="ruby-keyword">self</span>.<span class="ruby-identifier">now</span>)
+  <span class="ruby-identifier">comp</span> = <span class="ruby-operator">!</span><span class="ruby-identifier">block_given?</span>
+  <span class="ruby-identifier">d</span> = <span class="ruby-constant">Date</span>.<span class="ruby-identifier">_parse</span>(<span class="ruby-identifier">date</span>, <span class="ruby-identifier">comp</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">d</span>[<span class="ruby-value">:year</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">d</span>[<span class="ruby-value">:mon</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">d</span>[<span class="ruby-value">:mday</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">d</span>[<span class="ruby-value">:hour</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">d</span>[<span class="ruby-value">:min</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">d</span>[<span class="ruby-value">:sec</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">d</span>[<span class="ruby-value">:sec_fraction</span>]
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;no time information in #{date.inspect}&quot;</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">year</span> = <span class="ruby-identifier">d</span>[<span class="ruby-value">:year</span>]
+  <span class="ruby-identifier">year</span> = <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">year</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">year</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">comp</span>
+  <span class="ruby-identifier">make_time</span>(<span class="ruby-identifier">year</span>, <span class="ruby-identifier">d</span>[<span class="ruby-value">:mon</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:mday</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:hour</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:min</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:sec</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:sec_fraction</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:zone</span>], <span class="ruby-identifier">now</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- parse-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- parse-method -->
+
+    
+      <div id="method-c-rfc2822" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">rfc2822</span><span
+            class="method-args">(date)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses <code>date</code> as date-time defined by RFC 2822 and converts it
+to a <a href="Time.html">Time</a> object.  The format is identical to the
+date format defined by RFC 822 and updated by RFC 1123.</p>
+
+<p>ArgumentError is raised if <code>date</code> is not compliant with RFC 2822
+or <a href="Time.html">Time</a> class cannot represent specified date.</p>
+
+<p>See <a href="Time.html#method-i-rfc2822">rfc2822</a> for more information
+on this format.</p>
+
+<p>time library should be required to use this method as follows.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'time'</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="rfc2822-source">
+            <pre><span class="ruby-comment"># File rake/lib/time.rb, line 312</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">rfc2822</span>(<span class="ruby-identifier">date</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-regexp">%r\A\s*
+      (?:(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun)\s*,\s*)?
+      (\d{1,2})\s+
+      (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+
+      (\d{2,})\s+
+      (\d{2})\s*
+      :\s*(\d{2})\s*
+      (?::\s*(\d{2}))?\s+
+      ([+-]\d{4}|
+       UT|GMT|EST|EDT|CST|CDT|MST|MDT|PST|PDT|[A-IK-Z])/</span><span class="ruby-identifier">x</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">date</span>
+    <span class="ruby-comment"># Since RFC 2822 permit comments, the regexp has no right anchor.</span>
+    <span class="ruby-identifier">day</span> = <span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-identifier">mon</span> = <span class="ruby-constant">MonthValue</span>[<span class="ruby-node">$2</span>.<span class="ruby-identifier">upcase</span>]
+    <span class="ruby-identifier">year</span> = <span class="ruby-node">$3</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-identifier">hour</span> = <span class="ruby-node">$4</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-identifier">min</span> = <span class="ruby-node">$5</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-identifier">sec</span> = <span class="ruby-node">$6</span> <span class="ruby-operator">?</span> <span class="ruby-node">$6</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">:</span> <span class="ruby-value">0</span>
+    <span class="ruby-identifier">zone</span> = <span class="ruby-node">$7</span>
+
+    <span class="ruby-comment"># following year completion is compliant with RFC 2822.</span>
+    <span class="ruby-identifier">year</span> = <span class="ruby-keyword">if</span> <span class="ruby-identifier">year</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">50</span>
+             <span class="ruby-value">2000</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">year</span>
+           <span class="ruby-keyword">elsif</span> <span class="ruby-identifier">year</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">1000</span>
+             <span class="ruby-value">1900</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">year</span>
+           <span class="ruby-keyword">else</span>
+             <span class="ruby-identifier">year</span>
+           <span class="ruby-keyword">end</span>
+
+    <span class="ruby-identifier">year</span>, <span class="ruby-identifier">mon</span>, <span class="ruby-identifier">day</span>, <span class="ruby-identifier">hour</span>, <span class="ruby-identifier">min</span>, <span class="ruby-identifier">sec</span> =
+      <span class="ruby-identifier">apply_offset</span>(<span class="ruby-identifier">year</span>, <span class="ruby-identifier">mon</span>, <span class="ruby-identifier">day</span>, <span class="ruby-identifier">hour</span>, <span class="ruby-identifier">min</span>, <span class="ruby-identifier">sec</span>, <span class="ruby-identifier">zone_offset</span>(<span class="ruby-identifier">zone</span>))
+    <span class="ruby-identifier">t</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">utc</span>(<span class="ruby-identifier">year</span>, <span class="ruby-identifier">mon</span>, <span class="ruby-identifier">day</span>, <span class="ruby-identifier">hour</span>, <span class="ruby-identifier">min</span>, <span class="ruby-identifier">sec</span>)
+    <span class="ruby-identifier">t</span>.<span class="ruby-identifier">localtime</span> <span class="ruby-keyword">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">zone_utc?</span>(<span class="ruby-identifier">zone</span>)
+    <span class="ruby-identifier">t</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;not RFC 2822 compliant date: #{date.inspect}&quot;</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- rfc2822-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Time.html#method-c-rfc822">rfc822</a>
+        </div>
+        
+
+        
+      </div><!-- rfc2822-method -->
+
+    
+      <div id="method-c-rfc822" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">rfc822</span><span
+            class="method-args">(date)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Time.html#method-c-rfc2822">rfc2822</a>
+        </div>
+        
+      </div><!-- rfc822-method -->
+
+    
+      <div id="method-c-strptime" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">strptime</span><span
+            class="method-args">(date, format, now=self.now) { |year| ... }</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses <code>date</code> using <a href="Date.html">Date</a>._strptime and
+converts it to a <a href="Time.html">Time</a> object.</p>
+
+<p>If a block is given, the year described in <code>date</code> is converted
+by the block.  For example:</p>
+
+<pre class="ruby"><span class="ruby-constant">Time</span>.<span class="ruby-identifier">strptime</span>(<span class="ruby-operator">...</span>) {<span class="ruby-operator">|</span><span class="ruby-identifier">y</span><span class="ruby-operator">|</span> <span class="ruby-identifier">y</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">100</span> <span class="ruby-operator">?</span> (<span class="ruby-identifier">y</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-value">69</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">y</span> <span class="ruby-operator">+</span> <span class="ruby-value">1900</span> <span class="ruby-operator">:</span> <span class="ruby-identifier">y</span> <span class="ruby-operator">+</span> <span class="ruby-value">2000</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">y</span>}
+</pre>
+          
+
+          
+          <div class="method-source-code" id="strptime-source">
+            <pre><span class="ruby-comment"># File rake/lib/time.rb, line 281</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">strptime</span>(<span class="ruby-identifier">date</span>, <span class="ruby-identifier">format</span>, <span class="ruby-identifier">now</span>=<span class="ruby-keyword">self</span>.<span class="ruby-identifier">now</span>)
+  <span class="ruby-identifier">d</span> = <span class="ruby-constant">Date</span>.<span class="ruby-identifier">_strptime</span>(<span class="ruby-identifier">date</span>, <span class="ruby-identifier">format</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;invalid strptime format - `#{format}'&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">d</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">seconds</span> = <span class="ruby-identifier">d</span>[<span class="ruby-value">:seconds</span>]
+    <span class="ruby-constant">Time</span>.<span class="ruby-identifier">at</span>(<span class="ruby-identifier">seconds</span>)
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">year</span> = <span class="ruby-identifier">d</span>[<span class="ruby-value">:year</span>]
+    <span class="ruby-identifier">year</span> = <span class="ruby-keyword">yield</span>(<span class="ruby-identifier">year</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">year</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">block_given?</span>
+    <span class="ruby-identifier">make_time</span>(<span class="ruby-identifier">year</span>, <span class="ruby-identifier">d</span>[<span class="ruby-value">:mon</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:mday</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:hour</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:min</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:sec</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:sec_fraction</span>], <span class="ruby-identifier">d</span>[<span class="ruby-value">:zone</span>], <span class="ruby-identifier">now</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- strptime-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- strptime-method -->
+
+    
+      <div id="method-c-xmlschema" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">xmlschema</span><span
+            class="method-args">(date)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Parses <code>date</code> as date<a href="Time.html">Time</a> defined by XML
+Schema and converts it to a <a href="Time.html">Time</a> object.  The
+format is restricted version of the format defined by ISO 8601.</p>
+
+<p>ArgumentError is raised if <code>date</code> is not compliant with the
+format or <a href="Time.html">Time</a> class cannot represent specified
+date.</p>
+
+<p>See <a href="Time.html#method-i-xmlschema">xmlschema</a> for more
+information on this format.</p>
+
+<p>time library should be required to use this method as follows.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'time'</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="xmlschema-source">
+            <pre><span class="ruby-comment"># File rake/lib/time.rb, line 416</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">xmlschema</span>(<span class="ruby-identifier">date</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-regexp">%r\A\s*
+      (-?\d+)-(\d\d)-(\d\d)
+      T
+      (\d\d):(\d\d):(\d\d)
+      (\.\d+)?
+      (Z|[+-]\d\d:\d\d)?
+      \s*\z/</span><span class="ruby-identifier">x</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">date</span>
+    <span class="ruby-identifier">year</span> = <span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-identifier">mon</span> = <span class="ruby-node">$2</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-identifier">day</span> = <span class="ruby-node">$3</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-identifier">hour</span> = <span class="ruby-node">$4</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-identifier">min</span> = <span class="ruby-node">$5</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-identifier">sec</span> = <span class="ruby-node">$6</span>.<span class="ruby-identifier">to_i</span>
+    <span class="ruby-identifier">usec</span> = <span class="ruby-value">0</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-node">$7</span>
+      <span class="ruby-identifier">usec</span> = <span class="ruby-constant">Rational</span>(<span class="ruby-node">$7</span>) * <span class="ruby-value">1000000</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-node">$8</span>
+      <span class="ruby-identifier">zone</span> = <span class="ruby-node">$8</span>
+      <span class="ruby-identifier">year</span>, <span class="ruby-identifier">mon</span>, <span class="ruby-identifier">day</span>, <span class="ruby-identifier">hour</span>, <span class="ruby-identifier">min</span>, <span class="ruby-identifier">sec</span> =
+        <span class="ruby-identifier">apply_offset</span>(<span class="ruby-identifier">year</span>, <span class="ruby-identifier">mon</span>, <span class="ruby-identifier">day</span>, <span class="ruby-identifier">hour</span>, <span class="ruby-identifier">min</span>, <span class="ruby-identifier">sec</span>, <span class="ruby-identifier">zone_offset</span>(<span class="ruby-identifier">zone</span>))
+      <span class="ruby-keyword">self</span>.<span class="ruby-identifier">utc</span>(<span class="ruby-identifier">year</span>, <span class="ruby-identifier">mon</span>, <span class="ruby-identifier">day</span>, <span class="ruby-identifier">hour</span>, <span class="ruby-identifier">min</span>, <span class="ruby-identifier">sec</span>, <span class="ruby-identifier">usec</span>)
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-keyword">self</span>.<span class="ruby-identifier">local</span>(<span class="ruby-identifier">year</span>, <span class="ruby-identifier">mon</span>, <span class="ruby-identifier">day</span>, <span class="ruby-identifier">hour</span>, <span class="ruby-identifier">min</span>, <span class="ruby-identifier">sec</span>, <span class="ruby-identifier">usec</span>)
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;invalid date: #{date.inspect}&quot;</span>)
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- xmlschema-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Time.html#method-c-iso8601">iso8601</a>
+        </div>
+        
+
+        
+      </div><!-- xmlschema-method -->
+
+    
+      <div id="method-c-zone_offset" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">zone_offset</span><span
+            class="method-args">(zone, year=self.now.year)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="zone_offset-source">
+            <pre><span class="ruby-comment"># File rake/lib/time.rb, line 69</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">zone_offset</span>(<span class="ruby-identifier">zone</span>, <span class="ruby-identifier">year</span>=<span class="ruby-keyword">self</span>.<span class="ruby-identifier">now</span>.<span class="ruby-identifier">year</span>)
+  <span class="ruby-identifier">off</span> = <span class="ruby-keyword">nil</span>
+  <span class="ruby-identifier">zone</span> = <span class="ruby-identifier">zone</span>.<span class="ruby-identifier">upcase</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-regexp">%r\A([+-])(\d\d):?(\d\d)\z/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">zone</span>
+    <span class="ruby-identifier">off</span> = (<span class="ruby-node">$1</span> <span class="ruby-operator">==</span> <span class="ruby-string">'-'</span> <span class="ruby-operator">?</span> <span class="ruby-value">-1</span> <span class="ruby-operator">:</span> <span class="ruby-value">1</span>) * (<span class="ruby-node">$2</span>.<span class="ruby-identifier">to_i</span> * <span class="ruby-value">60</span> <span class="ruby-operator">+</span> <span class="ruby-node">$3</span>.<span class="ruby-identifier">to_i</span>) * <span class="ruby-value">60</span>
+  <span class="ruby-keyword">elsif</span> <span class="ruby-regexp">%r\A[+-]\d\d\z/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">zone</span>
+    <span class="ruby-identifier">off</span> = <span class="ruby-identifier">zone</span>.<span class="ruby-identifier">to_i</span> * <span class="ruby-value">3600</span>
+  <span class="ruby-keyword">elsif</span> <span class="ruby-constant">ZoneOffset</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">zone</span>)
+    <span class="ruby-identifier">off</span> = <span class="ruby-constant">ZoneOffset</span>[<span class="ruby-identifier">zone</span>] * <span class="ruby-value">3600</span>
+  <span class="ruby-keyword">elsif</span> ((<span class="ruby-identifier">t</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">local</span>(<span class="ruby-identifier">year</span>, <span class="ruby-value">1</span>, <span class="ruby-value">1</span>)).<span class="ruby-identifier">zone</span>.<span class="ruby-identifier">upcase</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">zone</span> <span class="ruby-keyword">rescue</span> <span class="ruby-keyword">false</span>)
+    <span class="ruby-identifier">off</span> = <span class="ruby-identifier">t</span>.<span class="ruby-identifier">utc_offset</span>
+  <span class="ruby-keyword">elsif</span> ((<span class="ruby-identifier">t</span> = <span class="ruby-keyword">self</span>.<span class="ruby-identifier">local</span>(<span class="ruby-identifier">year</span>, <span class="ruby-value">7</span>, <span class="ruby-value">1</span>)).<span class="ruby-identifier">zone</span>.<span class="ruby-identifier">upcase</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">zone</span> <span class="ruby-keyword">rescue</span> <span class="ruby-keyword">false</span>)
+    <span class="ruby-identifier">off</span> = <span class="ruby-identifier">t</span>.<span class="ruby-identifier">utc_offset</span>
+  <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">off</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- zone_offset-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- zone_offset-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-httpdate" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">httpdate</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns a string which represents the time as rfc1123-date of HTTP-date
+defined by RFC 2616:</p>
+
+<pre>day-of-week, DD month-name CCYY hh:mm:ss GMT</pre>
+
+<p>Note that the result is always UTC (GMT).</p>
+
+<p>time library should be required to use this method as follows.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'time'</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="httpdate-source">
+            <pre><span class="ruby-comment"># File rake/lib/time.rb, line 497</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">httpdate</span>
+  <span class="ruby-identifier">t</span> = <span class="ruby-identifier">dup</span>.<span class="ruby-identifier">utc</span>
+  <span class="ruby-identifier">sprintf</span>(<span class="ruby-string">'%s, %02d %s %0*d %02d:%02d:%02d GMT'</span>,
+    <span class="ruby-constant">RFC2822_DAY_NAME</span>[<span class="ruby-identifier">t</span>.<span class="ruby-identifier">wday</span>],
+    <span class="ruby-identifier">t</span>.<span class="ruby-identifier">day</span>, <span class="ruby-constant">RFC2822_MONTH_NAME</span>[<span class="ruby-identifier">t</span>.<span class="ruby-identifier">mon</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>], <span class="ruby-identifier">t</span>.<span class="ruby-identifier">year</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span> <span class="ruby-operator">?</span> <span class="ruby-value">5</span> <span class="ruby-operator">:</span> <span class="ruby-value">4</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">year</span>,
+    <span class="ruby-identifier">t</span>.<span class="ruby-identifier">hour</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">min</span>, <span class="ruby-identifier">t</span>.<span class="ruby-identifier">sec</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- httpdate-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- httpdate-method -->
+
+    
+      <div id="method-i-iso8601" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">iso8601</span><span
+            class="method-args">(fraction_digits=0)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Time.html#method-i-xmlschema">xmlschema</a>
+        </div>
+        
+      </div><!-- iso8601-method -->
+
+    
+      <div id="method-i-rfc2822" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">rfc2822</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns a string which represents the time as date-time defined by RFC
+2822:</p>
+
+<pre>day-of-week, DD month-name CCYY hh:mm:ss zone</pre>
+
+<p>where zone is [+-]hhmm.</p>
+
+<p>If <code>self</code> is a UTC time, -0000 is used as zone.</p>
+
+<p>time library should be required to use this method as follows.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'time'</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="rfc2822-source">
+            <pre><span class="ruby-comment"># File rake/lib/time.rb, line 462</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">rfc2822</span>
+  <span class="ruby-identifier">sprintf</span>(<span class="ruby-string">'%s, %02d %s %0*d %02d:%02d:%02d '</span>,
+    <span class="ruby-constant">RFC2822_DAY_NAME</span>[<span class="ruby-identifier">wday</span>],
+    <span class="ruby-identifier">day</span>, <span class="ruby-constant">RFC2822_MONTH_NAME</span>[<span class="ruby-identifier">mon</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>], <span class="ruby-identifier">year</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span> <span class="ruby-operator">?</span> <span class="ruby-value">5</span> <span class="ruby-operator">:</span> <span class="ruby-value">4</span>, <span class="ruby-identifier">year</span>,
+    <span class="ruby-identifier">hour</span>, <span class="ruby-identifier">min</span>, <span class="ruby-identifier">sec</span>) <span class="ruby-operator">+</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">utc?</span>
+    <span class="ruby-string">'-0000'</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">off</span> = <span class="ruby-identifier">utc_offset</span>
+    <span class="ruby-identifier">sign</span> = <span class="ruby-identifier">off</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span> <span class="ruby-operator">?</span> <span class="ruby-string">'-'</span> <span class="ruby-operator">:</span> <span class="ruby-string">'+'</span>
+    <span class="ruby-identifier">sprintf</span>(<span class="ruby-string">'%s%02d%02d'</span>, <span class="ruby-identifier">sign</span>, *(<span class="ruby-identifier">off</span>.<span class="ruby-identifier">abs</span> <span class="ruby-operator">/</span> <span class="ruby-value">60</span>).<span class="ruby-identifier">divmod</span>(<span class="ruby-value">60</span>))
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- rfc2822-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Time.html#method-i-rfc822">rfc822</a>
+        </div>
+        
+
+        
+      </div><!-- rfc2822-method -->
+
+    
+      <div id="method-i-rfc822" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">rfc822</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Time.html#method-i-rfc2822">rfc2822</a>
+        </div>
+        
+      </div><!-- rfc822-method -->
+
+    
+      <div id="method-i-xmlschema" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">xmlschema</span><span
+            class="method-args">(fraction_digits=0)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Returns a string which represents the time as date<a
+href="Time.html">Time</a> defined by XML Schema:</p>
+
+<pre>CCYY-MM-DDThh:mm:ssTZD
+CCYY-MM-DDThh:mm:ss.sssTZD</pre>
+
+<p>where TZD is Z or [+-]hh:mm.</p>
+
+<p>If self is a UTC time, Z is used as TZD.  [+-]hh:mm is used otherwise.</p>
+
+<p><code>fractional_seconds</code> specifies a number of digits of fractional
+seconds. Its default value is 0.</p>
+
+<p>time library should be required to use this method as follows.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">'time'</span>
+</pre>
+          
+
+          
+          <div class="method-source-code" id="xmlschema-source">
+            <pre><span class="ruby-comment"># File rake/lib/time.rb, line 523</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">xmlschema</span>(<span class="ruby-identifier">fraction_digits</span>=<span class="ruby-value">0</span>)
+  <span class="ruby-identifier">sprintf</span>(<span class="ruby-string">'%0*d-%02d-%02dT%02d:%02d:%02d'</span>,
+    <span class="ruby-identifier">year</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span> <span class="ruby-operator">?</span> <span class="ruby-value">5</span> <span class="ruby-operator">:</span> <span class="ruby-value">4</span>, <span class="ruby-identifier">year</span>, <span class="ruby-identifier">mon</span>, <span class="ruby-identifier">day</span>, <span class="ruby-identifier">hour</span>, <span class="ruby-identifier">min</span>, <span class="ruby-identifier">sec</span>) <span class="ruby-operator">+</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">fraction_digits</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-value">0</span>
+    <span class="ruby-string">''</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-string">'.'</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">sprintf</span>(<span class="ruby-string">'%0*d'</span>, <span class="ruby-identifier">fraction_digits</span>, (<span class="ruby-identifier">subsec</span> * <span class="ruby-value">10</span><span class="ruby-operator">**</span><span class="ruby-identifier">fraction_digits</span>).<span class="ruby-identifier">floor</span>)
+  <span class="ruby-keyword">end</span> <span class="ruby-operator">+</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">utc?</span>
+    <span class="ruby-string">'Z'</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-identifier">off</span> = <span class="ruby-identifier">utc_offset</span>
+    <span class="ruby-identifier">sign</span> = <span class="ruby-identifier">off</span> <span class="ruby-operator">&lt;</span> <span class="ruby-value">0</span> <span class="ruby-operator">?</span> <span class="ruby-string">'-'</span> <span class="ruby-operator">:</span> <span class="ruby-string">'+'</span>
+    <span class="ruby-identifier">sprintf</span>(<span class="ruby-string">'%s%02d:%02d'</span>, <span class="ruby-identifier">sign</span>, *(<span class="ruby-identifier">off</span>.<span class="ruby-identifier">abs</span> <span class="ruby-operator">/</span> <span class="ruby-value">60</span>).<span class="ruby-identifier">divmod</span>(<span class="ruby-value">60</span>))
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- xmlschema-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Time.html#method-i-iso8601">iso8601</a>
+        </div>
+        
+
+        
+      </div><!-- xmlschema-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

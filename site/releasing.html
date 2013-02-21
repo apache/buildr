@@ -1,0 +1,175 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'>
+    <title>buildr &mdash; Releasing</title>
+    <style type='text/css'>
+      @import 'css/default.css';
+      @import 'css/syntax.css';
+    </style>
+    <style media='print' type='text/css'>
+      @import 'css/print.css';
+    </style>
+    <meta content='Official Buildr documentation from the people in the know' name='subject'>
+    <link href='images/favicon.png' rel='shortcut icon'>
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <a href='http://buildr.apache.org/' title="Build like you code"><img alt='buildr' src='images/buildr.png'></a>
+        <div class='tagline'>Build like you code</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>Start Here
+            <ol class="toc">
+              <li><a href='index.html'>Welcome</a></li>
+              <li><a href='quick_start.html'>Quick Start</a></li>
+              <li><a href='installing.html'>Installing & Running</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Index'>Community Wiki</a></li>
+            </ol>
+          </li>
+          <li>Using Buildr
+            <ol class="toc">
+              <li><a href='buildr.pdf'>This Guide (PDF)</a></li>
+              <li><a href='projects.html'>Projects</a></li>
+              <li><a href='building.html'>Building</a></li>
+              <li><a href='artifacts.html'>Artifacts</a></li>
+              <li><a href='packaging.html'>Packaging</a></li>
+              <li><a href='testing.html'>Testing</a></li>
+              <li><a href='releasing.html'>Releasing</a></li>
+              <li><a href='settings_profiles.html'>Settings/Profiles</a></li>
+              <li><a href='languages.html'>Languages</a></li>
+              <li><a href='more_stuff.html'>More Stuff</a></li>
+              <li><a href='extending.html'>Extending Buildr</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Buildr+HowTos'>How-Tos</a></li>
+            </ol>
+          </li>
+          <li>Reference
+            <ol class="toc">
+              <li><a href='rdoc'>API</a></li>
+              <li><a href='http://docs.rubyrake.org'>Rake</a></li>
+              <li><a href='http://antwrap.rubyforge.org'>Antwrap</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Common+Problems+and+Solutions'>Troubleshooting</a></li>
+            </ol>
+          </li>
+          <li>Get Involved
+            <ol class="toc">
+              <li><a href='download.html'>Download</a></li>
+              <li><a href='mailing_lists.html'>Mailing Lists</a></li>
+              <li><a href='http://www.twitter.com/buildr'>Twitter</a></li>
+              <li><a href='http://issues.apache.org/jira/browse/Buildr'>Issues/Bugs</a></li>
+              <li><a href='https://builds.apache.org/view/A-F/view/Buildr'>CI Jobs</a></li>
+              <li><a href='contributing.html'>Contributing</a></li>
+            </ol>
+          </li>
+          <li>
+            <form action='http://www.google.com/cse' id='searchbox_003673095760649043902:ogcgrzu0l2y'>
+              <input name='cx' type='hidden' value='003673095760649043902:ogcgrzu0l2y'>
+              <input name='cof' type='hidden' value='FORID:0'>
+              <input name='q' size='20' type='text'>
+              <input name='sa' type='submit' value='Search'>
+              <img alt='Google Custom Search' src='http://www.google.com/coop/images/google_custom_search_smnar.gif'>
+            </form>
+          </li>
+          <li>The Buildr Book
+            <p><a href='http://www.amazon.com/Buildr/dp/1442160942/'><img src='images/1442160941-frontcover.jpg' style='width:120px'></a></p>
+            <p>Based on the Buildr documentation, available from <a href='http://www.amazon.com/Buildr/dp/1442160942/'>Amazon</a> and
+            <a href='http://www.createspace.com/3382199'>CreateSpace</a></p>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1 id='releasing'>Releasing</h1>
+        <ol class="toc"><li><a href="#default">What does a release do?</a></li><li><a href="#custom_version">How to specify my own version number scheme?</a></li><li><a href="#custom_tag_and_msg">How to specify my own tag name and commit message?</a></li></ol>
+        <p>Now that we built and tested our awesome software, let&#8217;s tell the world and release it.</p>
+<p>Each buildfile can specify the current version with a constant named <code>VERSION_NUMBER</code>  or <code>THIS_VERSION</code>.</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">THIS_VERSION</span> <span class="o">=</span> <span class="s2">&quot;1.0.0-SNAPSHOT&quot;</span>
+
+<span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="no">THIS_VERSION</span>
+
+  <span class="c1"># ...</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<h2 id="default">What does a release do?</h2>
+<p>The default behavior of the <code>Release</code> task is the following:</p>
+<ol>
+	<li>Check that the version to be released and the next version are different</li>
+	<li>Check that the project is being tracked by Git or Subversion</li>
+	<li>Package, test and deploy the artifacts using <code>THIS_VERSION</code> value minus the <code>-SNAPSHOT</code> suffix (if any)</li>
+	<li>Tag the repository with the released version number</li>
+	<li>Update the value of <code>THIS_VERSION</code> in the buildfile with the next version number</li>
+</ol>
+<p>Buildr will increment the last digit of the 3-digit versioni number if <code>THIS_VERSION</code> ends with <code>-SNAPSHOT</code>.<br />
+So, at the end of a release, the buildfile now looks like this:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">THIS_VERSION</span> <span class="o">=</span> <span class="s2">&quot;1.0.1-SNAPSHOT&quot;</span>
+
+<span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="no">THIS_VERSION</span>
+
+  <span class="c1"># ...</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>And the Git repository now contains two new commits and a new tag.</p>
+<div class="highlight"><pre><code class="sh">~/w/killer-app<span class="o">[</span>master<span class="o">]</span><span class="nv">$git</span> ol -4
+c1af3d5  <span class="o">(</span>HEAD, origin/master, master<span class="o">)</span> Changed version number to 1.0.1-SNAPSHOT
+dd35015  <span class="o">(</span>tag: 1.0.0<span class="o">)</span> Changed version number to 1.0.0
+76c96e7  Last fix before the release
+</code></pre>
+</div>
+<h2 id="custom_version">How to specify my own version number scheme?</h2>
+<p>If <code>THIS_VERSION</code> does not contain <code>-SNAPSHOT</code>, Buildr delegates the resolution of the next version number to the user which has 2 differents ways to express her wishes: <code>Release.next_version</code> or the environment variable <code>NEXT_VERSION</code>.</p>
+<h3 id="next_version_proc">Using Release.next_version</h3>
+<p>The <code>Release</code> class can receive the next version of the buildfile. This could be a string or a proc that would receive the current version and return the next version.</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">THIS_VERSION</span> <span class="o">=</span> <span class="s2">&quot;1.0.0-SNAPSHOT&quot;</span>
+
+<span class="c1"># a string</span>
+<span class="no">Release</span><span class="o">.</span><span class="n">next_version</span> <span class="o">=</span> <span class="s2">&quot;2.0.0-SNAPSHOT&quot;</span>
+
+<span class="c1"># or a proc</span>
+<span class="no">Release</span><span class="o">.</span><span class="n">next_version</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="k">do</span> <span class="o">|</span><span class="n">this_version</span><span class="o">|</span> <span class="c1"># 1.0.0-SNAPSHOT</span>
+    <span class="n">new_version</span> <span class="o">=</span> <span class="vi">@THIS_VERSION</span><span class="err">@</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sr">/\./</span><span class="p">)</span>
+    <span class="n">new_version</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">new_version</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">new_version</span>
+<span class="k">end</span>
+
+<span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="no">THIS_VERSION</span>
+
+  <span class="c1"># ...</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<h3 id="next_version_envvar">Using the environment variable NEXT_VERSION</h3>
+<p>If the environment variable <code>NEXT_VERSION</code> is set, Buildr will use this value to update <code>THIS_VERSION</code> at the end of the release.</p>
+<p>For conveniency, this variable is case insensitive.</p>
+<p>So, all 3 following commands will run a release with a custom new version:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr release <span class="nv">next_version</span><span class="o">=</span><span class="s2">&quot;1.0.0-rc1&quot;</span>
+<span class="nv">$ </span>env <span class="nv">next_version</span><span class="o">=</span><span class="s2">&quot;1.0.0-rc1&quot;</span> buildr release
+<span class="nv">$ </span>env <span class="nv">NEXT_VERSION</span><span class="o">=</span><span class="s2">&quot;1.0.0-rc1&quot;</span> buildr release
+</code></pre>
+</div>
+<p>Those commands will generate the Buildfile below:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">THIS_VERSION</span> <span class="o">=</span> <span class="s2">&quot;1.0.0-rc1&quot;</span>
+
+<span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+
+  <span class="n">project</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="no">THIS_VERSION</span>
+
+  <span class="c1"># ...</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>The environment variable <code>NEXT_VERSION</code> has precedence over Release.next_version.</p>
+<h2 id="custom_tag_and_msg">How to specify my own tag name and commit message?</h2>
+<p>As explained earlier, Buildr will create two new commits and a new tag in the version control system. Similarly to <code>Release.next_version</code>, the commit message and the tag name can be customized with <code>Release.message</code> and <code>Release.tag_name</code>. Both could be strings or procs that would receive the released version <code>THIS_VERSION</code> without <code>-SNAPSHOT</code>.</p>
+      </div>
+      <div id='footer'>Copyright &copy; 2007-2010 The Apache Software Foundation</div>
+    </div>
+  </body>
+</html>

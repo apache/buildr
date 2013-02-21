@@ -1,0 +1,714 @@
+<html>
+  <head>
+    <meta content='text/html;charset=UTF-8' http-equiv='Content-Type'>
+    <title>buildr &mdash; Languages</title>
+    <style type='text/css'>
+      @import 'css/default.css';
+      @import 'css/syntax.css';
+    </style>
+    <style media='print' type='text/css'>
+      @import 'css/print.css';
+    </style>
+    <meta content='Official Buildr documentation from the people in the know' name='subject'>
+    <link href='images/favicon.png' rel='shortcut icon'>
+  </head>
+  <body>
+    <div id='wrap'>
+      <div id='header'>
+        <a href='http://buildr.apache.org/' title="Build like you code"><img alt='buildr' src='images/buildr.png'></a>
+        <div class='tagline'>Build like you code</div>
+      </div>
+      <div id='pages'>
+        <ol class='toc'>
+          <li>Start Here
+            <ol class="toc">
+              <li><a href='index.html'>Welcome</a></li>
+              <li><a href='quick_start.html'>Quick Start</a></li>
+              <li><a href='installing.html'>Installing & Running</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Index'>Community Wiki</a></li>
+            </ol>
+          </li>
+          <li>Using Buildr
+            <ol class="toc">
+              <li><a href='buildr.pdf'>This Guide (PDF)</a></li>
+              <li><a href='projects.html'>Projects</a></li>
+              <li><a href='building.html'>Building</a></li>
+              <li><a href='artifacts.html'>Artifacts</a></li>
+              <li><a href='packaging.html'>Packaging</a></li>
+              <li><a href='testing.html'>Testing</a></li>
+              <li><a href='releasing.html'>Releasing</a></li>
+              <li><a href='settings_profiles.html'>Settings/Profiles</a></li>
+              <li><a href='languages.html'>Languages</a></li>
+              <li><a href='more_stuff.html'>More Stuff</a></li>
+              <li><a href='extending.html'>Extending Buildr</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Buildr+HowTos'>How-Tos</a></li>
+            </ol>
+          </li>
+          <li>Reference
+            <ol class="toc">
+              <li><a href='rdoc'>API</a></li>
+              <li><a href='http://docs.rubyrake.org'>Rake</a></li>
+              <li><a href='http://antwrap.rubyforge.org'>Antwrap</a></li>
+              <li><a href='http://cwiki.apache.org/confluence/display/BUILDR/Common+Problems+and+Solutions'>Troubleshooting</a></li>
+            </ol>
+          </li>
+          <li>Get Involved
+            <ol class="toc">
+              <li><a href='download.html'>Download</a></li>
+              <li><a href='mailing_lists.html'>Mailing Lists</a></li>
+              <li><a href='http://www.twitter.com/buildr'>Twitter</a></li>
+              <li><a href='http://issues.apache.org/jira/browse/Buildr'>Issues/Bugs</a></li>
+              <li><a href='https://builds.apache.org/view/A-F/view/Buildr'>CI Jobs</a></li>
+              <li><a href='contributing.html'>Contributing</a></li>
+            </ol>
+          </li>
+          <li>
+            <form action='http://www.google.com/cse' id='searchbox_003673095760649043902:ogcgrzu0l2y'>
+              <input name='cx' type='hidden' value='003673095760649043902:ogcgrzu0l2y'>
+              <input name='cof' type='hidden' value='FORID:0'>
+              <input name='q' size='20' type='text'>
+              <input name='sa' type='submit' value='Search'>
+              <img alt='Google Custom Search' src='http://www.google.com/coop/images/google_custom_search_smnar.gif'>
+            </form>
+          </li>
+          <li>The Buildr Book
+            <p><a href='http://www.amazon.com/Buildr/dp/1442160942/'><img src='images/1442160941-frontcover.jpg' style='width:120px'></a></p>
+            <p>Based on the Buildr documentation, available from <a href='http://www.amazon.com/Buildr/dp/1442160942/'>Amazon</a> and
+            <a href='http://www.createspace.com/3382199'>CreateSpace</a></p>
+          </li>
+        </ol>
+      </div>
+      <div id='content'>
+        <h1 id='languages'>Languages</h1>
+        <ol class="toc"><li><a href="#java">Java</a></li><li><a href="#scala">Scala</a></li><li><a href="#groovy">Groovy</a></li><li><a href="#ruby">Ruby</a></li></ol>
+        <h2 id="java">Java</h2>
+<h3>Compiling Java</h3>
+<p>The Java compiler looks for source files in the project&#8217;s <code>src/main/java</code> directory, and defaults to compiling them into the <code>target/classes</code> directory. It looks for test cases in the project&#8217;s <code>src/test/java</code> and defaults to compile them into the <code>target/test/classes</code> directory.</p>
+<p>If you point the <code>compile</code> task at any other source directory, it will use the Java compiler if any of these directories contains files with the extension <code>.java</code>.</p>
+<p>When using the Java compiler, if you don&#8217;t specify the packaging type, it defaults to <span class="caps">JAR</span>.  If you don&#8217;t specify the test framework, it defaults to JUnit.</p>
+<p>The Java compiler supports the following options:</p>
+<table>
+	<tr>
+		<th>Option        </th>
+		<th>Usage </th>
+	</tr>
+	<tr>
+		<td> <code>:debug</code>        </td>
+		<td> Generates bytecode with debugging information.  You can also override this by setting the environment variable <code>debug</code> to <code>off</code>. </td>
+	</tr>
+	<tr>
+		<td> <code>:deprecation</code>  </td>
+		<td> If true, shows deprecation messages.  False by default. </td>
+	</tr>
+	<tr>
+		<td> <code>:lint</code>         </td>
+		<td> Defaults to false.  Set this option to true to use all lint options, or specify a specific lint option (e.g. <code>:lint=&gt;'cast'</code>). </td>
+	</tr>
+	<tr>
+		<td> <code>:other</code>        </td>
+		<td> Array of options passed to the compiler (e.g. <code>:other=&gt;'-implicit:none'</code>). </td>
+	</tr>
+	<tr>
+		<td> <code>:source</code>       </td>
+		<td> Source code compatibility (e.g. &#8216;1.5&#8217;). </td>
+	</tr>
+	<tr>
+		<td> <code>:target</code>       </td>
+		<td> Bytecode compatibility (e.g. &#8216;1.4&#8217;). </td>
+	</tr>
+	<tr>
+		<td> <code>:warnings</code>     </td>
+		<td> Issue warnings when compiling.  True when running in verbose mode. </td>
+	</tr>
+</table>
+<h3>Testing with Java</h3>
+<h4>JUnit</h4>
+<p>The default test framework for Java projects is <a href="http://www.junit.org">JUnit 4</a>.</p>
+<p>When you use JUnit, the dependencies includes JUnit and <a href="http://www.jmock.org">JMock</a>, and Buildr picks up all test classes from the project by looking for classes that either subclass  <code>junit.framework.TestCase</code>, include methods annotated with <code>org.junit.Test</code>, or test suites annotated with <code>org.org.junit.runner.RunWith</code>.</p>
+<p>The JUnit test framework supports the following options:</p>
+<table>
+	<tr>
+		<th>Option        </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td> <code>:fork</code>         </td>
+		<td> VM forking, defaults to true. </td>
+	</tr>
+	<tr>
+		<td> <code>:clonevm</code>      </td>
+		<td> If true clone the VM each time it is forked. </td>
+	</tr>
+	<tr>
+		<td> <code>:properties</code>   </td>
+		<td> Hash of system properties available to the test case. </td>
+	</tr>
+	<tr>
+		<td> <code>:environment</code>  </td>
+		<td> Hash of environment variables available to the test case. </td>
+	</tr>
+	<tr>
+		<td> <code>:java_args</code>    </td>
+		<td> Arguments passed as is to the <span class="caps">JVM</span>. </td>
+	</tr>
+</table>
+<p>For example, to pass properties to the test case:</p>
+<div class="highlight"><pre><code class="ruby"><span class="nb">test</span><span class="o">.</span><span class="n">using</span> <span class="ss">:properties</span><span class="o">=&gt;</span><span class="p">{</span> <span class="ss">:currency</span><span class="o">=&gt;</span><span class="s1">&#39;USD&#39;</span> <span class="p">}</span>
+</code></pre>
+</div>
+<p>There are benefits to running test cases in separate VMs.  The default forking mode is <code>:once</code>, and you can change it by setting the <code>:fork</code> option.</p>
+<table>
+	<tr>
+		<th>:fork=&gt; </th>
+		<th>Behavior </th>
+	</tr>
+	<tr>
+		<td> <code>:once</code>   </td>
+		<td> Create one VM to run all test classes in the project, separate VMs for each project. </td>
+	</tr>
+	<tr>
+		<td> <code>:each</code>   </td>
+		<td> Create one VM for each test case class.  Slow but provides the best isolation between test classes. </td>
+	</tr>
+	<tr>
+		<td> <code>false</code>   </td>
+		<td> Without forking, Buildr runs all test cases in a single VM.  This option runs fastest, but at the risk of running out of memory and causing test cases to interfere with each other. </td>
+	</tr>
+</table>
+<p>You can see your tests running in the console, and if any tests fail, Buildr will show a list of the failed test classes.  In addition, JUnit produces text and <span class="caps">XML</span> report files in the project&#8217;s <code>reports/junit</code> directory.  You can use that to get around too-much-stuff-in-my-console, or when using an automated test system.</p>
+<p>In addition, you can get a consolidated <span class="caps">XML</span> or <span class="caps">HTML</span> report by running the <code>junit:report</code> task.  For example:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr <span class="nb">test </span>junit:report <span class="nb">test</span><span class="o">=</span>all
+<span class="nv">$ </span>firefox report/junit/html/index.html
+</code></pre>
+</div>
+<p>The <code>junit:report</code> task generates a report from all tests run so far.  If you run tests in a couple of projects, it will generate a report only for these two projects.  The example above runs tests in all the projects before generating the reports.</p>
+<p>You can use the <code>build.yaml</code> settings file to specify a particular version of JUnit or JMock.  For example, to force your build to use JUnit version 4.4 and JMock 2.0:</p>
+<div class="highlight"><pre><code class="yaml"><span class="l-Scalar-Plain">junit</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">4.4</span>
+<span class="l-Scalar-Plain">jmock</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2.0</span>
+</code></pre>
+</div>
+<h4>TestNG</h4>
+<p>You can use <a href="http://testng.org">TestNG</a> instead of JUnit.  To select TestNG as the test framework, add this to your project:</p>
+<div class="highlight"><pre><code class="ruby"><span class="nb">test</span><span class="o">.</span><span class="n">using</span> <span class="ss">:testng</span>
+</code></pre>
+</div>
+<p>Like all other options you can set with <code>test.using</code>, it affects the projects and all its sub-projects, so you only need to do this once at the top-most project to use TestNG throughout.  You can also mix TestNG and JUnit by setting different projects to use different frameworks, but you can&#8217;t mix both frameworks in the same project.  (And yes, <code>test.using :junit</code> will switch a project back to using JUnit)</p>
+<p>TestNG works much like JUnit, it gets included in the dependency list along with JMock, Buildr picks test classes that contain methods annotated with  <code>org.testng.annotations.Test</code>, and generates test reports in the <code>reports/testng</code> directory.  At the moment we don&#8217;t have consolidated <span class="caps">HTML</span> reports for TestNG.</p>
+<p>The TestNG test framework supports the following options:</p>
+<table>
+	<tr>
+		<th>Option        </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td> <code>:properties</code>   </td>
+		<td> Hash of system properties available to the test case. </td>
+	</tr>
+	<tr>
+		<td> <code>:java_args</code>    </td>
+		<td> Arguments passed as is to the <span class="caps">JVM</span>. </td>
+	</tr>
+</table>
+<p>You can use the <code>build.yaml</code> settings file to specify a particular version of TestNG, for example, to force your build to use TestNG 5.7:</p>
+<div class="highlight"><pre><code class="yaml"><span class="l-Scalar-Plain">testng</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">5.7</span>
+</code></pre>
+</div>
+<h4>JBehave</h4>
+<p><a href="http://jbehave.org/">JBehave</a> is a pure Java <span class="caps">BDD</span> framework, stories and behaviour specifications are written in the Java language.</p>
+<p>To use JBehave in your project you can select it with <code>test.using :jbehave</code>.</p>
+<p>This framework will search for the following patterns under your project:</p>
+<div class="highlight"><pre><code class="text">src/spec/java/**/*Behaviour.java
+</code></pre>
+</div>
+<p>Supports the following options:</p>
+<table>
+	<tr>
+		<th>Option        </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td> <code>:properties</code>   </td>
+		<td> Hash of system properties available to the test case. </td>
+	</tr>
+	<tr>
+		<td> <code>:java_args</code>    </td>
+		<td> Arguments passed as is to the <span class="caps">JVM</span>. </td>
+	</tr>
+</table>
+<p>You can use the <code>build.yaml</code> settings file to specify a particular version of JBehave, for example, to force your build to use JBehave 1.0.1:</p>
+<div class="highlight"><pre><code class="yaml"><span class="l-Scalar-Plain">jbehave</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">1.0.1</span>
+</code></pre>
+</div>
+<h3>Documentation</h3>
+<p>Buildr offers support for using JavaDoc to generate documentation from any Java sources in a project.  This is done using the <code>doc</code> task:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr doc
+</code></pre>
+</div>
+<p>This will use the same <code>.java</code> sources used by the <code>compile</code> task to produce JavaDoc results in the <code>target/doc/</code> directory.  By default, these sources are chosen only from the current project.  However, it is possible to override this and generate documentation from the sources in a sub-project (potentially more than one):</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;foo&#39;</span> <span class="k">do</span>
+  <span class="c1"># ...</span>
+
+  <span class="n">doc</span><span class="o">.</span><span class="n">from</span> <span class="n">projects</span><span class="p">(</span><span class="s1">&#39;foo:bar&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+
+  <span class="n">define</span> <span class="s1">&#39;bar&#39;</span> <span class="k">do</span>
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>With this configuration, the <code>doc</code> task will use sources from both <code>foo:bar</code> and<br />
+<code>foo</code>.</p>
+<p>The <code>doc</code> task supports any option that the <code>javadoc</code> command does (e.g. <code>-windowtitle</code>).  To pass an option to the JavaDoc generator, simply specify it using the <code>doc</code> method:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;foo&#39;</span> <span class="k">do</span>
+  <span class="c1"># ...</span>
+
+  <span class="n">doc</span> <span class="ss">:windowtitle</span> <span class="o">=&gt;</span> <span class="s1">&#39;Abandon All Hope, Ye Who Enter Here&#39;</span><span class="p">,</span> <span class="ss">:private</span> <span class="o">=&gt;</span> <span class="kp">true</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<h2 id="scala">Scala</h2>
+<p>Before using Scala, you must first <code>require</code> the Scala compiler:</p>
+<div class="highlight"><pre><code class="ruby"><span class="nb">require</span> <span class="s1">&#39;buildr/scala&#39;</span>
+</code></pre>
+</div>
+<p>By default, Buildr will attempt to use the latest stable release of Scala, which is currently Scala 2.9.0 as of May 2011.  Of course you can configure a specific version of Scala for your project by adding the following entry in <code>build.yaml</code>:</p>
+<div class="highlight"><pre><code class="yaml"><span class="l-Scalar-Plain">scala.version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2.8.0.Beta1</span>  <span class="c1"># Pick your version</span>
+</code></pre>
+</div>
+<p>Or, you can do the same programmatically:</p>
+<div class="highlight"><pre><code class="yaml"><span class="c1"># Must be placed before require &#39;buildr/scala&#39;</span>
+<span class="l-Scalar-Plain">Buildr.settings.build[&#39;scala.version&#39;] = &quot;2.8.0.Beta1&quot;</span>
+</code></pre>
+</div>
+<p>You may also determine the version in use by querying the <code>Scala.version</code> attribute:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">Scala</span><span class="o">.</span><span class="n">version</span>       <span class="c1"># =&gt; &#39;2.8.0&#39;</span>
+</code></pre>
+</div>
+<p>Regardless of how the Scala version is determined, if you have the same Scala version installed on your system and the SCALA_HOME environment variable points to it, then your local installation will be used.   Otherwise, Buildr will download it from the <a href="http://oss.sonatype.org/content/repositories/releases">Sonatype repository</a> which is automatically enlisted when you <code>require</code> Scala.  The only drawback if you don&#8217;t have a local installation is the <span class="caps">FSC</span> compiler won&#8217;t be available.</p>
+<p class="tip">For Mac users, if you have installed Scala via <a href="http://www.macports.org/">MacPorts</a>  Buildr will look in the<br />
+<code>/opt/local/share/scala/</code> directory if you have not set <code>SCALA_HOME</code>.</p>
+<h3>Compiling Scala</h3>
+<p>The Scala compiler looks for source files in the project&#8217;s <code>src/main/scala</code>  directory, and defaults to compiling them into the <code>target/classes</code> directory.  It looks for test cases in the project&#8217;s <code>src/test/scala</code> and defaults to  compile them into the <code>target/test/classes</code> directory.</p>
+<p>Any Java source files found in the <code>src/main/java</code> directory will be compiled using the Scala/Java joint compiler into the <code>target/classes</code> directory.  Both the Java and the Scala sources are compiled with an inclusive classpath, meaning that you may have a Java class which depends upon a Scala class which depends upon a Java class, all within the same project.  The Java sources will be compiled with the same dependencies as the Scala sources with the addition of the <code>scala-library.jar</code> file as required for Scala interop.</p>
+<p>Note that you cannot use the Groovy <strong>and</strong> the Scala joint compilers in the same project.  If both are required, the Groovy joint compiler will take precedence.</p>
+<p>If you point the <code>compile</code> task at any other source directory, it will use the  Scala compiler if any of these directories contains files with the extension <code>.scala</code>.  The joint compilation of Java sources may only be pointed at an alternative directory using the feature to redefine the <code>_(:src, :main, :java)</code> path.</p>
+<p>When using the Scala compiler, if you don&#8217;t specify the packaging type, it defaults to <span class="caps">JAR</span>.</p>
+<p>The Scala compiler supports the following options:</p>
+<table>
+	<tr>
+		<th>Option        </th>
+		<th>Usage </th>
+	</tr>
+	<tr>
+		<td> <code>:debug</code>        </td>
+		<td> If true, generates bytecode with debugging information. Scala 2.9 also accepts: none,source,line,vars,notc. </td>
+	</tr>
+	<tr>
+		<td> <code>:deprecation</code>  </td>
+		<td> If true, shows deprecation messages.  False by default. </td>
+	</tr>
+	<tr>
+		<td> <code>:make</code>         </td>
+		<td> Make strategy to be used by the compiler (e.g. <code>:make=&gt;'transitive'</code>). <strong>Scala 2.8 only</strong> </td>
+	</tr>
+	<tr>
+		<td> <code>:optimise</code>     </td>
+		<td> Generates faster bytecode by applying optimisations to the program. </td>
+	</tr>
+	<tr>
+		<td> <code>:other</code>        </td>
+		<td> Array of options passed to the compiler (e.g. <code>:other=&gt;'-Xprint-types'</code>). </td>
+	</tr>
+	<tr>
+		<td> <code>:target</code>       </td>
+		<td> Bytecode compatibility (e.g. &#8216;1.4&#8217;). </td>
+	</tr>
+	<tr>
+		<td> <code>:warnings</code>     </td>
+		<td> Issue warnings when compiling.  True when running in verbose mode. </td>
+	</tr>
+	<tr>
+		<td> <code>:javac</code>        </td>
+		<td> A hash of options passed to the <code>javac</code> compiler verbatim. </td>
+	</tr>
+	<tr>
+		<td> <code>:incremental</code>  </td>
+		<td> If true, enables incremental compilation using Zinc. </td>
+	</tr>
+</table>
+<h4>Fast Scala Compiler</h4>
+<p>You may use <code>fsc</code>, the Fast Scala Compiler, which submits compilation jobs to a  compilation daemon, by setting the environment variable <code>USE_FSC</code> to <code>yes</code>. Note that <code>fsc</code> <em>may</em> cache class libraries &#8212; don&#8217;t forget to run <code>fsc -reset</code> if  you upgrade a library.</p>
+<p>(Note <code>fsc</code> is not compatible with <code>zinc</code> incremental compilation.)</p>
+<h4>Rebuild detection</h4>
+<p><strong>Scala 2.7</strong></p>
+<p>The Scala 2.7 compiler task assumes that each <code>.scala</code> source file generates a  corresponding <code>.class</code> file under <code>target/classes</code> (or <code>target/test/classses</code>  for tests). The source may generate more <code>.class</code> files if it contains more than one class, object, trait or for anonymous functions and closures.</p>
+<p>For example, <code>src/main/scala/com/example/MyClass.scala</code> should generate at least <code>target/classes/com/example/MyClass.class</code>. If that it not the case, Buildr will always recompile your sources because it will assume this is a new source file that has never been compiled before.</p>
+<p><strong>Scala 2.8</strong></p>
+<p>Scala 2.8 provides a substantially better interface for implementing change detection.  Whenever you use Scala 2.8 (see below), Buildr will auto-detect the version and enable this feature dynamically.  After the <code>compile</code> task runs, the relevant target directory will contain a <code>.scala-deps</code> file, generated by the Scala compiler.  The manner in which this file is used can be configured using the <code>:make</code> compiler option.  The following values are available:</p>
+<ul>
+	<li><code>:all</code> &#8211; Disables compiler-level change detection</li>
+	<li><code>:changed</code> &#8211; Only build changed files without considering file dependencies</li>
+	<li><code>:immediate</code> &#8211; <strong>unknown</strong></li>
+	<li><code>:transitive</code> &#8211; Build changed files as well as their transitive file dependencies</li>
+	<li><code>:transitivenocp</code> &#8211; Build changed files as well as their transitive file dependencies (<strong>default</strong>)</li>
+</ul>
+<p>Please note that there are limits to compiler-level change detection.  Most notably, dependencies cannot be tracked across separate compilation targets.  This would cause problems in the case where an <span class="caps">API</span> has been changed in a main source file.  The test suite for the project will <strong>not</strong> be detected as requiring recompilation, potentially resulting in unexpected runtime exceptions.  When in doubt, run <code>clean</code> to remove all dependency information.  In extreme cases, it is possible to completely disable compiler-level change detection by adding the following statement to your project definition:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">compile</span><span class="o">.</span><span class="n">using</span> <span class="ss">:make</span> <span class="o">=&gt;</span> <span class="ss">:all</span>
+</code></pre>
+</div>
+<p>Effectively, this is telling the Scala compiler to ignore the information it has built up regarding source file dependencies.  When in this mode, only Buildr&#8217;s change detection semantics remain in play (as described above).</p>
+<p>To avoid unusual behavior, compiler-level change detection is disabled whenever the joint Scala-Java compiler is used.  Thus, any <code>.java</code> files in a project handled by the Scala compiler will cause the <code>:make</code> option to be ignored and revert to the exclusive use of Buildr&#8217;s change detection mechanism (as described above).</p>
+<p><strong>Scala 2.9 and later</strong></p>
+<p>Starting with Buildr 1.4.8, Buildr integrates with the <a href="https://github.com/typesafehub/zinc">Zinc</a> incremental compilation wrapper for <code>scalac</code>.  Incremental compilation can be enabled 3 ways,</p>
+<p>1) By setting the compiler&#8217;s option directly,</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">compile</span><span class="o">.</span><span class="n">using</span> <span class="ss">:incremental</span> <span class="o">=&gt;</span> <span class="kp">true</span>
+
+<span class="n">compile</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">incremental</span> <span class="o">=</span> <span class="kp">true</span>  <span class="c1"># same as above</span>
+</code></pre>
+</div>
+<p>Note that this won&#8217;t enable incremental compilation for both <code>compile</code> and <code>test.compile</code>, you would have to set options on both.  For this reason, it&#8217;s recommended that you set the option on the project instead (see below).</p>
+<p>2) By setting the project&#8217;s <code>scalac_options.incremental</code>,</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">project</span><span class="o">.</span><span class="n">scalac_options</span><span class="o">.</span><span class="n">incremental</span> <span class="o">=</span> <span class="kp">true</span>
+</code></pre>
+</div>
+<p>3) By setting the global <code>scalac.incremental</code> option,</p>
+<p>in your <code>buildfile</code>:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">Buildr</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">build</span><span class="o">[</span><span class="s1">&#39;scalac.incremental&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
+</code></pre>
+</div>
+<p>or in your <code>build.yaml</code>:</p>
+<div class="highlight"><pre><code class="yaml"><span class="l-Scalar-Plain">scalac.incremental</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">true</span>
+</code></pre>
+</div>
+<h4>Support for different Scala versions</h4>
+<p>Buildr defaults to the latest stable Scala version available at the time of the release if neither <code>SCALA_HOME</code> nor the <code>scala.version</code> build property are set.</p>
+<p>If your <code>SCALA_HOME</code> environment variable points to an installation of Scala (2.7, 2.8, 2.9, &#8230;), then Buildr will use that compiler and enable version-specific features.</p>
+<p>You may select the Scala version by dynamically in different ways,</p>
+<p>1) By reassigning <code>SCALA_HOME</code> at the top of the buildfile (<strong>before</strong> <code>require 'buildr/scala'</code>):</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;SCALA_HOME&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="no">ENV</span><span class="o">[</span><span class="s1">&#39;SCALA28_HOME&#39;</span><span class="o">]</span>
+
+<span class="nb">require</span> <span class="s1">&#39;buildr/scala&#39;</span>
+<span class="o">.</span><span class="n">.</span><span class="o">.</span>
+</code></pre>
+</div>
+<p>2) By setting the <code>scala.version</code> build property in your build.yaml file:</p>
+<div class="highlight"><pre><code class="yaml"><span class="l-Scalar-Plain">scala.version</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">2.9.1.RC1</span>
+</code></pre>
+</div>
+<p>3) By setting the <code>scala.version</code> build property in your buildfile:</p>
+<div class="highlight"><pre><code class="ruby"><span class="nb">require</span> <span class="s1">&#39;buildr/scala&#39;</span>
+<span class="o">.</span><span class="n">.</span><span class="o">.</span>
+<span class="no">Buildr</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">build</span><span class="o">[</span><span class="s1">&#39;scala.version&#39;</span><span class="o">]</span> <span class="o">=</span> <span class="s1">&#39;2.10-M6&#39;</span>
+</code></pre>
+</div>
+<h3>Testing with Scala</h3>
+<p>Buildr supports two main Scala testing frameworks:   <a href="http://www.artima.com/scalatest">ScalaTest</a> and  <a href="http://code.google.com/p/specs/">Specs</a>.  <a href="http://code.google.com/p/scalacheck/">ScalaCheck</a> is also supported within the confines of either of these two frameworks.  Thus, your Specs may use ScalaCheck properties, as may your ScalaTest suites.</p>
+<div class="highlight"><pre><code class="ruby"><span class="nb">test</span><span class="o">.</span><span class="n">using</span><span class="p">(</span><span class="ss">:scalatest</span><span class="p">)</span>
+</code></pre>
+</div>
+<h4>ScalaTest</h4>
+<p>ScalaTest support is activated automatically when there are any <code>.scala</code> source files contained in the <code>src/test/scala</code> directory.  If you are not using this directory convention, you may force the test framework by using the <code>test.using :scalatest</code> directive.</p>
+<p>Buildr automatically detects and runs tests that extend the <code>org.scalatest.Suite</code> interface.</p>
+<p>A very simplistic test class might look like,</p>
+<div class="highlight"><pre><code class="scala"><span class="k">class</span> <span class="nc">MySuite</span> <span class="k">extends</span> <span class="n">org</span><span class="o">.</span><span class="n">scalatest</span><span class="o">.</span><span class="nc">FunSuite</span> <span class="o">{</span>
+  <span class="n">test</span><span class="o">(</span><span class="s">&quot;addition&quot;</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">assert</span><span class="o">(</span><span class="n">sum</span> <span class="o">===</span> <span class="mi">2</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+<p>You can also pass properties to your tests by doing <code>test.using :properties =&gt; { 'name'=&gt;'value' }</code>, and by overriding the <code>Suite.runTests</code> method in a manner similar to:</p>
+<div class="highlight"><pre><code class="scala"><span class="k">import</span> <span class="nn">org.scalatest._</span>
+
+<span class="k">class</span> <span class="nc">PropertyTestSuite</span> <span class="k">extends</span> <span class="nc">FunSuite</span> <span class="o">{</span>
+  <span class="k">var</span> <span class="n">properties</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">]()</span>
+
+  <span class="n">test</span><span class="o">(</span><span class="s">&quot;testProperty&quot;</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">assert</span><span class="o">(</span><span class="n">properties</span><span class="o">(</span><span class="s">&quot;name&quot;</span><span class="o">)</span> <span class="o">===</span> <span class="s">&quot;value&quot;</span><span class="o">)</span>
+  <span class="o">}</span>
+
+  <span class="k">protected</span> <span class="k">override</span> <span class="k">def</span> <span class="n">runTests</span><span class="o">(</span><span class="n">testName</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">String</span><span class="o">],</span>
+    <span class="n">reporter</span><span class="k">:</span> <span class="kt">Reporter</span><span class="o">,</span> <span class="n">stopper</span><span class="k">:</span> <span class="kt">Stopper</span><span class="o">,</span> <span class="n">includes</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">],</span>
+    <span class="n">excludes</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">String</span><span class="o">],</span> <span class="n">properties</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Any</span><span class="o">])</span>
+  <span class="o">{</span>
+    <span class="k">this</span><span class="o">.</span><span class="n">properties</span> <span class="k">=</span> <span class="n">properties</span><span class="o">;</span>
+    <span class="k">super</span><span class="o">.</span><span class="n">runTests</span><span class="o">(</span><span class="n">testName</span><span class="o">,</span> <span class="n">reporter</span><span class="o">,</span> <span class="n">stopper</span><span class="o">,</span>
+                   <span class="n">includes</span><span class="o">,</span> <span class="n">excludes</span><span class="o">,</span> <span class="n">properties</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+<h4>Specs</h4>
+<p>Specs is automatically selected whenever there are <code>.scala</code> source files under the <code>src/spec/scala</code> directory.  It is also possible to force selection of the test framework by using the <code>test.using :specs</code> directive.  This can sometimes be useful when Scala sources may be found in <strong>both</strong> <code>src/test/scala</code> and <code>src/spec/scala</code>.  Normally in such cases, ScalaTest will have selection precedence, meaning that in case of a conflict between it and Specs, ScalaTest will be chosen.</p>
+<p>Any objects which extend the <code>org.specs.Specification</code> superclass will be automatically detected and run.  Note that any <strong>classes</strong> which extend <code>Specification</code> will also be invoked.  As such classes will not have a <code>main</code> method, such an invocation will raise an error.</p>
+<p>A simple specification might look like this:</p>
+<div class="highlight"><pre><code class="scala"><span class="k">import</span> <span class="nn">org.specs._</span>
+<span class="k">import</span> <span class="nn">org.specs.runner._</span>
+
+<span class="k">object</span> <span class="nc">StringSpecs</span> <span class="k">extends</span> <span class="nc">Specification</span> <span class="o">{</span>
+  <span class="s">&quot;empty string&quot;</span> <span class="n">should</span> <span class="o">{</span>
+    <span class="s">&quot;have a zero length&quot;</span> <span class="n">in</span> <span class="o">{</span>
+      <span class="s">&quot;&quot;</span><span class="o">.</span><span class="n">length</span> <span class="n">mustBe</span> <span class="mi">0</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+<p>ScalaCheck is automatically added to the classpath when Specs is used.  However, JMock, Mockito, CGlib and similar are <em>not</em>.  This is to avoid downloading extraneous artifacts which are only used by a small percentage of specifications.  To use Specs with Mockito (or any other library) in a Buildr project, simply add the appropriate dependencies to <code>test.with</code>:</p>
+<div class="highlight"><pre><code class="ruby"><span class="no">MOCKITO</span> <span class="o">=</span> <span class="s1">&#39;org.mockito:mockito-all:jar:1.7&#39;</span>
+<span class="no">CGLIB</span> <span class="o">=</span> <span class="s1">&#39;cglib:cglib:jar:2.1_3&#39;</span>
+<span class="no">ASM</span> <span class="o">=</span> <span class="s1">&#39;asm:asm:jar:1.5.3&#39;</span>
+<span class="no">OBJENESIS</span> <span class="o">=</span> <span class="s1">&#39;org.objenesis:objenesis:jar:1.1&#39;</span>
+
+<span class="n">define</span> <span class="s1">&#39;killer-app&#39;</span> <span class="k">do</span>
+  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+
+  <span class="nb">test</span><span class="o">.</span><span class="n">with</span> <span class="no">MOCKITO</span><span class="p">,</span> <span class="no">CGLIB</span><span class="p">,</span> <span class="no">ASM</span><span class="p">,</span> <span class="no">OBJENESIS</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>The dependencies for Specs&#8217;s optional features are defined <a href="http://code.google.com/p/specs/wiki/RunningSpecs#Dependencies">here</a>.</p>
+<h4>ScalaCheck</h4>
+<p>You may use ScalaCheck inside ScalaTest- and Specs-inherited classes.  Here is an example illustrating checks inside a ScalaTest suite,</p>
+<div class="highlight"><pre><code class="scala"><span class="k">import</span> <span class="nn">org.scalatest.prop.PropSuite</span>
+<span class="k">import</span> <span class="nn">org.scalacheck.Arbitrary._</span>
+<span class="k">import</span> <span class="nn">org.scalacheck.Prop._</span>
+
+<span class="k">class</span> <span class="nc">MySuite</span> <span class="k">extends</span> <span class="nc">PropSuite</span> <span class="o">{</span>
+
+  <span class="n">test</span><span class="o">(</span><span class="s">&quot;list concatenation&quot;</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">x</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
+    <span class="k">val</span> <span class="n">y</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">)</span>
+    <span class="n">assert</span><span class="o">(</span><span class="n">x</span> <span class="o">:::</span> <span class="n">y</span> <span class="o">===</span> <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">))</span>
+    <span class="n">check</span><span class="o">((</span><span class="n">a</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">],</span> <span class="n">b</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span> <span class="k">=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="o">(</span><span class="n">a</span> <span class="o">:::</span> <span class="n">b</span><span class="o">).</span><span class="n">size</span><span class="o">)</span>
+  <span class="o">}</span>
+
+  <span class="n">test</span><span class="o">(</span>
+    <span class="s">&quot;list concatenation using a test method&quot;</span><span class="o">,</span>
+    <span class="o">(</span><span class="n">a</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">],</span> <span class="n">b</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span> <span class="k">=&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="o">(</span><span class="n">a</span> <span class="o">:::</span> <span class="n">b</span><span class="o">).</span><span class="n">size</span>
+  <span class="o">)</span>
+<span class="o">}</span>
+</code></pre>
+</div>
+<h3>Documentation</h3>
+<p>Buildr offers support for using ScalaDoc or VScalaDoc to generate documentation from any Scala sources in a project.  This is done using the <code>doc</code> task:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr doc
+</code></pre>
+</div>
+<p>This will use the same <code>.scala</code> sources used by the <code>compile</code> task to produce ScalaDoc results in the <code>target/doc/</code> directory.  By default, these sources are chosen only from the current project.  However, it is possible to override this and generate documentation from the sources in a sub-project (potentially more than one):</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;foo&#39;</span> <span class="k">do</span>
+  <span class="c1"># ...</span>
+
+  <span class="n">doc</span><span class="o">.</span><span class="n">from</span> <span class="n">projects</span><span class="p">(</span><span class="s1">&#39;foo:bar&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+
+  <span class="n">define</span> <span class="s1">&#39;bar&#39;</span> <span class="k">do</span>
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>With this configuration, the <code>doc</code> task will use sources from both <code>foo:bar</code> and<br />
+<code>foo</code>.</p>
+<p>The <code>doc</code> task supports any option that the <code>scaladoc</code> command does (e.g. <code>-windowtitle</code>).  To pass an option to the ScalaDoc (or VScalaDoc) generator, simply specify it using the <code>doc</code> method:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;foo&#39;</span> <span class="k">do</span>
+  <span class="c1"># ...</span>
+
+  <span class="n">doc</span> <span class="ss">:windowtitle</span> <span class="o">=&gt;</span> <span class="s1">&#39;Abandon All Hope, Ye Who Enter Here&#39;</span><span class="p">,</span> <span class="ss">:private</span> <span class="o">=&gt;</span> <span class="kp">true</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>By default, the <code>doc</code> task will use the ScalaDoc generator on Scala projects.  To select the VScalaDoc generator, you must use the <code>doc.using</code> invocation:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;foo&#39;</span> <span class="k">do</span>
+  <span class="n">doc</span><span class="o">.</span><span class="n">using</span> <span class="ss">:vscaladoc</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>The <code>doc</code> task is <strong>not</strong> joint-compilation aware.  Thus, it will only generate ScalaDoc for mixed-source projects, it will not attempt to generate both JavaDoc and ScalaDoc.</p>
+<h2 id="groovy">Groovy</h2>
+<h3>Compiling Groovy</h3>
+<p>Before using the Groovy compiler, you must first require it on your buildfile:</p>
+<div class="highlight"><pre><code class="ruby"><span class="nb">require</span> <span class="s1">&#39;buildr/java/groovyc&#39;</span>
+</code></pre>
+</div>
+<p>Once loaded, the groovyc compiler will be automatically selected if any .groovy source files are found under <code>src/main/groovy</code> directory, compiling them by default into the <code>target/classes</code> directory.</p>
+<p>If the project has java sources in <code>src/main/java</code> they will get compiled using the groovyc joint compiler.</p>
+<p>Sources found in <code>src/test/groovy</code> are compiled into the <code>target/test/classes</code>.</p>
+<p>If you don&#8217;t specify the packaging type, it defaults to <span class="caps">JAR</span>.</p>
+<p>The Groovy compiler supports the following options:</p>
+<table>
+	<tr>
+		<th>Option        </th>
+		<th>Usage </th>
+	</tr>
+	<tr>
+		<td> <code>encoding</code>          </td>
+		<td> Encoding of source files. </td>
+	</tr>
+	<tr>
+		<td> <code>verbose</code>           </td>
+		<td> Asks the compiler for verbose output, true when running in verbose mode. </td>
+	</tr>
+	<tr>
+		<td> <code>fork</code>              </td>
+		<td> Whether to execute groovyc using a spawned instance of the <span class="caps">JVM</span>.  Defaults to no. </td>
+	</tr>
+	<tr>
+		<td> <code>memoryInitialSize</code> </td>
+		<td> The initial size of the memory for the underlying VM, if using fork mode, ignored otherwise.  Defaults to the standard VM memory setting. (Examples: <code>83886080</code>, <code>81920k</code>, or <code>80m</code>) </td>
+	</tr>
+	<tr>
+		<td> <code>memoryMaximumSize</code> </td>
+		<td> The maximum size of the memory for the underlying VM, if using fork mode, ignored otherwise.  Defaults to the standard VM memory setting. (Examples: <code>83886080</code>, <code>81920k</code>, or <code>80m</code>) </td>
+	</tr>
+	<tr>
+		<td> <code>listfiles</code>         </td>
+		<td> Indicates whether the source files to be compiled will be listed.  Defaults to no. </td>
+	</tr>
+	<tr>
+		<td> <code>stacktrace</code>        </td>
+		<td> If true each compile error message will contain a stacktrace. </td>
+	</tr>
+	<tr>
+		<td> <code>warnings</code>          </td>
+		<td> Issue warnings when compiling.  True when running in verbose mode. </td>
+	</tr>
+	<tr>
+		<td> <code>debug</code>             </td>
+		<td> Generates bytecode with debugging information.  Set from the debug environment variable/global option. </td>
+	</tr>
+	<tr>
+		<td> <code>deprecation</code>       </td>
+		<td> If true, shows deprecation messages.  False by default. </td>
+	</tr>
+	<tr>
+		<td> <code>optimise</code>          </td>
+		<td> Generates faster bytecode by applying optimisations to the program. </td>
+	</tr>
+	<tr>
+		<td> <code>source</code>            </td>
+		<td> Source code compatibility. </td>
+	</tr>
+	<tr>
+		<td> <code>target</code>            </td>
+		<td> Bytecode compatibility. </td>
+	</tr>
+	<tr>
+		<td> <code>javac</code>             </td>
+		<td> Hash of options passed to the ant javac task. </td>
+	</tr>
+</table>
+<h3>Testing with Groovy</h3>
+<h4>EasyB</h4>
+<p><a href="http://www.easyb.org/">EasyB</a> is a <span class="caps">BDD</span> framework using <a href="http://groovy.codehaus.org/">Groovy</a>.</p>
+<p>Specifications are written in the Groovy language, of course you get seamless Java integration as with all things groovy.</p>
+<p>To use this framework in your project you can select it with <code>test.using :easyb</code>.</p>
+<p>This framework will search for the following patterns under your project:</p>
+<div class="highlight"><pre><code class="text">src/spec/groovy/**/*Behavior.groovy
+src/spec/groovy/**/*Story.groovy
+</code></pre>
+</div>
+<p>Supports the following options:</p>
+<table>
+	<tr>
+		<th>Option        </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td> <code>:properties</code>   </td>
+		<td> Hash of system properties available to the test case. </td>
+	</tr>
+	<tr>
+		<td> <code>:java_args</code>    </td>
+		<td> Arguments passed as is to the <span class="caps">JVM</span>. </td>
+	</tr>
+	<tr>
+		<td> <code>:format</code>       </td>
+		<td> Report format, either <code>:txt</code> or <code>:xml</code> </td>
+	</tr>
+</table>
+<h3>Documentation</h3>
+<p>Buildr offers support for using GroovyDoc to generate documentation from any Groovy sources in a project.  This is done using the <code>doc</code> task:</p>
+<div class="highlight"><pre><code class="sh"><span class="nv">$ </span>buildr doc
+</code></pre>
+</div>
+<p>This will use the same <code>.groovy</code> sources used by the <code>compile</code> task to produce GroovyDoc results in the <code>target/doc/</code> directory.  By default, these sources are chosen only from the current project.  However, it is possible to override this and generate documentation from the sources in a sub-project (potentially more than one):</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;foo&#39;</span> <span class="k">do</span>
+  <span class="c1"># ...</span>
+
+  <span class="n">doc</span><span class="o">.</span><span class="n">from</span> <span class="n">projects</span><span class="p">(</span><span class="s1">&#39;foo:bar&#39;</span><span class="p">,</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+
+  <span class="n">define</span> <span class="s1">&#39;bar&#39;</span> <span class="k">do</span>
+    <span class="c1"># ...</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>With this configuration, the <code>doc</code> task will use sources from both <code>foo:bar</code> and<br />
+<code>foo</code>.</p>
+<p>The <code>doc</code> task supports any option that the <code>groovydoc</code> command does (e.g. <code>-windowtitle</code>).  To pass an option to the GroovyDoc generator, simply specify it using the <code>doc</code> method:</p>
+<div class="highlight"><pre><code class="ruby"><span class="n">define</span> <span class="s1">&#39;foo&#39;</span> <span class="k">do</span>
+  <span class="c1"># ...</span>
+
+  <span class="n">doc</span> <span class="ss">:windowtitle</span> <span class="o">=&gt;</span> <span class="s1">&#39;Abandon All Hope, Ye Who Enter Here&#39;</span><span class="p">,</span> <span class="ss">:private</span> <span class="o">=&gt;</span> <span class="kp">true</span>
+<span class="k">end</span>
+</code></pre>
+</div>
+<p>The <code>doc</code> task is <strong>not</strong> joint-compilation aware.  Thus, it will only generate GroovyDoc for mixed-source projects, it will not attempt to generate both JavaDoc and GroovyDoc.</p>
+<h2 id="ruby">Ruby</h2>
+<h3>Testing with Ruby</h3>
+<p>Buildr provides integration with some ruby testing frameworks, allowing you to test your Java code with state of the art tools.</p>
+<p>Testing code is written in <a href="http://www.ruby-lang.org/en/">Ruby</a> language, and is run by using <a href="http://jruby.codehaus.org/">JRuby</a>. That means you have access to all your Java classes and any Java or Ruby tool out there.</p>
+<p>Because of the use of JRuby, you will notice that running ruby tests is faster when running Buildr on JRuby, as in this case there&#8217;s no need to run another <span class="caps">JVM</span>.</p>
+<p class="tip">When not running on JRuby, Buildr will use the <code>JRUBY_HOME</code> environment variable to find the JRuby installation directory.  If no <code>JRUBY_HOME</code> is set or it points to an empty directory, Buildr will prompt you to either install JRuby manually or let it  extract it for you.</p>
+<p>You can use the <code>build.yaml</code> settings file to specify a particular version of JRuby (defaults to <code>1.4.0</code> as of Buildr 1.3.5).  For example:</p>
+<div class="highlight"><pre><code class="yaml"><span class="l-Scalar-Plain">jruby</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">1.3.1</span>
+</code></pre>
+</div>
+<h4>RSpec</h4>
+<p><a href="http://rspec.info/">RSpec</a> is the de-facto <span class="caps">BDD</span> framework for ruby. It&#8217;s the framework used to test Buildr itself.</p>
+<p>To use this framework in your project you can select it with <code>test.using :rspec</code>.</p>
+<p>This framework will search for the following patterns under your project:</p>
+<div class="highlight"><pre><code class="text">src/spec/ruby/**/*_spec.rb
+</code></pre>
+</div>
+<p>Supports the following options:</p>
+<table>
+	<tr>
+		<th>Option        </th>
+		<th>Value </th>
+	</tr>
+	<tr>
+		<td> <code>:gems</code>         </td>
+		<td> Hash of gems needed before running the tests. Keys are gem names, values are the required gem version. An example use of this option would be to require the ci_reporter gem to generate xml reports </td>
+	</tr>
+	<tr>
+		<td> <code>:requires</code>     </td>
+		<td> Array of ruby files to require before running the specs </td>
+	</tr>
+	<tr>
+		<td> <code>:format</code>       </td>
+		<td> Array of valid RSpec <code>--format</code> option values. Defaults to html report on the <code>reports</code> directory and text progress </td>
+	</tr>
+	<tr>
+		<td> <code>:output</code>       </td>
+		<td> File path to output dump. <code>false</code> to supress output </td>
+	</tr>
+	<tr>
+		<td> <code>:fork</code>         </td>
+		<td> Run the tests on a new java vm. (enabled unless running on JRuby) </td>
+	</tr>
+	<tr>
+		<td> <code>:properties</code>   </td>
+		<td> Hash of system properties available to the test case. </td>
+	</tr>
+	<tr>
+		<td> <code>:java_args</code>    </td>
+		<td> Arguments passed as is to the <span class="caps">JVM</span>. (only when fork is enabled) </td>
+	</tr>
+</table>
+      </div>
+      <div id='footer'>Copyright &copy; 2007-2010 The Apache Software Foundation</div>
+    </div>
+  </body>
+</html>
