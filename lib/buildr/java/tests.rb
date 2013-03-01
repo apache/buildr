@@ -337,7 +337,7 @@ module Buildr
         cmd_args << '-groups' << groups_args.join(",")
       end
       # run all tests in the same suite
-      cmd_args << '-testclass' << tests
+      cmd_args << '-testclass' << (TestNG.version < "6.0" ? test : tests.join(','))
 
       cmd_args += options[:args] if options[:args]
 
