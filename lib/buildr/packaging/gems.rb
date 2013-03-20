@@ -16,7 +16,7 @@
 autoload :RubyForge, 'rubyforge'
 Gem.autoload :Package, 'rubygems/package'
 
-module Buildr
+module Buildr #:nodoc:
 
   class PackageGemTask < ArchiveTask
 

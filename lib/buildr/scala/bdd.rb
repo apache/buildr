@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr::Scala
+module Buildr::Scala #:nodoc:
 
   # Specs is a Scala based BDD framework.
   # To use in your project:
@@ -247,7 +247,7 @@ module Buildr::Scala
 end
 
 # Backwards compatibility stuff.  Remove in 1.5.
-module Buildr
+module Buildr #:nodoc:
   ScalaSpecs = Scala::Specs
 end
 

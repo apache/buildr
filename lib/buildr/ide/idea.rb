@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
   module IntellijIdea
     def self.new_document(value)
       REXML::Document.new(value, :attribute_quote => :quote)

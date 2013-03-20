@@ -13,6 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
   VERSION = '1.4.12.dev'.freeze
 end

@@ -18,7 +18,7 @@ require 'yaml'
 require 'rspec/core/formatters/base_formatter'
 
 module Buildr #:nodoc:
-  module TestFramework
+  module TestFramework #:nodoc:
 
     # A class used by buildr for jruby based frameworks, so that buildr can know
     # which tests succeeded/failed.

@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr::Shell
+module Buildr::Shell #:nodoc:
 
   class Clojure < Base
     include JRebel

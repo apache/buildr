@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
   module Packaging #:nodoc:
 
     # Adds packaging for Java projects: JAR, WAR, AAR, EAR, Javadoc.
@@ -724,7 +724,6 @@ module Buildr
   end
 end
 
-
-class Buildr::Project
+class Buildr::Project #:nodoc:
   include Buildr::Packaging::Java
 end

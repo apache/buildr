@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+# The Scala Module
 module Buildr::Scala
   DEFAULT_VERSION = '2.9.2'
 
@@ -381,7 +382,7 @@ end
 # projects that mix Scala and Java code by spotting Scala code first.
 Buildr::Compiler.compilers.unshift Buildr::Scala::Scalac
 
-class Buildr::Project
+class Buildr::Project #:nodoc:
   include Buildr::Scala::ProjectExtension
 end
 

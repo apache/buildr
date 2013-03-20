@@ -145,8 +145,7 @@ module Java
 
 end
 
-
-class Array
+class Array #:nodoc:
   # Converts a Ruby array into a typed Java array, argument specifies the element type.
   # This is necessary for JRuby and causes no harm on RJB.
   def to_java(cls)

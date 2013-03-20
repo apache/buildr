@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
 
   class Options
 
@@ -604,7 +604,6 @@ module Buildr
 
 end
 
-
-class Buildr::Project
+class Buildr::Project #:nodoc:
   include Buildr::Build
 end

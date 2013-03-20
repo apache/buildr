@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
   # Methods added to Project to support packaging and tasks for packaging,
   # installing and uploading packages.
   module Package

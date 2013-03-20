@@ -30,7 +30,7 @@ unless Gem::Version.new(0).respond_to?(:version=)
   end
 end
 
-module Buildr
+module Buildr #:nodoc:
 
   #
   # See ArtifactNamespace#need

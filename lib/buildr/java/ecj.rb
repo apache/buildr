@@ -13,8 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
-  module Compiler
+module Buildr #:nodoc:
+  module Compiler #:nodoc:
 
     class Ecj < Javac
 

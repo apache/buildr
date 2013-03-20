@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
 
   # An ArtifactNamespace is a hierarchical dictionary used to manage ArtifactRequirements.
   # It can be used to have different artifact versions per project

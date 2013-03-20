@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
   # Methods added to Project to allow checking the build.
   module Checks
 
@@ -243,7 +243,6 @@ module Rake #:nodoc:
   end
 end
 
-
-class Buildr::Project
+class Buildr::Project #:nodoc:
   include Buildr::Checks
 end

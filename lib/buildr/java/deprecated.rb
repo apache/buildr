@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Java
+module Java #:nodoc:
 
   # *Deprecated:* In earlier versions, Java.wrapper served as a wrapper around RJB/JRuby.
   # From this version forward, we apply with JRuby style for importing Java classes:
