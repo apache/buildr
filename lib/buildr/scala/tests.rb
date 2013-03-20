@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr::Scala
+module Buildr::Scala#:nodoc:
 
   # Mockito is available when running ScalaTest
   module Mockito
@@ -212,7 +212,7 @@ end
 
 
 # Backwards compatibility stuff.  Remove in 1.5.
-module Buildr
+module Buildr#:nodoc:
   ScalaCheck = Scala::Check
   ScalaTest = Scala::ScalaTest
 end

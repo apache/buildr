@@ -13,9 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
-
-  module Shell
+module Buildr #:nodoc:
+  module Shell #:nodoc:
 
     class BeanShell < Base
       include Buildr::JRebel

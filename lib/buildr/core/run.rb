@@ -13,8 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
-  module Run
+module Buildr #:nodoc:
+  module Run #:nodoc:
 
     class JavaRunner < Base
       include Buildr::JRebel

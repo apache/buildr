@@ -16,7 +16,7 @@
 autoload :Archive, 'archive/tar/minitar'
 autoload :Zlib, 'zlib'
 
-module Buildr
+module Buildr #:nodoc:
 
   # The TarTask creates a new Tar file. You can include any number of files and and directories,
   # use exclusion patterns, and include files into specific directories.

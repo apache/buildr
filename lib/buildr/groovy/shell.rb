@@ -13,8 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
-  module Groovy
+module Buildr #:nodoc:
+  module Groovy #:nodoc:
     class GroovySH < Buildr::Shell::Base
       include JRebel
 

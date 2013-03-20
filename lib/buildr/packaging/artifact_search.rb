@@ -13,10 +13,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 autoload :Hpricot, 'hpricot'
 
-module Buildr
+module Buildr #:nodoc:
 
   # Search best artifact version from remote repositories
   module ArtifactSearch

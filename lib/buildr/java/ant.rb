@@ -18,7 +18,7 @@ gem 'atoulme-Antwrap'
 autoload :Antwrap, 'antwrap'
 autoload :Logger, 'logger'
 
-module Buildr
+module Buildr #:nodoc:
   module Ant
 
     # Which version of Ant we're using by default.

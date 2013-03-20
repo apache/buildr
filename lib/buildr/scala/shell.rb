@@ -13,8 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
-  module Scala
+module Buildr #:nodoc:
+  module Scala #:nodoc:
     class ScalaShell < Buildr::Shell::Base
       include Buildr::JRebel
 

@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
 
   # Provides the <code>cobertura:html</code>, <code>cobertura:xml</code> and <code>cobertura:check</code> tasks.
   # Require explicitly using <code>require "buildr/java/cobertura"</code>.

@@ -14,7 +14,7 @@
 # the License.
 
 
-module Buildr
+module Buildr #:nodoc:
 
   #
   # See ArtifactNamespace#need

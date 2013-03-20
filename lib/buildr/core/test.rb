@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
 
   # The underlying test framework used by TestTask.
   # To add a new test framework, extend TestFramework::Base and add your framework using:

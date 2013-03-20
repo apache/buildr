@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
   module Doc
     include Extension
 
@@ -275,8 +275,7 @@ module Buildr
     end
   end
 
-
-  class Project
+  class Project #:nodoc:
     include Doc
   end
 end

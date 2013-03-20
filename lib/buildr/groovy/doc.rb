@@ -13,10 +13,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
-  module Doc
+module Buildr #:nodoc:
+  module Doc #:nodoc:
 
-    module GroovydocDefaults
+    module GroovydocDefaults #:nodoc:
       include Extension
 
       # Default groovydoc -doc-title to project's comment or name
@@ -64,7 +64,7 @@ module Buildr
     end
   end
 
-  class Project
+  class Project #:nodoc:
     include GroovydocDefaults
   end
 end

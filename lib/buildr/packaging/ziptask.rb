@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
 
   # The ZipTask creates a new Zip file. You can include any number of files and and directories,
   # use exclusion patterns, and include files into specific directories.

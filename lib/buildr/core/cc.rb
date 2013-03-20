@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
   class CCTask < Rake::Task
     attr_accessor :delay
     attr_reader :project

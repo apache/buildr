@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-module Buildr
+module Buildr #:nodoc:
 
   # Provides the <code>emma:html</code> and <code>emma:xml</code> tasks.
   # Require explicitly using <code>require "buildr/emma"</code>.

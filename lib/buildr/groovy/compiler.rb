@@ -14,6 +14,7 @@
 # the License.
 
 
+#
 module Buildr::Groovy
 
   REQUIRES = ArtifactNamespace.for(self) do |ns|
