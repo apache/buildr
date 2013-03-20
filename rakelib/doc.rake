@@ -91,11 +91,10 @@ end
 
 # Publish prerequisites to Web site.
 desc "Publish complete web site"
-task 'publish' => 'site' do
-  target = "people.apache.org:/www/#{spec.name}.apache.org/"
-  puts "Uploading new site to #{target} ..."
-  sh 'rsync', '--progress', '--recursive', '--delete', '_site/', target
-  sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "/www/#{spec.name}.apache.org/*"
+task 'publish' => %w(site setup-local-site-svn) do
+  puts "Uploading new site ..."
+  sh 'rsync', '--progress', '--recursive', '--delete', '--exclude=.svn','_site/', 'site'
+  task('publish-site-svn').invoke
   puts 'Done'
 end
 
