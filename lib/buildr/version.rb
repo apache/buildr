@@ -14,5 +14,5 @@
 # the License.
 
 module Buildr
-  VERSION = '1.4.11'.freeze
+  VERSION = '1.4.12.dev'.freeze
 end
