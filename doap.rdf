@@ -37,6 +37,19 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.11</name>
+        <created>2013-03-14</created>
+        <revision>1.4.11</revision>
+        <dc:description>
+* Fixed:  Multiple tests in TestNG 6.x versions were being incorrectly passed to
+          the command line application.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.10</name>
         <created>2013-02-17</created>
         <revision>1.4.10</revision>
