@@ -124,6 +124,7 @@ module Buildr
     end
 
     def run
+      @start = Time.now
       standard_exception_handling do
         init 'Buildr'
         load_buildfile
@@ -234,7 +235,6 @@ module Buildr
         elsif options.execute
           eval options.execute
         else
-          @start = Time.now
           top_level_tasks.each { |task_name| invoke_task(task_name) }
           if verbose
             elapsed = Time.now - @start
