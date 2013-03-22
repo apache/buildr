@@ -88,12 +88,13 @@ module Buildr #:nodoc:
             when Buildr::Scala.version?("2.7")
               [ "org.scala-tools:vscaladoc:jar:#{VERSION}" ]
             else
+              warn "VScalaDoc not supported for Scala 2.8+"
               []
           end
         end
       end
 
-      Java.classpath << dependencies
+      Java.classpath << lambda { dependencies }
 
       specify :language => :scala, :source_ext => 'scala'
 
