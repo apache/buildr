@@ -1,4 +1,5 @@
 1.4.12 (Pending)
+* Fixed:  BUILDR-662 reported time is much shorter than actual
 
 1.4.11 (2013-03-14)
 * Fixed:  Multiple tests in TestNG 6.x versions were being incorrectly passed to
