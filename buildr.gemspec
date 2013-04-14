@@ -89,7 +89,9 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_development_dependency 'ci_reporter', '1.7.2'
 
   # NOTE: Must update all-in-one.rake if this is updated
-  spec.add_development_dependency 'ffi-ncurses', '0.4.0' if $platform.to_s == 'java'
+  # ffi-ncurses Fails on several varieties of Ubuntu due to being unable to locate ncursesw library
+  # Should be able to just disable it
+  #spec.add_development_dependency 'ffi-ncurses', '0.4.0' if $platform.to_s == 'java'
   spec.add_development_dependency 'win32console' if $platform.to_s == 'x86-mswin32'
   # Ideally we would depend on psych when the platform has >= 1.9.2 support and jruby platform version > 1.6.6
   #spec.add_development_dependency 'psych' if RUBY_VERSION >= '1.9.2'
