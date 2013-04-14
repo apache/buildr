@@ -186,7 +186,7 @@ module Buildr #:nodoc:
         when ArtifactNamespace
           set |= file.artifacts
         when Symbol, Hash
-          set |= [artifact(file)]
+          set |= [Buildr.artifact(file)]
         when /([^:]+:){2,4}/ # A spec as opposed to a file name.
           set |= [Buildr.artifact(file)]
         when Project
