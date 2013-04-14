@@ -110,15 +110,17 @@ share_as :ScalacCompiler do
   end
 end
 
+# Only run this test if the test environment has SCALA_HOME specified.
+# Allows the Test Suite to run on TravisCI
+if ENV['SCALA_HOME']
+  describe 'scala compiler (installed in SCALA_HOME)' do
+    it 'requires present SCALA_HOME' do
+      ENV['SCALA_HOME'].should_not be_nil
+    end
 
-describe 'scala compiler (installed in SCALA_HOME)' do
-  it 'requires present SCALA_HOME' do
-    ENV['SCALA_HOME'].should_not be_nil
+    it_should_behave_like ScalacCompiler
   end
-
-  it_should_behave_like ScalacCompiler
 end
-
 
 describe 'scala compiler (downloaded from repository)' do
   old_home = ENV['SCALA_HOME']
