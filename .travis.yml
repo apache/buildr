@@ -1,0 +1,20 @@
+language: ruby
+jdk:
+  - oraclejdk7
+rvm:
+  - "1.9.3"
+#  - "1.9.2"
+#  - "1.8.7"
+#  - jruby-19mode
+  - jruby-18mode
+scala:
+#  - 2.10.0
+  - 2.9.2
+#  - 2.9.1
+#  - 2.8.1
+install:
+  - gem install bundler
+  - bundle install
+  - export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx1024M"
+  - export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=312m"
+script: rake ci
