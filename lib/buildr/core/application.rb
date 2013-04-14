@@ -690,5 +690,6 @@ module FileUtils
       @fileutils_output.puts @fileutils_label + msg
     end
   end
-  private_module_function :fu_output_message
+  module_function :fu_output_message
+  private_class_method :fu_output_message
 end
