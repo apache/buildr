@@ -1,4 +1,6 @@
 1.4.12 (Pending)
+* Fixed:  BUILDR-665 Java artifacts in build.yaml breaking ArchiveTask.
+          Submitted by Antonio Pérez Barrero.
 * Fixed:  BUILDR-662 reported time is much shorter than actual
 
 1.4.11 (2013-03-14)
