@@ -141,7 +141,7 @@ module Buildr
       end
 
       def extra_dependencies
-        @extra_dependencies ||= [self.project.compile.dependencies, self.project.test.compile.dependencies].flatten
+        @extra_dependencies ||= []
       end
 
       protected
