@@ -18,3 +18,9 @@ install:
   - export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx1024M"
   - export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=312m"
 script: rake ci
+notifications:
+  email:
+    recipients:
+      - commits@buildr.apache.org
+notifications:
+  irc: "irc.freenode.org#buildr"
