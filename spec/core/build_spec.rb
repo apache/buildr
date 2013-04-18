@@ -421,9 +421,13 @@ describe Release do
       Release.find.should be_instance_of(SvnRelease)
     end
 
-    it 'should return nil if no known release process' do
-      Dir.chdir(Dir.tmpdir) do
-        Release.find.should be_nil
+    # TravisCI seems to place the tmp directory
+    # sub-ordinate to git repository so this will not work
+    unless ENV['TRAVIS_BUILD_ID']
+      it 'should return nil if no known release process' do
+        Dir.chdir(Dir.tmpdir) do
+          Release.find.should be_nil
+        end
       end
     end
 
@@ -807,9 +811,14 @@ describe GitRelease do
   end
 
   describe '#applies_to?' do
-    it 'should reject a non-git repo' do
-      Dir.chdir(Dir.tmpdir) do
-        GitRelease.applies_to?.should be_false
+
+    # TravisCI seems to place the tmp directory
+    # sub-ordinate to git repository so this will not work
+    unless ENV['TRAVIS_BUILD_ID']
+      it 'should reject a non-git repo' do
+        Dir.chdir(Dir.tmpdir) do
+          GitRelease.applies_to?.should be_false
+        end
       end
     end
 
