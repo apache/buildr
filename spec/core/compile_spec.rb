@@ -360,7 +360,7 @@ describe Buildr::CompileTask, '#invoke' do
   it 'should not force compilation if sources older than compiled' do
     # When everything has the same timestamp, nothing is compiled again.
     time = now_at_fs_resolution
-    sources.map { |src| src.pathmap("#{compile_task.target}/thepackage/%n.class") }.
+    sources.map { |src| File.utime(time, time, src); src.pathmap("#{compile_task.target}/thepackage/%n.class") }.
       each { |kls| write kls ; File.utime(time, time, kls) }
     lambda { compile_task.from(sources).invoke }.should_not run_task('foo:compile')
   end
