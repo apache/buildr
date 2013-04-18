@@ -1,4 +1,7 @@
 1.4.12 (Pending)
+* Added:  When generating the GWT facet for Intellij IDEA modules, use
+          the gwt-dev maven artifact dependency if present as the SDK,
+          falling back to the existing behaviour if not possible.
 * Added:  Improved support for auto-detection of VCS dirs when creating
           IDEA projects.
 * Added:  Added support for SuperDevMode in gwt addon and upgraded to
