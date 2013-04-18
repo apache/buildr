@@ -19,10 +19,10 @@ module Buildr
     class << self
       # The specs for requirements
       def dependencies
-        ['com.google.gwt:gwt-dev:jar:2.4.0']
+        %w(com.google.gwt:gwt-dev:jar:2.5.1)
       end
 
-      def gwtc_main(modules, source_artifacts, output_dir, options = {})
+      def gwtc_main(modules, source_artifacts, output_dir, unit_cache_dir, options = {})
         cp = Buildr.artifacts(self.dependencies).each(&:invoke).map(&:to_s) + Buildr.artifacts(source_artifacts).each(&:invoke).map(&:to_s)
         style = options[:style] || "OBFUSCATED," # "PRETTY", "DETAILED"
         log_level = options[:log_level] #  ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL
@@ -50,9 +50,40 @@ module Buildr
           args << "-draftCompile"
         end
 
+        if options[:enable_closure_compiler].nil? || options[:enable_closure_compiler]
+          args << "-XenableClosureCompiler"
+        end
+
         args += modules
 
-        Java::Commands.java 'com.google.gwt.dev.Compiler', *(args + [{:classpath => cp, :properties => options[:properties], :java_args => options[:java_args]}])
+        properties = options[:properties] ? options[:properties].dup : {}
+        properties["gwt.persistentunitcache"] = "true"
+        properties["gwt.persistentunitcachedir"] = unit_cache_dir
+
+        Java::Commands.java 'com.google.gwt.dev.Compiler', *(args + [{:classpath => cp, :properties => properties, :java_args => options[:java_args]}])
+      end
+
+      def superdev_dependencies
+        self.dependencies + %w(com.google.gwt:gwt-codeserver:jar:2.5.1)
+      end
+
+      def gwt_superdev(module_name, source_artifacts, work_dir, options = {})
+
+        cp = Buildr.artifacts(self.superdev_dependencies).each(&:invoke).map(&:to_s) + Buildr.artifacts(source_artifacts).each(&:invoke).map(&:to_s)
+
+        args = []
+        args << "-port" << (options[:port] || 5050)
+        args << "-workDir" << work_dir
+        (options[:src] || []).each do |src|
+          args << "-src" << src
+        end
+        args << module_name
+
+        properties = options[:properties] ? options[:properties].dup : {}
+
+        java_args = options[:java_args] ? options[:java_args].dup : {}
+
+        Java::Commands.java 'com.google.gwt.dev.codeserver.CodeServer', *(args + [{:classpath => cp, :properties => properties, :java_args => java_args}])
       end
     end
 
@@ -66,12 +97,26 @@ module Buildr
           a.is_a?(String) ? file(a) : a
         end
         dependencies = artifacts(options[:dependencies]) || project.compile.dependencies
+
+        unit_cache_dir = project._(:target, :gwt, :unit_cache_dir, output_key)
+
         task = file(output_dir) do
-          Buildr::GWT.gwtc_main(module_names, dependencies + artifacts, output_dir, options.dup)
+          Buildr::GWT.gwtc_main(module_names, dependencies + artifacts, output_dir, unit_cache_dir, options.dup)
         end
         task.enhance(dependencies)
         task.enhance([project.compile])
         task
+      end
+
+      def gwt_superdev_runner(module_name, options = {})
+        dependencies = artifacts(options[:dependencies]) || project.compile.dependencies
+
+        desc "Run Superdev mode"
+        project.task("superdev") do
+          work_dir = project._(:target, :gwt, :superdev)
+          mkdir_p work_dir
+          Buildr::GWT.gwt_superdev(module_name, dependencies, work_dir, options)
+        end
       end
     end
   end
