@@ -531,7 +531,6 @@ module Buildr #:nodoc:
 
     # IdeaModule represents an .ipr file
     class IdeaProject < IdeaFile
-      attr_accessor :vcs
       attr_accessor :extra_modules
       attr_accessor :artifacts
       attr_accessor :configurations
@@ -540,7 +539,6 @@ module Buildr #:nodoc:
       def initialize(buildr_project)
         super()
         @buildr_project = buildr_project
-        @vcs = detect_vcs
         @extra_modules = []
         @artifacts = []
         @configurations = []
@@ -719,14 +717,6 @@ module Buildr #:nodoc:
         "ipr"
       end
 
-      def detect_vcs
-        if File.directory?(buildr_project._('.svn'))
-          "svn"
-        elsif File.directory?(buildr_project._('.git'))
-          "Git"
-        end
-      end
-
       def base_document
         target = StringIO.new
         Builder::XmlMarkup.new(:target => target).project(:version => "4")
@@ -802,9 +792,30 @@ module Buildr #:nodoc:
       end
 
       def vcs_component
-        if vcs
+        project_directories = buildr_project.projects.select { |p| p.iml? }.collect { |p| p.base_dir }
+        project_directories << buildr_project.base_dir
+        # Guess the iml file is in the same dir as base dir
+        project_directories += self.extra_modules.collect { |p| File.dirname(p) }
+
+        project_directories = project_directories.sort.uniq
+
+        mappings = {}
+
+        project_directories.each do |dir|
+          if File.directory?("#{dir}/.git")
+            mappings[dir] = "Git"
+          elsif File.directory?("#{dir}/.svn")
+            mappings[dir] = "svn"
+          end
+        end
+
+        if mappings.size > 1
           create_component("VcsDirectoryMappings") do |xml|
-            xml.mapping :directory => "", :vcs => vcs
+            mappings.each_pair do |dir, vcs_type|
+              resolved_dir = resolve_path(dir)
+              mapped_dir = resolved_dir == '$PROJECT_DIR$/.' ? buildr_project.base_dir : resolved_dir
+              xml.mapping :directory => mapped_dir, :vcs => vcs_type
+            end
           end
         end
       end

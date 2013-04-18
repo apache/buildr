@@ -1,4 +1,6 @@
 1.4.12 (Pending)
+* Added:  Improved support for auto-detection of VCS dirs when creating
+          IDEA projects.
 * Added:  Added support for SuperDevMode in gwt addon and upgraded to
           GWT 2.5.1 by default.
 * Change: BUILDR-664 Update Checkstyle addon so that extra_dependencies is
