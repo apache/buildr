@@ -108,6 +108,8 @@ If you prefer Git, a Git fork is available from http://github.com/buildr/buildr/
 To install Buildr locally from source:
 
   cd buildr
+  export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx1024M"
+  export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=312m"
   rake install
 
 If the cutting edge doesn't work, make sure to check the CHANGELOG, to see
