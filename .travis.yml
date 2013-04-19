@@ -1,6 +1,7 @@
 language: ruby
 jdk:
   - oraclejdk7
+  - openjdk6
 rvm:
   - "1.9.3"
 #  - "1.9.2"
