@@ -16,6 +16,7 @@
 /*.iml
 /*.ipr
 /*.iws
+/setup.*
 /libs
 /Gemfile.lock
 *.rbc
