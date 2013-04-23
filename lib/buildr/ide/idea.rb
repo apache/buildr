@@ -253,7 +253,12 @@ module Buildr #:nodoc:
 
       def add_gwt_facet(modules = {}, options = {})
         name = options[:name] || "GWT"
-        detected_gwt_version = options[:gwt_dev_artifact] ? artifact(options[:gwt_dev_artifact]) : nil
+        detected_gwt_version = nil
+        if options[:gwt_dev_artifact]
+          a = Buildr.artifact(options[:gwt_dev_artifact])
+          a.invoke
+          detected_gwt_version = a.to_s
+        end
 
         settings =
           {
@@ -265,13 +270,13 @@ module Buildr #:nodoc:
 
         buildr_project.compile.dependencies.each do |d|
           if d.to_s =~ /\/com\/google\/gwt\/gwt-dev\/(.*)\//
-            detected_gwt_version = resolve_path(d.to_s)
+            detected_gwt_version = d.to_s
             break
           end
         end unless detected_gwt_version
 
         if detected_gwt_version
-          settings[:gwtSdkUrl] = detected_gwt_version
+          settings[:gwtSdkUrl] = resolve_path(File.dirname(detected_gwt_version))
           settings[:gwtSdkType] = "maven"
         else
           settings[:gwtSdkUrl] = "file://$GWT_TOOLS$"
