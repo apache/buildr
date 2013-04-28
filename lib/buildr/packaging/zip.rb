@@ -176,8 +176,11 @@ module Zip #:nodoc:
   end
 
   class ZipEntrySet
+    alias_method :original_push, :"<<"
+    alias_method :push, :"<<"
+
     def <<(entry)
-      @entrySet[entry.name.to_s] = entry if entry != nil
+      original_push(entry) if entry != nil
     end
   end
 end
