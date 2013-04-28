@@ -1,4 +1,6 @@
 1.4.12 (Pending)
+* Fixed:  BUILDR-666 ZipFile.open modifies file regardless of usage.
+          Reported by Pepijn Van Eeckhoudt, fix by Alex Boisvert.
 * Change: Moved to using TravisCI to test the Linux variants.
 * Added:  When generating the GWT facet for Intellij IDEA modules, use
           the gwt-dev maven artifact dependency if present as the SDK,
