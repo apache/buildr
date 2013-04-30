@@ -126,6 +126,7 @@ module Buildr
       #  Buildr::Wsgen.wsdl2java(project, {_('src/main/wsdl/MyService.wsdl') => {:package => 'com.example'}})
       #  Buildr::Wsgen.wsdl2java(project, {_('src/main/wsdl/MyService.wsdl') => {:output_dir => _(:target, :wsdl, :java)}})
       #  Buildr::Wsgen.wsdl2java(project, {_('src/main/wsdl/MyService.wsdl') => {}}, :package => 'com.example' )
+      #  Buildr::Wsgen.wsdl2java(project, {_('src/main/wsdl/MyService.wsdl') => {}}, :wsdl_location => 'file:META-INF/wsdl/SpecificTaskService.wsdl' )
       def wsdl2java(project, wsdls, options = {})
         desc "Generate java from wsdl"
         project.task("wsdl2java")
@@ -139,10 +140,27 @@ module Buildr
         wsdls.each_pair do |wsdl_file, config|
           pkg = config[:package] || options[:package]
           service = config[:service] || File.basename(wsdl_file, '.wsdl')
+          wsdl_location = config[:wsdl_location]
           java_file = "#{ws_dir}/#{pkg.gsub('.', '/')}/#{service}.java"
           project.file(java_file) do
             mkdir_p ws_dir
-            `wsimport -keep -Xnocompile -target #{target} -s #{ws_dir} -p #{pkg} -wsdllocation META-INF/wsdl/#{service}.wsdl #{wsdl_file}`
+            command = []
+            command << "wsimport"
+            command << "-keep"
+            command << "-Xnocompile"
+            command << "-target"
+            command << target
+            command << "-s"
+            command << ws_dir
+            command << "-p"
+            command << pkg
+            if wsdl_location
+              command << "-wsdllocation"
+              command << wsdl_location
+            end
+            command << wsdl_file
+
+            `#{command.join(' ')}`
             if $? != 0 || !File.exist?(java_file)
               rm_rf java_file
               raise "Problem building webservices"
