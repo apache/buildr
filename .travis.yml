@@ -15,8 +15,8 @@ scala:
 install:
   - gem install bundler
   - bundle install
-  - export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx1024M"
-  - export JAVA_OPTS="-Xmx1024m -XX:MaxPermSize=312m"
+  - export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx700M"
+  - export JAVA_OPTS="-Xmx700m -XX:MaxPermSize=312m"
 script: rake ci
 notifications:
   email:
