@@ -1,4 +1,6 @@
 1.4.12 (Pending)
+* Added:  BUILDR-648 Add new package(:test_jar) packaging type.
+          Submitted by Mike Pettypiece.
 * Fixed:  BUILDR-666 ZipFile.open modifies file regardless of usage.
           Reported by Pepijn Van Eeckhoudt, fix by Alex Boisvert.
 * Change: Moved to using TravisCI to test the Linux variants.
