@@ -46,24 +46,15 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-Highlights from Buildr 1.4.11 (2013-03-14)
+Highlights from Buildr 1.4.12 (2013-05-04)
 
-* Fixed:  Multiple tests in TestNG 6.x versions were being incorrectly passed to the command line application.
-
-
-Highlights from Buildr 1.4.10 (2013-02-10)
-
-* Added:  Support a single intermediate directory for each project hierarchy through an addon 'buildr/single_intermediate_layout'.
-* Fixed:  Scala 2.10 support - compiler now uses additional/separate jars introduced in 2.10 such as scala-reflect.jar and scala-actor.jar
-* Added:  Add an addon for NSIS.
-* Change: BUILDR-612 - Support the TestNG 6.x versions and default to 6.8.
-* Added:  BUILDR-599 - Support the passing of arguments to testng test runner.
-* Fixed:  Observer the per-project source version when generating IDEA module files.
-* Change: Sort the components in IDEA project files in the same order the idea sorts them.
-* Added:  Created an addon 'buildr/wsgen' for generating wsdls from java and java from wsdls using the underlying wsgen tool.
-* Added:  Create a 'buildr/gpg' addon that signs and uploads signatures when uploading artifacts. Inspired by a similar extension in the Apache ODE project by Tammo van Lessen.
-* Change: Require 'bundler/setup' as part of buildr startup to ensure that buildr always runs with up to date dependencies if a Gemfile is present.
-* Added:  Create a simple extension that modifies the project layout to place generated files at the top level.
+* Added:  BUILDR-648 Add new package(:test_jar) packaging type. Submitted by Mike Pettypiece.
+* Fixed:  BUILDR-666 ZipFile.open modifies file regardless of usage. Reported by Pepijn Van Eeckhoudt, fix by Alex Boisvert.
+* Change: Moved to using TravisCI to test the Linux variants.
+* Added:  Make the location of the wsdl in generated source configurable in the wsgen addon.
+* Added:  Added support for SuperDevMode in gwt addon and upgraded to GWT 2.5.1 by default.
+* Change: BUILDR-664 Update Checkstyle addon so that extra_dependencies is empty by default. Submitted by Dieter Vrancken.
+* Fixed:  BUILDR-663 require 'buildr' fails for Ruby 2.0.0.
 
 This is a partial list -- see the "CHANGELOG":CHANGELOG for full details.
 
