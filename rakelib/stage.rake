@@ -102,7 +102,7 @@ task 'stage' => %w(clobber prepare) do |task, args|
   mkpath '_staged'
 
   lambda do
-    puts 'Ensuring all files have appropraite group and other permissions...'
+    puts 'Ensuring all files have appropriate group and other permissions...'
     sh 'find . -type f | xargs chmod go+r'
     sh 'find . -type d | xargs chmod go+rx'
     puts '[X] File permissions updated/validted.'
