@@ -1,4 +1,4 @@
-1.4.12 (Pending)
+1.4.12 (2013-05-04)
 * Added:  BUILDR-648 Add new package(:test_jar) packaging type.
           Submitted by Mike Pettypiece.
 * Fixed:  BUILDR-666 ZipFile.open modifies file regardless of usage.
