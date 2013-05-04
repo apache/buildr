@@ -13,9 +13,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-if Java.java.lang.System.getProperty("java.runtime.version") >= "1.6"
-
 require File.expand_path('../spec_helpers', File.dirname(__FILE__))
+
+if Java.java.lang.System.getProperty("java.runtime.version") >= "1.6"
 Sandbox.require_optional_extension 'buildr/jaxb_xjc'
 
 XSD_CONTENT = <<XSD
