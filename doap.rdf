@@ -37,6 +37,37 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.12</name>
+        <created>2013-05-04</created>
+        <revision>1.4.12</revision>
+        <dc:description>
+* Added:  BUILDR-648 Add new package(:test_jar) packaging type.
+          Submitted by Mike Pettypiece.
+* Fixed:  BUILDR-666 ZipFile.open modifies file regardless of usage.
+          Reported by Pepijn Van Eeckhoudt, fix by Alex Boisvert.
+* Change: Moved to using TravisCI to test the Linux variants.
+* Added:  Make the location of the wsdl in generated source configurable
+          in the wsgen addon.
+* Added:  When generating the GWT facet for Intellij IDEA modules, use
+          the gwt-dev maven artifact dependency if present as the SDK,
+          falling back to the existing behaviour if not possible.
+* Added:  Improved support for auto-detection of VCS dirs when creating
+          IDEA projects.
+* Added:  Added support for SuperDevMode in gwt addon and upgraded to
+          GWT 2.5.1 by default.
+* Change: BUILDR-664 Update Checkstyle addon so that extra_dependencies is
+          empty by default. Submitted by Dieter Vrancken.
+* Fixed:  BUILDR-663 require 'buildr' fails for Ruby 2.0.0.
+* Fixed:  BUILDR-665 Java artifacts in build.yaml breaking ArchiveTask.
+          Submitted by Antonio Pérez Barrero.
+* Fixed:  BUILDR-662 reported time is much shorter than actual
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.11</name>
         <created>2013-03-14</created>
         <revision>1.4.11</revision>
