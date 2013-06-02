@@ -35,6 +35,7 @@ require 'find'
 require 'uri'
 require 'stringio'
 require 'fileutils'
+require 'orderedhash'
 
 require 'buildr/core/util'
 require 'buildr/core/common'

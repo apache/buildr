@@ -1,4 +1,6 @@
 1.4.13 (Pending)
+* Fixed:  Make Archive-related operations (e.g. zip.merge) deterministic using
+          OrderedHash.
 * Change: Update to TestNG 6.8.5.
 
 1.4.12 (2013-05-04)
