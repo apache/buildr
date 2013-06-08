@@ -699,9 +699,12 @@ module ::Rake
     # Add matching glob patterns.
     def add_matching(pattern)
       # Patch to use File::FNM_DOTMATCH where appropriate
-      args = []
-      args << File::FNM_DOTMATCH if pattern =~ /\.\*/
-      FileList.glob(pattern, *args).each do |fn|
+      flags = 0
+      args = [pattern]
+      flags |= File::FNM_DOTMATCH if pattern =~ /\.\*/
+      flags |= File::FNM_EXTGLOB if pattern =~ /[^\\]\{.*\}/
+      args << flags unless 0 == flags
+      FileList.glob(*args).each do |fn|
         self << fn unless exclude?(fn)
       end
     end
