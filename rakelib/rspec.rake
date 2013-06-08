@@ -22,20 +22,12 @@ def default_spec_opts
   default
 end
 
-# RSpec doesn't support file exclusion, so hack our own.
-class RSpec::Core::RakeTask
-  attr_accessor :rspec_files
-  private
-  def files_to_run
-    @rspec_files
-  end
-end
-
 desc 'Run all specs'
 RSpec::Core::RakeTask.new :spec => ['_reports', :compile] do |task|
   ENV['USE_FSC'] = 'no'
-  task.rspec_files = FileList['spec/**/*_spec.rb']
-  task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
+  files = FileList['spec/**/*_spec.rb']
+  files = files.delete_if {|f| f =~ /^spec\/groovy\//} if RUBY_PLATFORM[/java/]
+  task.rspec_files = files
   task.rspec_opts = %w{--format html --out _reports/specs.html --backtrace}
 end
 file('_reports/specs.html') { task(:spec).invoke }
