@@ -1,4 +1,9 @@
 1.4.13 (Pending)
+* Change: Updated dependency versions;
+          - rspec-expectations (2.13.0)
+          - rspec-mocks (2.13.1)
+          - rspec-core (2.13.1)
+          - rspec (2.13.0)
 * Fixed:  Ensure generation of buildfiles from eclipse projects will
           finds .project files in Ruby >= 2.0.0.
 * Fixed:  Patch Rake::FileList in Ruby >= 2.0.0 to match dot files if
