@@ -41,17 +41,6 @@ RSpec::Core::RakeTask.new :spec => ['_reports', :compile] do |task|
 end
 file('_reports/specs.html') { task(:spec).invoke }
 
-desc 'Run RSpec and generate Spec and coverage reports (slow)'
-RSpec::Core::RakeTask.new :coverage => ['_reports', :compile] do |task|
-  ENV['USE_FSC'] = 'no'
-  task.rspec_files = FileList['spec/**/*_spec.rb']
-  task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
-  task.rspec_opts = default_spec_opts
-  task.rcov = true
-  task.rcov_opts = %w{-o _reports/coverage --exclude / --include-file ^lib --text-summary}
-end
-file('_reports/coverage') { task(:coverage).invoke }
-
 task :load_ci_reporter do
   gem 'ci_reporter'
   ENV['CI_REPORTS'] = '_reports/ci'
