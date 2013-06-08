@@ -13,10 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 require File.expand_path(File.join(File.dirname(__FILE__), 'packaging_helper'))
-
 
 describe Project, '#group' do
   it 'should default to project name' do
@@ -34,7 +32,6 @@ describe Project, '#group' do
   end
 end
 
-
 describe Project, '#version' do
   it 'should default to nil' do
     define('foo').version.should be_nil
@@ -48,9 +45,7 @@ describe Project, '#version' do
     define('foo', :version=>'2.1') { define 'bar' }
     project('foo:bar').version.should eql('2.1')
   end
-
 end
-
 
 describe Project, '#id' do
   it 'should be same as project name' do
@@ -410,12 +405,7 @@ POM
       project('foo').packages.size.should == 2
     end
   end
-
 end
-
-
-
-
 
 describe Project, '#package file' do
   it 'should be a file task' do
@@ -527,12 +517,6 @@ describe Project, '#package file' do
 
 end
 
-
-
-
-
-
-
 describe Rake::Task, ' package' do
   it 'should be local task' do
     define 'foo', :version=>'1.0' do
@@ -565,7 +549,6 @@ describe Rake::Task, ' package' do
     FileList['**/target/*.zip'].map.sort.should == ['bar/target/foo-bar-1.0.zip', 'target/foo-1.0.zip']
   end
 end
-
 
 describe Rake::Task, ' install' do
   it 'should be local task' do
@@ -603,7 +586,6 @@ describe Rake::Task, ' install' do
   end
 end
 
-
 describe Rake::Task, ' uninstall' do
   it 'should be local task' do
     define 'foo', :version=>'1.0' do
@@ -629,7 +611,6 @@ describe Rake::Task, ' uninstall' do
     FileList[repositories.local + '/**/*'].reject { |f| File.directory?(f) }.sort.should be_empty
   end
 end
-
 
 describe Rake::Task, ' upload' do
   before do
@@ -692,7 +673,6 @@ describe Rake::Task, ' upload' do
   end
 end
 
-
 describe Packaging, 'zip' do
   it_should_behave_like 'packaging'
   before { @packaging = :zip }
@@ -706,12 +686,10 @@ describe Packaging, 'zip' do
   end
 end
 
-
 describe Packaging, ' tar' do
   before { @packaging = :tar }
   it_should_behave_like 'packaging'
 end
-
 
 describe Packaging, ' tgz' do
   before { @packaging = :tgz }
