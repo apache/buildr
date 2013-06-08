@@ -36,7 +36,6 @@ RSpec::Core::RakeTask.new :spec => ['_reports', :compile] do |task|
   ENV['USE_FSC'] = 'no'
   task.rspec_files = FileList['spec/**/*_spec.rb']
   task.rspec_files.exclude('spec/groovy/*') if RUBY_PLATFORM[/java/]
-  task.rspec_opts = default_spec_opts
   task.rspec_opts = %w{--format html --out _reports/specs.html --backtrace}
 end
 file('_reports/specs.html') { task(:spec).invoke }
