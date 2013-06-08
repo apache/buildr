@@ -22,15 +22,6 @@ def default_spec_opts
   default
 end
 
-# RSpec doesn't support file exclusion, so hack our own.
-class RSpec::Core::RakeTask
-  attr_accessor :rspec_files
-  private
-  def files_to_run
-    @rspec_files
-  end
-end
-
 desc 'Run all specs'
 RSpec::Core::RakeTask.new :spec => ['_reports', :compile] do |task|
   ENV['USE_FSC'] = 'no'
