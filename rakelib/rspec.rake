@@ -64,39 +64,6 @@ end
 desc 'Run all specs with CI reporter'
 task 'ci' => %w(clobber load_ci_reporter spec)
 
-def rvm_run_in(version, command)
-  if !(RbConfig::CONFIG['host_os'] =~ /mswin|win32|dos/i)
-    cmd_prefix = "rvm #{version} exec"
-    sh "rm -f Gemfile.lock; #{cmd_prefix} bundle install; #{cmd_prefix} bundle exec #{command}"
-  else
-    sh "#{version =~ /jruby/ ? "j" : ""}ruby -S #{command}"
-  end
-end
-
-# Useful for testing with JRuby when using Ruby and vice versa.
-namespace 'spec' do
-  desc 'Run all specs specifically with Ruby 1.9'
-  task 'ruby_1_9' do
-    puts 'Running test suite using Ruby ...'
-    rvm_run_in('ruby-1.9.2-p320@buildr', 'rake spec')
-  end
-
-  desc 'Run all specs specifically with Ruby 1.8'
-  task 'ruby_1_8' do
-    puts 'Running test suite using Ruby ...'
-    rvm_run_in('ruby-1.8.7-p358@buildr', 'rake spec')
-  end
-
-  desc 'Run all specs specifically with JRuby'
-  task 'jruby' do
-    puts 'Running test suite using JRuby ...'
-    rvm_run_in('jruby-1.6.7@buildr', 'rake spec')
-  end
-
-  desc 'Run all specs across various rubies'
-  task 'all' => %w(jruby ruby_1_8 ruby_1_9)
-end
-
 task 'clobber' do
   rm_f 'failed'
   rm_rf '_reports'
