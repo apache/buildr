@@ -86,7 +86,6 @@ module Buildr #:nodoc:
         def applies_to?(project, task)
           paths = task.sources + [sources].flatten.map { |src| Array(project.path_to(:source, task.usage, src.to_sym)) }
           paths.flatten!
-          ext_glob = Array(source_ext).join(',')
 
           paths.each { |path|
             Find.find(path) {|found|
