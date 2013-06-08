@@ -693,3 +693,24 @@ module FileUtils
   module_function :fu_output_message
   private_class_method :fu_output_message
 end
+
+module ::Rake
+  class FileList
+    # Add matching glob patterns.
+    def add_matching(pattern)
+      # Patch to use File::FNM_DOTMATCH where appropriate
+      args = []
+      args << File::FNM_DOTMATCH if pattern =~ /\.\*/
+      FileList.glob(pattern, *args).each do |fn|
+        self << fn unless exclude?(fn)
+      end
+    end
+    private :add_matching
+
+    class << self
+      def glob(pattern, *args)
+        Dir.glob(pattern, *args).sort
+      end
+    end
+  end
+end if RUBY_VERSION >= "2.0.0"

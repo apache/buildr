@@ -1,4 +1,6 @@
 1.4.13 (Pending)
+* Fixed:  Patch Rake::FileList in Ruby >= 2.0.0 to match dot files if
+          a .* pattern is supplied as in earlier versions of ruby.
 * Fixed:  Make Archive-related operations (e.g. zip.merge) deterministic using
           OrderedHash.
 * Change: Update to TestNG 6.8.5.
