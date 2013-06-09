@@ -17,7 +17,7 @@ require 'rspec/core/rake_task'
 directory '_reports'
 
 def default_spec_opts
-  default = %w{--format documentation --out _reports/specs.txt --backtrace}
+  default = %w{--order random:123 --format documentation --out _reports/specs.txt --backtrace}
   default << '--colour' if $stdout.isatty && !(RbConfig::CONFIG['host_os'] =~ /mswin|win32|dos/i)
   default
 end
@@ -37,7 +37,7 @@ RSpec::Core::RakeTask.new :spec => ['_reports', :compile] do |task|
   files = FileList['spec/**/*_spec.rb']
   files = files.delete_if {|f| f =~ /^spec\/groovy\//} if RUBY_PLATFORM[/java/]
   task.rspec_files = files
-  task.rspec_opts = %w{--format html --out _reports/specs.html --backtrace}
+  task.rspec_opts = %w{--order random:123 --format html --out _reports/specs.html --backtrace}
 end
 file('_reports/specs.html') { task(:spec).invoke }
 
