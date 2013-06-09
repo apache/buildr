@@ -595,6 +595,7 @@ end
 describe Buildr::Options, 'proxy.exclude' do
   before do
     options.proxy.http = 'http://myproxy:8080'
+    options.proxy.exclude.clear
     @domain = 'domain'
     @host = "host.#{@domain}"
     @uri = URI("http://#{@host}")
