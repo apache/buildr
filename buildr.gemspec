@@ -86,7 +86,7 @@ for those one-off tasks, with a language that's a joy to use.
     spec.add_development_dependency 'rdoc', '3.12'
   end
 
-  spec.add_development_dependency 'ci_reporter', '1.7.2'
+  spec.add_development_dependency 'ci_reporter', '1.8.4'
 
   # NOTE: Must update all-in-one.rake if this is updated
   # ffi-ncurses Fails on several varieties of Ubuntu due to being unable to locate ncursesw library
