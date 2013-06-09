@@ -671,8 +671,6 @@ module Buildr #:nodoc:
         end
       end
 
-    protected
-
       def package_as_jar(file_name) #:nodoc:
         Java::JarTask.define_task(file_name).tap do |jar|
           jar.with :manifest=>manifest, :meta_inf=>meta_inf

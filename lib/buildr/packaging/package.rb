@@ -214,8 +214,6 @@ module Buildr #:nodoc:
       @packages ||= []
     end
 
-  protected
-
     def package_as_zip(file_name) #:nodoc:
       ZipTask.define_task(file_name)
     end
