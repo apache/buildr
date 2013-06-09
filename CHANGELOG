@@ -5,6 +5,7 @@
           - rspec-core (2.13.1)
           - rspec (2.13.0)
           - minitar (0.5.4)
+          - ci_reporter (1.8.4)
 * Fixed:  BUILDR-668 - Specify File::FNM_EXTGLOB for include globs
           where needed in Ruby >= 2.0.0. Reported by Yavor Nikolov.
 * Fixed:  Ensure generation of buildfiles from eclipse projects will
