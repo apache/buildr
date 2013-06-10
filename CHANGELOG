@@ -16,6 +16,7 @@
           - net-sftp (2.1.2)
           - hoe (3.6.2)
           - json_pure (1.8.0)
+          - highline (1.6.19)
 * Fixed:  BUILDR-668 - Specify File::FNM_EXTGLOB for include globs
           where needed in Ruby >= 2.0.0. Reported by Yavor Nikolov.
 * Fixed:  Ensure generation of buildfiles from eclipse projects will
