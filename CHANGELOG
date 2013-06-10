@@ -10,6 +10,10 @@
           - ci_reporter (1.8.4)
           - xml-simple (1.1.2)
           - rjb (1.4.6)
+          - diff-lcs (1.2.4)
+          - builder (3.2.2)
+          - net-ssh (2.6.7)
+          - net-sftp (2.1.2)
 * Fixed:  BUILDR-668 - Specify File::FNM_EXTGLOB for include globs
           where needed in Ruby >= 2.0.0. Reported by Yavor Nikolov.
 * Fixed:  Ensure generation of buildfiles from eclipse projects will

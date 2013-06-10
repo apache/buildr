@@ -55,9 +55,9 @@ for those one-off tasks, with a language that's a joy to use.
 
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.9.2.2'
-  spec.add_dependency 'builder',              '3.1.3'
-  spec.add_dependency 'net-ssh',              '2.6.0'
-  spec.add_dependency 'net-sftp',             '2.0.5'
+  spec.add_dependency 'builder',              '3.2.2'
+  spec.add_dependency 'net-ssh',              '2.6.7'
+  spec.add_dependency 'net-sftp',             '2.1.2'
   spec.add_dependency 'rubyzip',              '0.9.9'
   # Highline 1.6.15 does not seem to work on windows. We should
   # investigate the root cause at a later stage before upgrading
@@ -67,7 +67,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'hoe',                  '3.1.0'
   spec.add_dependency 'rjb',                  '1.4.6' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
   spec.add_dependency 'atoulme-Antwrap',      '~> 0.7.4'
-  spec.add_dependency 'diff-lcs',             '1.1.3'
+  spec.add_dependency 'diff-lcs',             '1.2.4'
   spec.add_dependency 'rspec-expectations',   '2.13.0'
   spec.add_dependency 'rspec-mocks',          '2.13.1'
   spec.add_dependency 'rspec-core',           '2.13.1'
