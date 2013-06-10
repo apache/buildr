@@ -62,7 +62,7 @@ for those one-off tasks, with a language that's a joy to use.
   # Highline 1.6.15 does not seem to work on windows. We should
   # investigate the root cause at a later stage before upgrading
   spec.add_dependency 'highline',             '1.6.2'
-  spec.add_dependency 'json_pure',            '1.7.5'
+  spec.add_dependency 'json_pure',            '1.8.0'
   spec.add_dependency 'rubyforge',            '2.0.4'
   spec.add_dependency 'hoe',                  '3.6.2'
   spec.add_dependency 'rjb',                  '1.4.6' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
