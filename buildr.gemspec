@@ -61,7 +61,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'rubyzip',              '0.9.9'
   # Highline 1.6.15 does not seem to work on windows. We should
   # investigate the root cause at a later stage before upgrading
-  spec.add_dependency 'highline',             '1.6.2'
+  spec.add_dependency 'highline',             '1.6.19'
   spec.add_dependency 'json_pure',            '1.8.0'
   spec.add_dependency 'rubyforge',            '2.0.4'
   spec.add_dependency 'hoe',                  '3.6.2'
