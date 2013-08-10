@@ -667,7 +667,7 @@ describe Buildr::MultiTest do
         }
       }
     JAVA
-    define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ], :groups=>['included'] }
+    define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ], :options => {:testng => {:groups=>['included']}} }
     lambda { project('foo').test.invoke }.should_not raise_error
   end
 
@@ -688,7 +688,7 @@ describe Buildr::MultiTest do
         public void annotated() {}
       }
     JAVA
-    define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ], :excludegroups=>['excluded'] }
+    define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ], :options => {:testng => {:excludegroups=>['excluded']}} }
     lambda { project('foo').test.invoke }.should_not raise_error
   end
 end

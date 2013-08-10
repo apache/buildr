@@ -233,7 +233,7 @@ module Buildr #:nodoc:
           forking = {}
         when :each
           forking = { :fork=>true, :forkmode=>'perTest' }
-        when true, :once
+        when nil, true, :once
           forking = { :fork=>true, :forkmode=>'once' }
         else
           fail 'Option fork must be :once, :each or false.'
@@ -389,7 +389,7 @@ module Buildr #:nodoc:
       fail "Missing :frameworks option" unless options[:frameworks]
       @frameworks = options[:frameworks].map do |f|
         framework_options = (options[:options] || {})[f.to_sym] || {}
-        f.new(task, options)
+        f.new(task, framework_options)
       end
     end
 
