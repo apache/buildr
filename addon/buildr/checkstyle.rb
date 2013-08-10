@@ -130,10 +130,12 @@ module Buildr
       end
 
       def properties
-        properties = {:basedir => self.project.base_dir}
-        properties['checkstyle.suppressions.file'] = self.suppressions_file if File.exist?(self.suppressions_file)
-        properties['checkstyle.import-control.file'] = self.import_control_file if File.exist?(self.import_control_file)
-        properties
+        unless @properties
+          @properties = {:basedir => self.project.base_dir}
+          @properties['checkstyle.suppressions.file'] = self.suppressions_file if File.exist?(self.suppressions_file)
+          @properties['checkstyle.import-control.file'] = self.import_control_file if File.exist?(self.import_control_file)
+        end
+        @properties
       end
 
       def source_paths
