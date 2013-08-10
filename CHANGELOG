@@ -1,4 +1,7 @@
 1.4.13 (Pending)
+* Fixed:  BUILDR-673 - Fix the option handling of the MultiTest test
+          framework to behave as documented. Only the framework specific
+          options are passed to the test. Submitted by John Roth.
 * Added:  BUILDR-672 - Persist the properties field in the checkstyle
           addon so that they can be modified by the user. Submitted
           by Wim C.
