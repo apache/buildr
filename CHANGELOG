@@ -1,4 +1,7 @@
 1.4.13 (Pending)
+* Added:  BUILDR-672 - Persist the properties field in the checkstyle
+          addon so that they can be modified by the user. Submitted
+          by Wim C.
 * Fixed:  Make the package_as_* methods public so that the methods are
           detected in Ruby >= 2.0.0 via the respond_to? method.
 * Change: Updated dependency versions;
