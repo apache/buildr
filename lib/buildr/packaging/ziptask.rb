@@ -27,7 +27,7 @@ module Buildr #:nodoc:
   # See Buildr#zip and ArchiveTask.
   class ZipTask < ArchiveTask
 
-    # Compression leve for this Zip.
+    # Compression level for this Zip.
     attr_accessor :compression_level
 
     def initialize(*args) #:nodoc:
