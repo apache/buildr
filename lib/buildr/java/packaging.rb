@@ -685,8 +685,12 @@ module Buildr #:nodoc:
           war.with :classes=>[compile.target, resources.target].compact
           war.with :libs=>compile.dependencies
           # Add included files, or the webapp directory.
-          webapp = path_to(:source, :main, :webapp)
-          war.with webapp if File.exist?(webapp)
+          assets.paths.each do |asset|
+            war.tap do |war|
+              war.enhance([asset])
+            end
+            war.include asset, :as => '.'
+          end
         end
       end
 

@@ -235,6 +235,35 @@ puts 'Artifacts included in WAR package:'
 puts package(:war).libs.map(&:to_spec)
 {% endhighlight %}
 
+h3(#war_extra_assets). Compiling Assets
+
+In modern web applications, it is common to use tools that compile and compress assets. i.e. "Coffeescript":http://coffeescript.org/ is compiled into javascript and "Sass":http://sass-lang.com/ compiles into CSS. Buildr provides support using a simple @assets@ abstraction. Directory or file tasks can be added to the @assets.paths@ configuration variable for a project and the contents will be included in the package.
+
+h4(#coffeescript). Integrating CoffeeScript
+
+{% highlight ruby %}
+target_dir = _(:target, :generated, "coffee/main/webapp")
+source_dir = _(:source, :main, :coffee)
+
+assets.paths << file(target_dir => [FileList["#{source_dir}/**/*.coffee"]]) do
+  puts "Compiling coffeescript"
+  sh "coffee --bare --compile --output #{target_dir} #{source_dir}"
+  touch target_dir
+end
+{% endhighlight %}
+
+h4(#sass). Integrating Sass
+
+{% highlight ruby %}
+target_dir = _(:target, :generated, "sass/main/webapp")
+source_dir = _(:source, :main, :sass)
+
+assets.paths << file(target_dir => [FileList["#{source_dir}/**/*.scss"]]) do
+  puts "Compiling scss"
+  sh "scss -q --update #{source_dir}:#{target_dir}"
+  touch target_dir
+end
+{% endhighlight %}
 
 h2(#aar). Packaging AARs
 

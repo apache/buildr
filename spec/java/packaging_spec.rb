@@ -530,6 +530,26 @@ describe Packaging, 'war' do
     inspect_war { |files| files.should include('test.html') }
   end
 
+  it 'should use files from added assets directory if nothing included' do
+    write 'generated/main/webapp/test.html'
+    define('foo', :version => '1.0') { assets.paths << 'generated/main/webapp/'; package(:war) }
+    inspect_war { |files| files.should include('test.html') }
+  end
+
+  it 'should use files from generated assets directory if nothing included' do
+    write 'generated/main/webapp/test.html'
+    define('foo', :version => '1.0') do
+      target_dir = _('generated/main/webapp')
+      assets.paths << project.file(target_dir) do
+        mkdir_p target_dir
+        touch "#{target_dir}/test.html"
+        touch target_dir
+      end
+      package(:war)
+    end
+    inspect_war { |files| files.should include('test.html') }
+  end
+
   it 'should accept files from :classes option' do
     write 'src/main/java/Test.java', 'class Test {}'
     write 'classes/test'

@@ -299,7 +299,7 @@ module Buildr #:nodoc:
       def add_web_facet(options = {})
         name = options[:name] || "Web"
         url_base = options[:url_base] || "/"
-        default_webroots = [buildr_project._(:source, :main, :webapp)]
+        default_webroots = project.assets.paths
         webroots = options[:webroots] || default_webroots
         default_web_xml = "#{buildr_project._(:source, :main, :webapp)}/WEB-INF/web.xml"
         web_xml = options[:web_xml] || default_web_xml
