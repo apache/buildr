@@ -105,6 +105,7 @@ module Buildr
         end
         task.enhance(dependencies)
         task.enhance([project.compile])
+        project.assets.paths << task
         task
       end
 

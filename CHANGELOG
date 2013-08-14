@@ -1,4 +1,6 @@
 1.4.13 (Pending)
+* Added:  Initial support for simple integration of an asset pipeline.
+          See "Compiling Assets" section in the manual.
 * Fixed:  BUILDR-673 - Fix the option handling of the MultiTest test
           framework to behave as documented. Only the framework specific
           options are passed to the test. Submitted by John Roth.
