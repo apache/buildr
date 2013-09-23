@@ -223,6 +223,10 @@ describe URI::FILE, '#write' do
 end
 
 
+def default_http_headers
+  {"Cache-Control" => "no-cache", "User-Agent" => "Buildr-#{Buildr::VERSION}"}
+end
+
 describe URI::HTTP, '#read' do
   before do
     @proxy = 'http://john:smith@myproxy:8080'
@@ -328,7 +332,7 @@ describe URI::HTTP, '#read' do
     redirect['Location'] = "http://#{@host_domain}/asdf"
 
     request1 = mock('request1')
-    Net::HTTP::Get.should_receive(:new).once.with('/', {"Cache-Control"=>"no-cache"}).and_return(request1)
+    Net::HTTP::Get.should_receive(:new).once.with('/', default_http_headers).and_return(request1)
     request1.should_receive(:basic_auth).with('john', 'secret')
     @http.should_receive(:request).with(request1).and_yield(redirect)
 
@@ -337,7 +341,7 @@ describe URI::HTTP, '#read' do
     ok.stub!(:read_body)
 
     request2 = mock('request2')
-    Net::HTTP::Get.should_receive(:new).once.with("/asdf", {"Cache-Control"=>"no-cache"}).and_return(request2)
+    Net::HTTP::Get.should_receive(:new).once.with("/asdf", default_http_headers).and_return(request2)
     request2.should_receive(:basic_auth).with('john', 'secret')
     @http.should_receive(:request).with(request2).and_yield(ok)
 
@@ -347,7 +351,7 @@ describe URI::HTTP, '#read' do
   it 'should include the query part when performing HTTP GET' do
     # should this test be generalized or shared with any other URI subtypes?
     Net::HTTP.stub!(:new).and_return(@http)
-    Net::HTTP::Get.should_receive(:new).with(/#{Regexp.escape(@query)}$/, {"Cache-Control"=>"no-cache"})
+    Net::HTTP::Get.should_receive(:new).with(/#{Regexp.escape(@query)}$/, default_http_headers)
     @uri.read
   end
 

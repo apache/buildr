@@ -1,4 +1,7 @@
 1.4.13 (Pending)
+* Change: Default to setting the "User-Agent" header to "Buildr-VERSION"
+          when accessing http resources. Maven Central rejects requests
+          without a User-Agent string.
 * Change: Change default scope of dependencies to 'compile'. Submitted
           by Ingo Schmidt.
 * Change: BUILDR-675 - Set Cache-Control to 'no-cache' when downloading
