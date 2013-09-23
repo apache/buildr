@@ -1,4 +1,6 @@
 1.4.13 (Pending)
+* Change: Change default scope of dependencies to 'compile'. Submitted
+          by Ingo Schmidt.
 * Change: BUILDR-675 - Set Cache-Control to 'no-cache' when downloading
           artifacts. Submitted by Félix Enrique Llorente Pastora.
 * Added:  Initial support for simple integration of an asset pipeline.
