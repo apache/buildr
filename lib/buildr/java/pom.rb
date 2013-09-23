@@ -179,7 +179,7 @@ module Buildr
         spec[pair.first] = value_of(element[pair.last], substitute) if element[pair.last]
         spec
       }
-      { :type=>"jar" }.merge(hash)
+      {:scope => "compile", :type => "jar"}.merge(hash)
     end
 
   end
