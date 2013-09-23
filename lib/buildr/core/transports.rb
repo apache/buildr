@@ -274,6 +274,7 @@ module URI
         headers = {}
         headers['If-Modified-Since'] = CGI.rfc1123_date(options[:modified].utc) if options[:modified]
         headers['Cache-Control'] = 'no-cache'
+        headers['User-Agent'] = "Buildr-#{Buildr::VERSION}"
         request = Net::HTTP::Get.new(request_uri.empty? ? '/' : request_uri, headers)
         request.basic_auth self.user, self.password if self.user
         http.request request do |response|
