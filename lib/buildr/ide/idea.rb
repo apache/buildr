@@ -775,7 +775,7 @@ module Buildr #:nodoc:
         attribs["project-jdk-name"] = self.jdk_version
         attribs["project-jdk-type"] = "JavaSDK"
         create_component("ProjectRootManager", attribs) do |xml|
-          xml.output("url" => "file://$PROJECT_DIR$/out")
+          xml.output("url" => file_path(buildr_project._(:target, :idea, :project_out)))
         end
       end
 
