@@ -771,7 +771,7 @@ module Buildr #:nodoc:
         attribs["version"] = "2"
         attribs["languageLevel"] = "JDK_#{self.jdk_version.gsub('.', '_')}"
         attribs["assert-keyword"] = "true"
-        attribs["jdk-15"] = "true"
+        attribs["jdk-15"] = (jdk_version >= "1.5").to_s
         attribs["project-jdk-name"] = self.jdk_version
         attribs["project-jdk-type"] = "JavaSDK"
         create_component("ProjectRootManager", attribs) do |xml|
