@@ -323,10 +323,15 @@ module Buildr #:nodoc:
 
       def add_jruby_facet(options = {})
         name = options[:name] || "JRuby"
-        jruby_version = options[:jruby_version] || "jruby-1.5.2-p249"
+
+        ruby_version_file = buildr_project._('.ruby-version')
+        default_jruby_version = File.exist?(ruby_version_file) ? "rbenv: #{IO.read(ruby_version_file).strip}" : 'jruby-1.6.7.2'
+        jruby_version = options[:jruby_version] || default_jruby_version
         add_facet(name, "JRUBY") do |f|
-          f.configuration(:number => 0) do |c|
+          f.configuration do |c|
             c.JRUBY_FACET_CONFIG_ID :NAME => "JRUBY_SDK_NAME", :VALUE => jruby_version
+            c.LOAD_PATH :number => "0"
+            c.I18N_FOLDERS :number => "0"
           end
         end
       end
