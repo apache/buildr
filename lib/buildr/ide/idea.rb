@@ -303,13 +303,20 @@ module Buildr #:nodoc:
         webroots = options[:webroots] || default_webroots
         default_web_xml = "#{buildr_project._(:source, :main, :webapp)}/WEB-INF/web.xml"
         web_xml = options[:web_xml] || default_web_xml
-        version = options[:version] || "3.0"
+        default_deployment_descriptors = ['glassfish-web.xml', 'context.xml'].
+          collect { |d| "#{buildr_project._(:source, :main, :webapp)}/WEB-INF/#{d}" }
+        deployment_descriptors = options[:deployment_descriptors] || default_deployment_descriptors
 
         add_facet(name, "web") do |f|
           f.configuration do |c|
             c.descriptors do |d|
-              if File.exist?(web_xml) || default_web_xml != web_xml
-                d.deploymentDescriptor :name => 'web.xml', :url => file_path(web_xml), :optional => "true", :version => version
+              if File.exist?(web_xml) || options[:web_xml]
+                d.deploymentDescriptor :name => 'web.xml', :url => file_path(web_xml)
+              end
+              deployment_descriptors.each do |deployment_descriptor|
+                if File.exist?(deployment_descriptor) || options[:deployment_descriptors]
+                  d.deploymentDescriptor :name => File.basename(deployment_descriptor), :url => file_path(deployment_descriptor)
+                end
               end
             end
             c.webroots do |w|
