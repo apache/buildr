@@ -1,4 +1,6 @@
 1.4.13 (Pending)
+* Added:  Improve support for auto-detection of ejb and web descriptors
+          within Intellij IDEA project generation.
 * Change: Default to setting the "User-Agent" header to "Buildr-VERSION"
           when accessing http resources. Maven Central rejects requests
           without a User-Agent string.
