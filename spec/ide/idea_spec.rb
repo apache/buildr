@@ -296,6 +296,206 @@ describe Buildr::IntellijIdea do
       end
     end
 
+    describe "using add_web_facet" do
+      before do
+        write "src/main/webapp/WEB-INF/web.xml"
+        write "src/main/webapp/WEB-INF/glassfish-web.xml"
+        write "src/main/webapp/WEB-INF/context.xml"
+        write "src/main/webapp/WEB-INF/faces-config.xml"
+
+        @foo = define "foo" do
+          iml.add_web_facet
+        end
+        invoke_generate_task
+      end
+
+      it "generates a web facet with appropriate deployment descriptors" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        web_facet_xpath = "#{facet_xpath}[@type='web', @name='Web']"
+        doc.should have_xpath(web_facet_xpath)
+        deployment_descriptor_xpath = "#{web_facet_xpath}/configuration/descriptors/deploymentDescriptor"
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='web.xml',  url='file://$MODULE_DIR$/src/main/webapp/WEB-INF/web.xml']")
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='glassfish-web.xml',  url='file://$MODULE_DIR$/src/main/webapp/WEB-INF/glassfish-web.xml']")
+      end
+
+      it "generates a web facet with derived webroots" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        web_facet_xpath = "#{facet_xpath}[@type='web', @name='Web']"
+        doc.should have_xpath(web_facet_xpath)
+        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp', @realtive='/']")
+      end
+
+      it "generates a web facet with jsf facet auto-detected" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        web_facet_xpath = "#{facet_xpath}[@type='web', @name='Web']"
+        doc.should have_xpath(web_facet_xpath)
+        doc.should have_xpath("#{web_facet_xpath}/facet[@type='jsf', @name='JSF']")
+      end
+    end
+
+    describe "using add_web_facet with specified parameters" do
+      before do
+        @foo = define "foo" do
+          iml.add_web_facet(:deployment_descriptors => ["src/main/webapp2/WEB-INF/web.xml"],
+                            :enable_jsf => true,
+                            :webroots => {"src/main/webapp2" => "/", "src/main/css" => "/css"})
+        end
+        invoke_generate_task
+      end
+
+      it "generates a web facet with appropriate deployment descriptors" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        web_facet_xpath = "#{facet_xpath}[@type='web', @name='Web']"
+        doc.should have_xpath(web_facet_xpath)
+        deployment_descriptor_xpath = "#{web_facet_xpath}/configuration/descriptors/deploymentDescriptor"
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='web.xml',  url='file://$MODULE_DIR$/src/main/webapp2/WEB-INF/web.xml']")
+      end
+
+      it "generates a web facet with specified webroots" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        web_facet_xpath = "#{facet_xpath}[@type='web', @name='Web']"
+        doc.should have_xpath(web_facet_xpath)
+        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp2', @realtive='/']")
+        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/css', @realtive='/css']")
+      end
+
+      it "generates a web facet with jsf facet enabled" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        web_facet_xpath = "#{facet_xpath}[@type='web', @name='Web']"
+        doc.should have_xpath(web_facet_xpath)
+        doc.should have_xpath("#{web_facet_xpath}/facet[@type='jsf', @name='JSF']")
+      end
+    end
+
+    describe "using add_ejb_facet" do
+      before do
+        write "src/main/java/com/bin/foo.java"
+        write "src/main/resources/WEB-INF/ejb-jar.xml"
+
+        @foo = define "foo" do
+          iml.add_ejb_facet
+        end
+        invoke_generate_task
+      end
+
+      it "generates an ejb facet with appropriate deployment descriptors" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        web_facet_xpath = "#{facet_xpath}[@type='ejb', @name='EJB']"
+        doc.should have_xpath(web_facet_xpath)
+        deployment_descriptor_xpath = "#{web_facet_xpath}/configuration/descriptors/deploymentDescriptor"
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='ejb-jar.xml',  url='file://$MODULE_DIR$/src/main/resources/WEB-INF/ejb-jar.xml']")
+      end
+
+      it "generates an ejb facet with derived ejbRoots" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        web_facet_xpath = "#{facet_xpath}[@type='ejb', @name='EJB']"
+        doc.should have_xpath(web_facet_xpath)
+        doc.should have_xpath("#{web_facet_xpath}/configuration/ejbRoots/root[@url='file://$MODULE_DIR$/src/main/java']")
+        doc.should have_xpath("#{web_facet_xpath}/configuration/ejbRoots/root[@url='file://$MODULE_DIR$/src/main/resources']")
+      end
+    end
+
+
+    describe "using add_ejb_facet specifying parameters" do
+      before do
+        @foo = define "foo" do
+          iml.add_ejb_facet(:ejb_roots => ["generated/main/java","generated/main/resources"],
+          :deployment_descriptors => ["generated/main/resources/WEB-INF/ejb-jar.xml"])
+        end
+        invoke_generate_task
+      end
+
+      it "generates an ejb facet with appropriate deployment descriptors" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        web_facet_xpath = "#{facet_xpath}[@type='ejb', @name='EJB']"
+        doc.should have_xpath(web_facet_xpath)
+        deployment_descriptor_xpath = "#{web_facet_xpath}/configuration/descriptors/deploymentDescriptor"
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='ejb-jar.xml',  url='file://$MODULE_DIR$/generated/main/resources/WEB-INF/ejb-jar.xml']")
+      end
+
+      it "generates an ejb facet with derived ejbRoots" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        web_facet_xpath = "#{facet_xpath}[@type='ejb', @name='EJB']"
+        doc.should have_xpath(web_facet_xpath)
+        doc.should have_xpath("#{web_facet_xpath}/configuration/ejbRoots/root[@url='file://$MODULE_DIR$/generated/main/java']")
+        doc.should have_xpath("#{web_facet_xpath}/configuration/ejbRoots/root[@url='file://$MODULE_DIR$/generated/main/resources']")
+      end
+    end
+
+    describe "using add_jruby_facet" do
+      before do
+
+        @foo = define "foo" do
+          iml.add_jruby_facet
+        end
+        invoke_generate_task
+      end
+
+      it "generates a jruby facet with appropriate sdk" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        jruby_facet_xpath = "#{facet_xpath}[@type='JRUBY', @name='JRuby']"
+        doc.should have_xpath(jruby_facet_xpath)
+        doc.should have_xpath("#{jruby_facet_xpath}/configuration/JRUBY_FACET_CONFIG_ID[@NAME='JRUBY_SDK_NAME', VALUE='jruby-1.6.7.2']")
+      end
+
+      it "generates a jruby facet with appropriate paths" do
+        doc = xml_document(@foo._("foo.iml"))
+        prefix = "/module/component[@name='FacetManager']/facet[@type='JRUBY', @name='JRuby']/configuration"
+        doc.should have_xpath("#{prefix}/LOAD_PATH[@number='0']")
+        doc.should have_xpath("#{prefix}/I18N_FOLDERS[@number='0']")
+      end
+    end
+
+    describe "using add_jruby_facet with .ruby-version specified" do
+      before do
+
+        write ".ruby-version", "jruby-1.7.2"
+
+        @foo = define "foo" do
+          iml.add_jruby_facet
+        end
+        invoke_generate_task
+      end
+
+      it "generates a jruby facet with appropriate sdk" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = "/module/component[@name='FacetManager']/facet"
+        doc.should have_nodes(facet_xpath, 1)
+        jruby_facet_xpath = "#{facet_xpath}[@type='JRUBY', @name='JRuby']"
+        doc.should have_xpath(jruby_facet_xpath)
+        doc.should have_xpath("#{jruby_facet_xpath}/configuration/JRUBY_FACET_CONFIG_ID[@NAME='JRUBY_SDK_NAME', VALUE='rbenv: jruby-1.7.2']")
+      end
+
+      it "generates a jruby facet with appropriate paths" do
+        doc = xml_document(@foo._("foo.iml"))
+        prefix = "/module/component[@name='FacetManager']/facet[@type='JRUBY', @name='JRuby']/configuration"
+        doc.should have_xpath("#{prefix}/LOAD_PATH[@number='0']")
+        doc.should have_xpath("#{prefix}/I18N_FOLDERS[@number='0']")
+      end
+    end
+
     describe "with artifacts added to root project" do
       before do
         @foo = define "foo" do

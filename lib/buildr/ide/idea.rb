@@ -302,7 +302,11 @@ module Buildr #:nodoc:
         buildr_project.assets.paths.each {|p| default_webroots[p] = "/" }
         webroots = options[:webroots] || default_webroots
         default_deployment_descriptors = []
-        ['web.xml', 'glassfish-web.xml', 'context.xml'].each do |descriptor|
+        ['web.xml', 'sun-web.xml', 'glassfish-web.xml', 'jetty-web.xml', 'geronimo-web.xml',
+         'context.xml', 'weblogic.xml',
+         'jboss-deployment-structure.xml', 'jboss-web.xml',
+         'ibm-web-bnd.xml', 'ibm-web-ext.xml', 'ibm-web-ext-pme.xml'].
+          each do |descriptor|
           webroots.each_pair do |path, relative_url|
             next unless relative_url == "/"
             d = "#{path}/WEB-INF/#{descriptor}"
@@ -375,15 +379,27 @@ module Buildr #:nodoc:
 
       def add_ejb_facet(options = {})
         name = options[:name] || "EJB"
-        default_ejb_xml = buildr_project._(:source, :main, :resources, "WEB-INF/ejb-jar.xml")
-        ejb_xml = options[:ejb_xml] || default_ejb_xml
-        ejb_roots = options[:ejb_roots] || [buildr_project.compile.sources, buildr_project.resources.sources].flatten
+
+        default_ejb_roots = [buildr_project.compile.sources, buildr_project.resources.sources].flatten
+        ejb_roots = options[:ejb_roots] || default_ejb_roots
+
+        default_deployment_descriptors = []
+        ['ejb-jar.xml', 'glassfish-ejb-jar.xml', 'ibm-ejb-jar-bnd.xml', 'ibm-ejb-jar-ext-pme.xml', 'ibm-ejb-jar-ext.xml',
+         'jboss.xml', 'jbosscmp-jdbc.xml', 'openejb-jar.xml', 'sun-cmp-mapping.xml', 'sun-ejb-jar.xml',
+         'weblogic-cmp-rdbms-jar.xml', 'weblogic-ejb-jar.xml'].
+          each do |descriptor|
+          ejb_roots.each do |path|
+            d = "#{path}/WEB-INF/#{descriptor}"
+            default_deployment_descriptors << d if File.exist?(d)
+          end
+        end
+        deployment_descriptors = options[:deployment_descriptors] || default_deployment_descriptors
 
         add_facet(name, "ejb") do |facet|
           facet.configuration do |c|
             c.descriptors do |d|
-              if File.exist?(ejb_xml) || default_ejb_xml != ejb_xml
-                d.deploymentDescriptor :name => 'ejb-jar.xml', :url => file_path(ejb_xml)
+              deployment_descriptors.each do |deployment_descriptor|
+                d.deploymentDescriptor :name => File.basename(deployment_descriptor), :url => file_path(deployment_descriptor)
               end
             end
             c.ejbRoots do |e|
