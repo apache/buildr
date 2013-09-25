@@ -17,19 +17,19 @@
 * Fixed:  Make the package_as_* methods public so that the methods are
           detected in Ruby >= 2.0.0 via the respond_to? method.
 * Change: Updated dependency versions;
-          - rspec-expectations (2.13.0)
-          - rspec-mocks (2.13.1)
-          - rspec-core (2.13.1)
-          - rspec (2.13.0)
+          - rspec-expectations (2.14.3)
+          - rspec-mocks (2.14.3)
+          - rspec-core (2.14.5)
+          - rspec (2.14.1)
           - minitar (0.5.4)
           - ci_reporter (1.8.4)
           - xml-simple (1.1.2)
-          - rjb (1.4.6)
+          - rjb (1.4.8)
           - diff-lcs (1.2.4)
           - builder (3.2.2)
-          - net-ssh (2.6.7)
+          - net-ssh (2.7.0)
           - net-sftp (2.1.2)
-          - hoe (3.6.2)
+          - hoe (3.7.1)
           - json_pure (1.8.0)
           - highline (1.6.19)
 * Fixed:  BUILDR-668 - Specify File::FNM_EXTGLOB for include globs
