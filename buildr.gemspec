@@ -59,8 +59,6 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'net-ssh',              '2.7.0'
   spec.add_dependency 'net-sftp',             '2.1.2'
   spec.add_dependency 'rubyzip',              '0.9.9'
-  # Highline 1.6.15 does not seem to work on windows. We should
-  # investigate the root cause at a later stage before upgrading
   spec.add_dependency 'highline',             '1.6.19'
   spec.add_dependency 'json_pure',            '1.8.0'
   spec.add_dependency 'rubyforge',            '2.0.4'
@@ -80,10 +78,10 @@ for those one-off tasks, with a language that's a joy to use.
 
   # Unable to get this consistently working under jruby on windows
   unless $platform.to_s == 'java'
-    spec.add_development_dependency 'jekyll', '0.11.2'
+    spec.add_development_dependency 'jekyll', '1.2.1'
     spec.add_development_dependency 'RedCloth', '4.2.9'
     spec.add_development_dependency 'jekylltask', '1.1.0'
-    spec.add_development_dependency 'rdoc', '3.12'
+    spec.add_development_dependency 'rdoc', '4.0.1'
   end
 
   spec.add_development_dependency 'ci_reporter', '1.9.0'
