@@ -298,33 +298,37 @@ module Buildr #:nodoc:
 
       def add_web_facet(options = {})
         name = options[:name] || "Web"
-        url_base = options[:url_base] || "/"
-        default_webroots = buildr_project.assets.paths
+        default_webroots = {}
+        buildr_project.assets.paths.each {|p| default_webroots[p] = "/" }
         webroots = options[:webroots] || default_webroots
-        default_web_xml = "#{buildr_project._(:source, :main, :webapp)}/WEB-INF/web.xml"
-        web_xml = options[:web_xml] || default_web_xml
-        default_deployment_descriptors = ['glassfish-web.xml', 'context.xml'].
-          collect { |d| "#{buildr_project._(:source, :main, :webapp)}/WEB-INF/#{d}" }
+        default_deployment_descriptors = []
+        ['web.xml', 'glassfish-web.xml', 'context.xml'].each do |descriptor|
+          webroots.each_pair do |path, relative_url|
+            next unless relative_url == "/"
+            d = "#{path}/WEB-INF/#{descriptor}"
+            default_deployment_descriptors << d if File.exist?(d)
+          end
+        end
         deployment_descriptors = options[:deployment_descriptors] || default_deployment_descriptors
 
         add_facet(name, "web") do |f|
           f.configuration do |c|
             c.descriptors do |d|
-              if File.exist?(web_xml) || options[:web_xml]
-                d.deploymentDescriptor :name => 'web.xml', :url => file_path(web_xml)
-              end
               deployment_descriptors.each do |deployment_descriptor|
-                if File.exist?(deployment_descriptor) || options[:deployment_descriptors]
-                  d.deploymentDescriptor :name => File.basename(deployment_descriptor), :url => file_path(deployment_descriptor)
-                end
+                d.deploymentDescriptor :name => File.basename(deployment_descriptor), :url => file_path(deployment_descriptor)
               end
             end
             c.webroots do |w|
-              webroots.each do |webroot|
-                w.root :url => file_path(webroot), :relative => url_base
+              webroots.each_pair do |webroot, relative_url|
+                w.root :url => file_path(webroot), :relative => relative_url
               end
             end
           end
+          default_enable_jsf = webroots.select{|webroot| File.exist?("#{webroot}/WEB-INF/faces-config.xml")}
+          enable_jsf = options[:enable_jsf].nil? ? default_enable_jsf : options[:enable_jsf]
+          f.facet(:type => 'jsf', :name => 'JSF') do |jsf|
+            jsf.configuration
+          end if enable_jsf
         end
       end
 
