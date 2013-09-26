@@ -33,7 +33,7 @@ describe Buildr::Application do
     it 'should execute *_load methods in order' do
       order = [:load_gems, :load_artifact_ns, :load_tasks, :raw_load_buildfile]
       order.each { |method| Buildr.application.should_receive(method).ordered }
-      Buildr.application.stub!(:exit) # With this, shows the correct error instead of SystemExit.
+      Buildr.application.stub(:exit) # With this, shows the correct error instead of SystemExit.
       Buildr.application.run
     end
 
@@ -43,7 +43,7 @@ describe Buildr::Application do
         Buildr.application.should_receive(:load_imports)
         method.call
       end
-      Buildr.application.stub!(:exit) # With this, shows the correct error instead of SystemExit.
+      Buildr.application.stub(:exit) # With this, shows the correct error instead of SystemExit.
       Buildr.application.run
     end
 
@@ -51,7 +51,7 @@ describe Buildr::Application do
       Buildr.application.should_receive(:load_imports) do
         Buildr.should_receive(:projects)
       end
-      Buildr.application.stub!(:exit) # With this, shows the correct error instead of SystemExit.
+      Buildr.application.stub(:exit) # With this, shows the correct error instead of SystemExit.
       Buildr.application.run
     end
   end
@@ -174,7 +174,7 @@ describe Buildr::Application do
         spec.name = 'buildr-foo'
         spec.version = '1.2'
       end
-      $stdout.stub!(:isatty).and_return(true)
+      $stdout.stub(:isatty).and_return(true)
     end
 
     it 'should do nothing if no gems specified' do
@@ -495,19 +495,19 @@ describe Buildr, 'settings' do
     end
 
     it 'should have the same timestamp as the buildfile' do
-      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time, 1)
+      Buildr.application.buildfile.timestamp.should be_within(1).of(@buildfile_time)
     end
 
     it 'should have the same timestamp as build.yaml if the latter is newer' do
       write 'build.yaml'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'build.yaml')
       Buildr.application.run
-      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
+      Buildr.application.buildfile.timestamp.should be_within(1).of(@buildfile_time + 5)
     end
 
     it 'should have the same timestamp as the buildfile if build.yaml is older' do
       write 'build.yaml'; File.utime(@buildfile_time - 5, @buildfile_time - 5, 'build.yaml')
       Buildr.application.run
-      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time, 1)
+      Buildr.application.buildfile.timestamp.should be_within(1).of(@buildfile_time)
     end
 
     it 'should have the same timestamp as build.rb in home dir if the latter is newer (until version 1.6)' do
@@ -530,7 +530,7 @@ describe Buildr, 'settings' do
     def buildfile_should_have_same_timestamp_as(file)
       write file; File.utime(@buildfile_time + 5, @buildfile_time + 5, file)
       Buildr.application.send :load_tasks
-      Buildr.application.buildfile.timestamp.should be_close(@buildfile_time + 5, 1)
+      Buildr.application.buildfile.timestamp.should be_within(1).of(@buildfile_time + 5)
     end
   end
 end

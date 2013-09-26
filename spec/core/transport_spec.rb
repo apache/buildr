@@ -238,7 +238,7 @@ describe URI::HTTP, '#read' do
     @no_proxy_args = [@host_domain, 80]
     @proxy_args = @no_proxy_args + ['myproxy', 8080, 'john', 'smith']
     @http = mock('http')
-    @http.stub!(:request).and_yield(Net::HTTPNotModified.new(nil, nil, nil))
+    @http.stub(:request).and_yield(Net::HTTPNotModified.new(nil, nil, nil))
   end
 
   it 'should not use proxy unless proxy is set' do
@@ -309,8 +309,8 @@ describe URI::HTTP, '#read' do
 
   it 'should not die if content size is zero' do
     ok = Net::HTTPOK.new(nil, nil, nil)
-    ok.stub!(:read_body)
-    @http.stub!(:request).and_yield(ok)
+    ok.stub(:read_body)
+    @http.stub(:request).and_yield(ok)
     Net::HTTP.should_receive(:new).and_return(@http)
     $stdout.should_receive(:isatty).and_return(false)
     @uri.read :progress=>true
@@ -338,7 +338,7 @@ describe URI::HTTP, '#read' do
 
     # The second request will be ok
     ok = Net::HTTPOK.new(nil, nil, nil)
-    ok.stub!(:read_body)
+    ok.stub(:read_body)
 
     request2 = mock('request2')
     Net::HTTP::Get.should_receive(:new).once.with("/asdf", default_http_headers).and_return(request2)
@@ -350,7 +350,7 @@ describe URI::HTTP, '#read' do
 
   it 'should include the query part when performing HTTP GET' do
     # should this test be generalized or shared with any other URI subtypes?
-    Net::HTTP.stub!(:new).and_return(@http)
+    Net::HTTP.stub(:new).and_return(@http)
     Net::HTTP::Get.should_receive(:new).with(/#{Regexp.escape(@query)}$/, default_http_headers)
     @uri.read
   end
@@ -363,8 +363,8 @@ describe URI::HTTP, '#write' do
     @content = 'Readme. Please!'
     @uri = URI('http://john:secret@host.domain/foo/bar/baz.jar')
     @http = mock('Net::HTTP')
-    @http.stub!(:request).and_return(Net::HTTPOK.new(nil, nil, nil))
-    Net::HTTP.stub!(:new).and_return(@http)
+    @http.stub(:request).and_return(Net::HTTPOK.new(nil, nil, nil))
+    Net::HTTP.stub(:new).and_return(@http)
   end
 
   it 'should open connection to HTTP server' do
@@ -441,12 +441,12 @@ describe URI::SFTP, '#read' do
     @ssh_session = mock('Net::SSH::Session')
     @sftp_session = mock('Net::SFTP::Session')
     @file_factory = mock('Net::SFTP::Operations::FileFactory')
-    Net::SSH.stub!(:start).with('localhost', 'john', :password=>'secret', :port=>22).and_return(@ssh_session) do
+    Net::SSH.stub(:start).with('localhost', 'john', :password=>'secret', :port=>22).and_return(@ssh_session) do
       Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
       @sftp_session.should_receive(:connect!).and_return(@sftp_session)
       @sftp_session.should_receive(:loop)
       @sftp_session.should_receive(:file).with.and_return(@file_factory)
-      @file_factory.stub!(:open)
+      @file_factory.stub(:open)
       @ssh_session.should_receive(:close)
       @ssh_session
     end
@@ -489,15 +489,15 @@ describe URI::SFTP, '#write' do
     @ssh_session = mock('Net::SSH::Session')
     @sftp_session = mock('Net::SFTP::Session')
     @file_factory = mock('Net::SFTP::Operations::FileFactory')
-    Net::SSH.stub!(:start).with('localhost', 'john', :password=>'secret', :port=>22).and_return(@ssh_session) do
+    Net::SSH.stub(:start).with('localhost', 'john', :password=>'secret', :port=>22).and_return(@ssh_session) do
       Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
       @sftp_session.should_receive(:connect!).and_return(@sftp_session)
       @sftp_session.should_receive(:loop)
-      @sftp_session.stub!(:opendir!).and_return { fail }
-      @sftp_session.stub!(:close)
-      @sftp_session.stub!(:mkdir!)
+      @sftp_session.stub(:opendir!).and_return { fail }
+      @sftp_session.stub(:close)
+      @sftp_session.stub(:mkdir!)
       @sftp_session.should_receive(:file).with.and_return(@file_factory)
-      @file_factory.stub!(:open)
+      @file_factory.stub(:open)
       @ssh_session.should_receive(:close)
       @ssh_session
     end
