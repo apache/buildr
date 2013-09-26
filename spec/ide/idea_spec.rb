@@ -507,6 +507,28 @@ describe Buildr::IntellijIdea do
       end
     end
 
+    describe "using add_jpa_facet derived from main_source_directories" do
+      before do
+        write "src/main/resources2/META-INF/persistence.xml"
+        write "src/main/resources2/META-INF/orm.xml"
+
+        @foo = define "foo" do
+          iml.main_source_directories << "src/main/resources2"
+          iml.add_jpa_facet
+
+        end
+        invoke_generate_task
+      end
+
+      it "generates a jpa facet with appropriate deployment descriptors" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
+        deployment_descriptor_xpath = "#{facet_xpath}/configuration/deploymentDescriptor"
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='persistence.xml',  url='file://$MODULE_DIR$/src/main/resources2/META-INF/persistence.xml']")
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='orm.xml',  url='file://$MODULE_DIR$/src/main/resources2/META-INF/orm.xml']")
+      end
+    end
+
     describe "using add_jpa_facet with hibernate configured in persistence.xml" do
       before do
         write "src/main/resources/META-INF/persistence.xml", "org.hibernate.ejb.HibernatePersistence"
@@ -592,6 +614,24 @@ describe Buildr::IntellijIdea do
         ejb_facet_xpath = ensure_facet_xpath(doc, 'ejb', 'EJB')
         doc.should have_xpath("#{ejb_facet_xpath}/configuration/ejbRoots/root[@url='file://$MODULE_DIR$/generated/main/java']")
         doc.should have_xpath("#{ejb_facet_xpath}/configuration/ejbRoots/root[@url='file://$MODULE_DIR$/generated/main/resources']")
+      end
+    end
+
+    describe "using add_ejb_facet derived from main_source_directories" do
+      before do
+        write "src/main/resources2/WEB-INF/ejb-jar.xml"
+        @foo = define "foo" do
+          iml.main_source_directories << "src/main/resources2"
+          iml.add_ejb_facet
+        end
+        invoke_generate_task
+      end
+
+      it "generates an ejb facet with appropriate deployment descriptors" do
+        doc = xml_document(@foo._("foo.iml"))
+        ejb_facet_xpath = ensure_facet_xpath(doc, 'ejb', 'EJB')
+        deployment_descriptor_xpath = "#{ejb_facet_xpath}/configuration/descriptors/deploymentDescriptor"
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='ejb-jar.xml',  url='file://$MODULE_DIR$/src/main/resources2/WEB-INF/ejb-jar.xml']")
       end
     end
 

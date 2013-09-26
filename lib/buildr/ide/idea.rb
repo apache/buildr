@@ -354,7 +354,7 @@ module Buildr #:nodoc:
       def add_jpa_facet(options = {})
         name = options[:name] || "JPA"
 
-        source_roots = [buildr_project.compile.sources, buildr_project.resources.sources].flatten
+        source_roots = [buildr_project.iml.main_source_directories, buildr_project.compile.sources, buildr_project.resources.sources].flatten.compact
         default_deployment_descriptors = []
         ['orm.xml', 'persistence.xml'].
           each do |descriptor|
@@ -401,7 +401,7 @@ module Buildr #:nodoc:
       def add_ejb_facet(options = {})
         name = options[:name] || "EJB"
 
-        default_ejb_roots = [buildr_project.compile.sources, buildr_project.resources.sources].flatten
+        default_ejb_roots = [buildr_project.iml.main_source_directories, buildr_project.compile.sources, buildr_project.resources.sources].flatten.compact
         ejb_roots = options[:ejb_roots] || default_ejb_roots
 
         default_deployment_descriptors = []
