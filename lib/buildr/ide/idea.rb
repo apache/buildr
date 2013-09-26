@@ -353,25 +353,46 @@ module Buildr #:nodoc:
 
       def add_jpa_facet(options = {})
         name = options[:name] || "JPA"
+
+        source_roots = [buildr_project.compile.sources, buildr_project.resources.sources].flatten
+        default_deployment_descriptors = []
+        ['orm.xml', 'persistence.xml'].
+          each do |descriptor|
+          source_roots.each do |path|
+            d = "#{path}/META-INF/#{descriptor}"
+            default_deployment_descriptors << d if File.exist?(d)
+          end
+        end
+        deployment_descriptors = options[:deployment_descriptors] || default_deployment_descriptors
+
         factory_entry = options[:factory_entry] || buildr_project.name.to_s
         validation_enabled = options[:validation_enabled].nil? ? true : options[:validation_enabled]
-        provider_enabled = options[:provider_enabled] || 'Hibernate'
-        default_persistence_xml = buildr_project._(:source, :main, :resources, "META-INF/persistence.xml")
-        persistence_xml = options[:persistence_xml] || default_persistence_xml
-        default_orm_xml = buildr_project._(:source, :main, :resources, "META-INF/orm.xml")
-        orm_xml = options[:orm_xml] || default_orm_xml
+        if options[:provider_enabled]
+          provider = options[:provider_enabled]
+        else
+          provider = nil
+          {'org.hibernate.ejb.HibernatePersistence' => 'Hibernate',
+           'org.eclipse.persistence.jpa.PersistenceProvider' => 'EclipseLink'}.
+            each_pair do |match, candidate_provider|
+            deployment_descriptors.each do |descriptor|
+              if File.exist?(descriptor) && /#{Regexp.escape(match)}/ =~ IO.read(descriptor)
+                provider = candidate_provider
+              end
+            end
+          end
+        end
+
         add_facet(name, "jpa") do |f|
           f.configuration do |c|
-            c.setting :name => "validation-enabled", :value => validation_enabled
-            c.setting :name => "provider-name", :value => provider_enabled
+            if provider
+              c.setting :name => "validation-enabled", :value => validation_enabled
+              c.setting :name => "provider-name", :value => provider
+            end
             c.tag!('datasource-mapping') do |ds|
               ds.tag!('factory-entry', :name => factory_entry)
             end
-            if File.exist?(persistence_xml) || default_persistence_xml != persistence_xml
-              c.deploymentDescriptor :name => 'persistence.xml', :url => file_path(persistence_xml)
-            end
-            if File.exist?(orm_xml) || default_orm_xml != orm_xml
-              c.deploymentDescriptor :name => 'orm.xml', :url => file_path(orm_xml)
+            deployment_descriptors.each do |descriptor|
+              c.deploymentDescriptor :name => File.basename(descriptor), :url => file_path(descriptor)
             end
           end
         end

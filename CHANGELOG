@@ -1,4 +1,6 @@
 1.4.13 (Pending)
+* Added:  Auto-detect jpa provider in Intellij IDEA facet generation if
+          persistence.xml file is present and provider not specified.
 * Added:  Auto-detect jruby version in Intellij IDEA facet generation if
           .ruby-version file is present.
 * Added:  Improve support for auto-detection of ejb and web descriptors
