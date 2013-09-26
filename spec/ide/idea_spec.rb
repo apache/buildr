@@ -451,6 +451,100 @@ describe Buildr::IntellijIdea do
       end
     end
 
+    describe "using add_jpa_facet" do
+      before do
+        write "src/main/resources/META-INF/persistence.xml", "org.hibernate.ejb.HibernatePersistence"
+        write "src/main/resources/META-INF/orm.xml"
+
+        @foo = define "foo" do
+          iml.add_jpa_facet
+        end
+        invoke_generate_task
+      end
+
+      it "generates a jpa facet with appropriate deployment descriptors" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
+        deployment_descriptor_xpath = "#{facet_xpath}/configuration/deploymentDescriptor"
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='persistence.xml',  url='file://$MODULE_DIR$/src/main/resources/META-INF/persistence.xml']")
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='orm.xml',  url='file://$MODULE_DIR$/src/main/resources/META-INF/orm.xml']")
+      end
+
+      it "generates a jpa facet with default settings" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled', @value='true']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name', @value='Hibernate']")
+      end
+    end
+
+    describe "using add_jpa_facet specifying parameters" do
+      before do
+        write "src/main/resources2/META-INF/persistence.xml"
+        write "src/main/resources2/META-INF/orm.xml"
+
+        @foo = define "foo" do
+          iml.add_jpa_facet(:provider_enabled => 'Hibernate',
+                            :deployment_descriptors => ["src/main/resources2/META-INF/persistence.xml",
+                                                        "src/main/resources2/META-INF/orm.xml"])
+        end
+        invoke_generate_task
+      end
+
+      it "generates a jpa facet with appropriate deployment descriptors" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
+        deployment_descriptor_xpath = "#{facet_xpath}/configuration/deploymentDescriptor"
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='persistence.xml',  url='file://$MODULE_DIR$/src/main/resources2/META-INF/persistence.xml']")
+        doc.should have_xpath("#{deployment_descriptor_xpath}[@name='orm.xml',  url='file://$MODULE_DIR$/src/main/resources2/META-INF/orm.xml']")
+      end
+
+      it "generates a jpa facet with default settings" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled', @value='true']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name', @value='Hibernate']")
+      end
+    end
+
+    describe "using add_jpa_facet with hibernate configured in persistence.xml" do
+      before do
+        write "src/main/resources/META-INF/persistence.xml", "org.hibernate.ejb.HibernatePersistence"
+        write "src/main/resources/META-INF/orm.xml"
+
+        @foo = define "foo" do
+          iml.add_jpa_facet
+        end
+        invoke_generate_task
+      end
+
+      it "generates a jpa facet with default settings" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled', @value='true']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name', @value='Hibernate']")
+      end
+    end
+
+    describe "using add_jpa_facet with eclipselink configured in persistence.xml" do
+      before do
+        write "src/main/resources/META-INF/persistence.xml", "org.eclipse.persistence.jpa.PersistenceProvider"
+        write "src/main/resources/META-INF/orm.xml"
+
+        @foo = define "foo" do
+          iml.add_jpa_facet
+        end
+        invoke_generate_task
+      end
+
+      it "generates a jpa facet with default settings" do
+        doc = xml_document(@foo._("foo.iml"))
+        facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled', @value='true']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name', @value='EclipseLink']")
+      end
+    end
+
     describe "using add_ejb_facet" do
       before do
         write "src/main/java/com/bin/foo.java"
