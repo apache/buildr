@@ -322,8 +322,8 @@ describe Buildr::TestTask, 'with passing tests' do
       define 'foo' do
         test.using(:junit)
         test.instance_eval do
-          @framework.stub!(:tests).and_return(['PassingTest1', 'PassingTest2'])
-          @framework.stub!(:run).and_return(['PassingTest1', 'PassingTest2'])
+          @framework.stub(:tests).and_return(['PassingTest1', 'PassingTest2'])
+          @framework.stub(:run).and_return(['PassingTest1', 'PassingTest2'])
         end
       end
       project('foo').test
@@ -367,8 +367,8 @@ describe Buildr::TestTask, 'with failed test' do
       define 'foo' do
         test.using(:junit)
         test.instance_eval do
-          @framework.stub!(:tests).and_return(['FailingTest', 'PassingTest'])
-          @framework.stub!(:run).and_return(['PassingTest'])
+          @framework.stub(:tests).and_return(['FailingTest', 'PassingTest'])
+          @framework.stub(:run).and_return(['PassingTest'])
         end
       end
       project('foo').test
@@ -633,8 +633,8 @@ describe Buildr::TestTask, '#invoke' do
     @test_task ||= define('foo') {
       test.using(:junit)
       test.instance_eval do
-        @framework.stub!(:tests).and_return(['PassingTest'])
-        @framework.stub!(:run).and_return(['PassingTest'])
+        @framework.stub(:tests).and_return(['PassingTest'])
+        @framework.stub(:run).and_return(['PassingTest'])
       end
     }.test
   end
@@ -844,10 +844,10 @@ describe 'test rule' do
   it 'should reset tasks to specific pattern' do
     define 'foo' do
       test.using(:junit)
-      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
       define 'bar' do
         test.using(:junit)
-        test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+        test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
       end
     end
     task('test:something').invoke
@@ -860,7 +860,7 @@ describe 'test rule' do
   it 'should apply *name* pattern' do
     define 'foo' do
       test.using(:junit)
-      test.instance_eval { @framework.stub!(:tests).and_return(['prefix-something-suffix']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['prefix-something-suffix']) }
     end
     task('test:something').invoke
     project('foo').test.tests.should include('prefix-something-suffix')
@@ -869,7 +869,7 @@ describe 'test rule' do
   it 'should not apply *name* pattern if asterisks used' do
     define 'foo' do
       test.using(:junit)
-      test.instance_eval { @framework.stub!(:tests).and_return(['prefix-something', 'prefix-something-suffix']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['prefix-something', 'prefix-something-suffix']) }
     end
     task('test:*something').invoke
     project('foo').test.tests.should include('prefix-something')
@@ -879,7 +879,7 @@ describe 'test rule' do
   it 'should accept multiple tasks separated by commas' do
     define 'foo' do
       test.using(:junit)
-      test.instance_eval { @framework.stub!(:tests).and_return(['foo', 'bar', 'baz']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['foo', 'bar', 'baz']) }
     end
     task('test:foo,bar').invoke
     project('foo').test.tests.should include('foo')
@@ -899,7 +899,7 @@ describe 'test rule' do
   it 'should execute the named tests even if the test task is not needed' do
     define 'foo' do
       test.using(:junit)
-      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
     end
     touch_last_successful_test_run project('foo').test
     task('test:something').invoke
@@ -909,7 +909,7 @@ describe 'test rule' do
   it 'should not execute excluded tests' do
     define 'foo' do
       test.using(:junit)
-      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
     end
     task('test:*,-nothing').invoke
     project('foo').test.tests.should include('something')
@@ -932,7 +932,7 @@ describe 'test rule' do
   it 'should not execute excluded tests with wildcards' do
     define 'foo' do
       test.using(:junit)
-      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
     end
     task('test:something,-s*,-n*').invoke
     project('foo').test.tests.should_not include('something')
@@ -942,7 +942,7 @@ describe 'test rule' do
   it 'should execute all tests except excluded tests' do
     define 'foo' do
       test.using(:junit)
-      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'anything', 'nothing']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['something', 'anything', 'nothing']) }
     end
     task('test:-nothing').invoke
     project('foo').test.tests.should include('something', 'anything')
@@ -953,7 +953,7 @@ describe 'test rule' do
     define 'foo' do
       test.using(:junit)
       test.exclude 'something'
-      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'anything', 'nothing']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['something', 'anything', 'nothing']) }
     end
     task('test:-nothing').invoke
     project('foo').test.tests.should include('something', 'anything')
@@ -964,7 +964,7 @@ describe 'test rule' do
     define 'foo' do
       test.using(:junit)
       test.include 'something'
-      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
     end
     task('test:nothing').invoke
     project('foo').test.tests.should include('nothing')
@@ -974,7 +974,7 @@ describe 'test rule' do
   it 'should not execute a test if it''s both included and excluded' do
     define 'foo' do
       test.using(:junit)
-      test.instance_eval { @framework.stub!(:tests).and_return(['nothing']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['nothing']) }
     end
     task('test:nothing,-nothing').invoke
     project('foo').test.tests.should_not include('nothing')
@@ -983,7 +983,7 @@ describe 'test rule' do
   it 'should not update the last successful test run timestamp' do
     define 'foo' do
       test.using(:junit)
-      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
     end
     a_second_ago = Time.now - 1
     touch_last_successful_test_run project('foo').test, a_second_ago
@@ -1000,8 +1000,8 @@ describe 'test failed' do
       define 'foo' do
         test.using(:junit)
         test.instance_eval do
-          @framework.stub!(:tests).and_return(['FailingTest', 'PassingTest'])
-          @framework.stub!(:run).and_return(['PassingTest'])
+          @framework.stub(:tests).and_return(['FailingTest', 'PassingTest'])
+          @framework.stub(:run).and_return(['PassingTest'])
         end
       end
       project('foo').test
@@ -1012,8 +1012,8 @@ describe 'test failed' do
     define 'foo' do
       test.using(:junit)
       test.instance_eval do
-        @framework.stub!(:tests).and_return(['FailingTest', 'PassingTest'])
-        @framework.stub!(:run).and_return(['PassingTest'])
+        @framework.stub(:tests).and_return(['FailingTest', 'PassingTest'])
+        @framework.stub(:run).and_return(['PassingTest'])
       end
     end
     write project('foo').path_to(:target, "junit-failed"), "FailingTest"
@@ -1026,8 +1026,8 @@ describe 'test failed' do
     define 'foo' do
       test.using(:junit).exclude('ExcludedTest')
       test.instance_eval do
-        @framework.stub!(:tests).and_return(['FailingTest', 'PassingTest', 'ExcludedTest'])
-        @framework.stub!(:run).and_return(['PassingTest'])
+        @framework.stub(:tests).and_return(['FailingTest', 'PassingTest', 'ExcludedTest'])
+        @framework.stub(:run).and_return(['PassingTest'])
       end
     end
     write project('foo').path_to(:target, "junit-failed"), "FailingTest\nExcludedTest"
@@ -1041,16 +1041,16 @@ describe 'test failed' do
       define 'foo' do
         test.using(:junit)
         test.instance_eval do
-          @framework.stub!(:tests).and_return(['PassingTest'])
-          @framework.stub!(:run).and_return(['PassingTest'])
+          @framework.stub(:tests).and_return(['PassingTest'])
+          @framework.stub(:run).and_return(['PassingTest'])
         end
       end
       define 'bar' do
         test.using(:junit)
         test.enhance ["parent:foo:test"]
         test.instance_eval do
-          @framework.stub!(:tests).and_return(['FailingTest', 'PassingTest'])
-          @framework.stub!(:run).and_return(['PassingTest'])
+          @framework.stub(:tests).and_return(['FailingTest', 'PassingTest'])
+          @framework.stub(:run).and_return(['PassingTest'])
         end
       end
     end
@@ -1268,10 +1268,10 @@ describe 'integration rule' do
   it 'should reset tasks to specific pattern' do
     define 'foo' do
       test.using :junit, :integration
-      test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
       define 'bar' do
         test.using :junit, :integration
-        test.instance_eval { @framework.stub!(:tests).and_return(['something', 'nothing']) }
+        test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
       end
     end
     task('integration:something').invoke
@@ -1284,7 +1284,7 @@ describe 'integration rule' do
   it 'should apply *name* pattern' do
     define 'foo' do
       test.using :junit, :integration
-      test.instance_eval { @framework.stub!(:tests).and_return(['prefix-something-suffix']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['prefix-something-suffix']) }
     end
     task('integration:something').invoke
     project('foo').test.tests.should include('prefix-something-suffix')
@@ -1293,7 +1293,7 @@ describe 'integration rule' do
   it 'should not apply *name* pattern if asterisks used' do
     define 'foo' do
       test.using :junit, :integration
-      test.instance_eval { @framework.stub!(:tests).and_return(['prefix-something', 'prefix-something-suffix']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['prefix-something', 'prefix-something-suffix']) }
     end
     task('integration:*something').invoke
     project('foo').test.tests.should include('prefix-something')
@@ -1303,7 +1303,7 @@ describe 'integration rule' do
   it 'should accept multiple tasks separated by commas' do
     define 'foo' do
       test.using :junit, :integration
-      test.instance_eval { @framework.stub!(:tests).and_return(['foo', 'bar', 'baz']) }
+      test.instance_eval { @framework.stub(:tests).and_return(['foo', 'bar', 'baz']) }
     end
     task('integration:foo,bar').invoke
     project('foo').test.tests.should include('foo')

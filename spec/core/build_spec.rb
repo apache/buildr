@@ -335,16 +335,16 @@ end # of Git
 describe Svn do
   describe '#tag' do
     it 'should remove any existing tag with the same name' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-      Svn.stub!(:copy)
+      Svn.stub(:repo_url).and_return('http://my.repo.org/foo/trunk')
+      Svn.stub(:copy)
       Svn.should_receive(:remove).with('http://my.repo.org/foo/tags/1.0.0', 'Removing old copy')
 
       Svn.tag '1.0.0'
     end
 
     it 'should do an svn copy with the release version' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-      Svn.stub!(:remove)
+      Svn.stub(:repo_url).and_return('http://my.repo.org/foo/trunk')
+      Svn.stub(:remove)
       Svn.should_receive(:copy).with(Dir.pwd, 'http://my.repo.org/foo/tags/1.0.0', 'Release 1.0.0')
 
       Svn.tag '1.0.0'
@@ -444,47 +444,47 @@ shared_examples_for 'a release process' do
     before do
       write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
       # Prevent a real call to a spawned buildr process.
-      @release.stub!(:buildr)
-      @release.stub!(:check)
+      @release.stub(:buildr)
+      @release.stub(:check)
       @release.should_receive(:ruby).with('-S', 'buildr', "_#{Buildr::VERSION}_", '--buildfile', File.expand_path('buildfile.next'),
                                           '--environment', 'development', 'clean', 'upload', 'DEBUG=no')
     end
 
     it 'should tag a release with the release version' do
-      @release.stub!(:update_version_to_next)
+      @release.stub(:update_version_to_next)
       @release.should_receive(:tag_release).with('1.0.0')
       @release.make
     end
 
     it 'should not alter the buildfile before tagging' do
-      @release.stub!(:update_version_to_next)
+      @release.stub(:update_version_to_next)
       @release.should_receive(:tag_release).with('1.0.0')
       @release.make
       file('buildfile').should contain('VERSION_NUMBER = "1.0.0"')
     end
 
     it 'should update the buildfile with the next version number' do
-      @release.stub!(:tag_release)
+      @release.stub(:tag_release)
       @release.make
       file('buildfile').should contain('VERSION_NUMBER = "1.0.1-SNAPSHOT"')
     end
 
     it 'should keep leading zeros in the next version number' do
       write 'buildfile', "VERSION_NUMBER = '1.0.001-SNAPSHOT'"
-      @release.stub!(:tag_release)
+      @release.stub(:tag_release)
       @release.make
       file('buildfile').should contain('VERSION_NUMBER = "1.0.002-SNAPSHOT"')
     end
 
     it 'should commit the updated buildfile' do
-      @release.stub!(:tag_release)
+      @release.stub(:tag_release)
       @release.make
       file('buildfile').should contain('VERSION_NUMBER = "1.0.1-SNAPSHOT"')
     end
 
     it 'should not consider "-rc" as "-SNAPSHOT"' do
       write 'buildfile', "VERSION_NUMBER = '1.0.0-rc1'"
-      @release.stub!(:tag_release)
+      @release.stub(:tag_release)
       @release.make
       file('buildfile').should contain('VERSION_NUMBER = "1.0.0-rc1"')
     end
@@ -492,7 +492,7 @@ shared_examples_for 'a release process' do
     it 'should only commit the updated buildfile if the version changed' do
       write 'buildfile', "VERSION_NUMBER = '1.0.0-rc1'"
       @release.should_not_receive(:update_version_to_next)
-      @release.stub!(:tag_release)
+      @release.stub(:tag_release)
       @release.make
     end
   end
@@ -631,7 +631,7 @@ shared_examples_for 'a release process' do
 
   describe '#resolve_tag' do
     before do
-      @release.stub!(:extract_version).and_return('1.0.0')
+      @release.stub(:extract_version).and_return('1.0.0')
     end
 
     it 'should return tag specified by tag_name' do
@@ -648,7 +648,7 @@ shared_examples_for 'a release process' do
 
   describe '#tag_release' do
     it 'should inform the user' do
-      @release.stub!(:extract_version).and_return('1.0.0')
+      @release.stub(:extract_version).and_return('1.0.0')
       lambda { @release.tag_release('1.0.0') }.should show_info('Tagging release 1.0.0')
     end
   end
@@ -682,7 +682,7 @@ shared_examples_for 'a release process' do
 
   describe '#with_release_candidate_version' do
     before do
-      Buildr.application.stub!(:buildfile).and_return(file('buildfile'))
+      Buildr.application.stub(:buildfile).and_return(file('buildfile'))
       write 'buildfile', "THIS_VERSION = '1.1.0-SNAPSHOT'"
     end
 
@@ -741,7 +741,7 @@ shared_examples_for 'a release process' do
   describe '#check' do
     before { @release.send(:this_version=, "1.0.0-SNAPSHOT") }
     it 'should fail if THIS_VERSION equals the next_version' do
-      @release.stub!(:resolve_next_version).and_return('1.0.0-SNAPSHOT')
+      @release.stub(:resolve_next_version).and_return('1.0.0-SNAPSHOT')
       lambda { @release.check }.should raise_error("The next version can't be equal to the current version 1.0.0-SNAPSHOT.\nUpdate THIS_VERSION/VERSION_NUMBER, specify Release.next_version or use NEXT_VERSION env var")
     end
   end
@@ -754,9 +754,9 @@ describe HgRelease do
   before do
     write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
     @release = HgRelease.new
-    Hg.stub!(:hg)
-    Hg.stub!(:remote).and_return('https://bitbucket.org/sample-repo')
-    Hg.stub!(:current_branch).and_return('default')
+    Hg.stub(:hg)
+    Hg.stub(:remote).and_return('https://bitbucket.org/sample-repo')
+    Hg.stub(:current_branch).and_return('default')
   end
 
   describe '#applies_to?' do
@@ -806,8 +806,8 @@ describe GitRelease do
   before do
     write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
     @release = GitRelease.new
-    Git.stub!(:git)
-    Git.stub!(:current_branch).and_return('master')
+    Git.stub(:git)
+    Git.stub(:current_branch).and_return('master')
   end
 
   describe '#applies_to?' do
@@ -866,13 +866,13 @@ EOF
   describe '#tag_release' do
     before do
       @release = GitRelease.new
-      @release.stub!(:extract_version).and_return('1.0.1')
-      @release.stub!(:resolve_tag).and_return('TEST_TAG')
-      Git.stub!(:git).with('tag', '-a', 'TEST_TAG', '-m', '[buildr] Cutting release TEST_TAG')
-      Git.stub!(:git).with('push', 'origin', 'tag', 'TEST_TAG')
-      Git.stub!(:commit)
-      Git.stub!(:push)
-      Git.stub!(:remote).and_return('origin')
+      @release.stub(:extract_version).and_return('1.0.1')
+      @release.stub(:resolve_tag).and_return('TEST_TAG')
+      Git.stub(:git).with('tag', '-a', 'TEST_TAG', '-m', '[buildr] Cutting release TEST_TAG')
+      Git.stub(:git).with('push', 'origin', 'tag', 'TEST_TAG')
+      Git.stub(:commit)
+      Git.stub(:push)
+      Git.stub(:remote).and_return('origin')
     end
 
     it 'should delete any existing tag with the same name' do
@@ -895,7 +895,7 @@ EOF
     end
 
     it 'should NOT push the tag if no remote is tracked' do
-      Git.stub!(:remote).and_return(nil)
+      Git.stub(:remote).and_return(nil)
       Git.should_not_receive(:git).with('push', 'origin', 'tag',  'TEST_TAG')
       @release.tag_release 'TEST_TAG'
     end
@@ -909,9 +909,9 @@ describe SvnRelease do
   before do
     write 'buildfile', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
     @release = SvnRelease.new
-    Svn.stub!(:svn)
-    Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-    Svn.stub!(:tag)
+    Svn.stub(:svn)
+    Svn.stub(:repo_url).and_return('http://my.repo.org/foo/trunk')
+    Svn.stub(:tag)
   end
 
   describe '#applies_to?' do
@@ -927,34 +927,34 @@ describe SvnRelease do
 
   describe '#check' do
     before do
-      Svn.stub!(:uncommitted_files).and_return([])
+      Svn.stub(:uncommitted_files).and_return([])
       @release = SvnRelease.new
       @release.send(:this_version=, "1.0.0-SNAPSHOT")
     end
 
     it 'should accept to release from the trunk' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
+      Svn.stub(:repo_url).and_return('http://my.repo.org/foo/trunk')
       lambda { @release.check }.should_not raise_error
     end
 
     it 'should accept to release from a branch' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/branches/1.0')
+      Svn.stub(:repo_url).and_return('http://my.repo.org/foo/branches/1.0')
       lambda { @release.check }.should_not raise_error
     end
 
     it 'should reject releasing from a tag' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/tags/1.0.0')
+      Svn.stub(:repo_url).and_return('http://my.repo.org/foo/tags/1.0.0')
       lambda { @release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
     end
 
     it 'should reject a non standard repository layout' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/bar')
+      Svn.stub(:repo_url).and_return('http://my.repo.org/foo/bar')
       lambda { @release.check }.should raise_error(RuntimeError, "SVN URL must contain 'trunk' or 'branches/...'")
     end
 
     it 'should reject an uncommitted file' do
-      Svn.stub!(:repo_url).and_return('http://my.repo.org/foo/trunk')
-      Svn.stub!(:uncommitted_files).and_return(['foo.rb'])
+      Svn.stub(:repo_url).and_return('http://my.repo.org/foo/trunk')
+      Svn.stub(:uncommitted_files).and_return(['foo.rb'])
       lambda { @release.check }.should raise_error(RuntimeError,
         "Uncommitted files violate the First Principle Of Release!\n" +
         "foo.rb")
