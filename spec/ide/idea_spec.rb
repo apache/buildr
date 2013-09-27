@@ -333,8 +333,9 @@ describe Buildr::IntellijIdea do
 
     describe "using add_gwt_facet that detects gwt sdk" do
       before do
+        artifact('com.google.gwt:gwt-dev:jar:2.5.1-not-a-release') { |task| write task.name }
         @foo = define "foo" do
-          compile.with 'com.google.gwt:gwt-dev:jar:2.5.1'
+          compile.with 'com.google.gwt:gwt-dev:jar:2.5.1-not-a-release'
           iml.add_gwt_facet("com.biz.MyModule" => true)
         end
         invoke_generate_task
@@ -345,7 +346,7 @@ describe Buildr::IntellijIdea do
         facet_xpath = ensure_facet_xpath(doc, 'gwt', 'GWT')
         setting_xpath = "#{facet_xpath}/configuration/setting"
         doc.should have_xpath("#{setting_xpath}[@name='gwtSdkType', value='maven']")
-        doc.should have_xpath("#{setting_xpath}[@name='gwtSdkUrl', value='$MAVEN_REPOSITORY$/com/google/gwt/gwt-dev/2.5.1']")
+        doc.should have_xpath("#{setting_xpath}[@name='gwtSdkUrl', value='$MAVEN_REPOSITORY$/com/google/gwt/gwt-dev/2.5.1-not-a-release']")
       end
     end
 
