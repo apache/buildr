@@ -1,4 +1,6 @@
 1.4.13 (Pending)
+* Fixed:  BUILDR-676 - Rework Java::Command:java so that it does not
+          reject the :dir option. Reported by John Roth.
 * Added:  Auto-detect jpa provider in Intellij IDEA facet generation if
           persistence.xml file is present and provider not specified.
 * Added:  Auto-detect jruby version in Intellij IDEA facet generation if

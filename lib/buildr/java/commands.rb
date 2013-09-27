@@ -43,7 +43,7 @@ module Java
       def java(*args, &block)
         options = Hash === args.last ? args.pop : {}
         options[:verbose] ||= trace?(:java)
-        rake_check_options options, :classpath, :java_args, :properties, :name, :verbose
+        rake_check_options options, :classpath, :java_args, :properties, :name, :verbose, :dir
 
         name = options[:name]
         if name.nil?
