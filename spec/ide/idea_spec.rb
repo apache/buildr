@@ -387,12 +387,68 @@ describe Buildr::IntellijIdea do
       end
     end
 
+    describe "using add_web_facet with jsf and idea version 12" do
+      before do
+        write "src/main/webapp/WEB-INF/web.xml"
+        write "src/main/webapp/WEB-INF/faces-config.xml"
+
+        @foo = define "foo" do
+          ipr.version = "12"
+          iml.add_web_facet
+        end
+        invoke_generate_task
+      end
+
+      it "generates a web facet with jsf facet auto-detected" do
+        doc = xml_document(@foo._("foo.iml"))
+        web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
+        doc.should have_xpath("#{web_facet_xpath}/facet[@type='jsf', @name='JSF']")
+      end
+    end
+
+    describe "using add_web_facet with jsf and idea version 13" do
+      before do
+        write "src/main/webapp/WEB-INF/web.xml"
+        write "src/main/webapp/WEB-INF/faces-config.xml"
+
+        @foo = define "foo" do
+          ipr.version = "13"
+          iml.add_web_facet
+        end
+        invoke_generate_task
+      end
+
+      it "does not generate a web facet with jsf facet" do
+        doc = xml_document(@foo._("foo.iml"))
+        web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
+        doc.should_not have_xpath("#{web_facet_xpath}/facet[@type='jsf', @name='JSF']")
+      end
+    end
+
+    describe "using add_web_facet with jsf and idea version 13 and jsf 'enabled'" do
+      before do
+        write "src/main/webapp/WEB-INF/web.xml"
+        write "src/main/webapp/WEB-INF/faces-config.xml"
+
+        @foo = define "foo" do
+          ipr.version = "13"
+          iml.add_web_facet(:enable_jsf => true)
+        end
+        invoke_generate_task
+      end
+
+      it "does not generate a web facet with jsf facet" do
+        doc = xml_document(@foo._("foo.iml"))
+        web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
+        doc.should_not have_xpath("#{web_facet_xpath}/facet[@type='jsf', @name='JSF']")
+      end
+    end
+
     describe "using add_web_facet" do
       before do
         write "src/main/webapp/WEB-INF/web.xml"
         write "src/main/webapp/WEB-INF/glassfish-web.xml"
         write "src/main/webapp/WEB-INF/context.xml"
-        write "src/main/webapp/WEB-INF/faces-config.xml"
 
         @foo = define "foo" do
           iml.add_web_facet
@@ -413,19 +469,12 @@ describe Buildr::IntellijIdea do
         web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
         doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp', @realtive='/']")
       end
-
-      it "generates a web facet with jsf facet auto-detected" do
-        doc = xml_document(@foo._("foo.iml"))
-        web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
-        doc.should have_xpath("#{web_facet_xpath}/facet[@type='jsf', @name='JSF']")
-      end
     end
 
     describe "using add_web_facet with specified parameters" do
       before do
         @foo = define "foo" do
           iml.add_web_facet(:deployment_descriptors => ["src/main/webapp2/WEB-INF/web.xml"],
-                            :enable_jsf => true,
                             :webroots => {"src/main/webapp2" => "/", "src/main/css" => "/css"})
         end
         invoke_generate_task
@@ -443,12 +492,6 @@ describe Buildr::IntellijIdea do
         web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
         doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp2', @realtive='/']")
         doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/css', @realtive='/css']")
-      end
-
-      it "generates a web facet with jsf facet enabled" do
-        doc = xml_document(@foo._("foo.iml"))
-        web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
-        doc.should have_xpath("#{web_facet_xpath}/facet[@type='jsf', @name='JSF']")
       end
     end
 
