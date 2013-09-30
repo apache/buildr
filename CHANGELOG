@@ -1,4 +1,6 @@
 1.4.13 (Pending)
+* Added:  Initial support for data source creation in Intellij IDEA
+          project files.
 * Fixed:  BUILDR-676 - Rework Java::Command:java so that it does not
           reject the :dir option. Reported by John Roth.
 * Added:  Auto-detect jpa provider in Intellij IDEA facet generation if
