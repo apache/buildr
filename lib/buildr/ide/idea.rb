@@ -654,7 +654,6 @@ module Buildr #:nodoc:
       end
 
       def add_postgres_data_source(name, options = {})
-
         if options[:url].nil? && options[:database]
          default_url = "jdbc:postgresql://#{(options[:host] || "127.0.0.1")}:#{(options[:port] || "5432")}/#{options[:database]}"
         end
@@ -663,7 +662,23 @@ module Buildr #:nodoc:
           :driver => 'org.postgresql.Driver',
           :url => default_url,
           :username => ENV["USER"],
+          :dialect => 'PostgreSQL',
           :classpath => ["org.postgresql:postgresql:jar:9.2-1003-jdbc4"]
+        }.merge(options)
+        add_data_source(name, params)
+      end
+
+      def add_sql_server_data_source(name, options = {})
+        if options[:url].nil? && options[:database]
+          default_url = "jdbc:jtds:sqlserver://#{(options[:host] || "127.0.0.1")}:#{(options[:port] || "1433")}/#{options[:database]}"
+        end
+
+        params = {
+          :driver => 'net.sourceforge.jtds.jdbc.Driver',
+          :url => default_url,
+          :username => ENV["USER"],
+          :dialect => 'TSQL',
+          :classpath => ['net.sourceforge.jtds:jtds:jar:1.2.7']
         }.merge(options)
         add_data_source(name, params)
       end
@@ -682,6 +697,8 @@ module Buildr #:nodoc:
             xml.tag!("jdbc-url", options[:url]) if options[:url]
             xml.tag!("user-name", options[:username]) if options[:username]
             xml.tag!("user-password", encrypt(options[:password])) if options[:password]
+            xml.tag!("default-dialect", options[:dialect]) if options[:dialect]
+
             xml.libraries do |xml|
               classpath.each do |classpath_element|
                 a = Buildr.artifact(classpath_element)
