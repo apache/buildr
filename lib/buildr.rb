@@ -36,6 +36,7 @@ require 'uri'
 require 'stringio'
 require 'fileutils'
 require 'orderedhash'
+require 'securerandom'
 
 require 'buildr/core/util'
 require 'buildr/core/common'
