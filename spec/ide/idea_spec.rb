@@ -738,6 +738,7 @@ describe Buildr::IntellijIdea do
                               :url => "jdbc:postgresql://127.0.0.1:5432/MyDb",
                               :username => "MyDBUser",
                               :password => "secreto",
+                              :dialect => "PostgreSQL",
                               :classpath => ["org.postgresql:postgresql:jar:9.not-a-version"])
         end
         invoke_generate_task
@@ -754,6 +755,7 @@ describe Buildr::IntellijIdea do
         doc.should have_xpath("#{ds_path}/jdbc-url/text() = 'jdbc:postgresql://127.0.0.1:5432/MyDb'")
         doc.should have_xpath("#{ds_path}/user-name/text() = 'MyDBUser'")
         doc.should have_xpath("#{ds_path}/user-password/text() = 'dfd9dfcfdfc9dfd8dfcfdfdedfc5'")
+        doc.should have_xpath("#{ds_path}/default-dialect/text() = 'PostgreSQL'")
         doc.should have_xpath("#{ds_path}/libraries/library/url/text() = '$MAVEN_REPOSITORY$/org/postgresql/postgresql/9.not-a-version/postgresql-9.not-a-version.jar'")
       end
     end
@@ -778,7 +780,34 @@ describe Buildr::IntellijIdea do
         doc.should have_xpath("#{ds_path}/jdbc-driver/text() = 'org.postgresql.Driver'")
         doc.should have_xpath("#{ds_path}/jdbc-url/text() = 'jdbc:postgresql://127.0.0.1:5432/MyDb'")
         doc.should have_xpath("#{ds_path}/user-name/text() = 'Bob'")
+        doc.should have_xpath("#{ds_path}/default-dialect/text() = 'PostgreSQL'")
         doc.should have_xpath("#{ds_path}/libraries/library/url/text() = '$MAVEN_REPOSITORY$/org/postgresql/postgresql/9.2-1003-jdbc4/postgresql-9.2-1003-jdbc4.jar'")
+      end
+    end
+
+    describe "with add_sql_server_data_source" do
+      before do
+        ENV["USER"] = "Bob"
+        artifact('net.sourceforge.jtds:jtds:jar:1.2.7') { |task| write task.name }
+        @foo = define "foo" do
+          ipr.add_sql_server_data_source("SqlServer", :database => 'MyDb')
+        end
+        invoke_generate_task
+      end
+
+      it "generates a data source manager with specified data source" do
+        doc = xml_document(@foo._("foo.ipr"))
+        prefix_xpath = "/project/component[@name='DataSourceManagerImpl', @format='xml', @hash='3208837817']/data-source"
+        doc.should have_nodes(prefix_xpath, 1)
+        ds_path = "#{prefix_xpath}[@source='LOCAL', @name='SqlServer']"
+        doc.should have_xpath(ds_path)
+
+        doc.should have_xpath("#{ds_path}/synchronize/text() = 'true'")
+        doc.should have_xpath("#{ds_path}/jdbc-driver/text() = 'net.sourceforge.jtds.jdbc.Driver'")
+        doc.should have_xpath("#{ds_path}/jdbc-url/text() = 'jdbc:jtds:sqlserver://127.0.0.1:1433/MyDb'")
+        doc.should have_xpath("#{ds_path}/user-name/text() = 'Bob'")
+        doc.should have_xpath("#{ds_path}/default-dialect/text() = 'TSQL'")
+        doc.should have_xpath("#{ds_path}/libraries/library/url/text() = '$MAVEN_REPOSITORY$/net/sourceforge/jtds/1.2.7/jtds-1.2.7.jar'")
       end
     end
 
