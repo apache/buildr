@@ -729,6 +729,59 @@ describe Buildr::IntellijIdea do
       end
     end
 
+    describe "with add_data_source" do
+      before do
+        artifact("org.postgresql:postgresql:jar:9.not-a-version") { |task| write task.name }
+        @foo = define "foo" do
+          ipr.add_data_source("Postgres",
+                              :driver => 'org.postgresql.Driver',
+                              :url => "jdbc:postgresql://127.0.0.1:5432/MyDb",
+                              :username => "MyDBUser",
+                              :password => "secreto",
+                              :classpath => ["org.postgresql:postgresql:jar:9.not-a-version"])
+        end
+        invoke_generate_task
+      end
+
+      it "generates a data source manager with specified data source" do
+        doc = xml_document(@foo._("foo.ipr"))
+        prefix_xpath = "/project/component[@name='DataSourceManagerImpl', @format='xml', @hash='3208837817']/data-source"
+        doc.should have_nodes(prefix_xpath, 1)
+        ds_path = "#{prefix_xpath}[@source='LOCAL', @name='Postgres']"
+        doc.should have_xpath(ds_path)
+        doc.should have_xpath("#{ds_path}/synchronize/text() = 'true'")
+        doc.should have_xpath("#{ds_path}/jdbc-driver/text() = 'org.postgresql.Driver'")
+        doc.should have_xpath("#{ds_path}/jdbc-url/text() = 'jdbc:postgresql://127.0.0.1:5432/MyDb'")
+        doc.should have_xpath("#{ds_path}/user-name/text() = 'MyDBUser'")
+        doc.should have_xpath("#{ds_path}/user-password/text() = 'dfd9dfcfdfc9dfd8dfcfdfdedfc5'")
+        doc.should have_xpath("#{ds_path}/libraries/library/url/text() = '$MAVEN_REPOSITORY$/org/postgresql/postgresql/9.not-a-version/postgresql-9.not-a-version.jar'")
+      end
+    end
+
+    describe "with add_postgres_data_source" do
+      before do
+        ENV["USER"] = "Bob"
+        artifact("org.postgresql:postgresql:jar:9.2-1003-jdbc4") { |task| write task.name }
+        @foo = define "foo" do
+          ipr.add_postgres_data_source("Postgres", :database => 'MyDb')
+        end
+        invoke_generate_task
+      end
+
+      it "generates a data source manager with specified data source" do
+        doc = xml_document(@foo._("foo.ipr"))
+        prefix_xpath = "/project/component[@name='DataSourceManagerImpl', @format='xml', @hash='3208837817']/data-source"
+        doc.should have_nodes(prefix_xpath, 1)
+        ds_path = "#{prefix_xpath}[@source='LOCAL', @name='Postgres']"
+        doc.should have_xpath(ds_path)
+        doc.should have_xpath("#{ds_path}/synchronize/text() = 'true'")
+        doc.should have_xpath("#{ds_path}/jdbc-driver/text() = 'org.postgresql.Driver'")
+        doc.should have_xpath("#{ds_path}/jdbc-url/text() = 'jdbc:postgresql://127.0.0.1:5432/MyDb'")
+        doc.should have_xpath("#{ds_path}/user-name/text() = 'Bob'")
+        doc.should have_xpath("#{ds_path}/libraries/library/url/text() = '$MAVEN_REPOSITORY$/org/postgresql/postgresql/9.2-1003-jdbc4/postgresql-9.2-1003-jdbc4.jar'")
+      end
+    end
+
     describe "with artifacts added to root project" do
       before do
         @foo = define "foo" do

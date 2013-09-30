@@ -100,9 +100,9 @@ module Buildr #:nodoc:
         @components ||= []
       end
 
-      def create_composite_component(name, components)
+      def create_composite_component(name, attrs, components)
         return nil if components.empty?
-        component = self.create_component(name)
+        component = self.create_component(name, attrs)
         components.each do |element|
           element = element.call if element.is_a?(Proc)
           component.add_element element
@@ -477,7 +477,7 @@ module Buildr #:nodoc:
       end
 
       def facet_component
-        create_composite_component("FacetManager", self.facets)
+        create_composite_component("FacetManager", {}, self.facets)
       end
 
       def module_root_component
@@ -615,6 +615,7 @@ module Buildr #:nodoc:
     class IdeaProject < IdeaFile
       attr_accessor :extra_modules
       attr_accessor :artifacts
+      attr_accessor :data_sources
       attr_accessor :configurations
       attr_writer :jdk_version
       attr_writer :version
@@ -624,6 +625,7 @@ module Buildr #:nodoc:
         @buildr_project = buildr_project
         @extra_modules = []
         @artifacts = []
+        @data_sources = []
         @configurations = []
       end
 
@@ -647,6 +649,48 @@ module Buildr #:nodoc:
         add_to_composite_component(self.configurations) do |xml|
           xml.configuration(:name => name, :type => type, :factoryName => factory_name, :default => default) do |xml|
             yield xml if block_given?
+          end
+        end
+      end
+
+      def add_postgres_data_source(name, options = {})
+
+        if options[:url].nil? && options[:database]
+         default_url = "jdbc:postgresql://#{(options[:host] || "127.0.0.1")}:#{(options[:port] || "5432")}/#{options[:database]}"
+        end
+
+        params = {
+          :driver => 'org.postgresql.Driver',
+          :url => default_url,
+          :username => ENV["USER"],
+          :classpath => ["org.postgresql:postgresql:jar:9.2-1003-jdbc4"]
+        }.merge(options)
+        add_data_source(name, params)
+      end
+
+      def add_data_source(name, options = {})
+        add_to_composite_component(self.data_sources) do |xml|
+          data_source_options = {
+            :source => "LOCAL",
+            :name => name,
+            :uuid => Buildr::Util.uuid
+          }
+          classpath = options[:classpath] || []
+          xml.tag!("data-source", data_source_options) do |xml|
+            xml.tag!("synchronize", (options[:synchronize]||"true"))
+            xml.tag!("jdbc-driver", options[:driver]) if options[:driver]
+            xml.tag!("jdbc-url", options[:url]) if options[:url]
+            xml.tag!("user-name", options[:username]) if options[:username]
+            xml.tag!("user-password", encrypt(options[:password])) if options[:password]
+            xml.libraries do |xml|
+              classpath.each do |classpath_element|
+                a = Buildr.artifact(classpath_element)
+                a.invoke
+                xml.library do |xml|
+                  xml.tag!("url", resolve_path(a.to_s))
+                end
+              end
+            end if classpath.size > 0
           end
         end
       end
@@ -815,6 +859,7 @@ module Buildr #:nodoc:
           lambda { modules_component },
           vcs_component,
           artifacts_component,
+          lambda { data_sources_component },
           configurations_component,
           lambda { framework_detection_exclusion_component }
         ]
@@ -907,12 +952,16 @@ module Buildr #:nodoc:
         end
       end
 
+      def data_sources_component
+        create_composite_component("DataSourceManagerImpl", {:format => "xml", :hash => "3208837817"}, self.data_sources)
+      end
+
       def artifacts_component
-        create_composite_component("ArtifactManager", self.artifacts)
+        create_composite_component("ArtifactManager", {}, self.artifacts)
       end
 
       def configurations_component
-        create_composite_component("ProjectRunConfigurationManager", self.configurations)
+        create_composite_component("ProjectRunConfigurationManager", {}, self.configurations)
       end
 
       def resolve_path(path)
@@ -920,6 +969,10 @@ module Buildr #:nodoc:
       end
 
     private
+
+      def encrypt(password)
+        password.bytes.inject("") { |x, y| x + (y ^ 0xdfaa).to_s(16) }
+      end
 
       def partition_dependencies(dependencies)
         libraries = []
