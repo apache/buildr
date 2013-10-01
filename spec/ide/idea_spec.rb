@@ -854,13 +854,52 @@ describe Buildr::IntellijIdea do
       it "generates an IPR with a war artifact" do
         doc = xml_document(@foo._("foo.ipr"))
         base_xpath = "/project/component[@name='ArtifactManager']/artifact"
-        facet_xpath = "#{base_xpath}[@type='exploded-war', @name='MyFancy.jar', @build-on-make='false']"
+        facet_xpath = "#{base_xpath}[@type='exploded-war' and @name='bar' and @build-on-make='false']"
         doc.should have_xpath(facet_xpath)
 
         doc.should have_xpath("#{facet_xpath}/output-path/text() = $PROJECT_DIR$/artifacts/bar")
         doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory', @name='classes']/element[@id='module-output' and @name='bar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory', @name='lib']/element[@id='file-copy' and @path='$MAVEN_REPOSITORY$/net/sourceforge/jtds/jtds/1.2.7.XX/jtds-1.2.7.XX.jar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' and @facet='bar/web/Web']")
+      end
+    end
+
+    describe "that uses add_exploded_war_artifact with overrides" do
+      before do
+        write 'foo/bar/src/main/java/foo/Foo.java' # needed so that buildr will treat as a java project
+        artifact('net.sourceforge.jtds:jtds:jar:1.2.7.XX') { |task| write task.name }
+
+        @foo = define "foo" do
+          project.version = '1.0'
+          define "bar" do
+            compile.with 'net.sourceforge.jtds:jtds:jar:1.2.7.XX'
+            package :war
+          end
+          ipr.add_exploded_war_artifact(project,
+                                        :name => 'gar',
+                                        :war_module_names => ['x','y'],
+                                        :gwt_module_names => ['p','q'],
+                                        :artifacts => ['baz','biz'],
+                                        :dependencies => ['net.sourceforge.jtds:jtds:jar:1.2.7.XX', project('bar')])
+        end
+        invoke_generate_task
+      end
+
+      it "generates an IPR with a war artifact" do
+        doc = xml_document(@foo._("foo.ipr"))
+        base_xpath = "/project/component[@name='ArtifactManager']/artifact"
+        facet_xpath = "#{base_xpath}[@type='exploded-war' @name='MyFancy.jar', @build-on-make='false']"
+        doc.should have_xpath(facet_xpath)
+
+        doc.should have_xpath("#{facet_xpath}/output-path/text() = $PROJECT_DIR$/artifacts/gar")
         doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory', @name='classes']/element[@id='module-output' and @name='bar']")
         doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory', @name='lib']/element[@id='file-copy' and @path='$MAVEN_REPOSITORY$/net/sourceforge/jtds/jtds/1.2.7.XX/jtds-1.2.7.XX.jar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' and @facet='x/web/Web']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' and @facet='y/web/Web']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='gwt-compiler-output' and @facet='p/gwt/GWT']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='gwt-compiler-output' and @facet='q/gwt/GWT']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory', @name='lib']/element[@id='artifact' and @artifact-name='baz.jar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory', @name='lib']/element[@id='artifact' and @artifact-name='biz.jar']")
       end
     end
 
