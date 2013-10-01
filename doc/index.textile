@@ -46,15 +46,27 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-Highlights from Buildr 1.4.12 (2013-05-04)
+Highlights from Buildr 1.4.13 (2013-10-02)
 
-* Added:  BUILDR-648 Add new package(:test_jar) packaging type. Submitted by Mike Pettypiece.
-* Fixed:  BUILDR-666 ZipFile.open modifies file regardless of usage. Reported by Pepijn Van Eeckhoudt, fix by Alex Boisvert.
-* Change: Moved to using TravisCI to test the Linux variants.
-* Added:  Make the location of the wsdl in generated source configurable in the wsgen addon.
-* Added:  Added support for SuperDevMode in gwt addon and upgraded to GWT 2.5.1 by default.
-* Change: BUILDR-664 Update Checkstyle addon so that extra_dependencies is empty by default. Submitted by Dieter Vrancken.
-* Fixed:  BUILDR-663 require 'buildr' fails for Ruby 2.0.0.
+* Fixed:  Upgrade rjb dependency so that you can change JVMs by
+          modifying JAVA_HOME rather than recompiling rjb.
+* Change: Update to TestNG 6.8.5.
+* Fixed:  Several Ruby 2.0.0 failures have been addressed.
+* Fixed:  Make archive-related operations use a deterministic ordering.
+* Added:  Initial support for simple integration of an asset pipeline.
+          See "Compiling Assets" section in the manual.
+* Change: Improve the Intellij IDEA plugin substantially.
+* Change: Improve the gpg addon.
+* Fixed:  BUILDR-676 - Support the :dir option in Java::Command:java.
+          Reported by John Roth.
+* Fixed:  Improve downloading from Maven Central to avoid caching and
+          set the "User-Agent" http header.
+* Change: Change default scope of dependencies to 'compile'. Submitted
+          by Ingo Schmidt.
+* Fixed:  BUILDR-673 - Fix the option handling of the MultiTest test
+          framework to behave as documented. Submitted by John Roth.
+* Added:  BUILDR-672 - Allow the user to modify the properties field in
+          the checkstyle addon. Submitted by Wim C.
 
 This is a partial list -- see the "CHANGELOG":CHANGELOG for full details.
 
