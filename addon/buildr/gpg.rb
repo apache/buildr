@@ -29,6 +29,7 @@ module Buildr
       def sign_task(pkg)
         raise "ENV['GPG_USER'] not specified" unless ENV['GPG_USER']
         asc_filename = pkg.to_s + '.asc'
+        return if file(asc_filename).prerequisites.include?(pkg.to_s)
         file(asc_filename => [pkg.to_s]) do
           info "GPG signing #{pkg.to_spec}"
 
@@ -61,14 +62,18 @@ module Buildr
           artifact.upload
         end
       end
+
+      def sign_and_upload_all_packages(project)
+        project.packages.each { |pkg| Buildr::GPG.sign_and_upload(project, pkg) }
+        project.packages.map { |pkg| pkg.pom }.uniq.each { |pom| Buildr::GPG.sign_and_upload(project, pom) }
+      end
     end
 
     module ProjectExtension
       include Extension
 
       after_define do |project|
-        project.packages.each { |pkg| Buildr::GPG.sign_and_upload(project, pkg) }
-        project.packages.map { |pkg| pkg.pom }.uniq.each { |pom| Buildr::GPG.sign_and_upload(project, pom) }
+        Buildr::GPG.sign_and_upload_all_packages(project)
       end
     end
   end
