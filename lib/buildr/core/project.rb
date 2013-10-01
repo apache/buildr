@@ -251,7 +251,7 @@ module Buildr #:nodoc:
         end
         project ||= @projects[name] # Not found in scope.
         raise "No such project #{name}" unless project
-        project.invoke
+        project.invoke unless Buildr.application.current_scope.join(":").to_s == project.name.to_s
         project
       end
 
