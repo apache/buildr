@@ -748,7 +748,7 @@ module Buildr #:nodoc:
               end
             end
 
-            if options[:enable_gwt]
+            if options[:enable_gwt] || (options[:gwt_module_names] && options[:gwt_module_names].size > 1)
               module_names = options[:gwt_module_names] || [project.iml.id]
               module_names.each do |module_name|
                 facet_name = options[:gwt_facet_name] || "GWT"
