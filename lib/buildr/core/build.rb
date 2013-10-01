@@ -331,10 +331,10 @@ module Buildr #:nodoc:
       @this_version = extract_version
       check
       with_release_candidate_version do |release_candidate_buildfile|
-        args = '-S', 'buildr', "_#{Buildr::VERSION}_", '--buildfile', release_candidate_buildfile
+        args = 'buildr', "_#{Buildr::VERSION}_", '--buildfile', release_candidate_buildfile
         args << '--environment' << Buildr.environment unless Buildr.environment.to_s.empty?
         args << 'clean' << 'upload' << 'DEBUG=no'
-        ruby *args
+        sh *args
       end
       tag_release resolve_tag
       update_version_to_next if this_version != resolve_next_version(this_version)

@@ -1,4 +1,6 @@
 1.4.13 (2013-10-02)
+* Fixed:  BUILDR-394 - Fix release task with standalone distribution.
+          Submitted By Tammo van Lessen.
 * Added:  BUILDR-678 - Improve support for gpg signing artifacts
           using a single method.
 * Fixed:  BUILDR-677 - GPG addon hangs when .asc files are still in
