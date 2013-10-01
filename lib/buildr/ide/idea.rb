@@ -715,6 +715,7 @@ module Buildr #:nodoc:
       def add_exploded_war_artifact(project, options = {})
         artifact_name = options[:name] || project.iml.id
         build_on_make = options[:build_on_make].nil? ? false : options[:build_on_make]
+        artifacts = options[:artifacts] || []
 
         add_artifact(artifact_name, "exploded-war", build_on_make) do |xml|
           dependencies = (options[:dependencies] || ([project] + project.compile.dependencies)).flatten
@@ -727,27 +728,14 @@ module Buildr #:nodoc:
           xml.root :id => "root" do
             xml.element :id => "directory", :name => "WEB-INF" do
               xml.element :id => "directory", :name => "classes" do
-                projects.each do |p|
-                  xml.element :id => "module-output", :name => p.iml.id
-                end
-                if options[:enable_jpa]
-                  module_names = options[:jpa_module_names] || [project.iml.id]
-                  module_names.each do |module_name|
-                    facet_name = options[:jpa_facet_name] || "JPA"
-                    xml.element :id => "jpa-descriptors", :facet => "#{module_name}/jpa/#{facet_name}"
-                  end
-                end
-                if options[:enable_ejb]
-                  module_names = options[:ejb_module_names] || [project.iml.id]
-                  module_names.each do |module_name|
-                    facet_name = options[:ejb_facet_name] || "EJB"
-                    xml.element :id => "javaee-facet-resources", :facet => "#{module_name}/ejb/#{facet_name}"
-                  end
-                end
+                artifact_content(xml, project, projects, options)
               end
               xml.element :id => "directory", :name => "lib" do
                 libraries.each(&:invoke).map(&:to_s).each do |dependency_path|
                   xml.element :id => "file-copy", :path => resolve_path(dependency_path)
+                end
+                artifacts.each do |p|
+                  xml.element :id => "artifact", 'artifact-name' => "#{p}.jar"
                 end
               end
             end
@@ -804,6 +792,24 @@ module Buildr #:nodoc:
         end
       end
 
+      def add_jar_artifact(project, options = {})
+        artifact_name = options[:name] || project.iml.id
+        build_on_make = options[:build_on_make].nil? ? true : options[:build_on_make]
+
+        dependencies = (options[:dependencies] || ([project] + project.compile.dependencies)).flatten
+        libraries, projects = partition_dependencies(dependencies)
+        raise "Unable to add non-project dependencies (#{libraries.inspect}) to jar artifact" if libraries.size > 0
+
+        jar_name = "#{artifact_name}.jar"
+        add_artifact(jar_name, "jar", build_on_make) do |xml|
+          output_dir = options[:output_dir] || project._(:artifacts, artifact_name)
+          xml.tag!('output-path', output_dir)
+          xml.root(:id => "archive", :name => jar_name) do
+            artifact_content(xml, project, projects, options)
+          end
+        end
+      end
+
       def add_exploded_ejb_artifact(project, options = {})
 
         artifact_name = options[:name] || project.iml.id
@@ -841,7 +847,6 @@ module Buildr #:nodoc:
         end
       end
 
-
       def add_gwt_configuration(launch_page, project, options = {})
         name = options[:name] || "Run #{launch_page}"
         shell_parameters = options[:shell_parameters] || ""
@@ -860,6 +865,26 @@ module Buildr #:nodoc:
       end
 
       protected
+
+      def artifact_content(xml, project, projects, options)
+        projects.each do |p|
+          xml.element :id => "module-output", :name => p.iml.id
+        end
+        if options[:enable_jpa]
+          module_names = options[:jpa_module_names] || [project.iml.id]
+          module_names.each do |module_name|
+            facet_name = options[:jpa_facet_name] || "JPA"
+            xml.element :id => "jpa-descriptors", :facet => "#{module_name}/jpa/#{facet_name}"
+          end
+        end
+        if options[:enable_ejb]
+          module_names = options[:ejb_module_names] || [project.iml.id]
+          module_names.each do |module_name|
+            facet_name = options[:ejb_facet_name] || "EJB"
+            xml.element :id => "javaee-facet-resources", :facet => "#{module_name}/ejb/#{facet_name}"
+          end
+        end
+      end
 
       def extension
         "ipr"
@@ -998,7 +1023,8 @@ module Buildr #:nodoc:
         dependencies.each do |dependency|
           artifacts = Buildr.artifacts(dependency)
           artifacts_as_strings = artifacts.map(&:to_s)
-          project = Buildr.projects.detect do |project|
+          all_projects = Buildr::Project.instance_variable_get("@projects").keys - [buildr_project.name]
+          project = Buildr.projects(all_projects).detect do |project|
             [project.packages, project.compile.target, project.resources.target, project.test.compile.target, project.test.resources.target].flatten.
               detect { |component| artifacts_as_strings.include?(component.to_s) }
           end
