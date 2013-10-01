@@ -66,7 +66,7 @@ module Buildr #:nodoc:
           props.merge! jrebel_props(project)
           props.merge! task.properties
 
-          if not Util.win_os?
+          unless Util.win_os?
             uname = `uname -m`
             cpu = if uname =~ /i[34567]86/
               'i386'
