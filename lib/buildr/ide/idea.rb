@@ -722,8 +722,8 @@ module Buildr #:nodoc:
           libraries, projects = partition_dependencies(dependencies)
 
           ## The content here can not be indented
-          output_dir = options[:output_dir] || project._(:artifacts, artifact_name)
-          xml.tag!('output-path', output_dir)
+          output_dir = options[:output_dir] || buildr_project._(:artifacts, artifact_name)
+          xml.tag!('output-path', resolve_path(output_dir))
 
           xml.root :id => "root" do
             xml.element :id => "directory", :name => "WEB-INF" do
@@ -769,8 +769,8 @@ module Buildr #:nodoc:
           libraries, projects = partition_dependencies(dependencies)
 
           ## The content here can not be indented
-          output_dir = options[:output_dir] || project._(:artifacts, artifact_name)
-          xml.tag!('output-path', output_dir)
+          output_dir = options[:output_dir] || buildr_project._(:artifacts, artifact_name)
+          xml.tag!('output-path', resolve_path(output_dir))
 
           xml.root :id => "root" do
 
@@ -802,8 +802,8 @@ module Buildr #:nodoc:
 
         jar_name = "#{artifact_name}.jar"
         add_artifact(jar_name, "jar", build_on_make) do |xml|
-          output_dir = options[:output_dir] || project._(:artifacts, artifact_name)
-          xml.tag!('output-path', output_dir)
+          output_dir = options[:output_dir] || buildr_project._(:artifacts, artifact_name)
+          xml.tag!('output-path', resolve_path(output_dir))
           xml.root(:id => "archive", :name => jar_name) do
             artifact_content(xml, project, projects, options)
           end
@@ -820,8 +820,8 @@ module Buildr #:nodoc:
           libraries, projects = partition_dependencies(dependencies)
 
           ## The content here can not be indented
-          output_dir = options[:output_dir] || project._(:artifacts, artifact_name)
-          xml.tag!('output-path', output_dir)
+          output_dir = options[:output_dir] || buildr_project._(:artifacts, artifact_name)
+          xml.tag!('output-path', resolve_path(output_dir))
 
           xml.root :id => "root" do
 
