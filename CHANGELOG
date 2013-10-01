@@ -1,4 +1,6 @@
 1.4.13 (Pending)
+* Fixed:  BUILDR-677 - GPG addon hangs when .asc files are still in
+          target. Submitted By Tammo van Lessen.
 * Added:  Initial support for data source creation in Intellij IDEA
           project files.
 * Fixed:  BUILDR-676 - Rework Java::Command:java so that it does not
