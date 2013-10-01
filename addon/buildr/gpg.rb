@@ -44,6 +44,8 @@ module Buildr
             cmd << ENV['GPG_PASS']
           end
           cmd << '--detach-sig'
+          cmd << '--batch'
+          cmd << '--yes'
           cmd << pkg
           trace(cmd.join(' '))
           `#{cmd.join(' ')}`
