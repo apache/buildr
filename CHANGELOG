@@ -1,4 +1,4 @@
-1.4.13 (Pending)
+1.4.13 (2013-10-02)
 * Added:  BUILDR-678 - Improve support for gpg signing artifacts
           using a single method.
 * Fixed:  BUILDR-677 - GPG addon hangs when .asc files are still in
