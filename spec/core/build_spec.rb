@@ -446,7 +446,7 @@ shared_examples_for 'a release process' do
       # Prevent a real call to a spawned buildr process.
       @release.stub(:buildr)
       @release.stub(:check)
-      @release.should_receive(:ruby).with('-S', 'buildr', "_#{Buildr::VERSION}_", '--buildfile', File.expand_path('buildfile.next'),
+      @release.should_receive(:sh).with('buildr', '--buildfile', File.expand_path('buildfile.next'),
                                           '--environment', 'development', 'clean', 'upload', 'DEBUG=no')
     end
 
