@@ -1,4 +1,6 @@
 1.4.13 (2013-10-02)
+* Fixed:  BUILDR-439 - Fix java command under windows when supplied
+          with extremely long classpath. Submitted By Tammo van Lessen.
 * Fixed:  BUILDR-394 - Fix release task with standalone distribution.
           Submitted By Tammo van Lessen.
 * Added:  BUILDR-678 - Improve support for gpg signing artifacts

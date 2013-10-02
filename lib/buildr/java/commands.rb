@@ -63,7 +63,21 @@ module Java
         end
         cmd_args << path_to_bin('java')
         cp = classpath_from(options)
-        cmd_args << '-classpath' << cp.join(File::PATH_SEPARATOR) unless cp.empty?
+        paths = cp.map do |c|
+          path = File.directory?(c) && !c.end_with?('/') ? "#{c}/" : c.to_s
+          Buildr::Util.win_os? ? "/#{path}" : path
+        end
+        manifest = Buildr::Packaging::Java::Manifest.new([{'Class-Path' => paths.join(" ")}])
+
+        tjar = Tempfile.new(['javacmd', '.jar'])
+        Zip::ZipOutputStream.open(tjar.path) do |zos|
+          zos.put_next_entry('META-INF/MANIFEST.MF')
+          zos.write manifest.to_s
+          zos.write "\n"
+        end
+        tjar.close
+
+        cmd_args << '-classpath' << tjar.path
         options[:properties].each { |k, v| cmd_args << "-D#{k}=#{v}" } if options[:properties]
         cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
         cmd_args += args.flatten.compact
