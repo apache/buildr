@@ -713,34 +713,26 @@ module Buildr #:nodoc:
       end
 
       def add_exploded_war_artifact(project, options = {})
-        artifact_name = options[:name] || project.iml.id
-        build_on_make = options[:build_on_make].nil? ? false : options[:build_on_make]
+        artifact_name = to_artifact_name(project, options)
         artifacts = options[:artifacts] || []
 
-        add_artifact(artifact_name, "exploded-war", build_on_make) do |xml|
+        add_artifact(artifact_name, "exploded-war", build_on_make(options)) do |xml|
           dependencies = (options[:dependencies] || ([project] + project.compile.dependencies)).flatten
           libraries, projects = partition_dependencies(dependencies)
 
-          ## The content here can not be indented
-          output_dir = options[:output_dir] || buildr_project._(:artifacts, artifact_name)
-          xml.tag!('output-path', resolve_path(output_dir))
-
+          emit_output_path(xml, artifact_name, options)
           xml.root :id => "root" do
             xml.element :id => "directory", :name => "WEB-INF" do
               xml.element :id => "directory", :name => "classes" do
                 artifact_content(xml, project, projects, options)
               end
               xml.element :id => "directory", :name => "lib" do
-                libraries.each(&:invoke).map(&:to_s).each do |dependency_path|
-                  xml.element :id => "file-copy", :path => resolve_path(dependency_path)
-                end
-                artifacts.each do |p|
-                  xml.element :id => "artifact", 'artifact-name' => "#{p}.jar"
-                end
+                emit_libraries(xml, libraries)
+                emit_jar_artifacts(xml, artifacts)
               end
             end
 
-            if options[:enable_war].nil? || options[:enable_war]
+            if options[:enable_war].nil? || options[:enable_war] || (options[:war_module_names] && options[:war_module_names].size > 0)
               module_names = options[:war_module_names] || [project.iml.id]
               module_names.each do |module_name|
                 facet_name = options[:war_facet_name] || "Web"
@@ -748,7 +740,7 @@ module Buildr #:nodoc:
               end
             end
 
-            if options[:enable_gwt] || (options[:gwt_module_names] && options[:gwt_module_names].size > 1)
+            if options[:enable_gwt] || (options[:gwt_module_names] && options[:gwt_module_names].size > 0)
               module_names = options[:gwt_module_names] || [project.iml.id]
               module_names.each do |module_name|
                 facet_name = options[:gwt_facet_name] || "GWT"
@@ -760,50 +752,32 @@ module Buildr #:nodoc:
       end
 
       def add_exploded_ear_artifact(project, options ={})
+        artifact_name = to_artifact_name(project, options)
 
-        artifact_name = options[:name] || project.iml.id
-        build_on_make = options[:build_on_make].nil? ? true : options[:build_on_make]
-
-        add_artifact(artifact_name, "exploded-ear", build_on_make) do |xml|
+        add_artifact(artifact_name, "exploded-ear", build_on_make(options)) do |xml|
           dependencies = (options[:dependencies] || ([project] + project.compile.dependencies)).flatten
           libraries, projects = partition_dependencies(dependencies)
 
-          ## The content here can not be indented
-          output_dir = options[:output_dir] || buildr_project._(:artifacts, artifact_name)
-          xml.tag!('output-path', resolve_path(output_dir))
-
+          emit_output_path(xml, artifact_name, options)
           xml.root :id => "root" do
-
-            xml.element :id => "module-output", :name => project.iml.id
-
-            projects.each do |p|
-              xml.element :id => "directory", :name => p.iml.id do
-                xml.element :id => "module-output", :name => p.iml.id
-              end
-            end
-
+            emit_module_output(xml, projects)
             xml.element :id => "directory", :name => "lib" do
-              libraries.each(&:invoke).map(&:to_s).each do |dependency_path|
-                xml.element :id => "file-copy", :path => resolve_path(dependency_path)
-              end
+              emit_libraries(xml, libraries)
             end
-
           end
         end
       end
 
       def add_jar_artifact(project, options = {})
-        artifact_name = options[:name] || project.iml.id
-        build_on_make = options[:build_on_make].nil? ? true : options[:build_on_make]
+        artifact_name = to_artifact_name(project, options)
 
-        dependencies = (options[:dependencies] || ([project] + project.compile.dependencies)).flatten
+        dependencies = (options[:dependencies] || [project]).flatten
         libraries, projects = partition_dependencies(dependencies)
         raise "Unable to add non-project dependencies (#{libraries.inspect}) to jar artifact" if libraries.size > 0
 
         jar_name = "#{artifact_name}.jar"
-        add_artifact(jar_name, "jar", build_on_make) do |xml|
-          output_dir = options[:output_dir] || buildr_project._(:artifacts, artifact_name)
-          xml.tag!('output-path', resolve_path(output_dir))
+        add_artifact(jar_name, "jar", build_on_make(options)) do |xml|
+          emit_output_path(xml, artifact_name, options)
           xml.root(:id => "archive", :name => jar_name) do
             artifact_content(xml, project, projects, options)
           end
@@ -811,38 +785,15 @@ module Buildr #:nodoc:
       end
 
       def add_exploded_ejb_artifact(project, options = {})
+        artifact_name = to_artifact_name(project, options)
 
-        artifact_name = options[:name] || project.iml.id
-        build_on_make = options[:build_on_make].nil? ? true : options[:build_on_make]
-
-        add_artifact(artifact_name, "exploded-ejb", build_on_make) do |xml|
+        add_artifact(artifact_name, "exploded-ejb", build_on_make(options)) do |xml|
           dependencies = (options[:dependencies] || ([project] + project.compile.dependencies)).flatten
           libraries, projects = partition_dependencies(dependencies)
 
-          ## The content here can not be indented
-          output_dir = options[:output_dir] || buildr_project._(:artifacts, artifact_name)
-          xml.tag!('output-path', resolve_path(output_dir))
-
+          emit_output_path(xml, artifact_name, options)
           xml.root :id => "root" do
-
-            xml.element :id => "module-output", :name => project.iml.id
-
-            if options[:enable_jpa]
-              module_names = options[:jpa_module_names] || [project.iml.id]
-              module_names.each do |module_name|
-                facet_name = options[:jpa_facet_name] || "JPA"
-                xml.element :id => "jpa-descriptors", :facet => "#{module_name}/jpa/#{facet_name}"
-              end
-            end
-
-            if options[:enable_ejb].nil? || options[:enable_ejb]
-              module_names = options[:ejb_module_names] || [project.iml.id]
-              module_names.each do |module_name|
-                facet_name = options[:ejb_facet_name] || "EJB"
-                xml.element :id => "javaee-facet-resources", :facet => "#{module_name}/ejb/#{facet_name}"
-              end
-            end
-
+            artifact_content(xml, project, projects, options)
           end
         end
       end
@@ -867,23 +818,9 @@ module Buildr #:nodoc:
       protected
 
       def artifact_content(xml, project, projects, options)
-        projects.each do |p|
-          xml.element :id => "module-output", :name => p.iml.id
-        end
-        if options[:enable_jpa]
-          module_names = options[:jpa_module_names] || [project.iml.id]
-          module_names.each do |module_name|
-            facet_name = options[:jpa_facet_name] || "JPA"
-            xml.element :id => "jpa-descriptors", :facet => "#{module_name}/jpa/#{facet_name}"
-          end
-        end
-        if options[:enable_ejb]
-          module_names = options[:ejb_module_names] || [project.iml.id]
-          module_names.each do |module_name|
-            facet_name = options[:ejb_facet_name] || "EJB"
-            xml.element :id => "javaee-facet-resources", :facet => "#{module_name}/ejb/#{facet_name}"
-          end
-        end
+        emit_module_output(xml, projects)
+        emit_jpa_descriptors(xml, project, options)
+        emit_ejb_descriptors(xml, project, options)
       end
 
       def extension
@@ -1011,6 +948,58 @@ module Buildr #:nodoc:
       end
 
     private
+
+      def to_artifact_name(project, options)
+        options[:name] || project.iml.id
+      end
+
+      def build_on_make(options)
+        options[:build_on_make].nil? ? false : options[:build_on_make]
+      end
+
+      def emit_jar_artifacts(xml, artifacts)
+        artifacts.each do |p|
+          xml.element :id => "artifact", 'artifact-name' => "#{p}.jar"
+        end
+      end
+
+      def emit_libraries(xml, libraries)
+        libraries.each(&:invoke).map(&:to_s).each do |dependency_path|
+          xml.element :id => "file-copy", :path => resolve_path(dependency_path)
+        end
+      end
+
+      def emit_module_output(xml, projects)
+        projects.each do |p|
+          xml.element :id => "module-output", :name => p.iml.id
+        end
+      end
+
+      def emit_output_path(xml, artifact_name, options)
+        ## The content here can not be indented
+        output_dir = options[:output_dir] || buildr_project._(:artifacts, artifact_name)
+        xml.tag!('output-path', resolve_path(output_dir))
+      end
+
+      def emit_ejb_descriptors(xml, project, options)
+        if options[:enable_ejb] || (options[:ejb_module_names] && options[:ejb_module_names].size > 0)
+          module_names = options[:ejb_module_names] || [project.iml.id]
+          module_names.each do |module_name|
+            facet_name = options[:ejb_facet_name] || "EJB"
+            xml.element :id => "javaee-facet-resources", :facet => "#{module_name}/ejb/#{facet_name}"
+          end
+        end
+      end
+
+      def emit_jpa_descriptors(xml, project, options)
+        if options[:enable_jpa] || (options[:jpa_module_names] && options[:jpa_module_names].size > 0)
+          module_names = options[:jpa_module_names] || [project.iml.id]
+          module_names.each do |module_name|
+            facet_name = options[:jpa_facet_name] || "JPA"
+            xml.element :id => "jpa-descriptors", :facet => "#{module_name}/jpa/#{facet_name}"
+          end
+        end
+      end
 
       def encrypt(password)
         password.bytes.inject("") { |x, y| x + (y ^ 0xdfaa).to_s(16) }

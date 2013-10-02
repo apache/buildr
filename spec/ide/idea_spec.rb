@@ -835,6 +835,68 @@ describe Buildr::IntellijIdea do
       end
     end
 
+    describe "that uses add_jar_artifact with no overrides" do
+      before do
+        write 'foo/bar/src/main/java/foo/Foo.java' # needed so that buildr will treat as a java project
+        artifact('net.sourceforge.jtds:jtds:jar:1.2.7.XX') { |task| write task.name }
+
+        @foo = define "foo" do
+          project.version = '1.0'
+          define "bar" do
+            compile.with 'net.sourceforge.jtds:jtds:jar:1.2.7.XX'
+            package :war
+          end
+          ipr.add_jar_artifact(project("bar"))
+        end
+        invoke_generate_task
+      end
+
+      it "generates an IPR with a jar artifact" do
+        doc = xml_document(@foo._("foo.ipr"))
+        base_xpath = "/project/component[@name='ArtifactManager']/artifact"
+        facet_xpath = "#{base_xpath}[@type='jar' and @name='bar.jar' and @build-on-make='false']"
+        doc.should have_xpath(facet_xpath)
+
+        doc.should have_xpath("#{facet_xpath}/output-path/text() = $PROJECT_DIR$/artifacts/bar")
+        doc.should have_xpath("#{facet_xpath}/root[@id='archive' and @name='bar.jar']/element[@id='module-output' and @name='bar']")
+      end
+    end
+
+    describe "that uses add_jar_artifact with overrides" do
+      before do
+        write 'foo/bar/src/main/java/foo/Foo.java' # needed so that buildr will treat as a java project
+        artifact('net.sourceforge.jtds:jtds:jar:1.2.7.XX') { |task| write task.name }
+
+        @foo = define "foo" do
+          project.version = '1.0'
+          define "bar" do
+            compile.with 'net.sourceforge.jtds:jtds:jar:1.2.7.XX'
+            package :war
+          end
+          ipr.add_jar_artifact(project,
+                               :name => 'bar',
+                               :output_dir => _('bink'),
+                               :build_on_make => true,
+                               :ejb_module_names => ['x'],
+                               :jpa_module_names => ['p'],
+                               :dependencies => [project('bar')])
+        end
+        invoke_generate_task
+      end
+
+      it "generates an IPR with a jar artifact" do
+        doc = xml_document(@foo._("foo.ipr"))
+        base_xpath = "/project/component[@name='ArtifactManager']/artifact"
+        facet_xpath = "#{base_xpath}[@type='jar' and @name='bar.jar' and @build-on-make='true']"
+        doc.should have_xpath(facet_xpath)
+
+        doc.should have_xpath("#{facet_xpath}/output-path/text() = $PROJECT_DIR$/bink")
+        doc.should have_xpath("#{facet_xpath}/root[@id='archive' and @name='bar.jar']/element[@id='module-output' and @name='bar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='archive' and @name='bar.jar']/element[@id='jpa-descriptors' and @facet='p/jpa/JPA']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='archive' and @name='bar.jar']/element[@id='javaee-facet-resources' and @facet='x/ejb/EJB']")
+      end
+    end
+
     describe "that uses add_exploded_war_artifact with no overrides" do
       before do
         write 'foo/bar/src/main/java/foo/Foo.java' # needed so that buildr will treat as a java project
