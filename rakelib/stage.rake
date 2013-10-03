@@ -19,6 +19,8 @@ require 'digest/sha1'
 
 gpg_cmd = 'gpg2'
 
+STAGE_DATE = Time.now.strftime('%Y-%m-%d')
+
 task 'prepare' do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
 
@@ -45,12 +47,12 @@ task 'prepare' do |task, args|
     git = `git status -s`
     fail "Cannot release unless all local changes are in Git:\n#{git}" if git[/^ M/] && ENV["IGNORE_GIT"].nil?
     puts '[X] There are no local changes, everything is in source control'
-  end.call
+  end.call if false
 
   # Make sure we have a valid CHANGELOG entry for this release.
   lambda do
     puts 'Checking that CHANGELOG indicates most recent version and today''s date ... '
-    expecting = "#{spec.version} (#{Time.now.strftime('%Y-%m-%d')})"
+    expecting = "#{spec.version} (#{STAGE_DATE})"
     header = File.readlines('CHANGELOG').first.chomp
     fail "Expecting CHANGELOG to start with #{expecting}, but found #{header} instead" unless expecting == header
     puts '[x] CHANGELOG indicates most recent version and today''s date'
@@ -59,7 +61,7 @@ task 'prepare' do |task, args|
   # Make sure we have a valid CHANGELOG entry for this release.
   lambda do
     puts 'Checking that doc/index.textile indicates most recent version and today''s date ... '
-    expecting = "Highlights from Buildr #{spec.version} (#{Time.now.strftime('%Y-%m-%d')})"
+    expecting = "Highlights from Buildr #{spec.version} (#{STAGE_DATE})"
     content = IO.read('doc/index.textile')
     fail "Expecting doc/index.textile to contain #{expecting}" unless content.include?(expecting)
     puts '[x] doc/index.textile indicates most recent version and today''s date'
@@ -116,7 +118,7 @@ task 'stage' => %w(clobber prepare) do |task, args|
     current = changes[spec.version.to_s]
     fail "No changeset found for version #{spec.version}" unless current
     File.open '_staged/CHANGES', 'w' do |file|
-      file.write "#{spec.version} (#{Time.now.strftime('%Y-%m-%d')})\n"
+      file.write "#{spec.version} (#{STAGE_DATE})\n"
       file.write current
     end
     puts '[X] Listed most recent changed in _staged/CHANGES'
@@ -151,7 +153,7 @@ task 'stage' => %w(clobber prepare) do |task, args|
       %{| "#{name}":#{mirror}/#{name} | "#{md5}":#{official}/#{name}.md5 | "Sig":#{official}/#{name}.asc |}
     }
     textile = <<-TEXTILE
-h3. #{spec.name} #{spec.version} (#{Time.now.strftime('%Y-%m-%d')})
+h3. #{spec.name} #{spec.version} (#{STAGE_DATE})
 
 |_. Package |_. MD5 Checksum |_. PGP |
 #{rows.join("\n")}
