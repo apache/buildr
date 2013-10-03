@@ -788,8 +788,9 @@ module Buildr #:nodoc:
         artifact_name = to_artifact_name(project, options)
 
         add_artifact(artifact_name, "exploded-ejb", build_on_make(options)) do |xml|
-          dependencies = (options[:dependencies] || ([project] + project.compile.dependencies)).flatten
+          dependencies = (options[:dependencies] || [project]).flatten
           libraries, projects = partition_dependencies(dependencies)
+          raise "Unable to add non-project dependencies (#{libraries.inspect}) to ejb artifact" if libraries.size > 0
 
           emit_output_path(xml, artifact_name, options)
           xml.root :id => "root" do
