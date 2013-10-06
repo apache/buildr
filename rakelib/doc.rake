@@ -126,6 +126,8 @@ task 'setup-local-site-svn' do
 end
 
 task 'clobber' do
+  rm_rf 'rake'
+  rm_rf 'site'
   rm_rf '_site'
   rm_f 'buildr.pdf'
   rm_f 'prince_errors.log'

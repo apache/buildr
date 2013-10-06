@@ -231,3 +231,4 @@ The following changes were made since #{previous_version}:
 end
 
 task('clobber') { rm_rf '_staged' }
+task('clobber') { rm_rf 'vote-email.txt' }

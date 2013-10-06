@@ -15,7 +15,7 @@
 
 require 'rubygems/package_task'
 
-package = Gem::PackageTask.new(spec) do |pkg|
+Gem::PackageTask.new(spec) do |pkg|
   pkg.need_tar = true
   pkg.need_zip = true
 end

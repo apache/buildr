@@ -167,3 +167,4 @@ The Apache Buildr Team
 end
 
 task('clobber') { rm_rf '_release' }
+task('clobber') { rm_rf 'announce-email.txt' }
