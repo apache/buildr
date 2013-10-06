@@ -1,4 +1,6 @@
 1.4.14 (Pending)
+* Fixed:  Fixed regression using transitive dependencies due to
+          presence of :scope option in Artifacts.to_hash.
 * Fixed:  Fixed bug in GWT addon that required that the user supply
           the :dependencies option.
 * Fixed:  Fixed bug in Intellij project file generation when adding
