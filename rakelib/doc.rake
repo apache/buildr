@@ -109,7 +109,9 @@ task 'publish-doc' => %w(buildr.pdf _site setup-local-site-svn) do
 end
 
 task 'publish-site-svn' do
-  sh 'svn', 'add', '--force', 'site'
+  cd 'site'
+  sh 'svn', 'add', '--force', '.'
+  cd '..'
   sh 'svn', 'commit', 'site', '-m', 'Publish latest site'
 end
 
