@@ -96,7 +96,7 @@ module Buildr
         artifacts = (project.compile.sources + project.resources.sources).collect do |a|
           a.is_a?(String) ? file(a) : a
         end
-        dependencies = artifacts(options[:dependencies]) || project.compile.dependencies
+        dependencies = options[:dependencies] ? artifacts(options[:dependencies]) : project.compile.dependencies
 
         unit_cache_dir = project._(:target, :gwt, :unit_cache_dir, output_key)
 
