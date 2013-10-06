@@ -406,6 +406,23 @@ describe Buildr::IntellijIdea do
       end
     end
 
+    describe "using add_web_facet should default to no jsf" do
+      before do
+        write "src/main/webapp/WEB-INF/web.xml"
+
+        @foo = define "foo" do
+          iml.add_web_facet
+        end
+        invoke_generate_task
+      end
+
+      it "does not generate a web facet with jsf facet" do
+        doc = xml_document(@foo._("foo.iml"))
+        web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
+        doc.should_not have_xpath("#{web_facet_xpath}/facet[@type='jsf', @name='JSF']")
+      end
+    end
+
     describe "using add_web_facet with jsf and idea version 13" do
       before do
         write "src/main/webapp/WEB-INF/web.xml"
