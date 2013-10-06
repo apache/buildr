@@ -293,7 +293,7 @@ module Buildr #:nodoc:
         if spec.respond_to?(:to_spec)
           to_hash spec.to_spec
         elsif Hash === spec
-          rake_check_options spec, :id, :group, :type, :classifier, :version
+          rake_check_options spec, :id, :group, :type, :classifier, :version, :scope
           # Sanitize the hash and check it's valid.
           spec = ARTIFACT_ATTRIBUTES.inject({}) { |h, k| h[k] = spec[k].to_s if spec[k] ; h }
           fail "Missing group identifier for #{spec.inspect}" unless spec[:group]
