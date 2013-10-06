@@ -37,6 +37,77 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.13</name>
+        <created>2013-10-02</created>
+        <revision>1.4.13</revision>
+        <dc:description>
+* Fixed:  BUILDR-439 - Fix java command under windows when supplied
+          with extremely long classpath. Submitted By Tammo van Lessen.
+* Fixed:  BUILDR-394 - Fix release task with standalone distribution.
+          Submitted By Tammo van Lessen.
+* Added:  BUILDR-678 - Improve support for gpg signing artifacts
+          using a single method.
+* Fixed:  BUILDR-677 - GPG addon hangs when .asc files are still in
+          target. Submitted By Tammo van Lessen.
+* Added:  Initial support for data source creation in Intellij IDEA
+          project files.
+* Fixed:  BUILDR-676 - Rework Java::Command:java so that it does not
+          reject the :dir option. Reported by John Roth.
+* Added:  Auto-detect jpa provider in Intellij IDEA facet generation if
+          persistence.xml file is present and provider not specified.
+* Added:  Auto-detect jruby version in Intellij IDEA facet generation if
+          .ruby-version file is present.
+* Added:  Improve support for auto-detection of ejb and web descriptors
+          within Intellij IDEA project generation.
+* Change: Default to setting the "User-Agent" header to "Buildr-VERSION"
+          when accessing http resources. Maven Central rejects requests
+          without a User-Agent string.
+* Change: Change default scope of dependencies to 'compile'. Submitted
+          by Ingo Schmidt.
+* Change: BUILDR-675 - Set Cache-Control to 'no-cache' when downloading
+          artifacts. Submitted by Félix Enrique Llorente Pastora.
+* Added:  Initial support for simple integration of an asset pipeline.
+          See "Compiling Assets" section in the manual.
+* Fixed:  BUILDR-673 - Fix the option handling of the MultiTest test
+          framework to behave as documented. Only the framework specific
+          options are passed to the test. Submitted by John Roth.
+* Added:  BUILDR-672 - Persist the properties field in the checkstyle
+          addon so that they can be modified by the user. Submitted
+          by Wim C.
+* Fixed:  Make the package_as_* methods public so that the methods are
+          detected in Ruby >= 2.0.0 via the respond_to? method.
+* Change: Updated dependency versions;
+          - rspec-expectations (2.14.3)
+          - rspec-mocks (2.14.3)
+          - rspec-core (2.14.5)
+          - rspec (2.14.1)
+          - minitar (0.5.4)
+          - ci_reporter (1.8.4)
+          - xml-simple (1.1.2)
+          - rjb (1.4.8)
+          - diff-lcs (1.2.4)
+          - builder (3.2.2)
+          - net-ssh (2.7.0)
+          - net-sftp (2.1.2)
+          - hoe (3.7.1)
+          - json_pure (1.8.0)
+          - highline (1.6.19)
+* Fixed:  BUILDR-668 - Specify File::FNM_EXTGLOB for include globs
+          where needed in Ruby >= 2.0.0. Reported by Yavor Nikolov.
+* Fixed:  Ensure generation of buildfiles from eclipse projects will
+          finds .project files in Ruby >= 2.0.0.
+* Fixed:  Patch Rake::FileList in Ruby >= 2.0.0 to match dot files if
+          a .* pattern is supplied as in earlier versions of ruby.
+* Fixed:  Make Archive-related operations (e.g. zip.merge) deterministic using
+          OrderedHash.
+* Change: Update to TestNG 6.8.5.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.12</name>
         <created>2013-05-04</created>
         <revision>1.4.12</revision>
