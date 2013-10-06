@@ -547,6 +547,10 @@ MANIFEST
       end
     end
 
+    after do
+      rm_rf '../libs'
+    end
+
     it 'supports generating library paths with classpath variables' do
       classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }.
         should include('LIBS/some-local.jar')
