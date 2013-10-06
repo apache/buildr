@@ -56,4 +56,5 @@ task 'ci' => %w(clobber load_ci_reporter spec)
 task 'clobber' do
   rm_f 'failed'
   rm_rf '_reports'
+  rm_rf 'tmp'
 end
