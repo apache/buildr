@@ -100,7 +100,7 @@ module Buildr
 
         unit_cache_dir = project._(:target, :gwt, :unit_cache_dir, output_key)
 
-        task = file(output_dir) do
+        task = project.file(output_dir) do
           Buildr::GWT.gwtc_main(module_names, dependencies + artifacts, output_dir, unit_cache_dir, options.dup)
         end
         task.enhance(dependencies)
