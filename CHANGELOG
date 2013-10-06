@@ -1,4 +1,6 @@
 1.4.14 (Pending)
+* Fixed:  Fixed bug in Intellij project file generation when adding
+          a web facet.
 
 1.4.13 (2013-10-02)
 * Fixed:  BUILDR-439 - Fix java command under windows when supplied
