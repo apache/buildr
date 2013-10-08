@@ -142,7 +142,7 @@ module Buildr
           service = config[:service] || File.basename(wsdl_file, '.wsdl')
           wsdl_location = config[:wsdl_location]
           java_file = "#{ws_dir}/#{pkg.gsub('.', '/')}/#{service}.java"
-          project.file(java_file) do
+          project.file(java_file => [project.file(wsdl_file)]) do
             mkdir_p ws_dir
             command = []
             command << "wsimport"

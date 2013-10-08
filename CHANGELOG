@@ -1,4 +1,6 @@
 1.4.14 (Pending)
+* Change: Add dependency from generated jws client source directory
+          to the source wsdl in the wsgen addon.
 * Fixed:  Fixed regression in gwt addon due to "pathing_jar"
           functionality in Java::Commands.java.
 * Change: Support disabling the new "pathing_jar" functionality in
