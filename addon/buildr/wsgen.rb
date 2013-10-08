@@ -172,6 +172,8 @@ module Buildr
         project.compile.from ws_dir
         project.iml.main_source_directories << ws_dir if project.iml?
         project.compile.enhance(['wsdl2java'])
+
+        ws_dir
       end
     end
   end
