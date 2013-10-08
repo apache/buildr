@@ -60,7 +60,7 @@ module Buildr
         properties["gwt.persistentunitcache"] = "true"
         properties["gwt.persistentunitcachedir"] = unit_cache_dir
 
-        Java::Commands.java 'com.google.gwt.dev.Compiler', *(args + [{:classpath => cp, :properties => properties, :java_args => options[:java_args]}])
+        Java::Commands.java 'com.google.gwt.dev.Compiler', *(args + [{:classpath => cp, :properties => properties, :java_args => options[:java_args], :pathing_jar => false}])
       end
 
       def superdev_dependencies
@@ -83,7 +83,7 @@ module Buildr
 
         java_args = options[:java_args] ? options[:java_args].dup : {}
 
-        Java::Commands.java 'com.google.gwt.dev.codeserver.CodeServer', *(args + [{:classpath => cp, :properties => properties, :java_args => java_args}])
+        Java::Commands.java 'com.google.gwt.dev.codeserver.CodeServer', *(args + [{:classpath => cp, :properties => properties, :java_args => java_args, :pathing_jar => false}])
       end
     end
 
