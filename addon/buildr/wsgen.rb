@@ -131,7 +131,7 @@ module Buildr
         desc "Generate java from wsdl"
         project.task("wsdl2java")
 
-        ws_dir = File.expand_path(options[:output_dir] || project._(:target, :generated, "main/ws"))
+        ws_dir = File.expand_path(options[:output_dir] || project._(:target, :generated, "ws/main/java"))
         project.file(ws_dir)
         project.task('wsdl2java').enhance([ws_dir])
 
