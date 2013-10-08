@@ -1,4 +1,6 @@
 1.4.14 (Pending)
+* Change: Update wsgen addon to generate source into a directory
+          hierarchy based on maven conventions.
 * Fixed:  Fixed regression using transitive dependencies due to
           presence of :scope option in Artifacts.to_hash.
 * Fixed:  Fixed bug in GWT addon that required that the user supply
