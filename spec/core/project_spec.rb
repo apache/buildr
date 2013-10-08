@@ -672,7 +672,7 @@ describe Project, '#task' do
     project('foo').task('bar').name.should eql('foo:bar')
   end
 
-  it 'should ignore namespace if starting with color' do
+  it 'should ignore namespace if starting with colon' do
     define 'foo' do
       task(':bar').name.should == 'bar'
     end
