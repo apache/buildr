@@ -1,4 +1,7 @@
 1.4.14 (Pending)
+* Change: Support disabling the new "pathing_jar" functionality in
+          Java::Commands.java utility method. Required for tools
+          that introspect the classpath.
 * Change: Update wsgen addon to generate source into a directory
           hierarchy based on maven conventions.
 * Fixed:  Fixed regression using transitive dependencies due to
