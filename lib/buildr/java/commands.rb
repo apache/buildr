@@ -40,10 +40,13 @@ module Java
       # * :properties -- Hash of system properties (e.g. 'path'=>base_dir).
       # * :name -- Shows this name, otherwise shows the first argument (the class name).
       # * :verbose -- If true, prints the command and all its argument.
+      # * :pathing_jar -- If true, forces the use of a "pathing" jar, false disables. Nil
+      #                   will default to using a "pathing" jar under windows with long classpaths.
+      #                   See http://stackoverflow.com/questions/201816/how-to-set-a-long-java-classpath-in-msdos-windows
       def java(*args, &block)
         options = Hash === args.last ? args.pop : {}
         options[:verbose] ||= trace?(:java)
-        rake_check_options options, :classpath, :java_args, :properties, :name, :verbose, :dir
+        rake_check_options options, :classpath, :java_args, :properties, :name, :verbose, :dir, :pathing_jar
 
         name = options[:name]
         if name.nil?
@@ -63,21 +66,27 @@ module Java
         end
         cmd_args << path_to_bin('java')
         cp = classpath_from(options)
-        paths = cp.map do |c|
-          path = File.directory?(c) && !c.end_with?('/') ? "#{c}/" : c.to_s
-          Buildr::Util.win_os? ? "/#{path}" : path
-        end
-        manifest = Buildr::Packaging::Java::Manifest.new([{'Class-Path' => paths.join(" ")}])
 
-        tjar = Tempfile.new(['javacmd', '.jar'])
-        Zip::ZipOutputStream.open(tjar.path) do |zos|
-          zos.put_next_entry('META-INF/MANIFEST.MF')
-          zos.write manifest.to_s
-          zos.write "\n"
-        end
-        tjar.close
+        unless cp.empty?
+          if options[:pathing_jar] == true || (options[:pathing_jar].nil? && Util.win_os? && cp.join(':').size > 2048)
+            paths = cp.map do |c|
+              path = File.directory?(c) && !c.end_with?('/') ? "#{c}/" : c.to_s
+              Buildr::Util.win_os? ? "/#{path}" : path
+            end
+            manifest = Buildr::Packaging::Java::Manifest.new([{'Class-Path' => paths.join(" ")}])
+            tjar = Tempfile.new(['javacmd', '.jar'])
+            Zip::ZipOutputStream.open(tjar.path) do |zos|
+              zos.put_next_entry('META-INF/MANIFEST.MF')
+              zos.write manifest.to_s
+              zos.write "\n"
+            end
+            tjar.close
 
-        cmd_args << '-classpath' << tjar.path
+            cmd_args << '-classpath' << tjar.path
+          else
+            cmd_args << '-classpath' << cp.join(File::PATH_SEPARATOR)
+          end
+        end
         options[:properties].each { |k, v| cmd_args << "-D#{k}=#{v}" } if options[:properties]
         cmd_args += (options[:java_args] || (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split).flatten
         cmd_args += args.flatten.compact
