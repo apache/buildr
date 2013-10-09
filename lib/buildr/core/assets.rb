@@ -41,13 +41,16 @@ module Buildr #:nodoc:
       def initialize(*args) #:nodoc:
         super
         enhance do
-          mkdir_p name
-          self.paths.flatten.compact.collect do |a|
-            a.is_a?(String) ? project.file(a) : a
-          end.each do |a|
-            a.invoke if a.respond_to?(:invoke)
-          end.each do |asset|
-            cp_r Dir["#{asset}/*"], "#{name}/"
+          paths = self.paths.flatten.compact
+          if paths.size > 0
+            mkdir_p name
+            paths.collect do |a|
+              a.is_a?(String) ? project.file(a) : a
+            end.each do |a|
+              a.invoke if a.respond_to?(:invoke)
+            end.each do |asset|
+              cp_r Dir["#{asset}/*"], "#{name}/"
+            end
           end
         end
       end
