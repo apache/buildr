@@ -23,7 +23,7 @@ class ProgressBar
     end
 
     def width
-      @width ||= $terminal.output_cols || 0
+      @width ||= Buildr::Console.output_cols || 0
     end
 
   end

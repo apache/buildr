@@ -242,7 +242,7 @@ module Buildr
             real << ('%ih' % (elapsed / 3600)) if elapsed >= 3600
             real << ('%im' % ((elapsed / 60) % 60)) if elapsed >= 60
             real << ('%.3fs' % (elapsed % 60))
-            puts $terminal.color("Completed in #{real.join}", :green)
+            puts Buildr::Console.color("Completed in #{real.join}", :green)
           end
           # On OS X this will load Cocoa and Growl which takes half a second we
           # don't want to measure, so put this after the console message.
@@ -537,7 +537,7 @@ module Buildr
         # Exit silently with current status
         exit(ex.status)
       rescue OptionParser::ParseError => ex
-        $stderr.puts $terminal.color(ex.message, :red)
+        $stderr.puts Buildr::Console.color(ex.message, :red)
         exit(1)
       rescue Exception => ex
         ex_msg = ex.class.name == "Exception" ? ex.message : "#{ex.class.name} : #{ex.message}"
@@ -545,11 +545,11 @@ module Buildr
         build_failed(title, message, ex)
         # Exit with error message
         $stderr.puts "Buildr aborted!"
-        $stderr.puts $terminal.color(ex_msg, :red)
+        $stderr.puts Buildr::Console.color(ex_msg, :red)
         if options.trace
           $stderr.puts ex.backtrace.join("\n")
         else
-          $stderr.puts ex.backtrace.select { |str| str =~ /#{rakefile}/ }.map { |line| $terminal.color(line, :red) }.join("\n") if rakefile
+          $stderr.puts ex.backtrace.select { |str| str =~ /#{rakefile}/ }.map { |line| Buildr::Console.color(line, :red) }.join("\n") if rakefile
           $stderr.puts "(See full trace by running task with --trace)"
         end
         exit(1)
@@ -597,29 +597,17 @@ module Buildr
 
 end
 
-
-# Add a touch of color when available and running in terminal.
-HighLine.use_color = false
-if $stdout.isatty
-  begin
-    require 'Win32/Console/ANSI' if RbConfig::CONFIG['host_os'] =~ /mswin|win32|dos|cygwin|mingw/i
-    HighLine.use_color = true
-  rescue LoadError
-  end
-end
-
-
 alias :warn_without_color :warn
 
 # Show warning message.
 def warn(message)
-  warn_without_color $terminal.color(message.to_s, :blue) if verbose
+  warn_without_color Buildr::Console.color(message.to_s, :blue) if verbose
 end
 
 # Show error message.  Use this when you need to show an error message and not throwing
 # an exception that will stop the build.
 def error(message)
-  puts $terminal.color(message.to_s, :red)
+  puts Buildr::Console.color(message.to_s, :red)
 end
 
 # Show optional information.  The message is printed only when running in verbose
