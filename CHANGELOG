@@ -1,4 +1,5 @@
 1.4.14 (Pending)
+* Fixed:  BUILDR-681 - Stop empty projects creating target/webapp.
 * Change: Add dependency from generated jws client source directory
           to the source wsdl in the wsgen addon.
 * Fixed:  Fixed regression in gwt addon due to "pathing_jar"
