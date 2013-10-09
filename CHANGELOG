@@ -1,4 +1,7 @@
 1.4.14 (Pending)
+* Fixed:  BUILDR-682 - Fix the documentation for releasing using
+          your own versioning scheme. Submitted by Jean-Philippe
+          Caruana.
 * Fixed:  BUILDR-681 - Stop empty projects creating target/webapp.
 * Change: Add dependency from generated jws client source directory
           to the source wsdl in the wsgen addon.
