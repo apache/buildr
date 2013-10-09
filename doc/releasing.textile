@@ -66,11 +66,13 @@ THIS_VERSION = "1.0.0-SNAPSHOT"
 # a string
 Release.next_version = "2.0.0-SNAPSHOT"
 
-# or a proc
-Release.next_version = lambda do |this_version| # 1.0.0-SNAPSHOT
-    new_version = @THIS_VERSION@.split(/\./)
-    new_version[0] = new_version[0] + 1
-    new_version
+# or a proc - equivalent result
+Release.next_version = lambda do |this_version| # 2.0.0-SNAPSHOT
+    new_version = THIS_VERSION.split /\./
+    new_version[0] = new_version[0].to_i + 1
+    new_version[1] = 0
+    new_version[2] = '0-SNAPSHOT'
+    new_version.join '.'
 end
 
 define 'killer-app' do
