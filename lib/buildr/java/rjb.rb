@@ -112,6 +112,12 @@ module Java
       classpath.map! { |path| Proc === path ? path.call : path }
       cp = Buildr.artifacts(classpath).map(&:to_s).each { |path| file(path).invoke }
       java_opts = (ENV['JAVA_OPTS'] || ENV['JAVA_OPTIONS']).to_s.split
+
+      # Prepend the JDK bin directory to the path under windows as RJB can have issues if it picks
+      # up jvm dependencies from other products installed on the system
+      if Buildr::Util.win_os?
+        ENV["PATH"] = "#{ENV['JAVA_HOME']}#{File::SEPARATOR}bin#{File::PATH_SEPARATOR}#{ENV["PATH"]}"
+      end
       ::Rjb.load cp.join(File::PATH_SEPARATOR), java_opts
 
       props = ::Rjb.import('java.lang.System').getProperties
