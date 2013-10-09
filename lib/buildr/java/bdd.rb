@@ -128,9 +128,9 @@ module Buildr #:nodoc:
       unless jruby_installed?
         jruby_artifact = Buildr.artifact(TestFramework::JRubyBased.jruby_artifact)
         msg = "JRUBY_HOME is not correctly set or points to an invalid JRuby installation: #{jruby_home}"
-        say msg
-        say ''
-        say "You need to install JRuby version #{jruby_artifact.version} using your system package manager."
+        puts msg
+        puts ''
+        puts "You need to install JRuby version #{jruby_artifact.version} using your system package manager."
 
         fail msg unless jruby_installed?
       end
