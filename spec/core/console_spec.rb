@@ -21,7 +21,7 @@ describe Buildr::Console do
 
     it 'should return a value' do
       Buildr::Console.console_dimensions.should_not be_nil
-    end
+    end if $stdout.isatty
   end
 
   describe 'color' do
