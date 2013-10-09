@@ -403,7 +403,7 @@ module Buildr
     def raw_generate_buildfile(source, from_eclipse=Generate.has_eclipse_project?)
       # We need rakefile to be known, for settings.build to be accessible.
       @rakefile = File.expand_path(DEFAULT_BUILDFILES.first)
-      fail "Buildfile already exists" if File.exist?(@rakefile) && !(tty_output? && agree('Buildfile exists, overwrite?'))
+      fail "Buildfile already exists" if File.exist?(@rakefile) && !(tty_output? && Buildr::Console.agree?('Buildfile exists, overwrite?'))
       script = nil
       if from_eclipse
         script = Generate.from_eclipse(source)
