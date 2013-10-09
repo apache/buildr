@@ -47,7 +47,7 @@ module Buildr #:nodoc:
         each_project { |p| p.test.compile.invoke }
         build_completed(project)
       rescue Exception => ex
-        $stderr.puts $terminal.color(ex.message, :red)
+        $stderr.puts Buildr::Console.color(ex.message, :red)
         $stderr.puts
 
         build_failed(project, ex)
@@ -108,12 +108,12 @@ module Buildr #:nodoc:
             each_project { |p| p.test.compile.invoke }
             build_completed(project)
           rescue Exception => ex
-            $stderr.puts $terminal.color(ex.message, :red)
+            $stderr.puts Buildr::Console.color(ex.message, :red)
             build_failed(project, ex)
             successful = false
           end
 
-          puts $terminal.color("Build complete", :green) if successful
+          puts Buildr::Console.color("Build complete", :green) if successful
         end
       end
     end
