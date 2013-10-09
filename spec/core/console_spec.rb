@@ -42,7 +42,7 @@ describe Buildr::Console do
       it 'should emit blue code when asked' do
         Buildr::Console.color('message', :blue).should eql("\e[34mmessage\e[0m")
       end
-    end
+    end if $stdout.isatty
 
     describe ' use_color is false' do
       before do
