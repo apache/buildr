@@ -66,6 +66,19 @@ module Buildr #nodoc
         d = console_dimensions
         d ? d[0] : nil
       end
+
+      def ask_password(prompt)
+        ask(prompt) { |q| q.echo = '*' }
+      end
+
+      def present_menu(header, options)
+        choose do |menu|
+          menu.header = header
+          options.each_pair do |message, result|
+            menu.choice(message) { result }
+          end
+        end
+      end
     end
   end
 end

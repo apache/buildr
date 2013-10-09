@@ -17,15 +17,18 @@ module Buildr #:nodoc:
   module Generate #:nodoc:
 
     task 'generate' do
-      script = nil
-      choose do |menu|
-        menu.header = "To use Buildr you need a buildfile. Do you want me to create one?"
-        menu.choice("From eclipse .project files") { script = Generate.from_eclipse(Dir.pwd).join("\n") } if has_eclipse_project?
-        menu.choice("From maven2 pom file") { script = Generate.from_maven2_pom('pom.xml').join("\n") } if File.exists?("pom.xml")
-        menu.choice("From directory structure") { script = Generate.from_directory(Dir.pwd).join("\n") }
-        menu.choice("Skip") { }
-      end
 
+      header = "To use Buildr you need a buildfile. Do you want me to create one?"
+      options = {}
+      if Generate.has_eclipse_project?
+        options["From eclipse .project files"] = Proc.new { Generate.from_eclipse(Dir.pwd).join("\n") }
+      end
+      if File.exist?('pom.xml')
+        options["From Maven2 POM file"] = Proc.new { Generate.from_maven2_pom('pom.xml').join("\n") }
+      end
+      options["From directory structure"] = Proc.new { Generate.from_directory(Dir.pwd).join("\n") }
+      options["Skip"]= nil
+      script = Buildr::Console.present_menu(header, options)
       if script
         buildfile = File.expand_path(Buildr::Application::DEFAULT_BUILDFILES.first)
         File.open(buildfile, "w") { |file| file.write script }

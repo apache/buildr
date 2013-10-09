@@ -387,25 +387,25 @@ module Buildr
     end
 
     def ask_generate_buildfile
-      source, fromEclipse = choose do |menu|
-        menu.header = "To use Buildr you need a buildfile. Do you want me to create one?"
-        menu.choice("From eclipse .project files") { [Dir.pwd, true] } if Generate.has_eclipse_project?
-        menu.choice("From Maven2 POM file") { ['pom.xml', false] } if File.exist?('pom.xml')
-        menu.choice("From directory structure") { [Dir.pwd, false] }
-        menu.choice("Cancel") {}
-      end
+      header = "To use Buildr you need a buildfile. Do you want me to create one?"
+      options = {}
+      options["From eclipse .project files"] = [Dir.pwd, true] if Generate.has_eclipse_project?
+      options["From Maven2 POM file"] = ['pom.xml', false] if File.exist?('pom.xml')
+      options["From directory structure"] = [Dir.pwd, false]
+      options["Cancel"]= nil
+      source, from_eclipse = Buildr::Console.present_menu(header, options)
       if source
-        buildfile = raw_generate_buildfile(source, fromEclipse)
+        buildfile = raw_generate_buildfile(source, from_eclipse)
         [buildfile, File.dirname(buildfile)]
       end
     end
 
-    def raw_generate_buildfile(source, fromEclipse=Generate.has_eclipse_project?)
+    def raw_generate_buildfile(source, from_eclipse=Generate.has_eclipse_project?)
       # We need rakefile to be known, for settings.build to be accessible.
       @rakefile = File.expand_path(DEFAULT_BUILDFILES.first)
       fail "Buildfile already exists" if File.exist?(@rakefile) && !(tty_output? && agree('Buildfile exists, overwrite?'))
       script = nil
-      if fromEclipse
+      if from_eclipse
         script = Generate.from_eclipse(source)
       elsif File.directory?(source)
         script = Generate.from_directory(source)
