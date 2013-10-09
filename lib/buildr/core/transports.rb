@@ -422,7 +422,7 @@ module URI
       rescue Net::SSH::AuthenticationFailed=>ex
         # Only if running with console, prompt for password.
         if !ssh_options[:password] && $stdout.isatty
-          password = ask("Password for #{host}:") { |q| q.echo = '*' }
+          password = Buildr::Console.ask_password("Password for #{host}:") { |q| q.echo = '*' }
           ssh_options[:password] = password
           retry
         end
@@ -465,7 +465,7 @@ module URI
       rescue Net::SSH::AuthenticationFailed=>ex
         # Only if running with console, prompt for password.
         if !ssh_options[:password] && $stdout.isatty
-          password = ask("Password for #{host}:") { |q| q.echo = '*' }
+          password = Buildr::Console.ask_password("Password for #{host}:") { |q| q.echo = '*' }
           ssh_options[:password] = password
           retry
         end
