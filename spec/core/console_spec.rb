@@ -21,7 +21,7 @@ describe Buildr::Console do
 
     it 'should return a value' do
       Buildr::Console.console_dimensions.should_not be_nil
-    end if $stdout.isatty
+    end if $stdout.isatty && !ENV["TRAVIS"]
   end
 
   describe 'color' do
