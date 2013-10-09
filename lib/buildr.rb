@@ -105,3 +105,6 @@ class Object #:nodoc:
   end
 end
 
+# Need to set this again as jruby was not correctly
+# initialized, the first time it was called
+Buildr::Console.use_color = $stdout.isatty
