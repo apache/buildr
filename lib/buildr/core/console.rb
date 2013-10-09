@@ -41,10 +41,10 @@ module Buildr #nodoc
               rescue Error
                 # Attempt jruby 1.6.* code path
 
-                java_import java.io.OutputStreamWriter
-                java_import java.nio.channels.Channels
-                java_import jline.ConsoleReader
-                java_import jline.Terminal
+                java_import 'java.io.OutputStreamWriter'
+                java_import 'java.nio.channels.Channels'
+                java_import 'jline.ConsoleReader'
+                java_import 'jline.Terminal'
 
                 @java_input = Channels.newInputStream($stdin.to_channel)
                 @java_output = OutputStreamWriter.new(Channels.newOutputStream($stdout.to_channel))
