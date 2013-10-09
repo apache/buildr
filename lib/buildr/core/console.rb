@@ -67,6 +67,10 @@ module Buildr #nodoc
         d ? d[0] : nil
       end
 
+      def agree?(message)
+        agree(message)
+      end
+
       def ask_password(prompt)
         ask(prompt) { |q| q.echo = '*' }
       end
