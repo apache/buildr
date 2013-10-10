@@ -46,6 +46,14 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
+Highlights from Buildr 1.4.14 (2013-10-11)
+* Fixed:  Fixed regression in gwt addon.
+* Fixed:  Fixed regression using transitive dependencies due to
+          presence of :scope option in Artifacts.to_hash.
+* Fixed:  BUILDR-681 - Stop empty projects creating target/webapp.
+* Fixed:  Fixed several regressions in in the Intellij IDE
+          project file generation.
+
 Highlights from Buildr 1.4.13 (2013-10-02)
 
 * Fixed:  Upgrade rjb dependency so that you can change JVMs by
