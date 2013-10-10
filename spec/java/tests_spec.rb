@@ -308,7 +308,8 @@ describe Buildr::JUnit, 'report' do
     lambda { task('junit:report').invoke }.should change { File.exist?(JUnit.report.target) }.to(true)
   end
 
-  it 'should clean after itself' do
+  # for some reason this will intermittently fail under windows
+  it 'should clean after itself', :retry => (Buildr::Util.win_os? ? 4 : 1) do
     mkpath JUnit.report.target
     lambda { task('clean').invoke }.should change { File.exist?(JUnit.report.target) }.to(false)
   end
