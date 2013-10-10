@@ -59,7 +59,6 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'net-ssh',              '2.7.0'
   spec.add_dependency 'net-sftp',             '2.1.2'
   spec.add_dependency 'rubyzip',              '0.9.9'
-  spec.add_dependency 'highline',             '1.6.19'
   spec.add_dependency 'json_pure',            '1.8.0'
   spec.add_dependency 'rubyforge',            '2.0.4'
   spec.add_dependency 'hoe',                  '3.7.1'
@@ -75,6 +74,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'jruby-openssl',        '~> 0.8.2' if $platform.to_s == 'java'
   spec.add_dependency 'bundler'
   spec.add_dependency 'orderedhash'
+  spec.add_dependency 'win32console'          '1.3.2' if $platform.to_s == 'x86-mswin32'
 
   # Unable to get this consistently working under jruby on windows
   unless $platform.to_s == 'java'
@@ -85,12 +85,6 @@ for those one-off tasks, with a language that's a joy to use.
   end
 
   spec.add_development_dependency 'ci_reporter', '1.9.0'
-
-  # NOTE: Must update all-in-one.rake if this is updated
-  # ffi-ncurses Fails on several varieties of Ubuntu due to being unable to locate ncursesw library
-  # Should be able to just disable it
-  #spec.add_development_dependency 'ffi-ncurses', '0.4.0' if $platform.to_s == 'java'
-  spec.add_development_dependency 'win32console' if $platform.to_s == 'x86-mswin32'
   # Ideally we would depend on psych when the platform has >= 1.9.2 support and jruby platform version > 1.6.6
   #spec.add_development_dependency 'psych' if RUBY_VERSION >= '1.9.2'
   spec.add_development_dependency 'pygmentize', '0.0.3'
