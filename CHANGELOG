@@ -1,4 +1,5 @@
 1.4.14 (Pending)
+* Change: Remove highline dependency.
 * Fixed:  BUILDR-682 - Fix the documentation for releasing using
           your own versioning scheme. Submitted by Jean-Philippe
           Caruana.
