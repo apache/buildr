@@ -28,6 +28,11 @@ module Buildr::Scala
 end
 Buildr.settings.build['scala.version'] = Buildr::Scala::SCALA_VERSION_FOR_SPECS
 
+require 'rspec/retry'
+RSpec.configure do |config|
+  config.verbose_retry = true # show retry status in spec process
+end
+
 # Add a 'require' here only for optional extensions, not for extensions that should be loaded by default.
 require 'buildr/clojure'
 require 'buildr/groovy'

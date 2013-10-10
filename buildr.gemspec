@@ -84,6 +84,7 @@ for those one-off tasks, with a language that's a joy to use.
     spec.add_development_dependency 'rdoc', '4.0.1'
   end
 
+  spec.add_development_dependency 'rspec-retry', '0.2.1'
   spec.add_development_dependency 'ci_reporter', '1.9.0'
   # Ideally we would depend on psych when the platform has >= 1.9.2 support and jruby platform version > 1.6.6
   #spec.add_development_dependency 'psych' if RUBY_VERSION >= '1.9.2'
