@@ -61,6 +61,22 @@ describe 'javac compiler' do
     end
   end
 
+  it 'should accept a task to compile from' do
+    p = define 'foo' do
+      project.version = '1'
+      f = file(_(:target, :generated, 'myjava')) do
+        mkdir_p _(:target, :generated, 'myjava')
+        File.open("#{_(:target, :generated, 'myjava')}/Foo.java", "wb") do |f|
+          f.write "public class Foo {}"
+        end
+      end
+
+      compile.from(f)
+      package(:jar)
+    end.compile.invoke
+    file('target/classes/Foo.class').should exist
+  end
+
   it 'should not change existing list of sources' do
     define 'foo' do
       compile.from('sources')
