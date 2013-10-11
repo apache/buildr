@@ -14,8 +14,7 @@ scala:
 #  - 2.9.1
 #  - 2.8.1
 install:
-  - gem install bundler
-  - bundle install
+  - source ci-setup.sh
   - export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx700M"
   - export JAVA_OPTS="-Xmx700m -XX:MaxPermSize=312m"
 script: rake ci
