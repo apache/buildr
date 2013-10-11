@@ -29,7 +29,8 @@ describe Buildr::Compiler::Ecj do
           paths.flatten!
           ext_glob = Array(source_ext).join(',')
 
-          paths.each { |path| 
+          paths.each { |path|
+            path = path.to_s
             Find.find(path) {|found|
               if (!File.directory?(found)) && found.match(/.*\.#{Array(source_ext).join('|')}/)
                 return true
