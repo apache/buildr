@@ -207,6 +207,7 @@ module Buildr #:nodoc:
         @sources << proc { source }
         @actions << proc do |file_map|
           file = source.to_s
+          file(file).invoke
           unless excluded?(file)
             if File.directory?(file)
               in_directory file do |file, rel_path|

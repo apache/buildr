@@ -1,4 +1,5 @@
 1.4.15 (Pending)
+* Fixed:  BUILDR-605 - Ensure package task invokes included paths.
 * Fixed:  BUILDR-609 - compile.from should accept Task argument.
 
 1.4.14 (2013-10-11)

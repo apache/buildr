@@ -392,6 +392,25 @@ shared_examples_for 'ArchiveTask' do
     archive(@archive).include(@files)
     lambda { archive(@archive).with :option=>true }.should raise_error
   end
+
+  it 'should invoke paths supplied in from parameters' do
+    included_file = File.expand_path("somefile.myext")
+    write included_file, content_for(included_file)
+    archive2_filename = File.expand_path("somebug.zip")
+    a2 = zip(archive2_filename).
+      include(included_file, :as => 'folder1/somefile1.ext').
+      include(included_file, :as => 'folder2/somefile2.ext').
+      invoke
+    a = archive(@archive)
+    f1 = unzip('target/folder1' => archive2_filename).from_path("folder1/*").root
+    f2 = unzip('target/folder2' => archive2_filename).from_path("folder2/*").root
+    a.include(:from => f1)
+    a.include(:from => f2)
+    a.invoke
+    contents = inspect_archive
+    contents["folder1/somefile1.ext"].should_not be_nil
+    contents["folder2/somefile2.ext"].should_not be_nil
+  end
 end
 
 describe TarTask do
