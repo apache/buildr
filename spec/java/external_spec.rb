@@ -26,7 +26,8 @@ describe Buildr::Compiler::ExternalJavac do
     Buildr::Compiler.send :compilers=, COMPILERS_WITHOUT_JAVAC
   end
 
-  describe "should compile a Java project just in the same way javac does" do
+  # Fails sometimes under windows?
+  describe "should compile a Java project just in the same way javac does", :retry => 4 do
     javac_spec = File.read(File.join(File.dirname(__FILE__), "compiler_spec.rb"))
     javac_spec = javac_spec.match(Regexp.escape("require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))\n")).post_match
     javac_spec.gsub!("javac", "externaljavac")
