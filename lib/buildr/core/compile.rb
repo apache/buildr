@@ -92,7 +92,7 @@ module Buildr #:nodoc:
               if (!File.directory?(found)) && found.match(/.*\.#{Array(source_ext).join('|')}/)
                 return true
               end
-              } if File.exist? path
+              } if File.exist? path.to_s
             }
           false
         end

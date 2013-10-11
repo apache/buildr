@@ -1,3 +1,6 @@
+1.4.15 (Pending)
+* Fixed:  BUILDR-609 - compile.from should accept Task argument.
+
 1.4.14 (2013-10-11)
 * Change: Remove highline dependency.
 * Fixed:  BUILDR-682 - Fix the documentation for releasing using
