@@ -1013,7 +1013,7 @@ module Buildr #:nodoc:
         dependencies.each do |dependency|
           artifacts = Buildr.artifacts(dependency)
           artifacts_as_strings = artifacts.map(&:to_s)
-          all_projects = Buildr::Project.instance_variable_get("@projects").keys - [buildr_project.name]
+          all_projects = Buildr::Project.instance_variable_get("@projects").keys
           project = Buildr.projects(all_projects).detect do |project|
             [project.packages, project.compile.target, project.resources.target, project.test.compile.target, project.test.resources.target].flatten.
               detect { |component| artifacts_as_strings.include?(component.to_s) }

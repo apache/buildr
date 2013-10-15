@@ -1,4 +1,7 @@
 1.4.15 (Pending)
+* Fixed:  Bug in IdeaProject.partition_dependencies resulted in
+          projects being rebuilt if artifacts were added to the
+          project with dependencies on the current project.
 * Fixed:  BUILDR-605 - Ensure package task invokes included paths.
 * Fixed:  BUILDR-609 - compile.from should accept Task argument.
 
