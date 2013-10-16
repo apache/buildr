@@ -37,6 +37,37 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.14</name>
+        <created>2013-10-11</created>
+        <revision>1.4.14</revision>
+        <dc:description>
+* Change: Remove highline dependency.
+* Fixed:  BUILDR-682 - Fix the documentation for releasing using
+          your own versioning scheme. Submitted by Jean-Philippe
+          Caruana.
+* Fixed:  BUILDR-681 - Stop empty projects creating target/webapp.
+* Change: Add dependency from generated jws client source directory
+          to the source wsdl in the wsgen addon.
+* Fixed:  Fixed regression in gwt addon due to "pathing_jar"
+          functionality in Java::Commands.java.
+* Change: Support disabling the new "pathing_jar" functionality in
+          Java::Commands.java utility method. Required for tools
+          that introspect the classpath.
+* Change: Update wsgen addon to generate source into a directory
+          hierarchy based on maven conventions.
+* Fixed:  Fixed regression using transitive dependencies due to
+          presence of :scope option in Artifacts.to_hash.
+* Fixed:  Fixed bug in GWT addon that required that the user supply
+          the :dependencies option.
+* Fixed:  Fixed bug in Intellij project file generation when adding
+          a web facet.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.13</name>
         <created>2013-10-02</created>
         <revision>1.4.13</revision>
