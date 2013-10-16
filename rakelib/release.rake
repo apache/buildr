@@ -64,7 +64,14 @@ task 'release' => %w{setup-local-site-svn} do
     files = FileList["_release/#{spec.version}/dist/*.{gem}"]
     files.each do |f|
       puts "Push gem #{f} to RubyForge.org ... "
-      `gem push #{f}`
+      sh 'gem', 'push', f do |ok, res|
+          if ok
+            puts "[X] Pushed gem #{File.basename(f)} to Rubyforge.org"
+          else
+            puts 'Could not push gem, please do it yourself!'
+            puts %{  gem push #{f}}
+          end
+        end
     end
     puts '[X] Pushed gems to Rubyforge.org'
   end.call
