@@ -59,14 +59,14 @@ task 'release' => %w{setup-local-site-svn} do
     puts "[X] Uploaded gems and source files to #{spec.name}.rubyforge.org"
   end.call
 
-  # Push gems to Rubyforge.org / Gemcutter
+  # Push gems to Rubyforge.org
   lambda do
     files = FileList["_release/#{spec.version}/dist/*.{gem}"]
     files.each do |f|
-      puts "Push gem #{f} to RubyForge.org / Gemcutter ... "
+      puts "Push gem #{f} to RubyForge.org ... "
       `gem push #{f}`
     end
-    puts '[X] Pushed gems to Rubyforge.org / Gemcutter'
+    puts '[X] Pushed gems to Rubyforge.org'
   end.call
 
   # Create an SVN tag for this release.
