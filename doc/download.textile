@@ -20,6 +20,18 @@ The source code is included in both source and binary distribution, the Gem dist
 
 h2(#dist).  Binaries and Source Code
 
+h3. buildr 1.4.14 (2013-10-11)
+
+|_. Package |_. MD5 Checksum |_. PGP |
+| "buildr-1.4.14-java.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.14/buildr-1.4.14-java.gem | "f90047a502b964943bda09b0a76b98f2":http://www.apache.org/dist/buildr/1.4.14/buildr-1.4.14-java.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.14/buildr-1.4.14-java.gem.asc |
+| "buildr-1.4.14-x86-mswin32.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.14/buildr-1.4.14-x86-mswin32.gem | "f98125eb8edae9ecb720d04d895b113b":http://www.apache.org/dist/buildr/1.4.14/buildr-1.4.14-x86-mswin32.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.14/buildr-1.4.14-x86-mswin32.gem.asc |
+| "buildr-1.4.14.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.14/buildr-1.4.14.gem | "b797e2a07b7da07a317ea90ec1d7a36c":http://www.apache.org/dist/buildr/1.4.14/buildr-1.4.14.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.14/buildr-1.4.14.gem.asc |
+| "buildr-1.4.14.tgz":http://www.apache.org/dyn/closer.cgi/buildr/1.4.14/buildr-1.4.14.tgz | "ddece5f90aef3ccd589eeff81af2a686":http://www.apache.org/dist/buildr/1.4.14/buildr-1.4.14.tgz.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.14/buildr-1.4.14.tgz.asc |
+| "buildr-1.4.14.zip":http://www.apache.org/dyn/closer.cgi/buildr/1.4.14/buildr-1.4.14.zip | "40c0bffb0b2d3ca1ad43a5e0020e2afb":http://www.apache.org/dist/buildr/1.4.14/buildr-1.4.14.zip.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.14/buildr-1.4.14.zip.asc |
+
+p>. ("Release signing keys":http://www.apache.org/dist/buildr/1.4.14/KEYS)
+
+
 h3. buildr 1.4.13 (2013-10-02)
 
 |_. Package |_. MD5 Checksum |_. PGP |
