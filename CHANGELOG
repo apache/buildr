@@ -1,4 +1,6 @@
 1.4.15 (Pending)
+* Change: Update the default output directory used in the jaxb_xjc
+          addon to use Maven conventions.
 * Fixed:  Bug in IdeaProject.partition_dependencies resulted in
           projects being rebuilt if artifacts were added to the
           project with dependencies on the current project.

@@ -110,10 +110,10 @@ describe Buildr::JaxbXjc do
     end
 
     it "produce .java files in the correct location" do
-      File.should be_exist(@foo._("target/generated/jaxb/org/foo/api/Agency.java"))
-      File.should be_exist(@foo._("target/generated/jaxb/org/foo/api/LatLongCoordinate.java"))
-      File.should be_exist(@foo._("target/generated/jaxb/org/foo/api/ObjectFactory.java"))
-      File.should be_exist(@foo._("target/generated/jaxb/org/foo/api/Wildfire.java"))
+      File.should be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/Agency.java"))
+      File.should be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/LatLongCoordinate.java"))
+      File.should be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/ObjectFactory.java"))
+      File.should be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/Wildfire.java"))
     end
 
     it "produce .class files in the correct location" do
