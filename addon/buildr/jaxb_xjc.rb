@@ -47,7 +47,7 @@ module Buildr
       args = args.dup
       files = Array === files ? files.flatten : [files]
 
-      target_dir = options[:directory] || path_to(:target, :generated, :jaxb)
+      target_dir = File.expand_path(options[:directory] || _(:target, :generated, :jaxb, 'main/java'))
       timestamp_file = File.expand_path("#{target_dir}/jaxb-#{options[:id] || 1}.cache")
 
       file(target_dir => timestamp_file)
