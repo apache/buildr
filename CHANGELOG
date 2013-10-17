@@ -1,4 +1,6 @@
 1.4.15 (Pending)
+* Change: Update the jaxb_xjc addon to add output directory to
+          generated IDEA project files.
 * Change: Update the default output directory used in the jaxb_xjc
           addon to use Maven conventions.
 * Fixed:  Bug in IdeaProject.partition_dependencies resulted in
