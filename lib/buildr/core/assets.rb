@@ -72,6 +72,11 @@ module Buildr #:nodoc:
         Project.local_task("assets")
       end
 
+      before_define do |project|
+        # Force the construction of the assets task
+        project.assets.paths
+      end
+
       # Access the asset task
       def assets
         if @assets.nil?
@@ -81,11 +86,6 @@ module Buildr #:nodoc:
           project.build.enhance([@assets])
         end
         @assets
-      end
-
-      after_define do |project|
-        # Force construction
-        project.assets
       end
     end
   end
