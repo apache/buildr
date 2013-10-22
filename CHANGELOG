@@ -1,7 +1,7 @@
 1.4.15 (Pending)
 * Added:  BUILDR-679 - Support uploading to a snapshot repository
           defined by repositories.snapshot_to if the artifact is
-          a snapshot. Submitted by Jean-Philippe Caruana.
+          a snapshot. Submitted by Tammo van Lessen.
 * Change: Update the jaxb_xjc addon to add output directory to
           generated IDEA project files.
 * Change: Update the default output directory used in the jaxb_xjc
