@@ -58,6 +58,7 @@ repositories.release_to[:username] = ENV['USERNAME']
 repositories.release_to[:password] = ENV['PASSWORD']
 {% endhighlight %}
 
+The same works for the @repositories.snapshot_to@ hash.
 
 h2(#personal). Personal Settings
 

@@ -179,7 +179,8 @@ module Buildr #:nodoc:
     #
     # Uploads the artifact, its POM and digital signatures to remote server.
     #
-    # In the first form, uses the upload options specified by repositories.release_to.
+    # In the first form, uses the upload options specified by repositories.release_to
+    # or repositories.snapshot_to if the subject is a snapshot artifact.
     # In the second form, uses a URL that includes all the relevant information.
     # In the third form, uses a hash with the options :url, :username, :password,
     # and :permissions. All but :url are optional.
@@ -188,6 +189,7 @@ module Buildr #:nodoc:
     end
 
     def upload_task(upload_to = nil)
+      upload_to ||= Buildr.repositories.snapshot_to if snapshot? && Buildr.repositories.snapshot_to != nil && Buildr.repositories.snapshot_to[:url] != nil
       upload_to ||= Buildr.repositories.release_to
       upload_to = { :url=>upload_to } unless Hash === upload_to
       raise ArgumentError, 'Don\'t know where to upload, perhaps you forgot to set repositories.release_to' unless upload_to[:url]
@@ -713,6 +715,54 @@ module Buildr #:nodoc:
         @release_to = Hash === value ? value.inject({}) { |hash, (key, value)| hash.update(key.to_sym=>value) } : { :url=>Array(value).first }
       end
       @release_to
+    end
+
+    # :call-seq:
+    #   snapshot_to = url
+    #   snapshot_to = hash
+    #
+    # Specifies the release server. Accepts a Hash with different repository settings
+    # (e.g. url, username, password), or a String to only set the repository URL.
+    #
+    # Besides the URL, all other settings depend on the transport protocol in use.
+    #
+    # For example:
+    #   repositories.snapshot_to = 'sftp://john:secret@example.com/var/www/repo/'
+    #
+    #   repositories.snapshot_to = { :url=>'sftp://example.com/var/www/repo/',
+    #                                :username='john', :password=>'secret' }
+    # Or in the settings.yaml file:
+    #   repositories:
+    #     snapshot_to: sftp://john:secret@example.com/var/www/repo/
+    #
+    #   repositories:
+    #     snapshot_to:
+    #       url: sftp://example.com/var/www/repo/
+    #       username: john
+    #       password: secret
+    def snapshot_to=(options)
+      options = { :url=>options } unless Hash === options
+      @snapshot_to = options
+    end
+
+    # :call-seq:
+    #   snapshot_to => hash
+    #
+    # Returns the current snapshot release server setting as a Hash. This is a more convenient way to
+    # configure the settings, as it allows you to specify the settings progressively.
+    #
+    # For example, the Buildfile will contain the repository URL used by all developers:
+    #   repositories.snapshot_to[:url] ||= 'sftp://example.com/var/www/repo'
+    # Your private buildr.rb will contain your credentials:
+    #   repositories.snapshot_to[:username] = 'john'
+    #   repositories.snapshot_to[:password] = 'secret'
+    def snapshot_to
+      unless @snapshot_to
+        value = (Buildr.settings.user['repositories'] && Buildr.settings.user['repositories']['snapshot_to']) \
+          || (Buildr.settings.build['repositories'] && Buildr.settings.build['repositories']['snapshot_to'])
+        @snapshot_to = Hash === value ? value.inject({}) { |hash, (key, value)| hash.update(key.to_sym=>value) } : { :url=>Array(value).first }
+      end
+      @snapshot_to
     end
 
   end
