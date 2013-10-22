@@ -1,4 +1,7 @@
 1.4.15 (Pending)
+* Fixed:  BUILDR-689 - Define assets task before the project is
+          defined to avoid "undefined method `project='" if the
+          project attempts to generate into the same directory.
 * Added:  BUILDR-679 - Support uploading to a snapshot repository
           defined by repositories.snapshot_to if the artifact is
           a snapshot. Submitted by Tammo van Lessen.
