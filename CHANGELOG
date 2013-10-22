@@ -1,4 +1,7 @@
 1.4.15 (Pending)
+* Fixed:  BUILDR-689 - Ensure that war file includes generated
+          assets rather than the "source" assets that may have
+          been filtered.
 * Fixed:  BUILDR-689 - Define assets task before the project is
           defined to avoid "undefined method `project='" if the
           project attempts to generate into the same directory.
