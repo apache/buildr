@@ -510,6 +510,51 @@ describe Repositories, 'release_to' do
   end
 end
 
+describe Repositories, 'snapshot_to' do
+  it 'should accept URL as first argument' do
+    repositories.snapshot_to = 'http://buildr.apache.org/repository/noexist'
+    repositories.snapshot_to.should == { :url=>'http://buildr.apache.org/repository/noexist' }
+  end
+
+  it 'should accept hash with options' do
+    repositories.snapshot_to = { :url=>'http://buildr.apache.org/repository/noexist', :username=>'john' }
+    repositories.snapshot_to.should == { :url=>'http://buildr.apache.org/repository/noexist', :username=>'john' }
+  end
+
+  it 'should allow the hash to be manipulated' do
+    repositories.snapshot_to = 'http://buildr.apache.org/repository/noexist'
+    repositories.snapshot_to.should == { :url=>'http://buildr.apache.org/repository/noexist' }
+    repositories.snapshot_to[:username] = 'john'
+    repositories.snapshot_to.should == { :url=>'http://buildr.apache.org/repository/noexist', :username=>'john' }
+  end
+
+  it 'should load URL from settings file' do
+    write 'home/.buildr/settings.yaml', <<-YAML
+    repositories:
+      snapshot_to: http://john:secret@buildr.apache.org/repository/noexist
+    YAML
+    repositories.snapshot_to.should == { :url=>'http://john:secret@buildr.apache.org/repository/noexist' }
+  end
+
+  it 'should load URL from build settings file' do
+    write 'build.yaml', <<-YAML
+    repositories:
+      snapshot_to: http://john:secret@buildr.apache.org/repository/noexist
+    YAML
+    repositories.snapshot_to.should == { :url=>'http://john:secret@buildr.apache.org/repository/noexist' }
+  end
+
+  it 'should load URL, username and password from settings file' do
+    write 'home/.buildr/settings.yaml', <<-YAML
+    repositories:
+      snapshot_to:
+        url: http://buildr.apache.org/repository/noexist
+        username: john
+        password: secret
+    YAML
+    repositories.snapshot_to.should == { :url=>'http://buildr.apache.org/repository/noexist', :username=>'john', :password=>'secret' }
+  end
+end
 
 describe Buildr, '#artifact' do
   before do
@@ -885,7 +930,7 @@ describe ActsAsArtifact, '#upload' do
     lambda { artifact.upload }.should raise_error(Exception, /where to upload/)
   end
 
-  it 'should accept repositories.upload setting' do
+  it 'should accept repositories.release_to setting' do
     artifact = artifact('com.example:library:jar:2.0')
     # Prevent artifact from downloading anything.
     write repositories.locate(artifact)
@@ -895,6 +940,45 @@ describe ActsAsArtifact, '#upload' do
     artifact.upload
     lambda { artifact.upload }.should_not raise_error
   end
+
+  it 'should use repositories.release_to setting even for snapshots when snapshot_to is not set' do
+    artifact = artifact('com.example:library:jar:2.0-SNAPSHOT')
+    # Prevent artifact from downloading anything.
+    write repositories.locate(artifact)
+    write repositories.locate(artifact.pom)
+    URI.should_receive(:upload).once.
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/library-2.0-SNAPSHOT.pom'), artifact.pom.to_s, anything)
+    URI.should_receive(:upload).once.
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/library-2.0-SNAPSHOT.jar'), artifact.to_s, anything)
+    repositories.release_to = 'sftp://buildr.apache.org/repository/noexist/base'
+    artifact.upload
+    lambda { artifact.upload }.should_not raise_error
+  end
+
+  it 'should use repositories.snapshot_to setting when snapshot_to is set' do
+    artifact = artifact('com.example:library:jar:2.0-SNAPSHOT')
+    # Prevent artifact from downloading anything.
+    write repositories.locate(artifact)
+    write repositories.locate(artifact.pom)
+    URI.should_receive(:upload).once.
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/library-2.0-SNAPSHOT.pom'), artifact.pom.to_s, anything)
+    URI.should_receive(:upload).once.
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/library-2.0-SNAPSHOT.jar'), artifact.to_s, anything)
+    repositories.release_to = 'sftp://buildr.apache.org/repository/noexist/base'
+    repositories.snapshot_to = 'sftp://buildr.apache.org/repository/noexist/snapshot'
+    artifact.upload
+    lambda { artifact.upload }.should_not raise_error
+  end
+
+  it 'should complain when only a snapshot repo is set but the artifact is not a snapshot' do
+    artifact = artifact('com.example:library:jar:2.0')
+    # Prevent artifact from downloading anything.
+    write repositories.locate(artifact)
+    write repositories.locate(artifact.pom)
+    repositories.snapshot_to = 'sftp://buildr.apache.org/repository/noexist/snapshot'
+    lambda { artifact.upload }.should raise_error(Exception, /where to upload/)
+  end
+
 
 end
 

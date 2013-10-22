@@ -162,7 +162,7 @@ module Sandbox
     # since we don't want to remotely download artifacts into the sandbox over and over
     Buildr.repositories.instance_eval do
       @remote = ["file://" + @local]
-      @local = @release_to = nil
+      @local = @release_to = @snapshot_to = nil
     end
     Buildr.options.proxy.http = nil
 
