@@ -561,7 +561,6 @@ describe Packaging, 'war' do
       package(:war)
     end
     inspect_war { |files| files.should include('test.html') }
-    cp project('foo').package(:war).to_s, '/tmp/x.zip'
     Zip::ZipFile.open(project('foo').package(:war).to_s, false) do |war|
       war.get_input_stream('test.html').read.should eql('999')
     end
