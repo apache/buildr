@@ -40,6 +40,11 @@ module Buildr #:nodoc:
 
       def initialize(*args) #:nodoc:
         super
+      end
+
+      private
+
+      def add_enhance_actions
         enhance do
           paths = self.paths.flatten.compact
           if paths.size > 0
@@ -49,13 +54,20 @@ module Buildr #:nodoc:
             end.each do |a|
               a.invoke if a.respond_to?(:invoke)
             end.each do |asset|
-              cp_r Dir["#{asset}/*"], "#{name}/"
+              source_dir = asset.to_s
+              Dir["#{source_dir}/*"].each do |f|
+                f = f[source_dir.length + 1, 10000]
+                source = "#{asset}/#{f}"
+                target = "#{name}/#{f}"
+                if !File.exist?(target) || File.mtime(name.to_s) < File.mtime(source)
+                  mkdir_p File.dirname(target)
+                  cp source, target
+                end
+              end
             end
           end
         end
       end
-
-      private
 
       def out_of_date?(stamp)
         super ||
@@ -75,6 +87,10 @@ module Buildr #:nodoc:
       before_define do |project|
         # Force the construction of the assets task
         project.assets.paths
+      end
+
+      after_define do |project|
+        project.assets.send(:add_enhance_actions)
       end
 
       # Access the asset task
