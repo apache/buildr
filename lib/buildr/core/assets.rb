@@ -90,6 +90,9 @@ module Buildr #:nodoc:
       end
 
       after_define do |project|
+        # This is used to add actions after project is defined so that files are copied
+        # as the last action and don't block tasks that try and filter into target dir
+        # from the source dir
         project.assets.send(:add_enhance_actions)
       end
 
