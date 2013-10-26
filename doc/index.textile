@@ -46,6 +46,27 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
+Highlights from Buildr 1.4.15 (2013-10-26)
+* Change: Updated the 'test_jar' package type to have a
+          classifier of 'tests' and thus match maven
+          conventions. Reported by Chris Bozic.
+* Fixed:  BUILDR-689 - Ensure that war file includes generated
+          assets rather than the "source" assets that may have
+          been filtered.
+* Fixed:  BUILDR-689 - Define assets task before the project is
+          defined to avoid "undefined method `project='" if the
+          project attempts to generate into the same directory.
+* Added:  BUILDR-679 - Support uploading to a snapshot repository
+          defined by repositories.snapshot_to if the artifact is
+          a snapshot. Submitted by Tammo van Lessen.
+* Change: Update the default output directory used in the jaxb_xjc
+          addon to use Maven conventions.
+* Fixed:  Bug in IdeaProject.partition_dependencies resulted in
+          projects being rebuilt if artifacts were added to the
+          project with dependencies on the current project.
+* Fixed:  BUILDR-605 - Ensure package task invokes included paths.
+* Fixed:  BUILDR-609 - compile.from should accept Task argument.
+
 Highlights from Buildr 1.4.14 (2013-10-11)
 * Fixed:  Fixed regression in gwt addon.
 * Fixed:  Fixed regression using transitive dependencies due to
