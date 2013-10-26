@@ -194,7 +194,7 @@ module Buildr #nodoc
               require 'Win32/Console/ANSI'
             end
           end
-        rescue Java::JavaLang::IncompatibleClassChangeError
+        rescue
           # Unfortunately we have multiple incompatible jline libraries
           # in the classpath. This is probably because we are using jruby
           # 1.7.5 with a library like scala and both use incompatible jline
