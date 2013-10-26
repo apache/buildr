@@ -78,7 +78,7 @@ for those one-off tasks, with a language that's a joy to use.
 
   # Unable to get this consistently working under jruby on windows
   unless $platform.to_s == 'java'
-    spec.add_development_dependency 'jekyll', '1.2.1'
+    spec.add_development_dependency 'jekyll', '0.11.2'
     spec.add_development_dependency 'RedCloth', '4.2.9'
     spec.add_development_dependency 'jekylltask', '1.1.0'
     spec.add_development_dependency 'rdoc', '4.0.1'
