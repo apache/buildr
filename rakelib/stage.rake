@@ -47,7 +47,7 @@ task 'prepare' do |task, args|
     git = `git status -s`
     fail "Cannot release unless all local changes are in Git:\n#{git}" if git[/^ M/] && ENV["IGNORE_GIT"].nil?
     puts '[X] There are no local changes, everything is in source control'
-  end.call if false
+  end.call
 
   # Make sure we have a valid CHANGELOG entry for this release.
   lambda do
