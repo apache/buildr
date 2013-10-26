@@ -1248,7 +1248,7 @@ describe Packaging, 'test_jar' do
     define 'foo', :version=>'1.0' do
       package(:test_jar).type.should eql(:jar)
       package(:test_jar).classifier.should eql('tests')
-      package(:test_jar).name.should match(/foo-1.0-test-jar.jar$/)
+      package(:test_jar).name.should match(/foo-1.0-tests.jar$/)
     end
   end
 
