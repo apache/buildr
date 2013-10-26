@@ -1,6 +1,7 @@
 1.4.15 (Pending)
 * Change: Updated the 'test_jar' package type to have a
-          classifier of 'tests' and thus match maven conventions.
+          classifier of 'tests' and thus match maven
+          conventions. Reported by Chris Bozic.
 * Fixed:  BUILDR-689 - Ensure that war file includes generated
           assets rather than the "source" assets that may have
           been filtered.
