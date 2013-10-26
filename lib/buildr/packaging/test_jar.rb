@@ -16,7 +16,7 @@
 module Buildr #:nodoc:
   module PackageAsTestJar
     def package_as_test_jar_spec(spec) #:nodoc:
-      spec.merge(:type => :jar, :classifier => 'test-jar')
+      spec.merge(:type => :jar, :classifier => 'tests')
     end
 
     def package_as_test_jar(file_name) #:nodoc:
