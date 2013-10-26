@@ -1244,10 +1244,10 @@ describe Packaging, 'test_jar' do
   it_should_behave_like 'packaging'
   before { @packaging, @package_type = :test_jar, :jar }
 
-  it 'should create package of type :jar and classifier \'test-jar\'' do
+  it 'should create package of type :jar and classifier \'tests\'' do
     define 'foo', :version=>'1.0' do
       package(:test_jar).type.should eql(:jar)
-      package(:test_jar).classifier.should eql('test-jar')
+      package(:test_jar).classifier.should eql('tests')
       package(:test_jar).name.should match(/foo-1.0-test-jar.jar$/)
     end
   end
