@@ -97,7 +97,7 @@ end
 describe Buildr.method(:download) do
   before do
     @content = 'we has download!'
-    @http = mock('http')
+    @http = double('http')
     @http.stub(:request).and_return(Net::HTTPNotModified.new(nil, nil, nil))
   end
 
@@ -601,7 +601,7 @@ describe Buildr::Options, 'proxy.exclude' do
     @uri = URI("http://#{@host}")
     @no_proxy_args = [@host, 80]
     @proxy_args = @no_proxy_args + ['myproxy', 8080, nil, nil]
-    @http = mock('http')
+    @http = double('http')
     @http.stub(:request).and_return(Net::HTTPNotModified.new(nil, nil, nil))
   end
 
