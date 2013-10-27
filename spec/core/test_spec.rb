@@ -183,7 +183,7 @@ describe Buildr::TestTask do
   end
 
   it 'should execute setup task before running tests' do
-    mock = mock('actions')
+    mock = double('actions')
     test_task.setup { mock.setup }
     test_task.enhance { mock.tests }
     mock.should_receive(:setup).ordered
@@ -192,7 +192,7 @@ describe Buildr::TestTask do
   end
 
   it 'should execute teardown task after running tests' do
-    mock = mock('actions')
+    mock = double('actions')
     test_task.teardown { mock.teardown }
     test_task.enhance { mock.tests }
     mock.should_receive(:tests).ordered

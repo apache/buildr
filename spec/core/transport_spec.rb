@@ -237,7 +237,7 @@ describe URI::HTTP, '#read' do
     @uri = URI("http://#{@host_domain}#{@path}#{@query}")
     @no_proxy_args = [@host_domain, 80]
     @proxy_args = @no_proxy_args + ['myproxy', 8080, 'john', 'smith']
-    @http = mock('http')
+    @http = double('http')
     @http.stub(:request).and_yield(Net::HTTPNotModified.new(nil, nil, nil))
   end
 
@@ -318,7 +318,7 @@ describe URI::HTTP, '#read' do
 
   it 'should use HTTP Basic authentication' do
     Net::HTTP.should_receive(:new).and_return(@http)
-    request = mock('request')
+    request = double('request')
     Net::HTTP::Get.should_receive(:new).and_return(request)
     request.should_receive(:basic_auth).with('john', 'secret')
     URI("http://john:secret@#{@host_domain}").read
@@ -331,7 +331,7 @@ describe URI::HTTP, '#read' do
     redirect = Net::HTTPRedirection.new(nil, nil, nil)
     redirect['Location'] = "http://#{@host_domain}/asdf"
 
-    request1 = mock('request1')
+    request1 = double('request1')
     Net::HTTP::Get.should_receive(:new).once.with('/', default_http_headers).and_return(request1)
     request1.should_receive(:basic_auth).with('john', 'secret')
     @http.should_receive(:request).with(request1).and_yield(redirect)
@@ -340,7 +340,7 @@ describe URI::HTTP, '#read' do
     ok = Net::HTTPOK.new(nil, nil, nil)
     ok.stub(:read_body)
 
-    request2 = mock('request2')
+    request2 = double('request2')
     Net::HTTP::Get.should_receive(:new).once.with("/asdf", default_http_headers).and_return(request2)
     request2.should_receive(:basic_auth).with('john', 'secret')
     @http.should_receive(:request).with(request2).and_yield(ok)
@@ -362,7 +362,7 @@ describe URI::HTTP, '#write' do
   before do
     @content = 'Readme. Please!'
     @uri = URI('http://john:secret@host.domain/foo/bar/baz.jar')
-    @http = mock('Net::HTTP')
+    @http = double('Net::HTTP')
     @http.stub(:request).and_return(Net::HTTPOK.new(nil, nil, nil))
     Net::HTTP.stub(:new).and_return(@http)
   end
@@ -438,9 +438,9 @@ describe URI::SFTP, '#read' do
     @uri = URI('sftp://john:secret@localhost/root/path/readme')
     @content = 'Readme. Please!'
 
-    @ssh_session = mock('Net::SSH::Session')
-    @sftp_session = mock('Net::SFTP::Session')
-    @file_factory = mock('Net::SFTP::Operations::FileFactory')
+    @ssh_session = double('Net::SSH::Session')
+    @sftp_session = double('Net::SFTP::Session')
+    @file_factory = double('Net::SFTP::Operations::FileFactory')
     Net::SSH.stub(:start).with('localhost', 'john', :password=>'secret', :port=>22).and_return(@ssh_session) do
       Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
       @sftp_session.should_receive(:connect!).and_return(@sftp_session)
@@ -462,14 +462,14 @@ describe URI::SFTP, '#read' do
   end
 
   it 'should read contents of file and return it' do
-    file = mock('Net::SFTP::Operations::File')
+    file = double('Net::SFTP::Operations::File')
     file.should_receive(:read).with(URI::RW_CHUNK_SIZE).once.and_return(@content)
     @file_factory.should_receive(:open).with('/root/path/readme', 'r').and_yield(file)
     @uri.read.should eql(@content)
   end
 
   it 'should read contents of file and pass it to block' do
-    file = mock('Net::SFTP::Operations::File')
+    file = double('Net::SFTP::Operations::File')
     file.should_receive(:read).with(URI::RW_CHUNK_SIZE).once.and_return(@content)
     @file_factory.should_receive(:open).with('/root/path/readme', 'r').and_yield(file)
     content = ''
@@ -486,9 +486,9 @@ describe URI::SFTP, '#write' do
     @uri = URI('sftp://john:secret@localhost/root/path/readme')
     @content = 'Readme. Please!'
 
-    @ssh_session = mock('Net::SSH::Session')
-    @sftp_session = mock('Net::SFTP::Session')
-    @file_factory = mock('Net::SFTP::Operations::FileFactory')
+    @ssh_session = double('Net::SSH::Session')
+    @sftp_session = double('Net::SFTP::Session')
+    @file_factory = double('Net::SFTP::Operations::FileFactory')
     Net::SSH.stub(:start).with('localhost', 'john', :password=>'secret', :port=>22).and_return(@ssh_session) do
       Net::SFTP::Session.should_receive(:new).with(@ssh_session).and_yield(@sftp_session).and_return(@sftp_session)
       @sftp_session.should_receive(:connect!).and_return(@sftp_session)
@@ -539,7 +539,7 @@ describe URI::SFTP, '#write' do
   end
 
   it 'should write contents to file' do
-    file = mock('Net::SFTP::Operations::File')
+    file = double('Net::SFTP::Operations::File')
     file.should_receive(:write).with(@content)
     @file_factory.should_receive(:open).with('/root/path/readme', 'w').and_yield(file)
     @uri.write @content
