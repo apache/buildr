@@ -345,7 +345,7 @@ shared_examples_for 'ArchiveTask' do
     # all included files newer.
     File.utime Time.now - 100, Time.now - 100, @archive
     archive(@archive).include(@files).invoke
-    File.stat(@archive).mtime.should be_close(Time.now, 10)
+    File.stat(@archive).mtime.should be_within(10).of(Time.now)
   end
 
   it 'should update if a file in a subdir is more recent' do
@@ -369,7 +369,7 @@ shared_examples_for 'ArchiveTask' do
     # By touching all files in the past, there's nothing new to update.
     (@files + [@archive]).each { |f| File.utime Time.now - 100, Time.now - 100, f }
     archive(@archive).include(@files).invoke
-    File.stat(@archive).mtime.should be_close(Time.now - 100, 10)
+    File.stat(@archive).mtime.should be_within(10).of(Time.now - 100)
   end
 
   it 'should update if one of the files is recent' do
@@ -609,7 +609,7 @@ describe Unzip do
       File.utime(Time.now - 10, Time.now - 10, @target)
       unzip(@target=>@zip).target.invoke
     end
-    File.stat(@target).mtime.should be_close(Time.now, 2)
+    File.stat(@target).mtime.should be_within(2).of(Time.now)
   end
 
   it 'should expand files' do

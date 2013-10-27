@@ -389,21 +389,21 @@ describe Buildr::CompileTask, '#invoke' do
     time = now_at_fs_resolution - 10
     mkpath compile_task.target.to_s
     File.utime(time, time, compile_task.target.to_s)
-    compile_task.timestamp.should be_close(time, 1)
+    compile_task.timestamp.should be_within(1).of(time)
   end
 
   it 'should touch target if anything compiled' do
     mkpath compile_task.target.to_s
     File.utime(now_at_fs_resolution - 10, now_at_fs_resolution - 10, compile_task.target.to_s)
     compile_task.from(sources).invoke
-    File.stat(compile_task.target.to_s).mtime.should be_close(now_at_fs_resolution, 2)
+    File.stat(compile_task.target.to_s).mtime.should be_within(2).of(now_at_fs_resolution)
   end
 
   it 'should not touch target if nothing compiled' do
     mkpath compile_task.target.to_s
     File.utime(now_at_fs_resolution - 10, now_at_fs_resolution - 10, compile_task.target.to_s)
     compile_task.invoke
-    File.stat(compile_task.target.to_s).mtime.should be_close(now_at_fs_resolution - 10, 2)
+    File.stat(compile_task.target.to_s).mtime.should be_within(2).of(now_at_fs_resolution - 10)
   end
 
   it 'should not touch target if failed to compile' do
@@ -411,7 +411,7 @@ describe Buildr::CompileTask, '#invoke' do
     File.utime(now_at_fs_resolution - 10, now_at_fs_resolution - 10, compile_task.target.to_s)
     write 'failed.java', 'not a class'
     suppress_stdout { compile_task.from('failed.java').invoke rescue nil }
-    File.stat(compile_task.target.to_s).mtime.should be_close(now_at_fs_resolution - 10, 2)
+    File.stat(compile_task.target.to_s).mtime.should be_within(2).of(now_at_fs_resolution - 10)
   end
 
   it 'should complain if source directories and no compiler selected' do
@@ -429,7 +429,7 @@ describe Buildr::CompileTask, '#invoke' do
     touch 'target/classes/foo/Foo.class'
     File.utime(now_at_fs_resolution - 10, now_at_fs_resolution - 10, compile_task.target.to_s)
     compile_task.invoke
-    File.stat(compile_task.target.to_s).mtime.should be_close(now_at_fs_resolution - 10, 2)
+    File.stat(compile_task.target.to_s).mtime.should be_within(2).of(now_at_fs_resolution - 10)
   end
 end
 

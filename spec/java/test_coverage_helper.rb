@@ -128,7 +128,7 @@ shared_examples_for 'test coverage tool' do
         mkpath instrumented_dir.to_s
         File.utime(a_long_time_ago, a_long_time_ago, instrumented_dir.to_s)
         task("foo:#{toolname}:instrument").invoke
-        instrumented_dir.timestamp.should be_close(Time.now, 2)
+        instrumented_dir.timestamp.should be_within(2).of(Time.now)
       end
 
       it 'should not touch instrumented directory if nothing instrumented' do
@@ -137,7 +137,7 @@ shared_examples_for 'test coverage tool' do
         mkpath instrumented_dir.to_s
         [project('foo').compile.target, instrumented_dir].map(&:to_s).each { |dir| File.utime(a_long_time_ago, a_long_time_ago, dir) }
         task("foo:#{toolname}:instrument").invoke
-        instrumented_dir.timestamp.should be_close(a_long_time_ago, 2)
+        instrumented_dir.timestamp.should be_within(2).of(a_long_time_ago)
       end
     end
 
