@@ -1076,6 +1076,31 @@ describe Buildr::IntellijIdea do
       end
     end
 
+    describe "with default configuration added to root project" do
+      before do
+        @foo = define "foo" do
+          ipr.add_default_configuration("GWT.ConfigurationType", "GWT Configuration") do |xml|
+            xml.module(:name => project.iml.id)
+            xml.option(:name => "RUN_PAGE", :value => "Planner.html")
+            xml.option(:name => "compilerParameters", :value => "-draftCompile -localWorkers 2")
+            xml.option(:name => "compilerMaxHeapSize", :value => "512")
+
+            xml.RunnerSettings(:RunnerId => "Run")
+            xml.ConfigurationWrapper(:RunnerId => "Run")
+            xml.tag! :method
+          end
+        end
+        invoke_generate_task
+      end
+
+      it "generates an IPR with default configuration" do
+        doc = xml_document(@foo._("foo.ipr"))
+        facet_xpath = "/project/component[@name='ProjectRunConfigurationManager']/configuration"
+        doc.should have_nodes(facet_xpath, 1)
+        doc.should have_xpath("#{facet_xpath}[@type='GWT.ConfigurationType' AND @factoryName='GWT Configuration' AND @default='true']")
+      end
+    end
+
     describe "with iml.group specified" do
       before do
         @foo = define "foo" do
