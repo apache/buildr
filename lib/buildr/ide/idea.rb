@@ -647,10 +647,17 @@ module Buildr #:nodoc:
 
       def add_configuration(name, type, factory_name, default = false)
         add_to_composite_component(self.configurations) do |xml|
-          xml.configuration(:name => name, :type => type, :factoryName => factory_name, :default => default) do |xml|
+          options = {:type => type, :factoryName => factory_name}
+          options[:name] = name unless default
+          options[:default] = true if default
+          xml.configuration(options) do |xml|
             yield xml if block_given?
           end
         end
+      end
+
+      def add_default_configuration(type, factory_name)
+        add_configuration(nil, type, factory_name)
       end
 
       def add_postgres_data_source(name, options = {})
