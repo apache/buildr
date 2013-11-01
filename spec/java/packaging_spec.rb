@@ -564,12 +564,12 @@ describe Packaging, 'war' do
     Zip::ZipFile.open(project('foo').package(:war).to_s) do |war|
       war.get_input_stream('test.html').read.should eql('999')
     end
+    rm_f project('foo').package(:war).to_s
   end
 
   it 'should accept files from :classes option', :retry => (Buildr::Util.win_os? ? 4 : 1) do
     write 'classes/test'
     define('foo', :version=>'1.0') { package(:war).with(:classes=>'classes') }
-    rm_f project('foo').package(:war).to_s
     inspect_war { |files| files.should include('WEB-INF/classes/test') }
   end
 
