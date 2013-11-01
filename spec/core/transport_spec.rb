@@ -19,9 +19,10 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers')
 
 describe URI, '#download' do
   before do
-    write @source = 'source', @content = 'Just a file'
-    @uri = URI(URI.escape("file://#{File.expand_path(@source)}"))
-    @target = 'target'
+    write @source = File.expand_path('source'), @content = 'A file to download'
+    @uri = URI(URI.escape("file://#{@source}"))
+    @target = File.expand_path('target')
+    rm_f @target
   end
 
   it 'should download file if found' do
