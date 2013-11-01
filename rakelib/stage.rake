@@ -19,7 +19,7 @@ require 'digest/sha1'
 
 gpg_cmd = 'gpg2'
 
-STAGE_DATE = Time.now.strftime('%Y-%m-%d')
+STAGE_DATE = ENV['STAGE_DATE'] ||  Time.now.strftime('%Y-%m-%d')
 
 task 'prepare' do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
