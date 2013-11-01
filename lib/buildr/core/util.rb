@@ -27,7 +27,7 @@ module Buildr #:nodoc:
     #
     # Gem.win_platform? only checks these RUBY_PLATFORM global,
     # that in some cases like when running on JRuby is not
-    # succifient for our purpose:
+    # sufficient for our purpose:
     #
     # For JRuby, the value for RUBY_PLATFORM will always be 'java'
     # That's why this function checks on Config::CONFIG['host_os']
