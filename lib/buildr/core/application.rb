@@ -117,7 +117,7 @@ module Buildr
       @rakefiles = DEFAULT_BUILDFILES.dup
       @top_level_tasks = []
       @home_dir = File.expand_path('.buildr', ENV['HOME'])
-      mkpath @home_dir if !File.exist?(@home_dir) && File.writable?(ENV['HOME'])
+      mkpath Buildr::Util.normalize_path(@home_dir) if !File.exist?(@home_dir) && File.writable?(ENV['HOME'])
       @settings = Settings.new(self)
       @on_completion = []
       @on_failure = []
@@ -666,6 +666,18 @@ module Rake #:nodoc
       end
     end
   end
+end
+
+# Under windows, paths passed to mkpath, mkdir_p and mkdirs need to be normalized.
+# Otherwise ruby may decide to treat the drive component as a directory (i.e.
+# create a directory named "C:"). This patch hooks in at a low level to work around
+# this issue.
+module FileUtils
+  def fu_list(arg) #:nodoc:
+    [arg].flatten.map { |path| Buildr::Util.normalize_path(path) }
+  end
+
+  private_Fmodule_function :fu_list
 end
 
 module FileUtils
