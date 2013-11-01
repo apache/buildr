@@ -59,7 +59,7 @@ module Buildr #:nodoc:
                 f = f[source_dir.length + 1, 10000]
                 source = "#{asset}/#{f}"
                 target = "#{name}/#{f}"
-                if !File.exist?(target) || File.mtime(name.to_s) < File.mtime(source)
+                if !File.exist?(target) || File.mtime(target) < File.mtime(source)
                   mkdir_p File.dirname(target)
                   cp source, target
                 end
