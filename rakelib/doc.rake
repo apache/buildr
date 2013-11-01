@@ -125,15 +125,17 @@ task 'setup-local-site-svn' do
   end
 end
 
+rescue Exception => e
+# The doc tasks do not work on our CI infrastructure with jruby as the native libraries
+# are not compatible with version of the C++ library we are running there
+end
+
 task 'clobber' do
+  rm_f 'rake/lib'
   rm_rf 'rake'
+  rm_rf 'rdoc'
   rm_rf 'site'
   rm_rf '_site'
   rm_f 'buildr.pdf'
   rm_f 'prince_errors.log'
-end
-
-rescue Exception => e
-# The doc tasks do not work on our CI infrastructure with jruby as the native libraries
-# are not compatible with version of the C++ library we are running there
 end
