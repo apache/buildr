@@ -677,7 +677,7 @@ module FileUtils
     [arg].flatten.map { |path| Buildr::Util.normalize_path(path) }
   end
 
-  private_Fmodule_function :fu_list
+  private_module_function :fu_list
 end
 
 module FileUtils
