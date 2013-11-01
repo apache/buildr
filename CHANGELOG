@@ -1,4 +1,4 @@
-1.4.15 (2013-10-26)
+1.4.15 (2013-11-02)
 * Change: Updated the 'test_jar' package type to have a
           classifier of 'tests' and thus match maven
           conventions. Reported by Chris Bozic.
