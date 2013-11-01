@@ -117,7 +117,7 @@ module Buildr
       @rakefiles = DEFAULT_BUILDFILES.dup
       @top_level_tasks = []
       @home_dir = File.expand_path('.buildr', ENV['HOME'])
-      mkpath Buildr::Util.normalize_path(@home_dir) if !File.exist?(@home_dir) && File.writable?(ENV['HOME'])
+      mkpath @home_dir if !File.exist?(@home_dir) && File.writable?(ENV['HOME'])
       @settings = Settings.new(self)
       @on_completion = []
       @on_failure = []
