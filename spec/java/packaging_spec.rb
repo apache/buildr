@@ -566,7 +566,7 @@ describe Packaging, 'war' do
     end
   end
 
-  it 'should accept files from :classes option' do
+  it 'should accept files from :classes option', :retry => (Buildr::Util.win_os? ? 4 : 1) do
     write 'classes/test'
     define('foo', :version=>'1.0') { package(:war).with(:classes=>'classes') }
     rm_f project('foo').package(:war).to_s
