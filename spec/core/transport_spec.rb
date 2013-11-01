@@ -59,8 +59,9 @@ end
 describe URI, '#upload' do
   before do
     write @source = 'source', @content = 'Just a file'
-    @target = 'target'
-    @uri = URI(URI.escape("file://#{File.expand_path(@target)}"))
+    @target = File.expand_path('target')
+    rm_rf @target
+    @uri = URI(URI.escape("file://#{@target}"))
   end
 
   it 'should preserve file permissions if uploading to a file' do
