@@ -299,6 +299,7 @@ module Buildr #:nodoc:
       def add_web_facet(options = {})
         name = options[:name] || "Web"
         default_webroots = {}
+        default_webroots[buildr_project._(:source, :main, :webapp)] = "/" if File.exist?(buildr_project._(:source, :main, :webapp))
         buildr_project.assets.paths.each {|p| default_webroots[p] = "/" }
         webroots = options[:webroots] || default_webroots
         default_deployment_descriptors = []
