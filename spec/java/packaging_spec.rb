@@ -550,23 +550,6 @@ describe Packaging, 'war' do
     inspect_war { |files| files.should include('test.html') }
   end
 
-  it 'should allow filtering into target directory' do
-    write 'src/main/webapp/test.html', '${version}'
-    define('foo', :version => '1.0') do
-      target_webapp = file("target/webapp") do |task|
-        filter('src/main/webapp/').
-          into(task.to_s).using('version' => '999').
-          run
-      end
-      package(:war)
-    end
-    inspect_war { |files| files.should include('test.html') }
-    Zip::ZipFile.open(project('foo').package(:war).to_s) do |war|
-      war.get_input_stream('test.html').read.should eql('999')
-    end
-    rm_f project('foo').package(:war).to_s
-  end
-
   it 'should accept files from :classes option', :retry => (Buildr::Util.win_os? ? 4 : 1) do
     write 'classes/test'
     define('foo', :version=>'1.0') { package(:war).with(:classes=>'classes') }
