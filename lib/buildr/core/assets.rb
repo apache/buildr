@@ -31,7 +31,7 @@ module Buildr #:nodoc:
       def paths
         unless @paths
           @paths = []
-          @paths << project._(:source, :main, :webapp) if File.exist?(project._(:source, :main, :webapp))
+          @paths << project._(:source, :main, :assets) if File.exist?(project._(:source, :main, :assets))
         end
         @paths
       end
@@ -40,11 +40,6 @@ module Buildr #:nodoc:
 
       def initialize(*args) #:nodoc:
         super
-      end
-
-      private
-
-      def add_enhance_actions
         enhance do
           paths = self.paths.flatten.compact
           if paths.size > 0
@@ -54,20 +49,13 @@ module Buildr #:nodoc:
             end.each do |a|
               a.invoke if a.respond_to?(:invoke)
             end.each do |asset|
-              source_dir = asset.to_s
-              Dir["#{source_dir}/*"].each do |f|
-                f = f[source_dir.length + 1, 10000]
-                source = "#{asset}/#{f}"
-                target = "#{name}/#{f}"
-                if !File.exist?(target) || File.mtime(target) < File.mtime(source)
-                  mkdir_p File.dirname(target)
-                  cp source, target
-                end
-              end
+              cp_r Dir["#{asset}/*"], "#{name}/"
             end
           end
         end
       end
+
+      private
 
       def out_of_date?(stamp)
         super ||
@@ -89,17 +77,10 @@ module Buildr #:nodoc:
         project.assets.paths
       end
 
-      after_define do |project|
-        # This is used to add actions after project is defined so that files are copied
-        # as the last action and don't block tasks that try and filter into target dir
-        # from the source dir
-        project.assets.send(:add_enhance_actions)
-      end
-
       # Access the asset task
       def assets
         if @assets.nil?
-          @assets = AssetsTask.define_task(project._(:target, :main, :webapp) => [])
+          @assets = AssetsTask.define_task(project._(:target, :main, :assets) => [])
           @assets.project = self
           project.task('assets').enhance([@assets])
           project.build.enhance([@assets])
