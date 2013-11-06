@@ -1,4 +1,4 @@
-1.4.15 (2013-11-02)
+1.4.15 (2013-11-06)
 * Change: Update to TestNG 6.8.7.
 * Change: Updated the 'test_jar' package type to have a
           classifier of 'tests' and thus match maven
