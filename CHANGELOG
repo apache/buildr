@@ -1,4 +1,6 @@
 1.4.16 (Pending)
+* Fixed:  Correct location of Git mirror in the README. Submitted
+          by Marcos Sainz.
 
 1.4.15 (2013-11-06)
 * Change: Update to TestNG 6.8.7.
