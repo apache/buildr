@@ -17,9 +17,18 @@ module Buildr
   module GWT
 
     class << self
+
+      def version=(version)
+        @version = version
+      end
+
+      def version
+        @version || '2.5.1'
+      end
+
       # The specs for requirements
       def dependencies
-        %w(com.google.gwt:gwt-dev:jar:2.5.1)
+        ["com.google.gwt:gwt-dev:jar:#{version}"]
       end
 
       def gwtc_main(modules, source_artifacts, output_dir, unit_cache_dir, options = {})
@@ -64,7 +73,7 @@ module Buildr
       end
 
       def superdev_dependencies
-        self.dependencies + %w(com.google.gwt:gwt-codeserver:jar:2.5.1)
+        self.dependencies + ["com.google.gwt:gwt-codeserver:jar:#{version}"]
       end
 
       def gwt_superdev(module_name, source_artifacts, work_dir, options = {})
@@ -96,7 +105,9 @@ module Buildr
         artifacts = (project.compile.sources + project.resources.sources).collect do |a|
           a.is_a?(String) ? file(a) : a
         end
-        dependencies = options[:dependencies] ? artifacts(options[:dependencies]) : project.compile.dependencies
+        dependencies = options[:dependencies] ? artifacts(options[:dependencies]) : (project.compile.dependencies + [project.compile.target]).collect do |dep|
+          dep.is_a?(String) ? file(dep) : dep
+        end
 
         unit_cache_dir = project._(:target, :gwt, :unit_cache_dir, output_key)
 
@@ -110,7 +121,17 @@ module Buildr
       end
 
       def gwt_superdev_runner(module_name, options = {})
-        dependencies = artifacts(options[:dependencies]) || project.compile.dependencies
+
+        dependencies = []
+        if options[:dependencies]
+          dependencies = artifacts(options[:dependencies])
+        else
+          sources = [] + project.compile.sources + project.resources.sources
+          classes = [] + project.compile.dependencies + [project.compile.target]
+          dependencies = (classes + sources).collect do |dep|
+            dep.is_a?(String) ? file(dep) : dep
+          end
+        end
 
         desc "Run Superdev mode"
         project.task("superdev") do
