@@ -65,7 +65,7 @@ module Buildr
 
       def sign_and_upload_all_packages(project)
         project.packages.each { |pkg| Buildr::GPG.sign_and_upload(project, pkg) }
-        project.packages.map { |pkg| pkg.pom }.uniq.each { |pom| Buildr::GPG.sign_and_upload(project, pom) }
+        project.packages.map { |pkg| pkg.pom }.compact.uniq.each { |pom| Buildr::GPG.sign_and_upload(project, pom) }
       end
     end
 
