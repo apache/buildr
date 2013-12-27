@@ -21,7 +21,8 @@ module Buildr
       before_define do |project|
         unless project.version
           version_suffix = ENV['BUILD_NUMBER'] ? "-#{ENV['BUILD_NUMBER']}" : ''
-          project.version = `git describe --tags --always`.strip + version_suffix
+          version_prefix = ENV['VERSION_PREFIX'] ? "#{ENV['VERSION_PREFIX']}-" : ''
+          project.version = version_prefix + `git describe --tags --always`.strip + version_suffix
         end
       end
     end
