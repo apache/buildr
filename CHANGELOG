@@ -1,4 +1,6 @@
 1.4.16 (Pending)
+* Fixed:  Avoid crash in GPG addon if unable to create a pom
+          for an artifact.
 * Fixed:  Correct location of Git mirror in the README. Submitted
           by Marcos Sainz.
 
