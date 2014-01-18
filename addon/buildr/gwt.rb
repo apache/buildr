@@ -23,7 +23,7 @@ module Buildr
       end
 
       def version
-        @version || '2.5.1'
+        @version || Buildr.settings.build['gwt'] || '2.5.1'
       end
 
       # The specs for requirements
