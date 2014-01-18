@@ -1,4 +1,6 @@
 1.4.16 (Pending)
+* Change: Derive the version of GWT in gwt addon from supplied
+          dependencies.
 * Fixed:  Include the compiled classes on path for GWT addon to
           ensure the GWT compiler can load annotations.
 * Change: Derive the GWT version from build settings if not

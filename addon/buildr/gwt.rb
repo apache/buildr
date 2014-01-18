@@ -27,12 +27,12 @@ module Buildr
       end
 
       # The specs for requirements
-      def dependencies
-        ["com.google.gwt:gwt-dev:jar:#{version}"]
+      def dependencies(version = nil)
+        ["com.google.gwt:gwt-dev:jar:#{version || self.version}"]
       end
 
       def gwtc_main(modules, source_artifacts, output_dir, unit_cache_dir, options = {})
-        cp = Buildr.artifacts(self.dependencies).each(&:invoke).map(&:to_s) + Buildr.artifacts(source_artifacts).each(&:invoke).map(&:to_s)
+        cp = Buildr.artifacts(self.dependencies(options[:version])).each(&:invoke).map(&:to_s) + Buildr.artifacts(source_artifacts).each(&:invoke).map(&:to_s)
         style = options[:style] || "OBFUSCATED," # "PRETTY", "DETAILED"
         log_level = options[:log_level] #  ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL
         workers = options[:workers] || 2
@@ -72,13 +72,13 @@ module Buildr
         Java::Commands.java 'com.google.gwt.dev.Compiler', *(args + [{:classpath => cp, :properties => properties, :java_args => options[:java_args], :pathing_jar => false}])
       end
 
-      def superdev_dependencies
-        self.dependencies + ["com.google.gwt:gwt-codeserver:jar:#{version}"]
+      def superdev_dependencies(version = nil)
+        self.dependencies + ["com.google.gwt:gwt-codeserver:jar:#{version || self.version}"]
       end
 
       def gwt_superdev(module_name, source_artifacts, work_dir, options = {})
 
-        cp = Buildr.artifacts(self.superdev_dependencies).each(&:invoke).map(&:to_s) + Buildr.artifacts(source_artifacts).each(&:invoke).map(&:to_s)
+        cp = Buildr.artifacts(self.superdev_dependencies(options[:version])).each(&:invoke).map(&:to_s) + Buildr.artifacts(source_artifacts).each(&:invoke).map(&:to_s)
 
         args = []
         args << "-port" << (options[:port] || 5050)
@@ -112,7 +112,11 @@ module Buildr
         unit_cache_dir = project._(:target, :gwt, :unit_cache_dir, output_key)
 
         task = project.file(output_dir) do
-          Buildr::GWT.gwtc_main(module_names, dependencies + artifacts, output_dir, unit_cache_dir, options.dup)
+          Buildr::GWT.gwtc_main(module_names,
+                                dependencies + artifacts,
+                                output_dir,
+                                unit_cache_dir,
+                                {:version => gwt_detect_version(dependencies)}.merge(options))
         end
         task.enhance(dependencies)
         task.enhance([project.compile])
@@ -137,8 +141,26 @@ module Buildr
         project.task("superdev") do
           work_dir = project._(:target, :gwt, :superdev)
           mkdir_p work_dir
-          Buildr::GWT.gwt_superdev(module_name, dependencies, work_dir, options)
+          Buildr::GWT.gwt_superdev(module_name,
+                                   dependencies,
+                                   work_dir,
+                                   {:version => gwt_detect_version(dependencies)}.merge(options))
         end
+      end
+
+      protected
+
+      def gwt_detect_version(dependencies)
+        version = nil
+        dependencies.each do |dep|
+          if dep.respond_to?(:to_spec_hash)
+            hash = dep.to_spec_hash
+            if 'com.google.gwt' == hash[:group] && 'gwt-user' == hash[:id] && :jar == hash[:type]
+              version = hash[:version]
+            end
+          end
+        end
+        version
       end
     end
   end
