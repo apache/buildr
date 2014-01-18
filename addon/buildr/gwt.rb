@@ -102,7 +102,7 @@ module Buildr
       def gwt(module_names, options = {})
         output_key = options[:output_key] || project.id
         output_dir = project._(:target, :generated, :gwt, output_key)
-        artifacts = (project.compile.sources + project.resources.sources).collect do |a|
+        artifacts = ([project.compile.target] + project.compile.sources + project.resources.sources).collect do |a|
           a.is_a?(String) ? file(a) : a
         end
         dependencies = options[:dependencies] ? artifacts(options[:dependencies]) : (project.compile.dependencies + [project.compile.target]).collect do |dep|
