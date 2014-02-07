@@ -25,7 +25,7 @@ module Buildr
       # The specs for requirements
       def dependencies
         [
-          'pmd:pmd:jar:4.2.6',
+          'net.sourceforge.pmd:pmd:jar:5.0.5',
           'jaxen:jaxen:jar:1.1.1',
           'asm:asm:jar:3.2'
         ]
@@ -83,7 +83,7 @@ module Buildr
       attr_writer :rule_set_files
 
       def rule_set_files
-        @rule_set_files || ['basic','imports','unusedcode']
+        @rule_set_files ||= ['rulesets/java/basic.xml','rulesets/java/imports.xml','rulesets/java/unusedcode.xml']
       end
 
       attr_writer :rule_set_paths
