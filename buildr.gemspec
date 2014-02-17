@@ -23,10 +23,10 @@ end
 $platform ||= RUBY_PLATFORM[/java/] || 'ruby'
 
 Gem::Specification.new do |spec|
-  spec.name           = 'buildr'
+  spec.name           = 'ih-buildr'
   spec.version        = Buildr::VERSION.dup
-  spec.author         = 'Apache Buildr'
-  spec.email          = "users@buildr.apache.org"
+  spec.author         = 'Apache Buildr & Rajeev Sood'
+  spec.email          = "rajeev.m.sood@gmail.com"
   spec.homepage       = "http://buildr.apache.org/"
   spec.summary        = "Build like you code"
   spec.description    = <<-TEXT

@@ -81,6 +81,30 @@ module Buildr #:nodoc:
       end
 
       # :call-seq:
+      #   project_references=(project_references)
+      # Sets the Eclipse project references on the project.
+      #
+      def project_references=(var)
+        @project_references = arrayfy(var)
+      end
+
+      # :call-seq:
+      #   project_references() => [p1, p2]
+      # Returns the Eclipse project references on the project.
+      # They may be derived from the parent project if no specific references have been set
+      # on the project.
+      #
+      # An Eclipse project reference is used internally by Eclipse to determine the references of a project.
+      def project_references(*values)
+        if values.size > 0
+          @project_references ||= []
+          @project_references += values.flatten
+        else
+          @project_references || (@project.parent ? @project.parent.eclipse.project_references : [])
+        end
+      end
+
+      # :call-seq:
       #   classpath_containers=(cc)
       # Sets the Eclipse project classpath containers on the project.
       #
@@ -229,6 +253,14 @@ module Buildr #:nodoc:
                   # project_libs: artifacts created by other projects
                   project_libs, others = cp.partition { |path| path.is_a?(Project) }
 
+				  #splice back in after converting to global reference
+				  project_libs.each do |l|
+					package_spec = l.package.to_spec					
+					new_value = Buildr.repositories.locate package_spec
+					raise "Could not find #{package_spec} in repository.  Please ensure this is installed before running this command again" if new_value.nil?
+					others.push new_value
+				  end				  
+				 				  
                   # Separate artifacts under known classpath variable paths
                   # including artifacts located in local Maven2 repository
                   vars = []
@@ -250,16 +282,14 @@ module Buildr #:nodoc:
                     classpathentry.src project.test.resources
                   end
 
+                  classpathentry.output project.compile.target if project.compile.target
+                  classpathentry.lib libs
+                  classpathentry.var vars
+
                   project.eclipse.classpath_containers.each { |container|
                     classpathentry.con container
                   }
 
-                  # Classpath elements from other projects
-                  classpathentry.src_projects project_libs
-
-                  classpathentry.output project.compile.target if project.compile.target
-                  classpathentry.lib libs
-                  classpathentry.var vars
                 end
               end
             end
@@ -272,7 +302,16 @@ module Buildr #:nodoc:
               xml = Builder::XmlMarkup.new(:target=>file, :indent=>2)
               xml.projectDescription do
                 xml.name project.eclipse.name
-                xml.projects
+                if project.eclipse.project_references.empty?
+                  xml.projects
+                else
+                  xml.projects do
+                    project.eclipse.project_references.each do |project_reference|
+                      xml.project project_reference
+                    end
+                  end
+                end
+
                 unless project.eclipse.builders.empty?
                   xml.buildSpec do
                     project.eclipse.builders.each { |builder|
