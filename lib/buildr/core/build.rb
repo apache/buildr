@@ -211,7 +211,7 @@ module Buildr
     end
 
     def copy(dir, url, message)
-      svn 'copy', '--parents', dir, url, '-m', message
+      svn 'copy', dir, url, '-m', message
     end
 
     def remove(url, message)

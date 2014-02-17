@@ -62,15 +62,6 @@ task :release do
     puts "[X] Uploaded gems and source files to #{spec.name}.rubyforge.org"
   end.call
 
-  # Push gems to Rubyforge.org / Gemcutter
-  lambda do
-    files = FileList["_release/#{spec.version}/dist/*.{gem}"]
-    files.each do |f|
-      puts "Push gem #{f} to RubyForge.org / Gemcutter ... "
-      `gem push #{f}`
-    end
-    puts "[X] Pushed gems to Rubyforge.org / Gemcutter"
-  end
 
   # Create an SVN tag for this release.
   lambda do

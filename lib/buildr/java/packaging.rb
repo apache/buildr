@@ -391,8 +391,6 @@ module Buildr
 
         # The display-name entry for application.xml
         attr_accessor :display_name
-        # The description entry for application.xml
-        attr_accessor :description
         # Map from component type to path inside the EAR.
         attr_accessor :dirs
 
@@ -531,8 +529,6 @@ module Buildr
           "http://java.sun.com/j2ee/dtds/application_1_2.dtd"
           xml.application do
             xml.tag! 'display-name', display_name
-            desc = self.description || @project.comment 
-            xml.tag! 'description', desc if desc
             @components.each do |comp|
               basename = comp[:artifact].to_s.pathmap('%f')
               uri = comp[:path].empty? ? basename : File.join(comp[:path], basename)

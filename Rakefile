@@ -13,6 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+
 # We need JAVA_HOME for most things (setup, spec, etc).
 unless ENV['JAVA_HOME']
   if RUBY_PLATFORM[/java/]

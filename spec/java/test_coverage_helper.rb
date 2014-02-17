@@ -53,7 +53,7 @@ module TestCoverageHelper
   end
 end
 
-shared_examples_for 'test coverage tool' do
+describe 'test coverage tool', :shared=>true do
   include TestCoverageHelper
 
   def toolname

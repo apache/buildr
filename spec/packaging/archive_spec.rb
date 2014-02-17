@@ -17,7 +17,15 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 
-module ArchiveTaskHelpers
+describe 'ArchiveTask', :shared=>true do
+  before do
+    @dir = File.expand_path('test')
+    @files = %w{Test1.txt Text2.html}.map { |file| File.expand_path(file, @dir) }.
+      each { |file| write file, content_for(file) }
+    @empty_dirs = %w{EmptyDir1 EmptyDir2}.map { |file| File.expand_path(file, @dir) }.
+      each { |file| mkdir file }
+  end
+
   # Not too smart, we just create some content based on file name to make sure you read what you write.
   def content_for(file)
     "Content for #{File.basename(file)}"
@@ -38,24 +46,6 @@ module ArchiveTaskHelpers
     zip(@archive + '.src').include(@files).tap do |task|
       yield task
     end
-  end
-
-  def init_dir
-    unless @dir
-      @dir = File.expand_path('test')
-      @files = %w{Test1.txt Text2.html}.map { |file| File.expand_path(file, @dir) }.
-        each { |file| write file, content_for(file) }
-      @empty_dirs = %w{EmptyDir1 EmptyDir2}.map { |file| File.expand_path(file, @dir) }.
-        each { |file| mkdir file }
-    end
-  end
-end
-
-shared_examples_for 'ArchiveTask' do
-  include ArchiveTaskHelpers
-
-  before(:each) do
-    init_dir
   end
 
   it 'should point to archive file' do
@@ -369,13 +359,10 @@ shared_examples_for 'ArchiveTask' do
   end
 end
 
+
 describe TarTask do
   it_should_behave_like 'ArchiveTask'
-
-  before(:each) do
-    @archive = File.expand_path('test.tar')
-  end
-
+  before { @archive = File.expand_path('test.tar') }
   define_method(:archive) { |file| tar(file) }
 
   def inspect_archive
@@ -391,11 +378,7 @@ end
 
 describe TarTask, ' gzipped' do
   it_should_behave_like 'ArchiveTask'
-
-  before(:each) do
-    @archive = File.expand_path('test.tgz')
-  end
-
+  before { @archive = File.expand_path('test.tgz') }
   define_method(:archive) { |file| tar(file) }
 
   def inspect_archive
@@ -410,19 +393,13 @@ describe TarTask, ' gzipped' do
   end
 end
 
-describe "ZipTask" do
-  include ArchiveTaskHelpers
 
+describe ZipTask do
   it_should_behave_like 'ArchiveTask'
-
-  before(:each) do
-    init_dir
-    @archive = File.expand_path('test.zip')
-  end
-
+  before { @archive = File.expand_path('test.zip') }
   define_method(:archive) { |file| zip(file) }
 
-  after(:each) do
+  after do
     checkZip(@archive)
   end
 
@@ -496,8 +473,9 @@ describe "ZipTask" do
 
 end
 
+
 describe Unzip do
-  before(:each) do
+  before do
     @zip = File.expand_path('test.zip')
     @dir = File.expand_path('test')
     @files = %w{Test1.txt Text2.html}.map { |file| File.join(@dir, file) }.

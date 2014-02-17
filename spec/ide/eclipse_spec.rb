@@ -382,7 +382,7 @@ MANIFEST
         write 'src/test/java/Test.java'
       end
 
-      shared_examples_for 'source' do
+      describe 'source', :shared=>true do
         it 'should ignore CVS and SVN files' do
           define('foo')
           classpath_sources('excluding').each do |excluding_attribute|

@@ -38,23 +38,23 @@ module Buildr
     end
 
     def monitor_and_compile
-      # we don't want to actually fail if our dependencies don't succeed
+      # we don't want to actually fail if our dependencies don't succede
       begin
         [:compile, 'test:compile'].each { |name| project.task(name).invoke }
-        build_completed(project)
+        notify_build_status(true, project)
       rescue Exception => ex
         $stderr.puts $terminal.color(ex.message, :red)
         $stderr.puts
 
-        build_failed(project, ex)
+        notify_build_status(false, project)
       end
+
       main_dirs = project.compile.sources.map(&:to_s)
       test_dirs = project.task('test:compile').sources.map(&:to_s)
       res_dirs = project.resources.sources.map(&:to_s)
-
-      source_ext = lambda { |compiler| Array(Buildr::Compiler.select(compiler).source_ext).map(&:to_s) }
-      main_ext = source_ext.call(project.compile.compiler) unless project.compile.compiler.nil?
-      test_ext = source_ext.call(project.task('test:compile').compiler) unless project.task('test:compile').compiler.nil?
+      
+      main_ext = Buildr::Compiler.select(project.compile.compiler).source_ext.map(&:to_s) unless project.compile.compiler.nil?
+      test_ext = Buildr::Compiler.select(project.task('test:compile').compiler).source_ext.map(&:to_s) unless project.task('test:compile').compiler.nil?
 
       test_tail = if test_dirs.empty? then '' else ",{#{test_dirs.join ','}}/**/*.{#{test_ext.join ','}}" end
       res_tail = if res_dirs.empty? then '' else ",{#{res_dirs.join ','}}/**/*" end
@@ -102,24 +102,25 @@ module Buildr
             project.task(:resources).filter.run if in_res
             project.task(:compile).invoke if in_main
             project.task('test:compile').invoke if in_test || in_main
-            build_completed(project)
           rescue Exception => ex
             $stderr.puts $terminal.color(ex.message, :red)
-            build_failed(project, ex)
             successful = false
           end
 
+          notify_build_status(successful, project)
           puts $terminal.color("Build complete", :green) if successful
         end
       end
     end
 
-    def build_completed(project)
-      Buildr.application.build_completed('Compilation successful', project.path_to)
-    end
-
-    def build_failed(project, ex = nil)
-      Buildr.application.build_failed('Compilation failed', project.path_to, ex)
+    def notify_build_status(successful, project)
+       if RUBY_PLATFORM =~ /darwin/ && $stdout.isatty && verbose
+         if successful
+           growl_notify('Completed', 'Your build has completed', project.path_to)
+         else
+           growl_notify('Failed', 'Your build has failed with an error', project.path_to)
+         end
+       end
     end
 
     def check_mtime(pattern, old_times)

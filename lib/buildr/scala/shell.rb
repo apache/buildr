@@ -20,33 +20,41 @@ require 'buildr/java/commands'
 module Buildr
   module Scala
     class ScalaShell < Buildr::Shell::Base
-      include Buildr::JRebel
+      include Buildr::Shell::JavaRebel
 
-      specify :name => :scala, :languages => [:scala]
+      class << self
+        def lang
+          :scala
+        end
 
-      def launch(task)
-        jline = [File.expand_path("lib/jline.jar", Scalac.scala_home)].find_all { |f| File.exist? f }
+        def to_sym
+          :scala
+        end
+      end
 
+      def launch
         cp = project.compile.dependencies +
-             Scalac.dependencies +
-             [ project.path_to(:target, :classes) ] +
-             task.classpath +
-             jline
+          Scalac.dependencies +
+          [project.path_to(:target, :classes)]
 
-        java_args = jrebel_args + task.java_args
+        props = {
+          'scala.home' => Scalac.scala_home
+        }
 
-        props = jrebel_props(project).merge(task.properties).merge 'scala.home' => Scalac.scala_home
+        jline = [File.expand_path("lib/jline.jar", Scalac.scala_home)].find_all do |f|
+          File.exist? f
+        end
 
         Java::Commands.java 'scala.tools.nsc.MainGenericRunner',
                             '-cp', cp.join(File::PATH_SEPARATOR),
         {
-          :properties => props,
-          :classpath => cp,
-          :java_args => java_args
+          :properties => props.merge(rebel_props(project)),
+          :classpath => Scalac.dependencies + jline,
+          :java_args => rebel_args
         }
       end
     end
   end
 end
 
-Buildr::Shell.providers << Buildr::Scala::ScalaShell
+Buildr::ShellProviders << Buildr::Scala::ScalaShell

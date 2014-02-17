@@ -133,7 +133,7 @@ describe Buildr::Application do
       write 'build.yaml', <<-YAML
         gems:
         - rake
-        - rspec >= 1.2
+        - rspec ~> 1.3.1
       YAML
       Buildr.application.load_gems
     end

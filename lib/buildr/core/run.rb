@@ -21,7 +21,7 @@ module Buildr
   module Run
 
     class JavaRunner < Base
-      include Buildr::JRebel
+      include Shell::JavaRebel
 
       specify :name => :java, :languages => [:java, :scala, :groovy, :clojure]
 
@@ -29,9 +29,9 @@ module Buildr
         fail "Missing :main option" unless task.options[:main]
         cp = project.compile.dependencies + [project.path_to(:target, :classes)] + task.classpath
         Java::Commands.java(task.options[:main], {
-          :properties => jrebel_props(project).merge(task.options[:properties] || {}),
+          :properties => rebel_props(project).merge(task.options[:properties] || {}),
           :classpath => cp,
-          :java_args => jrebel_args + (task.options[:java_args] || [])
+          :java_args => rebel_args + (task.options[:java_args] || [])
         })
       end
     end # JavaRunnner

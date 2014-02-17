@@ -314,16 +314,13 @@ EAR packages include an @application.xml@ file in the @META-INF@ directory that 
 
 * *display-name* -- The application's display name defaults to the project's identifier.  You can change that by setting the @display_name@ attribute.
 
-* *description* -- The application's description defaults to the project's comment.  You can change that by setting the @description@ attribute.
-
 * *context-root* -- WAR components specify a context root, based on the package identifier, for example, "cool-web-1.0.war" will have the context root "cool-web".  To specify a different context root, add the WAR package with the @context_root@ option.
 
 Again, by example:
 
 {% highlight ruby %}
 package(:ear).display_name = 'MyCoolWebService'
-package(:ear).description = 'MyCoolWebService: Making coolness kool again'
-package(:ear).add project('coolWebService').package(:war), :context_root=>'coolness'
+package(:ear).add project('coolWebService').package(:war), :context-root=>'coolness'
 {% endhighlight %}
 
 If you need to disable the context root (e.g. for Portlets), set @context_root@ to @false@.
