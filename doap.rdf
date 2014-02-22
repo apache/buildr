@@ -292,8 +292,8 @@
     </release>
     <repository>
       <SVNRepository>
-        <location rdf:resource="http://svn.apache.org/repos/asf/buildr"/>
-        <browse rdf:resource="http://svn.apache.org/viewvc/buildr"/>
+        <location rdf:resource="http://git.apache.org/buildr.git"/>
+        <browse rdf:resource="https://github.com/apache/buildr"/>
       </SVNRepository>
     </repository>
     <maintainer>

@@ -76,19 +76,16 @@ task 'release' => %w{setup-local-site-svn} do
     puts '[X] Pushed gems to Rubyforge.org'
   end.call
 
-  # Create an SVN tag for this release.
+  # Create an tag for this release.
   lambda do
-    info = `svn info` + `git svn info` # Using either svn or git-svn
-    if url = info[/^URL:/] && info.scan(/^URL: (.*)/)[0][0]
-      new_url = url.sub(/(trunk$)|(branches\/\w*)$/, "tags/#{spec.version}")
-      unless url == new_url
-        sh 'svn', 'copy', url, new_url, '-m', "Release #{spec.version}" do |ok, res|
-          if ok
-            puts "[X] Tagged this release as tags/#{spec.version} ... "
-          else
-            puts 'Could not create tag, please do it yourself!'
-            puts %{  svn copy #{url} #{new_url} -m "Release #{spec.version}"}
-          end
+    version = `git describe --tags --always`.strip
+    unless version == spec.version
+      sh 'git', 'tag', '-a', '-m', "Release #{spec.version}" do |ok, res|
+        if ok
+          puts "[X] Tagged this release as #{spec.version} ... "
+        else
+          puts 'Could not create tag, please do it yourself!'
+          puts %{  git tag -a -m "Release #{spec.version}" }
         end
       end
     end

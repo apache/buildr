@@ -42,10 +42,8 @@ task 'prepare' do |task, args|
   # Make sure we're doing a release from checked code.
   lambda do
     puts 'Checking there are no local changes ... '
-    svn = `svn status`
-    fail "Cannot release unless all local changes are in SVN:\n#{svn}" unless svn.empty?
     git = `git status -s`
-    fail "Cannot release unless all local changes are in Git:\n#{git}" if git[/^ M/] && ENV["IGNORE_GIT"].nil?
+    fail "Cannot release unless all local changes are in Git:\n#{git}"
     puts '[X] There are no local changes, everything is in source control'
   end.call
 

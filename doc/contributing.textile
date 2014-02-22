@@ -76,19 +76,9 @@ h2(#edge).  Living on the edge
 
 Did we mention Buildr is an open source project?  In fact, when you install Buildr you get all the source code, documentation, test case and everything you need to use it, extend it and patch it.  Have a look in your Gem directory.
 
-h3(#svn).  SVN
+h3(#git).  GIT
 
-But if you want to work with the latest and greatest, you'll want to check out "Buildr from SVN":http://svn.apache.org/repos/asf/buildr:
-
-{% highlight sh %}
-$ svn co http://svn.apache.org/repos/asf/buildr/trunk buildr
-{% endhighlight %}
-
-You can also browse the "Buildr repository":http://svn.apache.org/repos/asf/buildr.
-
-h3(#git).  Git
-
-Not a fan of SVN?  We understand.  You can also use the "official Apache Git clone.":http://git.apache.org  This clone is maintained by the ASF and kept in sync with the SVN repository (though, in practice there may be some delay in cloning recent commits).  Apache's Git hosting supports both git:// and http:// protocols (you should use git:// if at all possible as it is faster than http://):
+But if you want to work with the latest and greatest, you'll want to check out Buildr from source control. You can use the "official Apache Git clone.":http://git.apache.org  This clone is maintained by the ASF and kept in sync with the SVN repository (though, in practice there may be some delay in cloning recent commits).  Apache's Git hosting supports both git:// and http:// protocols (you should use git:// if at all possible as it is faster than http://):
 
 {% highlight sh %}
 $ git clone git://git.apache.org/buildr.git
@@ -102,11 +92,7 @@ And keep this "Git cheat sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet
 
 h4. GitHub
 
-You are also welcome to fork or clone the "Buildr repository on GitHub":http://github.com/apache/buildr.  This repository is just an exact mirror of the official Apache Git clone referenced above (updated every 30 minutes).  Some of the core committers also maintain their own forks of Buildr on GitHub, often containing experimental and in-progress development slated for eventual inclusion into the SVN.  For reference, they are listed below:
-
-* "Assaf Arkin":http://github.com/assaf/buildr
-* "Victor Hugo Borja":http://github.com/vic/buildr
-* "Daniel Spiewak":http://github.com/djspiewak/buildr
+You are also welcome to fork or clone the "Buildr repository on GitHub":http://github.com/apache/buildr.  This repository is just an exact mirror of the official Apache Git clone referenced above (updated every 30 minutes).
 
 h3. Working with Source Code
 
@@ -193,7 +179,7 @@ Yes, we do make typos, spelling errors and sometimes we write things that don't 
 
 For simple typos and quick fixes, just send a message to the mailing list or log an issue in JIRA.
 
-If you end up rewriting a significant piece of text, or add new documentation (you rock!), send a patch.  Making documentation patches is fairly easy.  All the documentation is generated from text files in the @doc/pages@ directory, so all you need to do is check it out from Git/SVN, edit, and @svn diff@ to create a patch.
+If you end up rewriting a significant piece of text, or add new documentation (you rock!), send a patch.  Making documentation patches is fairly easy.  All the documentation is generated from text files in the @doc/pages@ directory, so all you need to do is check it out from Git, edit, and @git diff@ to create a patch.
 
 We use "Textile":http://www.textism.com/tools/textile/ as the markup language, it takes all of a few minutes to learn, it's intuitive to use, and produces clean HTML.  You can learn it all in a few minutes from the "Textile Reference Manual":http://redcloth.org/textile.  Also check out the "Textile Quick Reference":http://hobix.com/textile/quick.html.
 

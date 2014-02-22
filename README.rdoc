@@ -94,14 +94,11 @@ When prompted for a platform, select ruby.
 
 == Living On the Edge
 
-You can check the latest sources from SVN:
+You can check the latest sources from GIT:
 
-  svn co http://svn.apache.org/repos/asf/buildr/trunk
+  git clone http://git.apache.org/buildr.git
 
-Or browse the SVN repository online:
-http://svn.apache.org/repos/asf/buildr
-
-If you prefer Git, a Git mirror is available from http://github.com/apache/buildr:
+If you prefer GitHub, a mirror is available from http://github.com/apache/buildr:
 
   git clone git://github.com/apache/buildr.git
 

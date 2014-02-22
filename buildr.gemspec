@@ -48,7 +48,7 @@ for those one-off tasks, with a language that's a joy to use.
 
   spec.extra_rdoc_files = 'README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE'
   spec.rdoc_options     = '--title', 'Buildr', '--main', 'README.rdoc',
-                          '--webcvs', 'http://svn.apache.org/repos/asf/buildr/trunk/'
+                          '--webcvs', 'https://github.com/apache/buildr'
   spec.post_install_message = "To get started run buildr --help"
 
   spec.required_rubygems_version = ">= 1.8.6"
