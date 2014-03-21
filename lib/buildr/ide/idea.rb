@@ -677,6 +677,7 @@ module Buildr #:nodoc:
       end
 
       def add_sql_server_data_source(name, options = {})
+        default_url = nil
         if options[:url].nil? && options[:database]
           default_url = "jdbc:jtds:sqlserver://#{(options[:host] || "127.0.0.1")}:#{(options[:port] || "1433")}/#{options[:database]}"
         end
