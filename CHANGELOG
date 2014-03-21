@@ -1,4 +1,7 @@
 1.4.16 (Pending)
+* Added:  Add support for configuration of the schema-pattern,
+          table-pattern and default-schemas settings in idea's
+          data source definitions.
 * Change: Upgraded the PMD plugin to use pmd 5.0.5 which for Java 7
           compatibility.
 * Change: Derive the version of GWT in gwt addon from supplied

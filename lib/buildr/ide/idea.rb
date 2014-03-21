@@ -689,6 +689,15 @@ module Buildr #:nodoc:
           :dialect => 'TSQL',
           :classpath => ['net.sourceforge.jtds:jtds:jar:1.2.7']
         }.merge(options)
+
+        if params[:url]
+          if /jdbc\:jtds\:sqlserver\:\/\/[^:\\]+(\:\d+)?\/([^;]*)(\;.*)?/ =~ params[:url]
+            database_name = $2
+            params[:schema_pattern] = "#{database_name}.*"
+            params[:default_schemas] = "#{database_name}.*"
+          end
+        end
+
         add_data_source(name, params)
       end
 
@@ -706,6 +715,9 @@ module Buildr #:nodoc:
             xml.tag!("jdbc-url", options[:url]) if options[:url]
             xml.tag!("user-name", options[:username]) if options[:username]
             xml.tag!("user-password", encrypt(options[:password])) if options[:password]
+            xml.tag!("schema-pattern", options[:schema_pattern]) if options[:schema_pattern]
+            xml.tag!("default-schemas", options[:default_schemas]) if options[:default_schemas]
+            xml.tag!("table-pattern", options[:table_pattern]) if options[:table_pattern]
             xml.tag!("default-dialect", options[:dialect]) if options[:dialect]
 
             xml.libraries do |xml|
