@@ -1,4 +1,6 @@
 1.4.16 (Pending)
+* Change: Upgraded the Checkstyle plugin to use checkstyle 5.7 that
+          improves Java 7 compatibility.
 * Added:  Add support for configuration of the schema-pattern,
           table-pattern and default-schemas settings in idea's
           data source definitions.
