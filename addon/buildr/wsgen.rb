@@ -160,9 +160,15 @@ module Buildr
             end
             command << wsdl_file
 
-            `#{command.join(' ')}`
-            if $? != 0 || !File.exist?(java_file)
+            trace command.join(' ')
+            output = `#{command.join(' ')}`
+            if $? != 0
               rm_rf java_file
+              puts output
+              raise "Problem building webservices"
+            end
+            unless File.exist?(java_file)
+              puts output
               raise "Problem building webservices"
             end
           end
