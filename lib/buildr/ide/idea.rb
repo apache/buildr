@@ -1086,6 +1086,10 @@ module Buildr #:nodoc:
             end
             mv temp_filename, ideafile.filename
           end
+          if project.ipr?
+            filename = project._("#{project.ipr.name}.ids")
+            rm_rf filename if File.exists?(filename)
+          end
         end
 
         project.task("idea:clean") do
