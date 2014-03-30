@@ -80,7 +80,6 @@ module Buildr
             args << intermediate_dir
             args << "-r"
             args << "#{base_wsdl_dir}/META-INF/wsdl"
-            args << "-keep"
             args << "-s"
             args << java_dir
             args << "-cp"
