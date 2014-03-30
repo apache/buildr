@@ -170,6 +170,9 @@ module Buildr
               puts output
               raise "Problem building webservices"
             end
+            if output =~ /\[WARNING\]/
+              puts output
+            end
           end
           project.file(ws_dir).enhance([java_file])
         end
