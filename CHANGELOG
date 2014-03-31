@@ -1,6 +1,8 @@
 1.4.16 (Pending)
 * Fixed:  Remove the projectname.ids file when rebuilding the idea
           project file avoiding conflict with idea.
+* Fixed:  Avoid passing duplicate -keep parameters to wsimport from
+          wsgen addon.
 * Change: Improved the error handling when generating java from wsdl
           in the wsgen addon.
 * Change: Upgraded the Checkstyle plugin to use checkstyle 5.7 that
