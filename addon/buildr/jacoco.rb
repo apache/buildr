@@ -185,6 +185,40 @@ module Buildr
           end
         end
       end
+      namespace 'jacoco' do
+        desc "Generate JaCoCo reports."
+        task 'report' do
+          Buildr.ant "jacoco" do |ant|
+            ant.taskdef(:resource => "org/jacoco/ant/antlib.xml") do |ant|
+              ant.classpath :path => Buildr.artifacts(Buildr::JaCoCo.ant_spec).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
+            end
+            ant.report do |ant|
+              ant.executiondata do |ant|
+                Buildr.projects.each do |project|
+                  ant.fileset :file=>project.jacoco.destfile if File.exist?(project.jacoco.destfile)
+                end
+              end
+
+              ant.structure(:name => "Jacoco Report") do |ant|
+                ant.classfiles do |ant|
+                  Buildr.projects.map(&:compile).map(&:target).flatten.map(&:to_s).each do |src|
+                    ant.fileset :dir=>src.to_s if File.exist?(src)
+                  end
+                end
+                ant.sourcefiles(:encoding => "UTF-8") do |ant|
+                  Buildr.projects.map(&:compile).map(&:sources).flatten.map(&:to_s).each do |src|
+                    ant.fileset :dir=>src.to_s if File.exist?(src)
+                  end
+                end
+              end
+
+              ant.html :destdir => "reports/jacoco"
+              ant.xml :destfile => "reports/jacoco/jacoco.xml"
+              ant.csv :destfile => "reports/jacoco/jacoco.csv"
+            end
+          end
+        end
+      end
     end
   end
 end

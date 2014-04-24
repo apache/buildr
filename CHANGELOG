@@ -1,4 +1,6 @@
 1.4.16 (Pending)
+* Added:  Add the ability to generate a html report when using the
+          jacoco addon. Extracted from the ode project.
 * Fixed:  Remove the projectname.ids file when rebuilding the idea
           project file avoiding conflict with idea.
 * Fixed:  Avoid passing duplicate -keep parameters to wsimport from
