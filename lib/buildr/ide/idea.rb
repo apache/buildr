@@ -56,11 +56,11 @@ module Buildr #:nodoc:
         document.write(f, -1, false, true)
       end
 
-      protected
-
       def name
         "#{self.id}#{suffix}"
       end
+
+      protected
 
       def relative(path)
         ::Buildr::Util.relative_path(File.expand_path(path.to_s), self.base_directory)
