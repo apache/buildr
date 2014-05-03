@@ -43,7 +43,7 @@ task 'prepare' do |task, args|
   lambda do
     puts 'Checking there are no local changes ... '
     git = `git status -s`
-    fail "Cannot release unless all local changes are in Git:\n#{git}"
+    fail "Cannot release unless all local changes are in Git:\n#{git}" unless git.empty?
     puts '[X] There are no local changes, everything is in source control'
   end.call
 
