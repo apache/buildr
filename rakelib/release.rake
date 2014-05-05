@@ -30,10 +30,16 @@ task 'release' => %w{setup-local-site-svn} do
     puts 'Uploading packages to www.apache.org/dist ...'
     host, remote_dir = target.split(':')
     sh 'ssh', host, 'rm', '-rf', remote_dir rescue nil
+    existing_dirs = `ssh #{host} ls #{File.dirname(remote_dir)}`.split
     sh 'ssh', host, 'mkdir', remote_dir
     sh 'rsync', '--progress', '--recursive', '--delete', "_release/#{spec.version}/dist/", target
     sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "#{remote_dir}/*"
     puts '[X] Uploaded packages to www.apache.org/dist'
+
+    puts "[X] Removing existing packages #{existing_dirs.join(', ')}"
+    existing_dirs.each do |dir|
+      sh 'ssh', host, 'rm', '-rf', "#{File.dirname(remote_dir)}/#{dir}" rescue nil
+    end
 
     puts "Uploading new site to #{spec.name}.apache.org ..."
     sh 'rsync', '--progress', '--recursive', '--exclude', '.svn', '--delete', "_release/#{spec.version}/site/", 'site'
