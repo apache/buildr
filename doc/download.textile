@@ -20,16 +20,28 @@ The source code is included in both source and binary distribution, the Gem dist
 
 h2(#dist).  Binaries and Source Code
 
+h3. buildr 1.4.16 (2014-05-03)
+
+|_. Package |_. MD5 Checksum |_. PGP |
+| "buildr-1.4.16-java.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.16/buildr-1.4.16-java.gem | "da920dd00f4b09f01aa0e5c71a8a87e5":http://www.apache.org/dist/buildr/1.4.16/buildr-1.4.16-java.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.16/buildr-1.4.16-java.gem.asc |
+| "buildr-1.4.16-x86-mswin32.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.16/buildr-1.4.16-x86-mswin32.gem | "10180c59e1b11da4d6f499fd3f0d43bb":http://www.apache.org/dist/buildr/1.4.16/buildr-1.4.16-x86-mswin32.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.16/buildr-1.4.16-x86-mswin32.gem.asc |
+| "buildr-1.4.16.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.16/buildr-1.4.16.gem | "cfc81dacdd825928a5e1a8b55735895b":http://www.apache.org/dist/buildr/1.4.16/buildr-1.4.16.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.16/buildr-1.4.16.gem.asc |
+| "buildr-1.4.16.tgz":http://www.apache.org/dyn/closer.cgi/buildr/1.4.16/buildr-1.4.16.tgz | "b3234fff8924589fe2826acecc7bc03e":http://www.apache.org/dist/buildr/1.4.16/buildr-1.4.16.tgz.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.16/buildr-1.4.16.tgz.asc |
+| "buildr-1.4.16.zip":http://www.apache.org/dyn/closer.cgi/buildr/1.4.16/buildr-1.4.16.zip | "a20af0a5046e84813561ae50ce58703c":http://www.apache.org/dist/buildr/1.4.16/buildr-1.4.16.zip.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.16/buildr-1.4.16.zip.asc |
+
+p>. ("Release signing keys":http://www.apache.org/dist/buildr/1.4.16/KEYS)
+
+
 h3. buildr 1.4.15 (2013-11-06)
 
 |_. Package |_. MD5 Checksum |_. PGP |
-| "buildr-1.4.15-java.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.15/buildr-1.4.15-java.gem | "5ea7f855a2e57340d840fea3ef635a44":http://www.apache.org/dist/buildr/1.4.15/buildr-1.4.15-java.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.15/buildr-1.4.15-java.gem.asc |
-| "buildr-1.4.15-x86-mswin32.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.15/buildr-1.4.15-x86-mswin32.gem | "e297b9a358ed2fe90afe0a67285c1236":http://www.apache.org/dist/buildr/1.4.15/buildr-1.4.15-x86-mswin32.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.15/buildr-1.4.15-x86-mswin32.gem.asc |
-| "buildr-1.4.15.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.4.15/buildr-1.4.15.gem | "d4052ac4aa739c63ab7ad08d80719a1a":http://www.apache.org/dist/buildr/1.4.15/buildr-1.4.15.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.15/buildr-1.4.15.gem.asc |
-| "buildr-1.4.15.tgz":http://www.apache.org/dyn/closer.cgi/buildr/1.4.15/buildr-1.4.15.tgz | "c80a6fee2d2cfe7de1a57821596444bd":http://www.apache.org/dist/buildr/1.4.15/buildr-1.4.15.tgz.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.15/buildr-1.4.15.tgz.asc |
-| "buildr-1.4.15.zip":http://www.apache.org/dyn/closer.cgi/buildr/1.4.15/buildr-1.4.15.zip | "0c63028d9965817b8d17ca49096974dc":http://www.apache.org/dist/buildr/1.4.15/buildr-1.4.15.zip.md5 | "Sig":http://www.apache.org/dist/buildr/1.4.15/buildr-1.4.15.zip.asc |
+| "buildr-1.4.15-java.gem":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15-java.gem | "5ea7f855a2e57340d840fea3ef635a44":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15-java.gem.md5 | "Sig":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15-java.gem.asc |
+| "buildr-1.4.15-x86-mswin32.gem":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15-x86-mswin32.gem | "e297b9a358ed2fe90afe0a67285c1236":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15-x86-mswin32.gem.md5 | "Sig":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15-x86-mswin32.gem.asc |
+| "buildr-1.4.15.gem":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15.gem | "d4052ac4aa739c63ab7ad08d80719a1a":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15.gem.md5 | "Sig":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15.gem.asc |
+| "buildr-1.4.15.tgz":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15.tgz | "c80a6fee2d2cfe7de1a57821596444bd":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15.tgz.md5 | "Sig":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15.tgz.asc |
+| "buildr-1.4.15.zip":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15.zip | "0c63028d9965817b8d17ca49096974dc":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15.zip.md5 | "Sig":http://archive.apache.org/dist/buildr/1.4.15/buildr-1.4.15.zip.asc |
 
-p>. ("Release signing keys":http://www.apache.org/dist/buildr/1.4.15/KEYS)
+p>. ("Release signing keys":http://archive.apache.org/dist/buildr/1.4.15/KEYS)
 
 
 h3. buildr 1.4.14 (2013-10-11)
