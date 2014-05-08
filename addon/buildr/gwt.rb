@@ -113,7 +113,7 @@ module Buildr
 
         task = project.file(output_dir) do
           Buildr::GWT.gwtc_main(module_names,
-                                dependencies + artifacts,
+                                (dependencies + artifacts).flatten.compact,
                                 output_dir,
                                 unit_cache_dir,
                                 {:version => gwt_detect_version(dependencies)}.merge(options))
