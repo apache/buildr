@@ -391,6 +391,78 @@ $ buildr --generate /path/to/my_project
 
 This creates a basic buildfile with a main project called 'my_project'. The buildfile contains a skeleton for compiling the Eclipse projects. If you want to automate dependency tracking via OSGi have a look at the "buildr4osgi":http://oss.intalio.com/buildr4osgi/ project. Support for building Eclipse RCP applications, running PDE tests and P2-sites is currently lacking in Buildr.
 
+h2(#maven_central). Releasing to Maven Central
+
+Many opensource projects release their artifacts to Maven Central. To release a library to Maven Central, the project needs to provide several elements for each library;
+
+* the jar artifact,
+* the sources artifact,
+* the javadocs artifact,
+* a pom that supplies fields required by Maven Central, and
+* gpg signatures for every file supplied.
+
+Buildr has built-in support for the artifacts and can easily sign the artifacts using the 'buildr/gpg' addon. However it has not always been easy to generate a pom in the required format until the 'buildr/custom_pom' became available.
+
+Below is an extremely verbose example of a project that provides all the elements required to publish to Maven Central.
+
+{% highlight sh %}
+# Include addon to generate GPG Signatures
+require 'buildr/gpg'
+# Include addon to generate custom pom
+require 'buildr/custom_pom'
+
+define 'myproject' do
+  project.group = 'org.myproject'
+  project.version = '1.0'
+
+  pom.licenses['The Apache Software License, Version 2.0'] = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+  pom.scm_connection = pom.scm_developer_connection = 'scm:git:git@github.com:jbloggs/myproject'
+  pom.scm_url = 'git@github.com:jbloggs/myproject'
+  pom.url = 'https://github.com/jbloggs/myproject'
+  pom.issues_url = 'https://github.com/jbloggs/myproject/issues'
+  pom.issues_system = 'GitHub Issues'
+  pom.add_developer('jbloggs', 'Joe Bloggs', 'jbloggs@example.com', ['Project Lead'])
+  pom.provided_dependencies.concat [:javax_servlet]
+  pom.optional_dependencies.concat [:optional_api]
+
+  compile.with :javax_servlet, :some_api, :optional_api
+
+  test.with :mockito
+
+  package(:jar)
+  package(:sources)
+  package(:javadoc)
+end
+{% endhighlight %}
+
+That example is however, extremely verbose and there is a number of helper methods been added to the 'buildr/custom_pom' addon to simplify common scenarios. It would be more common to see the addon used in the following manner;
+
+{% highlight sh %}
+require 'buildr/gpg'
+require 'buildr/custom_pom'
+
+define 'myproject' do
+  project.group = 'org.myproject'
+  project.version = '1.0'
+
+  pom.add_apache2_license
+  pom.add_github_project('jbloggs/myproject')
+  pom.add_developer('jbloggs', 'Joe Bloggs')
+  pom.provided_dependencies.concat [:javax_servlet]
+  pom.optional_dependencies.concat [:optional_api]
+
+  compile.with :javax_servlet, :optional_api
+
+  test.with :mockito
+
+  package(:jar)
+  package(:sources)
+  package(:javadoc)
+end
+{% endhighlight %}
+
+If there are other common scenarios useful for opensource developers, feel free to make a request on buildr mailing list to provide simplified helper methods.
+
 h2(#idea). IntelliJ IDEA
 
 If you use IntelliJ IDEA, you can generate project files by issuing:

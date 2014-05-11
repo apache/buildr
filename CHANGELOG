@@ -1,4 +1,6 @@
 1.4.17 (Pending)
+* Added:  Import 'buildr/custom_pom' addon to make it easier to
+          build POMs for projects publishing to Maven Central.
 * Added:  Add flag to allow non portable extensions in wsgen addon.
 * Fixed:  Avoid nil dereference bug in GWT addon when running GWT in
           a project that has no source directory.
