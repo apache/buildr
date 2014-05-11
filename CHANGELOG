@@ -1,4 +1,7 @@
 1.4.17 (Pending)
+* Added:  Add flag to allow non portable extensions in wsgen addon.
+* Fixed:  Avoid nil dereference bug in GWT addon when running GWT in
+          a project that has no source directory.
 
 1.4.16 (2014-05-03)
 * Added:  Add the ability to generate a html report when using the

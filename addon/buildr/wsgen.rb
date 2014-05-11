@@ -114,6 +114,7 @@ module Buildr
       # Service options include:
       # * :service_name -- The name of the service.
       # * :package -- The package in which to generate the code.
+      # * :extension -- Should we allow non-portable extensions.
       #
       # Method options include:
       # * :output_dir -- The target directory.
@@ -153,6 +154,9 @@ module Buildr
             command << ws_dir
             command << "-p"
             command << pkg
+            if config[:extension]
+              command << "-extension"
+            end
             if wsdl_location
               command << "-wsdllocation"
               command << wsdl_location
