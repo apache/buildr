@@ -276,4 +276,3 @@ module Buildr
   end # DRbApplication
 
 end
-

@@ -325,4 +325,3 @@ describe Buildr::DRbApplication do
 
   end
 end
-

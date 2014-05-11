@@ -63,4 +63,3 @@ describe Buildr::Console do
     end
   end
 end
-

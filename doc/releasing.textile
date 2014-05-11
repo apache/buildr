@@ -116,4 +116,3 @@ The environment variable @NEXT_VERSION@ has precedence over Release.next_version
 h2(#custom_tag_and_msg). How to specify my own tag name and commit message?
 
 As explained earlier, Buildr will create two new commits and a new tag in the version control system. Similarly to @Release.next_version@, the commit message and the tag name can be customized with @Release.message@ and @Release.tag_name@. Both could be strings or procs that would receive the released version @THIS_VERSION@ without @-SNAPSHOT@.
-

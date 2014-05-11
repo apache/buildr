@@ -16,7 +16,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 module EclipseHelper
-  
+
   def setupExample(group, projectName, options = {})
 	options[:symName] ? symName = options[:symName] :symName = File.basename(projectName)
 	requiredPlugins = nil
@@ -102,12 +102,12 @@ describe Buildr::Generate do
   include EclipseHelper
   describe 'it should find a single eclipse project' do
     top = "top_#{__LINE__}"
-    
+
     before do
       setupExample(top, 'single')
       File.open(File.join(top, 'buildfile'), 'w') { |file| file.write Generate.from_eclipse(File.join(Dir.pwd, top)).join("\n") }
     end
-    
+
     it 'should create a valid buildfile' do
       define('first')
       File.exists?(File.join(top, 'single', '.project')).should be_true
@@ -149,7 +149,7 @@ describe Buildr::Generate do
       file(buildFile).should contain('layout[:source, :main, :scala]')
       lambda { Buildr.application.run }.should_not raise_error
     end
-    
+
     it "should pass output in build.properties to layout[:target, :main], etc" do
       define('layout_target')
       buildFile = File.join(top, 'buildfile')
@@ -161,7 +161,7 @@ describe Buildr::Generate do
       file(buildFile).should contain('layout[:target, :main, :scala]')
       lambda { Buildr.application.run }.should_not raise_error
     end
-    
+
     it "should package an eclipse plugin" do
       define('layout_target')
       buildFile = File.join(top, 'buildfile')
@@ -186,14 +186,14 @@ describe Buildr::Generate do
       lambda { Buildr.application.run }.should_not raise_error
     end
   end
-    
+
   describe 'it should accecpt singleton SymbolicName in MANIFEST.MF' do
     top = "top_#{__LINE__}"
     before do
       setupExample(top, 'single', { :symName => 'singleSymbolicName;singleton:=true'})
       File.open(File.join(top, 'buildfile'), 'w') { |file| file.write Generate.from_eclipse(File.join(Dir.pwd, top)).join("\n") }
     end
-    
+
     it "should not get confused if SymbolicName in MANIFEST.MF is a singleton:=true" do
       buildFile = File.join(top, 'buildfile')
       file(buildFile).should exist
@@ -220,7 +220,7 @@ describe Buildr::Generate do
       file(buildFile).should contain('define "single"')
       lambda { Buildr.application.run }.should_not raise_error
     end
-    
+
     it "should correct the path for a nested plugin" do
       define('base_dir')
       buildFile = File.join(top, 'buildfile')
@@ -264,7 +264,7 @@ describe Buildr::Generate do
       file(buildFile).should contain(/define "second".*do.*dependencies << projects\("first"\).* end/m)
       lambda { Buildr.application.run }.should_not raise_error
     end
-    
+
     # Fragments are only supported with buildr4osi which is not (yet?) part of buildr
     it 'should skip fragments.'  do
       define('base_dir')

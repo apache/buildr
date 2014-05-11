@@ -20,7 +20,7 @@ package org.apache.buildr;
 import com.martiansoftware.nailgun.NGContext;
 
 public interface BuildrNail {
-  
+
   public void main(NGContext ctx);
 
   public static class Main {
@@ -33,7 +33,7 @@ public interface BuildrNail {
 
 }
 
-/* 
+/*
  * Local Variables:
  * indent-tabs-mode: nil
  * c-basic-offset: 2

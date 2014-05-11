@@ -130,7 +130,7 @@ You can also use "profiles":settings_profiles.html#profiles to supply a name/val
 filter: &alpha1
   version: experimental
   copyright: Acme Inc (C) 2007
-  
+
 development:
   filter: *alpha1
 test:
@@ -143,7 +143,7 @@ You can specify a different format by passing it as the first argument. Supporte
 | @:ant@    | Map from <code>@key@</code> to value. |
 | @:maven@  | Map from @${key}@ to value (default). |
 | @:ruby@   | Map from @#{key}@ to value. |
-| @:erb@    | Map from @<%=key%>@ to value. | 
+| @:erb@    | Map from @<%=key%>@ to value. |
 | @Regexp@  | Map using the matched value of the regular expression (e.g. @/=(.*?)=/@). |
 
 For example, using the @:ruby@ format instead of the default @:maven@ format:
@@ -234,7 +234,7 @@ The @build@ task has an evil twin, the @clean@ task.  It's the task you use to r
 
 It basically erases the target directories, the one called @target@, and if you get creative and change the target directory for tasks like @compile@, it will also erase those.  If you decide to generate files outside the target directory and want to cleanup after yourself, just extend the @clean@ task.
 
-For example: 
+For example:
 
 {% highlight ruby %}
 clean { rm_rf _('staged') }

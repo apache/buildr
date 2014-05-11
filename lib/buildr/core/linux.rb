@@ -26,4 +26,3 @@ if $stdout.isatty && verbose
     Buildr.application.on_failure { |title, message, ex| notify_send(:failed, title, message) if verbose }
   end
 end
-

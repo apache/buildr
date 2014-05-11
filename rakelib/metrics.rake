@@ -22,12 +22,12 @@ namespace 'metrics' do
     base_dir = Pathname.new(File.expand_path(File.join(File.dirname(__FILE__), '..')))
     rb_files = %w(lib addon).collect { |folder|
       FileList[File.expand_path(File.join(File.dirname(__FILE__), '..', folder, '**', '*.rb'))]
-    }.flatten.collect {|path| 
+    }.flatten.collect {|path|
       Pathname.new(path).relative_path_from(base_dir).to_s
     }
     SaikuroRunner.new.run(rb_files, output_dir)
   end
-  
+
   desc 'generate ccn treemap'
   task 'ccn_treemap' do
     require 'saikuro_treemap'

@@ -253,4 +253,3 @@ end
 
 Buildr::TestFramework << Buildr::Scala::Specs
 Buildr::TestFramework << Buildr::Scala::Specs2
-

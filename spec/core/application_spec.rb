@@ -575,4 +575,3 @@ describe Rake do
    end
  end
 end
-

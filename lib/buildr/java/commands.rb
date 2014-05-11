@@ -110,7 +110,7 @@ module Java
             # set new cmd line.
             cmd_args = [tmp.path]
           end
-          
+
           unless Buildr.application.options.dryrun
             info "Running #{name}" if name && options[:verbose]
             block = lambda { |ok, res| fail "Failed to execute #{name}, see errors above" unless ok } unless block
@@ -121,7 +121,7 @@ module Java
           end
         ensure
           unless tmp.nil?
-            tmp.close 
+            tmp.close
             tmp.unlink
           end
         end
@@ -281,4 +281,3 @@ module Java
   end
 
 end
-

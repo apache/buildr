@@ -53,5 +53,3 @@ describe Buildr::Compiler::ExternalJavac do
   end
 
 end
-
-

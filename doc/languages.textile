@@ -617,4 +617,3 @@ Supports the following options:
 | @:fork@         | Run the tests on a new java vm. (enabled unless running on JRuby) |
 | @:properties@   | Hash of system properties available to the test case. |
 | @:java_args@    | Arguments passed as is to the JVM. (only when fork is enabled) |
-

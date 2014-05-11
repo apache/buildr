@@ -1007,5 +1007,3 @@ module Buildr #:nodoc:
   end
 
 end
-
-

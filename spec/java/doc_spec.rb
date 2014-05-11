@@ -53,4 +53,3 @@ describe 'Javadoc' do
   end
 
 end
-

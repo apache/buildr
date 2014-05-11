@@ -27,9 +27,9 @@ module Buildr
         self.nsis_executable = "makensis"
         self.nsis_major_version = 3
         self.values = {}
-        
+
         super(*args)
-        
+
         enhance do
           info "Calling makensis"
           # We make available one variable to the nsi script:

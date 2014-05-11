@@ -280,4 +280,3 @@ p>. ("Release signing keys":http://archive.apache.org/dist/buildr/1.3.0-incubati
 
 
 p(note). When downloading from files please check the "md5sum":http://www.apache.org/dev/release-signing#md5 and verify the "OpenPGP":http://www.apache.org/dev/release-signing#openpgp compatible signature from the main Apache site. This KEYS file contains the public keys used for signing releases. It is recommended that (when possible) a web of trust is used to confirm the identity of these keys. For more information, please see the "Apache Release FAQ":http://www.apache.org/dev/release.html.
-

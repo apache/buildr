@@ -143,4 +143,3 @@ Shell.providers.each do |provider|
     end
   end
 end
-

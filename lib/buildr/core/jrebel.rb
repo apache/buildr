@@ -39,4 +39,3 @@ module Buildr #:nodoc:
     end
   end
 end
-

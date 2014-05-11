@@ -75,4 +75,3 @@ The Apache Software Foundation is a non-profit organization, consider "sponsorin
 Community member quotes from a thread on "Stack Overflow":http://stackoverflow.com/questions/1015525/why-use-buildr-instead-of-ant-or-maven/1055864.
 
 Developed with !http://www.jetbrains.com/ruby/features/ruby_banners/ruby1/ruby120x30_white.gif(Developed with RubyMine)!:http://www.jetbrains.com/ruby/features?utm_source=RubyMineUser&utm_medium=Banner&utm_campaign=RubyMine
-

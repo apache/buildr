@@ -192,4 +192,3 @@ describe Project, '#doc' do
     project('foo').doc.invoke
   end
 end
-

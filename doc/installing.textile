@@ -11,11 +11,11 @@ The RubyForge distribution is *not* an official Apache distribution. The all-in-
 
 *In details:* Navigate to "Rubyforge's buildr's Files page":http://rubyforge.org/frs/?group_id=3180 and download the all-in-one bundle for the latest version available.
 
-Unzip the bundle in a convenient location. 
+Unzip the bundle in a convenient location.
 
-You can execute the buildr executable under the bin directory directly. 
+You can execute the buildr executable under the bin directory directly.
 
-You should consider adding the bin directory of the result to the @PATH@ global environment variable. See "Installing Buildr for JRuby":#jruby for instructions to update it.  
+You should consider adding the bin directory of the result to the @PATH@ global environment variable. See "Installing Buildr for JRuby":#jruby for instructions to update it.
 
 h1(#the-gem). Installing the gem
 

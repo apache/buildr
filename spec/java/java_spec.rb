@@ -63,7 +63,7 @@ describe 'Java.tools_jar' do
       write 'jdk/lib/tools.jar'
       ENV['JAVA_HOME'] = File.expand_path('jdk')
     end
-  
+
     it 'should return the path to tools.jar' do
       Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
     end
@@ -75,7 +75,7 @@ describe 'Java.tools_jar' do
       write 'jdk/lib/tools.jar'
       ENV['JAVA_HOME'] = File.expand_path('jdk/jre')
     end
-  
+
     it 'should return the path to tools.jar' do
       Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
     end
@@ -86,7 +86,7 @@ describe 'Java.tools_jar' do
       Java.instance_eval { @tools_jar = nil }
       ENV['JAVA_HOME'] = File.expand_path('jdk')
     end
-  
+
     it 'should return nil' do
       Java.tools_jar.should be_nil
     end

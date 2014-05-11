@@ -82,4 +82,3 @@ module Buildr
     include JiBX
   end
 end
-

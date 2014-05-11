@@ -70,4 +70,3 @@ module Buildr #:nodoc:
 end
 
 Buildr::Doc.engines << Buildr::Doc::Groovydoc
-

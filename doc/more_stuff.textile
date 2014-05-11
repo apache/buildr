@@ -1113,4 +1113,3 @@ puts "There are #{source.size} source files"
 lines = sources.inject(0) { |lines, src| lines += File.readlines(src).size }
 puts "That contain #{lines} lines"
 {% endhighlight %}
-

@@ -36,4 +36,3 @@ module Buildr #:nodoc:
 end
 
 Buildr::Run.runners << Buildr::Run::JavaRunner
-

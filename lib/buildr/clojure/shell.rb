@@ -49,4 +49,3 @@ module Buildr::Shell #:nodoc:
 end
 
 Buildr::Shell.providers << Buildr::Shell::Clojure
-

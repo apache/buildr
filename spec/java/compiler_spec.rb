@@ -268,4 +268,3 @@ describe 'javac compiler options' do
     ENV.delete "DEBUG"
   end
 end
-

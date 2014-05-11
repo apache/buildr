@@ -227,7 +227,7 @@ A README
     it 'should return an empty array on a clean repository' do
       Hg.should_receive(:`).with('hg status').and_return "\n"
       Hg.uncommitted_files.should be_empty
-    end   
+    end
   end
 
   describe '#remote' do

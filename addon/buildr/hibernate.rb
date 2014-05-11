@@ -17,7 +17,7 @@ module Buildr
 
   # Provides Hibernate Doclet and schema export tasks. Require explicitly using <code>require "buildr/hibernate"</code>.
   module Hibernate
-    
+
     REQUIRES = Buildr.struct(
       :collections  => "commons-collections:commons-collections:jar:3.1",
       :logging      => "commons-logging:commons-logging:jar:1.0.3",
@@ -75,7 +75,7 @@ module Buildr
     def hibernate_requires()
       @requires ||= REQUIRES.dup
     end
-    
+
     # :call-seq:
     #   hibernate_doclet(options?) => task
     #
@@ -115,22 +115,22 @@ module Buildr
     #   end
     def hibernate_schemaexport(args, &block)
       path, arg_names, deps = Rake.application.resolve_args([args])
-      file(path).enhance { |task| 
+      file(path).enhance { |task|
         unless task.respond_to? :ant #this is a hack. A better way to do the job is to create a real task for all this.
           class << task ; attr_accessor :ant ; end
-          task.ant = Hibernate.schemaexport(hib_resolve_classpath) 
+          task.ant = Hibernate.schemaexport(hib_resolve_classpath)
         end
-      }  
-      
+      }
+
       if block
         file(path).enhance(deps) { |task| block.call task, task.ant }
       else
         file(path).enhance deps
       end
     end
-    
+
     protected
-    
+
     # This will download all the required artifacts before returning a classpath, and we want to do this only once.
     def hib_resolve_classpath
       Buildr.artifacts(hibernate_requires.to_a).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)

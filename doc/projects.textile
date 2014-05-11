@@ -16,21 +16,21 @@ The remainder of this guide deals with what it takes to build a project.  But fi
 require "buildr/openjpa"
 
 include Buildr::OpenJPA
- 
+
 VERSION_NUMBER = '1.0'
- 
+
 AXIS2 = 'org.apache.axis2:axis2:jar:1.2'
 AXIOM = group('axiom-api', 'axiom-impl', 'axiom-dom',
   :under=>'org.apache.ws.commons.axiom', :version=>'1.2.4')
 AXIS_OF_WS = [AXIOM, AXIS2]
 OPENJPA = ['org.apache.openjpa:openjpa:jar:1.2.0',
   'net.sourceforge.serp:serp:jar:1.12.0']
- 
+
 repositories.remote << 'http://www.ibiblio.org/maven2/'
- 
+
 desc 'Code. Build. ??? Profit!'
 define 'killer-app' do
- 
+
   project.version = VERSION_NUMBER
   project.group = 'acme'
   manifest['Copyright'] = 'Acme Inc (C) 2007'
@@ -124,7 +124,7 @@ To see a list of all projects defined in your Buildfile run @buildr help:project
 
 h2(#tasks). Running Project Tasks
 
-Most times, you run tasks like @build@ or @package@ that operate on the current project and recursively on its sub-projects.  The "current project" is the one that uses the current working directory.  So if you're in the @la-web/src@ directory looking at source files, _la-web_ is the current project.  For example: 
+Most times, you run tasks like @build@ or @package@ that operate on the current project and recursively on its sub-projects.  The "current project" is the one that uses the current working directory.  So if you're in the @la-web/src@ directory looking at source files, _la-web_ is the current project.  For example:
 
 {% highlight sh %}
 # build killer-app and all its sub-projects

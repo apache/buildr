@@ -106,7 +106,7 @@ module Buildr #:nodoc:
     # :call-seq:
     #   hg(*args)
     #
-    # Executes a Mercurial (hg) command passing through the args and returns the output. 
+    # Executes a Mercurial (hg) command passing through the args and returns the output.
     # Throws exception if the exit status is not zero. For example:
     #   hg 'commit'
     #   hg 'update', 'default'
@@ -287,13 +287,13 @@ module Buildr #:nodoc:
       # Use this to specify the next version number to replace VERSION_NUMBER with in the buildfile.
       # You can set the next version or a proc that will be called with the current version number.
       # For example, with the following buildfile:
-      #   THIS_VERSION = "1.0.0-rc1" 
-      #   Release.next_version = lambda { |version| 
+      #   THIS_VERSION = "1.0.0-rc1"
+      #   Release.next_version = lambda { |version|
       #       version[-1] = version[-1].to_i + 1
       #       version
-      #   } 
-      # 
-      # Release.next_version will return "1.0.0-rc2", so at the end of the release, the buildfile will contain VERSION_NUMBER = "1.0.0-rc2" 
+      #   }
+      #
+      # Release.next_version will return "1.0.0-rc2", so at the end of the release, the buildfile will contain VERSION_NUMBER = "1.0.0-rc2"
       #
       attr_accessor :next_version
 
@@ -343,7 +343,7 @@ module Buildr #:nodoc:
 
     def check
       if this_version == resolve_next_version(this_version) && this_version.match(/-SNAPSHOT$/)
-        fail "The next version can't be equal to the current version #{this_version}.\nUpdate THIS_VERSION/VERSION_NUMBER, specify Release.next_version or use NEXT_VERSION env var" 
+        fail "The next version can't be equal to the current version #{this_version}.\nUpdate THIS_VERSION/VERSION_NUMBER, specify Release.next_version or use NEXT_VERSION env var"
       end
     end
 
@@ -370,7 +370,7 @@ module Buildr #:nodoc:
     end
 
   protected
- 
+
     # the initial value of THIS_VERSION
     attr_accessor :this_version
 
@@ -391,7 +391,7 @@ module Buildr #:nodoc:
     # for the release buildfile.
     def with_release_candidate_version
       release_candidate_buildfile = Buildr.application.buildfile.to_s + '.next'
-    
+
       release_candidate_buildfile_contents = change_version { |version|
         version.gsub(/-SNAPSHOT$/, "")
       }
@@ -435,20 +435,20 @@ module Buildr #:nodoc:
         next_version ||= lambda { |v|
           snapshot = v.match(/-SNAPSHOT$/)
           version = v.gsub(/-SNAPSHOT$/, "").split(/\./)
-          if snapshot 
+          if snapshot
             version[-1] = sprintf("%0#{version[-1].size}d", version[-1].to_i + 1) + '-SNAPSHOT'
-          end 
+          end
           version.join('.')
-        } 
-        next_version = ENV['NEXT_VERSION'] if ENV['NEXT_VERSION'] 
-        next_version = ENV['next_version'] if ENV['next_version'] 
+        }
+        next_version = ENV['NEXT_VERSION'] if ENV['NEXT_VERSION']
+        next_version = ENV['next_version'] if ENV['next_version']
         next_version = next_version.call(current_version) if Proc === next_version
         next_version
     end
 
     # Move the version to next and save the updated buildfile
     def update_buildfile
-      buildfile = change_version { |version| # THIS_VERSION minus SNAPSHOT 
+      buildfile = change_version { |version| # THIS_VERSION minus SNAPSHOT
         resolve_next_version(this_version) # THIS_VERSION
       }
       File.open(Buildr.application.buildfile.to_s, 'w') { |file| file.write buildfile }
@@ -512,7 +512,7 @@ module Buildr #:nodoc:
       info "Current version is now #{extract_version}"
       Hg.commit File.basename(Buildr.application.buildfile.to_s), message
       Hg.push if Hg.remote
-    end     
+    end
   end
 
 

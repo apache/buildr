@@ -75,4 +75,3 @@ describe Run::JavaRunner do
   end
 
 end
-

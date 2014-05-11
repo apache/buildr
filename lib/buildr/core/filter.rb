@@ -198,10 +198,10 @@ module Buildr #:nodoc:
     end
 
   protected
-  
+
     # :call-seq:
     #   pattern_match(file, pattern) => boolean
-    # 
+    #
     # This method returns true if the file name matches the pattern.
     # The pattern may be a String, a Regexp or a Proc.
     #
@@ -219,7 +219,7 @@ module Buildr #:nodoc:
         raise "Cannot interpret pattern #{pattern}"
       end
     end
-    
+
   private
     def copy_map
       sources.each { |source| raise "Source directory #{source} doesn't exist" unless File.exist?(source.to_s) }

@@ -16,7 +16,7 @@
 
 
 package org.apache.buildr;
- 
+
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.Request;
 import org.mortbay.jetty.Handler;
@@ -82,7 +82,7 @@ public class JettyWrapper {
                     String path = request.getParameter("path");
                     System.out.println("Deploying " + webapp + " in " + path);
                     WebAppContext context;
-            
+
                     context = (WebAppContext) _apps.get(path);
                     if (context != null) {
                         context.stop();
@@ -95,7 +95,7 @@ public class JettyWrapper {
                         "org.mortbay.jetty.webapp.WebInfConfiguration",
                         "org.mortbay.jetty.webapp.WebXmlConfiguration"});
                     context.setClassLoader(new WebAppClassLoader(context));
-                    
+
                     _handlerColl.addHandler(context);
                     context.start();
                     _apps.put(path, context);

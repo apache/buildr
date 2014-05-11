@@ -41,7 +41,7 @@ module Buildr
         Java::Commands.java 'aQute.bnd.main.bnd', *(args + [{ :classpath => cp }])
       end
     end
-    
+
     class BundleTask < Rake::FileTask
       attr_reader :project
       attr_accessor :classpath

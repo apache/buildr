@@ -342,4 +342,3 @@ end
 
 Buildr::TestFramework << Buildr::RSpec
 Buildr::TestFramework << Buildr::JBehave
-

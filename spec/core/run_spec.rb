@@ -34,7 +34,7 @@ describe Project, :run do
     end
     project('foo').run.classpath.should include(artifact('group:compile:jar:1.0'))
   end
-  
+
   it 'should not include test dependencies' do
     define('foo') do
       compile.using(:javac).with 'group:compile:jar:1.0'
@@ -70,7 +70,7 @@ describe Project, :run do
     end
     project('foo').run.runner.should be_a(Run::JavaRunner)
   end
-  
+
   it "should run with the project resources" do
     write 'src/main/java/Test.java', 'class Test {}'
     write 'src/main/resources/test.properties', ''
@@ -103,4 +103,3 @@ describe Project, :run do
   end
 
 end
-

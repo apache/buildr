@@ -385,4 +385,3 @@ Buildr::Compiler.compilers.unshift Buildr::Scala::Scalac
 class Buildr::Project #:nodoc:
   include Buildr::Scala::ProjectExtension
 end
-

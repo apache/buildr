@@ -198,4 +198,3 @@ module ExtensionThreeFour
     project.after_order << :four
   end
 end
-

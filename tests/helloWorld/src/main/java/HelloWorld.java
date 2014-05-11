@@ -16,7 +16,7 @@
  */
 
 public class HelloWorld {
-	
+
 	public void foo() {
 		System.err.println("bar");
 	}

@@ -74,7 +74,7 @@ SRC
         end
         task('package').invoke
       end
- 
+
       it "version 0.0.384 does not export the version and wrong import-package" do
         open_main_manifest_section do |attribs|
           attribs['Bundle-Name'].should eql('foo')

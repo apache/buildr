@@ -128,4 +128,3 @@ end
 
 Buildr::Shell.providers << Buildr::Shell::BeanShell
 Buildr::Shell.providers << Buildr::Shell::JIRB
-

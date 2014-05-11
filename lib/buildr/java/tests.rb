@@ -428,4 +428,3 @@ end # Buildr
 Buildr::TestFramework << Buildr::JUnit
 Buildr::TestFramework << Buildr::TestNG
 Buildr::TestFramework << Buildr::MultiTest
-

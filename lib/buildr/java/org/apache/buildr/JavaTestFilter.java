@@ -71,7 +71,7 @@ public class JavaTestFilter {
     }
     return this;
   }
-  
+
   public JavaTestFilter addFields(String[] names) {
     for (int i = names.length; i -- > 0;) {
       String name = names[i];
@@ -79,7 +79,7 @@ public class JavaTestFilter {
     }
     return this;
   }
-  
+
   private boolean isTest(Class cls) {
     if (Modifier.isAbstract(cls.getModifiers()) || !Modifier.isPublic(cls.getModifiers()))
       return false;
@@ -89,12 +89,12 @@ public class JavaTestFilter {
         if (iface.isAssignableFrom(cls)) { return true; }
       }
     }
-    if (classAnnotations != null) { 
+    if (classAnnotations != null) {
       for (Iterator it = classAnnotations.iterator(); it.hasNext(); ) {
         Class annotation = (Class) it.next();
         if (cls.isAnnotationPresent(annotation)) { return true; }
       }
-    } 
+    }
     if (methodAnnotations != null) {
       Method[] methods = cls.getMethods();
       for (int j = methods.length ; j-- > 0 ;) {
@@ -134,7 +134,7 @@ public class JavaTestFilter {
 
 }
 
-/* 
+/*
  * Local Variables:
  * indent-tabs-mode: nil
  * c-basic-offset: 2

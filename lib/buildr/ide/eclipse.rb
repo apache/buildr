@@ -534,5 +534,3 @@ class Buildr::Project
   include Buildr::Eclipse::Scala
   include Buildr::Eclipse::Java
 end
-
-
