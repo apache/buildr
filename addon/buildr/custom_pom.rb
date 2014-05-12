@@ -86,7 +86,6 @@ module Buildr
       self.licenses['The MIT License'] = 'http://opensource.org/licenses/MIT'
     end
 
-
     attr_accessor :scm_url
     attr_accessor :scm_connection
     attr_accessor :scm_developer_connection
