@@ -942,13 +942,13 @@ module Buildr #:nodoc:
           end
         end
 
-        if mappings.size > 1
-          create_component("VcsDirectoryMappings") do |xml|
-            mappings.each_pair do |dir, vcs_type|
-              resolved_dir = resolve_path(dir)
-              mapped_dir = resolved_dir == '$PROJECT_DIR$/.' ? buildr_project.base_dir : resolved_dir
-              xml.mapping :directory => mapped_dir, :vcs => vcs_type
-            end
+        return nil if 0 == mappings.size
+
+        create_component("VcsDirectoryMappings") do |xml|
+          mappings.each_pair do |dir, vcs_type|
+            resolved_dir = resolve_path(dir)
+            mapped_dir = resolved_dir == '$PROJECT_DIR$/.' ? buildr_project.base_dir : resolved_dir
+            xml.mapping :directory => mapped_dir, :vcs => vcs_type
           end
         end
       end
