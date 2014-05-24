@@ -46,6 +46,14 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
+Highlights from Buildr 1.4.17 (2014-05-25)
+
+* Change: Supply a default xsl file for generating the checkstyle report.
+* Added:  Add csslint tasks css_lint:xml and css_lint:html that support source code analysis of CSS files.
+* Added:  Add scss_lint tasks scss_lint:xml and scss_lint:html that support source code analysis of SCSS files.
+* Added:  Import 'buildr/custom_pom' addon to make it easier to build POMs for projects publishing to Maven Central.
+* Added:  Add flag to allow non portable extensions in wsgen addon.
+
 Highlights from Buildr 1.4.16 (2014-05-03)
 
 * Added:  Add the ability to generate a html report when using the
