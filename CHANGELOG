@@ -1,6 +1,8 @@
 1.4.17 (Pending)
 * Fixed:  Fix the vcs detection in IDEA addon for 1.8.6 (!) versions
           of ruby by reordering blocks.
+* Added:  Add scss_lint tasks scss_lint:xml and scss_lint:html that
+          support source code analysis of SCSS files.
 * Added:  Import 'buildr/custom_pom' addon to make it easier to
           build POMs for projects publishing to Maven Central.
 * Added:  Add flag to allow non portable extensions in wsgen addon.

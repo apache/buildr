@@ -1059,6 +1059,37 @@ The method compile_jaxb accepts either an array of files or a single file as the
 * <tt>:keep_content</tt>: By default the generated directory will be deleted. If <tt>true</tt> is specified for this parameter the directory will not be deleted.
 * <tt>:package</tt>: The package in which the source is generated.
 
+h2(#scss_lint). ScssLint
+
+"ScssLint":https://github.com/causes/scss-lint is integrated into Buildr through an extension. The extension adds the "scss_lint:xml" task to generate an xml report listing scss lint violations and a "scss_lint:html" task for a html variant of the same data. A buildr project that makes uses of the extension is expected to have added 'scss_lint' gem to the projects Gemfile by adding a line such as;
+
+{% highlight ruby %}
+gem 'scss-lint', '= 0.24.0'
+{% endhighlight %}
+
+A typical project that uses the extension may look something like;
+
+{% highlight ruby %}
+require 'buildr/scss_lint'
+
+define "foo" do
+  project.version = "1.0.0"
+
+  define "bar" do ... end
+
+  scss_lint.configuration_file = _('etc/scss_lint/checks.yml')
+  scss_lint.source_paths << project('web')._(:source, :main, :webapp, 'sass')
+  scss_lint.file_excludes = FileList["#{project('web')._(:source, :main, :webapp, 'sass')}/vendor/**/*"]
+end
+{% endhighlight %}
+
+By default scss_lint will look for all configuration files in the src/main/etc/scss_lint directory but this can be overriden by the setting the "scss_lint.config_directory" parameter. The "scss_lint:xml" task will be defined if the scss_lint rules file is found. The rules file is named "checks.yml" by default but can be overridden by setting the "scss_lint.configuration_file" parameter.
+
+[self.project._(:source, :main, :webapp, :sass)]
+The extension will lint the sass files in the "_(:source, :main, :webapp, :sass)" directory by default. The set of source directories linted can be controlled by the "scss_lint.source_paths" parameter.
+
+If the xsl file named "scss_lint-report.xsl" is present in the configuration directory then that will be used in the "scss_lint:html" task otherwise a default xsl included with buildr will be used. The name of the xsl file can be overridden by the parameter "scss_lint.style_file".
+
 h2(#anything_ruby). Anything Ruby Can Do
 
 Buildr is Ruby code.  That's an implementation detail for some, but a useful features for others.  You can use Ruby to keep your build scripts simple and DRY, tackle ad hoc tasks and write reusable features without the complexity of "plugins".
