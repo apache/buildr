@@ -884,7 +884,7 @@ $ buildr -rbuildr/java/cobertura cobertura:html
 
 h2(#checkstyle). Checkstyle
 
-Checkstyle is integrated into Buildr through an extension. The extension adds the "checkstyle:xml" task that generates an xml report listing checkstyle violations and may add a "checkstyle:html" task if an appropriate xsl is present. A typical project that uses the extension may look something like;
+Checkstyle is integrated into Buildr through an extension. The extension adds the "checkstyle:xml" task that generates an xml report listing checkstyle violations and a "checkstyle:html" task to generate the html variant. A typical project that uses the extension may look something like;
 
 {% highlight ruby %}
 require 'buildr/checkstyle'
@@ -905,7 +905,7 @@ By default checkstyle will look for all configuration files in the src/main/etc/
 
 The extension will include the source and test directories of the project aswell as the compile and test dependencies when invoking the checkstyle tool. These can be added to by the parameters "checkstyle.source_paths" and "checkstyle.extra_dependencies" as appropriate.
 
-If the xsl file named "checkstyle-report.xsl" is present in the configuration directory then a "checkstyle:html" task will be defined. The name of the xsl file can be overridden by the parameter "checkstyle.style_file".
+If the xsl file named "checkstyle-report.xsl" is present in the configuration directory then it will be used to generate the html report, otherwise a xsl file that comes with buildr will be used. The name of the xsl file can be overridden by the parameter "checkstyle.style_file".
 
 h2(#findbugs). FindBugs
 
