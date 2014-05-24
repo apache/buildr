@@ -1059,6 +1059,29 @@ The method compile_jaxb accepts either an array of files or a single file as the
 * <tt>:keep_content</tt>: By default the generated directory will be deleted. If <tt>true</tt> is specified for this parameter the directory will not be deleted.
 * <tt>:package</tt>: The package in which the source is generated.
 
+h2(#css_lint). CssLint
+
+"CssLint":https://github.com/CSSLint/csslint is integrated into Buildr through an extension. The extension adds the "css_lint:xml" task to generate an xml report listing css lint violations and a "css_lint:html" task for a html variant of the same data. It is expected that a project that makes use of css linting will have installed the csslint using node. A typical project that uses the extension may look something like;
+
+{% highlight ruby %}
+require 'buildr/css_lint'
+
+define "foo" do
+  project.version = "1.0.0"
+
+  define "bar" do ... end
+
+  css_lint.source_paths.concat([some_generated_dir])
+  css_lint.ignore.concat(%w(box-sizing font-sizes adjoining-classes))
+end
+{% endhighlight %}
+
+By default css_lint will look for the xsl file in the src/main/etc/css_lint directory but this can be overriden by the setting the "css_lint.config_directory" parameter. The "css_lint:xml" task will be defined if the source_paths is not empty. The rules can be passed to the task using the 'ignores', 'errors' and 'warnings' parameters.
+
+The extension will lint the css files in the "_(:source, :main, :webapp, :css)" directory by default. The set of source directories linted can be controlled by the "css_lint.source_paths" parameter.
+
+If the xsl file named "css_lint-report.xsl" is present in the configuration directory then that will be used in the "css_lint:html" task otherwise a default xsl included with buildr will be used. The name of the xsl file can be overridden by the parameter "css_lint.style_file".
+
 h2(#scss_lint). ScssLint
 
 "ScssLint":https://github.com/causes/scss-lint is integrated into Buildr through an extension. The extension adds the "scss_lint:xml" task to generate an xml report listing scss lint violations and a "scss_lint:html" task for a html variant of the same data. A buildr project that makes uses of the extension is expected to have added 'scss_lint' gem to the projects Gemfile by adding a line such as;

@@ -3,6 +3,8 @@
           of ruby by reordering blocks.
 * Change: Supply a default xsl file for generating the checkstyle
           report.
+* Added:  Add csslint tasks css_lint:xml and css_lint:html that
+          support source code analysis of CSS files.
 * Added:  Add scss_lint tasks scss_lint:xml and scss_lint:html that
           support source code analysis of SCSS files.
 * Added:  Import 'buildr/custom_pom' addon to make it easier to
