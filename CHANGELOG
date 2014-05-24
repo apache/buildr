@@ -1,4 +1,4 @@
-1.4.17 (Pending)
+1.4.17 (2014-05-25)
 * Fixed:  Fix the vcs detection in IDEA addon for 1.8.6 (!) versions
           of ruby by reordering blocks.
 * Change: Supply a default xsl file for generating the checkstyle
