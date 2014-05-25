@@ -658,7 +658,7 @@ module Buildr #:nodoc:
       end
 
       def add_default_configuration(type, factory_name)
-        add_configuration(nil, type, factory_name)
+        add_configuration(nil, type, factory_name, true)
       end
 
       def add_postgres_data_source(name, options = {})
