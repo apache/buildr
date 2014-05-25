@@ -160,9 +160,13 @@ module Buildr
         if project.scss_lint.enabled?
           desc "Generate scss-lint xml report."
           project.task("scss_lint:xml") do
+            source_paths = project.scss_lint.source_paths.flatten.compact
+            source_paths.each do |path|
+              path.respond_to?(:invoke) ? path.invoke : project.file(path).invoke
+            end
             puts "ScssLint: Analyzing source code..."
             Buildr::ScssLint.scss_lint(project.scss_lint.xml_output_file,
-                                       project.scss_lint.source_paths.flatten.compact,
+                                       source_paths,
                                        :formatter => project.scss_lint.format,
                                        :configuration_file => project.scss_lint.configuration_file,
                                        :file_excludes => project.scss_lint.file_excludes,
