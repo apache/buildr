@@ -1,4 +1,7 @@
 1.4.17 (2014-05-25)
+* Added:  Add the add_default_testng_configuration method to help IDEA
+          project creation. Improves test coverage across 'default'
+          configurations.
 * Fixed:  Fix a bug where 'default' configurations in IDEA projects
           were being incorrectly created.
 * Fixed:  Fix the vcs detection in IDEA addon for 1.8.6 (!) versions

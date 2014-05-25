@@ -839,6 +839,40 @@ module Buildr #:nodoc:
         end
       end
 
+      def add_default_testng_configuration(options = {})
+        jvm_args = options[:jvm_args] || '-ea'
+        dir = options[:dir] || '$PROJECT_DIR$'
+
+        add_default_configuration('TestNG', 'TestNG') do |xml|
+          xml.extension(:name => 'coverage', :enabled => 'false', :merge => 'false', :sample_coverage => 'true', :runner => 'idea')
+          xml.module(:name => '')
+          xml.option(:name => 'ALTERNATIVE_JRE_PATH_ENABLED', :value => 'false')
+          xml.option(:name => 'ALTERNATIVE_JRE_PATH')
+          xml.option(:name => 'SUITE_NAME')
+          xml.option(:name => 'PACKAGE_NAME')
+          xml.option(:name => 'MAIN_CLASS_NAME')
+          xml.option(:name => 'METHOD_NAME')
+          xml.option(:name => 'GROUP_NAME')
+          xml.option(:name => 'TEST_OBJECT', :value => 'CLASS')
+          xml.option(:name => 'VM_PARAMETERS', :value => jvm_args)
+          xml.option(:name => 'PARAMETERS')
+          xml.option(:name => 'WORKING_DIRECTORY', :value => dir)
+          xml.option(:name => 'OUTPUT_DIRECTORY')
+          xml.option(:name => 'ANNOTATION_TYPE')
+          xml.option(:name => 'ENV_VARIABLES')
+          xml.option(:name => 'PASS_PARENT_ENVS', :value => 'true')
+          xml.option(:name => 'TEST_SEARCH_SCOPE') do |opt|
+            opt.value(:defaultName => 'moduleWithDependencies')
+          end
+          xml.option(:name => 'USE_DEFAULT_REPORTERS', :value => 'false')
+          xml.option(:name => 'PROPERTIES_FILE')
+          xml.envs
+          xml.properties
+          xml.listeners
+          xml.method
+        end
+      end
+
       protected
 
       def artifact_content(xml, project, projects, options)

@@ -1101,6 +1101,44 @@ describe Buildr::IntellijIdea do
       end
     end
 
+    describe "with add_default_testng_configuration using defaults" do
+      before do
+        @foo = define "foo" do
+          ipr.add_default_testng_configuration
+        end
+        invoke_generate_task
+      end
+
+      it "generates an IPR with default configuration" do
+        doc = xml_document(@foo._("foo.ipr"))
+        configurations_xpath = "/project/component[@name='ProjectRunConfigurationManager']/configuration"
+        doc.should have_nodes(configurations_xpath, 1)
+        configuration_xpath = "#{configurations_xpath}[@type='TestNG' and @factoryName='TestNG' and @default='true']"
+        doc.should have_xpath(configuration_xpath)
+        doc.should have_xpath("#{configuration_xpath}/option[@name='VM_PARAMETERS' and @value='-ea']")
+        doc.should have_xpath("#{configuration_xpath}/option[@name='WORKING_DIRECTORY' and @value='$PROJECT_DIR$']")
+      end
+    end
+
+    describe "with add_default_testng_configuration specifying values" do
+      before do
+        @foo = define "foo" do
+          ipr.add_default_testng_configuration(:dir => 'C:/blah', :jvm_args => '-ea -Dtest.db.url=xxxx')
+        end
+        invoke_generate_task
+      end
+
+      it "generates an IPR with default configuration" do
+        doc = xml_document(@foo._("foo.ipr"))
+        configurations_xpath = "/project/component[@name='ProjectRunConfigurationManager']/configuration"
+        doc.should have_nodes(configurations_xpath, 1)
+        configuration_xpath = "#{configurations_xpath}[@type='TestNG' and @factoryName='TestNG' and @default='true']"
+        doc.should have_xpath(configuration_xpath)
+        doc.should have_xpath("#{configuration_xpath}/option[@name='VM_PARAMETERS' and @value='-ea -Dtest.db.url=xxxx']")
+        doc.should have_xpath("#{configuration_xpath}/option[@name='WORKING_DIRECTORY' and @value='C:/blah']")
+      end
+    end
+
     describe "with iml.group specified" do
       before do
         @foo = define "foo" do
