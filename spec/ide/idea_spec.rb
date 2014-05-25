@@ -484,7 +484,7 @@ describe Buildr::IntellijIdea do
       it "generates a web facet with derived webroots" do
         doc = xml_document(@foo._("foo.iml"))
         web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
-        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp' and @realtive='/']")
+        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp' and @relative='/']")
       end
     end
 
@@ -507,8 +507,8 @@ describe Buildr::IntellijIdea do
       it "generates a web facet with specified webroots" do
         doc = xml_document(@foo._("foo.iml"))
         web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
-        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp2' and @realtive='/']")
-        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/css' and @realtive='/css']")
+        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp2' and @relative='/']")
+        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/css' and @relative='/css']")
       end
     end
 
