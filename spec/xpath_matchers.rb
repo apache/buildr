@@ -29,7 +29,7 @@ module RSpec
         @response = response
         doc = response.is_a?(REXML::Document) ? response : REXML::Document.new(@response)
         match = REXML::XPath.match(doc, @xpath)
-        not match.empty?
+        !match.empty?
       end
 
       def failure_message
