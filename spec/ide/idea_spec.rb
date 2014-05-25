@@ -136,7 +136,7 @@ describe Buildr::IntellijIdea do
         end
 
         it "generates one exported 'module-library' orderEntry in IML" do
-          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' and @exported='']/library/CLASSES/root", 1)
+          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' and @scope='TEST']/library/CLASSES/root", 1)
         end
       end
 
