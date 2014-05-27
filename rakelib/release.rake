@@ -86,7 +86,7 @@ task 'release' => %w{setup-local-site-svn} do
   lambda do
     version = `git describe --tags --always`.strip
     unless version == spec.version
-      sh 'git', 'tag', '-m', "'Release #{spec.version}'", spec.version do |ok, res|
+      sh 'git', 'tag', '-m', "'Release #{spec.version}'", spec.version.to_s do |ok, res|
         if ok
           puts "[X] Tagged this release as #{spec.version} ... "
         else
