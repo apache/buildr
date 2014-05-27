@@ -37,6 +37,35 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.17</name>
+        <created>2014-05-25</created>
+        <revision>1.4.17</revision>
+        <dc:description>
+* Added:  Add the add_default_testng_configuration method to help IDEA
+          project creation. Improves test coverage across 'default'
+          configurations.
+* Fixed:  Fix a bug where 'default' configurations in IDEA projects
+          were being incorrectly created.
+* Fixed:  Fix the vcs detection in IDEA addon for 1.8.6 (!) versions
+          of ruby by reordering blocks.
+* Change: Supply a default xsl file for generating the checkstyle
+          report.
+* Added:  Add csslint tasks css_lint:xml and css_lint:html that
+          support source code analysis of CSS files.
+* Added:  Add scss_lint tasks scss_lint:xml and scss_lint:html that
+          support source code analysis of SCSS files.
+* Added:  Import 'buildr/custom_pom' addon to make it easier to
+          build POMs for projects publishing to Maven Central.
+* Added:  Add flag to allow non portable extensions in wsgen addon.
+* Fixed:  Avoid nil dereference bug in GWT addon when running GWT in
+          a project that has no source directory.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.16</name>
         <created>2014-05-03</created>
         <revision>1.4.16</revision>
