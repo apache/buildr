@@ -77,6 +77,7 @@ task 'prepare' do |task, args|
   end.call
 
   task('license').invoke
+  task('addon_extensions:check').invoke
 
   # Need Prince to generate PDF
   lambda do

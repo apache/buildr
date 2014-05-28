@@ -13,9 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-
 desc 'Check that source files contain the Apache license'
-task 'license' => FileList['{addond,lib,doc,rakelib}/**/*.{rb,rake,java}', 'buildr.gemspec', 'Rakefile'] do |task|
+task 'license' => FileList['{addon,lib,doc,rakelib}/**/*.{rb,rake,java}', 'buildr.gemspec', 'Rakefile'] do |task|
   puts 'Checking that files contain the Apache license ... '
   required = task.prerequisites.select { |fn| File.file?(fn) }
   missing = required.reject { |fn|
@@ -25,4 +24,10 @@ task 'license' => FileList['{addond,lib,doc,rakelib}/**/*.{rb,rake,java}', 'buil
   }
   fail "#{missing.join(', ')} missing Apache License, please add it before making a release!" unless missing.empty?
   puts '[x] Source files contain the Apache license'
+end
+
+desc 'Check that files in addon directory do not have the .rake suffix.'
+task 'addon_extensions:check' do
+  bad_files = FileList['addon/**/*.rake']
+  fail "#{bad_files.join(', ')} named with .rake extension but should be .rb, fix them before making a release!" unless bad_files.empty?
 end
