@@ -98,7 +98,15 @@ module Buildr
       attr_writer :style_file
 
       def style_file
-        @style_file || "#{self.config_directory}/jdepend.xsl"
+        unless @style_file
+          project_xsl = "#{self.config_directory}/jdepend-report.xsl"
+          if File.exist?(project_xsl)
+            @style_file = project_xsl
+          else
+            @style_file = "#{File.dirname(__FILE__)}/jdepend-report.xsl"
+          end
+        end
+        @style_file
       end
 
       def target_paths

@@ -1,4 +1,5 @@
 1.4.18 (Pending)
+* Change: Supply a default xsl file for generating the jdepend report.
 * Fixed:  Fix the naming of css_lint addon file so it is made available
           as an addon.
 
