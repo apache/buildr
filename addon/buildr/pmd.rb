@@ -85,7 +85,7 @@ module Buildr
       attr_writer :rule_set_files
 
       def rule_set_files
-        @rule_set_files ||= ['rulesets/java/basic.xml','rulesets/java/imports.xml','rulesets/java/unusedcode.xml']
+        @rule_set_files ||= ['rulesets/java/basic.xml', 'rulesets/java/imports.xml', 'rulesets/java/unusedcode.xml', 'rulesets/java/logging-java.xml', 'rulesets/java/finalizers.xml', 'rulesets/java/braces.xml']
       end
 
       attr_writer :rule_set_paths

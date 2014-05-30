@@ -1,4 +1,6 @@
 1.4.18 (Pending)
+* Change: Include additional rules in default pmd rule set: 'logging-java',
+          'finalizers' and 'braces'.
 * Change: Upgrade the version of PMD in use to 5.1.1.
 * Change: Supply a default xsl file for generating the jdepend report.
 * Fixed:  Fix the naming of css_lint addon file so it is made available
