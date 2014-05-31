@@ -1,4 +1,6 @@
 1.4.18 (Pending)
+* Added:  Add ipr.add_ruby_script_configuration method for defining a ruby
+          configuration within IDEA.
 * Added:  Add ipr.add_java_configuration method for defining a java
           configuration within IDEA.
 * Change: Include additional rules in default pmd rule set: 'logging-java',

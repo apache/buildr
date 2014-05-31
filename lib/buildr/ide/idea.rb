@@ -857,6 +857,35 @@ module Buildr #:nodoc:
         end
       end
 
+      def add_ruby_script_configuration(project, script, options = {})
+        args = options[:args] || ''
+        path = ::Buildr::Util.relative_path(File.expand_path(script), project.base_dir)
+        name = options[:name] || File.basename(script)
+        dir = options[:dir] || "$MODULE_DIR$/#{path}"
+        sdk = options[:sdk] || 'rbenv: ' + (IO.read(File.dirname(__FILE__) + '/../.ruby-version').trim rescue "jruby-#{RUBY_VERSION}")
+
+        add_to_composite_component(self.configurations) do |xml|
+          xml.configuration(:name => name, :type => 'RubyRunConfigurationType', :factoryName => 'Ruby', :default => !!options[:default]) do |xml|
+
+            xml.module(:name => project.iml.id)
+            xml.RUBY_RUN_CONFIG(:NAME => 'RUBY_ARGS', :VALUE => '-e STDOUT.sync=true;STDERR.sync=true;load($0=ARGV.shift)')
+            xml.RUBY_RUN_CONFIG(:NAME => 'WORK DIR', :VALUE => dir)
+            xml.RUBY_RUN_CONFIG(:NAME => 'SHOULD_USE_SDK', :VALUE => 'true')
+            xml.RUBY_RUN_CONFIG(:NAME => 'ALTERN_SDK_NAME', :VALUE => sdk)
+            xml.RUBY_RUN_CONFIG(:NAME => 'myPassParentEnvs', :VALUE => 'true')
+
+            xml.envs
+            xml.EXTENSION(:ID => 'BundlerRunConfigurationExtension', :bundleExecEnabled => 'false')
+            xml.EXTENSION(:ID => 'JRubyRunConfigurationExtension')
+
+            xml.RUBY_RUN_CONFIG(:NAME => 'SCRIPT_PATH', :VALUE => script)
+            xml.RUBY_RUN_CONFIG(:NAME => 'SCRIPT_ARGS', :VALUE => args)
+            xml.RunnerSettings(:RunnerId => 'RubyDebugRunner')
+            xml.ConfigurationWrapper(:RunnerId => 'RubyDebugRunner')
+          end
+        end
+      end
+
       def add_gwt_configuration(launch_page, project, options = {})
         name = options[:name] || "Run #{launch_page}"
         shell_parameters = options[:shell_parameters] || ""
