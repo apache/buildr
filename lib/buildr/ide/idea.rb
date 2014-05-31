@@ -822,6 +822,41 @@ module Buildr #:nodoc:
         end
       end
 
+      def add_java_configuration(project, classname, options = {})
+        args = options[:args] || ''
+        dir = options[:dir] || "file://$PROJECT_DIR$/"
+        debug_port = options[:debug_port] || 2599
+        module_name = options[:module_name] || project.iml.id
+        jvm_args = options[:jvm_args] || ''
+        name = options[:name] || classname
+
+        add_to_composite_component(self.configurations) do |xml|
+          xml.configuration(:name => name, :type => 'Application', :factoryName => 'Application', :default => !!options[:default]) do |xml|
+            xml.extension(:name => 'coverage', :enabled => 'false', :merge => 'false', :sample_coverage => 'true', :runner => 'idea')
+            xml.option(:name => 'MAIN_CLASS_NAME', :value => classname)
+            xml.option(:name => 'VM_PARAMETERS', :value => jvm_args)
+            xml.option(:name => 'PROGRAM_PARAMETERS', :value => args)
+            xml.option(:name => 'WORKING_DIRECTORY', :value => dir)
+            xml.option(:name => 'ALTERNATIVE_JRE_PATH_ENABLED', :value => 'false')
+            xml.option(:name => 'ALTERNATIVE_JRE_PATH', :value => '')
+            xml.option(:name => 'ENABLE_SWING_INSPECTOR', :value => 'false')
+            xml.option(:name => 'ENV_VARIABLES')
+            xml.option(:name => 'PASS_PARENT_ENVS', :value => 'true')
+            xml.module(:name => module_name)
+            xml.envs
+            xml.RunnerSettings(:RunnerId => 'Debug') do |xml|
+              xml.option(:name => 'DEBUG_PORT', :value => debug_port.to_s)
+              xml.option(:name => 'TRANSPORT', :value => '0')
+              xml.option(:name => 'LOCAL', :value => 'true')
+            end
+            xml.RunnerSettings(:RunnerId => 'Run')
+            xml.ConfigurationWrapper(:RunnerId => 'Debug')
+            xml.ConfigurationWrapper(:RunnerId => 'Run')
+            xml.method
+          end
+        end
+      end
+
       def add_gwt_configuration(launch_page, project, options = {})
         name = options[:name] || "Run #{launch_page}"
         shell_parameters = options[:shell_parameters] || ""
