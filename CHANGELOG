@@ -1,4 +1,6 @@
 1.4.18 (Pending)
+* Fixed:  BUILDR-698 - Correct "Lines of code" example in documentation.
+          Submitted By: Trejkaz.
 * Added:  Add ipr.add_glassfish_configuration method for defining a local
           glassfish configuration within IDEA.
 * Added:  Add ipr.add_ruby_script_configuration method for defining a ruby
