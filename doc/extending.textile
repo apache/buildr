@@ -105,11 +105,10 @@ module LinesOfCode
     project.recursive_task 'loc' do |task|
       lines = task.prerequisites.map { |path|
         Dir["#{path}/**/*"]
-      }.flatten.uniq.inject(0) { |total, file|
-        total = 0 if total.nil?
-        if File.file? file then
-          total + File.readlines(file).count
-        end
+      }.uniq.select { |file|
+        File.file?(file)
+      }.inject(0) { |total, file|
+        total + File.readlines(file).count
       }
       puts "Project #{project.name} has #{lines} lines of code"
       end
