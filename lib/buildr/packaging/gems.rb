@@ -62,9 +62,7 @@ module Buildr #:nodoc:
         end
       end
     end
-
   end
-
 
   module PackageAsGem #:nodoc:
 
@@ -83,11 +81,9 @@ module Buildr #:nodoc:
         end
       end
     end
-
   end
 
   class Project
     include PackageAsGem
   end
-
 end
