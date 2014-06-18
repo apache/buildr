@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-require 'rubyforge'
 require 'digest/md5'
 require 'digest/sha1'
 
