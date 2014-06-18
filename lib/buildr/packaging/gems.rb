@@ -13,7 +13,6 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-autoload :RubyForge, 'rubyforge'
 Gem.autoload :Package, 'rubygems/package'
 
 module Buildr #:nodoc:
@@ -23,12 +22,7 @@ module Buildr #:nodoc:
     def initialize(*args)
       super
       @spec = Gem::Specification.new
-      prepare do
-        include(changelog) if changelog
-      end
     end
-
-    attr_accessor :changelog
 
     def spec
       yield @spec if block_given?
@@ -36,10 +30,6 @@ module Buildr #:nodoc:
     end
 
     def upload
-      rubyforge = RubyForge.new
-      rubyforge.login
-      rubyforge.userconfig.merge!('release_changes'=>changelog.to_s, 'preformatted'=>true) if changelog
-      rubyforge.add_release spec.rubyforge_project.downcase, spec.name.downcase, spec.version, package(:gem).to_s
     end
 
   private
