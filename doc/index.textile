@@ -46,6 +46,16 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
+Highlights from Buildr 1.4.18 (2014-06-18)
+* Added:  Extend Intellij IDEA support to allow creation of glassfish,
+          java and ruby scrip configurations.
+* Change: Include additional rules in default pmd rule set:
+* Change: Upgrade the version of PMD in use to 5.1.1 and add additional
+          default rule sets 'finalizers' and 'braces'.
+* Change: Supply a default xsl file for generating the jdepend report.
+* Fixed:  Fix the naming of css_lint addon file so it is made available
+          as an addon.
+
 Highlights from Buildr 1.4.17 (2014-05-25)
 
 * Change: Supply a default xsl file for generating the checkstyle report.
