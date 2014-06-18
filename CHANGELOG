@@ -11,8 +11,8 @@
           configuration within IDEA.
 * Added:  Add ipr.add_java_configuration method for defining a java
           configuration within IDEA.
-* Change: Include additional rules in default pmd rule set: 'logging-java',
-          'finalizers' and 'braces'.
+* Change: Include additional rules in default pmd rule set: 'finalizers' and
+          'braces'.
 * Change: Upgrade the version of PMD in use to 5.1.1.
 * Change: Supply a default xsl file for generating the jdepend report.
 * Fixed:  Fix the naming of css_lint addon file so it is made available
