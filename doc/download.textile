@@ -13,8 +13,6 @@ h2(#dists).  Official & Unofficial Distributions
 
 The official Apache distribution consists of the digitally signed binaries (gems) and source packages "available below":#dist.  To install these binaries, you must first download them to disk and then install them using the @gem install@ command (or @rake install@ for a source distribution).
 
-In addition, contributors to this project maintain a separate distribution over on "RubyForge":http://rubyforge.org/projects/buildr.  Using this distribution, you're able to install Buildr directly from the remote gem repository and to automatically upgrade when a new release comes out.  The RubyForge distribution is *not* an official Apache distribution.
-
 The source code is included in both source and binary distribution, the Gem distribution expands the source code into your local Gem repository. That's in addition to getting the source code directly. Learn more about working with source code and "living on the edge":contributing.html#edge.
 
 

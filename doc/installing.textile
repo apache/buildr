@@ -289,6 +289,6 @@ For a quicker read (and much more humor), "Why’s (Poignant) Guide to Ruby":htt
 
 *Rake* Buildr is based on Rake, a Ruby build system that handles tasks and dependencies.  Check out the "Rake documentation":http://docs.rubyrake.org/ for more information.
 
-*AntWrap* Buildr uses AntWrap, for configuring and running Ant tasks.  You can learn more from the "Antwrap documentation":http://antwrap.rubyforge.org/.
+*AntWrap* Buildr uses AntWrap, for configuring and running Ant tasks.  You can learn more from the "Antwrap documentation":https://rubygems.org/gems/Antwrap.
 
 *YAML* Buildr uses YAML for its profiles.  You can "learn more about YAML here":http://www.yaml.org, and use this handy "YAML quick reference":http://www.yaml.org/refcard.html.

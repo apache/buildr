@@ -205,9 +205,9 @@ The purpose of the buildfile is to define your projects, and the various tasks a
 
 There are several mechanisms for developing extensions and build features across projects which we cover in more details in the section "Extending Buildr":extending.html.  Here we will talk about using extensions that are distributed in the form of RubyGems.
 
-"RubyGems":http://rubygems.rubyforge.org provides the @gem@ command line tool that you can use to search, install, upgrade, package and distribute gems. It installs all gems into a local repository that is shared across your builds and all other Ruby applications you may have running.  You can install a gem from a local file, or download and install it from any number of remote repositories.
+"RubyGems":http://rubygems.org provides the @gem@ command line tool that you can use to search, install, upgrade, package and distribute gems. It installs all gems into a local repository that is shared across your builds and all other Ruby applications you may have running.  You can install a gem from a local file, or download and install it from any number of remote repositories.
 
-RubyGems is preconfigured to use the "RubyForge":http://rubyforge.org repository.  You'll find a large number of open source Ruby libraries there, including Buildr itself and all its dependencies.  RubyForge provides a free account that you can use to host your projects and distribute your gems (you can use RubyForge strictly for distribution, as we do with Buildr).
+RubyGems is preconfigured to use the "RubyForge":http://rubygems.org repository.  You'll find a large number of open source Ruby libraries there, including Buildr itself and all its dependencies.
 
 You can also set up your own private repository and use it instead or in addition to RubyForge.  Use the @gem sources@ command to add repositories, and the @gem server@ command to run a remote repository.  You can see all available options by running @gem help@.
 

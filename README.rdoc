@@ -13,7 +13,7 @@ Buildr needs Ruby 1.8 or later and RubyGems 0.9 or later.
 Windows users can get the one-click Ruby installer, which includes the latest
 version of Ruby and RubyGems:
 
-http://rubyinstaller.rubyforge.org
+http://rubyinstaller.org
 
 Make sure to set JAVA_HOME environment variable first, then:
 
@@ -53,7 +53,7 @@ dependencies are installed when you run:
 Windows users can get the one-click Ruby installer, which includes the latest
 version of Ruby and RubyGems:
 
-http://rubyinstaller.rubyforge.org
+http://rubyinstaller.org
 
 Before installing Buildr, please set the JAVA_HOME environment variable to
 point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
