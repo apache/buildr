@@ -1,4 +1,4 @@
-1.4.18 (Pending)
+1.4.18 (2014-06-18)
 * Change: BUILDR-664 - Update Checkstyle addon so that extra_dependencies is
           the project dependencies by default. Move the checkstyle dependencies
           to the start of the classpath to avoid problems running checkstyle.
