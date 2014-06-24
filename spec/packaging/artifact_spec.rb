@@ -248,7 +248,7 @@ describe Repositories, 'remote' do
   it 'should lookup in array order' do
     repositories.remote = [ 'http://buildr.apache.org/repository/noexist', 'http://example.org' ]
     order = ['com', 'org']
-    URI.should_receive(:download).any_number_of_times do |uri, target, options|
+    URI.stub(:download) do |uri, target, options|
       order.shift if order.first && uri.to_s[order.first]
       fail URI::NotFoundError unless order.empty?
       write target
@@ -1023,7 +1023,7 @@ describe Rake::Task, ' artifacts:sources' do
 
   it 'should download sources for all specified artifacts' do
     artifact 'group:id:jar:1.0'
-    URI.should_receive(:download).any_number_of_times.and_return { |uri, target| write target }
+    URI.stub(:download).and_return { |uri, target| write target }
     lambda { task('artifacts:sources').invoke }.should change { File.exist?('home/.m2/repository/group/id/1.0/id-1.0-sources.jar') }.to(true)
   end
 
@@ -1037,7 +1037,7 @@ describe Rake::Task, ' artifacts:sources' do
 
     before do
       artifact 'group:id:jar:1.0'
-      URI.should_receive(:download).any_number_of_times.and_raise(URI::NotFoundError)
+      URI.should_receive(:download).and_raise(URI::NotFoundError)
     end
 
     it 'should not fail' do
@@ -1062,7 +1062,7 @@ describe Rake::Task, ' artifacts:javadoc' do
 
   it 'should download javadoc for all specified artifacts' do
     artifact 'group:id:jar:1.0'
-    URI.should_receive(:download).any_number_of_times.and_return { |uri, target| write target }
+    URI.should_receive(:download).and_return { |uri, target| write target }
     lambda { task('artifacts:javadoc').invoke }.should change { File.exist?('home/.m2/repository/group/id/1.0/id-1.0-javadoc.jar') }.to(true)
   end
 
@@ -1076,7 +1076,7 @@ describe Rake::Task, ' artifacts:javadoc' do
 
     before do
       artifact 'group:id:jar:1.0'
-      URI.should_receive(:download).any_number_of_times.and_raise(URI::NotFoundError)
+      URI.should_receive(:download).and_raise(URI::NotFoundError)
     end
 
     it 'should not fail' do
