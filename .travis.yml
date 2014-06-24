@@ -23,5 +23,6 @@ notifications:
   email:
     recipients:
       - commits@buildr.apache.org
+      - donaldp@apache.org
 notifications:
   irc: "irc.freenode.org#buildr"
