@@ -336,8 +336,8 @@ module URI
           request.content_length = content.size
           content.rewind
           stream = Object.new
-          class << stream ; self ;end.send :define_method, :read do |count|
-            bytes = content.read(count)
+          class << stream ; self ;end.send :define_method, :read do |*args|
+            bytes = content.read(*args)
             progress << bytes if bytes
             bytes
           end
