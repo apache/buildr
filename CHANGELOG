@@ -1,4 +1,4 @@
-1.4.18 (2014-06-18)
+1.4.18 (Pending)
 * Fixed:  BUILDR-694 - "buildr upload" fails: wrong number of arguments in
           progress bar read() in Ruby 2.1.0. Submitted By Mark Reibert.
 * Change: Remove support for uploads to RubyForge.org with gem dependencies
