@@ -1,4 +1,6 @@
 1.4.18 (Pending)
+* Fixed:  BUILDR-699 - Update the custom_pom addon to avoid failure when
+          used with zip packages.
 * Fixed:  BUILDR-694 - "buildr upload" fails: wrong number of arguments in
           progress bar read() in Ruby 2.1.0. Submitted By Mark Reibert.
 * Change: Remove support for uploads to RubyForge.org with gem dependencies

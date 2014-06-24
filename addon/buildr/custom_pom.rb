@@ -236,47 +236,46 @@ module Buildr
       end
     end
   end
-end
+  module CPom
+    module ProjectExtension
+      include Extension
 
-module Buildr
-  class Project #:nodoc:
-    def pom
-      unless @pom
-        @pom = parent ? parent.pom.dup : Buildr::CustomPom.new
-        @pom.send :associate_project, self
+      def pom
+        unless @pom
+          @pom = parent ? parent.pom.dup : Buildr::CustomPom.new
+          @pom.send :associate_project, self
+        end
+        @pom
       end
-      @pom
-    end
-  end
-end
 
-module Buildr
-  module Package
-    alias :old_package :package
+      after_define do |project|
+        project.packages.each do |pkg|
+          if pkg.type.to_s == 'jar' && !pkg.classifier
+            class << pkg
+              def pom_xml
+                self.pom.content
+              end
 
-    def package(*args)
-      package = old_package(*args)
-      class << package
-        def pom
-          unless @pom || classifier
-            pom_filename = Util.replace_extension(name, 'pom')
-            spec = {:group => group, :id => id, :version => version, :type => :pom}
-            @pom = Buildr.artifact(spec, pom_filename)
-            buildr_project = Buildr.project(self.scope.join(':'))
-            @pom.content Buildr::CustomPom.pom_xml(buildr_project, self)
+              def pom
+                unless @pom
+                  pom_filename = Util.replace_extension(name, 'pom')
+                  spec = {:group => group, :id => id, :version => version, :type => :pom}
+                  @pom = Buildr.artifact(spec, pom_filename)
+                  buildr_project = Buildr.project(self.scope.join(':'))
+                  @pom.content Buildr::CustomPom.pom_xml(buildr_project, self)
+                end
+                @pom
+              end
+            end
+            pkg.instance_variable_set('@pom', nil)
+            pkg.enhance([pkg.pom.to_s])
           end
-          @pom
         end
       end
-      package.instance_variable_set('@pom', nil)
-      package.enhance([package.pom.to_s]) if package.type.to_s == 'jar' && !package.classifier
-      package
     end
   end
+end
 
-  module ActsAsArtifact
-    def pom_xml
-      self.pom.content
-    end
-  end
+class Buildr::Project
+  include Buildr::CPom::ProjectExtension
 end
