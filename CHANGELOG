@@ -1,4 +1,4 @@
-1.4.18 (Pending)
+1.4.18 (2014-06-24)
 * Fixed:  BUILDR-699 - Update the custom_pom addon to avoid failure when
           used with zip packages.
 * Fixed:  BUILDR-694 - "buildr upload" fails: wrong number of arguments in
