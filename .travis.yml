@@ -21,8 +21,8 @@ install:
 script: rake ci
 notifications:
   email:
-    recipients:
-      - commits@buildr.apache.org
-      - donaldp@apache.org
+    - commits@buildr.apache.org
+    - donaldp@apache.org
+    - peter@realityforge.org
 notifications:
   irc: "irc.freenode.org#buildr"
