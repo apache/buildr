@@ -37,6 +37,41 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.18</name>
+        <created>2014-06-24</created>
+        <revision>1.4.18</revision>
+        <dc:description>
+* Fixed:  BUILDR-699 - Update the custom_pom addon to avoid failure when
+          used with zip packages.
+* Fixed:  BUILDR-694 - "buildr upload" fails: wrong number of arguments in
+          progress bar read() in Ruby 2.1.0. Submitted By Mark Reibert.
+* Change: Remove support for uploads to RubyForge.org with gem dependencies
+          as the site no longer exists.
+* Change: BUILDR-664 - Update Checkstyle addon so that extra_dependencies is
+          the project dependencies by default. Move the checkstyle dependencies
+          to the start of the classpath to avoid problems running checkstyle.
+          Submitted by Dieter Vrancken.
+* Fixed:  BUILDR-698 - Correct "Lines of code" example in documentation.
+          Submitted By: Trejkaz.
+* Added:  Add ipr.add_glassfish_configuration method for defining a local
+          glassfish configuration within IDEA.
+* Added:  Add ipr.add_ruby_script_configuration method for defining a ruby
+          configuration within IDEA.
+* Added:  Add ipr.add_java_configuration method for defining a java
+          configuration within IDEA.
+* Change: Include additional rules in default pmd rule set: 'finalizers' and
+          'braces'.
+* Change: Upgrade the version of PMD in use to 5.1.1.
+* Change: Supply a default xsl file for generating the jdepend report.
+* Fixed:  Fix the naming of css_lint addon file so it is made available
+          as an addon.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.17</name>
         <created>2014-05-25</created>
         <revision>1.4.17</revision>
