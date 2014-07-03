@@ -250,7 +250,7 @@ module Buildr
 
       after_define do |project|
         project.packages.each do |pkg|
-          if pkg.type.to_s == 'jar' && !pkg.classifier
+          if pkg.type.to_s == 'jar' && pkg.classifier.nil?
             class << pkg
               def pom_xml
                 self.pom.content

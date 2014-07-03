@@ -1,4 +1,6 @@
 1.4.19 (Pending)
+* Fixed:  Fix bug introduced in 1.4.18 version of custom_pom addon where
+          poms are created for artifacts that have a classifier.
 
 1.4.18 (2014-06-24)
 * Fixed:  BUILDR-699 - Update the custom_pom addon to avoid failure when
