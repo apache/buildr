@@ -106,6 +106,20 @@ module Buildr #:nodoc:
       uri = URI.parse(args.values.first.to_s)
       key = args.keys.first
       if key.is_a?(Buildr::Artifact)
+        if RUBY_VERSION < '1.9.0'
+          class << key
+            def singleton_class
+              class << self
+                self
+              end
+            end
+
+            def define_singleton_method(name, &block)
+              self.singleton_class.send(:define_method, name, &block)
+            end
+          end
+        end
+
         key.define_singleton_method(:source) do
           uri
         end
