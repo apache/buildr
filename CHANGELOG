@@ -1,4 +1,8 @@
 1.4.19 (Pending)
+* Fixed:  BUILDR-700 - Ensure SNAPSHOT artifacts, constructed using the
+          download(artifact('group:artifact:jar:1-SNAPSHOT') =>
+          'http://example.com/...') construct will correctly download the
+          artifacts from configured URL.
 * Fixed:  BUILDR-700 - Fix bug where buildr was truncating SNAPSHOT files
           that had not changed since last update check and HTTP was returning
           "HTTP Not Modified" status.
