@@ -66,30 +66,6 @@ Highlights from Buildr 1.4.18 (2014-06-24)
 * Fixed:  Fix the naming of css_lint addon file so it is made available
           as an addon.
 
-Highlights from Buildr 1.4.17 (2014-05-25)
-
-* Change: Supply a default xsl file for generating the checkstyle report.
-* Added:  Add csslint tasks css_lint:xml and css_lint:html that support source code analysis of CSS files.
-* Added:  Add scss_lint tasks scss_lint:xml and scss_lint:html that support source code analysis of SCSS files.
-* Added:  Import 'buildr/custom_pom' addon to make it easier to build POMs for projects publishing to Maven Central.
-* Added:  Add flag to allow non portable extensions in wsgen addon.
-
-Highlights from Buildr 1.4.16 (2014-05-03)
-
-* Added:  Add the ability to generate a html report when using the
-          jacoco addon. Extracted from the ode project.
-* Change: Improved the error handling when generating java from wsdl
-          in the wsgen addon.
-* Change: Upgraded the Checkstyle plugin to use checkstyle 5.7 that
-          improves Java 7 compatibility.
-* Change: Upgraded the PMD plugin to use pmd 5.0.5 which for Java 7
-          compatibility.
-* Change: Improve the 'buildr/gwt' addon to easily support different
-          gwt versions. Fix several bugs with the addon at the same
-          time.
-* Fixed:  Avoid crash in GPG addon if unable to create a pom
-          for an artifact.
-
 This is a partial list -- see the "CHANGELOG":CHANGELOG for full details.
 
 h2(#notices).  Credits & Notices
