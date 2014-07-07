@@ -37,6 +37,26 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.19</name>
+        <created>2014-07-06</created>
+        <revision>1.4.19</revision>
+        <dc:description>
+* Fixed:  BUILDR-700 - Ensure SNAPSHOT artifacts, constructed using the
+          download(artifact('group:artifact:jar:1-SNAPSHOT') =>
+          'http://example.com/...') construct will correctly download the
+          artifacts from configured URL.
+* Fixed:  BUILDR-700 - Fix bug where buildr was truncating SNAPSHOT files
+          that had not changed since last update check and HTTP was returning
+          "HTTP Not Modified" status.
+* Fixed:  Fix bug introduced in 1.4.18 version of custom_pom addon where
+          poms are created for artifacts that have a classifier.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.18</name>
         <created>2014-06-24</created>
         <revision>1.4.18</revision>
