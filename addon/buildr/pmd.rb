@@ -113,7 +113,7 @@ module Buildr
       end
 
       def source_paths
-        @source_paths ||= [self.project.compile.sources, self.project.test.compile.sources]
+        @source_paths ||= [self.project.compile.sources, self.project.test.compile.sources].flatten.compact
       end
 
       def flat_source_paths

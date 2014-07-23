@@ -1,4 +1,6 @@
 1.4.20 (Pending)
+* Fixed:  Ensure that the 'source_paths' property in the pmd addon does not
+          arrays or nils.
 
 1.4.19 (2014-07-06)
 * Fixed:  BUILDR-700 - Ensure SNAPSHOT artifacts, constructed using the
