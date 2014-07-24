@@ -45,6 +45,7 @@ module Buildr #nodoc
           parent = parent.parent
         end
 
+        # Should we  enhance top level clean task for "#{top_dir}/target" and "#{top_dir}/reports"?
         target_dir = "#{top_dir}/target/#{name.gsub(':', '_')}"
         reports_dir = "#{top_dir}/reports/#{name.gsub(':', '_')}"
         target_dir = ::Buildr::Util.relative_path(target_dir, File.expand_path(base_dir))
@@ -60,6 +61,8 @@ module Buildr #nodoc
           if top_dir == base_dir && project.iml?
             project.iml.excluded_directories << "#{base_dir}/target"
             project.iml.excluded_directories << "#{base_dir}/reports"
+            clean { rm_rf "#{base_dir}/target" }
+            clean { rm_rf "#{base_dir}/reports" }
           end
           project
         end

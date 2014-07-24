@@ -1,4 +1,6 @@
 1.4.20 (Pending)
+* Fixed:  Ensure that the 'single_intermediate_layout' addon removes the top
+          level target and reports directories during 'clean' phase.
 * Fixed:  Ensure that the 'source_paths' property in the pmd addon does not
           arrays or nils.
 
