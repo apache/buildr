@@ -61,6 +61,8 @@ module Buildr
         args[:excludeFilter] = options[:exclude_filter] if options[:exclude_filter]
         args[:jvmargs] = options[:java_args] if options[:java_args]
 
+        mkdir_p File.dirname(output_file)
+
         Buildr.ant('findBugs') do |ant|
           ant.taskdef :name =>'findBugs',
                       :classname =>'edu.umd.cs.findbugs.anttask.FindBugsTask',
@@ -187,7 +189,6 @@ module Buildr
           desc 'Generate findbugs xml report.'
           project.task('findbugs:xml') do
             puts 'Findbugs: Analyzing source code...'
-            mkdir_p File.dirname(project.findbugs.xml_output_file)
             options =
               {
                 :properties => project.findbugs.properties,
