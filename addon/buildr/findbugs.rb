@@ -44,18 +44,19 @@ module Buildr
         ]
       end
 
-      def findbugs(output_file, source_paths, analyze_paths, options = { })
+      def findbugs(output_file, source_paths, analyze_paths, options = {})
         dependencies = (options[:dependencies] || []) + self.dependencies
         cp = Buildr.artifacts(dependencies).each { |a| a.invoke() if a.respond_to?(:invoke) }.map(&:to_s).join(File::PATH_SEPARATOR)
 
         args = {
+          :output => options[:output] || 'xml',
+          :outputFile => output_file,
             :output => "xml:withMessages",
-            :outputFile => output_file,
-            :effort => 'max',
-            :pluginList => '',
-            :classpath => cp,
-            :timeout => "90000000",
-            :debug => "false"
+          :effort => 'max',
+          :pluginList => '',
+          :classpath => cp,
+          :timeout => '90000000',
+          :debug => 'false'
         }
         args[:failOnError] = true if options[:fail_on_error]
         args[:excludeFilter] = options[:exclude_filter] if options[:exclude_filter]
@@ -64,8 +65,8 @@ module Buildr
         mkdir_p File.dirname(output_file)
 
         Buildr.ant('findBugs') do |ant|
-          ant.taskdef :name =>'findBugs',
-                      :classname =>'edu.umd.cs.findbugs.anttask.FindBugsTask',
+          ant.taskdef :name => 'findBugs',
+                      :classname => 'edu.umd.cs.findbugs.anttask.FindBugsTask',
                       :classpath => cp
           ant.findBugs args do
             source_paths.each do |source_path|
@@ -146,7 +147,7 @@ module Buildr
       end
 
       def properties
-        @properties ||= { }
+        @properties ||= {}
       end
 
       attr_writer :java_args
@@ -174,7 +175,6 @@ module Buildr
       end
 
       attr_reader :project
-
     end
 
     module ProjectExtension
