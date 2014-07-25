@@ -1,4 +1,5 @@
 1.4.20 (Pending)
+* Change: Update the findbugs addon to use version Findbugs 3.0.0.
 * Change: Update the findbugs addon to use the built-in findbugs stylesheet
           to generate the html report.
 * Fixed:  Ensure that the 'source_paths' and 'extra_dependencies' properties

@@ -22,26 +22,16 @@ module Buildr
 
       # The specs for requirements
       def dependencies
-        [
-            'com.google.code.findbugs:findbugs-ant:jar:1.3.9',
-            'com.google.code.findbugs:findbugs:jar:1.3.9',
-            'com.google.code.findbugs:bcel:jar:1.3.9',
-            'com.google.code.findbugs:jsr305:jar:1.3.9',
-            'com.google.code.findbugs:jFormatString:jar:1.3.9',
-            'com.google.code.findbugs:annotations:jar:1.3.9',
-            'dom4j:dom4j:jar:1.6.1',
-            'jaxen:jaxen:jar:1.1.1',
-            'jdom:jdom:jar:1.0',
-            'xom:xom:jar:1.0',
-            'com.ibm.icu:icu4j:jar:2.6.1',
-            'asm:asm:jar:3.1',
-            'asm:asm-analysis:jar:3.1',
-            'asm:asm-tree:jar:3.1',
-            'asm:asm-commons:jar:3.1',
-            'asm:asm-util:jar:3.1',
-            'asm:asm-xml:jar:3.1',
-            'commons-lang:commons-lang:jar:2.4'
-        ]
+        %w(
+          com.google.code.findbugs:findbugs:jar:3.0.0
+          com.google.code.findbugs:jFormatString:jar:3.0.0
+          com.google.code.findbugs:bcel-findbugs:jar:6.0
+          com.google.code.findbugs:annotations:jar:3.0.0
+          org.ow2.asm:asm-debug-all:jar:5.0.2
+          commons-lang:commons-lang:jar:2.6
+          dom4j:dom4j:jar:1.6.1
+          jaxen:jaxen:jar:1.1.6
+        )
       end
 
       def findbugs(output_file, source_paths, analyze_paths, options = {})
