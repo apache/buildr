@@ -154,7 +154,7 @@ module Buildr
       end
 
       def source_paths
-        @source_paths ||= [self.project.compile.sources, self.project.test.compile.sources]
+        @source_paths ||= [self.project.compile.sources, self.project.test.compile.sources].flatten.compact
       end
 
       def analyze_paths
@@ -162,7 +162,7 @@ module Buildr
       end
 
       def extra_dependencies
-        @extra_dependencies ||= [self.project.compile.dependencies, self.project.test.compile.dependencies]
+        @extra_dependencies ||= [self.project.compile.dependencies, self.project.test.compile.dependencies].flatten.compact
       end
 
       protected
