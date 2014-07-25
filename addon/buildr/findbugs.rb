@@ -51,7 +51,6 @@ module Buildr
         args = {
           :output => options[:output] || 'xml',
           :outputFile => output_file,
-            :output => "xml:withMessages",
           :effort => 'max',
           :pluginList => '',
           :classpath => cp,
@@ -100,10 +99,6 @@ module Buildr
         !!@enabled
       end
 
-      def html_enabled?
-        File.exist?(self.style_file)
-      end
-
       attr_writer :config_directory
 
       def config_directory
@@ -132,12 +127,6 @@ module Buildr
 
       def html_output_file
         @html_output_file || "#{self.report_dir}/findbugs.html"
-      end
-
-      attr_writer :style_file
-
-      def style_file
-        @style_file || "#{self.config_directory}/findbugs-report.xsl"
       end
 
       attr_writer :filter_file
@@ -196,6 +185,7 @@ module Buildr
                 :extra_dependencies => project.findbugs.extra_dependencies
               }
             options[:exclude_filter] = project.findbugs.filter_file if File.exist?(project.findbugs.filter_file)
+            options[:output] = 'xml:withMessages'
 
             Buildr::Findbugs.findbugs(project.findbugs.xml_output_file,
                                       project.findbugs.source_paths.flatten.compact,
@@ -203,18 +193,22 @@ module Buildr
                                       options)
           end
 
-          if project.findbugs.html_enabled?
-            xml_task = project.task("findbugs:xml")
-            desc "Generate findbugs html report."
-            project.task("findbugs:html" => xml_task) do
-              puts "Findbugs: Generating report"
-              mkdir_p File.dirname(project.findbugs.html_output_file)
-              Buildr.ant "findbugs" do |ant|
-                ant.style :in => project.findbugs.xml_output_file,
-                          :out => project.findbugs.html_output_file,
-                          :style => project.findbugs.style_file
-              end
-            end
+          desc 'Generate findbugs html report.'
+          project.task('findbugs:html') do
+            puts 'Findbugs: Analyzing source code...'
+            options =
+              {
+                :properties => project.findbugs.properties,
+                :fail_on_error => project.findbugs.fail_on_error?,
+                :extra_dependencies => project.findbugs.extra_dependencies
+              }
+            options[:exclude_filter] = project.findbugs.filter_file if File.exist?(project.findbugs.filter_file)
+            options[:output] = 'html'
+
+            Buildr::Findbugs.findbugs(project.findbugs.html_output_file,
+                                      project.findbugs.source_paths.flatten.compact,
+                                      project.findbugs.analyze_paths.flatten.compact,
+                                      options)
           end
         end
       end

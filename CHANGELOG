@@ -1,4 +1,6 @@
 1.4.20 (Pending)
+* Change: Update the findbugs addon to use the built-in findbugs stylesheet
+          to generate the html report.
 * Fixed:  Ensure that the 'source_paths' and 'extra_dependencies' properties
           in the findbugs addon does not contain arrays or nils.
 * Fixed:  Ensure that the 'single_intermediate_layout' addon removes the top
