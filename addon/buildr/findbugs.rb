@@ -150,7 +150,7 @@ module Buildr
       attr_writer :java_args
 
       def java_args
-        @java_args || "-server -Xss1m -Xmx800m -Duser.language=en -Duser.region=EN "
+        @java_args || '-server -Xss1m -Xmx800m -Duser.language=en -Duser.region=EN '
       end
 
       def source_paths
@@ -184,11 +184,10 @@ module Buildr
 
       after_define do |project|
         if project.findbugs.enabled?
-          desc "Generate findbugs xml report."
-          project.task("findbugs:xml") do
-            puts "Findbugs: Analyzing source code..."
+          desc 'Generate findbugs xml report.'
+          project.task('findbugs:xml') do
+            puts 'Findbugs: Analyzing source code...'
             mkdir_p File.dirname(project.findbugs.xml_output_file)
-
             options =
               {
                 :properties => project.findbugs.properties,
