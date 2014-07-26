@@ -44,6 +44,7 @@ module Buildr
           :effort => 'max',
           :pluginList => '',
           :classpath => cp,
+          :reportLevel => options[:report_level] || 'medium',
           :timeout => '90000000',
           :debug => 'false'
         }
@@ -93,6 +94,12 @@ module Buildr
 
       def config_directory
         @config_directory || project._(:source, :main, :etc, :findbugs)
+      end
+
+      attr_writer :report_level
+
+      def report_level
+        @report_level || 'medium'
       end
 
       attr_writer :report_dir
@@ -176,6 +183,7 @@ module Buildr
               }
             options[:exclude_filter] = project.findbugs.filter_file if File.exist?(project.findbugs.filter_file)
             options[:output] = 'xml:withMessages'
+            options[:report_level] = project.findbugs.report_level
 
             Buildr::Findbugs.findbugs(project.findbugs.xml_output_file,
                                       project.findbugs.source_paths.flatten.compact,
@@ -194,6 +202,7 @@ module Buildr
               }
             options[:exclude_filter] = project.findbugs.filter_file if File.exist?(project.findbugs.filter_file)
             options[:output] = 'html'
+            options[:report_level] = project.findbugs.report_level
 
             Buildr::Findbugs.findbugs(project.findbugs.html_output_file,
                                       project.findbugs.source_paths.flatten.compact,
