@@ -135,7 +135,7 @@ EOF
             script += header.split("\n")
             script << "  # you may see hints about which jars are missing and should resolve them correctly"
             script << "  # dependencies  << 'junit should be commented out and replace by correct ARTIFACT definition. Eg"
-            script << "  # dependencies  << 'junit:junit:jar:3.8.2'"
+            script << "  # dependencies  << 'junit:junit:jar:4.11'"
             script << setLayout('src', 'bin') # default values for eclipse
             dot_projects = Dir.glob('**/.project', File::FNM_DOTMATCH).find_all { |dot_project| get_project_natures(dot_project) }
             dot_projects.sort.each { |dot_project| from_eclipse(File.dirname(dot_project), false) } if dot_projects
