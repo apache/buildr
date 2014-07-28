@@ -179,7 +179,7 @@ module Buildr #:nodoc:
     end
 
     # JUnit version number.
-    VERSION = '4.8.2'
+    VERSION = '4.11'
 
     class << self
       # :call-seq:
