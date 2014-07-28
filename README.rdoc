@@ -114,7 +114,6 @@ which changes might have broken your build.  To run all the test cases:
 
   rake spec
 
-
 == License
 
 Licensed to the Apache Software Foundation (ASF) under one or more
