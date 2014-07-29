@@ -96,15 +96,15 @@ module Buildr #:nodoc:
         Buildr.settings.build['jmock'] || VERSION
       end
 
-      def dependencies
+      def dependencies(versions = {:hamcrest => "1.1"})
         two_or_later = version[0,1].to_i >= 2
         group = two_or_later ? "org.jmock" : "jmock"
 
         @dependencies ||= ["#{group}:jmock:jar:#{version}"]
         if two_or_later
           @dependencies << "org.jmock:jmock-junit#{Buildr::JUnit.version.to_s[0,1]}:jar:#{version}"
-          @dependencies << "org.hamcrest:hamcrest-core:jar:1.1"
-          @dependencies << "org.hamcrest:hamcrest-library:jar:1.1"
+          @dependencies << "org.hamcrest:hamcrest-core:jar:#{versions[:hamcrest]}"
+          @dependencies << "org.hamcrest:hamcrest-library:jar:#{versions[:hamcrest]}"
         end
         @dependencies
       end
@@ -198,7 +198,8 @@ module Buildr #:nodoc:
       end
 
       def dependencies
-        @dependencies ||= ["junit:junit:jar:#{version}"]+ JMock.dependencies
+        four11_or_newer = version >= "4.11"
+        @dependencies ||= ["junit:junit:jar:#{version}"]+ (four11_or_newer ? JMock.dependencies({:hamcrest => '1.3'}) : JMock.dependencies)
       end
 
       def ant_taskdef #:nodoc:

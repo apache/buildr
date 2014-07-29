@@ -60,6 +60,24 @@ describe Buildr::JUnit do
     project('foo').test.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
   end
 
+  it 'should not include Hamcrest dependencies for JUnit < 4.11' do
+    begin
+      Buildr.settings.build['junit'] = '4.10'
+      define('foo') { test.using :junit }
+      project('foo').test.compile.dependencies.should_not include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
+      project('foo').test.dependencies.should_not include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
+    ensure
+      Buildr.settings.build['junit'] = nil
+    end
+  end
+
+  it 'should include Hamcrest dependencies for JUnit >= 4.11' do
+    define('foo') { test.using :junit }
+    project('foo').test.compile.dependencies.should include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
+    project('foo').test.dependencies.should include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
+  end
+
+
   it 'should pick JUnit version from junit build settings' do
     Buildr::JUnit.instance_eval { @dependencies = nil } # JUnit caches JMock dependencies
     Buildr::JMock.instance_eval { @dependencies = nil }
