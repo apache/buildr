@@ -134,6 +134,13 @@ module Buildr #:nodoc:
         @dependencies ||= ["org.hamcrest:hamcrest-core:jar:#{version}", "org.hamcrest:hamcrest-library:jar:#{version}"]
       end
 
+    private
+      def const_missing(const)
+        return super unless const == :REQUIRES # TODO: remove in 1.5
+        Buildr.application.deprecated "Please use Harmcrest.dependencies/.version instead of Harmcrest::REQUIRES/VERSION"
+        dependencies
+      end
+    end
   end
 
 
