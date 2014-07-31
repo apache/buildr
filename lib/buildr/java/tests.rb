@@ -103,8 +103,8 @@ module Buildr #:nodoc:
         @dependencies ||= ["#{group}:jmock:jar:#{version}"]
         if two_or_later
           @dependencies << "org.jmock:jmock-junit#{Buildr::JUnit.version.to_s[0,1]}:jar:#{version}"
-          @dependencies << "org.hamcrest:hamcrest-core:jar:1.1"
-          @dependencies << "org.hamcrest:hamcrest-library:jar:1.1"
+          @dependencies << "org.hamcrest:hamcrest-core:jar:1.3"
+          @dependencies << "org.hamcrest:hamcrest-library:jar:1.3"
         end
         @dependencies
       end
