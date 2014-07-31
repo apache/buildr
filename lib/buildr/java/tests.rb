@@ -103,8 +103,9 @@ module Buildr #:nodoc:
         @dependencies ||= ["#{group}:jmock:jar:#{version}"]
         if two_or_later
           @dependencies << "org.jmock:jmock-junit#{Buildr::JUnit.version.to_s[0,1]}:jar:#{version}"
-          @dependencies << "org.hamcrest:hamcrest-core:jar:1.1"
-          @dependencies << "org.hamcrest:hamcrest-library:jar:1.1"
+          Harmcrest.dependencies.each { |dependency|
+            @dependencies << dependency
+          }
         end
         @dependencies
       end
@@ -116,6 +117,23 @@ module Buildr #:nodoc:
         dependencies
       end
     end
+  end
+
+
+  # Provides a library of matcher objects (also known as constraints or predicates) allowing 'match' rules to be defined declaratively, to be used in other frameworks.
+  module Harmcrest
+
+    VERSION = '1.3'
+
+    class << self
+      def version
+        Buildr.settings.build['harmcrest'] || VERSION
+      end
+
+      def dependencies
+        @dependencies ||= ["org.hamcrest:hamcrest-core:jar:#{version}", "org.hamcrest:hamcrest-library:jar:#{version}"]
+      end
+
   end
 
 
@@ -198,7 +216,7 @@ module Buildr #:nodoc:
       end
 
       def dependencies
-        @dependencies ||= ["junit:junit:jar:#{version}"]+ JMock.dependencies
+        @dependencies ||= ["junit:junit:jar:#{version}"] + JMock.dependencies + Harmcrest.dependencies
       end
 
       def ant_taskdef #:nodoc:
