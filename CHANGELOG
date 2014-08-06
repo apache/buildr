@@ -8,6 +8,8 @@
           in the findbugs addon does not contain arrays or nils.
 * Fixed:  Ensure that the 'single_intermediate_layout' addon removes the top
           level target and reports directories during 'clean' phase.
+* Added:  Enhance idea project generation of ejb facet by looking for ejb
+          descriptors in location compatible with ejb-jars.
 * Fixed:  Ensure that the 'source_paths' property in the pmd addon does not
           contain arrays or nils.
 

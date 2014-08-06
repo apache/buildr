@@ -414,6 +414,8 @@ module Buildr #:nodoc:
           ejb_roots.each do |path|
             d = "#{path}/WEB-INF/#{descriptor}"
             default_deployment_descriptors << d if File.exist?(d)
+            d = "#{path}/META-INF/#{descriptor}"
+            default_deployment_descriptors << d if File.exist?(d)
           end
         end
         deployment_descriptors = options[:deployment_descriptors] || default_deployment_descriptors
