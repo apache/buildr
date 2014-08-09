@@ -1,7 +1,7 @@
 1.4.20 (Pending)
 * Change: BUILDR-701 - Update to JUnit 4.11. Submitted by Jean-Philippe Caruana.
 * Added:  Support the 'report_level' property on findbugs addon.
-* Change: Update the findbugs addon to use version Findbugs 3.0.0.
+* Change: Update the findbugs addon to use the 3.0.0 version of Findbugs.
 * Change: Update the findbugs addon to use the built-in findbugs stylesheet
           to generate the html report.
 * Fixed:  Ensure that the 'source_paths' and 'extra_dependencies' properties
