@@ -1,3 +1,5 @@
+#!/bin/bash
+
 update_bundler() {
   gem list | grep 'bundler' &> /dev/null
   if [ $? -gt 0 ]; then
