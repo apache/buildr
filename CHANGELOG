@@ -1,4 +1,5 @@
 1.4.20 (Pending)
+* Change: Upgrade rjb dependency to 1.4.9.
 * Change: BUILDR-701 - Update to JUnit 4.11. Submitted by Jean-Philippe Caruana.
 * Added:  Support the 'report_level' property on findbugs addon.
 * Change: Update the findbugs addon to use the 3.0.0 version of Findbugs.

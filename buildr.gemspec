@@ -63,7 +63,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'rubyzip',              '0.9.9'
   spec.add_dependency 'json_pure',            '1.8.0'
   spec.add_dependency 'hoe',                  '3.7.1'
-  spec.add_dependency 'rjb',                  '1.4.8' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
+  spec.add_dependency 'rjb',                  '1.4.9' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
   spec.add_dependency 'atoulme-Antwrap',      '~> 0.7.4'
   spec.add_dependency 'diff-lcs',             '1.2.4'
   spec.add_dependency 'rspec-expectations',   '2.14.3'
