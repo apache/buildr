@@ -26,9 +26,9 @@ Gem::Specification.new do |spec|
   spec.name           = 'buildr'
   spec.version        = Buildr::VERSION.dup
   spec.author         = 'Apache Buildr'
-  spec.email          = "users@buildr.apache.org"
-  spec.homepage       = "http://buildr.apache.org/"
-  spec.summary        = "Build like you code"
+  spec.email          = 'users@buildr.apache.org'
+  spec.homepage       = 'http://buildr.apache.org/'
+  spec.summary        = 'Build like you code'
   spec.description    = <<-TEXT
 Apache Buildr is a build system for Java-based applications, including support
 for Scala, Groovy and a growing number of JVM languages and tools.  We wanted
@@ -49,9 +49,9 @@ for those one-off tasks, with a language that's a joy to use.
   spec.extra_rdoc_files = 'README.rdoc', 'CHANGELOG', 'LICENSE', 'NOTICE'
   spec.rdoc_options     = '--title', 'Buildr', '--main', 'README.rdoc',
                           '--webcvs', 'https://github.com/apache/buildr'
-  spec.post_install_message = "To get started run buildr --help"
+  spec.post_install_message = 'To get started run buildr --help'
 
-  spec.required_rubygems_version = ">= 1.8.6"
+  spec.required_rubygems_version = '>= 1.8.6'
 
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.9.2.2'
@@ -59,7 +59,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'net-ssh',              '2.7.0'
   spec.add_dependency 'net-sftp',             '2.1.2'
   # Required for sftp support under windows
-  spec.add_dependency "jruby-pageant",        '1.1.1' if $platform.to_s == 'java'
+  spec.add_dependency 'jruby-pageant',        '1.1.1' if $platform.to_s == 'java'
   spec.add_dependency 'rubyzip',              '0.9.9'
   spec.add_dependency 'json_pure',            '1.8.0'
   spec.add_dependency 'hoe',                  '3.7.1'
