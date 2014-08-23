@@ -46,6 +46,21 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
+Highlights from Buildr 1.4.20 (2014-08-23)
+* Fixed : Work around bug/feature of jruby 1.7.13 that caches Gem::Version
+          objects based on constructor parameters that causes issues with
+          Buildr as we mutate the version objects through monkey patching.
+* Change: Upgrade rjb dependency to 1.4.9.
+* Change: BUILDR-701 - Update to JUnit 4.11. Submitted by Jean-Philippe Caruana.
+* Added:  Support the 'report_level' property on findbugs addon.
+* Change: Update the findbugs addon to use the 3.0.0 version of Findbugs.
+* Change: Update the findbugs addon to use the built-in findbugs stylesheet
+          to generate the html report.
+* Fixed:  Ensure that the 'single_intermediate_layout' addon removes the top
+          level target and reports directories during 'clean' phase.
+* Added:  Enhance idea project generation of ejb facet by looking for ejb
+          descriptors in location compatible with ejb-jars.
+
 Highlights from Buildr 1.4.19 (2014-07-06)
 * Fixed:  BUILDR-700 - Ensure SNAPSHOT artifacts, constructed using the
           download(artifact('group:artifact:jar:1-SNAPSHOT') =>
@@ -56,26 +71,6 @@ Highlights from Buildr 1.4.19 (2014-07-06)
           "HTTP Not Modified" status.
 * Fixed:  Fix bug introduced in 1.4.18 version of custom_pom addon where
           poms are created for artifacts that have a classifier.
-
-Highlights from Buildr 1.4.18 (2014-06-24)
-* Fixed:  BUILDR-699 - Update the custom_pom addon to avoid failure when
-          used with zip packages.
-* Fixed:  BUILDR-694 - "buildr upload" fails: wrong number of arguments in
-          progress bar read() in Ruby 2.1.0. Submitted By Mark Reibert.
-* Change: Remove support for uploads to RubyForge.org with gem dependencies
-          as the site no longer exists.
-* Change: BUILDR-664 - Update Checkstyle addon so that extra_dependencies is
-          the project dependencies by default. Move the checkstyle dependencies
-          to the start of the classpath to avoid problems running checkstyle.
-          Submitted by Dieter Vrancken.
-* Added:  Extend Intellij IDEA support to allow creation of glassfish,
-          java and ruby scrip configurations.
-* Change: Include additional rules in default pmd rule set:
-* Change: Upgrade the version of PMD in use to 5.1.1 and add additional
-          default rule sets 'finalizers' and 'braces'.
-* Change: Supply a default xsl file for generating the jdepend report.
-* Fixed:  Fix the naming of css_lint addon file so it is made available
-          as an addon.
 
 This is a partial list -- see the "CHANGELOG":CHANGELOG for full details.
 
