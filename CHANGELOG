@@ -1,4 +1,4 @@
-1.4.20 (Pending)
+1.4.20 (2014-08-23)
 * Fixed : Work around bug/feature of jruby 1.7.13 that caches Gem::Version
           objects based on constructor parameters that causes issues with
           Buildr as we mutate the version objects through monkey patching.
