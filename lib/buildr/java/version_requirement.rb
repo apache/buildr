@@ -53,7 +53,8 @@ module Buildr #:nodoc:
           raise "Invalid requirement string: #{req}"
         end
         comparator, version = $1, $2
-        version = Gem::Version.new(0).tap { |v| v.version = version }
+        # dup required due to jruby 1.7.13 bug/feature that caches versions?
+        version = Gem::Version.new(0).dup.tap { |v| v.version = version }
         VersionRequirement.new(nil, [$1, version])
       end
 
@@ -122,7 +123,8 @@ module Buildr #:nodoc:
       return false unless version
       unless version.kind_of?(Gem::Version)
         raise "Invalid version: #{version.inspect}" unless self.class.version?(version)
-        version = Gem::Version.new(0).tap { |v| v.version = version.strip }
+        # dup required due to jruby 1.7.13 bug/feature that caches versions?
+        version = Gem::Version.new(0).dup.tap { |v| v.version = version.strip }
       end
       message = op == :| ? :any? : :all?
       result = requirements.send message do |req|
