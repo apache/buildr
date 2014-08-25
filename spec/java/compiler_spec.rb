@@ -106,6 +106,13 @@ describe 'javac compiler' do
     define('foo').compile.invoke
     file('target/classes/UseApt.class').should exist
   end
+
+  it 'should ignore package-info.java files in up-to-date check' do
+    write 'src/main/java/foo/Test.java', 'package foo; class Test { public void foo() {} }'
+    write 'src/main/java/foo/package-info.java', 'package foo;'
+    lambda{ define('foo').compile.invoke }.should run_task('foo:compile')
+    lambda{ define('bar').compile.invoke }.should_not run_task('bar:compile')
+  end
 end
 
 
