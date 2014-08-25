@@ -64,6 +64,13 @@ module Buildr #:nodoc:
         end
       end
 
+      # Filter out source files that are known to not produce any corresponding .class output file. If we leave
+      # this type of file in the generated compile map the compiler will always be run due to missing output files.
+      def compile_map(sources, target)
+        map = super
+        map.reject! { |key,_| File.basename(key) == 'package-info.java' } || map
+      end
+
     private
 
       def javac_args #:nodoc:
