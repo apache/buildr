@@ -37,6 +37,37 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.20</name>
+        <created>2014-08-23</created>
+        <revision>1.4.20</revision>
+        <dc:description>
+* Fixed : BUILDR-688 - Disregard package-info.java files when determining if
+          the Javac compiler should be run or not. Submitted by Pepijn Van
+          Eeckhoudt.
+* Fixed : Work around bug/feature of jruby 1.7.13 that caches Gem::Version
+          objects based on constructor parameters that causes issues with
+          Buildr as we mutate the version objects through monkey patching.
+* Change: Upgrade rjb dependency to 1.4.9.
+* Change: BUILDR-701 - Update to JUnit 4.11. Submitted by Jean-Philippe Caruana.
+* Added:  Support the 'report_level' property on findbugs addon.
+* Change: Update the findbugs addon to use the 3.0.0 version of Findbugs.
+* Change: Update the findbugs addon to use the built-in findbugs stylesheet
+          to generate the html report.
+* Fixed:  Ensure that the 'source_paths' and 'extra_dependencies' properties
+          in the findbugs addon does not contain arrays or nils.
+* Fixed:  Ensure that the 'single_intermediate_layout' addon removes the top
+          level target and reports directories during 'clean' phase.
+* Added:  Enhance idea project generation of ejb facet by looking for ejb
+          descriptors in location compatible with ejb-jars.
+* Fixed:  Ensure that the 'source_paths' property in the pmd addon does not
+          contain arrays or nils.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.19</name>
         <created>2014-07-06</created>
         <revision>1.4.19</revision>
