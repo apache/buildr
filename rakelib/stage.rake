@@ -97,7 +97,7 @@ task 'stage' => %w(clobber prepare) do |task, args|
     puts 'Ensuring all files have appropriate group and other permissions...'
     sh 'find . -type f | xargs chmod go+r'
     sh 'find . -type d | xargs chmod go+rx'
-    puts '[X] File permissions updated/validted.'
+    puts '[X] File permissions updated/validated.'
   end.call
 
   # Start by figuring out what has changed.
