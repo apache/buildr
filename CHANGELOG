@@ -1,4 +1,6 @@
 1.4.21 (Pending)
+* Fixed : BUILDR-702 - Retain Unix permission flags when merging
+          zip files into another zip or tar archive. Submitted by Pepijn Van Eeckhoudt.
 
 1.4.20 (2014-08-23)
 * Fixed : BUILDR-688 - Disregard package-info.java files when determining if

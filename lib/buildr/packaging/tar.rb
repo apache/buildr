@@ -92,7 +92,7 @@ module Buildr #:nodoc:
 
         file_map.each do |path, content|
           if content.respond_to?(:call)
-            tar.add_file(path, options) { |os, opts| content.call os }
+            tar.add_file(path, content.respond_to?(:mode) ? options.merge(:mode => content.mode) : options) { |os, _| content.call os }
           elsif content.nil?
           elsif File.directory?(content.to_s)
             stat = File.stat(content.to_s)
