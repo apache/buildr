@@ -298,7 +298,7 @@ module Buildr #:nodoc:
                !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name) }
               dest = path =~ /^\/?$/ ? entry.name : Util.relative_path(path + "/" + entry.name)
               trace "Adding #{dest}"
-              file_map[dest] = lambda { |output| output.write source.read(entry) }
+              file_map[dest] = ZipEntryData.new(source, entry)
             end
           end
         end
@@ -306,6 +306,20 @@ module Buildr #:nodoc:
 
     end
 
+    class ZipEntryData
+      def initialize(zipfile, entry)
+        @zipfile = zipfile
+        @entry = entry
+      end
+
+      def call(output)
+        output.write @zipfile.read(@entry)
+      end
+
+      def mode
+        @entry.unix_perms
+      end
+    end
 
     def initialize(*args) #:nodoc:
       super

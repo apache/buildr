@@ -67,7 +67,8 @@ module Buildr #:nodoc:
           warn "Warning:  Path in zipfile #{name} contains backslash: #{path}" if path =~ /\\/
           mkpath.call File.dirname(path)
           if content.respond_to?(:call)
-            zip.put_next_entry(path, compression_level)
+            entry = zip.put_next_entry(path, compression_level)
+            entry.unix_perms = content.mode & 07777 if content.respond_to?(:mode)
             content.call zip
           elsif content.nil? || File.directory?(content.to_s)
             mkpath.call path
