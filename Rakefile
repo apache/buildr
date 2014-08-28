@@ -32,7 +32,6 @@ end
 def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
   @specs ||= ['ruby', 'java', 'x86-mswin32'].inject({}) { |hash, spec_platform|
     $platform = spec_platform
-    raise 'Gem::Specification.load ignores global context (thus $platform) in later versions' unless RUBY_VERSION == '1.9.3'
     hash.update(spec_platform=>Gem::Specification.load('buildr.gemspec'))
   }
   @specs[platform]
