@@ -1,6 +1,7 @@
 1.4.21 (Pending)
-* Fixed : Update pmd addon to use pmd version 5.1.3.
-* Fixed : BUILDR-702 - Retain Unix permission flags when merging
+* Added:  Update pmd addon to support downloading rule files as an artifact.
+* Change: Update pmd addon to use pmd version 5.1.3.
+* Fixed:  BUILDR-702 - Retain Unix permission flags when merging
           zip files into another zip or tar archive. Submitted by Pepijn Van Eeckhoudt.
 
 1.4.20 (2014-08-23)

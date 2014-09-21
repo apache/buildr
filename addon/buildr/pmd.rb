@@ -38,12 +38,22 @@ module Buildr
         cp = Buildr.artifacts(dependencies).each(&:invoke).map(&:to_s)
         (options[:rule_set_paths] || []).each {|p| cp << p}
 
+        rule_sets = rule_set_files.dup
+
+        Buildr.artifacts(options[:rule_set_artifacts] || []).each do |artifact|
+          a = artifact.to_s
+          dirname = File.dirname(a)
+          rule_sets << a[dirname.length + 1, a.length]
+          cp << File.dirname(a)
+          artifact.invoke
+        end
+
         puts 'PMD: Analyzing source code...'
         mkdir_p File.dirname(output_file_prefix)
 
         Buildr.ant('pmd-report') do |ant|
           ant.taskdef :name=> 'pmd', :classpath => cp.join(';'), :classname => 'net.sourceforge.pmd.ant.PMDTask'
-          ant.pmd :shortFilenames => true, :rulesetfiles => rule_set_files.join(',') do
+          ant.pmd :shortFilenames => true, :rulesetfiles => rule_sets.join(',') do
             ant.formatter :type => format, :toFile => "#{output_file_prefix}.#{format}"
             source_paths.each do |src|
               ant.fileset :dir=> src, :includes=>'**/*.java'
@@ -85,7 +95,12 @@ module Buildr
       attr_writer :rule_set_files
 
       def rule_set_files
-        @rule_set_files ||= ['rulesets/java/basic.xml', 'rulesets/java/imports.xml', 'rulesets/java/unusedcode.xml', 'rulesets/java/finalizers.xml', 'rulesets/java/braces.xml']
+        @rule_set_files ||= (self.rule_set_artifacts.empty? ? ['rulesets/java/basic.xml', 'rulesets/java/imports.xml', 'rulesets/java/unusedcode.xml', 'rulesets/java/finalizers.xml', 'rulesets/java/braces.xml'] : [])
+      end
+
+      # Support specification of rule sets that are distributed as part of a maven repository
+      def rule_set_artifacts
+        @rule_set_artifacts ||= []
       end
 
       attr_writer :rule_set_paths
@@ -140,12 +155,12 @@ module Buildr
         if project.pmd.enabled?
           desc 'Generate pmd xml report.'
           project.task('pmd:rule:xml') do
-            Buildr::Pmd.pmd(project.pmd.rule_set_files, 'xml', project.pmd.output_file_prefix, project.pmd.flat_source_paths, :rule_set_paths => project.pmd.rule_set_paths)
+            Buildr::Pmd.pmd(project.pmd.rule_set_files, 'xml', project.pmd.output_file_prefix, project.pmd.flat_source_paths, :rule_set_paths => project.pmd.rule_set_paths, :rule_set_artifacts => project.pmd.rule_set_artifacts)
           end
 
           desc 'Generate pmd html report.'
           project.task('pmd:rule:html') do
-            Buildr::Pmd.pmd(project.pmd.rule_set_files, 'html', project.pmd.output_file_prefix, project.pmd.flat_source_paths, :rule_set_paths => project.pmd.rule_set_paths)
+            Buildr::Pmd.pmd(project.pmd.rule_set_files, 'html', project.pmd.output_file_prefix, project.pmd.flat_source_paths, :rule_set_paths => project.pmd.rule_set_paths, :rule_set_artifacts => project.pmd.rule_set_artifacts)
           end
 
           desc 'Generate pmd cpd xml report.'
