@@ -17,7 +17,7 @@ module Buildr
   # Provides the <code>pmd:rule:xml</code>, <code>pmd:rule:html</code>, <code>pmd:cpd:xml</code>
   # and <code>pmd:cpd:html</code> tasks.
   #
-  # Require explicitly using <code>require "buildr/pmd"</code>.
+  # Require explicitly using <code>require 'buildr/pmd'</code>.
   module Pmd
 
     class << self
@@ -38,10 +38,10 @@ module Buildr
         cp = Buildr.artifacts(dependencies).each(&:invoke).map(&:to_s)
         (options[:rule_set_paths] || []).each {|p| cp << p}
 
-        puts "PMD: Analyzing source code..."
+        puts 'PMD: Analyzing source code...'
         mkdir_p File.dirname(output_file_prefix)
 
-        Buildr.ant("pmd-report") do |ant|
+        Buildr.ant('pmd-report') do |ant|
           ant.taskdef :name=> 'pmd', :classpath => cp.join(';'), :classname => 'net.sourceforge.pmd.ant.PMDTask'
           ant.pmd :shortFilenames => true, :rulesetfiles => rule_set_files.join(',') do
             ant.formatter :type => format, :toFile => "#{output_file_prefix}.#{format}"
@@ -59,10 +59,10 @@ module Buildr
         minimum_token_count = options[:minimum_token_count] || 100
         encoding = options[:encoding] || 'UTF-8'
 
-        puts "PMD-CPD: Analyzing source code..."
+        puts 'PMD-CPD: Analyzing source code...'
         mkdir_p File.dirname(output_file_prefix)
 
-        Buildr.ant("cpd-report") do |ant|
+        Buildr.ant('cpd-report') do |ant|
           ant.taskdef :name=> 'cpd', :classpath => cp.join(';'), :classname => 'net.sourceforge.pmd.cpd.CPDTask'
           ant.cpd :format => format, :minimumTokenCount => minimum_token_count, :encoding => encoding, :outputFile => "#{output_file_prefix}.#{format}" do
             source_paths.each do |src|
@@ -138,23 +138,23 @@ module Buildr
 
       after_define do |project|
         if project.pmd.enabled?
-          desc "Generate pmd xml report."
-          project.task("pmd:rule:xml") do
+          desc 'Generate pmd xml report.'
+          project.task('pmd:rule:xml') do
             Buildr::Pmd.pmd(project.pmd.rule_set_files, 'xml', project.pmd.output_file_prefix, project.pmd.flat_source_paths, :rule_set_paths => project.pmd.rule_set_paths)
           end
 
-          desc "Generate pmd html report."
-          project.task("pmd:rule:html") do
+          desc 'Generate pmd html report.'
+          project.task('pmd:rule:html') do
             Buildr::Pmd.pmd(project.pmd.rule_set_files, 'html', project.pmd.output_file_prefix, project.pmd.flat_source_paths, :rule_set_paths => project.pmd.rule_set_paths)
           end
 
-          desc "Generate pmd cpd xml report."
-          project.task("pmd:cpd:xml") do
+          desc 'Generate pmd cpd xml report.'
+          project.task('pmd:cpd:xml') do
             Buildr::Pmd.cpd('xml', project.pmd.cpd_output_file_prefix, project.pmd.flat_source_paths)
           end
 
-          desc "Generate pmd cpd text report."
-          project.task("pmd:cpd:text") do
+          desc 'Generate pmd cpd text report.'
+          project.task('pmd:cpd:text') do
             Buildr::Pmd.cpd('text', project.pmd.cpd_output_file_prefix, project.pmd.flat_source_paths)
           end
         end
