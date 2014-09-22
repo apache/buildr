@@ -40,17 +40,17 @@ module Buildr
 
         args = []
         if options[:properties_file]
-          args << "-p"
+          args << '-p'
           args << options[:properties_file]
         end
-        args << "-c"
+        args << '-c'
         args << configuration_file
-        args << "-f"
+        args << '-f'
         args << format
-        args << "-o"
+        args << '-o'
         args << output_file
         source_paths.each do |source_path|
-          args << "-r"
+          args << '-r'
           args << source_path
         end
 
@@ -175,9 +175,9 @@ module Buildr
 
       after_define do |project|
         if project.checkstyle.enabled?
-          desc "Generate checkstyle xml report."
-          project.task("checkstyle:xml") do
-            puts "Checkstyle: Analyzing source code..."
+          desc 'Generate checkstyle xml report.'
+          project.task('checkstyle:xml') do
+            puts 'Checkstyle: Analyzing source code...'
             mkdir_p File.dirname(project.checkstyle.xml_output_file)
             Buildr::Checkstyle.checkstyle(project.checkstyle.configuration_file,
                                           project.checkstyle.format,
@@ -189,12 +189,12 @@ module Buildr
           end
 
           if project.checkstyle.html_enabled?
-            xml_task = project.task("checkstyle:xml")
-            desc "Generate checkstyle html report."
-            project.task("checkstyle:html" => xml_task) do
-              puts "Checkstyle: Generating report"
+            xml_task = project.task('checkstyle:xml')
+            desc 'Generate checkstyle html report.'
+            project.task('checkstyle:html' => xml_task) do
+              puts 'Checkstyle: Generating report'
               mkdir_p File.dirname(project.checkstyle.html_output_file)
-              Buildr.ant "checkstyle" do |ant|
+              Buildr.ant 'checkstyle' do |ant|
                 ant.xslt :in => project.checkstyle.xml_output_file,
                          :out => project.checkstyle.html_output_file,
                          :style => project.checkstyle.style_file
