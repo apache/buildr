@@ -142,6 +142,7 @@ module Buildr
       def properties
         unless @properties
           @properties = {:basedir => self.project.base_dir}
+          @properties['checkstyle.config.dir'] = self.config_directory if File.directory?(self.config_directory)
           @properties['checkstyle.suppressions.file'] = self.suppressions_file if File.exist?(self.suppressions_file)
           @properties['checkstyle.import-control.file'] = self.import_control_file if File.exist?(self.import_control_file)
         end
