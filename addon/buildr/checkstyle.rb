@@ -85,8 +85,30 @@ module Buildr
 
       attr_writer :configuration_file
 
+      def configuration_file=(configuration_file)
+        raise 'Configuration artifact already specified' if @configuration_artifact
+        @configuration_file = configuration_file
+      end
+
       def configuration_file
-        @configuration_file || "#{self.config_directory}/checks.xml"
+        if @configuration_file
+          return @configuration_file
+        elsif @configuration_artifact.nil?
+          "#{self.config_directory}/checks.xml"
+        else
+          a = Buildr.artifact(@configuration_artifact)
+          a.invoke
+          a.to_s
+        end
+      end
+
+      def configuration_artifact=(configuration_artifact)
+        raise 'Configuration file already specified' if @configuration_file
+        @configuration_artifact = configuration_artifact
+      end
+
+      def configuration_artifact
+        @configuration_artifact
       end
 
       attr_writer :fail_on_error

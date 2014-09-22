@@ -1,4 +1,6 @@
 1.4.21 (Pending)
+* Added:  Update checkstyle addon to support downloading checkstyle checks
+          as an artifact.
 * Added:  Update checkstyle addon to supply checkstyle.config.dir property.
 * Added:  Update pmd addon to support downloading rule files as an artifact.
 * Change: Update pmd addon to use pmd version 5.1.3.
