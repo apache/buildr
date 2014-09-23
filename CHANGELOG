@@ -1,4 +1,5 @@
 1.4.21 (Pending)
+* Change: Update rjb to version 1.5.1.
 * Added:  Update checkstyle addon to support downloading checkstyle checks
           as an artifact.
 * Added:  Update checkstyle addon to supply checkstyle.config.dir property.
