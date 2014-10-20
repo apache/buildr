@@ -50,6 +50,21 @@ module Buildr #:nodoc:
         self.components << create_component(name, attrs, &xml)
       end
 
+      def add_component_from_file(filename)
+        self.components << lambda do
+          raise "Unable to locate file #{filename} adding component to idea file" unless File.exist?(filename)
+          Buildr::IntellijIdea.new_document(IO.read(filename)).root
+        end
+      end
+
+      def add_component_from_artifact(artifact)
+        self.components << lambda do
+          a = Buildr.artifact(artifact)
+          a.invoke
+          Buildr::IntellijIdea.new_document(IO.read(a.to_s)).root
+        end
+      end
+
       # IDEA can not handle text content with indents so need to removing indenting
       # Can not pass true as third argument as the ruby library seems broken
       def write(f)

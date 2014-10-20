@@ -1,4 +1,6 @@
 1.4.21 (Pending)
+* Added:  Enhance the IdeaFile class to easily support mixing in of custom
+          components from either the filesystem or from an artifact.
 * Change: Update rjb to version 1.5.1.
 * Added:  Update checkstyle addon to support downloading checkstyle checks
           as an artifact.
