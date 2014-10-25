@@ -199,7 +199,7 @@ module Buildr #:nodoc:
       end
 
       def jdk_version
-        @jdk_version || buildr_project.compile.options.source || '1.6'
+        @jdk_version || buildr_project.compile.options.source || '1.7'
       end
 
       def extension
@@ -652,7 +652,7 @@ module Buildr #:nodoc:
       end
 
       def jdk_version
-        @jdk_version ||= buildr_project.compile.options.source || '1.6'
+        @jdk_version ||= buildr_project.compile.options.source || '1.7'
       end
 
       def add_artifact(name, type, build_on_make = false)
