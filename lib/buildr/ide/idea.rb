@@ -648,7 +648,7 @@ module Buildr #:nodoc:
       end
 
       def version
-        @version || '12'
+        @version || '13'
       end
 
       def jdk_version

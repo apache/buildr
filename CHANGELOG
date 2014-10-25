@@ -1,4 +1,7 @@
 1.4.21 (Pending)
+* Change: Change the default version of the IDEA project files created to the
+          current release version 13. To revert to the older versions specify
+          ipr.version = '12' in your buildfile.
 * Added:  Enhance the IdeaFile class to easily support mixing in of custom
           components from either the filesystem or from an artifact.
 * Change: Update rjb to version 1.5.1.
