@@ -1,4 +1,10 @@
 1.4.21 (Pending)
+* Change: Enhance ipr.add_glassfish_configuration to support the ability to
+          define the version of GlassFish in uses. Change the default to 4.1.0
+          as that is the latest supported variant.
+* Fixed:  Change the name of the GlassFish install in ipr.add_glassfish_configuration
+          to use the same convention that IDEA uses by default. i.e. Name the
+          installation "GlassFish 4.1.0" rather than "Glassfish 4.1.0".
 * Change: Change the default version of the jdk in IDEA project files to 1.7.
 * Change: Change the default version of the IDEA project files created to the
           current release version 13. To revert to the older versions specify

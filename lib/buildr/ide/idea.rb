@@ -922,7 +922,8 @@ module Buildr #:nodoc:
 
       def add_glassfish_configuration(project, options = {})
         artifact_name = options[:name] || project.iml.id
-        server_name = options[:server_name] || 'Glassfish 4.0.0'
+        version = options[:version] || '4.1.0'
+        server_name = options[:server_name] || "GlassFish #{version}"
         domain_name = options[:domain] || project.iml.id
         domain_port = options[:port] || '9009'
         packaged = options[:packaged] || {}
