@@ -1,4 +1,5 @@
 1.4.21 (Pending)
+* Change: Update checkstyle addon to use Checkstyle 6.0.
 * Added:  Updated the gwt addon to support the upcoming GWT 2.7.x release.
 * Change: Enhance ipr.add_glassfish_configuration to support the ability to
           define the version of GlassFish in uses. Change the default to 4.1.0

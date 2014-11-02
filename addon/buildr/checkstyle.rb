@@ -23,12 +23,11 @@ module Buildr
       # The specs for requirements
       def dependencies
         [
-          'com.puppycrawl.tools:checkstyle:jar:5.7',
-          'commons-cli:commons-cli:jar:1.2',
+          'com.puppycrawl.tools:checkstyle:jar:6.0',
           'antlr:antlr:jar:2.7.7',
-          'com.google.guava:guava-jdk5:jar:16.0',
-          'com.google.guava:guava-bootstrap-jdk5:jar:16.0',
-          'com.google.collections:google-collections:jar:1.0',
+          'org.antlr:antlr4-runtime:jar:4.3',
+          'com.google.guava:guava:jar:18.0',
+          'commons-cli:commons-cli:jar:1.2',
           'commons-beanutils:commons-beanutils-core:jar:1.8.3',
           'commons-logging:commons-logging:jar:1.1.1'
         ]
