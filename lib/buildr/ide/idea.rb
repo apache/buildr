@@ -663,12 +663,14 @@ module Buildr #:nodoc:
         end
       end
 
-      def add_configuration(name, type, factory_name, default = false)
+      def add_configuration(name, type, factory_name, default = false, options = {})
         add_to_composite_component(self.configurations) do |xml|
-          options = {:type => type, :factoryName => factory_name}
-          options[:name] = name unless default
-          options[:default] = true if default
-          xml.configuration(options) do |xml|
+          params = options.dup
+          params[:type] = type
+          params[:factoryName] = factory_name
+          params[:name] = name unless default
+          params[:default] = true if default
+          xml.configuration(params) do |xml|
             yield xml if block_given?
           end
         end
