@@ -123,12 +123,14 @@ module Buildr
 
         unit_cache_dir = project._(:target, :gwt, :unit_cache_dir, output_key)
 
+        version = gwt_detect_version(dependencies) || Buildr::GWT.version
+
         task = project.file(output_dir) do
           Buildr::GWT.gwtc_main(module_names,
                                 (dependencies + artifacts).flatten.compact,
                                 output_dir,
                                 unit_cache_dir,
-                                {:version => gwt_detect_version(dependencies)}.merge(options))
+                                {:version => version}.merge(options))
         end
         task.enhance(dependencies)
         task.enhance([project.compile])
