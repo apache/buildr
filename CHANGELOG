@@ -1,4 +1,6 @@
 1.4.21 (Pending)
+* Change: Update the gwt addon to add the validation dependencies required for GWT
+          compiles without requiring that the user specify the dependency.
 * Change: Update ipr.add_gwt_configuration method to support GWT 2.7 configuration
           parameters and IDEA 14 parameters.
 * Change: Upgrade jacoco to 0.7.2. Submitted by neher.
