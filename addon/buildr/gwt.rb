@@ -28,11 +28,15 @@ module Buildr
 
       # The specs for requirements
       def dependencies(version = nil)
-        gwt_dev_jar = "com.google.gwt:gwt-dev:jar:#{version || self.version}"
-        if self.version <= '2.6.1'
+        v = version || self.version
+        gwt_dev_jar = "com.google.gwt:gwt-dev:jar:#{v}"
+        if v <= '2.6.1'
           [gwt_dev_jar]
         else
-          [gwt_dev_jar, 'org.ow2.asm:asm:jar:5.0.3']
+          [
+            gwt_dev_jar,
+            'org.ow2.asm:asm:jar:5.0.3'
+          ]
         end
       end
 
