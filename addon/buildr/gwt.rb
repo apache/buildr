@@ -43,7 +43,8 @@ module Buildr
       end
 
       def gwtc_main(modules, source_artifacts, output_dir, unit_cache_dir, options = {})
-        cp = Buildr.artifacts(self.dependencies(options[:version])).each(&:invoke).map(&:to_s) + Buildr.artifacts(source_artifacts).each(&:invoke).map(&:to_s)
+        base_dependencies = self.dependencies(options[:version])
+        cp = Buildr.artifacts(base_dependencies).each(&:invoke).map(&:to_s) + Buildr.artifacts(source_artifacts).each(&:invoke).map(&:to_s)
         style = options[:style] || 'OBFUSCATED,' # 'PRETTY', 'DETAILED'
         log_level = options[:log_level] #  ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL
         workers = options[:workers] || 2
