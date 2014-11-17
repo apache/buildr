@@ -912,6 +912,7 @@ module Buildr #:nodoc:
         vm_parameters = options[:vm_parameters] || '-Xmx512m'
         singleton = options[:singleton].nil? ? true : !!options[:singleton]
         super_dev = options[:super_dev].nil? ? true : !!options[:super_dev]
+        gwt_module = options[:gwt_module]
 
         start_javascript_debugger = options[:start_javascript_debugger].nil? ? true : !!options[:start_javascript_debugger]
 
@@ -920,6 +921,7 @@ module Buildr #:nodoc:
 
           xml.option(:name => 'VM_PARAMETERS', :value => vm_parameters)
           xml.option(:name => 'RUN_PAGE', :value => launch_page) if launch_page
+          xml.option(:name => 'GWT_MODULE', :value => gwt_module) if gwt_module
 
           xml.option(:name => 'START_JAVASCRIPT_DEBUGGER', :value => start_javascript_debugger)
           xml.option(:name => 'USE_SUPER_DEV_MODE', :value => super_dev)
