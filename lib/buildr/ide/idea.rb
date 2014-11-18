@@ -944,13 +944,14 @@ module Buildr #:nodoc:
         artifact_name = options[:name] || project.iml.id
         version = options[:version] || '4.1.0'
         server_name = options[:server_name] || "GlassFish #{version}"
+        configuration_name = options[:configuration_name] || server_name
         domain_name = options[:domain] || project.iml.id
         domain_port = options[:port] || '9009'
         packaged = options[:packaged] || {}
         exploded = options[:exploded] || {}
 
         add_to_composite_component(self.configurations) do |xml|
-          xml.configuration(:name => server_name, :type => 'GlassfishConfiguration', :factoryName => 'Local', :default => false, :APPLICATION_SERVER_NAME => server_name) do |xml|
+          xml.configuration(:name => configuration_name, :type => 'GlassfishConfiguration', :factoryName => 'Local', :default => false, :APPLICATION_SERVER_NAME => server_name) do |xml|
             xml.option(:name => 'OPEN_IN_BROWSER', :value => 'false')
             xml.option(:name => 'UPDATING_POLICY', :value => 'restart-server')
 
