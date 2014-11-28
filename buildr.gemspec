@@ -18,9 +18,10 @@ unless defined?(Buildr::VERSION)
   $LOADED_FEATURES << 'buildr/version.rb'
 end
 
-# Rakefile needs to create spec for both platforms (ruby and java), using the
-# $platform global variable.  In all other cases, we figure it out from RUBY_PLATFORM.
-$platform ||= RUBY_PLATFORM[/java/] || 'ruby'
+# Rakefile needs to create spec for all platforms (ruby and java), using the
+# BUILDR_PLATFORM environment variable. In all other cases, we figure it out
+# from RUBY_PLATFORM.
+$platform = ENV['BUILDR_PLATFORM'] || Gem::Platform::CURRENT
 
 Gem::Specification.new do |spec|
   spec.name           = 'buildr'

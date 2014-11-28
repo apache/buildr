@@ -31,8 +31,10 @@ end
 # Load the Gem specification for the current platform (Ruby or JRuby).
 def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
   @specs ||= ['ruby', 'java', 'x86-mswin32'].inject({}) { |hash, spec_platform|
-    $platform = spec_platform
-    hash.update(spec_platform=>Gem::Specification.load('buildr.gemspec'))
+    ENV['BUILDR_PLATFORM'] = spec_platform
+    hash.update(spec_platform=> Gem::Specification.load('buildr.gemspec'))
+    ENV['BUILDR_PLATFORM'] = nil
+    hash
   }
   @specs[platform]
 end
