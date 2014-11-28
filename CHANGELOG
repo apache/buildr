@@ -1,4 +1,4 @@
-1.4.21 (Pending)
+1.4.21 (2014-11-28)
 * Change: Update the gwt addon to add the validation dependencies required for GWT
           compiles without requiring that the user specify the dependency.
 * Change: Update ipr.add_gwt_configuration method to support GWT 2.7 configuration
