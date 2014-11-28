@@ -23,8 +23,6 @@ STAGE_DATE = ENV['STAGE_DATE'] ||  Time.now.strftime('%Y-%m-%d')
 task 'prepare' do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
 
-  raise 'Gem::Specification.load ignores global context (thus $platform) in later versions. Please stage project using ruby 1.9.3' unless RUBY_VERSION == '1.9.3'
-
   # Update source files to next release number.
   lambda do
     current_version = spec.version.to_s.split('.').map { |v| v.to_i }.
