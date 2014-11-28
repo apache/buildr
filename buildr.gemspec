@@ -75,7 +75,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'minitar',              '0.5.4'
   spec.add_dependency 'jruby-openssl',        '~> 0.8.2' if $platform.to_s == 'java'
   spec.add_dependency 'bundler'
-  spec.add_dependency 'orderedhash'
+  spec.add_dependency 'orderedhash',          '0.0.6'
   spec.add_dependency 'win32console'          '1.3.2' if $platform.to_s == 'x86-mswin32'
 
   # Unable to get this consistently working under jruby on windows
