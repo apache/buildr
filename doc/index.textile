@@ -46,31 +46,33 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-Highlights from Buildr 1.4.20 (2014-08-23)
-* Fixed : Work around bug/feature of jruby 1.7.13 that caches Gem::Version
-          objects based on constructor parameters that causes issues with
-          Buildr as we mutate the version objects through monkey patching.
-* Change: Upgrade rjb dependency to 1.4.9.
-* Change: BUILDR-701 - Update to JUnit 4.11. Submitted by Jean-Philippe Caruana.
-* Added:  Support the 'report_level' property on findbugs addon.
-* Change: Update the findbugs addon to use the 3.0.0 version of Findbugs.
-* Change: Update the findbugs addon to use the built-in findbugs stylesheet
-          to generate the html report.
-* Fixed:  Ensure that the 'single_intermediate_layout' addon removes the top
-          level target and reports directories during 'clean' phase.
-* Added:  Enhance idea project generation of ejb facet by looking for ejb
-          descriptors in location compatible with ejb-jars.
-
-Highlights from Buildr 1.4.19 (2014-07-06)
-* Fixed:  BUILDR-700 - Ensure SNAPSHOT artifacts, constructed using the
-          download(artifact('group:artifact:jar:1-SNAPSHOT') =>
-          'http://example.com/...') construct will correctly download the
-          artifacts from configured URL.
-* Fixed:  BUILDR-700 - Fix bug where buildr was truncating SNAPSHOT files
-          that had not changed since last update check and HTTP was returning
-          "HTTP Not Modified" status.
-* Fixed:  Fix bug introduced in 1.4.18 version of custom_pom addon where
-          poms are created for artifacts that have a classifier.
+Highlights from Buildr 1.4.21 (2014-11-28)
+* Fixed:  BUILDR-702 - Retain Unix permission flags when merging
+          zip files into another zip or tar archive. Submitted by Pepijn Van Eeckhoudt.
+* Change: Upgrade jacoco to 0.7.2 to support Java 8. Submitted by neher.
+* Change: Update checkstyle addon to use Checkstyle 6.0.
+* Added:  Update checkstyle addon to support downloading checkstyle checks as an artifact.
+* Added:  Update checkstyle addon to supply checkstyle.config.dir property.
+* Added:  Update pmd addon to support downloading rule files as an artifact.
+* Change: Update pmd addon to use pmd version 5.1.3.
+* Change: Update rjb to version 1.5.1.
+* Change: Update the gwt addon to add the validation dependencies required for GWT
+          compiles without requiring that the user specify the dependency.
+* Added:  Updated the gwt addon to support the GWT 2.7.0 release.
+* Change: Update ipr.add_gwt_configuration method to support GWT 2.7 configuration
+          parameters and IDEA 14 parameters.
+* Change: Enhance ipr.add_glassfish_configuration to support the ability to
+          define the version of GlassFish in uses. Change the default to 4.1.0
+          as that is the latest supported variant.
+* Fixed:  Change the name of the GlassFish install in ipr.add_glassfish_configuration
+          to use the same convention that IDEA uses by default. i.e. Name the
+          installation "GlassFish 4.1.0" rather than "Glassfish 4.1.0".
+* Change: Change the default version of the jdk in IDEA project files to 1.7.
+* Change: Change the default version of the IDEA project files created to the
+          current release version 13. To revert to the older versions specify
+          ipr.version = '12' in your buildfile.
+* Added:  Enhance the IdeaFile class to easily support mixing in of custom
+          components from either the filesystem or from an artifact.
 
 This is a partial list -- see the "CHANGELOG":CHANGELOG for full details.
 
