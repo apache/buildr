@@ -33,6 +33,7 @@ def spec(platform = RUBY_PLATFORM[/java/] || 'ruby')
   @specs ||= ['ruby', 'java', 'x86-mswin32'].inject({}) { |hash, spec_platform|
     ENV['BUILDR_PLATFORM'] = spec_platform
     hash.update(spec_platform=> Gem::Specification.load('buildr.gemspec'))
+    Gem::Specification._clear_load_cache
     ENV['BUILDR_PLATFORM'] = nil
     hash
   }
