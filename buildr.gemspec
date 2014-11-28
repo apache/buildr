@@ -21,7 +21,7 @@ end
 # Rakefile needs to create spec for all platforms (ruby and java), using the
 # BUILDR_PLATFORM environment variable. In all other cases, we figure it out
 # from RUBY_PLATFORM.
-$platform = ENV['BUILDR_PLATFORM'] || Gem::Platform::CURRENT
+$platform = ENV['BUILDR_PLATFORM'] || RUBY_PLATFORM[/java/] || Gem::Platform::CURRENT
 
 Gem::Specification.new do |spec|
   spec.name           = 'buildr'
