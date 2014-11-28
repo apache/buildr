@@ -47,6 +47,8 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 h2(#news).  What's New
 
 Highlights from Buildr 1.4.21 (2014-11-28)
+* Change: Upgrade atoulme-Antwrap to 0.7.5 to remove deprecation warnings in
+          modern JRuby. Suggested by Pepijn Van Eeckhoudt.
 * Fixed:  BUILDR-702 - Retain Unix permission flags when merging
           zip files into another zip or tar archive. Submitted by Pepijn Van Eeckhoudt.
 * Change: Upgrade jacoco to 0.7.2 to support Java 8. Submitted by neher.
