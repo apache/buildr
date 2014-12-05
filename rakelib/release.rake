@@ -79,7 +79,6 @@ task 'release' => %w{setup-local-site-svn} do
     end
   end.call
 
-
   # Update CHANGELOG to next release number.
   lambda do
     next_version = spec.version.to_s.split('.').map { |v| v.to_i }.
