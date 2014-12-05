@@ -13,8 +13,25 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-desc "Release the next version of buildr from existing staged repository"
-task 'release' => %w{setup-local-site-svn} do
+desc 'Checkout or update dist to local directory'
+task 'setup-local-dist-svn' do
+  if File.exist?('dist')
+    sh 'svn', 'up', 'site'
+    sh 'svn', 'revert', '--recursive', 'dist'
+  else
+    sh 'svn', 'co', 'https://dist.apache.org/repos/dist/release/buildr', 'dist'
+  end
+end
+
+task 'publish-dist-svn' do
+  cd 'dist'
+  sh 'svn', 'add', '--force', '.'
+  cd '..'
+  sh 'svn', 'commit', 'dist', '-m', 'Publish latest release'
+end
+
+desc 'Release the next version of buildr from existing staged repository'
+task 'release' => %w{setup-local-site-svn setup-local-dist-svn} do
   # First, we need to get all the staged files from Apache to _release.
   mkpath '_release'
   lambda do
@@ -26,25 +43,22 @@ task 'release' => %w{setup-local-site-svn} do
 
   # Upload binary and source packages and new Web site
   lambda do
-    target = "people.apache.org:/www/www.apache.org/dist/#{spec.name}/#{spec.version}"
-    puts 'Uploading packages to www.apache.org/dist ...'
-    host, remote_dir = target.split(':')
-    sh 'ssh', host, 'rm', '-rf', remote_dir rescue nil
-    existing_dirs = `ssh #{host} ls #{File.dirname(remote_dir)}`.split
-    sh 'ssh', host, 'mkdir', remote_dir
+    target = "dist/#{spec.version}"
+    puts "Copying packages to #{target}"
+    FileUtils.rm_rf(target)
+    existing_dirs = `ls dist`.split
+    FileUtils.mkdir_p(target)
     sh 'rsync', '--progress', '--recursive', '--delete', "_release/#{spec.version}/dist/", target
-    sh 'ssh', 'people.apache.org', 'chmod', '-f', '-R', 'g+w', "#{remote_dir}/*"
-    puts '[X] Uploaded packages to www.apache.org/dist'
+    sh 'chmod', '-f', '-R', 'g+w', target
+    puts "[X] Copying packages to #{target}"
 
     puts "[X] Removing existing packages #{existing_dirs.join(', ')}"
     existing_dirs.each do |dir|
-      sh 'ssh', host, 'rm', '-rf', "#{File.dirname(remote_dir)}/#{dir}" rescue nil
+      sh 'svn', 'rm', '--force', "dist/#{dir}"
     end
-
-    puts "Uploading new site to #{spec.name}.apache.org ..."
-    sh 'rsync', '--progress', '--recursive', '--exclude', '.svn', '--delete', "_release/#{spec.version}/site/", 'site'
-    task('publish-site-svn').invoke
-    puts "[X] Uploaded new site to #{spec.name}.apache.org"
+    puts "Publishing #{spec.name}"
+    task('publish-dist-svn').invoke
+    puts "[X] Publishing #{spec.name}"
   end.call
 
   # Push gems to Rubyforge.org
@@ -157,5 +171,6 @@ The Apache Buildr Team
   end.call
 end
 
+task('clobber') { rm_rf 'dist' }
 task('clobber') { rm_rf '_release' }
 task('clobber') { rm_rf 'announce-email.txt' }
