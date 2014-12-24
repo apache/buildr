@@ -23,7 +23,7 @@ module Buildr
       # The specs for requirements
       def dependencies
         [
-          'com.puppycrawl.tools:checkstyle:jar:6.0',
+          'com.puppycrawl.tools:checkstyle:jar:6.1.1',
           'antlr:antlr:jar:2.7.7',
           'org.antlr:antlr4-runtime:jar:4.3',
           'com.google.guava:guava:jar:18.0',
