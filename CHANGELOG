@@ -1,4 +1,5 @@
 1.4.22 (Pending)
+* Change: Update checkstyle to 6.1.1. Submitted by neher.
 
 1.4.21 (2014-11-28)
 * Change: Upgrade atoulme-Antwrap to 0.7.5 to remove deprecation warnings in
