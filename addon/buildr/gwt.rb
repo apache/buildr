@@ -126,7 +126,6 @@ module Buildr
         version = gwt_detect_version(dependencies) || Buildr::GWT.version
 
         if project.iml?
-
           existing_deps = project.compile.dependencies.collect do |d|
             a = artifact(d)
             a.invoke if a.respond_to?(:invoke)
