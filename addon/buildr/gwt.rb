@@ -128,7 +128,7 @@ module Buildr
         if project.iml?
           existing_deps = project.compile.dependencies.collect do |d|
             a = artifact(d)
-            a.invoke if a.respond_to?(:invoke)
+            a.invoke if a.is_a?(Buildr::Artifact)
             a.to_s
           end
           Buildr::GWT.dependencies(version).each do |d|

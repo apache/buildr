@@ -2,6 +2,9 @@
 * Change: Update checkstyle to 6.1.1. Submitted by neher.
 * Fixed:  Avoid empty dependency issue in gwt addon if the attempting to gwt compile
           a project that has no src/main/java.
+* Fixed:  Support dependencies in the gwt addon that are other local projects rather
+          that artifacts, without forcing a compilation of dependency when parsing
+          buildfile.
 
 1.4.21 (2014-11-28)
 * Change: Upgrade atoulme-Antwrap to 0.7.5 to remove deprecation warnings in
