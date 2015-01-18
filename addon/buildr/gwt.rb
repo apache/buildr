@@ -112,6 +112,8 @@ module Buildr
       include Extension
 
       def gwt(module_names, options = {})
+        p = options[:target_project]
+        target_project = p.nil? ? project : p.is_a?(String) ? project(p) : p
         output_key = options[:output_key] || project.id
         output_dir = project._(:target, :generated, :gwt, output_key)
         artifacts = ([project.compile.target] + project.compile.sources + project.resources.sources).flatten.compact.collect do |a|
@@ -147,7 +149,7 @@ module Buildr
         end
         task.enhance(dependencies)
         task.enhance([project.compile])
-        project.assets.paths << task
+        target_project.assets.paths << task
         task
       end
 

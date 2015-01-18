@@ -5,6 +5,8 @@
 * Fixed:  Support dependencies in the gwt addon that are other local projects rather
           that artifacts, without forcing a compilation of dependency when parsing
           buildfile.
+* Added:  Support specification of the target project to which the gwt compilation
+          artifacts are added as an asset, by using :target_project option.
 
 1.4.21 (2014-11-28)
 * Change: Upgrade atoulme-Antwrap to 0.7.5 to remove deprecation warnings in
