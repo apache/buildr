@@ -154,6 +154,11 @@ module Buildr #:nodoc:
           projects = ([project] + project.projects).select { |project| !(project.test.options[:integration] ^ integration) }
           projects.each do |project|
             info "Testing #{project.name}"
+            # Invoke the prerequisites outside of the rescue block, otherwise errors converging
+            # the prerequisites are swallowed (and treated like failed test results). Moving the
+            # code outside means problems such as test code that does not compile will result in a
+            # build failure even if Buildr.options.test is set to :all
+            project.test.prerequisites.each{|p|p.is_a?(String) ? file(p).invoke : p.invoke}
             begin
               project.test.invoke
             rescue
