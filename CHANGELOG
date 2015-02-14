@@ -12,6 +12,9 @@
 * Fixed:  Support dependencies in the gwt addon that are other local projects rather
           that artifacts, without forcing a compilation of dependency when parsing
           buildfile.
+* Added:  Support configuration of sql dialect mapping in IDEA generated project files
+          through methods on the ipr extension ipr.mssql_dialect_mapping,
+          ipr.postgres_dialect_mapping and ipr.sql_dialect_mappings
 * Added:  Support specification of the target project to which the gwt compilation
           artifacts are added as an asset, by using :target_project option.
 

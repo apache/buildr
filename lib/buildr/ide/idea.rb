@@ -682,6 +682,25 @@ module Buildr #:nodoc:
         end
       end
 
+      def mssql_dialect_mapping
+        sql_dialect_mappings(buildr_project.base_dir => 'TSQL')
+      end
+
+      def postgres_dialect_mapping
+        sql_dialect_mappings(buildr_project.base_dir => 'PostgreSQL')
+      end
+
+      def sql_dialect_mappings(mappings)
+        add_component('SqlDialectMappings') do |component|
+          mappings.each_pair do |path, dialect|
+            file_path = file_path(path).gsub(/\/.$/, '')
+
+            puts "#{file_path} => #{dialect}"
+            component.file :url => file_path, :dialect => dialect
+          end
+        end
+      end
+
       def add_postgres_data_source(name, options = {})
         if options[:url].nil? && options[:database]
          default_url = "jdbc:postgresql://#{(options[:host] || '127.0.0.1')}:#{(options[:port] || '5432')}/#{options[:database]}"
