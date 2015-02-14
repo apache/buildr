@@ -186,6 +186,7 @@ module Buildr #:nodoc:
     # During development you can write placeholder expectations by omitting the block. This will simply report
     # the expectation as pending.
     def check(*args, &block)
+      Buildr.ensure_rspec('check() method invoked in buildfile')
       expectations << Checks::Expectation.new(*args, &block)
     end
 
