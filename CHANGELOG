@@ -1,4 +1,10 @@
 1.4.22 (Pending)
+* Change: Update the buildr gemspec so that rspec is no longer a required dependency.
+          This enables end-users to use a different version of rspec and buildr in
+          the same project. The rspec version MUST be be compatible with the version
+          used by Buildr if rspec features are used from within Buildr. Buildr also
+          issues a warning if the `check` method is called and rspec has not been loaded.
+          The warning includes directions on how to resolve the issue. Submitted by r6p.
 * Fixed:  A long standing bug existed such that if tests failed to compile, and the
           option Buildr.options.test is set to :all then the compilation error would
           not result in a failed build. As many people set the Buildr.options.test to

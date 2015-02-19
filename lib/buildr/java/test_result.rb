@@ -15,7 +15,11 @@
 
 # It is necessary to require these files here as the bdd plugin directly includes this file
 require 'yaml'
-require 'rspec/core/formatters/base_formatter'
+begin
+  require 'rspec/core/formatters/base_formatter'
+rescue LoadError
+  # If Rspec is not present then assume we do no need Yaml formatter
+end
 
 module Buildr #:nodoc:
   module TestFramework #:nodoc:
@@ -52,49 +56,53 @@ module Buildr #:nodoc:
         @failed, @succeeded = [], []
       end
 
-      # An Rspec formatter used by buildr
-      class YamlFormatter  < ::RSpec::Core::Formatters::BaseFormatter
-        attr_reader :result
+      if Buildr.rspec_present?
+        require 'rspec/core/formatters/base_formatter'
 
-        def initialize(output)
-          super(output)
-          @result = Hash.new
-          @result[:succeeded] = []
-          @result[:failed] = []
-        end
+        # An Rspec formatter used by buildr
+        class YamlFormatter  < ::RSpec::Core::Formatters::BaseFormatter
+          attr_reader :result
 
-        def example_passed(example)
-          super(example)
-          result.succeeded << example_name(example)
-        end
+          def initialize(output)
+            super(output)
+            @result = Hash.new
+            @result[:succeeded] = []
+            @result[:failed] = []
+          end
 
-        def example_pending(example)
-          super(example)
-          result.succeeded << example_name(example)
-        end
+          def example_passed(example)
+            super(example)
+            result.succeeded << example_name(example)
+          end
 
-        def example_failed(example)
-          super(example)
-          result.failed << example_name(example)
-        end
+          def example_pending(example)
+            super(example)
+            result.succeeded << example_name(example)
+          end
 
-        def start(example_count)
-          super(example_count)
-          @result = TestResult.new
-        end
+          def example_failed(example)
+            super(example)
+            result.failed << example_name(example)
+          end
 
-        def close
-          super
-          result.succeeded = result.succeeded - result.failed
-          output.puts YAML.dump(result)
-        end
+          def start(example_count)
+            super(example_count)
+            @result = TestResult.new
+          end
 
-      private
-        def example_name(example)
-          example.file_path
-        end
-      end # YamlFormatter
+          def close
+            super
+            result.succeeded = result.succeeded - result.failed
+            output.puts YAML.dump(result)
+          end
 
-    end # TestResult
+        private
+          def example_name(example)
+            example.file_path
+          end
+        end # YamlFormatter
+
+      end # TestResult
+    end
   end
 end

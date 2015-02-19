@@ -84,7 +84,7 @@ module Buildr #:nodoc:
       def initialize(*args, &block)
         @description = args.pop if String === args.last
         @subject = args.shift
-        raise ArgumentError, "Expecting subject followed by description, and either one is optional. Not quite sure what to do with this list of arguments." unless args.empty?
+        raise ArgumentError, 'Expecting subject followed by description, and either one is optional. Not quite sure what to do with this list of arguments.' unless args.empty?
         @block = block || lambda { |klass| info "Pending: #{description}" }
       end
 
@@ -150,9 +150,9 @@ module Buildr #:nodoc:
           end
         end or fail "Checks failed for project #{project.name} (see errors above)."
       end
-      project.task("package").enhance do |task|
+      project.task('package').enhance do |task|
         # Run all actions before checks.
-        task.enhance { project.task("check").invoke }
+        task.enhance { project.task('check').invoke }
       end
     end
 
@@ -186,6 +186,7 @@ module Buildr #:nodoc:
     # During development you can write placeholder expectations by omitting the block. This will simply report
     # the expectation as pending.
     def check(*args, &block)
+      Buildr.ensure_rspec('check() method invoked in buildfile')
       expectations << Checks::Expectation.new(*args, &block)
     end
 
