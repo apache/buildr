@@ -21,7 +21,7 @@ module Buildr
       # The specs for requirements
       def dependencies
         [
-          'org.codehaus.sonar-plugins:sonar-ant-task:jar:1.3'
+          'org.codehaus.sonar-plugins:sonar-ant-task:jar:2.2'
         ]
       end
 
@@ -32,16 +32,13 @@ module Buildr
 
         cp = Buildr.artifacts(self.dependencies).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
 
-        args = {
-          :key => key,
-          :version => '1',
-          'xmlns:sonar' => 'antlib:org.sonar.ant'
-        }
-
         Buildr.ant('sonar') do |ant|
-          ant.taskdef  :name => 'sonar', :classname => 'org.sonar.ant.SonarTask', :classpath => cp
+          ant.taskdef :name => 'sonar', :classname => 'org.sonar.ant.SonarTask', :classpath => cp
 
           ant.property :name => 'sonar.projectName', :value => project_name
+
+          ant.property :name => 'sonar.projectKey', :value => key
+          ant.property :name => 'sonar.projectVersion', :value => '1.0'
 
           ant.property :name => 'sonar.jdbc.url', :value => jdbc_url
           ant.property :name => 'sonar.jdbc.driverClassName', :value => jdbc_driver_class_name
@@ -52,10 +49,10 @@ module Buildr
           ant.property :name => 'sonar.checkstyle.generateXml', :value => 'true'
 
           ant.property :name => 'sonar.sources', :value => sources.join(',')
-          ant.property :name => 'sonar.binaries', :value => binaries.join(',')
-          ant.property :name => 'sonar.libraries', :value => libraries.join(',')
+          ant.property :name => 'sonar.java.binaries', :value => binaries.join(',')
+          ant.property :name => 'sonar.java.libraries', :value => libraries.join(',')
 
-          ant.sonar args
+          ant.sonar
 
         end
       end
