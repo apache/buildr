@@ -21,10 +21,12 @@ module Buildr #:nodoc:
 
     # Abstract base class for IdeaModule and IdeaProject
     class IdeaFile
+      DEFAULT_PREFIX = ''
       DEFAULT_SUFFIX = ''
       DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE = 'MAVEN_REPOSITORY'
 
       attr_reader :buildr_project
+      attr_writer :prefix
       attr_writer :suffix
       attr_writer :id
       attr_accessor :template
@@ -32,6 +34,10 @@ module Buildr #:nodoc:
 
       def initialize
         @local_repository_env_override = DEFAULT_LOCAL_REPOSITORY_ENV_OVERRIDE
+      end
+
+      def prefix
+        @prefix ||= DEFAULT_PREFIX
       end
 
       def suffix
@@ -72,7 +78,7 @@ module Buildr #:nodoc:
       end
 
       def name
-        "#{self.id}#{suffix}"
+        "#{prefix}#{self.id}#{suffix}"
       end
 
       protected

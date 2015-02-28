@@ -528,6 +528,24 @@ foo-suffix2.iml
 bar/bar-suffix2.iml
 </pre>
 
+h5. Example: Setting prefix
+
+{% highlight ruby %}
+define "foo" do
+  ipr.prefix = "prefix1-"
+  iml.prefix = "prefix2-"
+  define "bar"
+end
+{% endhighlight %}
+
+Will generate:
+
+<pre>
+prefix1-foo.ipr
+prefix2-foo.iml
+bar/prefix2-bar.iml
+</pre>
+
 h4. Disabling project file generation
 
 The extension will not generate an iml file for a project if the "project.no_iml" method is invoked. Generation of ipr files can be disabled by invoking the method "project.no_ipr".

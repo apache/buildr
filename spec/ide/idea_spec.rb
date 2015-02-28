@@ -1293,6 +1293,60 @@ describe Buildr::IntellijIdea do
           doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']", 1)
         end
       end
+
+      describe "and a prefix defined" do
+        before do
+          @foo = define "foo" do
+            ipr.prefix = 'ipr-prefix-'
+            iml.prefix = 'iml-prefix-'
+          end
+          invoke_generate_task
+        end
+
+        it "generate an IPR in the root directory" do
+          File.should be_exist(@foo._("ipr-prefix-foo.ipr"))
+        end
+
+        it "generates an IML in the root directory" do
+          File.should be_exist(@foo._("iml-prefix-foo.iml"))
+        end
+
+        it "generate an IPR with the reference to correct module file" do
+          File.should be_exist(@foo._("ipr-prefix-foo.ipr"))
+          doc = xml_document(@foo._("ipr-prefix-foo.ipr"))
+          doc.should have_nodes("#{xpath_to_module}", 1)
+          module_ref = "$PROJECT_DIR$/iml-prefix-foo.iml"
+          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']", 1)
+        end
+      end
+
+      describe "and a suffix and a prefix defined" do
+        before do
+          @foo = define "foo" do
+            ipr.suffix = '-ipr-suffix'
+            iml.suffix = '-iml-suffix'
+            ipr.prefix = 'ipr-prefix-'
+            iml.prefix = 'iml-prefix-'
+          end
+          invoke_generate_task
+        end
+
+        it "generate an IPR in the root directory" do
+          File.should be_exist(@foo._("ipr-prefix-foo-ipr-suffix.ipr"))
+        end
+
+        it "generates an IML in the root directory" do
+          File.should be_exist(@foo._("iml-prefix-foo-iml-suffix.iml"))
+        end
+
+        it "generate an IPR with the reference to correct module file" do
+          File.should be_exist(@foo._("ipr-prefix-foo-ipr-suffix.ipr"))
+          doc = xml_document(@foo._("ipr-prefix-foo-ipr-suffix.ipr"))
+          doc.should have_nodes("#{xpath_to_module}", 1)
+          module_ref = "$PROJECT_DIR$/iml-prefix-foo-iml-suffix.iml"
+          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']", 1)
+        end
+      end
     end
 
     describe "with a subproject" do
