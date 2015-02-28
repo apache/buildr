@@ -1,4 +1,4 @@
-1.4.22 (Pending)
+1.4.22 (2015-02-28)
 * Change: BUILDR-704 - Updated the Sonar addon to support the latest version of SonarQube
           Runner. Submitted by Ross Mahony.
 * Added:  Add support for ipr.add_glassfish_remote_configuration method that generates
