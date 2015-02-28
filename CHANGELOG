@@ -1,4 +1,6 @@
 1.4.22 (Pending)
+* Added:  Add support for ipr.add_glassfish_remote_configuration method that generates
+          a remote glassfish configuration in IntelliJ IDEA project files.
 * Added:  Add support for iml.prefix and ipr.prefix settings that prefix the generated
           IntelliJ IDEA project and module files.
 * Change: Update the buildr gemspec so that rspec is no longer a required dependency.
