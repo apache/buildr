@@ -800,7 +800,7 @@ module Buildr #:nodoc:
             end
 
             if options[:enable_war].nil? || options[:enable_war] || (options[:war_module_names] && options[:war_module_names].size > 0)
-              module_names = options[:war_module_names] || [project.iml.id]
+              module_names = options[:war_module_names] || [project.iml.name]
               module_names.each do |module_name|
                 facet_name = options[:war_facet_name] || 'Web'
                 xml.element :id => 'javaee-facet-resources', :facet => "#{module_name}/web/#{facet_name}"
@@ -808,7 +808,7 @@ module Buildr #:nodoc:
             end
 
             if options[:enable_gwt] || (options[:gwt_module_names] && options[:gwt_module_names].size > 0)
-              module_names = options[:gwt_module_names] || [project.iml.id]
+              module_names = options[:gwt_module_names] || [project.iml.name]
               module_names.each do |module_name|
                 facet_name = options[:gwt_facet_name] || 'GWT'
                 xml.element :id => 'gwt-compiler-output', :facet => "#{module_name}/gwt/#{facet_name}"
@@ -870,7 +870,7 @@ module Buildr #:nodoc:
         args = options[:args] || ''
         dir = options[:dir] || 'file://$PROJECT_DIR$/'
         debug_port = options[:debug_port] || 2599
-        module_name = options[:module_name] || project.iml.id
+        module_name = options[:module_name] || project.iml.name
         jvm_args = options[:jvm_args] || ''
         name = options[:name] || classname
 
@@ -911,7 +911,7 @@ module Buildr #:nodoc:
         add_to_composite_component(self.configurations) do |xml|
           xml.configuration(:name => name, :type => 'RubyRunConfigurationType', :factoryName => 'Ruby', :default => !!options[:default]) do |xml|
 
-            xml.module(:name => project.iml.id)
+            xml.module(:name => project.iml.name)
             xml.RUBY_RUN_CONFIG(:NAME => 'RUBY_ARGS', :VALUE => '-e STDOUT.sync=true;STDERR.sync=true;load($0=ARGV.shift)')
             xml.RUBY_RUN_CONFIG(:NAME => 'WORK DIR', :VALUE => dir)
             xml.RUBY_RUN_CONFIG(:NAME => 'SHOULD_USE_SDK', :VALUE => 'true')
@@ -942,7 +942,7 @@ module Buildr #:nodoc:
         start_javascript_debugger = options[:start_javascript_debugger].nil? ? true : !!options[:start_javascript_debugger]
 
         add_configuration(name, 'GWT.ConfigurationType', 'GWT Configuration', false, :singleton => singleton) do |xml|
-          xml.module(:name => project.iml.id)
+          xml.module(:name => project.iml.name)
 
           xml.option(:name => 'VM_PARAMETERS', :value => vm_parameters)
           xml.option(:name => 'RUN_PAGE', :value => launch_page) if launch_page
@@ -1318,7 +1318,7 @@ module Buildr #:nodoc:
 
       def emit_module_output(xml, projects)
         projects.each do |p|
-          xml.element :id => 'module-output', :name => p.iml.id
+          xml.element :id => 'module-output', :name => p.iml.name
         end
       end
 
@@ -1330,7 +1330,7 @@ module Buildr #:nodoc:
 
       def emit_ejb_descriptors(xml, project, options)
         if options[:enable_ejb] || (options[:ejb_module_names] && options[:ejb_module_names].size > 0)
-          module_names = options[:ejb_module_names] || [project.iml.id]
+          module_names = options[:ejb_module_names] || [project.iml.name]
           module_names.each do |module_name|
             facet_name = options[:ejb_facet_name] || 'EJB'
             xml.element :id => 'javaee-facet-resources', :facet => "#{module_name}/ejb/#{facet_name}"
@@ -1340,7 +1340,7 @@ module Buildr #:nodoc:
 
       def emit_jpa_descriptors(xml, project, options)
         if options[:enable_jpa] || (options[:jpa_module_names] && options[:jpa_module_names].size > 0)
-          module_names = options[:jpa_module_names] || [project.iml.id]
+          module_names = options[:jpa_module_names] || [project.iml.name]
           module_names.each do |module_name|
             facet_name = options[:jpa_facet_name] || 'JPA'
             xml.element :id => 'jpa-descriptors', :facet => "#{module_name}/jpa/#{facet_name}"
