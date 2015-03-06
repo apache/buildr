@@ -37,6 +37,47 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.22</name>
+        <created>2015-02-28</created>
+        <revision>1.4.22</revision>
+        <dc:description>
+* Change: BUILDR-704 - Updated the Sonar addon to support the latest version of SonarQube
+          Runner. Submitted by Ross Mahony.
+* Added:  Add support for ipr.add_glassfish_remote_configuration method that generates
+          a remote glassfish configuration in IntelliJ IDEA project files.
+* Added:  Add support for iml.prefix and ipr.prefix settings that prefix the generated
+          IntelliJ IDEA project and module files.
+* Change: Update the buildr gemspec so that rspec is no longer a required dependency.
+          This enables end-users to use a different version of rspec and buildr in
+          the same project. The rspec version MUST be be compatible with the version
+          used by Buildr if rspec features are used from within Buildr. Buildr also
+          issues a warning if the `check` method is called and rspec has not been loaded.
+          The warning includes directions on how to resolve the issue. Submitted by r6p.
+* Fixed:  A long standing bug existed such that if tests failed to compile, and the
+          option Buildr.options.test is set to :all then the compilation error would
+          not result in a failed build. As many people set the Buildr.options.test to
+          :all in their continuous delivery/integration tools, this has caused some
+          problems. This has been fixed by ensuring all the problems associated with
+          the resolving the prerequisites are not caught when Buildr.options.test is
+          set to :all.
+* Change: Update checkstyle to 6.1.1. Submitted by neher.
+* Fixed:  Avoid empty dependency issue in gwt addon if the attempting to gwt compile
+          a project that has no src/main/java.
+* Fixed:  Support dependencies in the gwt addon that are other local projects rather
+          that artifacts, without forcing a compilation of dependency when parsing
+          buildfile.
+* Added:  Support configuration of sql dialect mapping in IDEA generated project files
+          through methods on the ipr extension ipr.mssql_dialect_mapping,
+          ipr.postgres_dialect_mapping and ipr.sql_dialect_mappings
+* Added:  Support specification of the target project to which the gwt compilation
+          artifacts are added as an asset, by using :target_project option.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.21</name>
         <created>2014-11-28</created>
         <revision>1.4.21</revision>
