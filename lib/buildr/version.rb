@@ -14,5 +14,5 @@
 # the License.
 
 module Buildr #:nodoc:
-  VERSION = '1.4.22'.freeze
+  VERSION = '1.4.23.dev'.freeze
 end
