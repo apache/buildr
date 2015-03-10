@@ -700,8 +700,6 @@ module Buildr #:nodoc:
         add_component('SqlDialectMappings') do |component|
           mappings.each_pair do |path, dialect|
             file_path = file_path(path).gsub(/\/.$/, '')
-
-            puts "#{file_path} => #{dialect}"
             component.file :url => file_path, :dialect => dialect
           end
         end
