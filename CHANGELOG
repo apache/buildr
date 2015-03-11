@@ -1,4 +1,5 @@
 1.4.23 (Pending)
+* Fixed:   Fix Buildr.rspec_present? so that it works under jruby 1.6.7.2
 
 1.4.22 (2015-02-28)
 * Change: BUILDR-704 - Updated the Sonar addon to support the latest version of SonarQube

@@ -27,7 +27,8 @@ module Buildr #:nodoc:
       @@rspec_checked = true
     end
 
-    $LOADED_FEATURES.any?{|f| f=~ /[\\\/]rspec\.rb$/ }
+    # Need to check 'rspec.rb' for jruby-1.6.7.2 and earlier
+    $LOADED_FEATURES.any?{|f| f == 'rspec.rb' || f =~ /[\\\/]rspec\.rb$/ }
   end
 
   def self.ensure_rspec(context)
