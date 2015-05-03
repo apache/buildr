@@ -23,10 +23,12 @@ module Buildr
       # The specs for requirements
       def dependencies
         [
-          'com.puppycrawl.tools:checkstyle:jar:6.1.1',
+          'com.puppycrawl.tools:checkstyle:jar:6.6',
           'antlr:antlr:jar:2.7.7',
-          'org.antlr:antlr4-runtime:jar:4.3',
+          'org.antlr:antlr4-runtime:jar:4.5',
           'com.google.guava:guava:jar:18.0',
+          'org.apache.commons:commons-lang3:jar:3.4',
+          'org.abego.treelayout:org.abego.treelayout.core:jar:1.0.1',
           'commons-cli:commons-cli:jar:1.2',
           'commons-beanutils:commons-beanutils-core:jar:1.8.3',
           'commons-logging:commons-logging:jar:1.1.1'
@@ -48,10 +50,7 @@ module Buildr
         args << format
         args << '-o'
         args << output_file
-        source_paths.each do |source_path|
-          args << '-r'
-          args << source_path
-        end
+        args += source_paths
 
         begin
           Java::Commands.java 'com.puppycrawl.tools.checkstyle.Main', *(args + [{:classpath => cp, :properties => options[:properties], :java_args => options[:java_args]}])
