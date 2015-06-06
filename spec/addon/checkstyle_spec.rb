@@ -14,6 +14,8 @@
 # the License.
 
 require File.expand_path('../spec_helpers', File.dirname(__FILE__))
+if Java.java.lang.System.getProperty('java.runtime.version') >= '1.7'
+
 Sandbox.require_optional_extension 'buildr/checkstyle'
 artifacts(Buildr::Checkstyle::dependencies).map(&:invoke)
 
@@ -54,4 +56,5 @@ describe Buildr::Checkstyle do
     file(project('foo')._('reports/checkstyle/checkstyle.html')).should exist
   end
 
+end
 end
