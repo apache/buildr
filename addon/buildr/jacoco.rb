@@ -130,15 +130,7 @@ module Buildr
           project.test.setup do
             agent_jar = Buildr.artifacts(Buildr::JaCoCo.agent_spec).each(&:invoke).map(&:to_s).join('')
             options = []
-            ["destfile",
-             "append",
-             "exclclassloader",
-             "sessionid",
-             "dumponexit",
-             "output",
-             "address",
-             "port",
-             "classdumpdir"].each do |option|
+            %w(destfile append exclclassloader sessionid dumponexit output address port classdumpdir).each do |option|
               value = project.jacoco.send(option.to_sym)
               options << "#{option}=#{value}" unless value.nil?
             end
@@ -150,10 +142,10 @@ module Buildr
           end
           namespace 'jacoco' do
             if project.jacoco.generate_xml?
-              desc "Generate JaCoCo reports."
+              desc 'Generate JaCoCo reports.'
               task 'reports' do
-                Buildr.ant "jacoco" do |ant|
-                  ant.taskdef(:resource => "org/jacoco/ant/antlib.xml") do |ant|
+                Buildr.ant 'jacoco' do |ant|
+                  ant.taskdef(:resource => 'org/jacoco/ant/antlib.xml') do |ant|
                     ant.classpath :path => Buildr.artifacts(Buildr::JaCoCo.ant_spec).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
                   end
                   ant.report do |ant|
@@ -167,7 +159,7 @@ module Buildr
                           ant.fileset :dir => project.compile.target
                         end
                       end
-                      ant.sourcefiles(:encoding => "UTF-8") do |ant|
+                      ant.sourcefiles(:encoding => 'UTF-8') do |ant|
                         project.compile.sources.each do |path|
                           ant.fileset :dir => path.to_s
                         end
@@ -184,10 +176,10 @@ module Buildr
         end
       end
       namespace 'jacoco' do
-        desc "Generate JaCoCo reports."
+        desc 'Generate JaCoCo reports.'
         task 'report' do
-          Buildr.ant "jacoco" do |ant|
-            ant.taskdef(:resource => "org/jacoco/ant/antlib.xml") do |ant|
+          Buildr.ant 'jacoco' do |ant|
+            ant.taskdef(:resource => 'org/jacoco/ant/antlib.xml') do |ant|
               ant.classpath :path => Buildr.artifacts(Buildr::JaCoCo.ant_spec).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
             end
             ant.report do |ant|
@@ -197,22 +189,22 @@ module Buildr
                 end
               end
 
-              ant.structure(:name => "Jacoco Report") do |ant|
+              ant.structure(:name => 'Jacoco Report') do |ant|
                 ant.classfiles do |ant|
                   Buildr.projects.map(&:compile).map(&:target).flatten.map(&:to_s).each do |src|
                     ant.fileset :dir=>src.to_s if File.exist?(src)
                   end
                 end
-                ant.sourcefiles(:encoding => "UTF-8") do |ant|
+                ant.sourcefiles(:encoding => 'UTF-8') do |ant|
                   Buildr.projects.map(&:compile).map(&:sources).flatten.map(&:to_s).each do |src|
                     ant.fileset :dir=>src.to_s if File.exist?(src)
                   end
                 end
               end
 
-              ant.html :destdir => "reports/jacoco"
-              ant.xml :destfile => "reports/jacoco/jacoco.xml"
-              ant.csv :destfile => "reports/jacoco/jacoco.csv"
+              ant.html :destdir => 'reports/jacoco'
+              ant.xml :destfile => 'reports/jacoco/jacoco.xml'
+              ant.csv :destfile => 'reports/jacoco/jacoco.csv'
             end
           end
         end
