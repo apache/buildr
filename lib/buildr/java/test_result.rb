@@ -15,11 +15,6 @@
 
 # It is necessary to require these files here as the bdd plugin directly includes this file
 require 'yaml'
-begin
-  require 'rspec/core/formatters/base_formatter'
-rescue LoadError
-  # If Rspec is not present then assume we do no need Yaml formatter
-end
 
 module Buildr #:nodoc:
   module TestFramework #:nodoc:
