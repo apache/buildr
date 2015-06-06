@@ -245,7 +245,7 @@ module Buildr #:nodoc:
         taskdef.invoke
         ant.taskdef :name=>'junit', :classname=>'org.apache.tools.ant.taskdefs.optional.junit.JUnitTask', :classpath=>taskdef.to_s
 
-        ant.junit forking.merge(:clonevm=>options[:clonevm] || false, :dir=>task.send(:project).path_to) do
+        ant.junit forking.merge(:clonevm=> !!options[:clonevm], :dir=>task.send(:project).path_to) do
           ant.classpath :path=>dependencies.join(File::PATH_SEPARATOR)
           (options[:properties] || []).each { |key, value| ant.sysproperty :key=>key, :value=>value }
           (options[:environment] || []).each { |key, value| ant.env :key=>key, :value=>value }
