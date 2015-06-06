@@ -194,7 +194,7 @@ module Buildr #:nodoc:
       runner.requires ||= []
       runner.requires.unshift File.join(File.dirname(__FILE__), 'test_result')
       runner.gems ||= {}
-      runner.rspec ||= ['--format', 'progress', '--format', 'documentation']
+      runner.rspec ||= %w(--format progress --format documentation)
       runner.format.each { |format| runner.rspec << '--format' << format } if runner.format
       runner.rspec.push '--format', "Buildr::TestFramework::TestResult::YamlFormatter"
       runner.rspec.push '-o', runner.result
