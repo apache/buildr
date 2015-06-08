@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.email          = 'users@buildr.apache.org'
   spec.homepage       = 'http://buildr.apache.org/'
   spec.summary        = 'Build like you code'
-  spec.licenses        = ['Apache-2.0']
+  spec.licenses        = %w(Apache-2.0)
   spec.description    = <<-TEXT
 Apache Buildr is a build system for Java-based applications, including support
 for Scala, Groovy and a growing number of JVM languages and tools.  We wanted
@@ -43,7 +43,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.platform       = $platform
 
   spec.files          = Dir['{addon,bin,doc,etc,lib,rakelib,spec}/**/*', '*.{gemspec,buildfile}'] +
-                        ['LICENSE', 'NOTICE', 'CHANGELOG', 'README.rdoc', 'Rakefile', '_buildr', '_jbuildr']
+                        %w(LICENSE NOTICE CHANGELOG README.rdoc Rakefile _buildr _jbuildr)
   spec.require_paths  = 'lib', 'addon'
   spec.bindir         = 'bin'                               # Use these for applications.
   spec.executable     = 'buildr'
