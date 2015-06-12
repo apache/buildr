@@ -46,6 +46,13 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
+Highlights from Buildr 1.4.23 (2015-06-12)
+* Change: BUILDR-706 - Update the checkstyle addon use checkstyle 6.6. Submitted
+          by Dieter Vrancken.
+* Fixed:  Fix Buildr.rspec_present? so that it works under jruby 1.6.7.2
+* Change: BUILDR-705 - Avoid attempting to load rspec classes unless Buildr.rspec_present?
+          returns true. Reported By rbpandey.
+
 Highlights from Buildr 1.4.22 (2015-02-28)
 * Change: BUILDR-704 - Updated the Sonar addon to support the latest version of SonarQube
           Runner. Submitted by Ross Mahony.
