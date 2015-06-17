@@ -53,8 +53,10 @@ module Buildr
         args += source_paths
 
         begin
+          touch output_file
           Java::Commands.java 'com.puppycrawl.tools.checkstyle.Main', *(args + [{:classpath => cp, :properties => options[:properties], :java_args => options[:java_args]}])
         rescue => e
+          rm_f output_file
           raise e if options[:fail_on_error]
         end
       end
