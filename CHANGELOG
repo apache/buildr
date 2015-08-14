@@ -1,5 +1,7 @@
 1.4.24 (Pending)
 * Change: Update the default GWT version used in the GWT addon to the latest release 2.7.0.
+* Fixed:  Fix GWT addon to explicitly add gwt-dev artifact to gwt compile path now that
+          the bug that allowed unintended sharing has been fixed.
 * Fixed:  Fix bug in IDEA module generation that resulted in dependencies in IDEA module
           using shared references to compile dependencies.
 * Change: Update the checkstyle addon to use checkstyle 6.7.

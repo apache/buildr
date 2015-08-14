@@ -127,22 +127,22 @@ module Buildr
 
         version = gwt_detect_version(dependencies) || Buildr::GWT.version
 
-        if project.iml?
-          existing_deps = project.compile.dependencies.collect do |d|
-            a = artifact(d)
-            a.invoke if a.is_a?(Buildr::Artifact)
-            a.to_s
-          end
-          Buildr::GWT.dependencies(version).each do |d|
-            a = artifact(d)
-            a.invoke if a.respond_to?(:invoke)
-            project.iml.main_dependencies << a.to_s unless existing_deps.include?(a.to_s)
-          end
+        additional_gwt_deps = []
+        existing_deps = project.compile.dependencies.collect do |d|
+          a = artifact(d)
+          a.invoke if a.is_a?(Buildr::Artifact)
+          a.to_s
+        end
+        Buildr::GWT.dependencies(version).each do |d|
+          a = artifact(d)
+          a.invoke if a.respond_to?(:invoke)
+          project.iml.main_dependencies << a.to_s unless !project.iml? || existing_deps.include?(a.to_s)
+          additional_gwt_deps << a
         end
 
         task = project.file(output_dir) do
           Buildr::GWT.gwtc_main(module_names,
-                                (dependencies + artifacts).flatten.compact,
+                                (dependencies + artifacts + additional_gwt_deps).flatten.compact,
                                 output_dir,
                                 unit_cache_dir,
                                 {:version => version}.merge(options))
