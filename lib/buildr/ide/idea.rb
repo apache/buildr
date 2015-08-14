@@ -249,11 +249,11 @@ module Buildr #:nodoc:
       end
 
       def main_dependencies
-        @main_dependencies ||=  buildr_project.compile.dependencies
+        @main_dependencies ||=  buildr_project.compile.dependencies.dup
       end
 
       def test_dependencies
-        @test_dependencies ||=  buildr_project.test.compile.dependencies
+        @test_dependencies ||=  buildr_project.test.compile.dependencies.dup
       end
 
       def add_facet(name, type)

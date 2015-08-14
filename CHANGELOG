@@ -1,4 +1,6 @@
 1.4.24 (Pending)
+* Fixed:  Fix bug in IDEA module generation that resulted in dependencies in IDEA module
+          using shared references to compile dependencies.
 * Change: Update the checkstyle addon to use checkstyle 6.7.
 
 1.4.23 (2015-06-12)
