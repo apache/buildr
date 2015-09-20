@@ -18,7 +18,7 @@ module Buildr
     class << self
 
       def jaxb_version
-        "2.2.1"
+        '2.2.1'
       end
 
       # The specs for requirements
@@ -32,7 +32,7 @@ module Buildr
 
       # Repositories containing the requirements
       def remote_repository
-        "http://download.java.net/maven/2"
+        'http://download.java.net/maven/2'
       end
 
       def xjc(*args)
@@ -57,8 +57,8 @@ module Buildr
       file(timestamp_file => files.flatten) do |task|
         rm_rf target_dir unless options[:keep_content]
         mkdir_p target_dir
-        args << "-d" << target_dir
-        args << "-p" << options[:package] if options[:package]
+        args << '-d' << target_dir
+        args << '-p' << options[:package] if options[:package]
         args += files.collect{|f| f.to_s}
         JaxbXjc.xjc args
         touch timestamp_file
