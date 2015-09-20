@@ -149,7 +149,7 @@ describe Buildr::IntellijIdea do
           invoke_generate_task
         end
 
-        it "generates one non-exported  test scope 'module-library' orderEntry in IML" do
+        it "generates one non-exported test scope 'module-library' orderEntry in IML" do
           root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' and @exported]/library/CLASSES/root", 0)
           root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' and @scope='TEST']/library/CLASSES/root", 1)
         end
