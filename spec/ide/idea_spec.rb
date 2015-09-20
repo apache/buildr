@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'xpath_matchers
 def ensure_facet_xpath(doc, type, name)
   facet_xpath = "/module/component[@name='FacetManager']/facet"
   doc.should have_xpath(facet_xpath)
-  web_facet_xpath = "#{facet_xpath}[@type='#{type}' and @name='#{name}']"
+  web_facet_xpath = "#{facet_xpath}[@type='#{type}' && @name='#{name}']"
   doc.should have_xpath(web_facet_xpath)
   web_facet_xpath
 end
@@ -122,7 +122,7 @@ describe Buildr::IntellijIdea do
         end
 
         it "generates one exported 'module-library' orderEntry in IML" do
-          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' and @exported='']/library/CLASSES/root", 1)
+          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' && @exported='']/library/CLASSES/root", 1)
         end
       end
 
@@ -136,7 +136,7 @@ describe Buildr::IntellijIdea do
         end
 
         it "generates one exported 'module-library' orderEntry in IML" do
-          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' and @scope='TEST']/library/CLASSES/root", 1)
+          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' && @scope='TEST']/library/CLASSES/root", 1)
         end
       end
 
@@ -150,8 +150,7 @@ describe Buildr::IntellijIdea do
         end
 
         it "generates one non-exported test scope 'module-library' orderEntry in IML" do
-          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' and @exported]/library/CLASSES/root", 0)
-          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' and @scope='TEST']/library/CLASSES/root", 1)
+          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' && @scope='TEST']/library/CLASSES/root", 1)
         end
       end
 
@@ -165,8 +164,7 @@ describe Buildr::IntellijIdea do
         end
 
         it "generates one non-exported 'module-library' orderEntry in IML" do
-          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' and @exported]/library/CLASSES/root", 0)
-          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library']/library/CLASSES/root", 1)
+          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' && @scope='TEST']/library/CLASSES/root", 1)
         end
       end
 
@@ -181,7 +179,7 @@ describe Buildr::IntellijIdea do
         end
 
         it "generates 'module-library' orderEntry in IML with SOURCES specified" do
-          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' and @exported='']/library/SOURCES/root", 1)
+          root_module_xml(@foo).should have_nodes("#{order_entry_xpath}[@type='module-library' && @exported='']/library/SOURCES/root", 1)
         end
       end
 
@@ -264,11 +262,11 @@ describe Buildr::IntellijIdea do
         doc = xml_document(@foo._("foo.ipr"))
         doc.should have_nodes("#{xpath_to_module}", 3)
         module_ref = "$PROJECT_DIR$/foo.iml"
-        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']")
+        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']")
         module_ref = "$PROJECT_DIR$/other.iml"
-        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']")
+        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']")
         module_ref = "$PROJECT_DIR$/other_other.iml"
-        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']")
+        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']")
       end
     end
 
@@ -326,8 +324,8 @@ describe Buildr::IntellijIdea do
         doc = xml_document(@foo._("foo.iml"))
         facet_xpath = ensure_facet_xpath(doc, 'gwt', 'GWT')
         prefix = "#{facet_xpath}/configuration/packaging/module"
-        doc.should have_xpath("#{prefix}[@name='com.biz.MyModule' and @enabled='true']")
-        doc.should have_xpath("#{prefix}[@name='com.biz.MyOtherModule' and @enabled='false']")
+        doc.should have_xpath("#{prefix}[@name='com.biz.MyModule' && @enabled='true']")
+        doc.should have_xpath("#{prefix}[@name='com.biz.MyOtherModule' && @enabled='false']")
       end
     end
 
@@ -402,7 +400,7 @@ describe Buildr::IntellijIdea do
       it "generates a web facet with jsf facet auto-detected" do
         doc = xml_document(@foo._("foo.iml"))
         web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
-        doc.should have_xpath("#{web_facet_xpath}/facet[@type='jsf' and @name='JSF']")
+        doc.should have_xpath("#{web_facet_xpath}/facet[@type='jsf' && @name='JSF']")
       end
     end
 
@@ -419,7 +417,7 @@ describe Buildr::IntellijIdea do
       it "does not generate a web facet with jsf facet" do
         doc = xml_document(@foo._("foo.iml"))
         web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
-        doc.should_not have_xpath("#{web_facet_xpath}/facet[@type='jsf' and @name='JSF']")
+        doc.should_not have_xpath("#{web_facet_xpath}/facet[@type='jsf' && @name='JSF']")
       end
     end
 
@@ -438,7 +436,7 @@ describe Buildr::IntellijIdea do
       it "does not generate a web facet with jsf facet" do
         doc = xml_document(@foo._("foo.iml"))
         web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
-        doc.should_not have_xpath("#{web_facet_xpath}/facet[@type='jsf' and @name='JSF']")
+        doc.should_not have_xpath("#{web_facet_xpath}/facet[@type='jsf' && @name='JSF']")
       end
     end
 
@@ -457,7 +455,7 @@ describe Buildr::IntellijIdea do
       it "does not generate a web facet with jsf facet" do
         doc = xml_document(@foo._("foo.iml"))
         web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
-        doc.should_not have_xpath("#{web_facet_xpath}/facet[@type='jsf' and @name='JSF']")
+        doc.should_not have_xpath("#{web_facet_xpath}/facet[@type='jsf' && @name='JSF']")
       end
     end
 
@@ -484,7 +482,7 @@ describe Buildr::IntellijIdea do
       it "generates a web facet with derived webroots" do
         doc = xml_document(@foo._("foo.iml"))
         web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
-        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp' and @relative='/']")
+        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp' && @relative='/']")
       end
     end
 
@@ -507,8 +505,8 @@ describe Buildr::IntellijIdea do
       it "generates a web facet with specified webroots" do
         doc = xml_document(@foo._("foo.iml"))
         web_facet_xpath = ensure_facet_xpath(doc, 'web', 'Web')
-        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp2' and @relative='/']")
-        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/css' and @relative='/css']")
+        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/webapp2' && @relative='/']")
+        doc.should have_xpath("#{web_facet_xpath}/configuration/webroots/root[@url='file://$MODULE_DIR$/src/main/css' && @relative='/css']")
       end
     end
 
@@ -534,8 +532,8 @@ describe Buildr::IntellijIdea do
       it "generates a jpa facet with default settings" do
         doc = xml_document(@foo._("foo.iml"))
         facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
-        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled' and @value='true']")
-        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name' and @value='Hibernate']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled' && @value='true']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name' && @value='Hibernate']")
       end
     end
 
@@ -563,8 +561,8 @@ describe Buildr::IntellijIdea do
       it "generates a jpa facet with default settings" do
         doc = xml_document(@foo._("foo.iml"))
         facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
-        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled' and @value='true']")
-        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name' and @value='Hibernate']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled' && @value='true']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name' && @value='Hibernate']")
       end
     end
 
@@ -604,8 +602,8 @@ describe Buildr::IntellijIdea do
       it "generates a jpa facet with default settings" do
         doc = xml_document(@foo._("foo.iml"))
         facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
-        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled' and @value='true']")
-        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name' and @value='Hibernate']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled' && @value='true']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name' && @value='Hibernate']")
       end
     end
 
@@ -623,8 +621,8 @@ describe Buildr::IntellijIdea do
       it "generates a jpa facet with default settings" do
         doc = xml_document(@foo._("foo.iml"))
         facet_xpath = ensure_facet_xpath(doc, 'jpa', 'JPA')
-        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled' and @value='true']")
-        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name' and @value='EclipseLink']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='validation-enabled' && @value='true']")
+        doc.should have_xpath("#{facet_xpath}/configuration/setting[@name='provider-name' && @value='EclipseLink']")
       end
     end
 
@@ -763,9 +761,9 @@ describe Buildr::IntellijIdea do
 
       it "generates a data source manager with specified data source" do
         doc = xml_document(@foo._("foo.ipr"))
-        prefix_xpath = "/project/component[@name='DataSourceManagerImpl' and @format='xml' and @hash='3208837817']/data-source"
+        prefix_xpath = "/project/component[@name='DataSourceManagerImpl' && @format='xml' && @hash='3208837817']/data-source"
         doc.should have_nodes(prefix_xpath, 1)
-        ds_path = "#{prefix_xpath}[@source='LOCAL' and @name='Postgres']"
+        ds_path = "#{prefix_xpath}[@source='LOCAL' && @name='Postgres']"
         doc.should have_xpath(ds_path)
         doc.should have_xpath("#{ds_path}/synchronize/text() = 'true'")
         doc.should have_xpath("#{ds_path}/jdbc-driver/text() = 'org.postgresql.Driver'")
@@ -789,9 +787,9 @@ describe Buildr::IntellijIdea do
 
       it "generates a data source manager with specified data source" do
         doc = xml_document(@foo._("foo.ipr"))
-        prefix_xpath = "/project/component[@name='DataSourceManagerImpl' and @format='xml' and @hash='3208837817']/data-source"
+        prefix_xpath = "/project/component[@name='DataSourceManagerImpl' && @format='xml' && @hash='3208837817']/data-source"
         doc.should have_nodes(prefix_xpath, 1)
-        ds_path = "#{prefix_xpath}[@source='LOCAL' and @name='Postgres']"
+        ds_path = "#{prefix_xpath}[@source='LOCAL' && @name='Postgres']"
         doc.should have_xpath(ds_path)
         doc.should have_xpath("#{ds_path}/synchronize/text() = 'true'")
         doc.should have_xpath("#{ds_path}/jdbc-driver/text() = 'org.postgresql.Driver'")
@@ -814,9 +812,9 @@ describe Buildr::IntellijIdea do
 
       it "generates a data source manager with specified data source" do
         doc = xml_document(@foo._("foo.ipr"))
-        prefix_xpath = "/project/component[@name='DataSourceManagerImpl' and @format='xml' and @hash='3208837817']/data-source"
+        prefix_xpath = "/project/component[@name='DataSourceManagerImpl' && @format='xml' && @hash='3208837817']/data-source"
         doc.should have_nodes(prefix_xpath, 1)
-        ds_path = "#{prefix_xpath}[@source='LOCAL' and @name='SqlServer']"
+        ds_path = "#{prefix_xpath}[@source='LOCAL' && @name='SqlServer']"
         doc.should have_xpath(ds_path)
 
         doc.should have_xpath("#{ds_path}/synchronize/text() = 'true'")
@@ -847,8 +845,8 @@ describe Buildr::IntellijIdea do
         doc = xml_document(@foo._("foo.ipr"))
         facet_xpath = "/project/component[@name='ArtifactManager']/artifact"
         doc.should have_nodes(facet_xpath, 2)
-        doc.should have_xpath("#{facet_xpath}[@type='jar' and @name='MyFancy.jar']")
-        doc.should have_xpath("#{facet_xpath}[@type='jar' and @name='MyOtherFancy.jar']")
+        doc.should have_xpath("#{facet_xpath}[@type='jar' && @name='MyFancy.jar']")
+        doc.should have_xpath("#{facet_xpath}[@type='jar' && @name='MyOtherFancy.jar']")
       end
     end
 
@@ -871,11 +869,11 @@ describe Buildr::IntellijIdea do
       it "generates an IPR with a jar artifact" do
         doc = xml_document(@foo._("foo.ipr"))
         base_xpath = "/project/component[@name='ArtifactManager']/artifact"
-        facet_xpath = "#{base_xpath}[@type='jar' and @name='bar.jar' and @build-on-make='false']"
+        facet_xpath = "#{base_xpath}[@type='jar' && @name='bar.jar' && @build-on-make='false']"
         doc.should have_xpath(facet_xpath)
 
         doc.should have_xpath("#{facet_xpath}/output-path/text() = $PROJECT_DIR$/artifacts/bar")
-        doc.should have_xpath("#{facet_xpath}/root[@id='archive' and @name='bar.jar']/element[@id='module-output' and @name='bar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='archive' && @name='bar.jar']/element[@id='module-output' && @name='bar']")
       end
     end
 
@@ -904,13 +902,13 @@ describe Buildr::IntellijIdea do
       it "generates an IPR with a jar artifact" do
         doc = xml_document(@foo._("foo.ipr"))
         base_xpath = "/project/component[@name='ArtifactManager']/artifact"
-        facet_xpath = "#{base_xpath}[@type='jar' and @name='bar.jar' and @build-on-make='true']"
+        facet_xpath = "#{base_xpath}[@type='jar' && @name='bar.jar' && @build-on-make='true']"
         doc.should have_xpath(facet_xpath)
 
         doc.should have_xpath("#{facet_xpath}/output-path/text() = $PROJECT_DIR$/bink")
-        doc.should have_xpath("#{facet_xpath}/root[@id='archive' and @name='bar.jar']/element[@id='module-output' and @name='bar']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='archive' and @name='bar.jar']/element[@id='jpa-descriptors' and @facet='p/jpa/JPA']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='archive' and @name='bar.jar']/element[@id='javaee-facet-resources' and @facet='x/ejb/EJB']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='archive' && @name='bar.jar']/element[@id='module-output' && @name='bar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='archive' && @name='bar.jar']/element[@id='jpa-descriptors' && @facet='p/jpa/JPA']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='archive' && @name='bar.jar']/element[@id='javaee-facet-resources' && @facet='x/ejb/EJB']")
       end
     end
 
@@ -935,12 +933,12 @@ describe Buildr::IntellijIdea do
       it "generates an IPR with an ejb artifact" do
         doc = xml_document(@foo._("foo.ipr"))
         base_xpath = "/project/component[@name='ArtifactManager']/artifact"
-        facet_xpath = "#{base_xpath}[@type='exploded-ejb' and @name='bar' and @build-on-make='false']"
+        facet_xpath = "#{base_xpath}[@type='exploded-ejb' && @name='bar' && @build-on-make='false']"
         doc.should have_xpath(facet_xpath)
         doc.should have_xpath("#{facet_xpath}/output-path/text() = $PROJECT_DIR$/artifacts/bar")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='module-output' and @name='bar']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='jpa-descriptors' and @facet='p/jpa/JPA']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' and @facet='x/ejb/EJB']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='module-output' && @name='bar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='jpa-descriptors' && @facet='p/jpa/JPA']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' && @facet='x/ejb/EJB']")
       end
     end
 
@@ -963,11 +961,11 @@ describe Buildr::IntellijIdea do
       it "generates an IPR with an ejb artifact" do
         doc = xml_document(@foo._("foo.ipr"))
         base_xpath = "/project/component[@name='ArtifactManager']/artifact"
-        facet_xpath = "#{base_xpath}[@type='exploded-ejb' and @name='bar' and @build-on-make='false']"
+        facet_xpath = "#{base_xpath}[@type='exploded-ejb' && @name='bar' && @build-on-make='false']"
         doc.should have_xpath(facet_xpath)
 
         doc.should have_xpath("#{facet_xpath}/output-path/text() = $PROJECT_DIR$/artifacts/bar")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='module-output' and @name='bar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='module-output' && @name='bar']")
       end
     end
 
@@ -991,13 +989,13 @@ describe Buildr::IntellijIdea do
       it "generates an IPR with a war artifact" do
         doc = xml_document(@foo._("foo.ipr"))
         base_xpath = "/project/component[@name='ArtifactManager']/artifact"
-        facet_xpath = "#{base_xpath}[@type='exploded-war' and @name='bar' and @build-on-make='false']"
+        facet_xpath = "#{base_xpath}[@type='exploded-war' && @name='bar' && @build-on-make='false']"
         doc.should have_xpath(facet_xpath)
 
         doc.should have_xpath("#{facet_xpath}/output-path/text() = $PROJECT_DIR$/artifacts/bar")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory' and @name='classes']/element[@id='module-output' and @name='bar']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory' and @name='lib']/element[@id='file-copy' and @path='$MAVEN_REPOSITORY$/net/sourceforge/jtds/jtds/1.2.7.XX/jtds-1.2.7.XX.jar']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' and @facet='bar/web/Web']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' && @name='WEB-INF']/element[@id='directory' && @name='classes']/element[@id='module-output' && @name='bar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' && @name='WEB-INF']/element[@id='directory' && @name='lib']/element[@id='file-copy' && @path='$MAVEN_REPOSITORY$/net/sourceforge/jtds/jtds/1.2.7.XX/jtds-1.2.7.XX.jar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' && @facet='bar/web/Web']")
       end
     end
 
@@ -1025,18 +1023,18 @@ describe Buildr::IntellijIdea do
       it "generates an IPR with a war artifact" do
         doc = xml_document(@foo._("foo.ipr"))
         base_xpath = "/project/component[@name='ArtifactManager']/artifact"
-        facet_xpath = "#{base_xpath}[@type='exploded-war' @name='MyFancy.jar' and @build-on-make='false']"
+        facet_xpath = "#{base_xpath}[@type='exploded-war' @name='MyFancy.jar' && @build-on-make='false']"
         doc.should have_xpath(facet_xpath)
 
         doc.should have_xpath("#{facet_xpath}/output-path/text() = $PROJECT_DIR$/artifacts/gar")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory' and @name='classes']/element[@id='module-output' and @name='bar']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory' and @name='lib']/element[@id='file-copy' and @path='$MAVEN_REPOSITORY$/net/sourceforge/jtds/jtds/1.2.7.XX/jtds-1.2.7.XX.jar']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' and @facet='x/web/Web']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' and @facet='y/web/Web']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='gwt-compiler-output' and @facet='p/gwt/GWT']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='gwt-compiler-output' and @facet='q/gwt/GWT']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory' and @name='lib']/element[@id='artifact' and @artifact-name='baz.jar']")
-        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' and @name='WEB-INF']/element[@id='directory' and @name='lib']/element[@id='artifact' and @artifact-name='biz.jar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' && @name='WEB-INF']/element[@id='directory' && @name='classes']/element[@id='module-output' && @name='bar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' && @name='WEB-INF']/element[@id='directory' && @name='lib']/element[@id='file-copy' && @path='$MAVEN_REPOSITORY$/net/sourceforge/jtds/jtds/1.2.7.XX/jtds-1.2.7.XX.jar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' && @facet='x/web/Web']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='javaee-facet-resources' && @facet='y/web/Web']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='gwt-compiler-output' && @facet='p/gwt/GWT']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='gwt-compiler-output' && @facet='q/gwt/GWT']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' && @name='WEB-INF']/element[@id='directory' && @name='lib']/element[@id='artifact' && @artifact-name='baz.jar']")
+        doc.should have_xpath("#{facet_xpath}/root[@id='root']/element[@id='directory' && @name='WEB-INF']/element[@id='directory' && @name='lib']/element[@id='artifact' && @artifact-name='biz.jar']")
       end
     end
 
@@ -1071,8 +1069,8 @@ describe Buildr::IntellijIdea do
         doc = xml_document(@foo._("foo.ipr"))
         facet_xpath = "/project/component[@name='ProjectRunConfigurationManager']/configuration"
         doc.should have_nodes(facet_xpath, 2)
-        doc.should have_xpath("#{facet_xpath}[@type='GWT.ConfigurationType' and @name='Run Contacts.html']")
-        doc.should have_xpath("#{facet_xpath}[@type='GWT.ConfigurationType' and @name='Run Planner.html']")
+        doc.should have_xpath("#{facet_xpath}[@type='GWT.ConfigurationType' && @name='Run Contacts.html']")
+        doc.should have_xpath("#{facet_xpath}[@type='GWT.ConfigurationType' && @name='Run Planner.html']")
       end
     end
 
@@ -1097,7 +1095,7 @@ describe Buildr::IntellijIdea do
         doc = xml_document(@foo._("foo.ipr"))
         facet_xpath = "/project/component[@name='ProjectRunConfigurationManager']/configuration"
         doc.should have_nodes(facet_xpath, 1)
-        doc.should have_xpath("#{facet_xpath}[@type='GWT.ConfigurationType' and @factoryName='GWT Configuration' and @default='true']")
+        doc.should have_xpath("#{facet_xpath}[@type='GWT.ConfigurationType' && @factoryName='GWT Configuration' && @default='true']")
       end
     end
 
@@ -1113,10 +1111,10 @@ describe Buildr::IntellijIdea do
         doc = xml_document(@foo._("foo.ipr"))
         configurations_xpath = "/project/component[@name='ProjectRunConfigurationManager']/configuration"
         doc.should have_nodes(configurations_xpath, 1)
-        configuration_xpath = "#{configurations_xpath}[@type='TestNG' and @factoryName='TestNG' and @default='true']"
+        configuration_xpath = "#{configurations_xpath}[@type='TestNG' && @factoryName='TestNG' && @default='true']"
         doc.should have_xpath(configuration_xpath)
-        doc.should have_xpath("#{configuration_xpath}/option[@name='VM_PARAMETERS' and @value='-ea']")
-        doc.should have_xpath("#{configuration_xpath}/option[@name='WORKING_DIRECTORY' and @value='$PROJECT_DIR$']")
+        doc.should have_xpath("#{configuration_xpath}/option[@name='VM_PARAMETERS' && @value='-ea']")
+        doc.should have_xpath("#{configuration_xpath}/option[@name='WORKING_DIRECTORY' && @value='$PROJECT_DIR$']")
       end
     end
 
@@ -1132,10 +1130,10 @@ describe Buildr::IntellijIdea do
         doc = xml_document(@foo._("foo.ipr"))
         configurations_xpath = "/project/component[@name='ProjectRunConfigurationManager']/configuration"
         doc.should have_nodes(configurations_xpath, 1)
-        configuration_xpath = "#{configurations_xpath}[@type='TestNG' and @factoryName='TestNG' and @default='true']"
+        configuration_xpath = "#{configurations_xpath}[@type='TestNG' && @factoryName='TestNG' && @default='true']"
         doc.should have_xpath(configuration_xpath)
-        doc.should have_xpath("#{configuration_xpath}/option[@name='VM_PARAMETERS' and @value='-ea -Dtest.db.url=xxxx']")
-        doc.should have_xpath("#{configuration_xpath}/option[@name='WORKING_DIRECTORY' and @value='C:/blah']")
+        doc.should have_xpath("#{configuration_xpath}/option[@name='VM_PARAMETERS' && @value='-ea -Dtest.db.url=xxxx']")
+        doc.should have_xpath("#{configuration_xpath}/option[@name='WORKING_DIRECTORY' && @value='C:/blah']")
       end
     end
 
@@ -1159,13 +1157,13 @@ describe Buildr::IntellijIdea do
         doc = xml_document(@foo._("foo.ipr"))
         doc.should have_nodes("#{xpath_to_module}", 4)
         module_ref = "$PROJECT_DIR$/foo.iml"
-        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']")
+        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']")
         module_ref = "$PROJECT_DIR$/rab/rab.iml"
-        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}' @group = 'MyGroup']")
+        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}' @group = 'MyGroup']")
         module_ref = "$PROJECT_DIR$/bar/bar.iml"
-        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}' @group = 'foo']")
+        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}' @group = 'foo']")
         module_ref = "$PROJECT_DIR$/bar/baz/baz.iml"
-        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}' @group = 'foo/bar']")
+        doc.should have_xpath("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}' @group = 'foo/bar']")
       end
     end
 
@@ -1196,7 +1194,7 @@ describe Buildr::IntellijIdea do
           File.should be_exist(@foo._("foo.ipr"))
           doc = xml_document(@foo._("foo.ipr"))
           module_ref = "$PROJECT_DIR$/foo.iml"
-          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']", 1)
+          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']", 1)
         end
       end
 
@@ -1264,7 +1262,7 @@ describe Buildr::IntellijIdea do
           File.should be_exist(@foo._("fooble.ipr"))
           doc = xml_document(@foo._("fooble.ipr"))
           module_ref = "$PROJECT_DIR$/feap.iml"
-          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']", 1)
+          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']", 1)
         end
       end
 
@@ -1290,7 +1288,7 @@ describe Buildr::IntellijIdea do
           doc = xml_document(@foo._("foo-ipr-suffix.ipr"))
           doc.should have_nodes("#{xpath_to_module}", 1)
           module_ref = "$PROJECT_DIR$/foo-iml-suffix.iml"
-          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']", 1)
+          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']", 1)
         end
       end
 
@@ -1316,7 +1314,7 @@ describe Buildr::IntellijIdea do
           doc = xml_document(@foo._("ipr-prefix-foo.ipr"))
           doc.should have_nodes("#{xpath_to_module}", 1)
           module_ref = "$PROJECT_DIR$/iml-prefix-foo.iml"
-          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']", 1)
+          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']", 1)
         end
       end
 
@@ -1344,7 +1342,7 @@ describe Buildr::IntellijIdea do
           doc = xml_document(@foo._("ipr-prefix-foo-ipr-suffix.ipr"))
           doc.should have_nodes("#{xpath_to_module}", 1)
           module_ref = "$PROJECT_DIR$/iml-prefix-foo-iml-suffix.iml"
-          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']", 1)
+          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']", 1)
         end
       end
     end
@@ -1370,9 +1368,9 @@ describe Buildr::IntellijIdea do
         doc = xml_document(@foo._("foo.ipr"))
         doc.should have_nodes("#{xpath_to_module}", 2)
         module_ref = "$PROJECT_DIR$/foo.iml"
-        doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']", 1)
+        doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']", 1)
         module_ref = "$PROJECT_DIR$/bar/bar.iml"
-        doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' and @filepath='#{module_ref}']", 1)
+        doc.should have_nodes("#{xpath_to_module}[@fileurl='file://#{module_ref}' && @filepath='#{module_ref}']", 1)
       end
     end
 
@@ -1409,7 +1407,7 @@ describe Buildr::IntellijIdea do
         doc = xml_document(@foo._("foo.ipr"))
         doc.should have_nodes("#{xpath_to_module}", 5)
         ["foo.iml", "fe/bar.iml", "fi/baz.iml", "fi/foe/foe.iml", "fe/fum/fum.iml"].each do |module_ref|
-          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://$PROJECT_DIR$/#{module_ref}' and @filepath='$PROJECT_DIR$/#{module_ref}']", 1)
+          doc.should have_nodes("#{xpath_to_module}[@fileurl='file://$PROJECT_DIR$/#{module_ref}' && @filepath='$PROJECT_DIR$/#{module_ref}']", 1)
         end
       end
     end
@@ -1448,7 +1446,7 @@ describe Buildr::IntellijIdea do
       end
 
       it "depends on the associated module exactly once" do
-        @bar_iml.should have_nodes("//orderEntry[@type='module' and @module-name='foo' and @exported=""]", 1)
+        @bar_iml.should have_nodes("//orderEntry[@type='module' && @module-name='foo' && @exported=""]", 1)
       end
 
       it "does not depend on the other project's packaged JAR" do
@@ -1501,12 +1499,12 @@ describe Buildr::IntellijIdea do
       it "generate an ProjectRootManager with 1.5 jdk specified" do
         #raise File.read(@foo._("foo.ipr"))
         xml_document(@foo._("foo.ipr")).
-          should have_xpath("/project/component[@name='ProjectRootManager' and @project-jdk-name = '1.5' and @languageLevel = 'JDK_1_5']")
+          should have_xpath("/project/component[@name='ProjectRootManager' && @project-jdk-name = '1.5' && @languageLevel = 'JDK_1_5']")
       end
 
       it "generates a ProjectDetails component with the projectName option set" do
         xml_document(@foo._("foo.ipr")).
-          should have_xpath("/project/component[@name='ProjectDetails']/option[@name = 'projectName' and @value = 'foo']")
+          should have_xpath("/project/component[@name='ProjectDetails']/option[@name = 'projectName' && @value = 'foo']")
       end
     end
 
@@ -1520,7 +1518,7 @@ describe Buildr::IntellijIdea do
 
       it "generate an ProjectRootManager with 1.6 jdk specified" do
         xml_document(@foo._("foo.ipr")).
-          should have_xpath("/project/component[@name='ProjectRootManager' and @project-jdk-name = '1.6' and @languageLevel = 'JDK_1_6']")
+          should have_xpath("/project/component[@name='ProjectRootManager' && @project-jdk-name = '1.6' && @languageLevel = 'JDK_1_6']")
       end
     end
 
@@ -1589,11 +1587,11 @@ describe Buildr::IntellijIdea do
       end
 
       it "generates the correct main source directories" do
-        root_module_xml(@foo).should have_xpath("//content/sourceFolder[@url='file://$MODULE_DIR$/src/main/baz' and @isTestSource='false']")
+        root_module_xml(@foo).should have_xpath("//content/sourceFolder[@url='file://$MODULE_DIR$/src/main/baz' && @isTestSource='false']")
       end
 
       it "generates the correct test source directories" do
-        root_module_xml(@foo).should have_xpath("//content/sourceFolder[@url='file://$MODULE_DIR$/src/test/foo' and @isTestSource='true']")
+        root_module_xml(@foo).should have_xpath("//content/sourceFolder[@url='file://$MODULE_DIR$/src/test/foo' && @isTestSource='true']")
       end
     end
 
@@ -1669,7 +1667,7 @@ PROJECT_XML
       end
 
       def ipr_from_template_xpath
-        "/project/component[@name='SvnBranchConfigurationManager']/option[@name = 'mySupportsUserInfoFilter' and @value = 'false']"
+        "/project/component[@name='SvnBranchConfigurationManager']/option[@name = 'mySupportsUserInfoFilter' && @value = 'false']"
       end
 
       def ipr_from_existing_xpath
@@ -1677,7 +1675,7 @@ PROJECT_XML
       end
 
       def ipr_from_existing_shadowing_template_xpath
-        "/project/component[@name='SvnBranchConfigurationManager']/option[@name = 'mySupportsUserInfoFilter' and @value = 'true']"
+        "/project/component[@name='SvnBranchConfigurationManager']/option[@name = 'mySupportsUserInfoFilter' && @value = 'true']"
       end
 
       def ipr_from_existing_shadowing_generated_xpath
@@ -1872,7 +1870,7 @@ PROJECT_XML
         it "merges components not in ipr template and not generated by task" do
           xml_document(@foo._("foo.ipr")).should have_xpath(ipr_from_existing_xpath)
           xml_document(@foo._("foo.ipr")).should_not have_xpath(ipr_from_existing_shadowing_generated_xpath)
-          xml_document(@foo._("foo.ipr")).should_not have_xpath(ipr_from_existing_shadowing_template_xpath)
+          xml_document(@foo._("foo.ipr")).should have_xpath(ipr_from_existing_shadowing_template_xpath)
         end
       end
     end
