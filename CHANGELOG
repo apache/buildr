@@ -1,4 +1,6 @@
 1.4.24 (Pending)
+* Change: Update the Intellij IDEA plugin to correctly identify project paths as resource
+          directories.
 * Change: Update the default GWT version used in the GWT addon to the latest release 2.7.0.
 * Fixed:  Fix GWT addon to explicitly add gwt-dev artifact to gwt compile path now that
           the bug that allowed unintended sharing has been fixed.
