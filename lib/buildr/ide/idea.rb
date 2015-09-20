@@ -469,6 +469,21 @@ module Buildr #:nodoc:
         p
       end
 
+      def main_dependency_details
+        target_dir = buildr_project.compile.target.to_s
+        main_dependencies.select { |d| d.to_s != target_dir }.collect do |d|
+          dependency_path = d.to_s
+          export = true
+          source_path = nil
+          if d.respond_to?(:to_spec_hash)
+            source_spec = d.to_spec_hash.merge(:classifier => 'sources')
+            source_path = Buildr.artifact(source_spec).to_s
+            source_path = nil unless File.exist?(source_path)
+          end
+          [dependency_path, export, source_path]
+        end
+      end
+
       def test_dependency_details
         main_dependencies_paths = main_dependencies.map(&:to_s)
         target_dir = buildr_project.compile.target.to_s
@@ -514,7 +529,7 @@ module Buildr #:nodoc:
           project_dependencies = []
 
 
-          self.test_dependency_details.each do |dependency_path, export, source_path|
+          self.main_dependency_details.each do |dependency_path, export, source_path|
             next unless export
             generate_lib(xml, dependency_path, export, source_path, project_dependencies)
           end
