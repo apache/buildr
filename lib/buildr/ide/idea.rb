@@ -616,7 +616,7 @@ module Buildr #:nodoc:
               options[:url] = file_path(dir)
               options[:isTestSource] = (content[:test] ? 'true' : 'false') if content[:type] != 'resource'
               options[:type] = 'java-resource' if content[:type] == 'resource' && !content[:test]
-              options[:type] = 'java-test-resource' if content[:type] == 'resource' && !content[:test]
+              options[:type] = 'java-test-resource' if content[:type] == 'resource' && content[:test]
               options[:generated] = 'true' if content[:generated]
               xml.sourceFolder options
             end
