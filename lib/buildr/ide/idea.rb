@@ -602,13 +602,13 @@ module Buildr #:nodoc:
         xml.content(:url => 'file://$MODULE_DIR$') do
           # Source folders
           [
-            {:dirs => self.main_source_directories},
+            {:dirs => (self.main_source_directories.dup - self.main_generated_source_directories)},
             {:dirs => self.main_generated_source_directories, :generated => true},
-            {:type => 'resource', :dirs => self.main_resource_directories},
+            {:type => 'resource', :dirs => (self.main_resource_directories.dup - self.main_generated_resource_directories)},
             {:type => 'resource', :dirs => self.main_generated_resource_directories, :generated => true},
-            {:test => true, :dirs => self.test_source_directories},
+            {:test => true, :dirs => (self.test_source_directories - self.test_generated_source_directories)},
             {:test => true, :dirs => self.test_generated_source_directories, :generated => true},
-            {:test => true, :type => 'resource', :dirs => self.test_resource_directories},
+            {:test => true, :type => 'resource', :dirs => (self.test_resource_directories - self.test_generated_resource_directories)},
             {:test => true, :type => 'resource', :dirs => self.test_generated_resource_directories, :generated => true},
           ].each do |content|
             content[:dirs].map { |dir| dir.to_s }.compact.sort.uniq.each do |dir|
