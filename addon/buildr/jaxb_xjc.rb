@@ -50,7 +50,7 @@ module Buildr
       target_dir = File.expand_path(options[:directory] || _(:target, :generated, :jaxb, 'main/java'))
       timestamp_file = File.expand_path("#{target_dir}/jaxb-#{options[:id] || 1}.cache")
 
-      project.iml.main_source_directories << target_dir if project.iml?
+      project.iml.main_generated_source_directories << target_dir if project.iml?
 
       file(target_dir => timestamp_file)
 

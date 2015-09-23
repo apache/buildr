@@ -43,7 +43,7 @@ module Buildr
         project.task("java2wsdl").enhance([project.compile.target])
 
         base_wsdl_dir = File.expand_path(options[:output_dir] || project._(:target, :generated, :wsgen, :main, :wsdl))
-        project.iml.main_source_directories << base_wsdl_dir if project.iml?
+        project.iml.main_generated_source_directories << base_wsdl_dir if project.iml?
         project.file(base_wsdl_dir)
         project.task("java2wsdl").enhance([base_wsdl_dir])
 
@@ -182,7 +182,7 @@ module Buildr
         end
 
         project.compile.from ws_dir
-        project.iml.main_source_directories << ws_dir if project.iml?
+        project.iml.main_generated_source_directories << ws_dir if project.iml?
         project.compile.enhance(['wsdl2java'])
 
         ws_dir
