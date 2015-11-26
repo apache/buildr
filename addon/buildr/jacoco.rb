@@ -138,7 +138,7 @@ module Buildr
             options << "excludes=#{project.jacoco.excludes.join(':')}" unless project.jacoco.excludes.empty?
 
             agent_config = "-javaagent:#{agent_jar}=#{options.join(',')}"
-            project.test.options[:java_args] = (project.test.options[:java_args] || []) + [agent_config]
+            project.test.options[:java_args] = ([project.test.options[:java_args]] || []) + [agent_config]
           end
           namespace 'jacoco' do
             if project.jacoco.generate_xml?
