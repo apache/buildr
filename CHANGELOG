@@ -11,7 +11,7 @@
           the bug that allowed unintended sharing has been fixed.
 * Fixed:  Fix bug in IDEA module generation that resulted in dependencies in IDEA module
           using shared references to compile dependencies.
-* Change: Update the checkstyle addon to use checkstyle 6.7.
+* Change: Update the checkstyle addon to use checkstyle 6.12.1.
 
 1.4.23 (2015-06-12)
 * Change: BUILDR-706 - Update the checkstyle addon use checkstyle 6.6. Submitted
