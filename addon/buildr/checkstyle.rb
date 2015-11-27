@@ -50,7 +50,7 @@ module Buildr
         args << format
         args << '-o'
         args << output_file
-        args += source_paths
+        args += source_paths.select { |p| File.exist?(p) }
 
         begin
           touch output_file
