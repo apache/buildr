@@ -37,7 +37,7 @@ module Buildr
 
       def checkstyle(configuration_file, format, output_file, source_paths, options = {})
         dependencies = self.dependencies + (options[:dependencies] || [])
-        cp = Buildr.artifacts(dependencies).each { |a| a.invoke() if a.respond_to?(:invoke) }.map(&:to_s)
+        cp = Buildr.artifacts(dependencies).each { |a| a.invoke if a.respond_to?(:invoke) }.map(&:to_s)
 
         args = []
         if options[:properties_file]
