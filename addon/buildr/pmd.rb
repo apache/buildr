@@ -24,13 +24,7 @@ module Buildr
 
       # The specs for requirements
       def dependencies
-        [
-          'net.sourceforge.pmd:pmd:jar:5.1.3',
-          'jaxen:jaxen:jar:1.1.1',
-          'commons-io:commons-io:jar:2.2',
-          'com.beust:jcommander:jar:1.27',
-          'asm:asm:jar:3.2'
-        ]
+        %w(net.sourceforge.pmd:pmd:jar:5.1.3 jaxen:jaxen:jar:1.1.1 commons-io:commons-io:jar:2.2 com.beust:jcommander:jar:1.27 asm:asm:jar:3.2)
       end
 
       def pmd(rule_set_files, format, output_file_prefix, source_paths, options = {})
