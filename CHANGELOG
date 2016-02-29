@@ -1,4 +1,6 @@
 1.4.24 (Pending)
+* Fixed:  In the PMD addon, check that the source directory exists before adding to
+          sources directories to include.
 * Fixed:  BUILDR-709 - Fix "Exception in jacoco.rb [TypeError : can't convert Array into
           String]". Submitted By Ross Mahony.
 * Added:  Define the 'activate_jruby_facet' addon that activates the jruby facet in

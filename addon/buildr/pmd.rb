@@ -50,7 +50,7 @@ module Buildr
           ant.pmd :shortFilenames => true, :rulesetfiles => rule_sets.join(',') do
             ant.formatter :type => format, :toFile => "#{output_file_prefix}.#{format}"
             source_paths.each do |src|
-              ant.fileset :dir=> src, :includes=>'**/*.java'
+              ant.fileset :dir=> src, :includes=>'**/*.java' if File.directory?(src)
             end
           end
 
@@ -70,7 +70,7 @@ module Buildr
           ant.taskdef :name=> 'cpd', :classpath => cp.join(';'), :classname => 'net.sourceforge.pmd.cpd.CPDTask'
           ant.cpd :format => format, :minimumTokenCount => minimum_token_count, :encoding => encoding, :outputFile => "#{output_file_prefix}.#{format}" do
             source_paths.each do |src|
-              ant.fileset :dir=> src, :includes=>'**/*.java'
+              ant.fileset :dir=> src, :includes=>'**/*.java' if File.directory?(src)
             end
           end
 
