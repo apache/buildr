@@ -176,6 +176,35 @@ module Buildr
         @extra_dependencies ||= [self.project.compile.dependencies, self.project.test.compile.dependencies].flatten
       end
 
+      # An array of additional projects to scan for main and test sources
+      attr_writer :additional_project_names
+
+      def additional_project_names
+        @additional_project_names ||= []
+      end
+
+      def complete_source_paths
+        paths = self.source_paths.dup
+
+        self.additional_project_names.each do |project_name|
+          p = self.project.project(project_name)
+          paths << [p.compile.sources, p.test.compile.sources].flatten.compact
+        end
+
+        paths.flatten.compact
+      end
+
+      def complete_extra_dependencies
+        deps = self.extra_dependencies.dup
+
+        self.additional_project_names.each do |project_name|
+          p = self.project.project(project_name)
+          deps << [p.compile.dependencies, p.test.compile.dependencies].flatten.compact
+        end
+
+        deps.flatten.compact
+      end
+
       protected
 
       def initialize(project)
@@ -202,10 +231,10 @@ module Buildr
             Buildr::Checkstyle.checkstyle(project.checkstyle.configuration_file,
                                           project.checkstyle.format,
                                           project.checkstyle.xml_output_file,
-                                          project.checkstyle.source_paths.flatten.compact,
+                                          project.checkstyle.complete_source_paths,
                                           :properties => project.checkstyle.properties,
                                           :fail_on_error => project.checkstyle.fail_on_error?,
-                                          :dependencies => project.checkstyle.extra_dependencies)
+                                          :dependencies => project.checkstyle.complete_extra_dependencies)
           end
 
           if project.checkstyle.html_enabled?
