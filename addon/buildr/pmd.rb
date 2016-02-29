@@ -125,8 +125,22 @@ module Buildr
         @source_paths ||= [self.project.compile.sources, self.project.test.compile.sources].flatten.compact
       end
 
+      # An array of additional projects to scan for main and test sources
+      attr_writer :additional_project_names
+
+      def additional_project_names
+        @additional_project_names ||= []
+      end
+
       def flat_source_paths
-        source_paths.flatten.compact
+        paths = source_paths.dup
+
+        self.additional_project_names.each do |project_name|
+          p = self.project.project(project_name)
+          paths << [p.compile.sources, p.test.compile.sources].flatten.compact
+        end
+
+        paths.flatten.compact
       end
 
       protected

@@ -1,4 +1,6 @@
 1.4.24 (Pending)
+* Added:  Add pmd.additional_project_names configuration to PMD addon to ease merging in
+          the source paths from multiple projects into one PMD task.
 * Fixed:  In the PMD addon, check that the source directory exists before adding to
           sources directories to include.
 * Fixed:  BUILDR-709 - Fix "Exception in jacoco.rb [TypeError : can't convert Array into
