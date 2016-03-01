@@ -154,6 +154,46 @@ module Buildr
         @extra_dependencies ||= [self.project.compile.dependencies, self.project.test.compile.dependencies].flatten.compact
       end
 
+      # An array of additional projects to scan for main and test sources
+      attr_writer :additional_project_names
+
+      def additional_project_names
+        @additional_project_names ||= []
+      end
+
+      def complete_source_paths
+        paths = self.source_paths.dup
+
+        self.additional_project_names.each do |project_name|
+          p = self.project.project(project_name)
+          paths << [p.compile.sources, p.test.compile.sources].flatten.compact
+        end
+
+        paths.flatten.compact
+      end
+
+      def complete_analyze_paths
+        paths = self.analyze_paths.dup
+
+        self.additional_project_names.each do |project_name|
+          paths << self.project.project(project_name).compile.target
+        end
+
+        paths.flatten.compact
+      end
+
+      def complete_extra_dependencies
+        deps = self.extra_dependencies.dup
+
+        self.additional_project_names.each do |project_name|
+          p = self.project.project(project_name)
+          deps << [p.compile.dependencies, p.test.compile.dependencies].flatten.compact
+        end
+
+        deps.flatten.compact
+      end
+
+
       protected
 
       def initialize(project)
@@ -179,15 +219,15 @@ module Buildr
               {
                 :properties => project.findbugs.properties,
                 :fail_on_error => project.findbugs.fail_on_error?,
-                :extra_dependencies => project.findbugs.extra_dependencies
+                :extra_dependencies => project.findbugs.complete_extra_dependencies
               }
             options[:exclude_filter] = project.findbugs.filter_file if File.exist?(project.findbugs.filter_file)
             options[:output] = 'xml:withMessages'
             options[:report_level] = project.findbugs.report_level
 
             Buildr::Findbugs.findbugs(project.findbugs.xml_output_file,
-                                      project.findbugs.source_paths.flatten.compact,
-                                      project.findbugs.analyze_paths.flatten.compact,
+                                      project.findbugs.complete_source_paths,
+                                      project.findbugs.complete_analyze_paths,
                                       options)
           end
 
@@ -198,15 +238,15 @@ module Buildr
               {
                 :properties => project.findbugs.properties,
                 :fail_on_error => project.findbugs.fail_on_error?,
-                :extra_dependencies => project.findbugs.extra_dependencies
+                :extra_dependencies => project.findbugs.complete_extra_dependencies
               }
             options[:exclude_filter] = project.findbugs.filter_file if File.exist?(project.findbugs.filter_file)
             options[:output] = 'html'
             options[:report_level] = project.findbugs.report_level
 
             Buildr::Findbugs.findbugs(project.findbugs.html_output_file,
-                                      project.findbugs.source_paths.flatten.compact,
-                                      project.findbugs.analyze_paths.flatten.compact,
+                                      project.findbugs.complete_source_paths,
+                                      project.findbugs.complete_analyze_paths,
                                       options)
           end
         end
