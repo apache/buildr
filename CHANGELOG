@@ -1,4 +1,6 @@
 1.4.24 (Pending)
+* Added:  Add jdepend.additional_project_names configuration to jDepend addon to
+          ease merging in the source paths from multiple projects into one jDepend task.
 * Added:  Add findbugs.additional_project_names configuration to Findbugs addon to
           ease merging in the source paths from multiple projects into one Findbugs task.
 * Added:  Add checkstyle.additional_project_names configuration to Checkstyle addon to

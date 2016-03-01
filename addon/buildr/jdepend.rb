@@ -121,6 +121,24 @@ module Buildr
         }
       end
 
+      # An array of additional projects to scan for target_paths
+      attr_writer :additional_project_names
+
+      def additional_project_names
+        @additional_project_names ||= []
+      end
+
+      def complete_target_paths
+        deps = self.target_paths.dup
+
+        self.additional_project_names.each do |project_name|
+          p = self.project.project(project_name)
+          deps << [p.compile.target, p.test.compile.target].flatten.compact
+        end
+
+        deps.flatten.compact
+      end
+
       protected
 
       def initialize(project)
@@ -140,30 +158,30 @@ module Buildr
 
       after_define do |project|
         if project.jdepend.enabled?
-          desc "Generate JDepend xml report."
-          project.task("jdepend:xml") do
-            puts "JDepend: Analyzing source code..."
+          desc 'Generate JDepend xml report.'
+          project.task('jdepend:xml') do
+            puts 'JDepend: Analyzing source code...'
             mkdir_p File.dirname(project.jdepend.xml_output_file)
             Buildr::JDepend.jdepend(project.jdepend.xml_output_file,
-                                    project.jdepend.target_paths.flatten.compact,
+                                    project.jdepend.complete_target_paths,
                                     project.jdepend.to_options)
           end
 
-          desc "Run JDepend with Swing UI."
-          project.task("jdepend:swing") do
-            puts "JDepend: Analyzing source code..."
+          desc 'Run JDepend with Swing UI.'
+          project.task('jdepend:swing') do
+            puts 'JDepend: Analyzing source code...'
             Buildr::JDepend.jdepend(nil,
-                                    project.jdepend.target_paths.flatten.compact,
+                                    project.jdepend.complete_target_paths,
                                     project.jdepend.to_options)
           end
 
           if project.jdepend.html_enabled?
-            xml_task = project.task("jdepend:xml")
-            desc "Generate JDepend html report."
+            xml_task = project.task('jdepend:xml')
+            desc 'Generate JDepend html report.'
             project.task("jdepend:html" => xml_task) do
-              puts "JDepend: Generating report"
+              puts 'JDepend: Generating report'
               mkdir_p File.dirname(project.jdepend.html_output_file)
-              Buildr.ant "jdepend" do |ant|
+              Buildr.ant 'jdepend' do |ant|
                 ant.xslt :in => project.jdepend.xml_output_file,
                          :out => project.jdepend.html_output_file,
                          :style => project.jdepend.style_file
