@@ -136,7 +136,11 @@ module Buildr
           deps << [p.compile.target, p.test.compile.target].flatten.compact
         end
 
-        deps.flatten.compact
+        deps = deps.flatten.compact
+        deps.each do |d|
+          d.invoke if d.respond_to?(:invoke)
+        end
+        deps
       end
 
       protected

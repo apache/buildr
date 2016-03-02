@@ -1,4 +1,6 @@
 1.4.24 (Pending)
+* Fixed:  Update jDepend addon to ensure target directories are invoked prior to attempting
+          to analyze directories.
 * Added:  Add jdepend.additional_project_names configuration to jDepend addon to
           ease merging in the source paths from multiple projects into one jDepend task.
 * Added:  Add findbugs.additional_project_names configuration to Findbugs addon to
