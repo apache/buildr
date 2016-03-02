@@ -40,7 +40,7 @@ module Buildr
         end
         target_paths.each do |target_path|
           file(target_path).invoke
-          args << target_path.to_s
+          args << target_path.to_s if ::File.exist?(target_path.to_s)
         end
 
         # If no output file then we must be trying to run the swing app
