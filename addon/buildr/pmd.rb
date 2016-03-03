@@ -89,7 +89,7 @@ module Buildr
       attr_writer :rule_set_files
 
       def rule_set_files
-        @rule_set_files ||= (self.rule_set_artifacts.empty? ? ['rulesets/java/basic.xml', 'rulesets/java/imports.xml', 'rulesets/java/unusedcode.xml', 'rulesets/java/finalizers.xml', 'rulesets/java/braces.xml'] : [])
+        @rule_set_files ||= (self.rule_set_artifacts.empty? ? %w(rulesets/java/basic.xml rulesets/java/imports.xml rulesets/java/unusedcode.xml rulesets/java/finalizers.xml rulesets/java/braces.xml) : [])
       end
 
       # Support specification of rule sets that are distributed as part of a maven repository
@@ -125,6 +125,11 @@ module Buildr
         @source_paths ||= [self.project.compile.sources, self.project.test.compile.sources].flatten.compact
       end
 
+      # An array of paths that should be excluded no matter how they are added to pmd
+      def exclude_paths
+        @source_paths ||= []
+      end
+
       # An array of additional projects to scan for main and test sources
       attr_writer :additional_project_names
 
@@ -140,7 +145,7 @@ module Buildr
           paths << [p.compile.sources, p.test.compile.sources].flatten.compact
         end
 
-        paths.flatten.compact
+        paths.flatten.select{|p|!self.exclude_paths.include?(p)}.compact
       end
 
       protected

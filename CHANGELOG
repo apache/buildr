@@ -1,4 +1,5 @@
 1.4.24 (Pending)
+* Added:  Add `exclude_paths` setting to pmd addon to allow paths to be explicitly excluded.
 * Fixed:  Update jDepend addon to ensure target directories are invoked prior to attempting
           to analyze directories.
 * Added:  Add jdepend.additional_project_names configuration to jDepend addon to
