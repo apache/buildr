@@ -22,6 +22,7 @@ STAGE_DATE = ENV['STAGE_DATE'] ||  Time.now.strftime('%Y-%m-%d')
 
 task 'prepare' do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
+  user = args.user || ENV['user'] || `whoami`
 
   # Update source files to next release number.
   lambda do
@@ -84,6 +85,13 @@ task 'prepare' do |task, args|
     sh 'prince --version'
     puts '[X] We have prince available'
   end.call
+  
+  # Need lftp to push the stage website to home.apache.org
+  lambda do
+    puts 'Checking that lftp is available...'
+    sh 'lftp --version'
+    puts '[X] We have lftp available'
+  end.call
 
   raise "Can not run stage process under jruby" if RUBY_PLATFORM[/java/]
   raise "Can not run staging process under older rubies" unless RUBY_VERSION >= '1.9'
@@ -91,6 +99,7 @@ end
 
 task 'stage' => %w(clobber prepare) do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
+  user = args.user || ENV['user'] || `whoami`
   mkpath '_staged'
 
   lambda do
@@ -173,12 +182,11 @@ p>. ("Release signing keys":#{official}/KEYS)
   end.call
 
 
-  # Move everything over to people.apache.org so we can vote on it.
+  # Move everything over to home.apache.org so we can vote on it.
   lambda do
-    url = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
-    puts "Uploading _staged directory to #{url} ..."
-    sh 'rsync', '--progress', '--recursive', '_staged/', url
-    puts "[X] Uploaded _staged directory to #{url}"
+    puts "Uploading _staged directory ..."
+    sh "lftp -e \"mirror -R _staged public_html/buildr/#{spec.version}; bye\" -u #{user} sftp://home.apache.org" 
+    puts "[X] Uploaded _staged directory"
   end.call
 
 
@@ -186,8 +194,7 @@ p>. ("Release signing keys":#{official}/KEYS)
   # email for you and vote on it.
   lambda do
     # Need to know who you are on Apache, local user may be different (see .ssh/config).
-    whoami = `ssh people.apache.org whoami`.strip
-    base_url = "http://people.apache.org/~#{whoami}/buildr/#{spec.version}"
+    base_url = "http://home.apache.org/~#{user}/buildr/#{spec.version}"
     # Need changes for this release only.
     changelog = File.read('CHANGELOG').scan(/(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/)
     changes = changelog[0][2]
