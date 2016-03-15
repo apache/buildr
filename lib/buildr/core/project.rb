@@ -234,7 +234,9 @@ module Buildr #:nodoc:
       def project(*args, &block) #:nodoc:
         options = args.pop if Hash === args.last
         return define(args.first, options, &block) if block
-        rake_check_options options, :scope if options
+        rake_check_options options, :scope, :no_invoke if options
+        no_invoke = options && options[:no_invoke]
+
         raise ArgumentError, 'Only one project name at a time' unless args.size == 1
         @projects ||= {}
         name = args.first.to_s
@@ -251,7 +253,7 @@ module Buildr #:nodoc:
         end
         project ||= @projects[name] # Not found in scope.
         raise "No such project #{name}" unless project
-        project.invoke unless Buildr.application.current_scope.join(":").to_s == project.name.to_s
+        project.invoke unless no_invoke || Buildr.application.current_scope.join(":").to_s == project.name.to_s
         project
       end
 
@@ -261,26 +263,29 @@ module Buildr #:nodoc:
       # See Buildr#projects.
       def projects(*names) #:nodoc:
         options = names.pop if Hash === names.last
-        rake_check_options options, :scope if options
+        rake_check_options options, :scope, :no_invoke if options
+
+        no_invoke = options && options[:no_invoke]
+
         @projects ||= {}
         names = names.flatten
         if options && options[:scope]
           # We assume parent project is evaluated.
           if names.empty?
             parent = @projects[options[:scope].to_s] or raise "No such project #{options[:scope]}"
-            @projects.values.select { |project| project.parent == parent }.each { |project| project.invoke }.
-              map { |project| [project] + projects(:scope=>project) }.flatten.sort_by(&:name)
+            @projects.values.select { |project| project.parent == parent }.each { |project| project.invoke unless no_invoke }.
+              map { |project| [project] + projects(:scope => project, :no_invoke => no_invoke) }.flatten.sort_by(&:name)
           else
-            names.uniq.map { |name| project(name, :scope=>options[:scope]) }
+            names.uniq.map { |name| project(name, :scope => options[:scope], :no_invoke => no_invoke) }
           end
         elsif names.empty?
           # Parent project(s) not evaluated so we don't know all the projects yet.
-          @projects.values.each(&:invoke)
-          @projects.keys.map { |name| project(name) or raise "No such project #{name}" }.sort_by(&:name)
+          @projects.values.each { |project| project.invoke unless no_invoke }
+          @projects.keys.map { |name| project(name, :no_invoke => no_invoke) or raise "No such project #{name}" }.sort_by(&:name)
         else
           # Parent project(s) not evaluated, for the sub-projects we may need to find.
-          names.map { |name| name.split(':') }.select { |name| name.size > 1 }.map(&:first).uniq.each { |name| project(name) }
-          names.uniq.map { |name| project(name) or raise "No such project #{name}" }.sort_by(&:name)
+          names.map { |name| name.split(':') }.select { |name| name.size > 1 }.map(&:first).uniq.each { |name| project(name, :no_invoke => no_invoke) }
+          names.uniq.map { |name| project(name, :no_invoke => no_invoke) or raise "No such project #{name}" }.sort_by(&:name)
         end
       end
 

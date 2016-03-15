@@ -1,4 +1,6 @@
 1.4.24 (Pending)
+* Added:  Support the :no_invoke parameter being passed to Buildr.project() and
+          Buildr.projects() to avoid attempting to call invoke when retrieving the projects.
 * Added:  Add `exclude_paths` setting to pmd addon to allow paths to be explicitly excluded.
 * Fixed:  Update jDepend addon to ensure target directories are invoked prior to attempting
           to analyze directories.
