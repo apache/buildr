@@ -17,7 +17,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 # need to test both with and without SCALA_HOME
-share_as :ScalacCompiler do
+shared_examples "ScalacCompiler" do
 
   it 'should identify itself from source directories' do
     write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }'
@@ -118,7 +118,7 @@ if ENV['SCALA_HOME']
       ENV['SCALA_HOME'].should_not be_nil
     end
 
-    it_should_behave_like ScalacCompiler
+    it_should_behave_like "ScalacCompiler"
   end
 end
 
@@ -133,14 +133,14 @@ describe 'scala compiler (downloaded from repository)' do
     ENV['SCALA_HOME'].should be_nil
   end
 
-  it_should_behave_like ScalacCompiler
+  it_should_behave_like "ScalacCompiler"
 
   after :all do
     ENV['SCALA_HOME'] = old_home
   end
 end
 
-share_as :ScalacCompiler_CommonOptions do
+shared_examples :ScalacCompiler_CommonOptions do
 
   it 'should set warnings option to false by default' do
     compile_task.options.warnings.should be_false
@@ -270,7 +270,7 @@ end
 
 describe 'scala compiler 2.8 options' do
 
-  it_should_behave_like ScalacCompiler_CommonOptions
+  it_should_behave_like :ScalacCompiler_CommonOptions
 
   def compile_task
     @compile_task ||= define('foo').compile.using(:scalac)
@@ -293,7 +293,7 @@ end if Buildr::Scala.version?(2.8)
 
 describe 'scala compiler 2.9 options' do
 
-  it_should_behave_like ScalacCompiler_CommonOptions
+  it_should_behave_like :ScalacCompiler_CommonOptions
 
   def compile_task
     @compile_task ||= define('foo').compile.using(:scalac)
@@ -342,7 +342,7 @@ describe 'zinc compiler (enabled through Buildr.settings)' do
     Buildr.settings.build['scalac.incremental'] = nil
   end
 
-  it_should_behave_like ScalacCompiler
+  it_should_behave_like "ScalacCompiler"
 end
 
 describe 'zinc compiler (enabled through project.scala_options)' do
