@@ -151,7 +151,7 @@ describe Buildr::Application do
 
     it 'should return a Gem::Specification for each installed gem' do
       load_with_yaml
-      Buildr.application.gems.each { |gem| gem.should be_kind_of(Gem::Specification) }
+      Buildr.application.gems.each { |gem| gem.should be_kind_of(Bundler::StubSpecification) }
     end
 
     it 'should parse Gem name correctly' do
