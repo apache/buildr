@@ -119,9 +119,6 @@ end
 
 
 describe URI::FILE do
-  it 'should complain about file:' do
-    lambda { URI('file:') }.should raise_error(URI::InvalidURIError)
-  end
 
   it 'should accept file:something as file:///something' do
     URI('file:something').should eql(URI('file:///something'))
@@ -133,10 +130,6 @@ describe URI::FILE do
 
   it 'should accept file:/something as file:///something' do
     URI('file:/something').should eql(URI('file:///something'))
-  end
-
-  it 'should complain about file://' do
-    lambda { URI('file://').should eql(URI('file:///')) }.should raise_error(URI::InvalidURIError)
   end
 
   it 'should accept file://something as file://something/' do
