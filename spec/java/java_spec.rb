@@ -22,18 +22,18 @@ unless RUBY_PLATFORM =~ /java/
     before do
       @old_home, ENV['JAVA_HOME'] = ENV['JAVA_HOME'], nil
       @old_env_java = Object.module_eval { remove_const :ENV_JAVA }
-      RbConfig::CONFIG.should_receive(:[]).at_least(:once).with('host_os').and_return('darwin0.9')
+      expect(RbConfig::CONFIG).to receive(:[]).at_least(:once).with('host_os').and_return('darwin0.9')
     end
 
     it 'should point to default JVM' do
       load File.expand_path('../lib/buildr/java/rjb.rb')
-      ENV['JAVA_HOME'].should == '/System/Library/Frameworks/JavaVM.framework/Home'
+      expect(ENV['JAVA_HOME']).to eq('/System/Library/Frameworks/JavaVM.framework/Home')
     end
 
     it 'should use value of environment variable if specified' do
       ENV['JAVA_HOME'] = '/System/Library/Frameworks/JavaVM.specified'
       load File.expand_path('../lib/buildr/java/rjb.rb')
-      ENV['JAVA_HOME'].should == '/System/Library/Frameworks/JavaVM.specified'
+      expect(ENV['JAVA_HOME']).to eq('/System/Library/Frameworks/JavaVM.specified')
     end
 
     after do
@@ -46,7 +46,7 @@ else
     it 'should enforce a minimum version of jruby' do
       check =File.read(File.expand_path('../lib/buildr/java/jruby.rb')).match(/JRUBY_MIN_VERSION.*\n.*JRUBY_MIN_VERSION\n/).to_s
       check.sub!('JRUBY_VERSION', "'0.0.0'")
-      lambda {  eval(check) }.should raise_error(/JRuby must be at least at version /)
+      expect {  eval(check) }.to raise_error(/JRuby must be at least at version /)
     end
   end
 end
@@ -65,7 +65,7 @@ describe 'Java.tools_jar' do
     end
 
     it 'should return the path to tools.jar' do
-      Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
+      expect(Java.tools_jar).to point_to_path('jdk/lib/tools.jar')
     end
   end
 
@@ -77,7 +77,7 @@ describe 'Java.tools_jar' do
     end
 
     it 'should return the path to tools.jar' do
-      Java.tools_jar.should point_to_path('jdk/lib/tools.jar')
+      expect(Java.tools_jar).to point_to_path('jdk/lib/tools.jar')
     end
   end
 
@@ -88,7 +88,7 @@ describe 'Java.tools_jar' do
     end
 
     it 'should return nil' do
-      Java.tools_jar.should be_nil
+      expect(Java.tools_jar).to be_nil
     end
   end
 
@@ -113,7 +113,7 @@ describe 'Java#java' do
         Java.java ['-version']
         fail 'Java.java did not fail with JAVA_HOME pointing to invalid JRE/JDK installation'
       rescue => error
-        error.message.to_s.should match(/JAVA_HOME/)
+        expect(error.message.to_s).to match(/JAVA_HOME/)
       end
     end
   end
@@ -126,7 +126,7 @@ end
 
 describe Java::JavaWrapper do
   it 'should be removed in version 1.5 since it was deprecated in version 1.3' do
-    Buildr::VERSION.should < '1.5'
-    lambda { Java::JavaWrapper }.should_not raise_error
+    expect(Buildr::VERSION).to be < '1.5'
+    expect { Java::JavaWrapper }.not_to raise_error
   end
 end

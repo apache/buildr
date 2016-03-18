@@ -27,8 +27,8 @@ describe "Groovydoc" do
       end
     end
 
-    project('foo').doc.options[:windowtitle].should eql('foo')
-    project('foo:bar').doc.options[:windowtitle].should eql('foo:bar')
+    expect(project('foo').doc.options[:windowtitle]).to eql('foo')
+    expect(project('foo:bar').doc.options[:windowtitle]).to eql('foo:bar')
   end
 
   it 'should pick :windowtitle from project description by default, if available' do
@@ -36,7 +36,7 @@ describe "Groovydoc" do
     define 'foo' do
       doc.using :groovydoc
     end
-    project('foo').doc.options[:windowtitle].should eql('My App')
+    expect(project('foo').doc.options[:windowtitle]).to eql('My App')
   end
 
   it 'should not override explicit :windowtitle option' do
@@ -44,14 +44,14 @@ describe "Groovydoc" do
       doc.using :groovydoc
       doc.using :windowtitle => 'explicit'
     end
-    project('foo').doc.options[:windowtitle].should eql('explicit')
+    expect(project('foo').doc.options[:windowtitle]).to eql('explicit')
   end
 
   it 'should identify itself from groovy source directories' do
     write 'src/main/groovy/some/A.java', 'package some; public class A {}'
     write 'src/main/groovy/some/B.groovy', 'package some; public class B {}'
     define('foo') do
-      doc.engine.should be_a(Buildr::Doc::Groovydoc)
+      expect(doc.engine).to be_a(Buildr::Doc::Groovydoc)
     end
   end
 
@@ -60,6 +60,6 @@ describe "Groovydoc" do
     write 'src/main/groovy/some/B.groovy', 'package some; public class B {}'
     define('foo')
     project('foo').doc.invoke
-    file('target/doc/index.html').should exist
+    expect(file('target/doc/index.html')).to exist
   end
 end

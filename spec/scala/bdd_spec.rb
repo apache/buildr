@@ -32,19 +32,19 @@ describe Buildr::Scala::Specs do
       }
     SCALA
     define 'foo'
-    project('foo').test.framework.should eql(:specs)
+    expect(project('foo').test.framework).to eql(:specs)
   end
 
   it 'should include Specs dependencies' do
     define('foo') { test.using(:specs) }
-    project('foo').test.compile.dependencies.should include(*artifacts(Scala::Specs.dependencies))
-    project('foo').test.dependencies.should include(*artifacts(Scala::Specs.dependencies))
+    expect(project('foo').test.compile.dependencies).to include(*artifacts(Scala::Specs.dependencies))
+    expect(project('foo').test.dependencies).to include(*artifacts(Scala::Specs.dependencies))
   end
 
   it 'should include ScalaCheck dependencies' do
     define('foo') { test.using(:specs) }
-    project('foo').test.compile.dependencies.should include(*artifacts(Scala::Check.dependencies))
-    project('foo').test.dependencies.should include(*artifacts(Scala::Check.dependencies))
+    expect(project('foo').test.compile.dependencies).to include(*artifacts(Scala::Check.dependencies))
+    expect(project('foo').test.dependencies).to include(*artifacts(Scala::Check.dependencies))
   end
 
   it 'should include public objects extending org.specs.Specification' do
@@ -60,7 +60,7 @@ describe Buildr::Scala::Specs do
       }
     SCALA
     define('foo').test.invoke
-    project('foo').test.tests.should include('com.example.MySpecs')
+    expect(project('foo').test.tests).to include('com.example.MySpecs')
   end
 
   it 'should include public objects extending org.specs.Specification even with companion classes' do
@@ -77,7 +77,7 @@ describe Buildr::Scala::Specs do
       class MySpecs extends org.specs.runner.JUnit4(MySpecs)
     SCALA
     define('foo').test.invoke
-    project('foo').test.tests.should include('com.example.MySpecs')
+    expect(project('foo').test.tests).to include('com.example.MySpecs')
   end
 
   it 'should pass when spec passes' do
@@ -91,7 +91,7 @@ describe Buildr::Scala::Specs do
         }
       }
     SCALA
-    lambda { define('foo').test.invoke }.should_not raise_error
+    expect { define('foo').test.invoke }.not_to raise_error
   end
 
   it 'should fail when spec fails' do
@@ -109,7 +109,7 @@ describe Buildr::Scala::Specs do
     SCALA
     define('foo')
     project('foo').test.invoke rescue
-    project('foo').test.failed_tests.should include('StringSpecs')
+    expect(project('foo').test.failed_tests).to include('StringSpecs')
   end
 end
 
@@ -128,19 +128,19 @@ describe Buildr::Scala::Specs2 do
       }
     SCALA
     define 'foo'
-    project('foo').test.framework.should eql(:specs2)
+    expect(project('foo').test.framework).to eql(:specs2)
   end
 
   it 'should include Specs2 dependencies' do
     define('foo') { test.using(:specs2) }
-    project('foo').test.compile.dependencies.should include(*artifacts(Scala::Specs2.dependencies))
-    project('foo').test.dependencies.should include(*artifacts(Scala::Specs2.dependencies))
+    expect(project('foo').test.compile.dependencies).to include(*artifacts(Scala::Specs2.dependencies))
+    expect(project('foo').test.dependencies).to include(*artifacts(Scala::Specs2.dependencies))
   end
 
   it 'should include ScalaCheck dependencies' do
     define('foo') { test.using(:specs2) }
-    project('foo').test.compile.dependencies.should include(*artifacts(Scala::Check.dependencies))
-    project('foo').test.dependencies.should include(*artifacts(Scala::Check.dependencies))
+    expect(project('foo').test.compile.dependencies).to include(*artifacts(Scala::Check.dependencies))
+    expect(project('foo').test.dependencies).to include(*artifacts(Scala::Check.dependencies))
   end
 
   it 'should include public objects extending org.specs2.mutable.Specification' do
@@ -155,9 +155,9 @@ describe Buildr::Scala::Specs2 do
         }
       }
     SCALA
-    define('foo').test.framework.should eql(:specs2)
+    expect(define('foo').test.framework).to eql(:specs2)
     project('foo').test.invoke
-    project('foo').test.tests.should include('com.example.MySpecs$')
+    expect(project('foo').test.tests).to include('com.example.MySpecs$')
   end
 
   it 'should include classes extending org.specs2.SpecificationWithJUnit' do
@@ -180,9 +180,9 @@ describe Buildr::Scala::Specs2 do
       }
     SCALA
     define('foo')
-    project('foo').test.framework.should eql(:specs2)
+    expect(project('foo').test.framework).to eql(:specs2)
     project('foo').test.invoke
-    project('foo').test.tests.should include('com.example.MySpecs')
+    expect(project('foo').test.tests).to include('com.example.MySpecs')
   end
 
   it 'should pass when spec passes' do
@@ -196,7 +196,7 @@ describe Buildr::Scala::Specs2 do
         }
       }
     SCALA
-    lambda { define('foo').test.invoke }.should_not raise_error
+    expect { define('foo').test.invoke }.not_to raise_error
   end
 
   it 'should fail when spec fails' do
@@ -213,7 +213,7 @@ describe Buildr::Scala::Specs2 do
     SCALA
     define('foo')
     project('foo').test.invoke rescue
-    project('foo').test.failed_tests.should include('StringSpecs$')
+    expect(project('foo').test.failed_tests).to include('StringSpecs$')
   end
 end
 

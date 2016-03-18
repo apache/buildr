@@ -33,33 +33,33 @@ describe Buildr::TestTask do
   end
 
   it 'should respond to :compile and return compile task' do
-    test_task.compile.should be_kind_of(Buildr::CompileTask)
+    expect(test_task.compile).to be_kind_of(Buildr::CompileTask)
   end
 
   it 'should respond to :compile and add sources to compile' do
     test_task.compile 'sources'
-    test_task.compile.sources.should include('sources')
+    expect(test_task.compile.sources).to include('sources')
   end
 
   it 'should respond to :compile and add action for test:compile' do
     write 'src/test/java/Test.java', 'class Test {}'
     test_task.compile { task('action').invoke }
-    lambda { test_task.compile.invoke }.should run_tasks('action')
+    expect { test_task.compile.invoke }.to run_tasks('action')
   end
 
   it 'should execute compile tasks first' do
     write 'src/main/java/Nothing.java', 'class Nothing {}'
     write 'src/test/java/Test.java', 'class Test {}'
     define 'foo'
-    lambda { project('foo').test.compile.invoke }.should run_tasks(['foo:compile', 'foo:test:compile'])
+    expect { project('foo').test.compile.invoke }.to run_tasks(['foo:compile', 'foo:test:compile'])
   end
 
   it 'should respond to :resources and return resources task' do
-    test_task.resources.should be_kind_of(Buildr::ResourcesTask)
+    expect(test_task.resources).to be_kind_of(Buildr::ResourcesTask)
   end
 
   it 'should respond to :resources and add prerequisites to test:resources' do
-    file('prereq').should_receive :invoke_prerequisites
+    expect(file('prereq')).to receive :invoke_prerequisites
     test_task.resources 'prereq'
     test_task.compile.invoke
   end
@@ -67,127 +67,127 @@ describe Buildr::TestTask do
   it 'should respond to :resources and add action for test:resources' do
     task 'action'
     test_task.resources { task('action').invoke }
-    lambda { test_task.resources.invoke }.should run_tasks('action')
+    expect { test_task.resources.invoke }.to run_tasks('action')
   end
 
   it 'should respond to :setup and return setup task' do
-    test_task.setup.name.should =~ /test:setup$/
+    expect(test_task.setup.name).to match(/test:setup$/)
   end
 
   it 'should respond to :setup and add prerequisites to test:setup' do
     test_task.setup 'prereq'
-    test_task.setup.prerequisites.should include('prereq')
+    expect(test_task.setup.prerequisites).to include('prereq')
   end
 
   it 'should respond to :setup and add action for test:setup' do
     task 'action'
     test_task.setup { task('action').invoke }
-    lambda { test_task.setup.invoke }.should run_tasks('action')
+    expect { test_task.setup.invoke }.to run_tasks('action')
   end
 
   it 'should respond to :teardown and return teardown task' do
-    test_task.teardown.name.should =~ /test:teardown$/
+    expect(test_task.teardown.name).to match(/test:teardown$/)
   end
 
   it 'should respond to :teardown and add prerequisites to test:teardown' do
     test_task.teardown 'prereq'
-    test_task.teardown.prerequisites.should include('prereq')
+    expect(test_task.teardown.prerequisites).to include('prereq')
   end
 
   it 'should respond to :teardown and add action for test:teardown' do
     task 'action'
     test_task.teardown { task('action').invoke }
-    lambda { test_task.teardown.invoke }.should run_tasks('action')
+    expect { test_task.teardown.invoke }.to run_tasks('action')
   end
 
   it 'should respond to :with and return self' do
-    test_task.with.should be(test_task)
+    expect(test_task.with).to be(test_task)
   end
 
   it 'should respond to :with and add artifacfs to compile task dependencies' do
     test_task.with 'test.jar', 'acme:example:jar:1.0'
-    test_task.compile.dependencies.should include(File.expand_path('test.jar'))
-    test_task.compile.dependencies.should include(artifact('acme:example:jar:1.0'))
+    expect(test_task.compile.dependencies).to include(File.expand_path('test.jar'))
+    expect(test_task.compile.dependencies).to include(artifact('acme:example:jar:1.0'))
   end
 
   it 'should respond to deprecated classpath' do
     test_task.classpath = artifact('acme:example:jar:1.0')
-    test_task.classpath.should be(artifact('acme:example:jar:1.0'))
+    expect(test_task.classpath).to be(artifact('acme:example:jar:1.0'))
   end
 
   it 'should respond to dependencies' do
     test_task.dependencies = artifact('acme:example:jar:1.0')
-    test_task.dependencies.should be(artifact('acme:example:jar:1.0'))
+    expect(test_task.dependencies).to be(artifact('acme:example:jar:1.0'))
   end
 
   it 'should respond to :with and add artifacfs to task dependencies' do
     test_task.with 'test.jar', 'acme:example:jar:1.0'
-    test_task.dependencies.should include(File.expand_path('test.jar'))
-    test_task.dependencies.should include(artifact('acme:example:jar:1.0'))
+    expect(test_task.dependencies).to include(File.expand_path('test.jar'))
+    expect(test_task.dependencies).to include(artifact('acme:example:jar:1.0'))
   end
 
   it 'should response to :options and return test framework options' do
     test_task.using :foo=>'bar'
-    test_task.options[:foo].should eql('bar')
+    expect(test_task.options[:foo]).to eql('bar')
   end
 
   it 'should respond to :using and return self' do
-    test_task.using.should be(test_task)
+    expect(test_task.using).to be(test_task)
   end
 
   it 'should respond to :using and set value options' do
     test_task.using('foo'=>'FOO', 'bar'=>'BAR')
-    test_task.options[:foo].should eql('FOO')
-    test_task.options[:bar].should eql('BAR')
+    expect(test_task.options[:foo]).to eql('FOO')
+    expect(test_task.options[:bar]).to eql('BAR')
   end
 
   it 'should respond to :using with deprecated parameter style and set value options to true, up to version 1.5 since this usage was deprecated in version 1.3' do
-    Buildr::VERSION.should < '1.5'
+    expect(Buildr::VERSION).to be < '1.5'
     test_task.using('foo', 'bar')
-    test_task.options[:foo].should eql(true)
-    test_task.options[:bar].should eql(true)
+    expect(test_task.options[:foo]).to eql(true)
+    expect(test_task.options[:bar]).to eql(true)
   end
 
   it 'should start without pre-selected test framework' do
-    test_task.framework.should be_nil
+    expect(test_task.framework).to be_nil
   end
 
   it 'should respond to :using and select test framework' do
     test_task.using(:testng)
-    test_task.framework.should eql(:testng)
+    expect(test_task.framework).to eql(:testng)
   end
 
   it 'should infer test framework from compiled language' do
-    lambda { test_task.compile.using(:javac) }.should change { test_task.framework }.to(:junit)
+    expect { test_task.compile.using(:javac) }.to change { test_task.framework }.to(:junit)
   end
 
   it 'should respond to :include and return self' do
-    test_task.include.should be(test_task)
+    expect(test_task.include).to be(test_task)
   end
 
   it 'should respond to :include and add inclusion patterns' do
     test_task.include 'Foo', 'Bar'
-    test_task.send(:include?, 'Foo').should be_true
-    test_task.send(:include?, 'Bar').should be_true
+    expect(test_task.send(:include?, 'Foo')).to be_truthy
+    expect(test_task.send(:include?, 'Bar')).to be_truthy
   end
 
   it 'should respond to :exclude and return self' do
-    test_task.exclude.should be(test_task)
+    expect(test_task.exclude).to be(test_task)
   end
 
   it 'should respond to :exclude and add exclusion patterns' do
     test_task.exclude 'FooTest', 'BarTest'
-    test_task.send(:include?, 'FooTest').should be_false
-    test_task.send(:include?, 'BarTest').should be_false
-    test_task.send(:include?, 'BazTest').should be_true
+    expect(test_task.send(:include?, 'FooTest')).to be_falsey
+    expect(test_task.send(:include?, 'BarTest')).to be_falsey
+    expect(test_task.send(:include?, 'BazTest')).to be_truthy
   end
 
   it 'should execute setup task before running tests' do
     mock = double('actions')
     test_task.setup { mock.setup }
     test_task.enhance { mock.tests }
-    mock.should_receive(:setup).ordered
-    mock.should_receive(:tests).ordered
+    expect(mock).to receive(:setup).ordered
+    expect(mock).to receive(:tests).ordered
     test_task.invoke
   end
 
@@ -195,51 +195,51 @@ describe Buildr::TestTask do
     mock = double('actions')
     test_task.teardown { mock.teardown }
     test_task.enhance { mock.tests }
-    mock.should_receive(:tests).ordered
-    mock.should_receive(:teardown).ordered
+    expect(mock).to receive(:tests).ordered
+    expect(mock).to receive(:teardown).ordered
     test_task.invoke
   end
 
   it 'should not execute teardown if setup failed' do
     test_task.setup { fail }
-    lambda { test_task.invoke rescue nil }.should_not run_task(test_task.teardown)
+    expect { test_task.invoke rescue nil }.not_to run_task(test_task.teardown)
   end
 
   it 'should use the main compile dependencies' do
     define('foo') { compile.using(:javac).with 'group:id:jar:1.0' }
-    project('foo').test.dependencies.should include(artifact('group:id:jar:1.0'))
+    expect(project('foo').test.dependencies).to include(artifact('group:id:jar:1.0'))
   end
 
   it 'should include the main compile target in its dependencies' do
     define('foo') { compile.using(:javac) }
-    project('foo').test.dependencies.should include(project('foo').compile.target)
+    expect(project('foo').test.dependencies).to include(project('foo').compile.target)
   end
 
   it 'should include the main compile target in its dependencies, even when using non standard directories' do
     write 'src/java/Nothing.java', 'class Nothing {}'
     define('foo') { compile path_to('src/java') }
-    project('foo').test.dependencies.should include(project('foo').compile.target)
+    expect(project('foo').test.dependencies).to include(project('foo').compile.target)
   end
 
   it 'should include the main resources target in its dependencies' do
     write 'src/main/resources/config.xml'
-    define('foo').test.dependencies.should include(project('foo').resources.target)
+    expect(define('foo').test.dependencies).to include(project('foo').resources.target)
   end
 
   it 'should use the test compile dependencies' do
     define('foo') { test.compile.using(:javac).with 'group:id:jar:1.0' }
-    project('foo').test.dependencies.should include(artifact('group:id:jar:1.0'))
+    expect(project('foo').test.dependencies).to include(artifact('group:id:jar:1.0'))
   end
 
   it 'should include the test compile target in its dependencies' do
     define('foo') { test.compile.using(:javac) }
-    project('foo').test.dependencies.should include(project('foo').test.compile.target)
+    expect(project('foo').test.dependencies).to include(project('foo').test.compile.target)
   end
 
   it 'should include the test compile target in its dependencies, even when using non standard directories' do
     write 'src/test/Test.java', 'class Test {}'
     define('foo') { test.compile path_to('src/test') }
-    project('foo').test.dependencies.should include(project('foo').test.compile.target)
+    expect(project('foo').test.dependencies).to include(project('foo').test.compile.target)
   end
 
   it 'should add test compile target ahead of regular compile target' do
@@ -247,12 +247,12 @@ describe Buildr::TestTask do
     write 'src/test/java/Test.java'
     define 'foo'
     depends = project('foo').test.dependencies
-    depends.index(project('foo').test.compile.target).should < depends.index(project('foo').compile.target)
+    expect(depends.index(project('foo').test.compile.target)).to be < depends.index(project('foo').compile.target)
   end
 
   it 'should include the test resources target in its dependencies' do
     write 'src/test/resources/config.xml'
-    define('foo').test.dependencies.should include(project('foo').test.resources.target)
+    expect(define('foo').test.dependencies).to include(project('foo').test.resources.target)
   end
 
   it 'should add test resource target ahead of regular resource target' do
@@ -260,23 +260,23 @@ describe Buildr::TestTask do
     write 'src/test/resources/config.xml'
     define 'foo'
     depends = project('foo').test.dependencies
-    depends.index(project('foo').test.resources.target).should < depends.index(project('foo').resources.target)
+    expect(depends.index(project('foo').test.resources.target)).to be < depends.index(project('foo').resources.target)
   end
 
   it 'should not have a last successful run timestamp before the tests are run' do
-    test_task.timestamp.should == Rake::EARLY
+    expect(test_task.timestamp).to eq(Rake::EARLY)
   end
 
   it 'should clean after itself (test files)' do
     define('foo') { test.compile.using(:javac) }
     mkpath project('foo').test.compile.target.to_s
-    lambda { task('clean').invoke }.should change { File.exist?(project('foo').test.compile.target.to_s) }.to(false)
+    expect { task('clean').invoke }.to change { File.exist?(project('foo').test.compile.target.to_s) }.to(false)
   end
 
   it 'should clean after itself (reports)' do
     define 'foo'
     mkpath project('foo').test.report_to.to_s
-    lambda { task('clean').invoke }.should change { File.exist?(project('foo').test.report_to.to_s) }.to(false)
+    expect { task('clean').invoke }.to change { File.exist?(project('foo').test.report_to.to_s) }.to(false)
   end
 
   it 'should only run tests explicitly specified if options.test is :only' do
@@ -284,34 +284,34 @@ describe Buildr::TestTask do
     write 'bar/src/main/java/Bar.java', 'public class Bar {}'
     define('bar', :version=>'1.0', :base_dir=>'bar') { package :jar }
     define('foo') { compile.with project('bar') }
-    lambda { task('foo:test').invoke rescue nil }.should_not run_tasks('bar:test')
+    expect { task('foo:test').invoke rescue nil }.not_to run_tasks('bar:test')
   end
 end
 
 
 describe Buildr::TestTask, 'with no tests' do
   it 'should pass' do
-    lambda { define('foo').test.invoke }.should_not raise_error
+    expect { define('foo').test.invoke }.not_to raise_error
   end
 
   it 'should report no failed tests' do
-    lambda { verbose(true) { define('foo').test.invoke } }.should_not show_error(/fail/i)
+    expect { verbose(true) { define('foo').test.invoke } }.not_to show_error(/fail/i)
   end
 
   it 'should return no failed tests' do
     define('foo') { test.using(:junit) }
     project('foo').test.invoke
-    project('foo').test.failed_tests.should be_empty
+    expect(project('foo').test.failed_tests).to be_empty
   end
 
   it 'should return no passing tests' do
     define('foo') { test.using(:junit) }
     project('foo').test.invoke
-    project('foo').test.passed_tests.should be_empty
+    expect(project('foo').test.passed_tests).to be_empty
   end
 
   it 'should execute teardown task' do
-    lambda { define('foo').test.invoke }.should run_task('foo:test:teardown')
+    expect { define('foo').test.invoke }.to run_task('foo:test:teardown')
   end
 end
 
@@ -331,30 +331,30 @@ describe Buildr::TestTask, 'with passing tests' do
   end
 
   it 'should pass' do
-    lambda { test_task.invoke }.should_not raise_error
+    expect { test_task.invoke }.not_to raise_error
   end
 
   it 'should report no failed tests' do
-    lambda { verbose(true) { test_task.invoke } }.should_not show_error(/fail/i)
+    expect { verbose(true) { test_task.invoke } }.not_to show_error(/fail/i)
   end
 
   it 'should return passed tests' do
     test_task.invoke
-    test_task.passed_tests.should == ['PassingTest1', 'PassingTest2']
+    expect(test_task.passed_tests).to eq(['PassingTest1', 'PassingTest2'])
   end
 
   it 'should return no failed tests' do
     test_task.invoke
-    test_task.failed_tests.should be_empty
+    expect(test_task.failed_tests).to be_empty
   end
 
   it 'should execute teardown task' do
-    lambda { test_task.invoke }.should run_task('foo:test:teardown')
+    expect { test_task.invoke }.to run_task('foo:test:teardown')
   end
 
   it 'should update the last successful run timestamp' do
     before = Time.now ; test_task.invoke ; after = Time.now
-    (before-1..after+1).should cover(test_task.timestamp)
+    expect(before-1..after+1).to cover(test_task.timestamp)
   end
 end
 
@@ -376,91 +376,91 @@ describe Buildr::TestTask, 'with failed test' do
   end
 
   it 'should fail' do
-    lambda { test_task.invoke }.should raise_error(RuntimeError, /Tests failed/)
+    expect { test_task.invoke }.to raise_error(RuntimeError, /Tests failed/)
   end
 
   it 'should report failed tests' do
-    lambda { verbose(true) { test_task.invoke rescue nil } }.should show_error(/FailingTest/)
+    expect { verbose(true) { test_task.invoke rescue nil } }.to show_error(/FailingTest/)
   end
 
   it 'should record failed tests' do
     test_task.invoke rescue nil
-    File.read(project('foo').path_to('target', "#{test_task.framework}-failed")).should == 'FailingTest'
+    expect(File.read(project('foo').path_to('target', "#{test_task.framework}-failed"))).to eq('FailingTest')
   end
 
   it 'should return failed tests' do
     test_task.invoke rescue nil
-    test_task.failed_tests.should == ['FailingTest']
+    expect(test_task.failed_tests).to eq(['FailingTest'])
   end
 
   it 'should return passing tests as well' do
     test_task.invoke rescue nil
-    test_task.passed_tests.should == ['PassingTest']
+    expect(test_task.passed_tests).to eq(['PassingTest'])
   end
 
   it 'should know what tests failed last time' do
     test_task.invoke rescue nil
-    project('foo').test.last_failures.should == ['FailingTest']
+    expect(project('foo').test.last_failures).to eq(['FailingTest'])
   end
 
   it 'should not fail if fail_on_failure is false' do
     test_task.using(:fail_on_failure=>false).invoke
-    lambda { test_task.invoke }.should_not raise_error
+    expect { test_task.invoke }.not_to raise_error
   end
 
   it 'should report failed tests even if fail_on_failure is false' do
     test_task.using(:fail_on_failure=>false)
-    lambda { verbose(true) { test_task.invoke } }.should show_error(/FailingTest/)
+    expect { verbose(true) { test_task.invoke } }.to show_error(/FailingTest/)
   end
 
   it 'should return failed tests even if fail_on_failure is false' do
     test_task.using(:fail_on_failure=>false).invoke
-    test_task.failed_tests.should == ['FailingTest']
+    expect(test_task.failed_tests).to eq(['FailingTest'])
   end
 
   it 'should execute teardown task' do
-    lambda { test_task.invoke rescue nil }.should run_task('foo:test:teardown')
+    expect { test_task.invoke rescue nil }.to run_task('foo:test:teardown')
   end
 
   it 'should not update the last successful run timestamp' do
     a_second_ago = Time.now - 1
     touch_last_successful_test_run test_task, a_second_ago
     test_task.invoke rescue nil
-    test_task.timestamp.should <= a_second_ago
+    expect(test_task.timestamp).to be <= a_second_ago
   end
 end
 
 
 describe Buildr::Project, '#test' do
   it 'should return the project\'s test task' do
-    define('foo') { test.should be(task('test')) }
+    define('foo') { expect(test).to be(task('test')) }
   end
 
   it 'should accept prerequisites for task' do
     define('foo') { test 'prereq' }
-    project('foo').test.prerequisites.should include('prereq')
+    expect(project('foo').test.prerequisites).to include('prereq')
   end
 
   it 'should accept actions for task' do
     task 'action'
     define('foo') { test { task('action').invoke } }
-    lambda { project('foo').test.invoke }.should run_tasks('action')
+    expect { project('foo').test.invoke }.to run_tasks('action')
   end
 
   it 'should set fail_on_failure true by default' do
-    define('foo').test.options[:fail_on_failure].should be_true
+    expect(define('foo').test.options[:fail_on_failure]).to be_truthy
   end
 
   it 'should set fork mode by default' do
-    define('foo').test.options[:fork].should == :once
+    expect(define('foo').test.options[:fork]).to eq(:once)
   end
 
   it 'should set properties to empty hash by default' do
-    define('foo').test.options[:properties].should == {}
+    expect(define('foo').test.options[:properties]).to eq({})
   end
 
   it 'should set environment variables to empty hash by default' do
-    define('foo').test.options[:environment].should == {}
+    expect(define('foo').test.options[:environment]).to eq({})
   end
 
   it 'should inherit options from parent project' do
@@ -468,10 +468,10 @@ describe Buildr::Project, '#test' do
       test.using :fail_on_failure=>false, :fork=>:each, :properties=>{ :foo=>'bar' }, :environment=>{ 'config'=>'config.yaml' }
       define 'bar' do
         test.using :junit
-        test.options[:fail_on_failure].should be_false
-        test.options[:fork].should == :each
-        test.options[:properties][:foo].should == 'bar'
-        test.options[:environment]['config'].should == 'config.yaml'
+        expect(test.options[:fail_on_failure]).to be_falsey
+        expect(test.options[:fork]).to eq(:each)
+        expect(test.options[:properties][:foo]).to eq('bar')
+        expect(test.options[:environment]['config']).to eq('config.yaml')
       end
     end
   end
@@ -482,10 +482,10 @@ describe Buildr::Project, '#test' do
         test.using :fail_on_failure=>false, :fork=>:each, :properties=>{ :foo=>'bar' }, :environment=>{ 'config'=>'config.yaml' }
         test.using :junit
       end.invoke
-      test.options[:fail_on_failure].should be_true
-      test.options[:fork].should == :once
-      test.options[:properties].should == {}
-      test.options[:environment].should == {}
+      expect(test.options[:fail_on_failure]).to be_truthy
+      expect(test.options[:fork]).to eq(:once)
+      expect(test.options[:properties]).to eq({})
+      expect(test.options[:environment]).to eq({})
     end
   end
 
@@ -498,10 +498,10 @@ describe Buildr::Project, '#test' do
         test.options[:environment]['config'] = 'config.yaml'
         test.using :junit
       end.invoke
-      test.options[:fail_on_failure].should be_true
-      test.options[:fork].should == :once
-      test.options[:properties].should == {}
-      test.options[:environment].should == {}
+      expect(test.options[:fail_on_failure]).to be_truthy
+      expect(test.options[:fork]).to eq(:once)
+      expect(test.options[:properties]).to eq({})
+      expect(test.options[:environment]).to eq({})
     end
   end
 
@@ -509,7 +509,7 @@ describe Buildr::Project, '#test' do
     define 'foo' do
         test.options[:properties][:foo] = 'bar'
     end
-    project('foo').test.options[:properties][:foo].should == 'bar'
+    expect(project('foo').test.options[:properties][:foo]).to eq('bar')
   end
 
   it 'should accept to set a test property in a subproject' do
@@ -518,7 +518,7 @@ describe Buildr::Project, '#test' do
         test.options[:properties][:bar] = 'baz'
       end
     end
-    project('foo:bar').test.options[:properties][:bar].should == 'baz'
+    expect(project('foo:bar').test.options[:properties][:bar]).to eq('baz')
   end
 
   it 'should not change options of unrelated projects when using #options' do
@@ -526,7 +526,7 @@ describe Buildr::Project, '#test' do
       test.options[:properties][:foo] = 'bar'
     end
     define 'bar' do
-      test.options[:properties].should == {}
+      expect(test.options[:properties]).to eq({})
     end
   end
 
@@ -534,7 +534,7 @@ describe Buildr::Project, '#test' do
     write 'src/main/java/Foo.java'
     write 'src/test/java/FooTest.java'
     define('foo')
-    lambda { task('foo:build').invoke }.should run_task('foo:test')
+    expect { task('foo:build').invoke }.to run_task('foo:test')
   end
 end
 
@@ -543,21 +543,21 @@ describe Buildr::Project, '#test.compile' do
   it 'should identify compiler from project' do
     write 'src/test/java/com/example/Test.java'
     define('foo') do
-      test.compile.compiler.should eql(:javac)
+      expect(test.compile.compiler).to eql(:javac)
     end
   end
 
   it 'should include identified sources' do
     write 'src/test/java/Test.java'
     define('foo') do
-      test.compile.sources.should include(_('src/test/java'))
+      expect(test.compile.sources).to include(_('src/test/java'))
     end
   end
 
   it 'should compile to target/test/<code>' do
     define 'foo', :target=>'targeted' do
       test.compile.using(:javac)
-      test.compile.target.should eql(file('targeted/test/classes'))
+      expect(test.compile.target).to eql(file('targeted/test/classes'))
     end
   end
 
@@ -566,7 +566,7 @@ describe Buildr::Project, '#test.compile' do
       compile.using(:javac).with 'group:id:jar:1.0'
       test.compile.using(:javac)
     end
-    project('foo').test.compile.dependencies.should include(artifact('group:id:jar:1.0'))
+    expect(project('foo').test.compile.dependencies).to include(artifact('group:id:jar:1.0'))
   end
 
   it 'should include the main compiled target in its dependencies' do
@@ -574,7 +574,7 @@ describe Buildr::Project, '#test.compile' do
       compile.using(:javac).into 'bytecode'
       test.compile.using(:javac)
     end
-    project('foo').test.compile.dependencies.should include(file('bytecode'))
+    expect(project('foo').test.compile.dependencies).to include(file('bytecode'))
   end
 
   it 'should include the test framework dependencies' do
@@ -582,46 +582,46 @@ describe Buildr::Project, '#test.compile' do
       test.compile.using(:javac)
       test.using(:junit)
     end
-    project('foo').test.compile.dependencies.should include(*artifacts(JUnit.dependencies))
+    expect(project('foo').test.compile.dependencies).to include(*artifacts(JUnit.dependencies))
   end
 
   it 'should clean after itself' do
     write 'src/test/java/Nothing.java', 'class Nothing {}'
     define('foo') { test.compile.into 'bytecode' }
     project('foo').test.compile.invoke
-    lambda { project('foo').clean.invoke }.should change { File.exist?('bytecode') }.to(false)
+    expect { project('foo').clean.invoke }.to change { File.exist?('bytecode') }.to(false)
   end
 end
 
 
 describe Buildr::Project, '#test.resources' do
   it 'should ignore resources unless they exist' do
-    define('foo').test.resources.sources.should be_empty
-    project('foo').test.resources.target.should be_nil
+    expect(define('foo').test.resources.sources).to be_empty
+    expect(project('foo').test.resources.target).to be_nil
   end
 
   it 'should pick resources from src/test/resources if found' do
     mkpath 'src/test/resources'
-    define('foo') { test.resources.sources.should include(file('src/test/resources')) }
+    define('foo') { expect(test.resources.sources).to include(file('src/test/resources')) }
   end
 
   it 'should copy to the resources target directory' do
     write 'src/test/resources/config.xml', '</xml>'
     define('foo', :target=>'targeted').test.invoke
-    file('targeted/test/resources/config.xml').should contain('</xml>')
+    expect(file('targeted/test/resources/config.xml')).to contain('</xml>')
   end
 
   it 'should create target directory even if no files to copy' do
     define('foo') do
       test.resources.filter.into('resources')
     end
-    lambda { file(File.expand_path('resources')).invoke }.should change { File.exist?('resources') }.to(true)
+    expect { file(File.expand_path('resources')).invoke }.to change { File.exist?('resources') }.to(true)
   end
 
   it 'should execute alongside compile task' do
     task 'action'
     define('foo') { test.resources { task('action').invoke } }
-    lambda { project('foo').test.compile.invoke }.should run_tasks('action')
+    expect { project('foo').test.compile.invoke }.to run_tasks('action')
   end
 end
 
@@ -640,22 +640,22 @@ describe Buildr::TestTask, '#invoke' do
   end
 
   it 'should require dependencies to exist' do
-    lambda { test_task.with('no-such.jar').invoke }.should \
+    expect { test_task.with('no-such.jar').invoke }.to \
       raise_error(RuntimeError, /Don't know how to build/)
   end
 
   it 'should run all dependencies as prerequisites' do
     file(File.expand_path('no-such.jar')) { task('prereq').invoke }
-    lambda { test_task.with('no-such.jar').invoke }.should run_tasks(['prereq', 'foo:test'])
+    expect { test_task.with('no-such.jar').invoke }.to run_tasks(['prereq', 'foo:test'])
   end
 
   it 'should run tests if they have never run' do
-    lambda { test_task.invoke }.should run_task('foo:test')
+    expect { test_task.invoke }.to run_task('foo:test')
   end
 
   it 'should not run tests if test option is off' do
     Buildr.options.test = false
-    lambda { test_task.invoke }.should_not run_task('foo:test')
+    expect { test_task.invoke }.not_to run_task('foo:test')
   end
 
   describe 'when there was a successful test run already' do
@@ -671,58 +671,58 @@ describe Buildr::TestTask, '#invoke' do
     end
 
     it 'should not run tests if nothing changed' do
-      lambda { test_task.invoke; sleep 1 }.should_not run_task('foo:test')
+      expect { test_task.invoke; sleep 1 }.not_to run_task('foo:test')
     end
 
     it 'should run tests if options.test is :all' do
       Buildr.options.test = :all
-      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
+      expect { test_task.invoke; sleep 1 }.to run_task('foo:test')
     end
 
     it 'should run tests if main compile target changed' do
       touch project('foo').compile.target.to_s
-      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
+      expect { test_task.invoke; sleep 1 }.to run_task('foo:test')
     end
 
     it 'should run tests if test compile target changed' do
       touch test_task.compile.target.to_s
-      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
+      expect { test_task.invoke; sleep 1 }.to run_task('foo:test')
     end
 
     it 'should run tests if main resources changed' do
       touch project('foo').resources.target.to_s
-      lambda { test_task.invoke }.should run_task('foo:test')
+      expect { test_task.invoke }.to run_task('foo:test')
     end
 
     it 'should run tests if test resources changed' do
       touch test_task.resources.target.to_s
-      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
+      expect { test_task.invoke; sleep 1 }.to run_task('foo:test')
     end
 
     it 'should run tests if compile-dependent project changed' do
       write 'bar/src/main/java/Bar.java', 'public class Bar {}'
       define('bar', :version=>'1.0', :base_dir=>'bar') { package :jar }
       project('foo').compile.with project('bar')
-      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
+      expect { test_task.invoke; sleep 1 }.to run_task('foo:test')
     end
 
     it 'should run tests if test-dependent project changed' do
       write 'bar/src/main/java/Bar.java', 'public class Bar {}'
       define('bar', :version=>'1.0', :base_dir=>'bar') { package :jar }
       test_task.with project('bar')
-      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
+      expect { test_task.invoke; sleep 1 }.to run_task('foo:test')
     end
 
     it 'should run tests if buildfile changed' do
       touch 'buildfile'
-      test_task.should_receive(:run_tests)
-      lambda { test_task.invoke; sleep 1 }.should run_task('foo:test')
+      expect(test_task).to receive(:run_tests)
+      expect { test_task.invoke; sleep 1 }.to run_task('foo:test')
     end
 
     it 'should not run tests if buildfile changed but IGNORE_BUILDFILE is true' do
       begin
         ENV["IGNORE_BUILDFILE"] = "true"
-        test_task.should_not_receive(:run_tests)
+        expect(test_task).not_to receive(:run_tests)
         test_task.invoke
       ensure
         ENV["IGNORE_BUILDFILE"] = nil
@@ -734,16 +734,16 @@ end
 describe Rake::Task, 'test' do
   it 'should be recursive' do
     define('foo') { define 'bar' }
-    lambda { task('test').invoke }.should run_tasks('foo:test', 'foo:bar:test')
+    expect { task('test').invoke }.to run_tasks('foo:test', 'foo:bar:test')
   end
 
   it 'should be local task' do
     define('foo') { define 'bar' }
-    lambda do
+    expect do
       in_original_dir project('foo:bar').base_dir do
         task('test').invoke
       end
-    end.should run_task('foo:bar:test').but_not('foo:test')
+    end.to run_task('foo:bar:test').but_not('foo:test')
   end
 
   it 'should stop at first failure' do
@@ -751,14 +751,14 @@ describe Rake::Task, 'test' do
       define('foo') { test { fail } }
       define('bar') { test { fail } }
     end
-    lambda { task('test').invoke rescue nil }.should run_tasks('myproject:bar:test').but_not('myproject:foo:test')
+    expect { task('test').invoke rescue nil }.to run_tasks('myproject:bar:test').but_not('myproject:foo:test')
   end
 
   it 'should ignore failure if options.test is :all' do
     define('foo') { test { fail } }
     define('bar') { test { fail } }
     options.test = :all
-    lambda { task('test').invoke rescue nil }.should run_tasks('foo:test', 'bar:test')
+    expect { task('test').invoke rescue nil }.to run_tasks('foo:test', 'bar:test')
   end
 
   it 'should ignore failure in subprojects if options.test is :all' do
@@ -769,7 +769,7 @@ describe Rake::Task, 'test' do
     }
     define('bar') { test { fail } }
     options.test = :all
-    lambda { task('test').invoke rescue nil }.should run_tasks('foo:p1:test', 'foo:p2:test', 'foo:p3:test', 'bar:test')
+    expect { task('test').invoke rescue nil }.to run_tasks('foo:p1:test', 'foo:p2:test', 'foo:p3:test', 'bar:test')
   end
 
   it 'should ignore failure in subprojects if environment variable test is \'all\'' do
@@ -780,56 +780,56 @@ describe Rake::Task, 'test' do
     }
     define('bar') { test { fail } }
     ENV['test'] = 'all'
-    lambda { task('test').invoke rescue nil }.should run_tasks('foo:p1:test', 'foo:p2:test', 'foo:p3:test', 'bar:test')
+    expect { task('test').invoke rescue nil }.to run_tasks('foo:p1:test', 'foo:p2:test', 'foo:p3:test', 'bar:test')
   end
 
   it 'should ignore failure if options.test is :all and target is build task ' do
     define('foo') { test { fail } }
     define('bar') { test { fail } }
     options.test = :all
-    lambda { task('build').invoke rescue nil }.should run_tasks('foo:test', 'bar:test')
+    expect { task('build').invoke rescue nil }.to run_tasks('foo:test', 'bar:test')
   end
 
   it 'should ignore failure if environment variable test is \'all\'' do
     define('foo') { test { fail } }
     define('bar') { test { fail } }
     ENV['test'] = 'all'
-    lambda { task('test').invoke rescue nil }.should run_tasks('foo:test', 'bar:test')
+    expect { task('test').invoke rescue nil }.to run_tasks('foo:test', 'bar:test')
   end
 
   it 'should ignore failure if environment variable TEST is \'all\'' do
     define('foo') { test { fail } }
     define('bar') { test { fail } }
     ENV['TEST'] = 'all'
-    lambda { task('test').invoke rescue nil }.should run_tasks('foo:test', 'bar:test')
+    expect { task('test').invoke rescue nil }.to run_tasks('foo:test', 'bar:test')
   end
 
   it 'should execute no tests if options.test is false' do
     define('foo') { test { fail } }
     define('bar') { test { fail } }
     options.test = false
-    lambda { task('test').invoke rescue nil }.should_not run_tasks('foo:test', 'bar:test')
+    expect { task('test').invoke rescue nil }.not_to run_tasks('foo:test', 'bar:test')
   end
 
   it 'should execute no tests if environment variable test is \'no\'' do
     define('foo') { test { fail } }
     define('bar') { test { fail } }
     ENV['test'] = 'no'
-    lambda { task('test').invoke rescue nil }.should_not run_tasks('foo:test', 'bar:test')
+    expect { task('test').invoke rescue nil }.not_to run_tasks('foo:test', 'bar:test')
   end
 
   it 'should execute no tests if environment variable TEST is \'no\'' do
     define('foo') { test { fail } }
     define('bar') { test { fail } }
     ENV['TEST'] = 'no'
-    lambda { task('test').invoke rescue nil }.should_not run_tasks('foo:test', 'bar:test')
+    expect { task('test').invoke rescue nil }.not_to run_tasks('foo:test', 'bar:test')
   end
 
   it "should not compile tests if environment variable test is 'no'" do
     write "src/test/java/HelloTest.java", "public class HelloTest { public void testTest() {}}"
     define('foo') { test { fail } }
     ENV['test'] = 'no'
-    lambda { task('test').invoke rescue nil }.should_not run_tasks('foo:test:compile')
+    expect { task('test').invoke rescue nil }.not_to run_tasks('foo:test:compile')
   end
 end
 
@@ -838,7 +838,7 @@ describe 'test rule' do
 
   it 'should execute test task on local project' do
     define('foo') { define 'bar' }
-    lambda { task('test:something').invoke }.should run_task('foo:test')
+    expect { task('test:something').invoke }.to run_task('foo:test')
   end
 
   it 'should reset tasks to specific pattern' do
@@ -852,8 +852,8 @@ describe 'test rule' do
     end
     task('test:something').invoke
     ['foo', 'foo:bar'].map { |name| project(name) }.each do |project|
-      project.test.tests.should include('something')
-      project.test.tests.should_not include('nothing')
+      expect(project.test.tests).to include('something')
+      expect(project.test.tests).not_to include('nothing')
     end
   end
 
@@ -863,7 +863,7 @@ describe 'test rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['prefix-something-suffix']) }
     end
     task('test:something').invoke
-    project('foo').test.tests.should include('prefix-something-suffix')
+    expect(project('foo').test.tests).to include('prefix-something-suffix')
   end
 
   it 'should not apply *name* pattern if asterisks used' do
@@ -872,8 +872,8 @@ describe 'test rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['prefix-something', 'prefix-something-suffix']) }
     end
     task('test:*something').invoke
-    project('foo').test.tests.should include('prefix-something')
-    project('foo').test.tests.should_not include('prefix-something-suffix')
+    expect(project('foo').test.tests).to include('prefix-something')
+    expect(project('foo').test.tests).not_to include('prefix-something-suffix')
   end
 
   it 'should accept multiple tasks separated by commas' do
@@ -882,9 +882,9 @@ describe 'test rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['foo', 'bar', 'baz']) }
     end
     task('test:foo,bar').invoke
-    project('foo').test.tests.should include('foo')
-    project('foo').test.tests.should include('bar')
-    project('foo').test.tests.should_not include('baz')
+    expect(project('foo').test.tests).to include('foo')
+    expect(project('foo').test.tests).to include('bar')
+    expect(project('foo').test.tests).not_to include('baz')
   end
 
   it 'should execute only the named tests' do
@@ -903,7 +903,7 @@ describe 'test rule' do
     end
     touch_last_successful_test_run project('foo').test
     task('test:something').invoke
-    project('foo').test.tests.should include('something')
+    expect(project('foo').test.tests).to include('something')
   end
 
   it 'should not execute excluded tests' do
@@ -912,8 +912,8 @@ describe 'test rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
     end
     task('test:*,-nothing').invoke
-    project('foo').test.tests.should include('something')
-    project('foo').test.tests.should_not include('nothing')
+    expect(project('foo').test.tests).to include('something')
+    expect(project('foo').test.tests).not_to include('nothing')
   end
 
   it 'should not execute tests in excluded package' do
@@ -925,8 +925,8 @@ describe 'test rule' do
       test.using(:junit)
     end
     task('test:-com.example.bar').invoke
-    project('foo').test.tests.should include('com.example.foo.TestSomething')
-    project('foo').test.tests.should_not include('com.example.bar.TestFails')
+    expect(project('foo').test.tests).to include('com.example.foo.TestSomething')
+    expect(project('foo').test.tests).not_to include('com.example.bar.TestFails')
   end
 
   it 'should not execute excluded tests with wildcards' do
@@ -935,8 +935,8 @@ describe 'test rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
     end
     task('test:something,-s*,-n*').invoke
-    project('foo').test.tests.should_not include('something')
-    project('foo').test.tests.should_not include('nothing')
+    expect(project('foo').test.tests).not_to include('something')
+    expect(project('foo').test.tests).not_to include('nothing')
   end
 
   it 'should execute all tests except excluded tests' do
@@ -945,8 +945,8 @@ describe 'test rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['something', 'anything', 'nothing']) }
     end
     task('test:-nothing').invoke
-    project('foo').test.tests.should include('something', 'anything')
-    project('foo').test.tests.should_not include('nothing')
+    expect(project('foo').test.tests).to include('something', 'anything')
+    expect(project('foo').test.tests).not_to include('nothing')
   end
 
   it 'should ignore exclusions in buildfile' do
@@ -956,8 +956,8 @@ describe 'test rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['something', 'anything', 'nothing']) }
     end
     task('test:-nothing').invoke
-    project('foo').test.tests.should include('something', 'anything')
-    project('foo').test.tests.should_not include('nothing')
+    expect(project('foo').test.tests).to include('something', 'anything')
+    expect(project('foo').test.tests).not_to include('nothing')
   end
 
   it 'should ignore inclusions in buildfile' do
@@ -967,8 +967,8 @@ describe 'test rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['something', 'nothing']) }
     end
     task('test:nothing').invoke
-    project('foo').test.tests.should include('nothing')
-    project('foo').test.tests.should_not include('something')
+    expect(project('foo').test.tests).to include('nothing')
+    expect(project('foo').test.tests).not_to include('something')
   end
 
   it 'should not execute a test if it''s both included and excluded' do
@@ -977,7 +977,7 @@ describe 'test rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['nothing']) }
     end
     task('test:nothing,-nothing').invoke
-    project('foo').test.tests.should_not include('nothing')
+    expect(project('foo').test.tests).not_to include('nothing')
   end
 
   it 'should not update the last successful test run timestamp' do
@@ -988,7 +988,7 @@ describe 'test rule' do
     a_second_ago = Time.now - 1
     touch_last_successful_test_run project('foo').test, a_second_ago
     task('test:something').invoke
-    project('foo').test.timestamp.should <= a_second_ago
+    expect(project('foo').test.timestamp).to be <= a_second_ago
   end
 end
 
@@ -1000,8 +1000,8 @@ describe 'test failed' do
       define 'foo' do
         test.using(:junit)
         test.instance_eval do
-          @framework.stub(:tests).and_return(['FailingTest', 'PassingTest'])
-          @framework.stub(:run).and_return(['PassingTest'])
+          allow(@framework).to receive(:tests).and_return(['FailingTest', 'PassingTest'])
+          allow(@framework).to receive(:run).and_return(['PassingTest'])
         end
       end
       project('foo').test
@@ -1018,8 +1018,8 @@ describe 'test failed' do
     end
     write project('foo').path_to(:target, "junit-failed"), "FailingTest"
     task('test:failed').invoke rescue nil
-    project('foo').test.tests.should include('FailingTest')
-    project('foo').test.tests.should_not include('PassingTest')
+    expect(project('foo').test.tests).to include('FailingTest')
+    expect(project('foo').test.tests).not_to include('PassingTest')
   end
 
   it 'should run failed tests, respecting excluded tests' do
@@ -1032,8 +1032,8 @@ describe 'test failed' do
     end
     write project('foo').path_to(:target, "junit-failed"), "FailingTest\nExcludedTest"
     task('test:failed').invoke rescue nil
-    project('foo').test.tests.should include('FailingTest')
-    project('foo').test.tests.should_not include('ExcludedTest')
+    expect(project('foo').test.tests).to include('FailingTest')
+    expect(project('foo').test.tests).not_to include('ExcludedTest')
   end
 
   it 'should run only the tests that failed the last time, even when failed tests have dependencies' do
@@ -1056,9 +1056,9 @@ describe 'test failed' do
     end
     write project('parent:bar').path_to(:target, "junit-failed"), "FailingTest"
     task('test:failed').invoke rescue nil
-    project('parent:foo').test.tests.should_not include('PassingTest')
-    project('parent:bar').test.tests.should include('FailingTest')
-    project('parent:bar').test.tests.should_not include('PassingTest')
+    expect(project('parent:foo').test.tests).not_to include('PassingTest')
+    expect(project('parent:bar').test.tests).to include('FailingTest')
+    expect(project('parent:bar').test.tests).not_to include('PassingTest')
   end
 
 end
@@ -1066,32 +1066,32 @@ end
 
 describe Buildr::Options, 'test' do
   it 'should be true by default' do
-    Buildr.options.test.should be_true
+    expect(Buildr.options.test).to be_truthy
   end
 
   ['skip', 'no', 'off', 'false'].each do |value|
     it "should be false if test environment variable is '#{value}'" do
-      lambda { ENV['test'] = value }.should change { Buildr.options.test }.to(false)
+      expect { ENV['test'] = value }.to change { Buildr.options.test }.to(false)
     end
   end
 
   ['skip', 'no', 'off', 'false'].each do |value|
     it "should be false if TEST environment variable is '#{value}'" do
-      lambda { ENV['TEST'] = value }.should change { Buildr.options.test }.to(false)
+      expect { ENV['TEST'] = value }.to change { Buildr.options.test }.to(false)
     end
   end
 
   it 'should be :all if test environment variable is all' do
-    lambda { ENV['test'] = 'all' }.should change { Buildr.options.test }.to(:all)
+    expect { ENV['test'] = 'all' }.to change { Buildr.options.test }.to(:all)
   end
 
   it 'should be :all if TEST environment variable is all' do
-    lambda { ENV['TEST'] = 'all' }.should change { Buildr.options.test }.to(:all)
+    expect { ENV['TEST'] = 'all' }.to change { Buildr.options.test }.to(:all)
   end
 
   it 'should be true and warn for any other value' do
     ENV['TEST'] = 'funky'
-    lambda { Buildr.options.test.should be(true) }.should show_warning(/expecting the environment variable/i)
+    expect { expect(Buildr.options.test).to be(true) }.to show_warning(/expecting the environment variable/i)
   end
 end
 
@@ -1100,44 +1100,44 @@ describe Buildr, 'integration' do
   it 'should return the same task from all contexts' do
     task = task('integration')
     define 'foo' do
-      integration.should be(task)
+      expect(integration).to be(task)
       define 'bar' do
-        integration.should be(task)
+        expect(integration).to be(task)
       end
     end
-    integration.should be(task)
+    expect(integration).to be(task)
   end
 
   it 'should respond to :setup and return setup task' do
     setup = integration.setup
-    define('foo') { integration.setup.should be(setup) }
+    define('foo') { expect(integration.setup).to be(setup) }
   end
 
   it 'should respond to :setup and add prerequisites to integration:setup' do
     define('foo') { integration.setup 'prereq' }
-    integration.setup.prerequisites.should include('prereq')
+    expect(integration.setup.prerequisites).to include('prereq')
   end
 
   it 'should respond to :setup and add action for integration:setup' do
     action = task('action')
     define('foo') { integration.setup { action.invoke } }
-    lambda { integration.setup.invoke }.should run_tasks(action)
+    expect { integration.setup.invoke }.to run_tasks(action)
   end
 
   it 'should respond to :teardown and return teardown task' do
     teardown = integration.teardown
-    define('foo') { integration.teardown.should be(teardown) }
+    define('foo') { expect(integration.teardown).to be(teardown) }
   end
 
   it 'should respond to :teardown and add prerequisites to integration:teardown' do
     define('foo') { integration.teardown 'prereq' }
-    integration.teardown.prerequisites.should include('prereq')
+    expect(integration.teardown.prerequisites).to include('prereq')
   end
 
   it 'should respond to :teardown and add action for integration:teardown' do
     action = task('action')
     define('foo') { integration.teardown { action.invoke } }
-    lambda { integration.teardown.invoke }.should run_tasks(action)
+    expect { integration.teardown.invoke }.to run_tasks(action)
   end
 end
 
@@ -1146,7 +1146,7 @@ describe Rake::Task, 'integration' do
   it 'should be a local task' do
     define('foo') { test.using :integration }
     define('bar', :base_dir=>'other') { test.using :integration }
-    lambda { task('integration').invoke }.should run_task('foo:test').but_not('bar:test')
+    expect { task('integration').invoke }.to run_task('foo:test').but_not('bar:test')
   end
 
   it 'should be a recursive task' do
@@ -1154,14 +1154,14 @@ describe Rake::Task, 'integration' do
       test.using :integration
       define('bar') { test.using :integration }
     end
-    lambda { task('integration').invoke }.should run_tasks('foo:test', 'foo:bar:test')
+    expect { task('integration').invoke }.to run_tasks('foo:test', 'foo:bar:test')
   end
 
   it 'should find nested integration tests' do
     define 'foo' do
       define('bar') { test.using :integration }
     end
-    lambda { task('integration').invoke }.should run_tasks('foo:bar:test').but_not('foo:test')
+    expect { task('integration').invoke }.to run_tasks('foo:bar:test').but_not('foo:test')
   end
 
   it 'should ignore nested regular tasks' do
@@ -1169,7 +1169,7 @@ describe Rake::Task, 'integration' do
       test.using :integration
       define('bar') { test.using :integration=>false }
     end
-    lambda { task('integration').invoke }.should run_tasks('foo:test').but_not('foo:bar:test')
+    expect { task('integration').invoke }.to run_tasks('foo:test').but_not('foo:bar:test')
   end
 
   it 'should agree not to run the same tasks as test' do
@@ -1179,34 +1179,34 @@ describe Rake::Task, 'integration' do
         define('baz') { test.using :integration=>false }
       end
     end
-    lambda { task('test').invoke }.should run_tasks('foo:test', 'foo:bar:baz:test').but_not('foo:bar:test')
-    lambda { task('integration').invoke }.should run_tasks('foo:bar:test').but_not('foo:test', 'foo:bar:baz:test')
+    expect { task('test').invoke }.to run_tasks('foo:test', 'foo:bar:baz:test').but_not('foo:bar:test')
+    expect { task('integration').invoke }.to run_tasks('foo:bar:test').but_not('foo:test', 'foo:bar:baz:test')
   end
 
   it 'should run setup task before any project integration tests' do
     define('foo') { test.using :integration }
     define('bar') { test.using :integration }
-    lambda { task('integration').invoke }.should run_tasks([integration.setup, 'bar:test'], [integration.setup, 'foo:test'])
+    expect { task('integration').invoke }.to run_tasks([integration.setup, 'bar:test'], [integration.setup, 'foo:test'])
   end
 
   it 'should run teardown task after all project integrations tests' do
     define('foo') { test.using :integration }
     define('bar') { test.using :integration }
-    lambda { task('integration').invoke }.should run_tasks(['bar:test', integration.teardown], ['foo:test', integration.teardown])
+    expect { task('integration').invoke }.to run_tasks(['bar:test', integration.teardown], ['foo:test', integration.teardown])
   end
 
   it 'should run test cases marked for integration' do
     write 'src/test/java/FailingTest.java',
       'public class FailingTest extends junit.framework.TestCase { public void testNothing() { assertTrue(false); } }'
     define('foo') { test.using :integration }
-    lambda { task('test').invoke }.should_not raise_error
-    lambda { task('integration').invoke }.should raise_error(RuntimeError, /tests failed/i)
+    expect { task('test').invoke }.not_to raise_error
+    expect { task('integration').invoke }.to raise_error(RuntimeError, /tests failed/i)
   end
 
   it 'should run setup and teardown tasks marked for integration' do
     define('foo') { test.using :integration }
-    lambda { task('test').invoke }.should run_tasks().but_not('foo:test:setup', 'foo:test:teardown')
-    lambda { task('integration').invoke }.should run_tasks('foo:test:setup', 'foo:test:teardown')
+    expect { task('test').invoke }.to run_tasks().but_not('foo:test:setup', 'foo:test:teardown')
+    expect { task('integration').invoke }.to run_tasks('foo:test:setup', 'foo:test:teardown')
   end
 
   it 'should run test actions marked for integration' do
@@ -1214,9 +1214,9 @@ describe Rake::Task, 'integration' do
     define 'foo' do
       test.using :integration, :junit
     end
-    lambda { task('test').invoke }.should_not change { project('foo').test.passed_tests }
-    lambda { task('integration').invoke }.should change { project('foo').test.passed_tests }
-    project('foo').test.passed_tests.should be_empty
+    expect { task('test').invoke }.not_to change { project('foo').test.passed_tests }
+    expect { task('integration').invoke }.to change { project('foo').test.passed_tests }
+    expect(project('foo').test.passed_tests).to be_empty
   end
 
   it 'should not fail if test=all' do
@@ -1224,7 +1224,7 @@ describe Rake::Task, 'integration' do
       'public class FailingTest extends junit.framework.TestCase { public void testNothing() { assertTrue(false); } }'
     define('foo') { test.using :integration }
     options.test = :all
-    lambda { task('integration').invoke }.should_not raise_error
+    expect { task('integration').invoke }.not_to raise_error
   end
 
   it 'should execute by local package task' do
@@ -1232,7 +1232,7 @@ describe Rake::Task, 'integration' do
       test.using :integration
       package :jar
     end
-    lambda { task('package').invoke }.should run_tasks(['foo:package', 'foo:test'])
+    expect { task('package').invoke }.to run_tasks(['foo:package', 'foo:test'])
   end
 
   it 'should execute by local package task along with unit tests' do
@@ -1241,7 +1241,7 @@ describe Rake::Task, 'integration' do
       package :jar
       define('bar') { test.using :integration=>false }
     end
-    lambda { task('package').invoke }.should run_tasks(['foo:package', 'foo:test'],
+    expect { task('package').invoke }.to run_tasks(['foo:package', 'foo:test'],
       ['foo:bar:test', 'foo:bar:package'])
   end
 
@@ -1251,7 +1251,7 @@ describe Rake::Task, 'integration' do
       package :jar
     end
     options.test = false
-    lambda { task('package').invoke }.should run_task('foo:package').but_not('foo:test')
+    expect { task('package').invoke }.to run_task('foo:package').but_not('foo:test')
   end
 end
 
@@ -1262,7 +1262,7 @@ describe 'integration rule' do
       test.using :junit, :integration
       define 'bar'
     end
-    lambda { task('integration:something').invoke }.should run_task('foo:test')
+    expect { task('integration:something').invoke }.to run_task('foo:test')
   end
 
   it 'should reset tasks to specific pattern' do
@@ -1276,8 +1276,8 @@ describe 'integration rule' do
     end
     task('integration:something').invoke
     ['foo', 'foo:bar'].map { |name| project(name) }.each do |project|
-      project.test.tests.should include('something')
-      project.test.tests.should_not include('nothing')
+      expect(project.test.tests).to include('something')
+      expect(project.test.tests).not_to include('nothing')
     end
   end
 
@@ -1287,7 +1287,7 @@ describe 'integration rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['prefix-something-suffix']) }
     end
     task('integration:something').invoke
-    project('foo').test.tests.should include('prefix-something-suffix')
+    expect(project('foo').test.tests).to include('prefix-something-suffix')
   end
 
   it 'should not apply *name* pattern if asterisks used' do
@@ -1296,8 +1296,8 @@ describe 'integration rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['prefix-something', 'prefix-something-suffix']) }
     end
     task('integration:*something').invoke
-    project('foo').test.tests.should include('prefix-something')
-    project('foo').test.tests.should_not include('prefix-something-suffix')
+    expect(project('foo').test.tests).to include('prefix-something')
+    expect(project('foo').test.tests).not_to include('prefix-something-suffix')
   end
 
   it 'should accept multiple tasks separated by commas' do
@@ -1306,9 +1306,9 @@ describe 'integration rule' do
       test.instance_eval { @framework.stub(:tests).and_return(['foo', 'bar', 'baz']) }
     end
     task('integration:foo,bar').invoke
-    project('foo').test.tests.should include('foo')
-    project('foo').test.tests.should include('bar')
-    project('foo').test.tests.should_not include('baz')
+    expect(project('foo').test.tests).to include('foo')
+    expect(project('foo').test.tests).to include('bar')
+    expect(project('foo').test.tests).not_to include('baz')
   end
 
   it 'should execute only the named tests' do

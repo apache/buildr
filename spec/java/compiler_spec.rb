@@ -20,7 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers')
 describe 'javac compiler' do
   it 'should identify itself from source directories' do
     write 'src/main/java/com/example/Test.java', 'package com.example; class Test {}'
-    define('foo').compile.compiler.should eql(:javac)
+    expect(define('foo').compile.compiler).to eql(:javac)
   end
 
   it 'should identify from source directories using custom layout' do
@@ -30,8 +30,8 @@ describe 'javac compiler' do
     custom[:source, :main, :java] = 'src'
     custom[:source, :test, :java] = 'testing'
     define 'foo', :layout=>custom do
-      compile.compiler.should eql(:javac)
-      test.compile.compiler.should eql(:javac)
+      expect(compile.compiler).to eql(:javac)
+      expect(test.compile.compiler).to eql(:javac)
     end
   end
 
@@ -39,25 +39,25 @@ describe 'javac compiler' do
     write 'src/com/example/Code.java', 'package com.example; class Code {}'
     write 'testing/com/example/Test.java', 'package com.example; class Test {}'
     define 'foo' do
-      lambda { compile.from 'src' }.should change { compile.compiler }.to(:javac)
-      lambda { test.compile.from 'testing' }.should change { test.compile.compiler }.to(:javac)
+      expect { compile.from 'src' }.to change { compile.compiler }.to(:javac)
+      expect { test.compile.from 'testing' }.to change { test.compile.compiler }.to(:javac)
     end
   end
 
   it 'should report the language as :java' do
-    define('foo').compile.using(:javac).language.should eql(:java)
+    expect(define('foo').compile.using(:javac).language).to eql(:java)
   end
 
   it 'should set the target directory to target/classes' do
     define 'foo' do
-      lambda { compile.using(:javac) }.should change { compile.target.to_s }.to(File.expand_path('target/classes'))
+      expect { compile.using(:javac) }.to change { compile.target.to_s }.to(File.expand_path('target/classes'))
     end
   end
 
   it 'should not override existing target directory' do
     define 'foo' do
       compile.into('classes')
-      lambda { compile.using(:javac) }.should_not change { compile.target }
+      expect { compile.using(:javac) }.not_to change { compile.target }
     end
   end
 
@@ -74,13 +74,13 @@ describe 'javac compiler' do
       compile.from(f)
       package(:jar)
     end.compile.invoke
-    file('target/classes/Foo.class').should exist
+    expect(file('target/classes/Foo.class')).to exist
   end
 
   it 'should not change existing list of sources' do
     define 'foo' do
       compile.from('sources')
-      lambda { compile.using(:javac) }.should_not change { compile.sources }
+      expect { compile.using(:javac) }.not_to change { compile.sources }
     end
   end
 
@@ -94,7 +94,7 @@ describe 'javac compiler' do
       end
       write 'src/test/DependencyTest.java', 'class DependencyTest { Dependency _var; }'
       define('foo').compile.from('src/test').with(project('dependency')).invoke
-      file('target/classes/DependencyTest.class').should exist
+      expect(file('target/classes/DependencyTest.class')).to exist
     end
   end
 
@@ -104,14 +104,14 @@ describe 'javac compiler' do
       public class UseApt { }
     JAVA
     define('foo').compile.invoke
-    file('target/classes/UseApt.class').should exist
+    expect(file('target/classes/UseApt.class')).to exist
   end
 
   it 'should ignore package-info.java files in up-to-date check' do
     write 'src/main/java/foo/Test.java', 'package foo; class Test { public void foo() {} }'
     write 'src/main/java/foo/package-info.java', 'package foo;'
-    lambda{ define('foo').compile.invoke }.should run_task('foo:compile')
-    lambda{ define('bar').compile.invoke }.should_not run_task('bar:compile')
+    expect{ define('foo').compile.invoke }.to run_task('foo:compile')
+    expect{ define('bar').compile.invoke }.not_to run_task('bar:compile')
   end
 end
 
@@ -126,133 +126,133 @@ describe 'javac compiler options' do
   end
 
   it 'should set warnings option to false by default' do
-    compile_task.options.warnings.should be_false
+    expect(compile_task.options.warnings).to be_falsey
   end
 
   it 'should set warnings option to true when running with --verbose option' do
     verbose true
-    compile_task.options.warnings.should be_false
+    expect(compile_task.options.warnings).to be_falsey
   end
 
   it 'should use -nowarn argument when warnings is false' do
     compile_task.using(:warnings=>false)
-    javac_args.should include('-nowarn')
+    expect(javac_args).to include('-nowarn')
   end
 
   it 'should not use -nowarn argument when warnings is true' do
     compile_task.using(:warnings=>true)
-    javac_args.should_not include('-nowarn')
+    expect(javac_args).not_to include('-nowarn')
   end
 
   it 'should not use -verbose argument by default' do
-    javac_args.should_not include('-verbose')
+    expect(javac_args).not_to include('-verbose')
   end
 
   it 'should use -verbose argument when running with --trace=javac option' do
     Buildr.application.options.trace_categories = [:javac]
-    javac_args.should include('-verbose')
+    expect(javac_args).to include('-verbose')
   end
 
   it 'should set debug option to true by default' do
-    compile_task.options.debug.should be_true
+    expect(compile_task.options.debug).to be_truthy
   end
 
   it 'should set debug option to false based on Buildr.options' do
     Buildr.options.debug = false
-    compile_task.options.debug.should be_false
+    expect(compile_task.options.debug).to be_falsey
   end
 
   it 'should set debug option to false based on debug environment variable' do
     ENV['debug'] = 'no'
-    compile_task.options.debug.should be_false
+    expect(compile_task.options.debug).to be_falsey
   end
 
   it 'should set debug option to false based on DEBUG environment variable' do
     ENV['DEBUG'] = 'no'
-    compile_task.options.debug.should be_false
+    expect(compile_task.options.debug).to be_falsey
   end
 
   it 'should use -g argument when debug option is true' do
     compile_task.using(:debug=>true)
-    javac_args.should include('-g')
+    expect(javac_args).to include('-g')
   end
 
   it 'should not use -g argument when debug option is false' do
     compile_task.using(:debug=>false)
-    javac_args.should_not include('-g')
+    expect(javac_args).not_to include('-g')
   end
 
   it 'should set deprecation option to false by default' do
-    compile_task.options.deprecation.should be_false
+    expect(compile_task.options.deprecation).to be_falsey
   end
 
   it 'should use -deprecation argument when deprecation is true' do
     compile_task.using(:deprecation=>true)
-    javac_args.should include('-deprecation')
+    expect(javac_args).to include('-deprecation')
   end
 
   it 'should not use -deprecation argument when deprecation is false' do
     compile_task.using(:deprecation=>false)
-    javac_args.should_not include('-deprecation')
+    expect(javac_args).not_to include('-deprecation')
   end
 
   it 'should not set source option by default' do
-    compile_task.options.source.should be_nil
-    javac_args.should_not include('-source')
+    expect(compile_task.options.source).to be_nil
+    expect(javac_args).not_to include('-source')
   end
 
   it 'should not set target option by default' do
-    compile_task.options.target.should be_nil
-    javac_args.should_not include('-target')
+    expect(compile_task.options.target).to be_nil
+    expect(javac_args).not_to include('-target')
   end
 
   it 'should use -source nn argument if source option set' do
     compile_task.using(:source=>'1.5')
-    javac_args.should include('-source', '1.5')
+    expect(javac_args).to include('-source', '1.5')
   end
 
   it 'should use -target nn argument if target option set' do
     compile_task.using(:target=>'1.5')
-    javac_args.should include('-target', '1.5')
+    expect(javac_args).to include('-target', '1.5')
   end
 
   it 'should set lint option to false by default' do
-    compile_task.options.lint.should be_false
+    expect(compile_task.options.lint).to be_falsey
   end
 
   it 'should use -lint argument if lint option is true' do
     compile_task.using(:lint=>true)
-    javac_args.should include('-Xlint')
+    expect(javac_args).to include('-Xlint')
   end
 
   it 'should use -lint argument with value of option' do
     compile_task.using(:lint=>'all')
-    javac_args.should include('-Xlint:all')
+    expect(javac_args).to include('-Xlint:all')
   end
 
   it 'should use -lint argument with value of option as array' do
     compile_task.using(:lint=>['path', 'serial'])
-    javac_args.should include('-Xlint:path,serial')
+    expect(javac_args).to include('-Xlint:path,serial')
   end
 
   it 'should not set other option by default' do
-    compile_task.options.other.should be_nil
+    expect(compile_task.options.other).to be_nil
   end
 
   it 'should pass other argument if other option is string' do
     compile_task.using(:other=>'-Xprint')
-    javac_args.should include('-Xprint')
+    expect(javac_args).to include('-Xprint')
   end
 
   it 'should pass other argument if other option is array' do
     compile_task.using(:other=>['-Xstdout', 'msgs'])
-    javac_args.should include('-Xstdout', 'msgs')
+    expect(javac_args).to include('-Xstdout', 'msgs')
   end
 
   it 'should complain about options it doesn\'t know' do
     write 'source/Test.java', 'class Test {}'
     compile_task.using(:unknown=>'option')
-    lambda { compile_task.from('source').invoke }.should raise_error(ArgumentError, /no such option/i)
+    expect { compile_task.from('source').invoke }.to raise_error(ArgumentError, /no such option/i)
   end
 
   it 'should inherit options from parent' do
@@ -260,11 +260,11 @@ describe 'javac compiler options' do
       compile.using(:warnings=>true, :debug=>true, :deprecation=>true, :source=>'1.5', :target=>'1.4')
       define 'bar' do
         compile.using(:javac)
-        compile.options.warnings.should be_true
-        compile.options.debug.should be_true
-        compile.options.deprecation.should be_true
-        compile.options.source.should eql('1.5')
-        compile.options.target.should eql('1.4')
+        expect(compile.options.warnings).to be_truthy
+        expect(compile.options.debug).to be_truthy
+        expect(compile.options.deprecation).to be_truthy
+        expect(compile.options.source).to eql('1.5')
+        expect(compile.options.target).to eql('1.4')
       end
     end
   end

@@ -19,7 +19,7 @@ Sandbox.require_optional_extension 'buildr/bnd'
 
 def open_zip_file(file = 'target/foo-2.1.3.jar')
   jar_filename = @foo._(file)
-  File.should be_exist(jar_filename)
+  expect(File).to be_exist(jar_filename)
   Zip::ZipFile.open(jar_filename) do |zip|
     yield zip
   end
@@ -27,7 +27,7 @@ end
 
 def open_main_manifest_section(file = 'target/foo-2.1.3.jar')
   jar_filename = @foo._(file)
-  File.should be_exist(jar_filename)
+  expect(File).to be_exist(jar_filename)
   yield Buildr::Packaging::Java::Manifest.from_zip(jar_filename).main
 end
 
@@ -77,11 +77,11 @@ SRC
 
       it "version 0.0.384 does not export the version and wrong import-package" do
         open_main_manifest_section do |attribs|
-          attribs['Bundle-Name'].should eql('foo')
-          attribs['Bundle-Version'].should eql('2.1.3')
-          attribs['Bundle-SymbolicName'].should eql('mygroup.foo')
-          attribs['Export-Package'].should eql('com.biz')
-          attribs['Import-Package'].should eql('com.biz')
+          expect(attribs['Bundle-Name']).to eql('foo')
+          expect(attribs['Bundle-Version']).to eql('2.1.3')
+          expect(attribs['Bundle-SymbolicName']).to eql('mygroup.foo')
+          expect(attribs['Export-Package']).to eql('com.biz')
+          expect(attribs['Import-Package']).to eql('com.biz')
         end
       end
   end
@@ -121,70 +121,70 @@ SRC
       end
 
       it "produces a .bnd in the correct location for root project" do
-        File.should be_exist(@foo._("target/foo-2.1.3.bnd"))
+        expect(File).to be_exist(@foo._("target/foo-2.1.3.bnd"))
       end
 
       it "produces a .jar in the correct location for root project" do
-        File.should be_exist(@foo._("target/foo-2.1.3.jar"))
+        expect(File).to be_exist(@foo._("target/foo-2.1.3.jar"))
       end
 
       it "produces a .jar containing correct .class files for root project" do
         open_zip_file do |zip|
-          zip.file.exist?('com/biz/Foo.class').should be_true
+          expect(zip.file.exist?('com/biz/Foo.class')).to be_truthy
         end
       end
 
       it "produces a .jar containing resoruces from resource directory root project" do
         open_zip_file do |zip|
-          zip.file.exist?('IRIS-INF/iris.config').should be_true
+          expect(zip.file.exist?('IRIS-INF/iris.config')).to be_truthy
         end
       end
 
       it "produces a .jar containing expected manifest entries derived from project.bnd for root project" do
         open_main_manifest_section do |attribs|
-          attribs['Bundle-Name'].should eql('foo')
-          attribs['Bundle-Version'].should eql('2.1.3')
-          attribs['Bundle-SymbolicName'].should eql('mygroup.foo')
-          attribs['Export-Package'].should eql('com.biz;version="2.1.3"')
-          attribs['Import-Package'].should be_nil
+          expect(attribs['Bundle-Name']).to eql('foo')
+          expect(attribs['Bundle-Version']).to eql('2.1.3')
+          expect(attribs['Bundle-SymbolicName']).to eql('mygroup.foo')
+          expect(attribs['Export-Package']).to eql('com.biz;version="2.1.3"')
+          expect(attribs['Import-Package']).to be_nil
         end
       end
 
       it "produces a .jar containing expected manifest entries derived from project.manifest root project" do
         open_main_manifest_section do |attribs|
-          attribs['Magic-Drink'].should eql('Wine')
-          attribs['Magic-Food'].should eql('Chocolate')
+          expect(attribs['Magic-Drink']).to eql('Wine')
+          expect(attribs['Magic-Food']).to eql('Chocolate')
         end
       end
 
       it "produces a .bnd in the correct location for subproject project" do
-        File.should be_exist(@foo._("bar/target/foo-bar-2.2.bnd"))
+        expect(File).to be_exist(@foo._("bar/target/foo-bar-2.2.bnd"))
       end
 
       it "produces a .jar in the correct location for subproject project" do
-        File.should be_exist(@foo._("bar/target/foo-bar-2.2.jar"))
+        expect(File).to be_exist(@foo._("bar/target/foo-bar-2.2.jar"))
       end
 
       it "produces a .jar containing correct .class files for subproject project" do
         open_zip_file('bar/target/foo-bar-2.2.jar') do |zip|
-          zip.file.exist?('com/biz/bar/Bar.class').should be_true
+          expect(zip.file.exist?('com/biz/bar/Bar.class')).to be_truthy
         end
       end
 
       it "produces a .jar containing expected manifest entries derived from project.bnd for subproject project" do
         open_main_manifest_section('bar/target/foo-bar-2.2.jar') do |attribs|
-          attribs['Bundle-Name'].should eql('foo:bar')
-          attribs['Bundle-Version'].should eql('2.2')
-          attribs['Bundle-SymbolicName'].should eql('mygroup.foo.bar')
-          attribs['Export-Package'].should eql('com.biz.bar;version="2.2"')
-          attribs['Import-Package'].should be_nil
+          expect(attribs['Bundle-Name']).to eql('foo:bar')
+          expect(attribs['Bundle-Version']).to eql('2.2')
+          expect(attribs['Bundle-SymbolicName']).to eql('mygroup.foo.bar')
+          expect(attribs['Export-Package']).to eql('com.biz.bar;version="2.2"')
+          expect(attribs['Import-Package']).to be_nil
         end
       end
 
       it "produces a .jar containing expected manifest entries derived from project.manifest subproject project" do
         open_main_manifest_section('bar/target/foo-bar-2.2.jar') do |attribs|
-          attribs['Magic-Drink'].should eql('Wine')
-          attribs['Magic-Food'].should eql('Cheese')
+          expect(attribs['Magic-Drink']).to eql('Wine')
+          expect(attribs['Magic-Food']).to eql('Cheese')
         end
       end
     end
@@ -202,12 +202,12 @@ SRC
       end
 
       it "raise an error if unable to build a valid bundle" do
-        lambda { task('package').invoke }.should raise_error
+        expect { task('package').invoke }.to raise_error /Failed to execute java aQute\.bnd\.main\.bnd/
       end
 
       it "raise not produce an invalid jar file" do
-        lambda { task('package').invoke }.should raise_error
-        File.should_not be_exist(@foo._("target/foo-2.1.3.jar"))
+        expect { task('package').invoke }.to raise_error /Failed to execute java aQute\.bnd\.main\.bnd/
+        expect(File).not_to be_exist(@foo._("target/foo-2.1.3.jar"))
       end
     end
 
@@ -226,13 +226,13 @@ SRC
       end
 
       it "should not raise an error during packaging" do
-        lambda { task('package').invoke }.should_not raise_error
+        expect { task('package').invoke }.not_to raise_error
       end
 
       it "should generate package with files exported from dependency" do
         task('package').invoke
         open_main_manifest_section do |attribs|
-          attribs['Export-Package'].should eql('org.apache.tools.zip;version="2.1.3"')
+          expect(attribs['Export-Package']).to eql('org.apache.tools.zip;version="2.1.3"')
         end
       end
     end
@@ -258,13 +258,13 @@ SRC
       end
 
       it "should not raise an error during packaging" do
-        lambda { task('package').invoke }.should_not raise_error
+        expect { task('package').invoke }.not_to raise_error
       end
 
       it "should generate package with files exported from dependency" do
         task('package').invoke
         open_main_manifest_section do |attribs|
-          attribs['Export-Package'].should eql('org.apache.tools.zip;version="2.1.3"')
+          expect(attribs['Export-Package']).to eql('org.apache.tools.zip;version="2.1.3"')
         end
       end
     end
@@ -282,13 +282,13 @@ SRC
       end
 
       it "should not raise an error during packaging" do
-        lambda { task('package').invoke }.should_not raise_error
+        expect { task('package').invoke }.not_to raise_error
       end
 
       it "should generate package with files exported from dependency" do
         task('package').invoke
         open_main_manifest_section do |attribs|
-          attribs['Export-Package'].should eql('org.apache.tools.zip;version="2.1.3"')
+          expect(attribs['Export-Package']).to eql('org.apache.tools.zip;version="2.1.3"')
         end
       end
     end
@@ -320,64 +320,64 @@ SRC
     end
 
     it "defaults Bundle-Version to project.version" do
-      @foo.packages[0].to_params['Bundle-Version'].should eql('2.1.3')
-      @bar.packages[0].to_params['Bundle-Version'].should eql('2.1.3')
+      expect(@foo.packages[0].to_params['Bundle-Version']).to eql('2.1.3')
+      expect(@bar.packages[0].to_params['Bundle-Version']).to eql('2.1.3')
     end
 
     it "defaults -classpath to compile path and dependencies" do
-      @foo.packages[0].to_params['-classpath'].should include(@foo.compile.target.to_s)
-      @foo.packages[0].to_params['-classpath'].should include(Buildr.artifact(Buildr::Ant.dependencies[0]).to_s)
-      @bar.packages[0].to_params['-classpath'].should include(@bar.compile.target.to_s)
+      expect(@foo.packages[0].to_params['-classpath']).to include(@foo.compile.target.to_s)
+      expect(@foo.packages[0].to_params['-classpath']).to include(Buildr.artifact(Buildr::Ant.dependencies[0]).to_s)
+      expect(@bar.packages[0].to_params['-classpath']).to include(@bar.compile.target.to_s)
     end
 
     it "classpath method returns compile path and dependencies" do
-      @foo.packages[0].classpath.should include(@foo.compile.target)
+      expect(@foo.packages[0].classpath).to include(@foo.compile.target)
       Buildr::Ant.dependencies.each do |dependency|
-        @foo.packages[0].classpath.to_s.should include(Buildr.artifact(dependency).to_s)
+        expect(@foo.packages[0].classpath.to_s).to include(Buildr.artifact(dependency).to_s)
       end
-      @bar.packages[0].classpath.should include(@bar.compile.target)
+      expect(@bar.packages[0].classpath).to include(@bar.compile.target)
     end
 
     it "defaults Bundle-SymbolicName to combination of group and name" do
-      @foo.packages[0].to_params['Bundle-SymbolicName'].should eql('mygroup.foo')
-      @bar.packages[0].to_params['Bundle-SymbolicName'].should eql('mygroup.foo.bar')
+      expect(@foo.packages[0].to_params['Bundle-SymbolicName']).to eql('mygroup.foo')
+      expect(@bar.packages[0].to_params['Bundle-SymbolicName']).to eql('mygroup.foo.bar')
     end
 
     it "defaults Export-Package to nil" do
-      @foo.packages[0].to_params['Export-Package'].should be_nil
-      @bar.packages[0].to_params['Export-Package'].should be_nil
+      expect(@foo.packages[0].to_params['Export-Package']).to be_nil
+      expect(@bar.packages[0].to_params['Export-Package']).to be_nil
     end
 
     it "defaults Import-Package to nil" do
-      @foo.packages[0].to_params['Import-Package'].should be_nil
-      @bar.packages[0].to_params['Import-Package'].should be_nil
+      expect(@foo.packages[0].to_params['Import-Package']).to be_nil
+      expect(@bar.packages[0].to_params['Import-Package']).to be_nil
     end
 
     it "defaults Bundle-Name to project.name if comment not present" do
-      @foo.packages[0].to_params['Bundle-Name'].should eql('foo')
+      expect(@foo.packages[0].to_params['Bundle-Name']).to eql('foo')
     end
 
     it "defaults Bundle-Name to comment if present" do
-      @bar.packages[0].to_params['Bundle-Name'].should eql('My Bar Project')
+      expect(@bar.packages[0].to_params['Bundle-Name']).to eql('My Bar Project')
     end
 
     it "defaults Bundle-Description to project.full_comment" do
-      @foo.packages[0].to_params['Bundle-Description'].should be_nil
-      @bar.packages[0].to_params['Bundle-Description'].should eql('My Bar Project')
+      expect(@foo.packages[0].to_params['Bundle-Description']).to be_nil
+      expect(@bar.packages[0].to_params['Bundle-Description']).to eql('My Bar Project')
     end
 
     it "defaults -removeheaders to" do
-      @foo.packages[0].to_params['-removeheaders'].should eql("Include-Resource,Bnd-LastModified,Created-By,Implementation-Title,Tool")
+      expect(@foo.packages[0].to_params['-removeheaders']).to eql("Include-Resource,Bnd-LastModified,Created-By,Implementation-Title,Tool")
     end
   end
 
   describe "project extension" do
     it "provides an 'bnd:print' task" do
-      Rake::Task.tasks.detect { |task| task.to_s == "bnd:print" }.should_not be_nil
+      expect(Rake::Task.tasks.detect { |task| task.to_s == "bnd:print" }).not_to be_nil
     end
 
     it "documents the 'bnd:print' task" do
-      Rake::Task.tasks.detect { |task| task.to_s == "bnd:print" }.comment.should_not be_nil
+      expect(Rake::Task.tasks.detect { |task| task.to_s == "bnd:print" }.comment).not_to be_nil
     end
   end
 

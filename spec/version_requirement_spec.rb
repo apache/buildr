@@ -22,25 +22,25 @@ describe Buildr::VersionRequirement, '.create' do
   end
 
   it 'should complain on invalid input' do
-    lambda { create }.should raise_error(Exception)
-    lambda { create('%') }.should raise_error(Exception, /invalid character/)
-    lambda { create('1#{0}') }.should raise_error(Exception, /invalid character/)
-    lambda { create('1.0rc`exit`') }.should raise_error(Exception, /invalid character/)
-    lambda { create(1.0) }.should raise_error(Exception)
-    lambda { create('1.0') }.should_not raise_error(Exception)
-    lambda { create('1.0rc3') }.should_not raise_error(Exception)
+    expect { create }.to raise_error(Exception)
+    expect { create('%') }.to raise_error(Exception, /invalid character/)
+    expect { create('1#{0}') }.to raise_error(Exception, /invalid character/)
+    expect { create('1.0rc`exit`') }.to raise_error(Exception, /invalid character/)
+    expect { create(1.0) }.to raise_error(Exception)
+    expect { create('1.0') }.not_to raise_error
+    expect { create('1.0rc3') }.not_to raise_error
   end
 
   it 'should allow versions using hyphen' do
-    lambda { create('1.0-rc3') }.should_not raise_error(Exception)
+    expect { create('1.0-rc3') }.not_to raise_error
   end
 
   it 'should create a single version requirement' do
-    create('1.0').should_not be_composed
+    expect(create('1.0')).not_to be_composed
   end
 
   it 'should create a composed version requirement' do
-    create('1.0 | 2.1').should be_composed
+    expect(create('1.0 | 2.1')).to be_composed
   end
 end
 
@@ -111,35 +111,35 @@ end
 
 describe Buildr::VersionRequirement, '#default' do
   it 'should return nil if missing default requirement' do
-    Buildr::VersionRequirement.create('>1').default.should be_nil
-    Buildr::VersionRequirement.create('<1').default.should be_nil
-    Buildr::VersionRequirement.create('!1').default.should be_nil
-    Buildr::VersionRequirement.create('!<=1').default.should be_nil
+    expect(Buildr::VersionRequirement.create('>1').default).to be_nil
+    expect(Buildr::VersionRequirement.create('<1').default).to be_nil
+    expect(Buildr::VersionRequirement.create('!1').default).to be_nil
+    expect(Buildr::VersionRequirement.create('!<=1').default).to be_nil
   end
 
   it 'should return the last version with a = requirement' do
-    Buildr::VersionRequirement.create('1').default.should == '1'
-    Buildr::VersionRequirement.create('=1').default.should == '1'
-    Buildr::VersionRequirement.create('<=1').default.should == '1'
-    Buildr::VersionRequirement.create('>=1').default.should == '1'
-    Buildr::VersionRequirement.create('1 | 2 | 3').default.should == '3'
-    Buildr::VersionRequirement.create('1 2 | 3').default.should == '3'
-    Buildr::VersionRequirement.create('1 & 2 | 3').default.should == '3'
+    expect(Buildr::VersionRequirement.create('1').default).to eq('1')
+    expect(Buildr::VersionRequirement.create('=1').default).to eq('1')
+    expect(Buildr::VersionRequirement.create('<=1').default).to eq('1')
+    expect(Buildr::VersionRequirement.create('>=1').default).to eq('1')
+    expect(Buildr::VersionRequirement.create('1 | 2 | 3').default).to eq('3')
+    expect(Buildr::VersionRequirement.create('1 2 | 3').default).to eq('3')
+    expect(Buildr::VersionRequirement.create('1 & 2 | 3').default).to eq('3')
   end
 end
 
 describe Buildr::VersionRequirement, '#version?' do
   it 'should identify valid versions' do
-    Buildr::VersionRequirement.version?('1').should be_true
-    Buildr::VersionRequirement.version?('1a').should be_true
-    Buildr::VersionRequirement.version?('1.0').should be_true
-    Buildr::VersionRequirement.version?('11.0').should be_true
-    Buildr::VersionRequirement.version?(' 11.0 ').should be_true
-    Buildr::VersionRequirement.version?('11.0-alpha').should be_true
-    Buildr::VersionRequirement.version?('r09').should be_true # BUILDR-615: com.google.guava:guava:jar:r09
+    expect(Buildr::VersionRequirement.version?('1')).to be_truthy
+    expect(Buildr::VersionRequirement.version?('1a')).to be_truthy
+    expect(Buildr::VersionRequirement.version?('1.0')).to be_truthy
+    expect(Buildr::VersionRequirement.version?('11.0')).to be_truthy
+    expect(Buildr::VersionRequirement.version?(' 11.0 ')).to be_truthy
+    expect(Buildr::VersionRequirement.version?('11.0-alpha')).to be_truthy
+    expect(Buildr::VersionRequirement.version?('r09')).to be_truthy # BUILDR-615: com.google.guava:guava:jar:r09
 
-    Buildr::VersionRequirement.version?('a').should be_false
-    Buildr::VersionRequirement.version?('a1').should be_false
-    Buildr::VersionRequirement.version?('r').should be_false
+    expect(Buildr::VersionRequirement.version?('a')).to be_falsey
+    expect(Buildr::VersionRequirement.version?('a1')).to be_falsey
+    expect(Buildr::VersionRequirement.version?('r')).to be_falsey
   end
 end

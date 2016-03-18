@@ -26,6 +26,6 @@ describe 'scala' do
   end
 
   it "should provide the Scala version string" do
-    Scala.version_str.should eql(Buildr::Scala::SCALA_VERSION_FOR_SPECS)
+    expect(Scala.version_str).to eql(Buildr::Scala::SCALA_VERSION_FOR_SPECS)
   end
 end

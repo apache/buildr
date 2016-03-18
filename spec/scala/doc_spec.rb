@@ -27,8 +27,8 @@ describe "Scaladoc" do
       end
     end
 
-    project('foo').doc.options[:"doc-title"].should eql('foo')
-    project('foo:bar').doc.options[:"doc-title"].should eql('foo:bar')
+    expect(project('foo').doc.options[:"doc-title"]).to eql('foo')
+    expect(project('foo:bar').doc.options[:"doc-title"]).to eql('foo:bar')
   end
 
   it 'should pick -doc-title from project description by default, if available' do
@@ -36,7 +36,7 @@ describe "Scaladoc" do
     define 'foo' do
       compile.using(:scalac)
     end
-    project('foo').doc.options[:"doc-title"].should eql('My App')
+    expect(project('foo').doc.options[:"doc-title"]).to eql('My App')
   end
 
   it 'should not override explicit "doc-title" option' do
@@ -44,7 +44,7 @@ describe "Scaladoc" do
       compile.using(:scalac)
       doc.using "doc-title" => 'explicit'
     end
-    project('foo').doc.options[:"doc-title"].should eql('explicit')
+    expect(project('foo').doc.options[:"doc-title"]).to eql('explicit')
   end
 
 if Java.java.lang.System.getProperty("java.runtime.version") >= "1.6"
@@ -56,15 +56,15 @@ if Java.java.lang.System.getProperty("java.runtime.version") >= "1.6"
     end
     actual = Java.scala.tools.nsc.ScalaDoc.new
     scaladoc = Java.scala.tools.nsc.ScalaDoc.new
-    Java.scala.tools.nsc.ScalaDoc.should_receive(:new) do
+    expect(Java.scala.tools.nsc.ScalaDoc).to receive(:new) do
       scaladoc
     end
-    scaladoc.should_receive(:process) do |args|
+    expect(scaladoc).to receive(:process) do |args|
       # Convert Java Strings to Ruby Strings, if needed.
       xargs = args.map { |a| a.is_a?(String) ? a : a.toString }
-      xargs.should include("-doc-title")
-      xargs.should_not include("-windowtitle")
-      actual.process(args).should eql(true)
+      expect(xargs).to include("-doc-title")
+      expect(xargs).not_to include("-windowtitle")
+      expect(actual.process(args)).to eql(true)
     end
     project('foo').doc.invoke
   end unless Buildr::Scala.version?(2.7, "2.8.0")
@@ -85,15 +85,15 @@ describe "package(:scaladoc)" do
     end
 
     scaladoc = project('foo').package(:scaladoc)
-    scaladoc.should point_to_path('target/foo-1.0-scaladoc.jar')
+    expect(scaladoc).to point_to_path('target/foo-1.0-scaladoc.jar')
 
-    lambda {
+    expect {
       project('foo').task('package').invoke
-    }.should change { File.exist?('target/foo-1.0-scaladoc.jar') }.to(true)
+    }.to change { File.exist?('target/foo-1.0-scaladoc.jar') }.to(true)
 
-    scaladoc.should exist
-    scaladoc.should contain('index.html')
-    scaladoc.should contain('Foo.html')
+    expect(scaladoc).to exist
+    expect(scaladoc).to contain('index.html')
+    expect(scaladoc).to contain('Foo.html')
   end
 end
 

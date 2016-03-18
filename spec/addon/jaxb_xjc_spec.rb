@@ -110,17 +110,17 @@ describe Buildr::JaxbXjc do
     end
 
     it "produce .java files in the correct location" do
-      File.should be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/Agency.java"))
-      File.should be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/LatLongCoordinate.java"))
-      File.should be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/ObjectFactory.java"))
-      File.should be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/Wildfire.java"))
+      expect(File).to be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/Agency.java"))
+      expect(File).to be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/LatLongCoordinate.java"))
+      expect(File).to be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/ObjectFactory.java"))
+      expect(File).to be_exist(@foo._("target/generated/jaxb/main/java/org/foo/api/Wildfire.java"))
     end
 
     it "produce .class files in the correct location" do
-      File.should be_exist(@foo._("target/classes/org/foo/api/Agency.class"))
-      File.should be_exist(@foo._("target/classes/org/foo/api/LatLongCoordinate.class"))
-      File.should be_exist(@foo._("target/classes/org/foo/api/ObjectFactory.class"))
-      File.should be_exist(@foo._("target/classes/org/foo/api/Wildfire.class"))
+      expect(File).to be_exist(@foo._("target/classes/org/foo/api/Agency.class"))
+      expect(File).to be_exist(@foo._("target/classes/org/foo/api/LatLongCoordinate.class"))
+      expect(File).to be_exist(@foo._("target/classes/org/foo/api/ObjectFactory.class"))
+      expect(File).to be_exist(@foo._("target/classes/org/foo/api/Wildfire.class"))
     end
   end
 end

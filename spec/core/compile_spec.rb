@@ -59,54 +59,54 @@ describe Buildr::CompileTask do
   include CompilerHelper
 
   it 'should respond to from() and return self' do
-    compile_task.from(sources).should be(compile_task)
+    expect(compile_task.from(sources)).to be(compile_task)
   end
 
   it 'should respond to from() with FileTask having no compiler set and return self' do
-    compile_task_without_compiler.from(file_task).should be(compile_task)
+    expect(compile_task_without_compiler.from(file_task)).to be(compile_task)
   end
 
   it 'should respond to from() and add sources' do
     compile_task.from sources, File.dirname(sources.first)
-    compile_task.sources.should == sources + [File.dirname(sources.first)]
+    expect(compile_task.sources).to eq(sources + [File.dirname(sources.first)])
   end
 
   it 'should respond to with() and return self' do
-    compile_task.with('test.jar').should be(compile_task)
+    expect(compile_task.with('test.jar')).to be(compile_task)
   end
 
   it 'should respond to with() and add dependencies' do
     jars = (1..3).map { |i| "test#{i}.jar" }
     compile_task.with *jars
-    compile_task.dependencies.should == artifacts(jars)
+    expect(compile_task.dependencies).to eq(artifacts(jars))
   end
 
   it 'should respond to into() and return self' do
-    compile_task.into('code').should be(compile_task)
+    expect(compile_task.into('code')).to be(compile_task)
   end
 
   it 'should respond to into() and create file task' do
     compile_task.from(sources).into('code')
-    lambda { file('code').invoke }.should run_task('foo:compile')
+    expect { file('code').invoke }.to run_task('foo:compile')
   end
 
   it 'should respond to using() and return self' do
-    compile_task.using(:source=>'1.4').should eql(compile_task)
+    expect(compile_task.using(:source=>'1.4')).to eql(compile_task)
   end
 
   it 'should respond to using() and set options' do
     compile_task.using(:source=>'1.4', 'target'=>'1.5')
-    compile_task.options.source.should eql('1.4')
-    compile_task.options.target.should eql('1.5')
+    expect(compile_task.options.source).to eql('1.4')
+    expect(compile_task.options.target).to eql('1.5')
   end
 
   it 'should attempt to identify compiler' do
-    Compiler.compilers.first.should_receive(:applies_to?).at_least(:once)
+    expect(Compiler.compilers.first).to receive(:applies_to?).at_least(:once)
     define('foo')
   end
 
   it 'should only support existing compilers' do
-    lambda { define('foo') { compile.using(:unknown) } }.should raise_error(ArgumentError, /unknown compiler/i)
+    expect { define('foo') { compile.using(:unknown) } }.to raise_error(ArgumentError, /unknown compiler/i)
   end
 
   it 'should allow overriding the guessed compiler' do
@@ -118,20 +118,20 @@ describe Buildr::CompileTask do
       compile.using(:scalac)
       new_compiler = compile.compiler
     }
-    old_compiler.should == :javac
-    new_compiler.should == :scalac
+    expect(old_compiler).to eq(:javac)
+    expect(new_compiler).to eq(:scalac)
   end
 end
 
 
 describe Buildr::CompileTask, '#compiler' do
   it 'should be nil if no compiler identifier' do
-    define('foo').compile.compiler.should be_nil
+    expect(define('foo').compile.compiler).to be_nil
   end
 
   it 'should return the selected compiler' do
     define('foo') { compile.using(:javac) }
-    project('foo').compile.compiler.should eql(:javac)
+    expect(project('foo').compile.compiler).to eql(:javac)
   end
 
   it 'should attempt to identify compiler if sources are specified' do
@@ -147,19 +147,19 @@ describe Buildr::CompileTask, '#compiler' do
       compile.sources.clear
     end
     project('foo').compile.invoke
-    Dir['target/classes/*'].should be_empty
+    expect(Dir['target/classes/*']).to be_empty
   end
 end
 
 
 describe Buildr::CompileTask, '#language' do
   it 'should be nil if no compiler identifier' do
-    define('foo').compile.language.should be_nil
+    expect(define('foo').compile.language).to be_nil
   end
 
   it 'should return the appropriate language' do
     define('foo') { compile.using(:javac) }
-    project('foo').compile.language.should eql(:java)
+    expect(project('foo').compile.language).to eql(:java)
   end
 end
 
@@ -168,36 +168,36 @@ describe Buildr::CompileTask, '#sources' do
   include CompilerHelper
 
   it 'should be empty if no sources in default directory' do
-    compile_task.sources.should be_empty
+    expect(compile_task.sources).to be_empty
   end
 
   it 'should point to default directory if it contains sources' do
     write 'src/main/java', ''
-    compile_task.sources.first.should point_to_path('src/main/java')
+    expect(compile_task.sources.first).to point_to_path('src/main/java')
   end
 
   it 'should be an array' do
     compile_task.sources += sources
-    compile_task.sources.should == sources
+    expect(compile_task.sources).to eq(sources)
   end
 
   it 'should allow files' do
     compile_task.from(sources).into('classes').invoke
-    sources.each { |src| file(src.pathmap('classes/thepackage/%n.class')).should exist }
+    sources.each { |src| expect(file(src.pathmap('classes/thepackage/%n.class'))).to exist }
   end
 
   it 'should allow directories' do
     compile_task.from(File.dirname(sources.first)).into('classes').invoke
-    sources.each { |src| file(src.pathmap('classes/thepackage/%n.class')).should exist }
+    sources.each { |src| expect(file(src.pathmap('classes/thepackage/%n.class'))).to exist }
   end
 
   it 'should allow tasks' do
-    lambda { compile_task.from(file(sources.first)).into('classes').invoke }.should run_task('foo:compile')
+    expect { compile_task.from(file(sources.first)).into('classes').invoke }.to run_task('foo:compile')
   end
 
   it 'should act as prerequisites' do
     file('src2') { |task| task('prereq').invoke ; mkpath task.name }
-    lambda { compile_task.from('src2').into('classes').invoke }.should run_task('prereq')
+    expect { compile_task.from('src2').into('classes').invoke }.to run_task('prereq')
   end
 end
 
@@ -206,17 +206,17 @@ describe Buildr::CompileTask, '#dependencies' do
   include CompilerHelper
 
   it 'should be empty' do
-    compile_task.dependencies.should be_empty
+    expect(compile_task.dependencies).to be_empty
   end
 
   it 'should be an array' do
     compile_task.dependencies += jars
-    compile_task.dependencies.should == jars
+    expect(compile_task.dependencies).to eq(jars)
   end
 
   it 'should allow files' do
     compile_task.from(sources).with(jars).into('classes').invoke
-    sources.each { |src| file(src.pathmap('classes/thepackage/%n.class')).should exist }
+    sources.each { |src| expect(file(src.pathmap('classes/thepackage/%n.class'))).to exist }
   end
 
   it 'should allow tasks' do
@@ -231,13 +231,13 @@ describe Buildr::CompileTask, '#dependencies' do
   it 'should allow projects' do
     define('bar', :version=>'1', :group=>'self') { package :jar }
     compile_task.with project('bar')
-    compile_task.dependencies.should == project('bar').packages
+    expect(compile_task.dependencies).to eq(project('bar').packages)
   end
 
   it 'should be accessible as classpath up to version 1.5 since it was deprecated in version 1.3' do
-    Buildr::VERSION.should < '1.5'
-    lambda { compile_task.classpath = jars }.should change(compile_task, :dependencies).to(jars)
-    lambda { compile_task.dependencies = [] }.should change(compile_task, :classpath).to([])
+    expect(Buildr::VERSION).to be < '1.5'
+    expect { compile_task.classpath = jars }.to change(compile_task, :dependencies).to(jars)
+    expect { compile_task.dependencies = [] }.to change(compile_task, :classpath).to([])
   end
 
 end
@@ -248,17 +248,17 @@ describe Buildr::CompileTask, '#target' do
 
   it 'should be a file task' do
     compile_task.from(@sources).into('classes')
-    compile_task.target.should be_kind_of(Rake::FileTask)
+    expect(compile_task.target).to be_kind_of(Rake::FileTask)
   end
 
   it 'should accept a task' do
     task = file('classes')
-    compile_task.into(task).target.should be(task)
+    expect(compile_task.into(task).target).to be(task)
   end
 
   it 'should create dependency in file task when set' do
     compile_task.from(sources).into('classes')
-    lambda { file('classes').invoke }.should run_task('foo:compile')
+    expect { file('classes').invoke }.to run_task('foo:compile')
   end
 end
 
@@ -268,17 +268,17 @@ describe Buildr::CompileTask, '#options' do
 
   it 'should have getter and setter methods' do
     compile_task.options.foo = 'bar'
-    compile_task.options.foo.should eql('bar')
+    expect(compile_task.options.foo).to eql('bar')
   end
 
   it 'should have bracket accessors' do
     compile_task.options[:foo] = 'bar'
-    compile_task.options[:foo].should eql('bar')
+    expect(compile_task.options[:foo]).to eql('bar')
   end
 
   it 'should map from bracket accessor to get/set accessor' do
     compile_task.options[:foo] = 'bar'
-    compile_task.options.foo.should eql('bar')
+    expect(compile_task.options.foo).to eql('bar')
   end
 
   it 'should be independent of parent' do
@@ -288,8 +288,8 @@ describe Buildr::CompileTask, '#options' do
         compile.using(:javac, :source=>'1.5')
       end
     end
-    project('foo').compile.options.source.should eql('1.4')
-    project('foo:bar').compile.options.source.should eql('1.5')
+    expect(project('foo').compile.options.source).to eql('1.4')
+    expect(project('foo:bar').compile.options.source).to eql('1.5')
   end
 end
 
@@ -299,52 +299,52 @@ describe Buildr::CompileTask, '#invoke' do
 
   it 'should compile into target directory' do
     compile_task.from(sources).into('code').invoke
-    Dir['code/thepackage/*.class'].should_not be_empty
+    expect(Dir['code/thepackage/*.class']).not_to be_empty
   end
 
   it 'should compile only once' do
     compile_task.from(sources)
-    lambda { compile_task.target.invoke }.should run_task('foo:compile')
-    lambda { compile_task.invoke }.should_not run_task('foo:compile')
+    expect { compile_task.target.invoke }.to run_task('foo:compile')
+    expect { compile_task.invoke }.not_to run_task('foo:compile')
   end
 
   it 'should compile if there are source files to compile' do
-    lambda { compile_task.from(sources).invoke }.should run_task('foo:compile')
+    expect { compile_task.from(sources).invoke }.to run_task('foo:compile')
   end
 
   it 'should not compile unless there are source files to compile' do
-    lambda { compile_task.invoke }.should_not run_task('foo:compile')
+    expect { compile_task.invoke }.not_to run_task('foo:compile')
   end
 
   it 'should require source file or directory to exist' do
-    lambda { compile_task.from('empty').into('classes').invoke }.should raise_error(RuntimeError, /Don't know how to build/)
+    expect { compile_task.from('empty').into('classes').invoke }.to raise_error(RuntimeError, /Don't know how to build/)
   end
 
   it 'should run all source files as prerequisites' do
     mkpath 'src'
-    file('src').should_receive :invoke_prerequisites
+    expect(file('src')).to receive :invoke_prerequisites
     compile_task.from('src').invoke
   end
 
   it 'should require dependencies to exist' do
-    lambda { compile_task.from(sources).with('no-such.jar').into('classes').invoke }.should \
+    expect { compile_task.from(sources).with('no-such.jar').into('classes').invoke }.to \
       raise_error(RuntimeError, /Don't know how to build/)
   end
 
   it 'should run all dependencies as prerequisites' do
     file(File.expand_path('no-such.jar')) { |task| task('prereq').invoke }
-    lambda { compile_task.from(sources).with('no-such.jar').into('classes').invoke }.should run_tasks(['prereq', 'foo:compile'])
+    expect { compile_task.from(sources).with('no-such.jar').into('classes').invoke }.to run_tasks(['prereq', 'foo:compile'])
   end
 
   it 'should force compilation if no target' do
-    lambda { compile_task.from(sources).invoke }.should run_task('foo:compile')
+    expect { compile_task.from(sources).invoke }.to run_task('foo:compile')
   end
 
   it 'should force compilation if target empty' do
     time = now_at_fs_resolution
     mkpath compile_task.target.to_s
     File.utime(time - 1, time - 1, compile_task.target.to_s)
-    lambda { compile_task.from(sources).invoke }.should run_task('foo:compile')
+    expect { compile_task.from(sources).invoke }.to run_task('foo:compile')
   end
 
   it 'should force compilation if sources newer than compiled' do
@@ -354,7 +354,7 @@ describe Buildr::CompileTask, '#invoke' do
     sources.map { |src| src.pathmap("#{compile_task.target}/thepackage/%n.class") }.
       each { |kls| write kls ; File.utime(time, time, kls) }
     File.utime(time - 1, time - 1, project('foo').compile.target.to_s)
-    lambda { compile_task.from(sources).invoke }.should run_task('foo:compile')
+    expect { compile_task.from(sources).invoke }.to run_task('foo:compile')
   end
 
   it 'should not force compilation if sources older than compiled' do
@@ -362,7 +362,7 @@ describe Buildr::CompileTask, '#invoke' do
     time = now_at_fs_resolution
     sources.map { |src| File.utime(time, time, src); src.pathmap("#{compile_task.target}/thepackage/%n.class") }.
       each { |kls| write kls ; File.utime(time, time, kls) }
-    lambda { compile_task.from(sources).invoke }.should_not run_task('foo:compile')
+    expect { compile_task.from(sources).invoke }.not_to run_task('foo:compile')
   end
 
   it 'should not force compilation if dependencies older than compiled' do
@@ -371,7 +371,7 @@ describe Buildr::CompileTask, '#invoke' do
     jars.each { |jar| File.utime(time - 1 , time - 1, jar) }
     sources.map { |src| File.utime(time, time, src); src.pathmap("#{compile_task.target}/thepackage/%n.class") }.
       each { |kls| write kls ; File.utime(time, time, kls) }
-    lambda { compile_task.from(sources).with(jars).invoke }.should_not run_task('foo:compile')
+    expect { compile_task.from(sources).with(jars).invoke }.not_to run_task('foo:compile')
   end
 
   it 'should force compilation if dependencies newer than compiled' do
@@ -382,28 +382,28 @@ describe Buildr::CompileTask, '#invoke' do
       each { |kls| write kls ; File.utime(time - 1, time - 1, kls) }
     File.utime(time - 1, time - 1, project('foo').compile.target.to_s)
     jars.each { |jar| File.utime(time + 1, time + 1, jar) }
-    lambda { compile_task.from(sources).with(jars).invoke }.should run_task('foo:compile')
+    expect { compile_task.from(sources).with(jars).invoke }.to run_task('foo:compile')
   end
 
   it 'should timestamp target directory if specified' do
     time = now_at_fs_resolution - 10
     mkpath compile_task.target.to_s
     File.utime(time, time, compile_task.target.to_s)
-    compile_task.timestamp.should be_within(1).of(time)
+    expect(compile_task.timestamp).to be_within(1).of(time)
   end
 
   it 'should touch target if anything compiled' do
     mkpath compile_task.target.to_s
     File.utime(now_at_fs_resolution - 10, now_at_fs_resolution - 10, compile_task.target.to_s)
     compile_task.from(sources).invoke
-    File.stat(compile_task.target.to_s).mtime.should be_within(2).of(now_at_fs_resolution)
+    expect(File.stat(compile_task.target.to_s).mtime).to be_within(2).of(now_at_fs_resolution)
   end
 
   it 'should not touch target if nothing compiled' do
     mkpath compile_task.target.to_s
     File.utime(now_at_fs_resolution - 10, now_at_fs_resolution - 10, compile_task.target.to_s)
     compile_task.invoke
-    File.stat(compile_task.target.to_s).mtime.should be_within(2).of(now_at_fs_resolution - 10)
+    expect(File.stat(compile_task.target.to_s).mtime).to be_within(2).of(now_at_fs_resolution - 10)
   end
 
   it 'should not touch target if failed to compile' do
@@ -411,13 +411,13 @@ describe Buildr::CompileTask, '#invoke' do
     File.utime(now_at_fs_resolution - 10, now_at_fs_resolution - 10, compile_task.target.to_s)
     write 'failed.java', 'not a class'
     suppress_stdout { compile_task.from('failed.java').invoke rescue nil }
-    File.stat(compile_task.target.to_s).mtime.should be_within(2).of(now_at_fs_resolution - 10)
+    expect(File.stat(compile_task.target.to_s).mtime).to be_within(2).of(now_at_fs_resolution - 10)
   end
 
   it 'should complain if source directories and no compiler selected' do
     mkpath 'sources'
     define 'bar' do
-      lambda { compile.from('sources').invoke }.should raise_error(RuntimeError, /no compiler selected/i)
+      expect { compile.from('sources').invoke }.to raise_error(RuntimeError, /no compiler selected/i)
     end
   end
 
@@ -429,30 +429,30 @@ describe Buildr::CompileTask, '#invoke' do
     touch 'target/classes/foo/Foo.class'
     File.utime(now_at_fs_resolution - 10, now_at_fs_resolution - 10, compile_task.target.to_s)
     compile_task.invoke
-    File.stat(compile_task.target.to_s).mtime.should be_within(2).of(now_at_fs_resolution - 10)
+    expect(File.stat(compile_task.target.to_s).mtime).to be_within(2).of(now_at_fs_resolution - 10)
   end
 end
 
 
 shared_examples_for 'accessor task' do
   it 'should return a task' do
-    define('foo').send(@task_name).should be_kind_of(Rake::Task)
+    expect(define('foo').send(@task_name)).to be_kind_of(Rake::Task)
   end
 
   it 'should always return the same task' do
     task_name, task = @task_name, nil
     define('foo') { task = self.send(task_name) }
-    project('foo').send(task_name).should be(task)
+    expect(project('foo').send(task_name)).to be(task)
   end
 
   it 'should be unique for the project' do
     define('foo') { define 'bar' }
-    project('foo').send(@task_name).should_not eql(project('foo:bar').send(@task_name))
+    expect(project('foo').send(@task_name)).not_to eql(project('foo:bar').send(@task_name))
   end
 
   it 'should be named after the project' do
     define('foo') { define 'bar' }
-    project('foo:bar').send(@task_name).name.should eql("foo:bar:#{@task_name}")
+    expect(project('foo:bar').send(@task_name).name).to eql("foo:bar:#{@task_name}")
   end
 end
 
@@ -462,52 +462,52 @@ describe Project, '#compile' do
   it_should_behave_like 'accessor task'
 
   it 'should return a compile task' do
-    define('foo').compile.should be_instance_of(CompileTask)
+    expect(define('foo').compile).to be_instance_of(CompileTask)
   end
 
   it 'should accept sources and add to source list' do
     define('foo') { compile('file1', 'file2') }
-    project('foo').compile.sources.should include('file1', 'file2')
+    expect(project('foo').compile.sources).to include('file1', 'file2')
   end
 
   it 'should accept block and enhance task' do
     write 'src/main/java/Test.java', 'class Test {}'
     action = task('action')
     define('foo') { compile { action.invoke } }
-    lambda { project('foo').compile.invoke }.should run_tasks('foo:compile', action)
+    expect { project('foo').compile.invoke }.to run_tasks('foo:compile', action)
   end
 
   it 'should execute resources task' do
     define 'foo'
-    lambda { project('foo').compile.invoke }.should run_task('foo:resources')
+    expect { project('foo').compile.invoke }.to run_task('foo:resources')
   end
 
   it 'should be recursive' do
     write 'bar/src/main/java/Test.java', 'class Test {}'
     define('foo') { define 'bar' }
-    lambda { project('foo').compile.invoke }.should run_task('foo:bar:compile')
+    expect { project('foo').compile.invoke }.to run_task('foo:bar:compile')
   end
 
   it 'should be a local task' do
     write 'bar/src/main/java/Test.java', 'class Test {}'
     define('foo') { define 'bar' }
-    lambda do
+    expect do
       in_original_dir project('foo:bar').base_dir do
         task('compile').invoke
       end
-    end.should run_task('foo:bar:compile').but_not('foo:compile')
+    end.to run_task('foo:bar:compile').but_not('foo:compile')
   end
 
   it 'should run from build task' do
     write 'bar/src/main/java/Test.java', 'class Test {}'
     define('foo') { define 'bar' }
-    lambda { task('build').invoke }.should run_task('foo:bar:compile')
+    expect { task('build').invoke }.to run_task('foo:bar:compile')
   end
 
   it 'should clean after itself' do
     mkpath 'code'
     define('foo') { compile.into('code') }
-    lambda { task('clean').invoke }.should change { File.exist?('code') }.to(false)
+    expect { task('clean').invoke }.to change { File.exist?('code') }.to(false)
   end
 end
 
@@ -517,26 +517,26 @@ describe Project, '#resources' do
   it_should_behave_like 'accessor task'
 
   it 'should return a resources task' do
-    define('foo').resources.should be_instance_of(ResourcesTask)
+    expect(define('foo').resources).to be_instance_of(ResourcesTask)
   end
 
   it 'should provide a filter' do
-    define('foo').resources.filter.should be_instance_of(Filter)
+    expect(define('foo').resources.filter).to be_instance_of(Filter)
   end
 
   it 'should include src/main/resources as source directory' do
     write 'src/main/resources/test'
-    define('foo').resources.sources.first.should point_to_path('src/main/resources')
+    expect(define('foo').resources.sources.first).to point_to_path('src/main/resources')
   end
 
   it 'should include src/main/resources directory only if it exists' do
-    define('foo').resources.sources.should be_empty
+    expect(define('foo').resources.sources).to be_empty
   end
 
   it 'should accept prerequisites' do
     tasks = ['task1', 'task2'].each { |name| task(name) }
     define('foo') { resources 'task1', 'task2' }
-    lambda { project('foo').resources.invoke }.should run_tasks('task1', 'task2')
+    expect { project('foo').resources.invoke }.to run_tasks('task1', 'task2')
   end
 
   it 'should respond to from and add additional sources' do
@@ -544,50 +544,50 @@ describe Project, '#resources' do
     write 'extra/spicy'
     define('foo') { resources.from 'extra' }
     project('foo').resources.invoke
-    FileList['target/resources/*'].sort.should  == ['target/resources/original', 'target/resources/spicy']
+    expect(FileList['target/resources/*'].sort).to  eq(['target/resources/original', 'target/resources/spicy'])
   end
 
   it 'should pass include pattern to filter' do
     3.times { |i| write "src/main/resources/test#{i + 1}" }
     define('foo') { resources.include('test2') }
     project('foo').resources.invoke
-    FileList['target/resources/*'].should  == ['target/resources/test2']
+    expect(FileList['target/resources/*']).to  eq(['target/resources/test2'])
   end
 
   it 'should pass exclude pattern to filter' do
     3.times { |i| write "src/main/resources/test#{i + 1}" }
     define('foo') { resources.exclude('test2') }
     project('foo').resources.invoke
-    FileList['target/resources/*'].sort.should  == ['target/resources/test1', 'target/resources/test3']
+    expect(FileList['target/resources/*'].sort).to  eq(['target/resources/test1', 'target/resources/test3'])
   end
 
   it 'should accept block and enhance task' do
     action = task('action')
     define('foo') { resources { action.invoke } }
-    lambda { project('foo').resources.invoke }.should run_tasks('foo:resources', action)
+    expect { project('foo').resources.invoke }.to run_tasks('foo:resources', action)
   end
 
   it 'should set target directory to target/resources' do
     write 'src/main/resources/foo'
-    define('foo').resources.target.to_s.should point_to_path('target/resources')
+    expect(define('foo').resources.target.to_s).to point_to_path('target/resources')
   end
 
   it 'should use provided target directoy' do
     define('foo') { resources.filter.into('the_resources') }
-    project('foo').resources.target.to_s.should point_to_path('the_resources')
+    expect(project('foo').resources.target.to_s).to point_to_path('the_resources')
   end
 
   it 'should create file task for target directory' do
     write 'src/main/resources/foo'
     define 'foo'
     project('foo').file('target/resources').invoke
-    file('target/resources/foo').should exist
+    expect(file('target/resources/foo')).to exist
   end
 
   it 'should copy resources to target directory' do
     write 'src/main/resources/foo', 'Foo'
     define('foo').compile.invoke
-    file('target/resources/foo').should contain('Foo')
+    expect(file('target/resources/foo')).to contain('Foo')
   end
 
   it 'should copy new resources to target directory' do
@@ -599,7 +599,7 @@ describe Project, '#resources' do
 
     define('foo')
     project('foo').file('target/resources').invoke
-    file('target/resources/foo').should exist
+    expect(file('target/resources/foo')).to exist
   end
 
   it 'should copy updated resources to target directory' do
@@ -612,23 +612,23 @@ describe Project, '#resources' do
     write 'src/main/resources/foo', 'Foo2'
     define('foo')
     project('foo').file('target/resources').invoke
-    file('target/resources/foo').should contain('Foo2')
+    expect(file('target/resources/foo')).to contain('Foo2')
   end
 
   it 'should not create target directory unless there are resources' do
     define('foo').compile.invoke
-    file('target/resources').should_not exist
+    expect(file('target/resources')).not_to exist
   end
 
   it 'should run from target/resources' do
     write 'src/main/resources/test'
     define('foo')
-    lambda { project('foo').resources.target.invoke }.should change { File.exist?('target/resources/test') }.to(true)
+    expect { project('foo').resources.target.invoke }.to change { File.exist?('target/resources/test') }.to(true)
   end
 
   it 'should not be recursive' do
     define('foo') { define 'bar' }
-    lambda { project('foo').resources.invoke }.should_not run_task('foo:bar:resources')
+    expect { project('foo').resources.invoke }.not_to run_task('foo:bar:resources')
   end
 
   it 'should use current profile for filtering' do
@@ -642,7 +642,7 @@ describe Project, '#resources' do
     YAML
     write 'src/main/resources/foo', '${foo}'
     define('foo').compile.invoke
-    file('target/resources/foo').should contain('bar')
+    expect(file('target/resources/foo')).to contain('bar')
   end
 
   it 'should use current profile as default for filtering' do
@@ -656,7 +656,7 @@ describe Project, '#resources' do
       resources.filter.using 'baz' => 'qux'
     end
     project('foo').compile.invoke
-    file('target/resources/foo').should contain('bar qux')
+    expect(file('target/resources/foo')).to contain('bar qux')
   end
 
   it 'should allow clearing default filter mapping' do
@@ -671,6 +671,6 @@ describe Project, '#resources' do
       resources.filter.using 'baz' => 'qux'
     end
     project('foo').compile.invoke
-    file('target/resources/foo').should contain('${foo} qux')
+    expect(file('target/resources/foo')).to contain('${foo} qux')
   end
 end

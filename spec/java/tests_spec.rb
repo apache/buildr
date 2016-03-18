@@ -24,48 +24,48 @@ describe Buildr::JUnit do
       public class FirstTest extends junit.framework.TestCase { }
     JAVA
     define 'foo'
-    project('foo').test.framework.should eql(:junit)
+    expect(project('foo').test.framework).to eql(:junit)
   end
 
   it 'should be picked if the test language is Java' do
     define 'foo' do
       test.compile.using(:javac)
-      test.framework.should eql(:junit)
+      expect(test.framework).to eql(:junit)
     end
   end
 
   it 'should include JUnit dependencies' do
     define('foo') { test.using(:junit) }
-    project('foo').test.compile.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
-    project('foo').test.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
+    expect(project('foo').test.compile.dependencies).to include(artifact("junit:junit:jar:#{JUnit.version}"))
+    expect(project('foo').test.dependencies).to include(artifact("junit:junit:jar:#{JUnit.version}"))
   end
 
   it 'should have REQUIRES up to version 1.5 since it was deprecated in 1.3.3' do
-    Buildr::VERSION.should < '1.5'
-    lambda { JUnit::REQUIRES }.should_not raise_error
+    expect(Buildr::VERSION).to be < '1.5'
+    expect { JUnit::REQUIRES }.not_to raise_error
   end
 
   it 'should pick JUnit version from junit build settings' do
     Buildr::JUnit.instance_eval { @dependencies = nil }
     write 'build.yaml', 'junit: 1.2.3'
     define('foo') { test.using(:junit) }
-    project('foo').test.compile.dependencies.should include(artifact("junit:junit:jar:1.2.3"))
+    expect(project('foo').test.compile.dependencies).to include(artifact("junit:junit:jar:1.2.3"))
   end
 
   it 'should include JMock dependencies' do
     define('foo') { test.using(:junit) }
     two_or_later = JMock.version[0,1].to_i >= 2
     group = two_or_later ? "org.jmock" : "jmock"
-    project('foo').test.compile.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
-    project('foo').test.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
+    expect(project('foo').test.compile.dependencies).to include(artifact("#{group}:jmock:jar:#{JMock.version}"))
+    expect(project('foo').test.dependencies).to include(artifact("#{group}:jmock:jar:#{JMock.version}"))
   end
 
   it 'should not include Hamcrest dependencies for JUnit < 4.11' do
     begin
       Buildr.settings.build['junit'] = '4.10'
       define('foo') { test.using :junit }
-      project('foo').test.compile.dependencies.should_not include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
-      project('foo').test.dependencies.should_not include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
+      expect(project('foo').test.compile.dependencies).not_to include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
+      expect(project('foo').test.dependencies).not_to include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
     ensure
       Buildr.settings.build['junit'] = nil
     end
@@ -73,8 +73,8 @@ describe Buildr::JUnit do
 
   it 'should include Hamcrest dependencies for JUnit >= 4.11' do
     define('foo') { test.using :junit }
-    project('foo').test.compile.dependencies.should include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
-    project('foo').test.dependencies.should include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
+    expect(project('foo').test.compile.dependencies).to include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
+    expect(project('foo').test.dependencies).to include(artifact("org.hamcrest:hamcrest-core:jar:1.3"))
   end
 
 
@@ -83,7 +83,7 @@ describe Buildr::JUnit do
     Buildr::JMock.instance_eval { @dependencies = nil }
     write 'build.yaml', 'jmock: 1.2.3'
     define('foo') { test.using(:junit) }
-    project('foo').test.compile.dependencies.should include(artifact("jmock:jmock:jar:1.2.3"))
+    expect(project('foo').test.compile.dependencies).to include(artifact("jmock:jmock:jar:1.2.3"))
   end
 
   it 'should include public classes extending junit.framework.TestCase' do
@@ -100,7 +100,7 @@ describe Buildr::JUnit do
       }
     JAVA
     define('foo').test.invoke
-    project('foo').test.tests.should include('com.example.FirstTest', 'com.example.AnotherOne')
+    expect(project('foo').test.tests).to include('com.example.FirstTest', 'com.example.AnotherOne')
   end
 
   it 'should include public classes with annotated test cases' do
@@ -114,7 +114,7 @@ describe Buildr::JUnit do
       }
     JAVA
     define('foo').test.invoke
-    project('foo').test.tests.should include('com.example.FirstTest')
+    expect(project('foo').test.tests).to include('com.example.FirstTest')
   end
 
   it 'should include public classes with RunWith annotation' do
@@ -136,7 +136,7 @@ describe Buildr::JUnit do
       }
     JAVA
     define('foo').test.invoke
-    project('foo').test.tests.should include('com.example.RunSuite')
+    expect(project('foo').test.tests).to include('com.example.RunSuite')
   end
 
   it 'should ignore classes not extending junit.framework.TestCase' do
@@ -144,7 +144,7 @@ describe Buildr::JUnit do
       public class NotATest { }
     JAVA
     define('foo').test.invoke
-    project('foo').test.tests.should be_empty
+    expect(project('foo').test.tests).to be_empty
   end
 
   it 'should ignore inner classes' do
@@ -158,7 +158,7 @@ describe Buildr::JUnit do
       }
     JAVA
     define('foo').test.invoke
-    project('foo').test.tests.should eql(['InnerClassTest'])
+    expect(project('foo').test.tests).to eql(['InnerClassTest'])
   end
 
   it 'should ignore abstract classes' do
@@ -168,7 +168,7 @@ describe Buildr::JUnit do
       }
     JAVA
     define('foo').test.invoke
-    project('foo').test.tests.should be_empty
+    expect(project('foo').test.tests).to be_empty
   end
 
   it 'should ignore classes with no tests in them' do
@@ -177,7 +177,7 @@ describe Buildr::JUnit do
       }
     JAVA
     define('foo').test.invoke
-    project('foo').test.tests.should be_empty
+    expect(project('foo').test.tests).to be_empty
   end
 
   it 'should pass when JUnit test case passes' do
@@ -186,7 +186,7 @@ describe Buildr::JUnit do
         public void testNothing() {}
       }
     JAVA
-    lambda { define('foo').test.invoke }.should_not raise_error
+    expect { define('foo').test.invoke }.not_to raise_error
   end
 
   it 'should fail when JUnit test case fails' do
@@ -197,14 +197,14 @@ describe Buildr::JUnit do
         }
       }
     JAVA
-    lambda { define('foo').test.invoke }.should raise_error(RuntimeError, /Tests failed/) rescue nil
+    expect { define('foo').test.invoke }.to raise_error(RuntimeError, /Tests failed/) rescue nil
   end
 
   it 'should fail when JUnit test case fails to compile' do
     write 'src/test/java/FailingTest.java', <<-JAVA
       public class FailingTest e xtends blah blah
     JAVA
-    lambda { define('foo').test.invoke }.should raise_error(RuntimeError, /Tests failed/) rescue nil
+    expect { define('foo').test.invoke }.to raise_error(RuntimeError, /Failed to compile/) rescue nil
   end
 
   it 'should report failed test names' do
@@ -216,7 +216,7 @@ describe Buildr::JUnit do
       }
     JAVA
     define('foo').test.invoke rescue
-    project('foo').test.failed_tests.should include('FailingTest')
+    expect(project('foo').test.failed_tests).to include('FailingTest')
   end
 
   it 'should report to reports/junit' do
@@ -226,11 +226,11 @@ describe Buildr::JUnit do
       }
     JAVA
     define 'foo' do
-      test.report_to.should be(file('reports/junit'))
+      expect(test.report_to).to be(file('reports/junit'))
     end
     project('foo').test.invoke
-    project('foo').file('reports/junit/TEST-PassingTest.txt').should exist
-    project('foo').file('reports/junit/TEST-PassingTest.xml').should exist
+    expect(project('foo').file('reports/junit/TEST-PassingTest.txt')).to exist
+    expect(project('foo').file('reports/junit/TEST-PassingTest.xml')).to exist
   end
 
   it 'should pass properties to JVM' do
@@ -243,7 +243,7 @@ describe Buildr::JUnit do
     JAVA
     define('foo').test.using :properties=>{ 'name'=>'value' }
     project('foo').test.invoke
-    project('foo').test.options[:properties]["baseDir"].should eql(project("foo").test.compile.target.to_s)
+    expect(project('foo').test.options[:properties]["baseDir"]).to eql(project("foo").test.compile.target.to_s)
   end
 
   it 'should pass environment to JVM' do
@@ -307,12 +307,12 @@ describe Buildr::JUnit do
 
   it 'should run all test cases in same VM if fork is once' do
     fork_tests :once
-    project('foo').test.failed_tests.size.should eql(1)
+    expect(project('foo').test.failed_tests.size).to eql(1)
   end
 
   it 'should run each test case in separate same VM if fork is each' do
     fork_tests :each
-    project('foo').test.failed_tests.should be_empty
+    expect(project('foo').test.failed_tests).to be_empty
   end
 
   after do
@@ -325,38 +325,38 @@ end
 
 describe Buildr::JUnit, 'report' do
   it 'should default to the target directory reports/junit' do
-    JUnit.report.target.should eql('reports/junit')
+    expect(JUnit.report.target).to eql('reports/junit')
   end
 
   it 'should generate report into the target directory' do
     JUnit.report.target = 'test-report'
-    lambda { task('junit:report').invoke }.should change { File.exist?(JUnit.report.target) }.to(true)
+    expect { task('junit:report').invoke }.to change { File.exist?(JUnit.report.target) }.to(true)
   end
 
   # for some reason this will intermittently fail under windows
   it 'should clean after itself', :retry => (Buildr::Util.win_os? ? 4 : 1) do
     mkpath JUnit.report.target
-    lambda { task('clean').invoke }.should change { File.exist?(JUnit.report.target) }.to(false)
+    expect { task('clean').invoke }.to change { File.exist?(JUnit.report.target) }.to(false)
   end
 
   it 'should generate a consolidated XML report' do
-    lambda { task('junit:report').invoke }.should change { File.exist?('reports/junit/TESTS-TestSuites.xml') }.to(true)
+    expect { task('junit:report').invoke }.to change { File.exist?('reports/junit/TESTS-TestSuites.xml') }.to(true)
   end
 
   it 'should default to generating a report with frames' do
-    JUnit.report.frames.should be_true
+    expect(JUnit.report.frames).to be_truthy
   end
 
   it 'should generate single page when frames is false' do
     JUnit.report.frames = false
     task('junit:report').invoke
-    file('reports/junit/html/junit-noframes.html').should exist
+    expect(file('reports/junit/html/junit-noframes.html')).to exist
   end
 
   it 'should generate frame page when frames is false' do
     JUnit.report.frames = true
     task('junit:report').invoke
-    file('reports/junit/html/index.html').should exist
+    expect(file('reports/junit/html/index.html')).to exist
   end
 
   it 'should generate reports from all projects that ran test cases' do
@@ -368,7 +368,7 @@ describe Buildr::JUnit, 'report' do
     define 'foo'
     project('foo').test.invoke
     task('junit:report').invoke
-    FileList['reports/junit/html/*TestSomething.html'].size.should be(1)
+    expect(FileList['reports/junit/html/*TestSomething.html'].size).to be(1)
   end
 
   after do
@@ -381,7 +381,7 @@ describe Buildr::TestNG do
   it 'should be selectable in project' do
     define 'foo' do
       test.using(:testng)
-      test.framework.should eql(:testng)
+      expect(test.framework).to eql(:testng)
     end
   end
 
@@ -391,15 +391,15 @@ describe Buildr::TestNG do
       test.using(:testng)
       define 'bar'
     end
-    project('foo:bar').test.framework.should eql(:testng)
+    expect(project('foo:bar').test.framework).to eql(:testng)
   end
 
   it 'should include TestNG dependencies for old version' do
     begin
       Buildr.settings.build['testng'] = '5.10'
       define('foo') { test.using :testng }
-      project('foo').test.compile.dependencies.should include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
-      project('foo').test.dependencies.should include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
+      expect(project('foo').test.compile.dependencies).to include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
+      expect(project('foo').test.dependencies).to include(artifact("org.testng:testng:jar:jdk15:#{TestNG.version}"))
     ensure
       Buildr.settings.build['testng'] = nil
     end
@@ -407,18 +407,18 @@ describe Buildr::TestNG do
 
   it 'should include TestNG dependencies for old version' do
     define('foo') { test.using :testng }
-    project('foo').test.compile.dependencies.should include(artifact("org.testng:testng:jar:#{TestNG.version}"))
-    project('foo').test.compile.dependencies.should include(artifact("com.beust:jcommander:jar:1.27"))
-    project('foo').test.dependencies.should include(artifact("org.testng:testng:jar:#{TestNG.version}"))
-    project('foo').test.dependencies.should include(artifact("com.beust:jcommander:jar:1.27"))
+    expect(project('foo').test.compile.dependencies).to include(artifact("org.testng:testng:jar:#{TestNG.version}"))
+    expect(project('foo').test.compile.dependencies).to include(artifact("com.beust:jcommander:jar:1.27"))
+    expect(project('foo').test.dependencies).to include(artifact("org.testng:testng:jar:#{TestNG.version}"))
+    expect(project('foo').test.dependencies).to include(artifact("com.beust:jcommander:jar:1.27"))
   end
 
   it 'should include jmock dependencies' do
     define('foo') { test.using :testng }
     two_or_later = JMock.version[0,1].to_i >= 2
     group = two_or_later ? "org.jmock" : "jmock"
-    project('foo').test.compile.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
-    project('foo').test.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
+    expect(project('foo').test.compile.dependencies).to include(artifact("#{group}:jmock:jar:#{JMock.version}"))
+    expect(project('foo').test.dependencies).to include(artifact("#{group}:jmock:jar:#{JMock.version}"))
   end
 
   it 'should include classes using TestNG annotations' do
@@ -436,14 +436,14 @@ describe Buildr::TestNG do
     JAVA
     define('foo') { test.using(:testng) }
     project('foo').test.invoke
-    project('foo').test.tests.should include('com.example.AnnotatedClass', 'com.example.AnnotatedMethod')
+    expect(project('foo').test.tests).to include('com.example.AnnotatedClass', 'com.example.AnnotatedMethod')
   end
 
   it 'should ignore classes not using TestNG annotations' do
     write 'src/test/java/NotATestClass.java', 'public class NotATestClass {}'
     define('foo') { test.using(:testng) }
     project('foo').test.invoke
-    project('foo').test.tests.should be_empty
+    expect(project('foo').test.tests).to be_empty
   end
 
   it 'should ignore inner classes' do
@@ -456,7 +456,7 @@ describe Buildr::TestNG do
     JAVA
     define('foo') { test.using(:testng) }
     project('foo').test.invoke
-    project('foo').test.tests.should eql(['InnerClassTest'])
+    expect(project('foo').test.tests).to eql(['InnerClassTest'])
   end
 
   it 'should pass when TestNG test case passes' do
@@ -467,7 +467,7 @@ describe Buildr::TestNG do
       }
     JAVA
     define('foo') { test.using(:testng) }
-    lambda { project('foo').test.invoke }.should_not raise_error
+    expect { project('foo').test.invoke }.not_to raise_error
   end
 
   it 'should fail when TestNG test case fails' do
@@ -480,7 +480,7 @@ describe Buildr::TestNG do
       }
     JAVA
     define('foo') { test.using(:testng) }
-    lambda { project('foo').test.invoke }.should raise_error(RuntimeError, /Tests failed/)
+    expect { project('foo').test.invoke }.to raise_error(RuntimeError, /Tests failed/)
   end
 
   it 'should fail when TestNG test case fails to compile' do
@@ -488,7 +488,7 @@ describe Buildr::TestNG do
       public class FailingTest exte lasjw9jc930d;kl;kl
     JAVA
     define('foo') { test.using(:testng) }
-    lambda { project('foo').test.invoke }.should raise_error(RuntimeError)
+    expect { project('foo').test.invoke }.to raise_error(RuntimeError)
   end
 
   it 'should fail when multiple TestNG test case fail' do
@@ -509,7 +509,7 @@ describe Buildr::TestNG do
       }
     JAVA
     define('foo') { test.using(:testng) }
-    lambda { project('foo').test.invoke }.should raise_error(RuntimeError, /Tests failed/)
+    expect { project('foo').test.invoke }.to raise_error(RuntimeError, /Tests failed/)
   end
 
   it 'should report failed test names' do
@@ -523,12 +523,12 @@ describe Buildr::TestNG do
     JAVA
     define('foo') { test.using(:testng) }
     project('foo').test.invoke rescue nil
-    project('foo').test.failed_tests.should include('FailingTest')
+    expect(project('foo').test.failed_tests).to include('FailingTest')
   end
 
   it 'should report to reports/testng' do
     define('foo') { test.using(:testng) }
-    project('foo').test.report_to.should be(project('foo').file('reports/testng'))
+    expect(project('foo').test.report_to).to be(project('foo').file('reports/testng'))
   end
 
   it 'should generate reports' do
@@ -539,7 +539,7 @@ describe Buildr::TestNG do
       }
     JAVA
     define('foo') { test.using(:testng) }
-    lambda { project('foo').test.invoke }.should change { File.exist?('reports/testng/index.html') }.to(true)
+    expect { project('foo').test.invoke }.to change { File.exist?('reports/testng/index.html') }.to(true)
   end
 
   it 'should include classes using TestNG annotations marked with a specific group' do
@@ -558,7 +558,7 @@ describe Buildr::TestNG do
       }
     JAVA
     define('foo').test.using :testng, :groups=>['included']
-    lambda { project('foo').test.invoke }.should_not raise_error
+    expect { project('foo').test.invoke }.not_to raise_error
   end
 
   it 'should exclude classes using TestNG annotations marked with a specific group' do
@@ -579,7 +579,7 @@ describe Buildr::TestNG do
       }
     JAVA
     define('foo').test.using :testng, :excludegroups=>['excluded']
-    lambda { project('foo').test.invoke }.should_not raise_error
+    expect { project('foo').test.invoke }.not_to raise_error
   end
 end
 
@@ -587,16 +587,16 @@ describe Buildr::MultiTest do
   it 'should be selectable in project' do
     define 'foo' do
       test.using(:multitest, :frameworks => [])
-      test.framework.should eql(:multitest)
+      expect(test.framework).to eql(:multitest)
     end
   end
 
   it 'should include dependencies of whichever test framework(s) are selected' do
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ] }
-    project('foo').test.compile.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
-    project('foo').test.compile.dependencies.should include(artifact("org.testng:testng:jar:#{TestNG.version}"))
-    project('foo').test.dependencies.should include(artifact("junit:junit:jar:#{JUnit.version}"))
-    project('foo').test.dependencies.should include(artifact("org.testng:testng:jar:#{TestNG.version}"))
+    expect(project('foo').test.compile.dependencies).to include(artifact("junit:junit:jar:#{JUnit.version}"))
+    expect(project('foo').test.compile.dependencies).to include(artifact("org.testng:testng:jar:#{TestNG.version}"))
+    expect(project('foo').test.dependencies).to include(artifact("junit:junit:jar:#{JUnit.version}"))
+    expect(project('foo').test.dependencies).to include(artifact("org.testng:testng:jar:#{TestNG.version}"))
   end
 
   it 'should include classes of given test framework(s)' do
@@ -613,7 +613,7 @@ describe Buildr::MultiTest do
     JAVA
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ] }
     project('foo').test.invoke
-    project('foo').test.tests.should include('com.example.JUnitTest', 'com.example.TestNGTest')
+    expect(project('foo').test.tests).to include('com.example.JUnitTest', 'com.example.TestNGTest')
   end
 
   it 'should pass when test case passes' do
@@ -623,7 +623,7 @@ describe Buildr::MultiTest do
       }
     JAVA
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ] }
-    lambda { project('foo').test.invoke }.should_not raise_error
+    expect { project('foo').test.invoke }.not_to raise_error
   end
 
   it 'should fail when test case fails' do
@@ -636,7 +636,7 @@ describe Buildr::MultiTest do
       }
     JAVA
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ] }
-    lambda { project('foo').test.invoke }.should raise_error(RuntimeError, /Tests failed/)
+    expect { project('foo').test.invoke }.to raise_error(RuntimeError, /Tests failed/)
   end
 
   it 'should fail when multiple test case fail' do
@@ -657,7 +657,7 @@ describe Buildr::MultiTest do
       }
     JAVA
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ] }
-    lambda { project('foo').test.invoke }.should raise_error(RuntimeError, /Tests failed/)
+    expect { project('foo').test.invoke }.to raise_error(RuntimeError, /Tests failed/)
   end
 
   it 'should report failed test names' do
@@ -671,7 +671,7 @@ describe Buildr::MultiTest do
     JAVA
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ] }
     project('foo').test.invoke rescue nil
-    project('foo').test.failed_tests.should include('FailingTest')
+    expect(project('foo').test.failed_tests).to include('FailingTest')
   end
 
   it 'should generate reports' do
@@ -682,7 +682,7 @@ describe Buildr::MultiTest do
       }
     JAVA
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ] }
-    lambda { project('foo').test.invoke }.should change {
+    expect { project('foo').test.invoke }.to change {
     File.exist?('reports/multitest/index.html') }.to(true)
   end
 
@@ -702,7 +702,7 @@ describe Buildr::MultiTest do
       }
     JAVA
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ], :options => {:testng => {:groups=>['included']}} }
-    lambda { project('foo').test.invoke }.should_not raise_error
+    expect { project('foo').test.invoke }.not_to raise_error
   end
 
   it 'should exclude classes using TestNG annotations marked with a specific group' do
@@ -723,6 +723,6 @@ describe Buildr::MultiTest do
       }
     JAVA
     define('foo') { test.using :multitest, :frameworks => [ Buildr::JUnit, Buildr::TestNG ], :options => {:testng => {:excludegroups=>['excluded']}} }
-    lambda { project('foo').test.invoke }.should_not raise_error
+    expect { project('foo').test.invoke }.not_to raise_error
   end
 end

@@ -47,13 +47,13 @@ describe Buildr::Checkstyle do
   it 'should generate an XML report' do
     define 'foo'
     task('foo:checkstyle:xml').invoke
-    file(project('foo')._('reports/checkstyle/checkstyle.xml')).should exist
+    expect(file(project('foo')._('reports/checkstyle/checkstyle.xml'))).to exist
   end
 
   it 'should generate an HTML report' do
     define 'foo'
     task('foo:checkstyle:html').invoke
-    file(project('foo')._('reports/checkstyle/checkstyle.html')).should exist
+    expect(file(project('foo')._('reports/checkstyle/checkstyle.html'))).to exist
   end
 
 end

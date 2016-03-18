@@ -21,33 +21,33 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'packaging', 'p
 describe Project, '#manifest' do
   it 'should include user name' do
     ENV['USER'] = 'MysteriousJoe'
-    define('foo').manifest['Build-By'].should eql('MysteriousJoe')
+    expect(define('foo').manifest['Build-By']).to eql('MysteriousJoe')
   end
 
   it 'should include JDK version' do
-    define('foo').manifest['Build-Jdk'].should =~ /^1\.\d+\.\w+$/
+    expect(define('foo').manifest['Build-Jdk']).to match(/^1\.\d+\.\w+$/)
   end
 
   it 'should include project comment' do
     desc 'My Project'
-    define('foo').manifest['Implementation-Title'].should eql('My Project')
+    expect(define('foo').manifest['Implementation-Title']).to eql('My Project')
   end
 
   it 'should include project name if no comment' do
-    define('foo').manifest['Implementation-Title'].should eql('foo')
+    expect(define('foo').manifest['Implementation-Title']).to eql('foo')
   end
 
   it 'should include project version' do
-    define('foo', :version=>'2.1').manifest['Implementation-Version'].should eql('2.1')
+    expect(define('foo', :version=>'2.1').manifest['Implementation-Version']).to eql('2.1')
   end
 
   it 'should not include project version unless specified' do
-    define('foo').manifest['Implementation-Version'].should be_nil
+    expect(define('foo').manifest['Implementation-Version']).to be_nil
   end
 
   it 'should inherit from parent project' do
     define('foo', :version=>'2.1') { define 'bar' }
-    project('foo:bar').manifest['Implementation-Version'].should eql('2.1')
+    expect(project('foo:bar').manifest['Implementation-Version']).to eql('2.1')
   end
 
 end
@@ -76,15 +76,15 @@ shared_examples_for 'package with manifest' do
     ENV['USER'] = 'MysteriousJoe'
     package_with_manifest # Nothing for default.
     inspect_manifest do |manifest|
-      manifest.sections.size.should be(1)
-      manifest.main.should == {
+      expect(manifest.sections.size).to be(1)
+      expect(manifest.main).to eq({
         'Manifest-Version'        =>'1.0',
         'Created-By'              =>'Buildr',
         'Implementation-Title'    =>@project.name,
         'Implementation-Version'  =>'1.2',
         'Build-Jdk'               =>ENV_JAVA['java.version'],
         'Build-By'                =>'MysteriousJoe'
-      }
+      })
     end
   end
 
@@ -92,7 +92,7 @@ shared_examples_for 'package with manifest' do
     package_with_manifest false
     @project.package(@packaging).invoke
     Zip::ZipFile.open(@project.package(@packaging).to_s) do |zip|
-      zip.file.exist?('META-INF/MANIFEST.MF').should be_false
+      expect(zip.file.exist?('META-INF/MANIFEST.MF')).to be_falsey
     end
   end
 
@@ -103,7 +103,7 @@ shared_examples_for 'package with manifest' do
     begin
       manifest = Buildr::Packaging::Java::Manifest.from_zip('tmp.zip')
       manifest.each do |key, val|
-        Buildr::Packaging::Java::Manifest::STANDARD_HEADER.should include(key)
+        expect(Buildr::Packaging::Java::Manifest::STANDARD_HEADER).to include(key)
       end
     ensure
       rm 'tmp.zip'
@@ -113,11 +113,11 @@ shared_examples_for 'package with manifest' do
   it 'should map manifest from hash' do
     package_with_manifest 'Foo'=>1, :bar=>'Bar'
     inspect_manifest do |manifest|
-      manifest.sections.size.should be(1)
-      manifest.main['Manifest-Version'].should eql('1.0')
-      manifest.main['Created-By'].should eql('Buildr')
-      manifest.main['Foo'].should eql('1')
-      manifest.main['bar'].should eql('Bar')
+      expect(manifest.sections.size).to be(1)
+      expect(manifest.main['Manifest-Version']).to eql('1.0')
+      expect(manifest.main['Created-By']).to eql('Buildr')
+      expect(manifest.main['Foo']).to eql('1')
+      expect(manifest.main['bar']).to eql('Bar')
     end
   end
 
@@ -128,31 +128,31 @@ shared_examples_for 'package with manifest' do
     module AccessManifestTMP
       attr_reader :manifest_tmp
     end
-    (package.dup.extend(AccessManifestTMP).manifest_tmp.closed?).should be_true
+    expect(package.dup.extend(AccessManifestTMP).manifest_tmp.closed?).to be_truthy
   end
 
   it 'should end hash manifest with EOL' do
     package_with_manifest 'Foo'=>1, :bar=>'Bar'
     package = project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF').should =~ /#{Buildr::Packaging::Java::Manifest::LINE_SEPARATOR}$/ }
+    Zip::ZipFile.open(package.to_s) { |zip| expect(zip.file.read('META-INF/MANIFEST.MF')).to match(/#{Buildr::Packaging::Java::Manifest::LINE_SEPARATOR}$/) }
   end
 
   it 'should break hash manifest lines longer than 72 characters using continuations' do
     package_with_manifest 'foo'=>@long_line
     package = project('foo').package(@packaging)
     inspect_manifest do |manifest|
-      manifest.main['foo'].should == @long_line
+      expect(manifest.main['foo']).to eq(@long_line)
     end
   end
 
   it 'should map manifest from array' do
     package_with_manifest [ { :foo=>'first' }, { :bar=>'second' } ]
     inspect_manifest do |manifest|
-      manifest.sections.size.should be(2)
-      manifest.main['Manifest-Version'].should eql('1.0')
-      manifest.main['foo'].should eql('first')
-      manifest.sections.last['bar'].should eql('second')
+      expect(manifest.sections.size).to be(2)
+      expect(manifest.main['Manifest-Version']).to eql('1.0')
+      expect(manifest.main['foo']).to eql('first')
+      expect(manifest.sections.last['bar']).to eql('second')
     end
   end
 
@@ -160,14 +160,14 @@ shared_examples_for 'package with manifest' do
     package_with_manifest [ { :foo=>'first' }, { :bar=>'second' } ]
     package = project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF')[-1].should == ?\n }
+    Zip::ZipFile.open(package.to_s) { |zip| expect(zip.file.read('META-INF/MANIFEST.MF')[-1]).to eq(?\n) }
   end
 
   it 'should break array manifest lines longer than 72 characters using continuations' do
     package_with_manifest ['foo'=>@long_line]
     package = project('foo').package(@packaging)
     inspect_manifest do |manifest|
-      manifest.main['foo'].should == @long_line
+      expect(manifest.main['foo']).to eq(@long_line)
     end
   end
 
@@ -176,16 +176,16 @@ shared_examples_for 'package with manifest' do
     package = project('foo').package(@packaging)
     package.invoke
     inspect_manifest do |manifest|
-      manifest.sections[1]["Name"].should == "first"
+      expect(manifest.sections[1]["Name"]).to eq("first")
     end
   end
 
   it 'should create manifest from proc' do
     package_with_manifest lambda { 'Meta: data' }
     inspect_manifest do |manifest|
-      manifest.sections.size.should be(1)
-      manifest.main['Manifest-Version'].should eql('1.0')
-      manifest.main['Meta'].should eql('data')
+      expect(manifest.sections.size).to be(1)
+      expect(manifest.main['Manifest-Version']).to eql('1.0')
+      expect(manifest.main['Meta']).to eql('data')
     end
   end
 
@@ -193,8 +193,8 @@ shared_examples_for 'package with manifest' do
     write 'MANIFEST.MF', 'Meta: data'
     package_with_manifest 'MANIFEST.MF'
     inspect_manifest do |manifest|
-      manifest.sections.size.should be(1)
-      manifest.main['Meta'].should eql('data')
+      expect(manifest.sections.size).to be(1)
+      expect(manifest.main['Meta']).to eql('data')
     end
   end
 
@@ -205,7 +205,7 @@ shared_examples_for 'package with manifest' do
     Zip::ZipFile.open(package.to_s) do |zip|
       permissions = format("%o", zip.file.stat('META-INF/MANIFEST.MF').mode)
       expected_mode = Buildr::Util.win_os? ? /666$/ : /644$/
-      permissions.should match expected_mode
+      expect(permissions).to match expected_mode
     end
   end
 
@@ -215,7 +215,7 @@ shared_examples_for 'package with manifest' do
     package ||= project('foo').package(@packaging)
     package.invoke
     Zip::ZipFile.open(package.to_s) do |zip|
-      zip.read('META-INF/MANIFEST.MF').scan(/(Manifest-Version)/m).size.should == 1
+      expect(zip.read('META-INF/MANIFEST.MF').scan(/(Manifest-Version)/m).size).to eq(1)
     end
   end
 
@@ -223,7 +223,7 @@ shared_examples_for 'package with manifest' do
     write 'MANIFEST.MF', 'Manifest-Version: 1.9'
     package_with_manifest 'MANIFEST.MF'
     inspect_manifest do |manifest|
-      manifest.main['Manifest-Version'].should == '1.9'
+      expect(manifest.main['Manifest-Version']).to eq('1.9')
     end
   end
 
@@ -233,9 +233,9 @@ shared_examples_for 'package with manifest' do
     end
     package_with_manifest 'MANIFEST.MF'
     inspect_manifest do |manifest|
-      manifest.sections.size.should be(1)
-      manifest.main['Manifest-Version'].should eql('1.0')
-      manifest.main['Meta'].should eql('data')
+      expect(manifest.sections.size).to be(1)
+      expect(manifest.main['Manifest-Version']).to eql('1.0')
+      expect(manifest.main['Meta']).to eql('data')
     end
   end
 
@@ -244,7 +244,7 @@ shared_examples_for 'package with manifest' do
     mkpath 'target/classes'
     packaging = @packaging
     define('foo', :version=>'1.0') { package(packaging).with :manifest=>{'Foo'=>'data'} }
-    inspect_manifest { |manifest| manifest.main['Foo'].should eql('data') }
+    inspect_manifest { |manifest| expect(manifest.main['Foo']).to eql('data') }
   end
 
   it 'should include META-INF directory' do
@@ -252,7 +252,7 @@ shared_examples_for 'package with manifest' do
     package = define('foo', :version=>'1.0') { package(packaging) }.packages.first
     package.invoke
     Zip::ZipFile.open(package.to_s) do |zip|
-      zip.entries.map(&:to_s).should include('META-INF/')
+      expect(zip.entries.map(&:to_s)).to include('META-INF/')
     end
   end
 
@@ -269,11 +269,11 @@ shared_examples_for 'package with manifest' do
       end
     end
     inspect_manifest(package) do |manifest|
-      manifest.sections.size.should be(1)
-      manifest.main['Manifest-Version'].should eql('1.0')
-      manifest.main['Created-By'].should eql('Buildr')
-      manifest.main['Foo'].should eql('1')
-      manifest.main['bar'].should eql('Bar')
+      expect(manifest.sections.size).to be(1)
+      expect(manifest.main['Manifest-Version']).to eql('1.0')
+      expect(manifest.main['Created-By']).to eql('Buildr')
+      expect(manifest.main['Foo']).to eql('1')
+      expect(manifest.main['bar']).to eql('Bar')
     end
   end
 
@@ -292,28 +292,28 @@ shared_examples_for 'package with manifest' do
       end
     end
     inspect_manifest(project('foo').packages.first) do |manifest|
-      manifest.sections.size.should be(1)
-      manifest.main['Manifest-Version'].should eql('1.0')
-      manifest.main['Created-By'].should eql('Buildr')
-      manifest.main['Foo'].should eql('1')
-      manifest.main['bar'].should be_nil
-      manifest.main['baz'].should be_nil
+      expect(manifest.sections.size).to be(1)
+      expect(manifest.main['Manifest-Version']).to eql('1.0')
+      expect(manifest.main['Created-By']).to eql('Buildr')
+      expect(manifest.main['Foo']).to eql('1')
+      expect(manifest.main['bar']).to be_nil
+      expect(manifest.main['baz']).to be_nil
     end
     inspect_manifest(project('foo:bar').packages.first) do |manifest|
-      manifest.sections.size.should be(1)
-      manifest.main['Manifest-Version'].should eql('1.0')
-      manifest.main['Created-By'].should eql('Buildr')
-      manifest.main['Foo'].should eql('1')
-      manifest.main['bar'].should eql('Bar')
-      manifest.main['baz'].should be_nil
+      expect(manifest.sections.size).to be(1)
+      expect(manifest.main['Manifest-Version']).to eql('1.0')
+      expect(manifest.main['Created-By']).to eql('Buildr')
+      expect(manifest.main['Foo']).to eql('1')
+      expect(manifest.main['bar']).to eql('Bar')
+      expect(manifest.main['baz']).to be_nil
     end
     inspect_manifest(project('foo:baz').packages.first) do |manifest|
-      manifest.sections.size.should be(1)
-      manifest.main['Manifest-Version'].should eql('1.0')
-      manifest.main['Created-By'].should eql('Buildr')
-      manifest.main['Foo'].should eql('1')
-      manifest.main['baz'].should eql('Baz')
-      manifest.main['bar'].should be_nil
+      expect(manifest.sections.size).to be(1)
+      expect(manifest.main['Manifest-Version']).to eql('1.0')
+      expect(manifest.main['Created-By']).to eql('Buildr')
+      expect(manifest.main['Foo']).to eql('1')
+      expect(manifest.main['baz']).to eql('Baz')
+      expect(manifest.main['bar']).to be_nil
     end
   end
 end
@@ -321,28 +321,28 @@ end
 
 describe Project, '#meta_inf' do
   it 'should by an array' do
-    define('foo').meta_inf.should be_kind_of(Array)
+    expect(define('foo').meta_inf).to be_kind_of(Array)
   end
 
   it 'should include LICENSE file if found' do
     write 'LICENSE'
-    define('foo').meta_inf.first.should point_to_path('LICENSE')
+    expect(define('foo').meta_inf.first).to point_to_path('LICENSE')
   end
 
   it 'should be empty unless LICENSE exists' do
-    define('foo').meta_inf.should be_empty
+    expect(define('foo').meta_inf).to be_empty
   end
 
   it 'should inherit from parent project' do
     write 'LICENSE'
     define('foo') { define 'bar' }
-    project('foo:bar').meta_inf.first.should point_to_path('LICENSE')
+    expect(project('foo:bar').meta_inf.first).to point_to_path('LICENSE')
   end
 
   it 'should expect LICENSE file parent project' do
     write 'bar/LICENSE'
     define('foo') { define 'bar' }
-    project('foo:bar').meta_inf.should be_empty
+    expect(project('foo:bar').meta_inf).to be_empty
   end
 end
 
@@ -363,7 +363,7 @@ shared_examples_for 'package with meta_inf' do
     assumed = Array(@meta_inf_ignore)
     Zip::ZipFile.open(package.to_s) do |zip|
       entries = zip.entries.map(&:name).select { |f| File.dirname(f) == 'META-INF' }.map { |f| File.basename(f) }
-      assumed.each { |f| entries.should include(f) }
+      assumed.each { |f| expect(entries).to include(f) }
       yield entries - assumed if block_given?
     end
   end
@@ -371,47 +371,47 @@ shared_examples_for 'package with meta_inf' do
   it 'should default to LICENSE file' do
     write 'LICENSE'
     package_with_meta_inf
-    inspect_meta_inf { |files| files.should eql(['LICENSE']) }
+    inspect_meta_inf { |files| expect(files).to eql(['LICENSE']) }
   end
 
   it 'should be empty if no LICENSE file' do
     package_with_meta_inf
-    inspect_meta_inf { |files| files.should be_empty }
+    inspect_meta_inf { |files| expect(files).to be_empty }
   end
 
   it 'should include file specified by :meta_inf option' do
     write 'README'
     package_with_meta_inf 'README'
-    inspect_meta_inf { |files| files.should eql(['README']) }
+    inspect_meta_inf { |files| expect(files).to eql(['README']) }
   end
 
   it 'should include files specified by :meta_inf option' do
     files = ['README', 'DISCLAIMER'].each { |file| write file }
     package_with_meta_inf files
-    inspect_meta_inf { |files| files.should eql(files) }
+    inspect_meta_inf { |files| expect(files).to eql(files) }
   end
 
   it 'should include file task specified by :meta_inf option' do
     file('README') { |task| write task.to_s }
     package_with_meta_inf file('README')
-    inspect_meta_inf { |files| files.should eql(['README']) }
+    inspect_meta_inf { |files| expect(files).to eql(['README']) }
   end
 
   it 'should include file tasks specified by :meta_inf option' do
     files = ['README', 'DISCLAIMER'].each { |file| file(file) { |task| write task.to_s } }
     package_with_meta_inf files.map { |f| file(f) }
-    inspect_meta_inf { |files| files.should eql(files) }
+    inspect_meta_inf { |files| expect(files).to eql(files) }
   end
 
   it 'should complain if cannot find file' do
     package_with_meta_inf 'README'
-    lambda { inspect_meta_inf }.should raise_error(RuntimeError, /README/)
+    expect { inspect_meta_inf }.to raise_error(RuntimeError, /README/)
   end
 
   it 'should complain if cannot build task' do
     file('README')  { fail 'Failed' }
     package_with_meta_inf 'README'
-    lambda { inspect_meta_inf }.should raise_error(RuntimeError, /Failed/)
+    expect { inspect_meta_inf }.to raise_error(RuntimeError, /Failed/)
   end
 
   it 'should respond to with() and accept manifest and meta_inf' do
@@ -419,7 +419,7 @@ shared_examples_for 'package with meta_inf' do
     mkpath 'target/classes'
     packaging = @packaging
     define('foo', :version=>'1.0') { package(packaging).with :meta_inf=>'DISCLAIMER' }
-    inspect_meta_inf { |files| files.should eql(['DISCLAIMER']) }
+    inspect_meta_inf { |files| expect(files).to eql(['DISCLAIMER']) }
   end
 end
 
@@ -438,7 +438,7 @@ describe Packaging, 'jar' do
     Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
       entries_to_s = jar.entries.map(&:to_s).delete_if {|entry| entry[-1,1] == "/"}
       # Sometimes META-INF/ is counted as first entry, which is fair game.
-      (entries_to_s.first == 'META-INF/MANIFEST.MF' || entries_to_s[1] == 'META-INF/MANIFEST.MF').should be_true
+      expect(entries_to_s.first == 'META-INF/MANIFEST.MF' || entries_to_s[1] == 'META-INF/MANIFEST.MF').to be_truthy
     end
   end
 
@@ -447,7 +447,7 @@ describe Packaging, 'jar' do
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
     Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
-      jar.entries.map(&:to_s).sort.should include('META-INF/MANIFEST.MF', 'Test.class')
+      expect(jar.entries.map(&:to_s).sort).to include('META-INF/MANIFEST.MF', 'Test.class')
     end
   end
 
@@ -456,7 +456,7 @@ describe Packaging, 'jar' do
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
     Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
-      jar.entries.map(&:to_s).sort.should include('test/important.properties')
+      expect(jar.entries.map(&:to_s).sort).to include('test/important.properties')
     end
   end
 
@@ -465,7 +465,7 @@ describe Packaging, 'jar' do
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
     Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
-      jar.entries.map(&:to_s).sort.should include('code/')
+      expect(jar.entries.map(&:to_s).sort).to include('code/')
     end
   end
 
@@ -474,7 +474,7 @@ describe Packaging, 'jar' do
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
     Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
-      jar.entries.map(&:to_s).sort.should include('test/.config')
+      expect(jar.entries.map(&:to_s).sort).to include('test/.config')
     end
   end
 
@@ -483,14 +483,14 @@ describe Packaging, 'jar' do
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
     Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
-      jar.entries.map(&:to_s).sort.should include('empty/')
+      expect(jar.entries.map(&:to_s).sort).to include('empty/')
     end
   end
 
   it 'should raise error when calling with() with nil value' do
-    lambda {
+    expect {
       define('foo', :version=>'1.0') { package(:jar).with(nil) }
-    }.should raise_error
+    }.to raise_error /package\.with\(\) should not contain nil values/
   end
 
   it 'should exclude resources when ordered to do so' do
@@ -498,7 +498,7 @@ describe Packaging, 'jar' do
     foo = define('foo', :version => '1.0') { package(:jar).exclude('foo.xml')}
     foo.package(:jar).invoke
     Zip::ZipFile.open(foo.package(:jar).to_s) do |jar|
-      jar.entries.map(&:to_s).sort.should_not include('foo.xml')
+      expect(jar.entries.map(&:to_s).sort).not_to include('foo.xml')
     end
   end
 
@@ -527,13 +527,13 @@ describe Packaging, 'war' do
   it 'should use files from webapp directory if nothing included' do
     write 'src/main/webapp/test.html'
     define('foo', :version=>'1.0') { package(:war) }
-    inspect_war { |files| files.should include('test.html') }
+    inspect_war { |files| expect(files).to include('test.html') }
   end
 
   it 'should use files from added assets directory if nothing included' do
     write 'generated/main/webapp/test.html'
     define('foo', :version => '1.0') { assets.paths << 'generated/main/webapp/'; package(:war) }
-    inspect_war { |files| files.should include('test.html') }
+    inspect_war { |files| expect(files).to include('test.html') }
   end
 
   it 'should use files from generated assets directory if nothing included' do
@@ -547,92 +547,92 @@ describe Packaging, 'war' do
       end
       package(:war)
     end
-    inspect_war { |files| files.should include('test.html') }
+    inspect_war { |files| expect(files).to include('test.html') }
   end
 
   it 'should accept files from :classes option', :retry => (Buildr::Util.win_os? ? 4 : 1) do
     write 'classes/test'
     define('foo', :version=>'1.0') { package(:war).with(:classes=>'classes') }
-    inspect_war { |files| files.should include('WEB-INF/classes/test') }
+    inspect_war { |files| expect(files).to include('WEB-INF/classes/test') }
   end
 
   it 'should use files from compile directory if nothing included' do
     write 'src/main/java/Test.java', 'class Test {}'
     define('foo', :version=>'1.0') { package(:war) }
-    inspect_war { |files| files.should include('WEB-INF/classes/Test.class') }
+    inspect_war { |files| expect(files).to include('WEB-INF/classes/Test.class') }
   end
 
   it 'should ignore compile directory if no source files to compile' do
     define('foo', :version=>'1.0') { package(:war) }
-    inspect_war { |files| files.should_not include('target/classes') }
+    inspect_war { |files| expect(files).not_to include('target/classes') }
   end
 
   it 'should include only specified classes directories' do
     write 'src/main/java'
     define('foo', :version=>'1.0') { package(:war).with :classes=>_('additional') }
-    project('foo').package(:war).classes.should_not include(project('foo').file('target/classes'))
-    project('foo').package(:war).classes.should include(project('foo').file('additional'))
+    expect(project('foo').package(:war).classes).not_to include(project('foo').file('target/classes'))
+    expect(project('foo').package(:war).classes).to include(project('foo').file('additional'))
   end
 
   it 'should use files from resources directory if nothing included' do
     write 'src/main/resources/test/important.properties'
     define('foo', :version=>'1.0') { package(:war) }
-    inspect_war { |files| files.should include('WEB-INF/classes/test/important.properties') }
+    inspect_war { |files| expect(files).to include('WEB-INF/classes/test/important.properties') }
   end
 
   it 'should include empty resource directories' do
     mkpath 'src/main/resources/empty'
     define('foo', :version=>'1.0') { package(:war) }
-    inspect_war { |files| files.should include('WEB-INF/classes/empty/') }
+    inspect_war { |files| expect(files).to include('WEB-INF/classes/empty/') }
   end
 
   it 'should accept file from :libs option' do
     write 'lib/foo.jar'
     define('foo', :version=>'1.0') { package(:war).libs << 'lib/foo.jar' }
-    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/foo.jar') }
+    inspect_war { |files| expect(files).to include('META-INF/MANIFEST.MF', 'WEB-INF/lib/foo.jar') }
   end
 
 
   it 'should accept artifacts from :libs option' do
     make_jars
     define('foo', :version=>'1.0') { package(:war).with(:libs=>'group:id:jar:1.0') }
-    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
+    inspect_war { |files| expect(files).to include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
   end
 
   it 'should accept artifacts from :libs option' do
     make_jars
     define('foo', :version=>'1.0') { package(:war).with(:libs=>['group:id:jar:1.0', 'group:id:jar:2.0']) }
-    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar', 'WEB-INF/lib/id-2.0.jar') }
+    inspect_war { |files| expect(files).to include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar', 'WEB-INF/lib/id-2.0.jar') }
   end
 
   it 'should use artifacts from compile classpath if no libs specified' do
     make_jars
     define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war) }
-    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar', 'WEB-INF/lib/id-2.0.jar') }
+    inspect_war { |files| expect(files).to include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar', 'WEB-INF/lib/id-2.0.jar') }
   end
 
   it 'should use artifacts from compile classpath if no libs specified, leaving the user specify which to exclude as files' do
     make_jars
     define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war).path('WEB-INF/lib').exclude('id-2.0.jar')  }
-    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
+    inspect_war { |files| expect(files).to include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
   end
 
   it 'should use artifacts from compile classpath if no libs specified, leaving the user specify which to exclude as files with glob expressions' do
     make_jars
     define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war).path('WEB-INF/lib').exclude('**/id-2.0.jar')   }
-    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
+    inspect_war { |files| expect(files).to include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
   end
 
   it 'should exclude files regardless of the path where they are included, using wildcards' do
     make_jars
     define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war).exclude('**/id-2.0.jar')   }
-    inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
+    inspect_war { |files| expect(files).to include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
   end
 
   it 'should exclude files regardless of the path where they are included, specifying target path entirely' do
      make_jars
      define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:war).exclude('WEB-INF/lib/id-2.0.jar')   }
-     inspect_war { |files| files.should include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
+     inspect_war { |files| expect(files).to include('META-INF/MANIFEST.MF', 'WEB-INF/lib/id-1.0.jar') }
    end
 
   it 'should exclude files regardless of the path where they are included for war files' do
@@ -644,8 +644,8 @@ describe Packaging, 'war' do
        end
      end
      inspect_war do |files|
-       files.should include('WEB-INF/classes/com/example/included/Test.class')
-       files.should_not include('WEB-INF/classes/com/example/excluded/Test.class')
+       expect(files).to include('WEB-INF/classes/com/example/included/Test.class')
+       expect(files).not_to include('WEB-INF/classes/com/example/excluded/Test.class')
      end
    end
 
@@ -654,8 +654,8 @@ describe Packaging, 'war' do
       compile.with 'group:id:jar:1.0'
       package(:war).with :libs=>'additional:id:jar:1.0'
     end
-    project('foo').package(:war).libs.should_not include(artifact('group:id:jar:1.0'))
-    project('foo').package(:war).libs.should include(artifact('additional:id:jar:1.0'))
+    expect(project('foo').package(:war).libs).not_to include(artifact('group:id:jar:1.0'))
+    expect(project('foo').package(:war).libs).to include(artifact('additional:id:jar:1.0'))
   end
 
 end
@@ -686,49 +686,49 @@ describe Packaging, 'aar' do
   it 'should automatically include services.xml and any *.wsdl files under src/main/axis2' do
     write 'src/main/axis2/my-service.wsdl'
     define('foo', :version=>'1.0') { package(:aar) }
-    inspect_aar { |files| files.should include('META-INF/MANIFEST.MF', 'META-INF/services.xml', 'META-INF/my-service.wsdl') }
+    inspect_aar { |files| expect(files).to include('META-INF/MANIFEST.MF', 'META-INF/services.xml', 'META-INF/my-service.wsdl') }
   end
 
   it 'should accept files from :include option' do
     write 'test'
     define('foo', :version=>'1.0') { package(:aar).include 'test' }
-    inspect_aar { |files| files.should include('META-INF/MANIFEST.MF', 'test') }
+    inspect_aar { |files| expect(files).to include('META-INF/MANIFEST.MF', 'test') }
   end
 
   it 'should use files from compile directory if nothing included' do
     write 'src/main/java/Test.java', 'class Test {}'
     define('foo', :version=>'1.0') { package(:aar) }
-    inspect_aar { |files| files.should include('Test.class') }
+    inspect_aar { |files| expect(files).to include('Test.class') }
   end
 
   it 'should use files from resources directory if nothing included' do
     write 'src/main/resources/test/important.properties'
     define('foo', :version=>'1.0') { package(:aar) }
-    inspect_aar { |files| files.should include('test/important.properties') }
+    inspect_aar { |files| expect(files).to include('test/important.properties') }
   end
 
   it 'should include empty resource directories' do
     mkpath 'src/main/resources/empty'
     define('foo', :version=>'1.0') { package(:aar) }
-    inspect_aar { |files| files.should include('empty/') }
+    inspect_aar { |files| expect(files).to include('empty/') }
   end
 
   it 'should accept file from :libs option' do
     make_jars
     define('foo', :version=>'1.0') { package(:aar).with :libs=>'group:id:jar:1.0' }
-    inspect_aar { |files| files.should include('META-INF/MANIFEST.MF', 'lib/id-1.0.jar') }
+    inspect_aar { |files| expect(files).to include('META-INF/MANIFEST.MF', 'lib/id-1.0.jar') }
   end
 
   it 'should accept file from :libs option' do
     make_jars
     define('foo', :version=>'1.0') { package(:aar).with :libs=>['group:id:jar:1.0', 'group:id:jar:2.0'] }
-    inspect_aar { |files| files.should include('META-INF/MANIFEST.MF', 'lib/id-1.0.jar', 'lib/id-2.0.jar') }
+    inspect_aar { |files| expect(files).to include('META-INF/MANIFEST.MF', 'lib/id-1.0.jar', 'lib/id-2.0.jar') }
   end
 
   it 'should NOT use artifacts from compile classpath if no libs specified' do
     make_jars
     define('foo', :version=>'1.0') { compile.with 'group:id:jar:1.0', 'group:id:jar:2.0' ; package(:aar) }
-    inspect_aar { |files| files.should include('META-INF/MANIFEST.MF') }
+    inspect_aar { |files| expect(files).to include('META-INF/MANIFEST.MF') }
   end
 
   it 'should return all libraries from libs attribute' do
@@ -736,8 +736,8 @@ describe Packaging, 'aar' do
       compile.with 'group:id:jar:1.0'
       package(:aar).with :libs=>'additional:id:jar:1.0'
     end
-    project('foo').package(:aar).libs.should_not include(artifact('group:id:jar:1.0'))
-    project('foo').package(:aar).libs.should include(artifact('additional:id:jar:1.0'))
+    expect(project('foo').package(:aar).libs).not_to include(artifact('group:id:jar:1.0'))
+    expect(project('foo').package(:aar).libs).to include(artifact('additional:id:jar:1.0'))
   end
 
 end
@@ -777,9 +777,9 @@ describe Packaging, 'ear' do
 
   it 'should set display name from project id' do
     define 'foo', :version=>'1.0' do
-      package(:ear).display_name.should eql('foo')
+      expect(package(:ear).display_name).to eql('foo')
       define 'bar' do
-        package(:ear).display_name.should eql('foo-bar')
+        expect(package(:ear).display_name).to eql('foo-bar')
       end
     end
   end
@@ -788,14 +788,14 @@ describe Packaging, 'ear' do
     define 'foo', :version=>'1.0' do
       package(:ear)
     end
-    inspect_application_xml { |xml| xml.get_text('/application/display-name').should == 'foo' }
+    inspect_application_xml { |xml| expect(xml.get_text('/application/display-name')).to eq('foo') }
   end
 
   it 'should accept different display name' do
     define 'foo', :version=>'1.0' do
       package(:ear).display_name = 'bar'
     end
-    inspect_application_xml { |xml| xml.get_text('/application/display-name').should == 'bar' }
+    inspect_application_xml { |xml| expect(xml.get_text('/application/display-name')).to eq('bar') }
   end
 
   it 'should set description in application.xml to project comment if not specified' do
@@ -803,21 +803,21 @@ describe Packaging, 'ear' do
     define 'foo', :version=>'1.0' do
       package(:ear)
     end
-    inspect_application_xml { |xml| xml.get_text('/application/description').should == 'MyDescription' }
+    inspect_application_xml { |xml| expect(xml.get_text('/application/description')).to eq('MyDescription') }
   end
 
   it 'should not set description in application.xml if not specified and no project comment' do
     define 'foo', :version=>'1.0' do
       package(:ear)
     end
-    inspect_application_xml { |xml| xml.get_text('/application/description').should be_nil }
+    inspect_application_xml { |xml| expect(xml.get_text('/application/description')).to be_nil }
   end
 
   it 'should set description in application.xml if specified' do
     define 'foo', :version=>'1.0' do
       package(:ear).description = "MyDescription"
     end
-    inspect_application_xml { |xml| xml.get_text('/application/description').should == 'MyDescription' }
+    inspect_application_xml { |xml| expect(xml.get_text('/application/description')).to eq('MyDescription') }
   end
 
   it 'should add security-roles to application.xml if given' do
@@ -826,8 +826,8 @@ describe Packaging, 'ear' do
 		:description=>'System Administrator', :name=>'systemadministrator'}
 	end
 	inspect_application_xml do |xml|
-		xml.get_text("/application/security-role[@id='sr1']/description").to_s.should eql('System Administrator')
-		xml.get_text("/application/security-role[@id='sr1']/role-name").to_s.should eql('systemadministrator')
+		expect(xml.get_text("/application/security-role[@id='sr1']/description").to_s).to eql('System Administrator')
+		expect(xml.get_text("/application/security-role[@id='sr1']/role-name").to_s).to eql('systemadministrator')
 	end
   end
 
@@ -835,14 +835,14 @@ describe Packaging, 'ear' do
     define 'foo', :version=>'1.0' do
       package(:ear) << package(:war)
     end
-    inspect_ear { |files| files.should include('war/foo-1.0.war') }
+    inspect_ear { |files| expect(files).to include('war/foo-1.0.war') }
   end
 
   it 'should map EJBs to /ejb directory' do
     define 'foo', :version=>'1.0' do
       package(:ear).add :ejb=>package(:jar)
     end
-    inspect_ear { |files| files.should include('ejb/foo-1.0.jar') }
+    inspect_ear { |files| expect(files).to include('ejb/foo-1.0.jar') }
   end
 
   it 'should not modify original artifact for its components' do
@@ -861,13 +861,13 @@ describe Packaging, 'ear' do
       package(:ear).add :ejb => project(:two).package(:jar)
     end
 
-    inspect_ear { |files| files.should include('lib/one-1.0.jar', 'ejb/two-1.0.jar') }
+    inspect_ear { |files| expect(files).to include('lib/one-1.0.jar', 'ejb/two-1.0.jar') }
 
-    Buildr::Packaging::Java::Manifest.from_zip(project('one').package(:jar)).main['Class-Path'].should be_nil
-    Buildr::Packaging::Java::Manifest.from_zip(project('two').package(:jar)).main['Class-Path'].should be_nil
+    expect(Buildr::Packaging::Java::Manifest.from_zip(project('one').package(:jar)).main['Class-Path']).to be_nil
+    expect(Buildr::Packaging::Java::Manifest.from_zip(project('two').package(:jar)).main['Class-Path']).to be_nil
 
     inspect_classpath 'ejb/two-1.0.jar' do |classpath|
-      classpath.should include('../lib/one-1.0.jar')
+      expect(classpath).to include('../lib/one-1.0.jar')
     end
   end
 
@@ -875,28 +875,28 @@ describe Packaging, 'ear' do
     define 'foo', :version=>'1.0' do
       package(:ear) << package(:jar)
     end
-    inspect_ear { |files| files.should include('lib/foo-1.0.jar') }
+    inspect_ear { |files| expect(files).to include('lib/foo-1.0.jar') }
   end
 
   it 'should accept component type with :type option' do
     define 'foo', :version=>'1.0' do
       package(:ear).add package(:jar), :type=>:ejb
     end
-    inspect_ear { |files| files.should include('ejb/foo-1.0.jar') }
+    inspect_ear { |files| expect(files).to include('ejb/foo-1.0.jar') }
   end
 
   it 'should accept component and its type as type=>artifact' do
     define 'foo', :version=>'1.0' do
       package(:ear).add :ejb=>package(:jar)
     end
-    inspect_ear { |files| files.should include('ejb/foo-1.0.jar') }
+    inspect_ear { |files| expect(files).to include('ejb/foo-1.0.jar') }
   end
 
   it 'should map typed JARs to /jar directory' do
     define 'foo', :version=>'1.0' do
       package(:ear).add :jar=>package(:jar)
     end
-    inspect_ear { |files| files.should include('jar/foo-1.0.jar') }
+    inspect_ear { |files| expect(files).to include('jar/foo-1.0.jar') }
   end
 
   it 'should add multiple components at a time using the type=>component style' do
@@ -915,8 +915,8 @@ describe Packaging, 'ear' do
                         :ejb => project('bar').package(:jar)
     end
     inspect_ear do |files|
-      files.should include(*%w{ lib/one-1.5.jar lib/two-1.5.jar war/bar-1.5.war ejb/bar-1.5.jar  })
-      files.should_not satisfy { files.any? { |f| f =~ /\.zip$/ } }
+      expect(files).to include(*%w{ lib/one-1.5.jar lib/two-1.5.jar war/bar-1.5.war ejb/bar-1.5.jar  })
+      expect(files).not_to satisfy { files.any? { |f| f =~ /\.zip$/ } }
     end
   end
 
@@ -934,14 +934,14 @@ describe Packaging, 'ear' do
       package(:ear).add projects(:bar, :baz)
     end
     inspect_ear do |files|
-      files.should include('war/bar-1.5.war', 'lib/bar-1.5.jar', 'lib/baz-1.5.jar', 'war/baz-1.5.war')
-      files.should_not satisfy { files.any? { |f| f =~ /\.zip$/ } }
+      expect(files).to include('war/bar-1.5.war', 'lib/bar-1.5.jar', 'lib/baz-1.5.jar', 'war/baz-1.5.war')
+      expect(files).not_to satisfy { files.any? { |f| f =~ /\.zip$/ } }
     end
   end
 
   it 'should complain about unknown component type' do
     define 'foo', :version=>'1.0' do
-      lambda { package(:ear).add package(:zip) }.should raise_error(RuntimeError, /ear component/i)
+      expect { package(:ear).add package(:zip) }.to raise_error(RuntimeError, /ear component/i)
     end
   end
 
@@ -949,14 +949,14 @@ describe Packaging, 'ear' do
     define 'foo', :version=>'1.0' do
       package(:ear).add :lib=>package(:zip)
     end
-    inspect_ear { |files| files.should include('lib/foo-1.0.zip') }
+    inspect_ear { |files| expect(files).to include('lib/foo-1.0.zip') }
   end
 
   it 'should accept alternative directory name' do
     define 'foo', :version=>'1.0' do
       package(:ear).add package(:jar), :path=>'trash'
     end
-    inspect_ear { |files| files.should include('trash/foo-1.0.jar') }
+    inspect_ear { |files| expect(files).to include('trash/foo-1.0.jar') }
   end
 
   it 'should accept customization of directory map' do
@@ -964,7 +964,7 @@ describe Packaging, 'ear' do
       package(:ear).dirs[:jar] = 'jarred'
       package(:ear).add :jar=>package(:jar)
     end
-    inspect_ear { |files| files.should include('jarred/foo-1.0.jar') }
+    inspect_ear { |files| expect(files).to include('jarred/foo-1.0.jar') }
   end
 
   it 'should accept customization of directory map with nil paths in application.xml' do
@@ -973,9 +973,9 @@ describe Packaging, 'ear' do
       package(:ear).add :war=>package(:war)
       package(:ear).add package(:jar)
     end
-    inspect_ear { |files| files.should include('foo-1.0.war') }
+    inspect_ear { |files| expect(files).to include('foo-1.0.war') }
     inspect_application_xml do |xml|
-      xml.get_text("/application/module[@id='foo']/web/web-uri").to_s.should eql('foo-1.0.war')
+      expect(xml.get_text("/application/module[@id='foo']/web/web-uri").to_s).to eql('foo-1.0.war')
     end
   end
 
@@ -986,7 +986,7 @@ describe Packaging, 'ear' do
       package(:ear) << package(:jar)
     end
     inspect_classpath 'war/foo-1.0.war' do |classpath|
-      classpath.should include('../foo-1.0.jar')
+      expect(classpath).to include('../foo-1.0.jar')
     end
   end
 
@@ -995,8 +995,8 @@ describe Packaging, 'ear' do
       package(:ear) << package(:war) << package(:war, :id=>'bar')
     end
     inspect_application_xml do |xml|
-      xml.get_elements("/application/module[@id='foo'][web]").should_not be_empty
-      xml.get_elements("/application/module[@id='bar'][web]").should_not be_empty
+      expect(xml.get_elements("/application/module[@id='foo'][web]")).not_to be_empty
+      expect(xml.get_elements("/application/module[@id='bar'][web]")).not_to be_empty
     end
   end
 
@@ -1006,8 +1006,8 @@ describe Packaging, 'ear' do
       package(:ear).add package(:war, :id=>'bar'), :path=>'ws'
     end
     inspect_application_xml do |xml|
-      xml.get_text("/application/module[@id='foo']/web/web-uri").to_s.should eql('war/foo-1.0.war')
-      xml.get_text("/application/module[@id='bar']/web/web-uri").to_s.should eql('ws/bar-1.0.war')
+      expect(xml.get_text("/application/module[@id='foo']/web/web-uri").to_s).to eql('war/foo-1.0.war')
+      expect(xml.get_text("/application/module[@id='bar']/web/web-uri").to_s).to eql('ws/bar-1.0.war')
     end
   end
 
@@ -1017,8 +1017,8 @@ describe Packaging, 'ear' do
       package(:ear).add package(:war, :id=>'bar')
     end
     inspect_application_xml do |xml|
-      xml.get_text("/application/module[@id='foo']/web/context-root").to_s.should eql('/foo')
-      xml.get_text("/application/module[@id='bar']/web/context-root").to_s.should eql('/bar')
+      expect(xml.get_text("/application/module[@id='foo']/web/context-root").to_s).to eql('/foo')
+      expect(xml.get_text("/application/module[@id='bar']/web/context-root").to_s).to eql('/bar')
     end
   end
 
@@ -1027,7 +1027,7 @@ describe Packaging, 'ear' do
       package(:ear).add package(:war), :context_root=>'rooted'
     end
     inspect_application_xml do |xml|
-      xml.get_text("/application/module[@id='foo']/web/context-root").to_s.should eql('/rooted')
+      expect(xml.get_text("/application/module[@id='foo']/web/context-root").to_s).to eql('/rooted')
     end
   end
 
@@ -1036,7 +1036,7 @@ describe Packaging, 'ear' do
       package(:ear).add package(:war), :context_root=>false
     end
     inspect_application_xml do |xml|
-      xml.get_elements("/application/module[@id='foo']/web/context-root").should be_empty
+      expect(xml.get_elements("/application/module[@id='foo']/web/context-root")).to be_empty
     end
   end
 
@@ -1046,8 +1046,8 @@ describe Packaging, 'ear' do
       package(:ear).add :ejb=>package(:jar, :id=>'bar')
     end
     inspect_application_xml do |xml|
-      xml.get_text("/application/module[@id='foo']/ejb").to_s.should eql('ejb/foo-1.0.jar')
-      xml.get_text("/application/module[@id='bar']/ejb").to_s.should eql('ejb/bar-1.0.jar')
+      expect(xml.get_text("/application/module[@id='foo']/ejb").to_s).to eql('ejb/foo-1.0.jar')
+      expect(xml.get_text("/application/module[@id='bar']/ejb").to_s).to eql('ejb/bar-1.0.jar')
     end
   end
 
@@ -1057,7 +1057,7 @@ describe Packaging, 'ear' do
     end
     inspect_application_xml do |xml|
       jars = xml.get_elements('/application/jar').map(&:texts).map(&:join)
-      jars.should include('jar/foo-1.0.jar', 'jar/bar-1.0.jar')
+      expect(jars).to include('jar/foo-1.0.jar', 'jar/bar-1.0.jar')
     end
   end
 
@@ -1067,7 +1067,7 @@ describe Packaging, 'ear' do
       package(:ear).add package(:war)
     end
     inspect_classpath 'war/foo-1.0.war' do |classpath|
-      classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
+      expect(classpath).to include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
     end
   end
 
@@ -1078,8 +1078,8 @@ describe Packaging, 'ear' do
       package(:ear).add package(:war)
     end
     inspect_classpath 'war/foo-1.0.war' do |classpath|
-      classpath.should_not include('../lib/lib1-1.0.jar')
-      classpath.should include('../lib/lib2-1.0.jar')
+      expect(classpath).not_to include('../lib/lib1-1.0.jar')
+      expect(classpath).to include('../lib/lib2-1.0.jar')
     end
   end
 
@@ -1089,7 +1089,7 @@ describe Packaging, 'ear' do
       package(:ear).add :ejb=>package(:jar, :id=>'foo')
     end
     inspect_classpath 'ejb/foo-1.0.jar' do |classpath|
-      classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
+      expect(classpath).to include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
     end
   end
 
@@ -1099,7 +1099,7 @@ describe Packaging, 'ear' do
       package(:ear).add :jar=>package(:jar, :id=>'foo')
     end
     inspect_classpath 'jar/foo-1.0.jar' do |classpath|
-      classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
+      expect(classpath).to include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
     end
   end
 
@@ -1109,7 +1109,7 @@ describe Packaging, 'ear' do
       package(:ear).add :jar=>package(:jar, :id=>'foo')
     end
     inspect_classpath 'jar/foo-1.0.jar' do |classpath|
-      classpath.should include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
+      expect(classpath).to include('../lib/lib1-1.0.jar', '../lib/lib2-1.0.jar')
     end
   end
 
@@ -1122,7 +1122,7 @@ describe Packaging, 'ear' do
       package(:ear).add :ejb => package(:jar, :id => 'ejb1'), :path => '.'
     end
     inspect_classpath 'ejb1-1.0.jar' do |classpath|
-      classpath.should include(*%w{ one-1.0.jar dos/two-1.0.jar tres/three-1.0.jar })
+      expect(classpath).to include(*%w{ one-1.0.jar dos/two-1.0.jar tres/three-1.0.jar })
     end
   end
 
@@ -1134,7 +1134,7 @@ describe Packaging, 'ear' do
       package(:ear).add :ejb => package(:jar, :id => 'ejb2'), :path => 'dos'
     end
     inspect_classpath 'dos/ejb2-1.0.jar' do |classpath|
-      classpath.should include(*%w{ ../one-1.0.jar two-1.0.jar ../tres/three-1.0.jar })
+      expect(classpath).to include(*%w{ ../one-1.0.jar two-1.0.jar ../tres/three-1.0.jar })
     end
   end
 
@@ -1147,7 +1147,7 @@ describe Packaging, 'ear' do
       package(:ear).add :ejb => package(:jar, :id => 'ejb4'), :path => 'dos/cuatro'
     end
     inspect_classpath 'dos/cuatro/ejb4-1.0.jar' do |classpath|
-      classpath.should include(*%w{ ../../one-1.0.jar ../two-1.0.jar ../tres/three-1.0.jar four-1.0.jar })
+      expect(classpath).to include(*%w{ ../../one-1.0.jar ../two-1.0.jar ../tres/three-1.0.jar four-1.0.jar })
     end
   end
 
@@ -1160,9 +1160,9 @@ describe Packaging, 'sources' do
 
   it 'should create package of type :jar and classifier \'sources\'' do
     define 'foo', :version=>'1.0' do
-      package(:sources).type.should eql(:jar)
-      package(:sources).classifier.should eql('sources')
-      package(:sources).name.should match(/foo-1.0-sources.jar$/)
+      expect(package(:sources).type).to eql(:jar)
+      expect(package(:sources).classifier).to eql('sources')
+      expect(package(:sources).name).to match(/foo-1.0-sources.jar$/)
     end
   end
 
@@ -1171,20 +1171,20 @@ describe Packaging, 'sources' do
     write 'src/main/resources/foo.properties', 'foo=bar'
     define('foo', :version=>'1.0') { package(:sources) }
     project('foo').task('package').invoke
-    project('foo').packages.first.should contain('Source.java')
-    project('foo').packages.first.should contain('foo.properties')
+    expect(project('foo').packages.first).to contain('Source.java')
+    expect(project('foo').packages.first).to contain('foo.properties')
   end
 
   it 'should create sources jar if resources exists (but not sources)' do
     write 'src/main/resources/foo.properties', 'foo=bar'
     define('foo', :version=>'1.0') { package(:sources) }
     project('foo').package(:sources).invoke
-    project('foo').packages.first.should contain('foo.properties')
+    expect(project('foo').packages.first).to contain('foo.properties')
   end
 
   it 'should be a ZipTask' do
     define 'foo', :version=>'1.0' do
-      package(:sources).should be_kind_of(ZipTask)
+      expect(package(:sources)).to be_kind_of(ZipTask)
     end
   end
 end
@@ -1195,9 +1195,9 @@ describe Packaging, 'javadoc' do
 
   it 'should create package of type :zip and classifier \'javadoc\'' do
     define 'foo', :version=>'1.0' do
-      package(:javadoc).type.should eql(:jar)
-      package(:javadoc).classifier.should eql('javadoc')
-      package(:javadoc).name.pathmap('%f').should eql('foo-1.0-javadoc.jar')
+      expect(package(:javadoc).type).to eql(:jar)
+      expect(package(:javadoc).classifier).to eql('javadoc')
+      expect(package(:javadoc).name.pathmap('%f')).to eql('foo-1.0-javadoc.jar')
     end
   end
 
@@ -1205,7 +1205,7 @@ describe Packaging, 'javadoc' do
     write 'src/main/java/Source.java', 'public class Source {}'
     define('foo', :version=>'1.0') { package(:javadoc) }
     project('foo').task('package').invoke
-    project('foo').packages.first.should contain('Source.html', 'index.html')
+    expect(project('foo').packages.first).to contain('Source.html', 'index.html')
   end
 
   it 'should use project description in window title' do
@@ -1213,12 +1213,12 @@ describe Packaging, 'javadoc' do
     desc 'My Project'
     define('foo', :version=>'1.0') { package(:javadoc) }
     project('foo').task('package').invoke
-    project('foo').packages.first.entry('index.html').should contain('My Project')
+    expect(project('foo').packages.first.entry('index.html')).to contain('My Project')
   end
 
   it 'should be a ZipTask' do
     define 'foo', :version=>'1.0' do
-      package(:javadoc).should be_kind_of(ZipTask)
+      expect(package(:javadoc)).to be_kind_of(ZipTask)
     end
   end
 end
@@ -1229,9 +1229,9 @@ describe Packaging, 'test_jar' do
 
   it 'should create package of type :jar and classifier \'tests\'' do
     define 'foo', :version=>'1.0' do
-      package(:test_jar).type.should eql(:jar)
-      package(:test_jar).classifier.should eql('tests')
-      package(:test_jar).name.should match(/foo-1.0-tests.jar$/)
+      expect(package(:test_jar).type).to eql(:jar)
+      expect(package(:test_jar).classifier).to eql('tests')
+      expect(package(:test_jar).name).to match(/foo-1.0-tests.jar$/)
     end
   end
 
@@ -1240,20 +1240,20 @@ describe Packaging, 'test_jar' do
     write 'src/test/resources/test.properties', 'foo=bar'
     define('foo', :version=>'1.0') { package(:test_jar) }
     project('foo').task('package').invoke
-    project('foo').packages.first.should contain('Test.class')
-    project('foo').packages.first.should contain('test.properties')
+    expect(project('foo').packages.first).to contain('Test.class')
+    expect(project('foo').packages.first).to contain('test.properties')
   end
 
   it 'should create test jar if resources exists (but not sources)' do
     write 'src/test/resources/test.properties', 'foo=bar'
     define('foo', :version=>'1.0') { package(:test_jar) }
     project('foo').package(:test_jar).invoke
-    project('foo').packages.first.should contain('test.properties')
+    expect(project('foo').packages.first).to contain('test.properties')
   end
 
   it 'should be a ZipTask' do
     define 'foo', :version=>'1.0' do
-      package(:test_jar).should be_kind_of(ZipTask)
+      expect(package(:test_jar)).to be_kind_of(ZipTask)
     end
   end
 end
@@ -1276,37 +1276,37 @@ shared_examples_for 'package_with_' do
 
   it 'should create package of the right packaging with classifier' do
     prepare
-    project('foo').packages.first.to_s.should =~ /foo-1.0-#{@packaging}.#{@ext}/
+    expect(project('foo').packages.first.to_s).to match(/foo-1.0-#{@packaging}.#{@ext}/)
   end
 
   it 'should create package for projects that have source files' do
     prepare
-    applied_to.should include('foo', 'foo:baz')
+    expect(applied_to).to include('foo', 'foo:baz')
   end
 
   it 'should not create package for projects that have no source files' do
     prepare
-    applied_to.should_not include('foo:bar')
+    expect(applied_to).not_to include('foo:bar')
   end
 
   it 'should limit to projects specified by :only' do
     prepare :only=>'baz'
-    applied_to.should eql(['foo:baz'])
+    expect(applied_to).to eql(['foo:baz'])
   end
 
   it 'should limit to projects specified by :only array' do
     prepare :only=>['baz']
-    applied_to.should eql(['foo:baz'])
+    expect(applied_to).to eql(['foo:baz'])
   end
 
   it 'should ignore project specified by :except' do
     prepare :except=>'baz'
-    applied_to.should eql(['foo'])
+    expect(applied_to).to eql(['foo'])
   end
 
   it 'should ignore projects specified by :except array' do
     prepare :except=>['baz']
-    applied_to.should eql(['foo'])
+    expect(applied_to).to eql(['foo'])
   end
 end
 

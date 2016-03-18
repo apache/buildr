@@ -14,6 +14,7 @@
 # the License.
 
 require 'rspec/core/rake_task'
+require 'ci/reporter/rake/rspec'
 directory '_reports'
 
 def default_spec_opts
@@ -41,17 +42,8 @@ RSpec::Core::RakeTask.new :spec => ['_reports', :compile] do |task|
 end
 file('_reports/specs.html') { task(:spec).invoke }
 
-task :load_ci_reporter do
-  gem 'ci_reporter'
-  ENV['CI_REPORTS'] = '_reports/ci'
-  # CI_Reporter does not quote the path to rspec_loader which causes problems when ruby is installed in C:/Program Files.
-  # However, newer versions of rspec don't like double quotes escaping as well, so removing them for now.
-  ci_rep_path = Gem.loaded_specs['ci_reporter'].full_gem_path
-  ENV['SPEC_OPTS'] = [ENV['SPEC_OPTS'], default_spec_opts, '--require', "#{ci_rep_path}/lib/ci/reporter/rake/rspec_loader.rb", '--format', 'CI::Reporter::RSpec'].join(" ")
-end
-
 desc 'Run all specs with CI reporter'
-task 'ci' => %w(clobber load_ci_reporter spec)
+task 'ci' => %w(clobber ci:setup:rspec spec)
 
 task 'clobber' do
   rm_f 'failed'
