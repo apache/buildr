@@ -43,7 +43,7 @@ describe Buildr::Compiler::ExternalJavac do
     end
     begin
       trace true #We set it true to grab the trace statement with the jvm path in it!
-      lambda {lambda {project("foo").compile.invoke}.should raise_error(RuntimeError, /Failed to compile, see errors above/)}.should show(/somepath\/bin\/javac .*/)
+      expect {expect {project("foo").compile.invoke}.to raise_error(RuntimeError, /Failed to compile, see errors above/)}.to show(/somepath\/bin\/javac .*/)
     end
     trace false
   end

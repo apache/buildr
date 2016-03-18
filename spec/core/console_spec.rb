@@ -20,7 +20,7 @@ describe Buildr::Console do
   describe 'console_dimensions' do
 
     it 'should return a value' do
-      Buildr::Console.console_dimensions.should_not be_nil if $stdout.isatty # have to ask again as stdout may be redirected.
+      expect(Buildr::Console.console_dimensions).not_to be_nil if $stdout.isatty # have to ask again as stdout may be redirected.
     end if $stdout.isatty && !ENV["TRAVIS"] && !Buildr::Util.win_os?
   end
 
@@ -32,15 +32,15 @@ describe Buildr::Console do
       end
 
       it 'should emit red code when asked' do
-        Buildr::Console.color('message', :red).should eql("\e[31mmessage\e[0m")
+        expect(Buildr::Console.color('message', :red)).to eql("\e[31mmessage\e[0m")
       end
 
       it 'should emit green code when asked' do
-        Buildr::Console.color('message', :green).should eql("\e[32mmessage\e[0m")
+        expect(Buildr::Console.color('message', :green)).to eql("\e[32mmessage\e[0m")
       end
 
       it 'should emit blue code when asked' do
-        Buildr::Console.color('message', :blue).should eql("\e[34mmessage\e[0m")
+        expect(Buildr::Console.color('message', :blue)).to eql("\e[34mmessage\e[0m")
       end
     end if $stdout.isatty && !Buildr::Util.win_os?
 
@@ -50,15 +50,15 @@ describe Buildr::Console do
       end
 
       it 'should not emit red code when asked' do
-        Buildr::Console.color('message', :red).should eql("message")
+        expect(Buildr::Console.color('message', :red)).to eql("message")
       end
 
       it 'should not emit green code when asked' do
-        Buildr::Console.color('message', :green).should eql("message")
+        expect(Buildr::Console.color('message', :green)).to eql("message")
       end
 
       it 'should not emit blue code when asked' do
-        Buildr::Console.color('message', :blue).should eql("message")
+        expect(Buildr::Console.color('message', :blue)).to eql("message")
       end
     end
   end

@@ -21,13 +21,13 @@ describe Buildr do
     it "should replace filename extensions" do
       replace = lambda { |filename, ext| Util.replace_extension(filename, ext) }
 
-      replace["foo.zip", "txt"].should eql("foo.txt")
-      replace["foo.", "txt"].should eql("foo.txt")
-      replace["foo", "txt"].should eql("foo.txt")
+      expect(replace["foo.zip", "txt"]).to eql("foo.txt")
+      expect(replace["foo.", "txt"]).to eql("foo.txt")
+      expect(replace["foo", "txt"]).to eql("foo.txt")
 
-      replace["bar/foo.zip", "txt"].should eql("bar/foo.txt")
-      replace["bar/foo.", "txt"].should eql("bar/foo.txt")
-      replace["bar/foo", "txt"].should eql("bar/foo.txt")
+      expect(replace["bar/foo.zip", "txt"]).to eql("bar/foo.txt")
+      expect(replace["bar/foo.", "txt"]).to eql("bar/foo.txt")
+      expect(replace["bar/foo", "txt"]).to eql("bar/foo.txt")
     end
   end
 end
@@ -35,11 +35,11 @@ end
 describe Hash do
   describe "#only" do
     it "should find value for one key" do
-      {:a => 1, :b => 2, :c => 3}.only(:a).should == {:a => 1}
+      expect({:a => 1, :b => 2, :c => 3}.only(:a)).to eq({:a => 1})
     end
 
     it "should find values for multiple keys" do
-      {:a => 1, :b => 2, :c => 3}.only(:b, :c).should == {:b => 2, :c => 3}
+      expect({:a => 1, :b => 2, :c => 3}.only(:b, :c)).to eq({:b => 2, :c => 3})
     end
   end
 end
@@ -50,35 +50,35 @@ describe OpenObject do
   end
 
   it "should be kind of Hash" do
-    Hash.should === @obj
+    expect(Hash).to be === @obj
   end
 
   it "should accept block that supplies default value" do
     obj = OpenObject.new { |hash, key| hash[key] = "New #{key}" }
-    obj[:foo].should == "New foo"
-    obj.keys.should == [:foo]
+    expect(obj[:foo]).to eq("New foo")
+    expect(obj.keys).to eq([:foo])
   end
 
   it "should combine initial values from hash argument and from block" do
     obj = OpenObject.new(:a => 6, :b => 2) { |h, k| h[k] = k.to_s * 2 }
-    obj[:a].should == 6
-    obj[:c].should == 'cc'
+    expect(obj[:a]).to eq(6)
+    expect(obj[:c]).to eq('cc')
   end
 
   it "should allow reading a value by calling its name method" do
-    @obj.b.should == 2
+    expect(@obj.b).to eq(2)
   end
 
   it "should allow setting a value by calling its name= method" do
-    lambda { @obj.f = 32 }.should change { @obj.f }.to(32)
+    expect { @obj.f = 32 }.to change { @obj.f }.to(32)
   end
 
   it "should allow changing a value by calling its name= method" do
-    lambda { @obj.c = 17 }.should change { @obj.c }.to(17)
+    expect { @obj.c = 17 }.to change { @obj.c }.to(17)
   end
 
   it "should implement only method like a hash" do
-    @obj.only(:a).should == { :a => 1 }
+    expect(@obj.only(:a)).to eq({ :a => 1 })
   end
 end
 
@@ -94,7 +94,7 @@ describe File do
         sleep 1
         File.utime(nil, nil, 'tmp')
 
-        File.mtime('tmp').should > creation_time
+        expect(File.mtime('tmp')).to be > creation_time
       ensure
         Dir.rmdir 'tmp'
       end
@@ -108,7 +108,7 @@ describe File do
         sleep 1
         File.utime(nil, nil, 'tmp')
 
-        File.mtime('tmp').should > creation_time
+        expect(File.mtime('tmp')).to be > creation_time
       ensure
         File.delete 'tmp'
       end
@@ -120,7 +120,7 @@ describe File do
         time = Time.at((Time.now - 10).to_i)
         File.utime(time, time, 'tmp')
 
-        File.mtime('tmp').should == time
+        expect(File.mtime('tmp')).to eq(time)
       ensure
         File.delete 'tmp'
       end
@@ -132,7 +132,7 @@ describe File do
         time = Time.at((Time.now + 10).to_i)
         File.utime(time, time, 'tmp')
 
-        File.mtime('tmp').should == time
+        expect(File.mtime('tmp')).to eq(time)
       ensure
         File.delete 'tmp'
       end

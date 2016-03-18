@@ -23,7 +23,7 @@ describe Run::JavaRunner do
     define 'foo' do
       run.using :java, :main => 'org.example.NonExistentMain' # class doesn't exist
     end
-    lambda { project('foo').run.invoke }.should raise_error(RuntimeError, /Failed to execute java/)
+    expect { project('foo').run.invoke }.to raise_error(RuntimeError, /Failed to execute java/)
   end
 
   it 'should execute main class' do
@@ -38,15 +38,15 @@ describe Run::JavaRunner do
     define 'foo' do
       run.using :main => 'org.example.Main'
     end
-    project('foo').run.prerequisites.should include(task("foo:compile"))
+    expect(project('foo').run.prerequisites).to include(task("foo:compile"))
   end
 
   it 'should accept :main option as an array including parameters for the main class' do
     define 'foo' do
       run.using :java, :main => ['org.example.Main', '-t', 'input.txt']
     end
-    Java::Commands.should_receive(:java).once.with do |*args|
-      args[0].should == ['org.example.Main', '-t', 'input.txt']
+    expect(Java::Commands).to receive(:java).once do |*args|
+      expect(args[0]).to eq(['org.example.Main', '-t', 'input.txt'])
     end
     project('foo').run.invoke
   end
@@ -55,9 +55,9 @@ describe Run::JavaRunner do
     define 'foo' do
       run.using :java, :main => 'foo', :java_args => ['-server']
     end
-    Java::Commands.should_receive(:java).once.with do |*args|
-      args[0].should == 'foo'
-      args[1][:java_args].should include('-server')
+    expect(Java::Commands).to receive(:java).once do |*args|
+      expect(args[0]).to eq('foo')
+      expect(args[1][:java_args]).to include('-server')
     end
     project('foo').run.invoke
   end
@@ -66,10 +66,10 @@ describe Run::JavaRunner do
     define 'foo' do
       run.using :java, :main => 'foo', :properties => { :foo => 'one', :bar => 'two' }
     end
-    Java::Commands.should_receive(:java).once.with do |*args|
-      args[0].should == 'foo'
-      args[1][:properties][:foo].should == 'one'
-      args[1][:properties][:bar].should == 'two'
+    expect(Java::Commands).to receive(:java) do |*args|
+      expect(args[0]).to eq('foo')
+      expect(args[1][:properties][:foo]).to eq('one')
+      expect(args[1][:properties][:bar]).to eq('two')
     end
     project('foo').run.invoke
   end

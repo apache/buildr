@@ -36,7 +36,7 @@ module RSpec
         "Did not find expected xpath #{@xpath}"
       end
 
-      def negative_failure_message
+      def failure_message_when_negated
         "Did find unexpected xpath #{@xpath}"
       end
 

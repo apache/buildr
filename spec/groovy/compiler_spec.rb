@@ -22,8 +22,8 @@ describe 'groovyc compiler' do
     write 'src/main/groovy/some/Hello.groovy', 'println "Hello Groovy"'
     write 'src/test/groovy/some/Hello.groovy', 'println "Hello Groovy"'
     define('foo') do
-      compile.compiler.should eql(:groovyc)
-      test.compile.compiler.should eql(:groovyc)
+      expect(compile.compiler).to eql(:groovyc)
+      expect(test.compile.compiler).to eql(:groovyc)
     end
   end
 
@@ -31,8 +31,8 @@ describe 'groovyc compiler' do
     write 'src/main/java/some/Hello.groovy', 'println "Hello Groovy"'
     write 'src/test/java/some/Hello.groovy', 'println "Hello Groovy"'
     define('foo') do
-      compile.compiler.should eql(:groovyc)
-      test.compile.compiler.should eql(:groovyc)
+      expect(compile.compiler).to eql(:groovyc)
+      expect(test.compile.compiler).to eql(:groovyc)
     end
   end
 
@@ -42,8 +42,8 @@ describe 'groovyc compiler' do
     write 'src/test/java/some/Empty.java', 'package some; public interface Empty {}'
     write 'src/test/groovy/some/Hello.groovy', 'println "Hello Groovy"'
     define('foo') do
-      compile.compiler.should eql(:groovyc)
-      test.compile.compiler.should eql(:groovyc)
+      expect(compile.compiler).to eql(:groovyc)
+      expect(test.compile.compiler).to eql(:groovyc)
     end
   end
 
@@ -54,8 +54,8 @@ describe 'groovyc compiler' do
     custom[:source, :main, :groovy] = 'groovy'
     custom[:source, :test, :groovy] = 'testing'
     define 'foo', :layout=>custom do
-      compile.compiler.should eql(:groovyc)
-      test.compile.compiler.should eql(:groovyc)
+      expect(compile.compiler).to eql(:groovyc)
+      expect(test.compile.compiler).to eql(:groovyc)
     end
   end
 
@@ -63,39 +63,39 @@ describe 'groovyc compiler' do
     write 'src/com/example/Code.groovy', 'println "monkey code"'
     write 'testing/com/example/Test.groovy', 'println "some test"'
     define 'foo' do
-      lambda { compile.from 'src' }.should change { compile.compiler }.to(:groovyc)
-      lambda { test.compile.from 'testing' }.should change { test.compile.compiler }.to(:groovyc)
+      expect { compile.from 'src' }.to change { compile.compiler }.to(:groovyc)
+      expect { test.compile.from 'testing' }.to change { test.compile.compiler }.to(:groovyc)
     end
   end
 
   it 'should report the multi-language as :groovy, :java' do
-    define('foo').compile.using(:groovyc).language.should == :groovy
+    expect(define('foo').compile.using(:groovyc).language).to eq(:groovy)
   end
 
   it 'should set the target directory to target/classes' do
     define 'foo' do
-      lambda { compile.using(:groovyc) }.should change { compile.target.to_s }.to(File.expand_path('target/classes'))
+      expect { compile.using(:groovyc) }.to change { compile.target.to_s }.to(File.expand_path('target/classes'))
     end
   end
 
   it 'should not override existing target directory' do
     define 'foo' do
       compile.into('classes')
-      lambda { compile.using(:groovyc) }.should_not change { compile.target }
+      expect { compile.using(:groovyc) }.not_to change { compile.target }
     end
   end
 
   it 'should not change existing list of sources' do
     define 'foo' do
       compile.from('sources')
-      lambda { compile.using(:groovyc) }.should_not change { compile.sources }
+      expect { compile.using(:groovyc) }.not_to change { compile.sources }
     end
   end
 
   it 'should compile groovy sources' do
     write 'src/main/groovy/some/Example.groovy', 'package some; class Example { static main(args) { println "Hello" } }'
     define('foo').compile.invoke
-    file('target/classes/some/Example.class').should exist
+    expect(file('target/classes/some/Example.class')).to exist
   end
 
   it 'should compile test groovy sources that rely on junit' do
@@ -105,8 +105,8 @@ describe 'groovyc compiler' do
       test.using :junit
     end
     foo.test.compile.invoke
-    file('target/classes/some/Example.class').should exist
-    file('target/test/classes/some/ExampleTest.class').should exist
+    expect(file('target/classes/some/Example.class')).to exist
+    expect(file('target/test/classes/some/ExampleTest.class')).to exist
   end
 
   it 'should include as classpath dependency' do
@@ -116,8 +116,8 @@ describe 'groovyc compiler' do
       compile.from('src/bar/groovy').into('target/bar')
       package(:jar)
     end
-    lambda { define('foo').compile.with(project('bar').package(:jar)).invoke }.should run_task('foo:compile')
-    file('target/classes/some/Example.class').should exist
+    expect { define('foo').compile.with(project('bar').package(:jar)).invoke }.to run_task('foo:compile')
+    expect(file('target/classes/some/Example.class')).to exist
   end
 
   it 'should cross compile java sources' do
@@ -125,7 +125,7 @@ describe 'groovyc compiler' do
     write 'src/main/java/some/Baz.java', 'package some; public class Baz extends Bar { }'
     write 'src/main/groovy/some/Bar.groovy', 'package some; class Bar implements Foo { def void hello() { } }'
     define('foo').compile.invoke
-    %w{Foo Bar Baz}.each { |f| file("target/classes/some/#{f}.class").should exist }
+    %w{Foo Bar Baz}.each { |f| expect(file("target/classes/some/#{f}.class")).to exist }
   end
 
   it 'should cross compile test java sources' do
@@ -133,15 +133,15 @@ describe 'groovyc compiler' do
     write 'src/test/java/some/Baz.java', 'package some; public class Baz extends Bar { }'
     write 'src/test/groovy/some/Bar.groovy', 'package some; class Bar implements Foo { def void hello() { } }'
     define('foo').test.compile.invoke
-    %w{Foo Bar Baz}.each { |f| file("target/test/classes/some/#{f}.class").should exist }
+    %w{Foo Bar Baz}.each { |f| expect(file("target/test/classes/some/#{f}.class")).to exist }
   end
 
   it 'should package classes into a jar file' do
     write 'src/main/groovy/some/Example.groovy', 'package some; class Example { }'
     define('foo', :version => '1.0').package.invoke
-    file('target/foo-1.0.jar').should exist
+    expect(file('target/foo-1.0.jar')).to exist
     Zip::File.open(project('foo').package(:jar).to_s) do |jar|
-      jar.exist?('some/Example.class').should be_true
+      expect(jar.exist?('some/Example.class')).to be_truthy
     end
   end
 
@@ -167,78 +167,78 @@ describe 'groovyc compiler options' do
 
   it 'should set warning option to false by default' do
     groovyc do
-      compile.options.warnings.should be_false
-      @compiler.javac_options[:nowarn].should be_true
+      expect(compile.options.warnings).to be_falsey
+      expect(@compiler.javac_options[:nowarn]).to be_truthy
     end
   end
 
   it 'should set warning option to true when running with --verbose option' do
     verbose true
     groovyc do
-      compile.options.warnings.should be_true
-      @compiler.javac_options[:nowarn].should be_false
+      expect(compile.options.warnings).to be_truthy
+      expect(@compiler.javac_options[:nowarn]).to be_falsey
     end
   end
 
   it 'should not set verbose option by default' do
-    groovyc.options.verbose.should be_false
+    expect(groovyc.options.verbose).to be_falsey
   end
 
   it 'should set verbose option when running with --trace=groovyc option' do
     Buildr.application.options.trace_categories = [:groovyc]
-    groovyc.options.verbose.should be_true
+    expect(groovyc.options.verbose).to be_truthy
   end
 
   it 'should set debug option to false based on Buildr.options' do
     Buildr.options.debug = false
-    groovyc.options.debug.should be_false
+    expect(groovyc.options.debug).to be_falsey
   end
 
   it 'should set debug option to false based on debug environment variable' do
     ENV['debug'] = 'no'
-    groovyc.options.debug.should be_false
+    expect(groovyc.options.debug).to be_falsey
   end
 
   it 'should set debug option to false based on DEBUG environment variable' do
     ENV['DEBUG'] = 'no'
-    groovyc.options.debug.should be_false
+    expect(groovyc.options.debug).to be_falsey
   end
 
   it 'should set deprecation option to false by default' do
-    groovyc.options.deprecation.should be_false
+    expect(groovyc.options.deprecation).to be_falsey
   end
 
   it 'should use deprecation argument when deprecation is true' do
     groovyc do
       compile.using(:deprecation=>true)
-      compile.options.deprecation.should be_true
-      @compiler.javac_options[:deprecation].should be_true
+      expect(compile.options.deprecation).to be_truthy
+      expect(@compiler.javac_options[:deprecation]).to be_truthy
     end
   end
 
   it 'should not use deprecation argument when deprecation is false' do
     groovyc do
       compile.using(:deprecation=>false)
-      compile.options.deprecation.should be_false
-      @compiler.javac_options[:deprecation].should_not be_true
+      expect(compile.options.deprecation).to be_falsey
+      expect(@compiler.javac_options[:deprecation]).not_to be_truthy
     end
   end
 
   it 'should set optimise option to false by default' do
-    groovyc.options.optimise.should be_false
+    expect(groovyc.options.optimise).to be_falsey
   end
 
   it 'should use optimize argument when deprecation is true' do
     groovyc do
       compile.using(:optimise=>true)
-      @compiler.javac_options[:optimize].should be_true
+      expect(@compiler.javac_options[:optimize]).to be_truthy
     end
   end
 
   it 'should not use optimize argument when deprecation is false' do
     groovyc do
       compile.using(:optimise=>false)
-      @compiler.javac_options[:optimize].should be_false
+      expect(@compiler.javac_options[:optimize]).to be_falsey
     end
   end
 

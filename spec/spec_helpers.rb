@@ -63,6 +63,7 @@ unless defined?(SpecHelpers)
     [:info, :warn, :error, :puts].each do |severity|
       ::Object.class_eval do
         define_method severity do |*args|
+          $stderr.puts args
           $messages ||= {}
           $messages[severity] ||= []
           $messages[severity].push(*args)
@@ -88,13 +89,17 @@ unless defined?(SpecHelpers)
         target.call
         return Regexp === @expect ? $messages[@severity].join('\n') =~ @expect : $messages[@severity].include?(@expect.to_s)
       end
+      
+      def supports_block_expectations?
+        true
+      end
 
       def failure_message
         "Expected #{@severity} #{@expect.inspect}, " +
           ($messages[@severity].empty? ? "no #{@severity} issued" : "found #{$messages[@severity].inspect}")
       end
 
-      def negative_failure_message
+      def failure_message_when_negated
         "Found unexpected #{$messages[@severity].inspect}"
       end
     end
@@ -171,12 +176,12 @@ unless defined?(SpecHelpers)
       end
 
       def failure_message
-        return @but_not.negative_failure_message if all_ran? && @but_not
+        return @but_not.failure_message_when_negated if all_ran? && @but_not
         "Expected the tasks #{expected} to run, but #{remaining} did not run, or not in the order we expected them to." +
           "  Tasks that ran: #{$executed.inspect}"
       end
 
-      def negative_failure_message
+      def failure_message_when_negated
         if all_ran?
           "Expected the tasks #{expected} to not run, but they all ran."
         else
@@ -187,6 +192,10 @@ unless defined?(SpecHelpers)
       def but_not(*tasks)
         @but_not = InvokeMatcher.new(*tasks)
         self
+      end
+      
+      def supports_block_expectations?
+        true
       end
 
     protected
@@ -242,31 +251,6 @@ unless defined?(SpecHelpers)
       InvokeMatcher.new [task]
     end
 
-    class UriPathMatcher
-      def initialize(re)
-        @expression = re
-      end
-
-      def matches?(uri)
-        @uri = uri
-        uri.path =~ @expression
-      end
-
-      def description
-        "URI with path matching #{@expression} vs #{@uri}"
-      end
-
-      def failure_message_for_should
-        "expected #{description}"
-      end
-    end
-
-    # Matches a parsed URI's path against the given regular expression
-    def uri(re)
-      UriPathMatcher.new(re)
-    end
-
-
     class AbsolutePathMatcher
       def initialize(path)
         @expected = File.expand_path(path.to_s)
@@ -281,7 +265,7 @@ unless defined?(SpecHelpers)
         "Expected path #{@expected}, but found path #{@provided}"
       end
 
-      def negative_failure_message
+      def failure_message_when_negated
         "Expected a path other than #{@expected}"
       end
     end
@@ -362,9 +346,32 @@ unless defined?(SpecHelpers)
     include ::RSpec::Matchers, SpecHelpers
   end
 
+  require 'rspec/expectations'
+
+  ::RSpec::Matchers.define :uri do |expression|
+    match do |uri|
+      @uri = uri
+      uri.path =~ expression
+    end
+    
+    description do
+      "be multiple of #{expected}"
+    end
+    
+    def description
+      "URI with path matching #{expression} vs #{@uri.inspect}"
+    end
+
+    def failure_message
+      "expected #{description}"
+    end
+    
+    def failure_message_when_negated
+      "URI with path not to match #{expression} vs #{@uri}"
+    end
+  end
 
   ::RSpec.configure do |config|
-    config.treat_symbols_as_metadata_keys_with_true_values = true
     # Make all Buildr methods accessible from test cases, and add various helper methods.
     config.include Buildr
     config.include SpecHelpers

@@ -40,7 +40,7 @@ describe Buildr::Compiler::Ecj do
     it "should be the default Java compiler once loaded" do
       write 'src/main/java/Foo.java', 'public class Foo {}'
     foo = define('foo')
-    foo.compile.compiler.should == :ecj
+    expect(foo.compile.compiler).to eq(:ecj)
   end
 
   describe "should compile a Java project just in the same way javac does" do
@@ -55,7 +55,7 @@ describe Buildr::Compiler::Ecj do
   # and returning the content of the error buffer.
   #
   def redirect_java_err
-    pending "RJB doesn't support well instantiating a class that has several constructors" unless RUBY_PLATFORM =~ /java/
+    skip "RJB doesn't support well instantiating a class that has several constructors" unless RUBY_PLATFORM =~ /java/
     err = Java.java.io.ByteArrayOutputStream.new
     original_err = Java.java.lang.System.err
     begin
@@ -75,7 +75,7 @@ describe Buildr::Compiler::Ecj do
       compile.options.source = "1.5"
       compile.options.target = "1.5"
     }
-    redirect_java_err { foo.compile.invoke }.should_not match(/WARNING/)
+    expect(redirect_java_err { foo.compile.invoke }).not_to match(/WARNING/)
   end
 
   it "should issue warnings for type casting when warnings are set" do
@@ -85,7 +85,7 @@ describe Buildr::Compiler::Ecj do
       compile.options.target = "1.5"
       compile.options.warnings = true
     }
-    redirect_java_err { foo.compile.invoke }.should match(/WARNING/)
+    expect(redirect_java_err { foo.compile.invoke }).to match(/WARNING/)
   end
 
   after(:all) do

@@ -19,46 +19,46 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'packaging_helper'))
 describe Project, '#group' do
   it 'should default to project name' do
     desc 'My Project'
-    define('foo').group.should eql('foo')
+    expect(define('foo').group).to eql('foo')
   end
 
   it 'should be settable' do
-    define('foo', :group=>'bar').group.should eql('bar')
+    expect(define('foo', :group=>'bar').group).to eql('bar')
   end
 
   it 'should inherit from parent project' do
     define('foo', :group=>'groupie') { define 'bar' }
-    project('foo:bar').group.should eql('groupie')
+    expect(project('foo:bar').group).to eql('groupie')
   end
 end
 
 describe Project, '#version' do
   it 'should default to nil' do
-    define('foo').version.should be_nil
+    expect(define('foo').version).to be_nil
   end
 
   it 'should be settable' do
-    define('foo', :version=>'2.1').version.should eql('2.1')
+    expect(define('foo', :version=>'2.1').version).to eql('2.1')
   end
 
   it 'should inherit from parent project' do
     define('foo', :version=>'2.1') { define 'bar' }
-    project('foo:bar').version.should eql('2.1')
+    expect(project('foo:bar').version).to eql('2.1')
   end
 end
 
 describe Project, '#id' do
   it 'should be same as project name' do
-    define('foo').id.should eql('foo')
+    expect(define('foo').id).to eql('foo')
   end
 
   it 'should replace colons with dashes' do
     define('foo', :version=>'2.1') { define 'bar' }
-    project('foo:bar').id.should eql('foo-bar')
+    expect(project('foo:bar').id).to eql('foo-bar')
   end
 
   it 'should not be settable' do
-    lambda { define 'foo', :id=>'bar' }.should raise_error(NoMethodError)
+    expect { define 'foo', :id=>'bar' }.to raise_error(NoMethodError)
   end
 end
 
@@ -66,88 +66,88 @@ end
 describe Project, '#package' do
   it 'should default to id from project' do
     define('foo', :version=>'1.0') do
-      package(:jar).id.should eql('foo')
+      expect(package(:jar).id).to eql('foo')
     end
   end
 
   it 'should default to composed id for nested projects' do
     define('foo', :version=>'1.0') do
       define 'bar' do
-        package(:jar).id.should eql('foo-bar')
+        expect(package(:jar).id).to eql('foo-bar')
       end
     end
   end
 
   it 'should take id from option if specified' do
     define 'foo', :version=>'1.0' do
-      package(:jar, :id=>'bar').id.should eql('bar')
+      expect(package(:jar, :id=>'bar').id).to eql('bar')
       define 'bar' do
-        package(:jar, :id=>'baz').id.should eql('baz')
+        expect(package(:jar, :id=>'baz').id).to eql('baz')
       end
     end
   end
 
   it 'should default to group from project' do
     define 'foo', :version=>'1.0' do
-      package(:jar).group.should eql('foo')
+      expect(package(:jar).group).to eql('foo')
       define 'bar' do
-        package(:jar).group.should eql('foo')
+        expect(package(:jar).group).to eql('foo')
       end
     end
   end
 
   it 'should take group from option if specified' do
     define 'foo', :version=>'1.0' do
-      package(:jar, :group=>'foos').group.should eql('foos')
+      expect(package(:jar, :group=>'foos').group).to eql('foos')
       define 'bar' do
-        package(:jar, :group=>'bars').group.should eql('bars')
+        expect(package(:jar, :group=>'bars').group).to eql('bars')
       end
     end
   end
 
   it 'should default to version from project' do
     define 'foo', :version=>'1.0' do
-      package(:jar).version.should eql('1.0')
+      expect(package(:jar).version).to eql('1.0')
       define 'bar' do
-        package(:jar).version.should eql('1.0')
+        expect(package(:jar).version).to eql('1.0')
       end
     end
   end
 
   it 'should take version from option if specified' do
     define 'foo', :version=>'1.0' do
-      package(:jar, :version=>'1.1').version.should eql('1.1')
+      expect(package(:jar, :version=>'1.1').version).to eql('1.1')
       define 'bar' do
-        package(:jar, :version=>'1.2').version.should eql('1.2')
+        expect(package(:jar, :version=>'1.2').version).to eql('1.2')
       end
     end
   end
 
   it 'should accept package type as first argument' do
     define 'foo', :version=>'1.0' do
-      package(:war).type.should eql(:war)
+      expect(package(:war).type).to eql(:war)
       define 'bar' do
-        package(:jar).type.should eql(:jar)
+        expect(package(:jar).type).to eql(:jar)
       end
     end
   end
 
   it 'should support optional type' do
     define 'foo', :version=>'1.0' do
-      package.type.should eql(:zip)
-      package(:classifier=>'srcs').type.should eql(:zip)
+      expect(package.type).to eql(:zip)
+      expect(package(:classifier=>'srcs').type).to eql(:zip)
     end
     define 'bar', :version=>'1.0' do
       compile.using :javac
-      package(:classifier=>'srcs').type.should eql(:jar)
+      expect(package(:classifier=>'srcs').type).to eql(:jar)
     end
   end
 
   it 'should assume :zip package type unless specified' do
     define 'foo', :version=>'1.0' do
-      package.type.should eql(:zip)
+      expect(package.type).to eql(:zip)
       define 'bar' do
-        package.type.should eql(:zip)
+        expect(package.type).to eql(:zip)
       end
     end
   end
@@ -155,12 +155,12 @@ describe Project, '#package' do
   it 'should infer packaging type from compiler' do
     define 'foo', :version=>'1.0' do
       compile.using :javac
-      package.type.should eql(:jar)
+      expect(package.type).to eql(:jar)
     end
   end
 
   it 'should fail if packaging not supported' do
-    lambda { define('foo') { package(:weirdo) } }.should raise_error(RuntimeError, /Don't know how to create a package/)
+    expect { define('foo') { package(:weirdo) } }.to raise_error(RuntimeError, /Don't know how to create a package/)
   end
 
   it 'should call package_as_foo when using package(:foo)' do
@@ -174,8 +174,8 @@ describe Project, '#package' do
     end
     define('foo', :version => '1.0') do |project|
       package(:foo).invoke
-      package(:foo).should exist
-      package(:foo).should contain('foo')
+      expect(package(:foo)).to exist
+      expect(package(:foo)).to contain('foo')
     end
   end
 
@@ -186,8 +186,8 @@ describe Project, '#package' do
       end
     end
     define('foo', :version => '1.0') do
-      package(:sources).type.should eql(:jar)
-      package(:sources).classifier.should eql('sources')
+      expect(package(:sources).type).to eql(:jar)
+      expect(package(:sources).classifier).to eql('sources')
     end
   end
 
@@ -211,41 +211,41 @@ describe Project, '#package' do
 
     end
     define('foo', :version => '1.0') do
-      package(:foo).type.should eql(:zip)
-      package(:foo).classifier.should be_nil
-      package(:bar).type.should eql(:zip)
-      package(:bar).classifier.should eql('foobar')
-      package(:foo).equal?(package(:bar)).should be_false
+      expect(package(:foo).type).to eql(:zip)
+      expect(package(:foo).classifier).to be_nil
+      expect(package(:bar).type).to eql(:zip)
+      expect(package(:bar).classifier).to eql('foobar')
+      expect(package(:foo).equal?(package(:bar))).to be_falsey
     end
   end
 
   it 'should default to no classifier' do
     define 'foo', :version=>'1.0' do
-      package.classifier.should be_nil
+      expect(package.classifier).to be_nil
       define 'bar' do
-        package.classifier.should be_nil
+        expect(package.classifier).to be_nil
       end
     end
   end
 
   it 'should accept classifier from option' do
     define 'foo', :version=>'1.0' do
-      package(:classifier=>'srcs').classifier.should eql('srcs')
+      expect(package(:classifier=>'srcs').classifier).to eql('srcs')
       define 'bar' do
-        package(:classifier=>'docs').classifier.should eql('docs')
+        expect(package(:classifier=>'docs').classifier).to eql('docs')
       end
     end
   end
 
   it 'should return a file task' do
     define('foo', :version=>'1.0') { package(:jar) }
-    project('foo').package(:jar).should be_kind_of(Rake::FileTask)
+    expect(project('foo').package(:jar)).to be_kind_of(Rake::FileTask)
   end
 
   it 'should return a task that acts as artifact' do
     define('foo', :version=>'1.0') { package(:jar) }
-    project('foo').package(:jar).should respond_to(:to_spec)
-    project('foo').package(:jar).to_spec.should eql('foo:foo:jar:1.0')
+    expect(project('foo').package(:jar)).to respond_to(:to_spec)
+    expect(project('foo').package(:jar).to_spec).to eql('foo:foo:jar:1.0')
   end
 
   it 'should create different tasks for each spec' do
@@ -256,7 +256,7 @@ describe Project, '#package' do
       package(:jar, :classifier=>'srcs')
       package(:jar, :classifier=>'doc')
     end
-    project('foo').packages.uniq.size.should be(5)
+    expect(project('foo').packages.uniq.size).to be(5)
   end
 
   it 'should create different tasks for package with different ids' do
@@ -264,7 +264,7 @@ describe Project, '#package' do
       package(:jar, :id=>'bar')
       package(:jar)
     end
-    project('foo').packages.uniq.size.should be(2)
+    expect(project('foo').packages.uniq.size).to be(2)
   end
 
   it 'should create different tasks for package with classifier' do
@@ -272,7 +272,7 @@ describe Project, '#package' do
       package(:jar)
       package(:jar, :classifier=>'foo')
     end
-    project('foo').packages.uniq.size.should be(2)
+    expect(project('foo').packages.uniq.size).to be(2)
   end
 
   it 'should not create multiple packages for the same spec' do
@@ -283,7 +283,7 @@ describe Project, '#package' do
       package(:jar, :id=>'bar')
       package(:jar, :id=>'baz')
     end
-    project('foo').packages.uniq.size.should be(3)
+    expect(project('foo').packages.uniq.size).to be(3)
   end
 
   it 'should create different tasks for specs with matching type' do
@@ -292,20 +292,20 @@ describe Project, '#package' do
       package(:javadoc)
       package(:zip)
     end
-    project('foo').packages.uniq.size.should be(2)
+    expect(project('foo').packages.uniq.size).to be(2)
   end
 
   it 'should return the same task for subsequent calls' do
     define 'foo', :version=>'1.0' do
-      package.should eql(package)
-      package(:jar, :classifier=>'resources').should be(package(:jar, :classifier=>'resources'))
+      expect(package).to eql(package)
+      expect(package(:jar, :classifier=>'resources')).to be(package(:jar, :classifier=>'resources'))
     end
   end
 
   it 'should return a packaging task even if file already exists' do
     write 'target/foo-1.0.zip', ''
     define 'foo', :version=>'1.0' do
-      package.should be_kind_of(ZipTask)
+      expect(package).to be_kind_of(ZipTask)
     end
   end
 
@@ -314,14 +314,14 @@ describe Project, '#package' do
       package(:jar, :id=>'bar')
       package(:war)
     end
-    project('foo').packages.should eql(artifacts('foo:bar:jar:1.0', 'foo:foo:war:1.0'))
+    expect(project('foo').packages).to eql(artifacts('foo:bar:jar:1.0', 'foo:foo:war:1.0'))
   end
 
   it 'should create in target path' do
     define 'foo', :version=>'1.0' do
-      package(:war).should point_to_path('target/foo-1.0.war')
-      package(:jar, :id=>'bar').should point_to_path('target/bar-1.0.jar')
-      package(:zip, :classifier=>'srcs').should point_to_path('target/foo-1.0-srcs.zip')
+      expect(package(:war)).to point_to_path('target/foo-1.0.war')
+      expect(package(:jar, :id=>'bar')).to point_to_path('target/bar-1.0.jar')
+      expect(package(:zip, :classifier=>'srcs')).to point_to_path('target/foo-1.0-srcs.zip')
     end
   end
 
@@ -331,27 +331,27 @@ describe Project, '#package' do
       package(:jar, :id=>'bar')
       package(:jar, :classifier=>'srcs')
     end
-    project('foo').task('package').prerequisites.should include(*project('foo').packages)
+    expect(project('foo').task('package').prerequisites).to include(*project('foo').packages)
   end
 
   it 'should create task requiring a build' do
     define 'foo', :version=>'1.0' do
-      package(:war).prerequisites.should include(build)
-      package(:jar, :id=>'bar').prerequisites.should include(build)
-      package(:jar, :classifier=>'srcs').prerequisites.should include(build)
+      expect(package(:war).prerequisites).to include(build)
+      expect(package(:jar, :id=>'bar').prerequisites).to include(build)
+      expect(package(:jar, :classifier=>'srcs').prerequisites).to include(build)
     end
   end
 
   it 'should create a POM artifact in target directory' do
     define 'foo', :version=>'1.0' do
-      package.pom.should be(artifact('foo:foo:pom:1.0'))
-      package.pom.to_s.should point_to_path('target/foo-1.0.pom')
+      expect(package.pom).to be(artifact('foo:foo:pom:1.0'))
+      expect(package.pom.to_s).to point_to_path('target/foo-1.0.pom')
     end
   end
 
   it 'should create POM artifact ignoring classifier' do
     define 'foo', :version=>'1.0' do
-      package(:jar, :classifier=>'srcs').pom.should be(artifact('foo:foo:pom:1.0'))
+      expect(package(:jar, :classifier=>'srcs').pom).to be(artifact('foo:foo:pom:1.0'))
     end
   end
 
@@ -359,7 +359,7 @@ describe Project, '#package' do
     define('foo', :group=>'bar', :version=>'1.0') { package(:jar, :classifier=>'srcs') }
     pom = project('foo').packages.first.pom
     pom.invoke
-    read(pom.to_s).should eql(<<-POM
+    expect(read(pom.to_s)).to eql(<<-POM
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
@@ -374,15 +374,15 @@ POM
   it 'should not require downloading artifact or POM' do
     #task('artifacts').instance_eval { @actions.clear }
     define('foo', :group=>'bar', :version=>'1.0') { package(:jar) }
-    lambda { task('artifacts').invoke }.should_not raise_error
+    expect { task('artifacts').invoke }.not_to raise_error
   end
 
   describe "existing package access" do
     it "should return the same instance for identical optionless invocations" do
       define 'foo', :version => '1.0' do
-        package(:zip).should equal(package(:zip))
+        expect(package(:zip)).to equal(package(:zip))
       end
-      project('foo').packages.size.should == 1
+      expect(project('foo').packages.size).to eq(1)
     end
 
     it "should return the exactly matching package identical invocations with options" do
@@ -390,9 +390,9 @@ POM
         package(:zip, :id => 'src')
         package(:zip, :id => 'bin')
       end
-      project('foo').package(:zip, :id => 'src').should equal(project('foo').packages.first)
-      project('foo').package(:zip, :id => 'bin').should equal(project('foo').packages.last)
-      project('foo').packages.size.should == 2
+      expect(project('foo').package(:zip, :id => 'src')).to equal(project('foo').packages.first)
+      expect(project('foo').package(:zip, :id => 'bin')).to equal(project('foo').packages.last)
+      expect(project('foo').packages.size).to eq(2)
     end
 
     it "should return the first of the same type for subsequent optionless invocations" do
@@ -400,9 +400,9 @@ POM
         package(:zip, :file => 'override.zip')
         package(:jar, :file => 'another.jar')
       end
-      project('foo').package(:zip).name.should == 'override.zip'
-      project('foo').package(:jar).name.should == 'another.jar'
-      project('foo').packages.size.should == 2
+      expect(project('foo').package(:zip).name).to eq('override.zip')
+      expect(project('foo').package(:jar).name).to eq('another.jar')
+      expect(project('foo').packages.size).to eq(2)
     end
   end
 end
@@ -410,24 +410,24 @@ end
 describe Project, '#package file' do
   it 'should be a file task' do
     define 'foo' do
-      package(:zip, :file=>'foo.zip').should be_kind_of(Rake::FileTask)
+      expect(package(:zip, :file=>'foo.zip')).to be_kind_of(Rake::FileTask)
     end
   end
 
   it 'should not require id, project or version' do
     define 'foo', :group=>nil do
-      lambda { package(:zip, :file=>'foo.zip') }.should_not raise_error
-      lambda { package(:zip, :file=>'bar.zip', :id=>'error') }.should raise_error
-      lambda { package(:zip, :file=>'bar.zip', :group=>'error') }.should raise_error
-      lambda { package(:zip, :file=>'bar.zip', :version=>'error') }.should raise_error
+      expect { package(:zip, :file=>'foo.zip') }.not_to raise_error
+      expect { package(:zip, :file=>'bar.zip', :id=>'error') }.to raise_error /no such option: id/
+      expect { package(:zip, :file=>'bar.zip', :group=>'error') }.to raise_error /no such option: group/
+      expect { package(:zip, :file=>'bar.zip', :version=>'error') }.to raise_error /no such option: version/
     end
   end
 
   it 'should not provide project or version' do
     define 'foo' do
       package(:zip, :file=>'foo.zip').tap do |pkg|
-        pkg.should_not respond_to(:group)
-        pkg.should_not respond_to(:version)
+        expect(pkg).not_to respond_to(:group)
+        expect(pkg).not_to respond_to(:version)
       end
     end
   end
@@ -436,31 +436,31 @@ describe Project, '#package file' do
     define 'foo', :version=>'1.0' do
       zip = package(:zip, :file=>'foo.zip')
       jar = package(:jar, :file=>'bar.jar')
-      zip.type.should eql(:zip)
-      jar.type.should eql(:jar)
+      expect(zip.type).to eql(:zip)
+      expect(jar.type).to eql(:jar)
     end
   end
 
   it 'should assume packaging type from extension if unspecified' do
     define 'foo', :version=>'1.0' do
-      package(:file=>'foo.zip').class.should be(Buildr::ZipTask)
+      expect(package(:file=>'foo.zip').class).to be(Buildr::ZipTask)
       define 'bar' do
-        package(:file=>'bar.jar').class.should be(Buildr::Packaging::Java::JarTask)
+        expect(package(:file=>'bar.jar').class).to be(Buildr::Packaging::Java::JarTask)
       end
     end
   end
 
   it 'should support different packaging types' do
     define 'foo', :version=>'1.0' do
-      package(:jar, :file=>'foo.jar').class.should be(Buildr::Packaging::Java::JarTask)
+      expect(package(:jar, :file=>'foo.jar').class).to be(Buildr::Packaging::Java::JarTask)
     end
     define 'bar' do
-      package(:type=>:war, :file=>'bar.war').class.should be(Buildr::Packaging::Java::WarTask)
+      expect(package(:type=>:war, :file=>'bar.war').class).to be(Buildr::Packaging::Java::WarTask)
     end
   end
 
   it 'should fail if packaging not supported' do
-    lambda { define('foo') { package(:weirdo, :file=>'foo.zip') } }.should raise_error(RuntimeError, /Don't know how to create a package/)
+    expect { define('foo') { package(:weirdo, :file=>'foo.zip') } }.to raise_error(RuntimeError, /Don't know how to create a package/)
   end
 
   it 'should create different tasks for each file' do
@@ -468,19 +468,19 @@ describe Project, '#package file' do
       package(:zip, :file=>'foo.zip')
       package(:jar, :file=>'foo.jar')
     end
-    project('foo').packages.uniq.size.should be(2)
+    expect(project('foo').packages.uniq.size).to be(2)
   end
 
   it 'should return the same task for subsequent calls' do
     define 'foo', :version=>'1.0' do
-      package(:zip, :file=>'foo.zip').should eql(package(:file=>'foo.zip'))
+      expect(package(:zip, :file=>'foo.zip')).to eql(package(:file=>'foo.zip'))
     end
   end
 
   it 'should point to specified file' do
     define 'foo', :version=>'1.0' do
-      package(:zip, :file=>'foo.zip').should point_to_path('foo.zip')
-      package(:zip, :file=>'target/foo-1.0.zip').should point_to_path('target/foo-1.0.zip')
+      expect(package(:zip, :file=>'foo.zip')).to point_to_path('foo.zip')
+      expect(package(:zip, :file=>'target/foo-1.0.zip')).to point_to_path('target/foo-1.0.zip')
     end
   end
 
@@ -488,12 +488,12 @@ describe Project, '#package file' do
     define 'foo', :version=>'1.0' do
       package(:zip, :file=>'foo.zip')
     end
-    project('foo').task('package').prerequisites.should include(*project('foo').packages)
+    expect(project('foo').task('package').prerequisites).to include(*project('foo').packages)
   end
 
   it 'should create task requiring a build' do
     define 'foo', :version=>'1.0' do
-      package(:zip, :file=>'foo.zip').prerequisites.should include(build)
+      expect(package(:zip, :file=>'foo.zip').prerequisites).to include(build)
     end
   end
 
@@ -501,18 +501,18 @@ describe Project, '#package file' do
     define 'foo', :version=>'1.0' do
       package(:zip, :file=>'foo.zip')
     end
-    lambda { project('foo').task('package').invoke }.should change { File.exist?('foo.zip') }.to(true)
+    expect { project('foo').task('package').invoke }.to change { File.exist?('foo.zip') }.to(true)
   end
 
   it 'should do nothing for installation/upload' do
     define 'foo', :version=>'1.0' do
       package(:zip, :file=>'foo.zip')
     end
-    lambda do
+    expect do
       task('install').invoke
       task('upload').invoke
       task('uninstall').invoke
-    end.should_not raise_error
+    end.not_to raise_error
   end
 
 end
@@ -525,8 +525,8 @@ describe Rake::Task, ' package' do
     end
     in_original_dir project('foo:bar').base_dir do
       task('package').invoke
-      project('foo').package.should_not exist
-      project('foo:bar').package.should exist
+      expect(project('foo').package).not_to exist
+      expect(project('foo:bar').package).to exist
     end
   end
 
@@ -536,8 +536,8 @@ describe Rake::Task, ' package' do
       define('bar') { package }
     end
     task('package').invoke
-    project('foo').package.should exist
-    project('foo:bar').package.should exist
+    expect(project('foo').package).to exist
+    expect(project('foo:bar').package).to exist
   end
 
   it 'should create package in target directory' do
@@ -546,7 +546,7 @@ describe Rake::Task, ' package' do
       define('bar') { package }
     end
     task('package').invoke
-    FileList['**/target/*.zip'].map.sort.should == ['bar/target/foo-bar-1.0.zip', 'target/foo-1.0.zip']
+    expect(FileList['**/target/*.zip'].map.sort).to eq(['bar/target/foo-bar-1.0.zip', 'target/foo-1.0.zip'])
   end
 end
 
@@ -558,8 +558,8 @@ describe Rake::Task, ' install' do
     end
     in_original_dir project('foo:bar').base_dir do
       task('install').invoke
-      artifacts('foo:foo:zip:1.0', 'foo:foo:pom:1.0').each { |t| t.should_not exist }
-      artifacts('foo:foo-bar:zip:1.0', 'foo:foo-bar:pom:1.0').each { |t| t.should exist }
+      artifacts('foo:foo:zip:1.0', 'foo:foo:pom:1.0').each { |t| expect(t).not_to exist }
+      artifacts('foo:foo-bar:zip:1.0', 'foo:foo-bar:pom:1.0').each { |t| expect(t).to exist }
     end
   end
 
@@ -569,7 +569,7 @@ describe Rake::Task, ' install' do
       define('bar') { package }
     end
     task('install').invoke
-    artifacts('foo:foo:zip:1.0', 'foo:foo:pom:1.0', 'foo:foo-bar:zip:1.0', 'foo:foo-bar:pom:1.0').each { |t| t.should exist }
+    artifacts('foo:foo:zip:1.0', 'foo:foo:pom:1.0', 'foo:foo-bar:zip:1.0', 'foo:foo-bar:pom:1.0').each { |t| expect(t).to exist }
   end
 
   it 'should create package in local repository' do
@@ -578,11 +578,11 @@ describe Rake::Task, ' install' do
       define('bar') { package }
     end
     task('install').invoke
-    FileList[repositories.local + '/**/*'].reject { |f| File.directory?(f) }.sort.should == [
+    expect(FileList[repositories.local + '/**/*'].reject { |f| File.directory?(f) }.sort).to eq([
       File.expand_path('foo/foo/1.0/foo-1.0.zip', repositories.local),
       File.expand_path('foo/foo/1.0/foo-1.0.pom', repositories.local),
       File.expand_path('foo/foo-bar/1.0/foo-bar-1.0.zip', repositories.local),
-      File.expand_path('foo/foo-bar/1.0/foo-bar-1.0.pom', repositories.local)].sort
+      File.expand_path('foo/foo-bar/1.0/foo-bar-1.0.pom', repositories.local)].sort)
   end
 end
 
@@ -595,9 +595,9 @@ describe Rake::Task, ' uninstall' do
     task('install').invoke
     in_original_dir project('foo:bar').base_dir do
       task('uninstall').invoke
-      FileList[repositories.local + '/**/*'].reject { |f| File.directory?(f) }.sort.should == [
+      expect(FileList[repositories.local + '/**/*'].reject { |f| File.directory?(f) }.sort).to eq([
         File.expand_path('foo/foo/1.0/foo-1.0.zip', repositories.local),
-        File.expand_path('foo/foo/1.0/foo-1.0.pom', repositories.local)].sort
+        File.expand_path('foo/foo/1.0/foo-1.0.pom', repositories.local)].sort)
     end
   end
 
@@ -608,7 +608,7 @@ describe Rake::Task, ' uninstall' do
     end
     task('install').invoke
     task('uninstall').invoke
-    FileList[repositories.local + '/**/*'].reject { |f| File.directory?(f) }.sort.should be_empty
+    expect(FileList[repositories.local + '/**/*'].reject { |f| File.directory?(f) }.sort).to be_empty
   end
 end
 
@@ -623,7 +623,7 @@ describe Rake::Task, ' upload' do
       define('bar') { package }
     end
     in_original_dir project('foo:bar').base_dir do
-      lambda { task('upload').invoke }.should run_task('foo:bar:upload').but_not('foo:upload')
+      expect { task('upload').invoke }.to run_task('foo:bar:upload').but_not('foo:upload')
     end
   end
 
@@ -632,7 +632,7 @@ describe Rake::Task, ' upload' do
       package
       define('bar') { package }
     end
-    lambda { task('upload').invoke }.should run_tasks('foo:upload', 'foo:bar:upload')
+    expect { task('upload').invoke }.to run_tasks('foo:upload', 'foo:bar:upload')
   end
 
   it 'should upload artifact and POM' do
@@ -640,7 +640,7 @@ describe Rake::Task, ' upload' do
     task('upload').invoke
     { 'remote/foo/foo/1.0/foo-1.0.jar'=>project('foo').package(:jar),
       'remote/foo/foo/1.0/foo-1.0.pom'=>project('foo').package(:jar).pom }.each do |upload, package|
-      read(upload).should eql(read(package))
+      expect(read(upload)).to eql(read(package))
     end
   end
 
@@ -653,11 +653,11 @@ describe Rake::Task, ' upload' do
       package(:jar)
       package(:sources)
     end
-     URI.should_receive(:upload).exactly(:once).
+     expect(URI).to receive(:upload).exactly(:once).
          with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/attached/foo/1.0/foo-1.0-sources.jar'), project("foo").package(:sources).to_s, anything)
-     URI.should_receive(:upload).exactly(:once).
+     expect(URI).to receive(:upload).exactly(:once).
          with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/attached/foo/1.0/foo-1.0.jar'), project("foo").package(:jar).to_s, anything)
-     URI.should_receive(:upload).exactly(:once).
+     expect(URI).to receive(:upload).exactly(:once).
         with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/attached/foo/1.0/foo-1.0.pom'), project("foo").package(:jar).pom.to_s, anything)
      verbose(false) { project("foo").upload.invoke }
   end
@@ -667,8 +667,8 @@ describe Rake::Task, ' upload' do
     task('upload').invoke
     { 'remote/foo/foo/1.0/foo-1.0.jar'=>project('foo').package(:jar),
       'remote/foo/foo/1.0/foo-1.0.pom'=>project('foo').package(:jar).pom }.each do |upload, package|
-      read("#{upload}.md5").split.first.should eql(Digest::MD5.hexdigest(read(package, "rb")))
-      read("#{upload}.sha1").split.first.should eql(Digest::SHA1.hexdigest(read(package, "rb")))
+      expect(read("#{upload}.md5").split.first).to eql(Digest::MD5.hexdigest(read(package, "rb")))
+      expect(read("#{upload}.sha1").split.first).to eql(Digest::SHA1.hexdigest(read(package, "rb")))
     end
   end
 end
@@ -681,7 +681,7 @@ describe Packaging, 'zip' do
     define('foo', :version=>'1.0') { package(:zip) }
     project('foo').package(:zip).invoke
     Zip::File.open(project('foo').package(:zip).to_s) do |zip|
-      zip.entries.map(&:to_s).should_not include('META-INF/')
+      expect(zip.entries.map(&:to_s)).not_to include('META-INF/')
     end
   end
 end

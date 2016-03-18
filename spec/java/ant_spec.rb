@@ -23,15 +23,15 @@ describe Buildr::Ant do
     begin
       Buildr::Ant.instance_eval { @dependencies = nil }
       write 'build.yaml', 'ant: 1.2.3'
-      Buildr::Ant.dependencies.should include("org.apache.ant:ant:jar:1.2.3")
+      expect(Buildr::Ant.dependencies).to include("org.apache.ant:ant:jar:1.2.3")
     ensure
       Buildr::Ant.instance_eval { @dependencies = nil }
     end
   end
 
   it 'should have REQUIRES up to version 1.5 since it was deprecated in version 1.3.3' do
-    Buildr::VERSION.should < '1.5'
-    lambda { Ant::REQUIRES }.should_not raise_error
+    expect(Buildr::VERSION).to be < '1.5'
+    expect { Ant::REQUIRES }.not_to raise_error
   end
 
 end
