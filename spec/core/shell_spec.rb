@@ -19,12 +19,12 @@ describe Project, '.shell' do
 
   it 'should return the project\'s shell task' do
     define('foo')
-    project('foo').shell.name.should eql('foo:shell')
+    expect(project('foo').shell.name).to eql('foo:shell')
   end
 
   it 'should return a ShellTask' do
     define('foo')
-    project('foo').shell.should be_kind_of(Shell::ShellTask)
+    expect(project('foo').shell).to be_kind_of(Shell::ShellTask)
   end
 
   it 'should include compile and test.compile dependencies' do
@@ -32,13 +32,13 @@ describe Project, '.shell' do
       compile.using(:javac).with 'group:compile:jar:1.0'
       test.compile.using(:javac).with 'group:test:jar:1.0'
     end
-    project('foo').shell.classpath.should include(artifact('group:compile:jar:1.0'))
-    project('foo').shell.classpath.should include(artifact('group:test:jar:1.0'))
+    expect(project('foo').shell.classpath).to include(artifact('group:compile:jar:1.0'))
+    expect(project('foo').shell.classpath).to include(artifact('group:test:jar:1.0'))
   end
 
   it 'should respond to using() and return self' do
     define 'foo' do
-      shell.using(:foo=>'Fooing').should be(shell)
+      expect(shell.using(:foo=>'Fooing')).to be(shell)
     end
   end
 
@@ -46,14 +46,14 @@ describe Project, '.shell' do
     define 'foo' do
       shell.using :foo=>'Fooing'
     end
-    project('foo').shell.options[:foo].should eql('Fooing')
+    expect(project('foo').shell.options[:foo]).to eql('Fooing')
   end
 
   it 'should select provider using shell.using' do
     define 'foo' do
       shell.using :bsh
     end
-    project('foo').shell.provider.should be_a(Shell::BeanShell)
+    expect(project('foo').shell.provider).to be_a(Shell::BeanShell)
   end
 
   it 'should select runner based on compile language' do
@@ -61,12 +61,12 @@ describe Project, '.shell' do
     define 'foo' do
       # compile language detected as :java
     end
-    project('foo').shell.provider.should be_a(Shell::BeanShell)
+    expect(project('foo').shell.provider).to be_a(Shell::BeanShell)
   end
 
   it 'should depend on project''s compile task' do
     define 'foo'
-    project('foo').shell.prerequisites.should include(project('foo').compile)
+    expect(project('foo').shell.prerequisites).to include(project('foo').compile)
   end
 
   it 'should be local task' do
@@ -76,8 +76,8 @@ describe Project, '.shell' do
       end
     end
     task = project('foo:bar').shell
-    task.should_receive(:invoke_prerequisites)
-    task.should_receive(:run)
+    expect(task).to receive(:invoke_prerequisites)
+    expect(task).to receive(:run)
     in_original_dir(project('foo:bar').base_dir) { task('shell').invoke }
   end
 
@@ -86,9 +86,9 @@ describe Project, '.shell' do
       shell.using :bsh
       define('bar') { shell.using :bsh }
     end
-    project('foo:bar').shell.should_not_receive(:invoke_prerequisites)
-    project('foo:bar').shell.should_not_receive(:run)
-    project('foo').shell.should_receive(:run)
+    expect(project('foo:bar').shell).not_to receive(:invoke_prerequisites)
+    expect(project('foo:bar').shell).not_to receive(:run)
+    expect(project('foo').shell).to receive(:run)
     project('foo').shell.invoke
   end
 
@@ -97,7 +97,7 @@ describe Project, '.shell' do
       shell.using :bsh
     end
     shell = project('foo').shell
-    shell.provider.should_receive(:launch).with(shell)
+    expect(shell.provider).to receive(:launch).with(shell)
     project('foo').shell.invoke
   end
 end
@@ -105,8 +105,8 @@ end
 shared_examples_for "shell provider" do
 
   it 'should have launch method accepting shell task' do
-    @instance.method(:launch).should_not be_nil
-    @instance.method(:launch).arity.should === 1
+    expect(@instance.method(:launch)).not_to be_nil
+    expect(@instance.method(:launch).arity).to be === 1
   end
 
 end
@@ -124,20 +124,22 @@ Shell.providers.each do |provider|
 
     it 'should call Java::Commands.java with :java_args' do
       @project.shell.using :java_args => ["-Xx"]
-      Java::Commands.should_receive(:java).with do |*args|
-        args.last.should be_a(Hash)
-        args.last.keys.should include(:java_args)
-        args.last[:java_args].should include('-Xx')
+      expect(Java::Commands).to receive(:java) do |*args|
+        expect(args.last).to be_a(Hash)
+        expect(args.last.keys).to include(:java_args)
+        expect(args.last[:java_args]).to include('-Xx')
+        
       end
       project('foo').shell.invoke
     end
 
     it 'should call Java::Commands.java with :properties' do
       @project.shell.using :properties => {:foo => "bar"}
-      Java::Commands.should_receive(:java).with do |*args|
-        args.last.should be_a(Hash)
-        args.last.keys.should include(:properties)
-        args.last[:properties][:foo].should == "bar"
+      expect(Java::Commands).to receive(:java) do |*args|
+        expect(args.last).to be_a(Hash)
+        expect(args.last.keys).to include(:properties)
+        expect(args.last[:properties][:foo]).to eq("bar")
+        
       end
       project('foo').shell.invoke
     end

@@ -19,12 +19,12 @@ describe Project, :run do
 
   it 'should return the project\'s run task' do
     define('foo')
-    project('foo').run.name.should eql('foo:run')
+    expect(project('foo').run.name).to eql('foo:run')
   end
 
   it 'should return a RunTask' do
     define('foo')
-    project('foo').run.should be_kind_of(Run::RunTask)
+    expect(project('foo').run).to be_kind_of(Run::RunTask)
   end
 
   it 'should include compile dependencies' do
@@ -32,7 +32,7 @@ describe Project, :run do
       compile.using(:javac).with 'group:compile:jar:1.0'
       test.compile.using(:javac).with 'group:test:jar:1.0'
     end
-    project('foo').run.classpath.should include(artifact('group:compile:jar:1.0'))
+    expect(project('foo').run.classpath).to include(artifact('group:compile:jar:1.0'))
   end
 
   it 'should not include test dependencies' do
@@ -40,12 +40,12 @@ describe Project, :run do
       compile.using(:javac).with 'group:compile:jar:1.0'
       test.compile.using(:javac).with 'group:test:jar:1.0'
     end
-    project('foo').run.classpath.should_not include(artifact('group:test:jar:1.0'))
+    expect(project('foo').run.classpath).not_to include(artifact('group:test:jar:1.0'))
   end
 
   it 'should respond to using() and return self' do
     define 'foo' do
-      run.using(:foo=>'Fooing').should be(run)
+      expect(run.using(:foo=>'Fooing')).to be(run)
     end
   end
 
@@ -53,14 +53,14 @@ describe Project, :run do
     define 'foo' do
       run.using :foo=>'Fooing'
     end
-    project('foo').run.options[:foo].should eql('Fooing')
+    expect(project('foo').run.options[:foo]).to eql('Fooing')
   end
 
   it 'should select runner using run.using' do
     define 'foo' do
       run.using :java
     end
-    project('foo').run.runner.should be_a(Run::JavaRunner)
+    expect(project('foo').run.runner).to be_a(Run::JavaRunner)
   end
 
   it 'should select runner based on compile language' do
@@ -68,27 +68,27 @@ describe Project, :run do
     define 'foo' do
       # compile language detected as :java
     end
-    project('foo').run.runner.should be_a(Run::JavaRunner)
+    expect(project('foo').run.runner).to be_a(Run::JavaRunner)
   end
 
   it "should run with the project resources" do
     write 'src/main/java/Test.java', 'class Test {}'
     write 'src/main/resources/test.properties', ''
     define 'foo'
-    project('foo').run.classpath.should include project('foo').resources.target
+    expect(project('foo').run.classpath).to include project('foo').resources.target
   end
 
   it 'should depend on project''s compile task' do
     define 'foo'
-    project('foo').run.prerequisites.should include(project('foo').compile)
+    expect(project('foo').run.prerequisites).to include(project('foo').compile)
   end
 
   it 'should be local task' do
     define 'foo' do
       define('bar')
     end
-    project('foo:bar').run.should_receive(:invoke_prerequisites)
-    project('foo:bar').run.should_receive(:run)
+    expect(project('foo:bar').run).to receive(:invoke_prerequisites)
+    expect(project('foo:bar').run).to receive(:run)
     in_original_dir(project('foo:bar').base_dir) { task('run').invoke }
   end
 
@@ -96,9 +96,9 @@ describe Project, :run do
     define 'foo' do
       define('bar') { run.using :java, :main => 'foo' }
     end
-    project('foo:bar').run.should_not_receive(:invoke_prerequisites)
-    project('foo:bar').run.should_not_receive(:run)
-    project('foo').run.should_receive(:run)
+    expect(project('foo:bar').run).not_to receive(:invoke_prerequisites)
+    expect(project('foo:bar').run).not_to receive(:run)
+    expect(project('foo').run).to receive(:run)
     project('foo').run.invoke
   end
 

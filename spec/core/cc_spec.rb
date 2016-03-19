@@ -53,7 +53,7 @@ describe Buildr::CCTask do
   include CCHelper
 
   it 'should default to a delay of 0.2' do
-    define('foo').cc.delay.should == 0.2
+    expect(define('foo').cc.delay).to eq(0.2)
   end
 
   it 'should compile and test:compile on initial start' do
@@ -74,8 +74,8 @@ describe Buildr::CCTask do
 
     wait_while { foo.test.compile.run_count != 1 }
 
-    foo.compile.run_count.should == 1
-    foo.test.compile.run_count.should == 1
+    expect(foo.compile.run_count).to eq(1)
+    expect(foo.test.compile.run_count).to eq(1)
 
     thread.exit
   end
@@ -98,17 +98,17 @@ describe Buildr::CCTask do
 
     wait_while { foo.test.compile.run_count != 1 }
 
-    foo.compile.run_count.should == 1
-    foo.test.compile.run_count.should == 1
-    foo.resources.run_count.should == 1
+    expect(foo.compile.run_count).to eq(1)
+    expect(foo.test.compile.run_count).to eq(1)
+    expect(foo.resources.run_count).to eq(1)
 
     modify_file_times(File.join(Dir.pwd, 'src/main/java/Example.java'))
 
     wait_while { foo.test.compile.run_count != 2 }
 
-    foo.compile.run_count.should == 2
-    foo.test.compile.run_count.should == 2
-    foo.resources.run_count.should == 2
+    expect(foo.compile.run_count).to eq(2)
+    expect(foo.test.compile.run_count).to eq(2)
+    expect(foo.resources.run_count).to eq(2)
 
     thread.exit
   end
@@ -135,21 +135,21 @@ describe Buildr::CCTask do
 
     wait_while { foo.test.compile.run_count != 1 }
 
-    foo.compile.run_count.should == 1
-    foo.test.compile.run_count.should == 1
-    foo.resources.run_count.should == 1
+    expect(foo.compile.run_count).to eq(1)
+    expect(foo.test.compile.run_count).to eq(1)
+    expect(foo.resources.run_count).to eq(1)
 
-    file("foo/target/classes/Example.class").should exist
+    expect(file("foo/target/classes/Example.class")).to exist
 
     tstamp = File.mtime("foo/target/classes/Example.class")
 
     modify_file_times(File.join(Dir.pwd, 'foo/src/main/java/Example.java'))
     wait_while { foo.test.compile.run_count != 2 }
 
-    foo.compile.run_count.should == 2
-    foo.test.compile.run_count.should == 2
-    foo.resources.run_count.should == 2
-    File.mtime("foo/target/classes/Example.class").should_not == tstamp
+    expect(foo.compile.run_count).to eq(2)
+    expect(foo.test.compile.run_count).to eq(2)
+    expect(foo.resources.run_count).to eq(2)
+    expect(File.mtime("foo/target/classes/Example.class")).not_to eq(tstamp)
 
     thread.exit
   end
@@ -206,38 +206,38 @@ describe Buildr::CCTask do
     wait_while { all.any? { |p| p.test.compile.run_count != 1 } }
 
     all.each do |p|
-      p.compile.run_count.should == 1
-      p.test.compile.run_count.should == 1
-      p.resources.run_count.should == 1
+      expect(p.compile.run_count).to eq(1)
+      expect(p.test.compile.run_count).to eq(1)
+      expect(p.resources.run_count).to eq(1)
     end
 
-    file("foo/target/classes/Example.class").should exist
+    expect(file("foo/target/classes/Example.class")).to exist
     tstamp = File.mtime("foo/target/classes/Example.class")
 
     modify_file_times('foo/src/main/java/Example.java')
     wait_while { project("container:foo").test.compile.run_count != 2 }
 
     project("container:foo").tap do |p|
-      p.compile.run_count.should == 2
-      p.test.compile.run_count.should == 2
-      p.resources.run_count.should == 2
+      expect(p.compile.run_count).to eq(2)
+      expect(p.test.compile.run_count).to eq(2)
+      expect(p.resources.run_count).to eq(2)
     end
 
     wait_while { project("container").resources.run_count != 2 }
 
     project("container").tap do |p|
-      p.compile.run_count.should == 1 # not_needed
-      p.resources.run_count.should == 2
+      expect(p.compile.run_count).to eq(1) # not_needed
+      expect(p.resources.run_count).to eq(2)
     end
-    File.mtime("foo/target/classes/Example.class").should_not == tstamp
+    expect(File.mtime("foo/target/classes/Example.class")).not_to eq(tstamp)
 
     modify_file_times('src/main/java/Example.java')
 
     wait_while { project("container").resources.run_count != 3 }
 
     project("container").tap do |p|
-      p.compile.run_count.should == 2
-      p.resources.run_count.should == 3
+      expect(p.compile.run_count).to eq(2)
+      expect(p.resources.run_count).to eq(3)
     end
 
     thread.exit

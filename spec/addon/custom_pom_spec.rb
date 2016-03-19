@@ -26,7 +26,7 @@ Sandbox.require_optional_extension 'buildr/custom_pom'
 describe Buildr::CustomPom do
 
   def xml_document(filename)
-    File.should be_exist(filename)
+    expect(File).to be_exist(filename)
     REXML::Document.new(File.read(filename))
   end
 
@@ -35,7 +35,7 @@ describe Buildr::CustomPom do
   end
 
   def verify_license(pom_xml, name, url)
-    pom_xml.should match_xpath("/project/licenses/license/url[../name/text() = '#{name}']", url)
+    expect(pom_xml).to match_xpath("/project/licenses/license/url[../name/text() = '#{name}']", url)
   end
 
   def dependency_xpath(artifact_id)
@@ -43,19 +43,19 @@ describe Buildr::CustomPom do
   end
 
   def verify_dependency_group(pom_xml, artifact_id, group)
-    pom_xml.should match_xpath("#{dependency_xpath(artifact_id)}/groupId", group)
+    expect(pom_xml).to match_xpath("#{dependency_xpath(artifact_id)}/groupId", group)
   end
 
   def verify_dependency_version(pom_xml, artifact_id, version)
-    pom_xml.should match_xpath("#{dependency_xpath(artifact_id)}/version", version)
+    expect(pom_xml).to match_xpath("#{dependency_xpath(artifact_id)}/version", version)
   end
 
   def verify_dependency_scope(pom_xml, artifact_id, scope)
-    pom_xml.should match_xpath("#{dependency_xpath(artifact_id)}/scope", scope)
+    expect(pom_xml).to match_xpath("#{dependency_xpath(artifact_id)}/scope", scope)
   end
 
   def verify_dependency_optional(pom_xml, artifact_id, optional)
-    pom_xml.should match_xpath("#{dependency_xpath(artifact_id)}/optional", optional)
+    expect(pom_xml).to match_xpath("#{dependency_xpath(artifact_id)}/optional", optional)
   end
 
   def verify_dependency(pom_xml, artifact_id, group, version, scope, optional)
@@ -104,38 +104,38 @@ describe Buildr::CustomPom do
     end
 
     it "has correct static metadata" do
-      @pom_xml.should match_xpath("/project/modelVersion", '4.0.0')
-      @pom_xml.should match_xpath("/project/parent/groupId", 'org.sonatype.oss')
-      @pom_xml.should match_xpath("/project/parent/artifactId", 'oss-parent')
-      @pom_xml.should match_xpath("/project/parent/version", '7')
+      expect(@pom_xml).to match_xpath("/project/modelVersion", '4.0.0')
+      expect(@pom_xml).to match_xpath("/project/parent/groupId", 'org.sonatype.oss')
+      expect(@pom_xml).to match_xpath("/project/parent/artifactId", 'oss-parent')
+      expect(@pom_xml).to match_xpath("/project/parent/version", '7')
     end
 
     it "has correct project level metadata" do
-      @pom_xml.should match_xpath("/project/groupId", 'org.myproject')
-      @pom_xml.should match_xpath("/project/artifactId", 'foo')
-      @pom_xml.should match_xpath("/project/version", '1.0')
-      @pom_xml.should match_xpath("/project/packaging", 'jar')
-      @pom_xml.should match_xpath("/project/name", 'foo')
-      @pom_xml.should match_xpath("/project/description", 'foo')
-      @pom_xml.should match_xpath("/project/url", 'https://github.com/jbloggs/myproject')
+      expect(@pom_xml).to match_xpath("/project/groupId", 'org.myproject')
+      expect(@pom_xml).to match_xpath("/project/artifactId", 'foo')
+      expect(@pom_xml).to match_xpath("/project/version", '1.0')
+      expect(@pom_xml).to match_xpath("/project/packaging", 'jar')
+      expect(@pom_xml).to match_xpath("/project/name", 'foo')
+      expect(@pom_xml).to match_xpath("/project/description", 'foo')
+      expect(@pom_xml).to match_xpath("/project/url", 'https://github.com/jbloggs/myproject')
     end
 
     it "has correct scm details" do
-      @pom_xml.should match_xpath("/project/scm/connection", 'scm:git:git@github.com:jbloggs/myproject')
-      @pom_xml.should match_xpath("/project/scm/developerConnection", 'scm:git:git@github.com:jbloggs/myproject')
-      @pom_xml.should match_xpath("/project/scm/url", 'git@github.com:jbloggs/myproject')
+      expect(@pom_xml).to match_xpath("/project/scm/connection", 'scm:git:git@github.com:jbloggs/myproject')
+      expect(@pom_xml).to match_xpath("/project/scm/developerConnection", 'scm:git:git@github.com:jbloggs/myproject')
+      expect(@pom_xml).to match_xpath("/project/scm/url", 'git@github.com:jbloggs/myproject')
     end
 
     it "has correct issueManagement details" do
-      @pom_xml.should match_xpath("/project/issueManagement/url", 'https://github.com/jbloggs/myproject/issues')
-      @pom_xml.should match_xpath("/project/issueManagement/system", 'GitHub Issues')
+      expect(@pom_xml).to match_xpath("/project/issueManagement/url", 'https://github.com/jbloggs/myproject/issues')
+      expect(@pom_xml).to match_xpath("/project/issueManagement/system", 'GitHub Issues')
     end
 
     it "has correct developers details" do
-      @pom_xml.should match_xpath("/project/developers/developer/id", 'jbloggs')
-      @pom_xml.should match_xpath("/project/developers/developer/name", 'Joe Bloggs')
-      @pom_xml.should match_xpath("/project/developers/developer/email", 'jbloggs@example.com')
-      @pom_xml.should match_xpath("/project/developers/developer/roles/role", 'Project Lead')
+      expect(@pom_xml).to match_xpath("/project/developers/developer/id", 'jbloggs')
+      expect(@pom_xml).to match_xpath("/project/developers/developer/name", 'Joe Bloggs')
+      expect(@pom_xml).to match_xpath("/project/developers/developer/email", 'jbloggs@example.com')
+      expect(@pom_xml).to match_xpath("/project/developers/developer/roles/role", 'Project Lead')
     end
 
     it "has correct license details" do

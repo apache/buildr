@@ -32,8 +32,8 @@ describe 'Javadoc' do
       end
     end
 
-    project('foo').doc.options[:windowtitle].should eql('foo')
-    project('foo:bar').doc.options[:windowtitle].should eql('foo:bar')
+    expect(project('foo').doc.options[:windowtitle]).to eql('foo')
+    expect(project('foo:bar').doc.options[:windowtitle]).to eql('foo:bar')
   end
 
   it 'should pick -windowtitle from project description by default, if available' do
@@ -41,7 +41,7 @@ describe 'Javadoc' do
     define 'foo' do
       compile.using(:javac)
     end
-    project('foo').doc.options[:windowtitle].should eql('My App')
+    expect(project('foo').doc.options[:windowtitle]).to eql('My App')
   end
 
   it 'should not override explicit :windowtitle' do
@@ -49,7 +49,7 @@ describe 'Javadoc' do
       compile.using(:javac)
       doc.using :windowtitle => 'explicit'
     end
-    project('foo').doc.options[:windowtitle].should eql('explicit')
+    expect(project('foo').doc.options[:windowtitle]).to eql('explicit')
   end
 
 end

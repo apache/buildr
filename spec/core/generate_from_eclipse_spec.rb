@@ -110,13 +110,13 @@ describe Buildr::Generate do
 
     it 'should create a valid buildfile' do
       define('first')
-      File.exists?(File.join(top, 'single', '.project')).should be_true
-      File.exists?(File.join(top, '.project')).should be_false
-      File.exists?('.project').should be_false
+      expect(File.exists?(File.join(top, 'single', '.project'))).to be_truthy
+      expect(File.exists?(File.join(top, '.project'))).to be_falsey
+      expect(File.exists?('.project')).to be_falsey
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should exist
-      file(buildFile).should contain("GROUP = \"#{top}\"")
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to exist
+      expect(file(buildFile)).to contain("GROUP = \"#{top}\"")
+      expect { Buildr.application.run }.not_to raise_error
     end
 
     it "should not add project if the corresponding .project file is not an eclipse project" do
@@ -124,51 +124,51 @@ describe Buildr::Generate do
       FileUtils.rm(buildFile)
       write File.join(top, 'myproject', '.project'), '# Dummy file'
       File.open(File.join(top, 'buildfile'), 'w') { |file| file.write Generate.from_eclipse(File.join(Dir.pwd, top)).join("\n") }
-      file(buildFile).should exist
-      file(buildFile).should contain('define "single"')
-      file(buildFile).should_not contain('define "myproject"')
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to exist
+      expect(file(buildFile)).to contain('define "single"')
+      expect(file(buildFile)).not_to contain('define "myproject"')
+      expect { Buildr.application.run }.not_to raise_error
     end
 
       it 'should honour Bundle-Version in MANIFEST.MF' do
 	define('bundle_version')
 	buildFile = File.join(top, 'buildfile')
-	file(buildFile).should exist
-	file(buildFile).should contain('define "single"')
-	file(buildFile).should contain('define "single", :version => "1.1"')
-	lambda { Buildr.application.run }.should_not raise_error
+	expect(file(buildFile)).to exist
+	expect(file(buildFile)).to contain('define "single"')
+	expect(file(buildFile)).to contain('define "single", :version => "1.1"')
+	expect { Buildr.application.run }.not_to raise_error
       end
 
     it "should pass source in build.properties to layout[:source, :main, :java] and layout[:source, :main, :scala]" do
       define('layout_source')
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should exist
-      file(buildFile).should contain('define')
-      file(buildFile).should contain('define "single"')
-      file(buildFile).should contain('layout[:source, :main, :java]')
-      file(buildFile).should contain('layout[:source, :main, :scala]')
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to exist
+      expect(file(buildFile)).to contain('define')
+      expect(file(buildFile)).to contain('define "single"')
+      expect(file(buildFile)).to contain('layout[:source, :main, :java]')
+      expect(file(buildFile)).to contain('layout[:source, :main, :scala]')
+      expect { Buildr.application.run }.not_to raise_error
     end
 
     it "should pass output in build.properties to layout[:target, :main], etc" do
       define('layout_target')
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should exist
-      file(buildFile).should contain('define')
-      file(buildFile).should contain('define "single"')
-      file(buildFile).should contain('layout[:target, :main]')
-      file(buildFile).should contain('layout[:target, :main, :java]')
-      file(buildFile).should contain('layout[:target, :main, :scala]')
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to exist
+      expect(file(buildFile)).to contain('define')
+      expect(file(buildFile)).to contain('define "single"')
+      expect(file(buildFile)).to contain('layout[:target, :main]')
+      expect(file(buildFile)).to contain('layout[:target, :main, :java]')
+      expect(file(buildFile)).to contain('layout[:target, :main, :scala]')
+      expect { Buildr.application.run }.not_to raise_error
     end
 
     it "should package an eclipse plugin" do
       define('layout_target')
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should exist
-      file(buildFile).should contain('define')
-      file(buildFile).should contain('package(:jar)')
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to exist
+      expect(file(buildFile)).to contain('define')
+      expect(file(buildFile)).to contain('package(:jar)')
+      expect { Buildr.application.run }.not_to raise_error
     end
 
   end
@@ -181,9 +181,9 @@ describe Buildr::Generate do
     end
     it "should set the project name to the SymbolicName from the MANIFEST.MF" do
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should exist
-      file(buildFile).should contain('define "singleSymbolicName"')
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to exist
+      expect(file(buildFile)).to contain('define "singleSymbolicName"')
+      expect { Buildr.application.run }.not_to raise_error
     end
   end
 
@@ -196,9 +196,9 @@ describe Buildr::Generate do
 
     it "should not get confused if SymbolicName in MANIFEST.MF is a singleton:=true" do
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should exist
-      file(buildFile).should contain('define "singleSymbolicName"')
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to exist
+      expect(file(buildFile)).to contain('define "singleSymbolicName"')
+      expect { Buildr.application.run }.not_to raise_error
     end
   end
 
@@ -212,22 +212,22 @@ describe Buildr::Generate do
     it 'should create a valid buildfile for a nested project' do
       setupExample(top, 'single')
       define('nested/second')
-      File.exists?(File.join(top, 'single', '.project')).should be_true
-      File.exists?(File.join(top, '.project')).should be_false
-      File.exists?('.project').should be_false
+      expect(File.exists?(File.join(top, 'single', '.project'))).to be_truthy
+      expect(File.exists?(File.join(top, '.project'))).to be_falsey
+      expect(File.exists?('.project')).to be_falsey
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should contain("GROUP = \"#{top}\"")
-      file(buildFile).should contain('define "single"')
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to contain("GROUP = \"#{top}\"")
+      expect(file(buildFile)).to contain('define "single"')
+      expect { Buildr.application.run }.not_to raise_error
     end
 
     it "should correct the path for a nested plugin" do
       define('base_dir')
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should exist
-      file(buildFile).should contain('define "single"')
-      file(buildFile).should contain('define "single", :version => "1.1", :base_dir => "nested/single"')
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to exist
+      expect(file(buildFile)).to contain('define "single"')
+      expect(file(buildFile)).to contain('define "single", :version => "1.1", :base_dir => "nested/single"')
+      expect { Buildr.application.run }.not_to raise_error
     end
 
   end
@@ -248,31 +248,31 @@ describe Buildr::Generate do
     it 'should add "compile.with dependencies" in MANIFEST.MF' do
       define('base_dir')
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should exist
-      file(buildFile).should contain('compile.with dependencies')
-      file(buildFile).should contain('resources')
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to exist
+      expect(file(buildFile)).to contain('compile.with dependencies')
+      expect(file(buildFile)).to contain('resources')
+      expect { Buildr.application.run }.not_to raise_error
     end
                                                            #dependencies << projects("first")
 
     it 'should honour Require-Bundle in MANIFEST.MF' do
       define('base_dir')
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should exist
-      file(buildFile).should contain(/define "second"/)
-      file(buildFile).should contain(                     /dependencies << projects\("first"\)/)
-      file(buildFile).should contain(/define "second".*do.*dependencies << projects\("first"\).* end/m)
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to exist
+      expect(file(buildFile)).to contain(/define "second"/)
+      expect(file(buildFile)).to contain(                     /dependencies << projects\("first"\)/)
+      expect(file(buildFile)).to contain(/define "second".*do.*dependencies << projects\("first"\).* end/m)
+      expect { Buildr.application.run }.not_to raise_error
     end
 
     # Fragments are only supported with buildr4osi which is not (yet?) part of buildr
     it 'should skip fragments.'  do
       define('base_dir')
       buildFile = File.join(top, 'buildfile')
-      file(buildFile).should exist
+      expect(file(buildFile)).to exist
 #      system("cat #{buildFile}")  # if $VERBOSE
-      file(buildFile).should contain('define "first"')
-      lambda { Buildr.application.run }.should_not raise_error
+      expect(file(buildFile)).to contain('define "first"')
+      expect { Buildr.application.run }.not_to raise_error
     end
 
   end

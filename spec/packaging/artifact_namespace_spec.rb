@@ -28,64 +28,64 @@ describe Buildr::ArtifactNamespace do
 
   describe '.root' do
     it 'should return the top level namespace' do
-      Buildr::ArtifactNamespace.root.should be_root
+      expect(Buildr::ArtifactNamespace.root).to be_root
     end
 
     it 'should yield the namespace if a block is given' do
       flag = false
-      Buildr::ArtifactNamespace.root { |ns| flag = true; ns.should be_root }
-      flag.should == true
+      Buildr::ArtifactNamespace.root { |ns| flag = true; expect(ns).to be_root }
+      expect(flag).to eq(true)
     end
 
     it 'should return the root when used outside of a project definition' do
-      artifact_ns.should be_root
+      expect(artifact_ns).to be_root
     end
 
     it 'should yield to a block when used outside of a project definition' do
       flag = false
-      artifact_ns {|ns| flag = true; ns.should be_root}
-      flag.should == true
+      artifact_ns {|ns| flag = true; expect(ns).to be_root}
+      expect(flag).to eq(true)
     end
   end
 
   describe '.instance' do
     it 'should return the top level namespace when invoked outside a project definition' do
-      artifact_ns.should be_root
+      expect(artifact_ns).to be_root
     end
 
     it 'should return the namespace for the receiving project' do
       define('foo') { }
-      project('foo').artifact_ns.name.should == 'foo'
+      expect(project('foo').artifact_ns.name).to eq('foo')
     end
 
     it 'should return the current project namespace when invoked inside a project' do
       define 'foo' do
-        artifact_ns.should_not be_root
-        artifact_ns.name.should == 'foo'
+        expect(artifact_ns).not_to be_root
+        expect(artifact_ns.name).to eq('foo')
         task :doit do
-          artifact_ns.should_not be_root
-          artifact_ns.name.should == 'foo'
+          expect(artifact_ns).not_to be_root
+          expect(artifact_ns.name).to eq('foo')
         end.invoke
       end
     end
 
     it 'should return the root namespace if given :root' do
-      artifact_ns(:root).should be_root
+      expect(artifact_ns(:root)).to be_root
     end
 
     it 'should return the namespace for the given name' do
-      artifact_ns(:foo).name.should == 'foo'
-      artifact_ns('foo:bar').name.should == 'foo:bar'
-      artifact_ns(['foo', 'bar', 'baz']).name.should == 'foo:bar:baz'
+      expect(artifact_ns(:foo).name).to eq('foo')
+      expect(artifact_ns('foo:bar').name).to eq('foo:bar')
+      expect(artifact_ns(['foo', 'bar', 'baz']).name).to eq('foo:bar:baz')
       abc_module do
-        artifact_ns(A::B::C).name.should == 'A::B::C'
+        expect(artifact_ns(A::B::C).name).to eq('A::B::C')
       end
-      artifact_ns(:root).should be_root
-      artifact_ns(:current).should be_root
+      expect(artifact_ns(:root)).to be_root
+      expect(artifact_ns(:current)).to be_root
       define 'foo' do
-        artifact_ns(:current).name.should == 'foo'
+        expect(artifact_ns(:current).name).to eq('foo')
         define 'baz' do
-          artifact_ns(:current).name.should == 'foo:baz'
+          expect(artifact_ns(:current).name).to eq('foo:baz')
         end
       end
     end
@@ -93,14 +93,14 @@ describe Buildr::ArtifactNamespace do
 
   describe '#parent' do
     it 'should be nil for root namespace' do
-      artifact_ns(:root).parent.should be_nil
+      expect(artifact_ns(:root).parent).to be_nil
     end
 
     it 'should be the parent namespace for nested modules' do
       abc_module do
-        artifact_ns(A::B::C).parent.should == artifact_ns(A::B)
-        artifact_ns(A::B).parent.should == artifact_ns(A)
-        artifact_ns(A).parent.should == artifact_ns(:root)
+        expect(artifact_ns(A::B::C).parent).to eq(artifact_ns(A::B))
+        expect(artifact_ns(A::B).parent).to eq(artifact_ns(A))
+        expect(artifact_ns(A).parent).to eq(artifact_ns(:root))
       end
     end
 
@@ -108,25 +108,25 @@ describe Buildr::ArtifactNamespace do
       define 'a' do
         define 'b' do
           define 'c' do
-            artifact_ns.parent.should == artifact_ns(parent)
+            expect(artifact_ns.parent).to eq(artifact_ns(parent))
           end
-          artifact_ns.parent.should == artifact_ns(parent)
+          expect(artifact_ns.parent).to eq(artifact_ns(parent))
         end
-        artifact_ns.parent.should == artifact_ns(:root)
+        expect(artifact_ns.parent).to eq(artifact_ns(:root))
       end
     end
   end
 
   describe '#parent=' do
     it 'should reject to set parent for root namespace' do
-      lambda { artifact_ns(:root).parent = :foo }.should raise_error(Exception, /cannot set parent/i)
+      expect { artifact_ns(:root).parent = :foo }.to raise_error(Exception, /cannot set parent/i)
     end
 
     it 'should allow to set parent' do
       artifact_ns(:bar).parent = :foo
-      artifact_ns(:bar).parent.should == artifact_ns(:foo)
+      expect(artifact_ns(:bar).parent).to eq(artifact_ns(:foo))
       artifact_ns(:bar).parent = artifact_ns(:baz)
-      artifact_ns(:bar).parent.should == artifact_ns(:baz)
+      expect(artifact_ns(:bar).parent).to eq(artifact_ns(:baz))
     end
 
     it 'should allow to set parent to :current' do
@@ -138,9 +138,9 @@ describe Buildr::ArtifactNamespace do
         end
         define 'a' do
           define 'b' do
-            mod.stuff.parent.should == artifact_ns
+            expect(mod.stuff.parent).to eq(artifact_ns)
           end
-          mod.stuff.parent.should == artifact_ns
+          expect(mod.stuff.parent).to eq(artifact_ns)
         end
       end
     end
@@ -151,14 +151,14 @@ describe Buildr::ArtifactNamespace do
       define 'one' do
         artifact_ns.need 'a:b:c:1'
         # referenced by spec
-        artifact_ns['a:b:c'].should_not be_selected
+        expect(artifact_ns['a:b:c']).not_to be_selected
 
         # referenced by name
-        artifact_ns[:b].should_not be_selected
-        artifact_ns[:b].should be_satisfied_by('a:b:c:1')
-        artifact_ns[:b].should_not be_satisfied_by('a:b:c:2')
-        artifact_ns[:b].should_not be_satisfied_by('d:b:c:1')
-        artifact_ns[:b].version.should == '1'
+        expect(artifact_ns[:b]).not_to be_selected
+        expect(artifact_ns[:b]).to be_satisfied_by('a:b:c:1')
+        expect(artifact_ns[:b]).not_to be_satisfied_by('a:b:c:2')
+        expect(artifact_ns[:b]).not_to be_satisfied_by('d:b:c:1')
+        expect(artifact_ns[:b].version).to eq('1')
       end
     end
 
@@ -166,14 +166,14 @@ describe Buildr::ArtifactNamespace do
       define 'one' do
         artifact_ns.need 'a:b:c:d:1'
         # referenced by spec
-        artifact_ns['a:b:c:d:'].should_not be_selected
+        expect(artifact_ns['a:b:c:d:']).not_to be_selected
 
         # referenced by name
-        artifact_ns[:b].should_not be_selected
-        artifact_ns[:b].should be_satisfied_by('a:b:c:d:1')
-        artifact_ns[:b].should_not be_satisfied_by('a:b:c:d:2')
-        artifact_ns[:b].should_not be_satisfied_by('d:b:c:d:1')
-        artifact_ns[:b].version.should == '1'
+        expect(artifact_ns[:b]).not_to be_selected
+        expect(artifact_ns[:b]).to be_satisfied_by('a:b:c:d:1')
+        expect(artifact_ns[:b]).not_to be_satisfied_by('a:b:c:d:2')
+        expect(artifact_ns[:b]).not_to be_satisfied_by('d:b:c:d:1')
+        expect(artifact_ns[:b].version).to eq('1')
       end
     end
 
@@ -181,30 +181,30 @@ describe Buildr::ArtifactNamespace do
       define 'one' do
         artifact_ns.need 'thing -> a:b:c:2.1 -> ~>2.0'
         # referenced by spec
-        artifact_ns['a:b:c'].should_not be_selected
+        expect(artifact_ns['a:b:c']).not_to be_selected
 
         # referenced by name
-        artifact_ns.key?(:b).should be_false
-        artifact_ns[:thing].should_not be_selected
-        artifact_ns[:thing].should be_satisfied_by('a:b:c:2.5')
-        artifact_ns[:thing].should_not be_satisfied_by('a:b:c:3')
-        artifact_ns[:thing].version.should == '2.1'
+        expect(artifact_ns.key?(:b)).to be_falsey
+        expect(artifact_ns[:thing]).not_to be_selected
+        expect(artifact_ns[:thing]).to be_satisfied_by('a:b:c:2.5')
+        expect(artifact_ns[:thing]).not_to be_satisfied_by('a:b:c:3')
+        expect(artifact_ns[:thing].version).to eq('2.1')
       end
     end
 
     it 'should accept a hash :name -> requirement_spec' do
       define 'one' do
         artifact_ns.need :thing => 'a:b:c:2.1 -> ~>2.0'
-        artifact_ns[:thing].should be_satisfied_by('a:b:c:2.5')
-        artifact_ns[:thing].should_not be_satisfied_by('a:b:c:3')
-        artifact_ns[:thing].version.should == '2.1'
+        expect(artifact_ns[:thing]).to be_satisfied_by('a:b:c:2.5')
+        expect(artifact_ns[:thing]).not_to be_satisfied_by('a:b:c:3')
+        expect(artifact_ns[:thing].version).to eq('2.1')
       end
 
       define 'two' do
         artifact_ns.need :thing => 'a:b:c:(~>2.0 | 2.1)'
-        artifact_ns[:thing].should be_satisfied_by('a:b:c:2.5')
-        artifact_ns[:thing].should_not be_satisfied_by('a:b:c:3')
-        artifact_ns[:thing].version.should == '2.1'
+        expect(artifact_ns[:thing]).to be_satisfied_by('a:b:c:2.5')
+        expect(artifact_ns[:thing]).not_to be_satisfied_by('a:b:c:3')
+        expect(artifact_ns[:thing].version).to eq('2.1')
       end
     end
 
@@ -212,12 +212,12 @@ describe Buildr::ArtifactNamespace do
       define 'one' do
         artifact_ns.need :things => ['foo:bar:jar:1.0',
                                      'foo:baz:jar:2.0',]
-        artifact_ns['foo:bar:jar'].should_not be_selected
-        artifact_ns['foo:baz:jar'].should_not be_selected
-        artifact_ns[:bar, :baz].should == [nil, nil]
-        artifact_ns[:things].map(&:unversioned_spec).should include('foo:bar:jar', 'foo:baz:jar')
+        expect(artifact_ns['foo:bar:jar']).not_to be_selected
+        expect(artifact_ns['foo:baz:jar']).not_to be_selected
+        expect(artifact_ns[:bar, :baz]).to eq([nil, nil])
+        expect(artifact_ns[:things].map(&:unversioned_spec)).to include('foo:bar:jar', 'foo:baz:jar')
         artifact_ns.alias :baz, 'foo:baz:jar'
-        artifact_ns[:baz].should == artifact_ns['foo:baz:jar']
+        expect(artifact_ns[:baz]).to eq(artifact_ns['foo:baz:jar'])
       end
     end
 
@@ -226,22 +226,22 @@ describe Buildr::ArtifactNamespace do
         artifact_ns.use :a => 'foo:bar:jar:1.5'
         artifact_ns.use :b => 'foo:baz:jar:2.0'
         define 'two' do
-          artifact_ns[:a].requirement.should be_nil
-          artifact_ns[:a].should be_selected
+          expect(artifact_ns[:a].requirement).to be_nil
+          expect(artifact_ns[:a]).to be_selected
 
           artifact_ns.need :c => 'foo:bat:jar:3.0'
-          artifact_ns['foo:bat:jar'].should_not be_selected
-          artifact_ns[:c].should_not be_selected
+          expect(artifact_ns['foo:bat:jar']).not_to be_selected
+          expect(artifact_ns[:c]).not_to be_selected
 
           artifact_ns.need :one => 'foo:bar:jar:>=1.0'
-          artifact_ns[:one].version.should == '1.5'
-          artifact_ns[:one].should be_selected
-          artifact_ns[:a].requirement.should be_nil
+          expect(artifact_ns[:one].version).to eq('1.5')
+          expect(artifact_ns[:one]).to be_selected
+          expect(artifact_ns[:a].requirement).to be_nil
 
           artifact_ns.need :two => 'foo:baz:jar:>2'
-          artifact_ns[:two].version.should be_nil
-          artifact_ns[:two].should_not be_selected
-          artifact_ns[:b].requirement.should be_nil
+          expect(artifact_ns[:two].version).to be_nil
+          expect(artifact_ns[:two]).not_to be_selected
+          expect(artifact_ns[:b].requirement).to be_nil
         end
       end
     end
@@ -251,27 +251,27 @@ describe Buildr::ArtifactNamespace do
     it 'should register the artifact on namespace' do
       define 'one' do
         artifact_ns.use :thing => 'a:b:c:1'
-        artifact_ns[:thing].requirement.should be_nil
-        artifact_ns[:thing].version.should == '1'
-        artifact_ns[:thing].id.should == 'b'
+        expect(artifact_ns[:thing].requirement).to be_nil
+        expect(artifact_ns[:thing].version).to eq('1')
+        expect(artifact_ns[:thing].id).to eq('b')
         define 'one' do
           artifact_ns.use :thing => 'a:d:c:2'
-          artifact_ns[:thing].requirement.should be_nil
-          artifact_ns[:thing].version.should == '2'
-          artifact_ns[:thing].id.should == 'd'
+          expect(artifact_ns[:thing].requirement).to be_nil
+          expect(artifact_ns[:thing].version).to eq('2')
+          expect(artifact_ns[:thing].id).to eq('d')
 
           artifact_ns.use :copied => artifact_ns.parent[:thing]
-          artifact_ns[:copied].should_not == artifact_ns.parent[:thing]
-          artifact_ns[:copied].requirement.should be_nil
-          artifact_ns[:copied].version.should == '1'
-          artifact_ns[:copied].id.should == 'b'
+          expect(artifact_ns[:copied]).not_to eq(artifact_ns.parent[:thing])
+          expect(artifact_ns[:copied].requirement).to be_nil
+          expect(artifact_ns[:copied].version).to eq('1')
+          expect(artifact_ns[:copied].id).to eq('b')
 
           artifact_ns.use :aliased => :copied
-          artifact_ns[:aliased].should == artifact_ns[:copied]
+          expect(artifact_ns[:aliased]).to eq(artifact_ns[:copied])
 
-          lambda { artifact_ns.use :invalid => :unknown }.should raise_error(NameError, /undefined/i)
+          expect { artifact_ns.use :invalid => :unknown }.to raise_error(NameError, /undefined/i)
         end
-        artifact_ns[:copied].should be_nil
+        expect(artifact_ns[:copied]).to be_nil
       end
     end
 
@@ -279,40 +279,40 @@ describe Buildr::ArtifactNamespace do
       define 'one' do
         artifact_ns.use :foo => 'a:b:c:1'
         artifact_ns.use :bar => 'a:b:c:2'
-        artifact_ns[:foo].version.should == '1'
-        artifact_ns[:bar].version.should == '2'
+        expect(artifact_ns[:foo].version).to eq('1')
+        expect(artifact_ns[:bar].version).to eq('2')
         # unversioned references the last version set.
-        artifact_ns['a:b:c'].version.should == '2'
+        expect(artifact_ns['a:b:c'].version).to eq('2')
       end
     end
 
     it 'should complain if namespace requirement is not satisfied' do
       define 'one' do
         artifact_ns.need :bar => 'foo:bar:baz:~>1.5'
-        lambda { artifact_ns.use :bar => '1.4' }.should raise_error(Exception, /unsatisfied/i)
+        expect { artifact_ns.use :bar => '1.4' }.to raise_error(Exception, /unsatisfied/i)
       end
     end
 
     it 'should be able to register a group' do
       specs = ['its:me:here:1', 'its:you:there:2']
       artifact_ns.use :them => specs
-      artifact_ns[:them].map(&:to_spec).should == specs
-      artifact_ns['its:me:here'].should_not be_nil
-      artifact_ns[:you].should be_nil
+      expect(artifact_ns[:them].map(&:to_spec)).to eq(specs)
+      expect(artifact_ns['its:me:here']).not_to be_nil
+      expect(artifact_ns[:you]).to be_nil
     end
 
     it 'should be able to assign sub namespaces' do
       artifact_ns(:foo).bar = "foo:bar:baz:0"
       artifact_ns(:moo).foo = artifact_ns(:foo)
-      artifact_ns(:moo).foo.should == artifact_ns(:foo)
-      artifact_ns(:moo).foo_bar.should == artifact_ns(:foo).bar
+      expect(artifact_ns(:moo).foo).to eq(artifact_ns(:foo))
+      expect(artifact_ns(:moo).foo_bar).to eq(artifact_ns(:foo).bar)
     end
 
     it 'should handle symbols with dashes and periods' do
       [:'a-b', :'a.b'].each do |symbol|
         artifact_ns.use symbol => 'a:b:c:1'
-        artifact_ns[symbol].version.should == '1'
-        artifact_ns[symbol].id.should == 'b'
+        expect(artifact_ns[symbol].version).to eq('1')
+        expect(artifact_ns[symbol].id).to eq('b')
       end
     end
 
@@ -321,7 +321,7 @@ describe Buildr::ArtifactNamespace do
         ns.bar = 'a:b:c:1'
       end
       foo.use :bar => '2.0'
-      foo.bar.version.should == '2.0'
+      expect(foo.bar.version).to eq('2.0')
     end
   end
 
@@ -333,11 +333,11 @@ describe Buildr::ArtifactNamespace do
           artifact_ns.use 'foo:two:baz:1.0'
 
           specs = artifact_ns.values.map(&:to_spec)
-          specs.should include('foo:two:baz:1.0')
-          specs.should_not include('foo:one:baz:1.0')
+          expect(specs).to include('foo:two:baz:1.0')
+          expect(specs).not_to include('foo:one:baz:1.0')
 
           specs = artifact_ns.values(true).map(&:to_spec)
-          specs.should include('foo:two:baz:1.0', 'foo:one:baz:1.0')
+          expect(specs).to include('foo:two:baz:1.0', 'foo:one:baz:1.0')
         end
       end
     end
@@ -351,12 +351,12 @@ describe Buildr::ArtifactNamespace do
           artifact_ns.use :foo_baz => 'foo:two:baz:1.0'
 
           specs = artifact_ns.values_at('one').map(&:to_spec)
-          specs.should include('foo:one:baz:1.0')
-          specs.should_not include('foo:two:baz:1.0')
+          expect(specs).to include('foo:one:baz:1.0')
+          expect(specs).not_to include('foo:two:baz:1.0')
 
           specs = artifact_ns.values_at('foo_baz').map(&:to_spec)
-          specs.should include('foo:two:baz:1.0')
-          specs.should_not include('foo:one:baz:1.0')
+          expect(specs).to include('foo:two:baz:1.0')
+          expect(specs).not_to include('foo:one:baz:1.0')
         end
       end
     end
@@ -368,12 +368,12 @@ describe Buildr::ArtifactNamespace do
           artifact_ns.use :older => 'foo:one:baz:1.0'
 
           specs = artifact_ns.values_at('foo:one:baz').map(&:to_spec)
-          specs.should include('foo:one:baz:1.0')
-          specs.should_not include('foo:one:baz:2.0')
+          expect(specs).to include('foo:one:baz:1.0')
+          expect(specs).not_to include('foo:one:baz:2.0')
         end
         specs = artifact_ns.values_at('foo:one:baz').map(&:to_spec)
-        specs.should include('foo:one:baz:2.0')
-        specs.should_not include('foo:one:baz:1.0')
+        expect(specs).to include('foo:one:baz:2.0')
+        expect(specs).not_to include('foo:one:baz:1.0')
       end
     end
 
@@ -384,8 +384,8 @@ describe Buildr::ArtifactNamespace do
           artifact_ns.use :older => 'foo:one:baz:1.0'
 
           specs = artifact_ns.values_at('foo:one:baz:>1.0').map(&:to_spec)
-          specs.should include('foo:one:baz:2.0')
-          specs.should_not include('foo:one:baz:1.0')
+          expect(specs).to include('foo:one:baz:2.0')
+          expect(specs).not_to include('foo:one:baz:1.0')
         end
       end
     end
@@ -396,7 +396,7 @@ describe Buildr::ArtifactNamespace do
       define 'one' do
         artifact_ns[:foo] = 'group:foo:jar:1'
         artifact_ns[:bar] = 'group:bar:jar:1'
-        artifact_ns.artifacts.map{|a| a.to_spec}.should include('group:foo:jar:1', 'group:bar:jar:1')
+        expect(artifact_ns.artifacts.map{|a| a.to_spec}).to include('group:foo:jar:1', 'group:bar:jar:1')
       end
     end
   end
@@ -406,7 +406,7 @@ describe Buildr::ArtifactNamespace do
       define 'one' do
         artifact_ns[:foo] = 'group:foo:jar:1'
         artifact_ns[:bar] = 'group:bar:jar:1'
-        artifact_ns.keys.should include('foo', 'bar')
+        expect(artifact_ns.keys).to include('foo', 'bar')
       end
     end
   end
@@ -417,8 +417,8 @@ describe Buildr::ArtifactNamespace do
         artifact_ns[:foo] = 'group:foo:jar:1'
         artifact_ns[:bar] = 'group:bar:jar:1'
         artifact_ns.delete :bar
-        artifact_ns.artifacts.map{|a| a.to_spec}.should include('group:foo:jar:1')
-        artifact_ns[:foo].to_spec.should eql('group:foo:jar:1')
+        expect(artifact_ns.artifacts.map{|a| a.to_spec}).to include('group:foo:jar:1')
+        expect(artifact_ns[:foo].to_spec).to eql('group:foo:jar:1')
       end
     end
   end
@@ -429,7 +429,7 @@ describe Buildr::ArtifactNamespace do
         artifact_ns[:foo] = 'group:foo:jar:1'
         artifact_ns[:bar] = 'group:bar:jar:1'
         artifact_ns.clear
-        artifact_ns.artifacts.should be_empty
+        expect(artifact_ns.artifacts).to be_empty
       end
     end
   end
@@ -437,86 +437,86 @@ describe Buildr::ArtifactNamespace do
   describe '#method_missing' do
     it 'should use cool_aid! to create a requirement' do
       define 'foo' do
-        artifact_ns.cool_aid!('cool:aid:jar:2').should be_kind_of(ArtifactNamespace::ArtifactRequirement)
-        artifact_ns[:cool_aid].version.should == '2'
-        artifact_ns[:cool_aid].should_not be_selected
+        expect(artifact_ns.cool_aid!('cool:aid:jar:2')).to be_kind_of(ArtifactNamespace::ArtifactRequirement)
+        expect(artifact_ns[:cool_aid].version).to eq('2')
+        expect(artifact_ns[:cool_aid]).not_to be_selected
         define 'bar' do
           artifact_ns.cool_aid! 'cool:aid:man:3', '>2'
-          artifact_ns[:cool_aid].version.should == '3'
-          artifact_ns[:cool_aid].requirement.should be_satisfied_by('2.5')
-          artifact_ns[:cool_aid].should_not be_selected
+          expect(artifact_ns[:cool_aid].version).to eq('3')
+          expect(artifact_ns[:cool_aid].requirement).to be_satisfied_by('2.5')
+          expect(artifact_ns[:cool_aid]).not_to be_selected
         end
       end
     end
 
     it 'should use cool_aid= as shorhand for [:cool_aid]=' do
       artifact_ns.cool_aid = 'cool:aid:jar:1'
-      artifact_ns[:cool_aid].should be_selected
+      expect(artifact_ns[:cool_aid]).to be_selected
     end
 
     it 'should use cool_aid as shorthand for [:cool_aid]' do
       artifact_ns.need :cool_aid => 'cool:aid:jar:1'
-      artifact_ns.cool_aid.should_not be_selected
+      expect(artifact_ns.cool_aid).not_to be_selected
     end
 
     it 'should use cool_aid? to test if artifact has been defined and selected' do
       artifact_ns.need :cool_aid => 'cool:aid:jar:>1'
-      artifact_ns.should_not have_cool_aid
-      artifact_ns.should_not have_unknown
+      expect(artifact_ns.has_cool_aid?).to be_falsey
+      expect(artifact_ns.has_unknown?).to be_falsey
       artifact_ns.cool_aid = '2'
-      artifact_ns.should have_cool_aid
+      expect(artifact_ns.has_cool_aid?).to be_truthy
     end
   end
 
   describe '#ns' do
     it 'should create a sub namespace' do
       artifact_ns.ns :foo
-      artifact_ns[:foo].should be_kind_of(ArtifactNamespace)
-      artifact_ns(:foo).should_not === artifact_ns.foo
-      artifact_ns.foo.parent.should == artifact_ns
+      expect(artifact_ns[:foo]).to be_kind_of(ArtifactNamespace)
+      expect(artifact_ns(:foo)).not_to be === artifact_ns.foo
+      expect(artifact_ns.foo.parent).to eq(artifact_ns)
     end
 
     it 'should take any use arguments' do
       artifact_ns.ns :foo, :bar => 'foo:bar:jar:0', :baz => 'foo:baz:jar:0'
-      artifact_ns.foo.bar.should be_selected
-      artifact_ns.foo[:baz].should be_selected
+      expect(artifact_ns.foo.bar).to be_selected
+      expect(artifact_ns.foo[:baz]).to be_selected
     end
 
     it 'should access sub artifacts using with foo_bar like syntax' do
       artifact_ns.ns :foo, :bar => 'foo:bar:jar:0', :baz => 'foo:baz:jar:0'
-      artifact_ns[:foo_baz].should be_selected
-      artifact_ns.foo_bar.should be_selected
+      expect(artifact_ns[:foo_baz]).to be_selected
+      expect(artifact_ns.foo_bar).to be_selected
 
       artifact_ns.foo.ns :bat, 'bat:man:jar:>1'
       batman = artifact_ns.foo.bat.man
-      batman.should be_selected
+      expect(batman).to be_selected
       artifact_ns[:foo_bat_man] = '3'
-      artifact_ns[:foo_bat_man].should == batman
-      artifact_ns[:foo_bat_man].version.should == '3'
+      expect(artifact_ns[:foo_bat_man]).to eq(batman)
+      expect(artifact_ns[:foo_bat_man].version).to eq('3')
     end
 
     it 'should include sub artifacts when calling #values' do
       artifact_ns.ns :bat, 'bat:man:jar:>1'
-      artifact_ns.values.should_not be_empty
-      artifact_ns.values.first.unversioned_spec.should == 'bat:man:jar'
+      expect(artifact_ns.values).not_to be_empty
+      expect(artifact_ns.values.first.unversioned_spec).to eq('bat:man:jar')
     end
 
     it 'should reopen a sub-namespace' do
       artifact_ns.ns :bat, 'bat:man:jar:>1'
       bat = artifact_ns[:bat]
-      bat.should == artifact_ns.ns(:bat)
+      expect(bat).to eq(artifact_ns.ns(:bat))
     end
 
     it 'should fail reopening if not a sub-namespace' do
       artifact_ns.foo = 'foo:bar:baz:0'
-      lambda { artifact_ns.ns(:foo) }.should raise_error(TypeError, /not a sub/i)
+      expect { artifact_ns.ns(:foo) }.to raise_error(TypeError, /not a sub/i)
     end
 
     it 'should clone artifacts when assigned' do
       artifact_ns(:foo).bar = "foo:bar:jar:0"
       artifact_ns(:moo).ns :muu, :miu => artifact_ns(:foo).bar
-      artifact_ns(:moo).muu.miu.should_not == artifact_ns(:foo).bar
-      artifact_ns(:moo).muu.miu.to_spec.should == artifact_ns(:foo).bar.to_spec
+      expect(artifact_ns(:moo).muu.miu).not_to eq(artifact_ns(:foo).bar)
+      expect(artifact_ns(:moo).muu.miu.to_spec).to eq(artifact_ns(:foo).bar.to_spec)
     end
 
     it 'should clone parent artifacts by name' do
@@ -524,17 +524,17 @@ describe Buildr::ArtifactNamespace do
         artifact_ns.bar = "foo:bar:jar:0"
         define 'moo' do
           artifact_ns.ns(:muu).use :bar
-          artifact_ns.muu_bar.should be_selected
-          artifact_ns.muu.bar.should_not == artifact_ns.bar
+          expect(artifact_ns.muu_bar).to be_selected
+          expect(artifact_ns.muu.bar).not_to eq(artifact_ns.bar)
         end
       end
     end
   end
 
   it 'should be an Enumerable' do
-    artifact_ns.should be_kind_of(Enumerable)
+    expect(artifact_ns).to be_kind_of(Enumerable)
     artifact_ns.use 'foo:bar:baz:1.0'
-    artifact_ns.map(&:artifact).should include(artifact('foo:bar:baz:1.0'))
+    expect(artifact_ns.map(&:artifact)).to include(artifact('foo:bar:baz:1.0'))
   end
 
 end # ArtifactNamespace
@@ -545,7 +545,7 @@ describe Buildr::ArtifactNamespace::ArtifactRequirement do
     foo = artifact_ns do |ns|
       ns.bar = 'a:b:c:1.0'
     end
-    foo.bar.should be_kind_of(ArtifactNamespace::ArtifactRequirement)
+    expect(foo.bar).to be_kind_of(ArtifactNamespace::ArtifactRequirement)
   end
 
   it 'should handle version as string' do
@@ -553,7 +553,7 @@ describe Buildr::ArtifactNamespace::ArtifactRequirement do
       ns.bar = 'a:b:c:1.0'
     end
     foo.bar.version = '2.0'
-    foo.bar.version.should == '2.0'
+    expect(foo.bar.version).to eq('2.0')
   end
 
   it 'should handle version string directly' do
@@ -561,7 +561,7 @@ describe Buildr::ArtifactNamespace::ArtifactRequirement do
       ns.bar = 'a:b:c:1.0'
     end
     foo.bar = '2.0'
-    foo.bar.version.should == '2.0'
+    expect(foo.bar.version).to eq('2.0')
   end
 
 end # ArtifactRequirement
@@ -576,7 +576,7 @@ describe Buildr do
         artifact_ns.use 'some:other:jar:1.0'
         artifact_ns.use 'bat:man:jar:1.0'
         compile.with :cool, :other, :'bat:man:jar'
-        compile.dependencies.map(&:to_spec).should include('cool:aid:jar:1.0', 'some:other:jar:1.0', 'bat:man:jar:1.0')
+        expect(compile.dependencies.map(&:to_spec)).to include('cool:aid:jar:1.0', 'some:other:jar:1.0', 'bat:man:jar:1.0')
       end
     end
 
@@ -584,7 +584,7 @@ describe Buildr do
       artifact_ns(:moo).muu = 'moo:muu:jar:1.0'
       define 'foo' do
         compile.with artifact_ns(:moo)
-        compile.dependencies.map(&:to_spec).should include('moo:muu:jar:1.0')
+        expect(compile.dependencies.map(&:to_spec)).to include('moo:muu:jar:1.0')
       end
     end
   end
@@ -594,7 +594,7 @@ describe Buildr do
       define 'foo' do
         artifact_ns.use :cool => 'cool:aid:jar:1.0'
         define 'bar' do
-          artifact(:cool).should == artifact_ns[:cool].artifact
+          expect(artifact(:cool)).to eq(artifact_ns[:cool].artifact)
         end
       end
     end
@@ -603,7 +603,7 @@ describe Buildr do
       define 'foo' do
         artifact_ns.use 'cool:aid:jar:1.0'
         define 'bar' do
-          artifact(:'cool:aid:jar').should == artifact_ns[:aid].artifact
+          expect(artifact(:'cool:aid:jar')).to eq(artifact_ns[:aid].artifact)
         end
       end
     end
@@ -612,7 +612,7 @@ describe Buildr do
       define 'foo' do
         artifact_ns.use 'cool:aid:jar:1.0'
         define 'bar' do
-          lambda { artifact(:cool) }.should raise_error(IndexError, /artifact/)
+          expect { artifact(:cool) }.to raise_error(IndexError, /artifact/)
         end
       end
     end
@@ -666,13 +666,13 @@ describe "Extension using ArtifactNamespace" do
           options.xmlbeans.add_listener &method(:selected_xmlbeans)
           options.stax_api.add_listener do |stax|
             # Now using a proc
-            stax.should be_selected
-            stax.version.should == '1.6180'
+            expect(stax).to be_selected
+            expect(stax.version).to eq('1.6180')
             options[:math] = :golden # customize our options for this version
             # In this example we set the stax version when running outside
             # a project definition. This means we have no access to the project
             # namespace unless we had a reference to the project or knew it's name
-            Buildr.artifact_ns(:current).name.should == 'root'
+            expect(Buildr.artifact_ns(:current).name).to eq('root')
           end
         end
 
@@ -682,12 +682,12 @@ describe "Extension using ArtifactNamespace" do
         # by a user. This allows extension author to selectively perform
         # some action by inspecting the requirement state.
         def selected_xmlbeans(xmlbeans)
-          xmlbeans.should be_selected
-          xmlbeans.version.should == '3.1415'
+          expect(xmlbeans).to be_selected
+          expect(xmlbeans.version).to eq('3.1415')
           options[:math] = :pi
           # This example just sets xmlbeans for foo:bar project
           # So the currently running namespace should have the foo:bar name
-          Buildr.artifact_ns(:current).name.should == 'foo:bar'
+          expect(Buildr.artifact_ns(:current).name).to eq('foo:bar')
         end
 
         # Suppose we invoke an ant task here or something else.
@@ -697,7 +697,7 @@ describe "Extension using ArtifactNamespace" do
           lambda { ant('thing') { |ant| ant.classpath classpath, :math => options[:math] } }
 
           # We are not a Project instance, hence we have no artifact_ns
-          lambda { artifact_ns }.should raise_error(NameError)
+          expect { artifact_ns }.to raise_error(NameError)
 
           # Extension authors may NOT rely project's namespaces.
           # However the ruby-way gives you power and at the same time
@@ -719,13 +719,13 @@ describe "Extension using ArtifactNamespace" do
           name = Buildr.artifact_ns(:current).name
           case name
           when 'foo:bar'
-            options[:math].should == :pi
-            requires.xmlbeans.version.should == '3.1415'
-            requires.stax_api.version.should == '1.0.1'
+            expect(options[:math]).to eq(:pi)
+            expect(requires.xmlbeans.version).to eq('3.1415')
+            expect(requires.stax_api.version).to eq('1.0.1')
           when 'foo:baz'
-            options[:math].should == :golden
-            requires.xmlbeans.version.should == '2.3.0'
-            requires.stax_api.version.should == '1.6180'
+            expect(options[:math]).to eq(:golden)
+            expect(requires.xmlbeans.version).to eq('2.3.0')
+            expect(requires.stax_api.version).to eq('1.6180')
           else
             fail "This example expects foo:bar or foo:baz projects not #{name.inspect}"
           end
@@ -745,14 +745,14 @@ describe "Extension using ArtifactNamespace" do
         end
       end
 
-      project('foo:bar').example.requires.should_not == project('foo:baz').example.requires
-      project('foo:bar').example.requires.xmlbeans.should_not == project('foo:baz').example.requires.xmlbeans
+      expect(project('foo:bar').example.requires).not_to eq(project('foo:baz').example.requires)
+      expect(project('foo:bar').example.requires.xmlbeans).not_to eq(project('foo:baz').example.requires.xmlbeans)
 
       # current namespace outside a project is :root, see the stax callback
       project('foo:baz').example.options.stax_api = '1.6180'
       # we call the task outside the project, see #doit
-      lambda { task('foo:bar:run').invoke }.should run_task('foo:bar:example')
-      lambda { task('foo:baz:example').invoke }.should run_task('foo:baz:example')
+      expect { task('foo:bar:run').invoke }.to run_task('foo:bar:example')
+      expect { task('foo:baz:example').invoke }.to run_task('foo:baz:example')
     end
   end
 end

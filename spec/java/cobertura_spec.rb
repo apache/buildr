@@ -35,19 +35,19 @@ describe Buildr::Cobertura do
 
     describe 'data file' do
       it 'should have a default value' do
-        define('foo').cobertura.data_file.should point_to_path('reports/cobertura.ser')
+        expect(define('foo').cobertura.data_file).to point_to_path('reports/cobertura.ser')
       end
 
       it 'should be overridable' do
         define('foo') { cobertura.data_file = path_to('target/data.cobertura') }
-        project('foo').cobertura.data_file.should point_to_path('target/data.cobertura')
+        expect(project('foo').cobertura.data_file).to point_to_path('target/data.cobertura')
       end
 
       it 'should be created during instrumentation' do
         write 'src/main/java/Foo.java', 'public class Foo {}'
         define('foo')
         task('foo:cobertura:instrument').invoke
-        file(project('foo').cobertura.data_file).should exist
+        expect(file(project('foo').cobertura.data_file)).to exist
       end
 
       it 'should not instrument projects which have no sources' do
@@ -70,20 +70,20 @@ describe Buildr::Cobertura do
       it 'should instrument only included classes' do
         define('foo') { cobertura.include 'Foo' }
         task("foo:cobertura:instrument").invoke
-        Dir.chdir('target/instrumented/classes') { Dir.glob('*').sort.should == ['Foo.class'] }
+        Dir.chdir('target/instrumented/classes') { expect(Dir.glob('*').sort).to eq(['Foo.class']) }
       end
 
       it 'should not instrument excluded classes' do
         define('foo') { cobertura.exclude 'Foo' }
         task("foo:cobertura:instrument").invoke
-        Dir.chdir('target/instrumented/classes') { Dir.glob('*').sort.should == ['Bar.class'] }
+        Dir.chdir('target/instrumented/classes') { expect(Dir.glob('*').sort).to eq(['Bar.class']) }
       end
 
       it 'should instrument classes that are included but not excluded' do
         write 'src/main/java/Baz.java', 'public class Baz {}'
         define('foo') { cobertura.include('Ba').exclude('ar') }
         task("foo:cobertura:instrument").invoke
-        Dir.chdir('target/instrumented/classes') { Dir.glob('*').sort.should == ['Baz.class'] }
+        Dir.chdir('target/instrumented/classes') { expect(Dir.glob('*').sort).to eq(['Baz.class']) }
       end
     end
 
@@ -106,7 +106,7 @@ JAVA
 
       it 'should not raise errors during execution' do
         define('foo')  { cobertura.include 'Foo' }
-        lambda {task("foo:cobertura:check").invoke}.should_not raise_error
+        expect {task("foo:cobertura:check").invoke}.not_to raise_error
       end
 
     end

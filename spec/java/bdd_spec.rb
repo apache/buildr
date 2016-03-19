@@ -24,7 +24,7 @@ describe Buildr::RSpec do
   end
 
   it 'should be selected by :rspec name' do
-    project('foo').test.framework.should eql(:rspec)
+    expect(project('foo').test.framework).to eql(:rspec)
   end
 
   # These tests will fail because they expect that a version of rspec will be present in the local gem
@@ -35,7 +35,7 @@ describe Buildr::RSpec do
       write('src/spec/ruby/success_spec.rb', 'describe("success") { it("is true") { nil.should be_nil } }')
 
       project('foo').test.invoke
-      project('foo').test.passed_tests.should eql([File.expand_path('src/spec/ruby/success_spec.rb')])
+      expect(project('foo').test.passed_tests).to eql([File.expand_path('src/spec/ruby/success_spec.rb')])
     end
 
     it 'should read result yaml to obtain the list of failed specs' do
@@ -46,10 +46,10 @@ describe Buildr::RSpec do
       error = File.expand_path('src/spec/ruby/error_spec.rb')
       write(error, 'describe("error") { it("raises") { lambda; } }')
 
-      lambda { project('foo').test.invoke }.should raise_error(/Tests failed/)
-      project('foo').test.tests.should include(success, failure, error)
-      project('foo').test.failed_tests.sort.should eql([failure, error].sort)
-      project('foo').test.passed_tests.should eql([success])
+      expect { project('foo').test.invoke }.to raise_error(/Tests failed/)
+      expect(project('foo').test.tests).to include(success, failure, error)
+      expect(project('foo').test.failed_tests.sort).to eql([failure, error].sort)
+      expect(project('foo').test.passed_tests).to eql([success])
     end
   end
 
@@ -70,37 +70,37 @@ describe Buildr::JBehave do
   it 'should apply to projects having JBehave sources' do
     define('one', :base_dir => 'one') do
       write _('src/spec/java/SomeBehaviour.java'), 'public class SomeBehaviour {}'
-      JBehave.applies_to?(self).should be_true
+      expect(JBehave.applies_to?(self)).to be_truthy
     end
     define('two', :base_dir => 'two') do
       write _('src/test/java/SomeBehaviour.java'), 'public class SomeBehaviour {}'
-      JBehave.applies_to?(self).should be_false
+      expect(JBehave.applies_to?(self)).to be_falsey
     end
     define('three', :base_dir => 'three') do
       write _('src/spec/java/SomeBehavior.java'), 'public class SomeBehavior {}'
-      JBehave.applies_to?(self).should be_true
+      expect(JBehave.applies_to?(self)).to be_truthy
     end
     define('four', :base_dir => 'four') do
       write _('src/test/java/SomeBehavior.java'), 'public class SomeBehavior {}'
-      JBehave.applies_to?(self).should be_false
+      expect(JBehave.applies_to?(self)).to be_falsey
     end
   end
 
   it 'should be selected by :jbehave name' do
-    foo { test.framework.should eql(:jbehave) }
+    foo { expect(test.framework).to eql(:jbehave) }
   end
 
   it 'should select a java compiler for its sources' do
     write 'src/test/java/SomeBehavior.java', 'public class SomeBehavior {}'
     foo do
-      test.compile.language.should eql(:java)
+      expect(test.compile.language).to eql(:java)
     end
   end
 
   it 'should include JBehave dependencies' do
     foo do
-      test.compile.dependencies.should include(artifact("org.jbehave:jbehave:jar::#{JBehave.version}"))
-      test.dependencies.should include(artifact("org.jbehave:jbehave:jar::#{JBehave.version}"))
+      expect(test.compile.dependencies).to include(artifact("org.jbehave:jbehave:jar::#{JBehave.version}"))
+      expect(test.dependencies).to include(artifact("org.jbehave:jbehave:jar::#{JBehave.version}"))
     end
   end
 
@@ -108,8 +108,8 @@ describe Buildr::JBehave do
     foo do
       two_or_later = JMock.version[0,1].to_i >= 2
       group = two_or_later ? "org.jmock" : "jmock"
-      test.compile.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
-      test.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
+      expect(test.compile.dependencies).to include(artifact("#{group}:jmock:jar:#{JMock.version}"))
+      expect(test.dependencies).to include(artifact("#{group}:jmock:jar:#{JMock.version}"))
     end
   end
 
@@ -126,7 +126,7 @@ describe Buildr::JBehave do
     JAVA
     foo.tap do |project|
       project.test.invoke
-      project.test.tests.should include('some.FooBehavior')
+      expect(project.test.tests).to include('some.FooBehavior')
     end
   end
 
@@ -153,7 +153,7 @@ describe Buildr::JBehave do
     JAVA
     foo.tap do |project|
       project.test.invoke
-      project.test.tests.should include('some.MyBehaviours')
+      expect(project.test.tests).to include('some.MyBehaviours')
     end
   end
 

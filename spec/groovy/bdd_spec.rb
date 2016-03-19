@@ -32,30 +32,30 @@ describe Buildr::Groovy::EasyB do
   it 'should apply to a project having EasyB sources' do
     define('one', :base_dir => 'one') do
       write _('src/spec/groovy/SomeSpecification.groovy'), 'true;'
-      Buildr::Groovy::EasyB.applies_to?(self).should be_true
+      expect(Buildr::Groovy::EasyB.applies_to?(self)).to be_truthy
     end
     define('two', :base_dir => 'two') do
       write _('src/test/groovy/SomeSpecification.groovy'), 'true;'
-      Buildr::Groovy::EasyB.applies_to?(self).should be_false
+      expect(Buildr::Groovy::EasyB.applies_to?(self)).to be_falsey
     end
     define('three', :base_dir => 'three') do
       write _('src/spec/groovy/SomeStory.groovy'), 'true;'
-      Buildr::Groovy::EasyB.applies_to?(self).should be_true
+      expect(Buildr::Groovy::EasyB.applies_to?(self)).to be_truthy
     end
     define('four', :base_dir => 'four') do
       write _('src/test/groovy/SomeStory.groovy'), 'true;'
-      Buildr::Groovy::EasyB.applies_to?(self).should be_false
+      expect(Buildr::Groovy::EasyB.applies_to?(self)).to be_falsey
     end
   end
 
   it 'should be selected by :easyb name' do
-    foo { test.framework.should eql(:easyb) }
+    foo { expect(test.framework).to eql(:easyb) }
   end
 
   it 'should select a java compiler if java sources are found' do
     foo do
       write _('src/spec/java/SomeSpecification.java'), 'public class SomeSpecification {}'
-      test.compile.language.should eql(:java)
+      expect(test.compile.language).to eql(:java)
     end
   end
 
@@ -64,7 +64,7 @@ describe Buildr::Groovy::EasyB do
       spec = _('src/spec/groovy/SomeSpecification.groovy')
       write spec, 'true'
       test.invoke
-      test.tests.should include(spec)
+      expect(test.tests).to include(spec)
     end
   end
 
@@ -73,7 +73,7 @@ describe Buildr::Groovy::EasyB do
       spec = _('src/spec/groovy/SomeStory.groovy')
       write spec, 'true'
       test.invoke
-      test.tests.should include(spec)
+      expect(test.tests).to include(spec)
     end
   end
 

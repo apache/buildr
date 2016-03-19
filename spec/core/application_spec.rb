@@ -21,37 +21,37 @@ describe Buildr::Application do
 
   describe 'home_dir' do
     it 'should point to ~/.buildr' do
-      Buildr.application.home_dir.should eql(File.expand_path('.buildr', ENV['HOME']))
+      expect(Buildr.application.home_dir).to eql(File.expand_path('.buildr', ENV['HOME']))
     end
 
     it 'should point to existing directory' do
-      File.directory?(Buildr.application.home_dir).should be_true
+      expect(File.directory?(Buildr.application.home_dir)).to be_truthy
     end
   end
 
   describe '#run' do
     it 'should execute *_load methods in order' do
       order = [:load_gems, :load_artifact_ns, :load_tasks, :raw_load_buildfile]
-      order.each { |method| Buildr.application.should_receive(method).ordered }
-      Buildr.application.stub(:exit) # With this, shows the correct error instead of SystemExit.
+      order.each { |method| expect(Buildr.application).to receive(method).ordered }
+      allow(Buildr.application).to receive(:exit) # With this, shows the correct error instead of SystemExit.
       Buildr.application.run
     end
 
     it 'should load imports after loading buildfile' do
       method = Buildr.application.method(:raw_load_buildfile)
-      Buildr.application.should_receive(:raw_load_buildfile) do
-        Buildr.application.should_receive(:load_imports)
+      expect(Buildr.application).to receive(:raw_load_buildfile) do
+        expect(Buildr.application).to receive(:load_imports)
         method.call
       end
-      Buildr.application.stub(:exit) # With this, shows the correct error instead of SystemExit.
+      allow(Buildr.application).to receive(:exit) # With this, shows the correct error instead of SystemExit.
       Buildr.application.run
     end
 
     it 'should evaluate all projects after loading buildfile' do
-      Buildr.application.should_receive(:load_imports) do
-        Buildr.should_receive(:projects)
+      expect(Buildr.application).to receive(:load_imports) do
+        expect(Buildr).to receive(:projects)
       end
-      Buildr.application.stub(:exit) # With this, shows the correct error instead of SystemExit.
+      allow(Buildr.application).to receive(:exit) # With this, shows the correct error instead of SystemExit.
       Buildr.application.run
     end
   end
@@ -59,65 +59,65 @@ describe Buildr::Application do
   describe 'environment' do
     it 'should return value of BUILDR_ENV' do
       ENV['BUILDR_ENV'] = 'qa'
-      Buildr.application.environment.should eql('qa')
+      expect(Buildr.application.environment).to eql('qa')
     end
 
     it 'should default to development' do
-      Buildr.application.environment.should eql('development')
+      expect(Buildr.application.environment).to eql('development')
     end
 
     it 'should set environment name from -e argument' do
       ARGV.push('-e', 'test')
       Buildr.application.send(:handle_options)
-      Buildr.application.environment.should eql('test')
-      ENV['BUILDR_ENV'].should eql('test')
+      expect(Buildr.application.environment).to eql('test')
+      expect(ENV['BUILDR_ENV']).to eql('test')
     end
 
     it 'should be echoed to user' do
       write 'buildfile'
       ENV['BUILDR_ENV'] = 'spec'
       Buildr.application.send(:handle_options)
-      lambda { Buildr.application.send :load_buildfile }.should show(%r{(in .*, spec)})
+      expect { Buildr.application.send :load_buildfile }.to show(%r{(in .*, spec)})
     end
   end
 
   describe 'options' do
     it "should have 'tasks' as the sole default rakelib" do
       Buildr.application.send(:handle_options)
-      Buildr.application.options.rakelib.should == ['tasks']
+      expect(Buildr.application.options.rakelib).to eq(['tasks'])
     end
 
     it 'should show the version when prompted with -V' do
       ARGV.push('-V')
-      test_exit(0) { Buildr.application.send(:handle_options) }.should show(/Buildr #{Buildr::VERSION}.*/)
+      expect(test_exit(0) { Buildr.application.send(:handle_options) }).to show(/Buildr #{Buildr::VERSION}.*/)
     end
 
     it 'should show the version when prompted with --version' do
       ARGV.push('--version')
-      test_exit(0) { Buildr.application.send(:handle_options) }.should show(/Buildr #{Buildr::VERSION}.*/)
+      expect(test_exit(0) { Buildr.application.send(:handle_options) }).to show(/Buildr #{Buildr::VERSION}.*/)
     end
 
     it 'should enable tracing with --trace' do
       ARGV.push('--trace')
       Buildr.application.send(:handle_options)
-      Buildr.application.options.trace.should == true
+      expect(Buildr.application.options.trace).to eq(true)
     end
 
     it 'should enable tracing of [:foo, :bar] categories with --trace=foo,bar' do
       ARGV.push('--trace=foo,bar')
       Buildr.application.send(:handle_options)
-      Buildr.application.options.trace.should == true
-      Buildr.application.options.trace_categories.should == [:foo, :bar]
-      trace?(:foo).should == true
-      trace?(:not).should == false
+      expect(Buildr.application.options.trace).to eq(true)
+      expect(Buildr.application.options.trace_categories).to eq([:foo, :bar])
+      expect(trace?(:foo)).to eq(true)
+      expect(trace?(:not)).to eq(false)
     end
 
     it 'should enable tracing for all categories with --trace=all' do
       ARGV.push('--trace=all')
       Buildr.application.send(:handle_options)
-      Buildr.application.options.trace.should == true
-      Buildr.application.options.trace_all.should == true
-      trace?(:foo).should == true
+      expect(Buildr.application.options.trace).to eq(true)
+      expect(Buildr.application.options.trace_all).to eq(true)
+      expect(trace?(:foo)).to eq(true)
     end
 
   end
@@ -135,33 +135,33 @@ describe Buildr::Application do
         - rake
         - rspec ~> 2.9.0
       YAML
-      Buildr.application.should_receive(:listed_gems).and_return([[Gem.loaded_specs['rspec'],Gem.loaded_specs['rake']],[]])
+      expect(Buildr.application).to receive(:listed_gems).and_return([[Gem.loaded_specs['rspec'],Gem.loaded_specs['rake']],[]])
       Buildr.application.load_gems
     end
 
     it 'should return empty array if no gems specified' do
       Buildr.application.load_gems
-      Buildr.application.gems.should be_empty
+      expect(Buildr.application.gems).to be_empty
     end
 
     it 'should return one entry for each gem specified in buildr.yaml' do
       load_with_yaml
-      Buildr.application.gems.size.should be(2)
+      expect(Buildr.application.gems.size).to be(2)
     end
 
     it 'should return a Gem::Specification for each installed gem' do
       load_with_yaml
-      Buildr.application.gems.each { |gem| gem.should be_kind_of(Gem::Specification) }
+      Buildr.application.gems.each { |gem| expect(gem).to be_kind_of(Bundler::StubSpecification) }
     end
 
     it 'should parse Gem name correctly' do
       load_with_yaml
-      Buildr.application.gems.map(&:name).should include('rspec', 'rake')
+      expect(Buildr.application.gems.map(&:name)).to include('rspec', 'rake')
     end
 
     it 'should find installed version of Gem' do
       load_with_yaml
-      Buildr.application.gems.each { |gem| gem.version.should eql(Gem.loaded_specs[gem.name].version) }
+      Buildr.application.gems.each { |gem| expect(gem.version).to eql(Gem.loaded_specs[gem.name].version) }
     end
   end
 
@@ -174,27 +174,27 @@ describe Buildr::Application do
         spec.name = 'buildr-foo'
         spec.version = '1.2'
       end
-      $stdout.stub(:isatty).and_return(true)
+      allow($stdout).to receive(:isatty).and_return(true)
     end
 
     it 'should do nothing if no gems specified' do
-      lambda { Buildr.application.load_gems }.should_not raise_error
+      expect { Buildr.application.load_gems }.not_to raise_error
     end
 
     it 'should install nothing if specified gems already installed' do
-      Buildr.application.should_receive(:listed_gems).and_return([[Gem.loaded_specs['rspec']],[]])
-      Util.should_not_receive(:ruby)
-      lambda { Buildr.application.load_gems }.should_not raise_error
+      expect(Buildr.application).to receive(:listed_gems).and_return([[Gem.loaded_specs['rspec']],[]])
+      expect(Util).not_to receive(:ruby)
+      expect { Buildr.application.load_gems }.not_to raise_error
     end
 
     it 'should fail if required gem not installed' do
-      Buildr.application.should_receive(:listed_gems).and_return([[],[Gem::Dependency.new('buildr-foo', '>=1.1')]])
-      lambda { Buildr.application.load_gems }.should raise_error(LoadError, /cannot be found/i)
+      expect(Buildr.application).to receive(:listed_gems).and_return([[],[Gem::Dependency.new('buildr-foo', '>=1.1')]])
+      expect { Buildr.application.load_gems }.to raise_error(LoadError, /cannot be found/i)
     end
 
     it 'should load previously installed gems' do
-      Gem.loaded_specs['rspec'].should_receive(:activate)
-      Buildr.application.should_receive(:listed_gems).and_return([[Gem.loaded_specs['rspec']],[]])
+      expect(Gem.loaded_specs['rspec']).to receive(:activate)
+      expect(Buildr.application).to receive(:listed_gems).and_return([[Gem.loaded_specs['rspec']],[]])
       #Buildr.application.should_receive(:gem).with('rspec', Gem.loaded_specs['rspec'].version.to_s)
       Buildr.application.load_gems
     end
@@ -221,7 +221,7 @@ describe Buildr::Application do
 
     def should_attempt_to_load_dependency(dep)
       missing_gems = Buildr.application.send(:listed_gems)[1]
-      missing_gems.size.should eql(1)
+      expect(missing_gems.size).to eql(1)
       missing_gems[0].eql?(dep)
     end
   end
@@ -256,21 +256,21 @@ describe Buildr::Application do
 
     it "should load {options.rakelib}/foo.rake" do
       write_task 'tasks/foo.rake'
-      loaded_tasks.should have(1).task
-      loaded_tasks.first.should =~ %r{tasks/foo\.rake$}
+      expect(loaded_tasks.size).to eq(1)
+      expect(loaded_tasks.first).to match(%r{tasks/foo\.rake$})
     end
 
     it 'should load all *.rake files from the rakelib' do
       write_task 'tasks/bar.rake'
       write_task 'tasks/quux.rake'
-      loaded_tasks.should have(2).tasks
+      expect(loaded_tasks.size).to eq(2)
     end
 
     it 'should not load files which do not have the .rake extension' do
       write_task 'tasks/foo.rb'
       write_task 'tasks/bar.rake'
-      loaded_tasks.should have(1).task
-      loaded_tasks.first.should =~ %r{tasks/bar\.rake$}
+      expect(loaded_tasks.size).to eq(1)
+      expect(loaded_tasks.first).to match(%r{tasks/bar\.rake$})
     end
 
     it 'should load files only from the directory specified in the rakelib option' do
@@ -278,9 +278,9 @@ describe Buildr::Application do
       write_task 'extensions/amp.rake'
       write_task 'tasks/bar.rake'
       write_task 'extensions/foo.rake'
-      loaded_tasks.should have(2).tasks
+      expect(loaded_tasks.size).to eq(2)
       %w[amp foo].each do |filename|
-        loaded_tasks.select{|x| x =~ %r{extensions/#{filename}\.rake}}.should have(1).entry
+        expect(loaded_tasks.select{|x| x =~ %r{extensions/#{filename}\.rake}}.size).to eq(1)
       end
     end
 
@@ -290,7 +290,7 @@ describe Buildr::Application do
       write_task 'tasks/bar.rake'
       write_task 'tasks/zeb.rake'
       write_task 'more/baz.rake'
-      loaded_tasks.should have(4).tasks
+      expect(loaded_tasks.size).to eq(4)
     end
 
     it 'should not load files from the rakelib more than once' do
@@ -298,8 +298,8 @@ describe Buildr::Application do
       write_task 'tasks/already.rake'
       $LOADED_FEATURES << File.expand_path('tasks/already.rake')
 
-      loaded_tasks.should have(1).task
-      loaded_tasks.first.should =~ %r{tasks/new_one\.rake$}
+      expect(loaded_tasks.size).to eq(1)
+      expect(loaded_tasks.first).to match(%r{tasks/new_one\.rake$})
     end
   end
 
@@ -344,14 +344,14 @@ describe Buildr::Application do
             raise MyOwnNicelyNamedException.new('My message')
           end
         }.call
-        $stderr.messages.select {|msg| msg =~ /.*MyOwnNicelyNamedException : My message.*/}.size.should == 1
+        expect($stderr.messages.select {|msg| msg =~ /.*MyOwnNicelyNamedException : My message.*/}.size).to eq(1)
         $stderr.messages.clear
         test_exit(1) {
           Buildr.application.send :standard_exception_handling do
             raise Exception.new('My message')
           end
         }.call
-        $stderr.messages.select {|msg| msg =~ /.*My message.*/ && !(msg =~ /Exception/)}.size.should == 1
+        expect($stderr.messages.select {|msg| msg =~ /.*My message.*/ && !(msg =~ /Exception/)}.size).to eq(1)
       end
       $stderr = old_stderr
     end
@@ -365,59 +365,59 @@ describe Buildr, 'settings' do
   describe 'user' do
 
     it 'should be empty hash if no settings.yaml file' do
-      Buildr.settings.user.should == {}
+      expect(Buildr.settings.user).to eq({})
     end
 
     it 'should return loaded settings.yaml file' do
       write 'home/.buildr/settings.yaml', 'foo: bar'
-      Buildr.settings.user.should == { 'foo'=>'bar' }
+      expect(Buildr.settings.user).to eq({ 'foo'=>'bar' })
     end
 
     it 'should return loaded settings.yml file' do
       write 'home/.buildr/settings.yml', 'foo: bar'
-      Buildr.settings.user.should == { 'foo'=>'bar' }
+      expect(Buildr.settings.user).to eq({ 'foo'=>'bar' })
     end
 
     it 'should fail if settings.yaml file is not a hash' do
       write 'home/.buildr/settings.yaml', 'foo bar'
-      lambda { Buildr.settings.user }.should raise_error(RuntimeError, /expecting.*settings.yaml/i)
+      expect { Buildr.settings.user }.to raise_error(RuntimeError, /expecting.*settings.yaml/i)
     end
 
     it 'should be empty hash if settings.yaml file is empty' do
       write 'home/.buildr/settings.yaml'
-      Buildr.settings.user.should == {}
+      expect(Buildr.settings.user).to eq({})
     end
   end
 
   describe 'configuration' do
     it 'should be empty hash if no build.yaml file' do
-      Buildr.settings.build.should == {}
+      expect(Buildr.settings.build).to eq({})
     end
 
     it 'should return loaded build.yaml file' do
       write 'build.yaml', 'foo: bar'
-      Buildr.settings.build.should == { 'foo'=>'bar' }
+      expect(Buildr.settings.build).to eq({ 'foo'=>'bar' })
     end
 
     it 'should return loaded build.yml file' do
       write 'build.yml', 'foo: bar'
-      Buildr.settings.build.should == { 'foo'=>'bar' }
+      expect(Buildr.settings.build).to eq({ 'foo'=>'bar' })
     end
 
     it 'should fail if build.yaml file is not a hash' do
       write 'build.yaml', 'foo bar'
-      lambda { Buildr.settings.build }.should raise_error(RuntimeError, /expecting.*build.yaml/i)
+      expect { Buildr.settings.build }.to raise_error(RuntimeError, /expecting.*build.yaml/i)
     end
 
     it 'should be empty hash if build.yaml file is empty' do
       write 'build.yaml'
-      Buildr.settings.build.should == {}
+      expect(Buildr.settings.build).to eq({})
     end
   end
 
   describe 'profiles' do
     it 'should be empty hash if no profiles.yaml file' do
-      Buildr.settings.profiles.should == {}
+      expect(Buildr.settings.profiles).to eq({})
     end
 
     it 'should return loaded profiles.yaml file' do
@@ -425,7 +425,7 @@ describe Buildr, 'settings' do
         development:
           foo: bar
       YAML
-      Buildr.settings.profiles.should == { 'development'=> { 'foo'=>'bar' } }
+      expect(Buildr.settings.profiles).to eq({ 'development'=> { 'foo'=>'bar' } })
     end
 
     it 'should return loaded profiles.yml file' do
@@ -433,17 +433,17 @@ describe Buildr, 'settings' do
         development:
           foo: bar
       YAML
-      Buildr.settings.profiles.should == { 'development'=> { 'foo'=>'bar' } }
+      expect(Buildr.settings.profiles).to eq({ 'development'=> { 'foo'=>'bar' } })
     end
 
     it 'should fail if profiles.yaml file is not a hash' do
       write 'profiles.yaml', 'foo bar'
-      lambda { Buildr.settings.profiles }.should raise_error(RuntimeError, /expecting.*profiles.yaml/i)
+      expect { Buildr.settings.profiles }.to raise_error(RuntimeError, /expecting.*profiles.yaml/i)
     end
 
     it 'should be empty hash if profiles.yaml file is empty' do
       write 'profiles.yaml'
-      Buildr.settings.profiles.should == {}
+      expect(Buildr.settings.profiles).to eq({})
     end
   end
 
@@ -452,7 +452,7 @@ describe Buildr, 'settings' do
     end
 
     it 'should be empty hash if no profiles.yaml' do
-      Buildr.settings.profile.should == {}
+      expect(Buildr.settings.profile).to eq({})
     end
 
     it 'should be empty hash if no matching profile' do
@@ -460,7 +460,7 @@ describe Buildr, 'settings' do
         test:
           foo: bar
       YAML
-      Buildr.settings.profile.should == {}
+      expect(Buildr.settings.profile).to eq({})
     end
 
     it 'should return profile matching environment name' do
@@ -470,7 +470,7 @@ describe Buildr, 'settings' do
         test:
           foo: baz
       YAML
-      Buildr.settings.profile.should == { 'foo'=>'bar' }
+      expect(Buildr.settings.profile).to eq({ 'foo'=>'bar' })
     end
   end
 
@@ -481,37 +481,37 @@ describe Buildr, 'settings' do
     end
 
     it 'should point to the buildfile' do
-      Buildr.application.buildfile.should point_to_path('buildfile')
+      expect(Buildr.application.buildfile).to point_to_path('buildfile')
     end
 
     it 'should be a defined task' do
-      Buildr.application.buildfile.should == file(File.expand_path('buildfile'))
+      expect(Buildr.application.buildfile).to eq(file(File.expand_path('buildfile')))
     end
 
     it 'should ignore any rake namespace' do
       namespace 'dummy_ns' do
-        Buildr.application.buildfile.should point_to_path('buildfile')
+        expect(Buildr.application.buildfile).to point_to_path('buildfile')
       end
     end
 
     it 'should have the same timestamp as the buildfile' do
-      Buildr.application.buildfile.timestamp.should be_within(1).of(@buildfile_time)
+      expect(Buildr.application.buildfile.timestamp).to be_within(1).of(@buildfile_time)
     end
 
     it 'should have the same timestamp as build.yaml if the latter is newer' do
       write 'build.yaml'; File.utime(@buildfile_time + 5, @buildfile_time + 5, 'build.yaml')
       Buildr.application.run
-      Buildr.application.buildfile.timestamp.should be_within(1).of(@buildfile_time + 5)
+      expect(Buildr.application.buildfile.timestamp).to be_within(1).of(@buildfile_time + 5)
     end
 
     it 'should have the same timestamp as the buildfile if build.yaml is older' do
       write 'build.yaml'; File.utime(@buildfile_time - 5, @buildfile_time - 5, 'build.yaml')
       Buildr.application.run
-      Buildr.application.buildfile.timestamp.should be_within(1).of(@buildfile_time)
+      expect(Buildr.application.buildfile.timestamp).to be_within(1).of(@buildfile_time)
     end
 
     it 'should have the same timestamp as build.rb in home dir if the latter is newer (until version 1.6)' do
-      Buildr::VERSION.should < '1.6'
+      expect(Buildr::VERSION).to be < '1.6'
       buildfile_should_have_same_timestamp_as 'home/buildr.rb'
     end
 
@@ -530,7 +530,7 @@ describe Buildr, 'settings' do
     def buildfile_should_have_same_timestamp_as(file)
       write file; File.utime(@buildfile_time + 5, @buildfile_time + 5, file)
       Buildr.application.send :load_tasks
-      Buildr.application.buildfile.timestamp.should be_within(1).of(@buildfile_time + 5)
+      expect(Buildr.application.buildfile.timestamp).to be_within(1).of(@buildfile_time + 5)
     end
   end
 end
@@ -540,19 +540,19 @@ describe Buildr do
 
   describe 'environment' do
     it 'should be same as Buildr.application.environment' do
-      Buildr.environment.should eql(Buildr.application.environment)
+      expect(Buildr.environment).to eql(Buildr.application.environment)
     end
   end
 
   describe 'application' do
     it 'should be same as Rake.application' do
-      Buildr.application.should == Rake.application
+      expect(Buildr.application).to eq(Rake.application)
     end
   end
 
   describe 'settings' do
     it 'should be same as Buildr.application.settings' do
-      Buildr.settings.should == Buildr.application.settings
+      expect(Buildr.settings).to eq(Buildr.application.settings)
     end
   end
 
@@ -568,7 +568,7 @@ describe Rake do
        chain1 = Thread.current[:rake_chain]
        task1.invoke
        chain2 = Thread.current[:rake_chain]
-       chain2.should == chain1
+       expect(chain2).to eq(chain1)
      end
 
      task2.invoke
