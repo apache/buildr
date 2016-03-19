@@ -96,9 +96,9 @@ module Buildr #:nodoc:
         Buildr.settings.build['jmock'] || VERSION
       end
 
-      def dependencies(versions = {:hamcrest => "1.1"})
+      def dependencies(versions = {:hamcrest => '1.1'})
         two_or_later = version[0,1].to_i >= 2
-        group = two_or_later ? "org.jmock" : "jmock"
+        group = two_or_later ? 'org.jmock' : 'jmock'
 
         @dependencies ||= ["#{group}:jmock:jar:#{version}"]
         if two_or_later
@@ -112,7 +112,7 @@ module Buildr #:nodoc:
     private
       def const_missing(const)
         return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated "Please use JMock.dependencies/.version instead of JMock::REQUIRES/VERSION"
+        Buildr.application.deprecated 'Please use JMock.dependencies/.version instead of JMock::REQUIRES/VERSION'
         dependencies
       end
     end
@@ -198,7 +198,7 @@ module Buildr #:nodoc:
       end
 
       def dependencies
-        four11_or_newer = version >= "4.11"
+        four11_or_newer = version >= '4.11'
         @dependencies ||= ["junit:junit:jar:#{version}"]+ (four11_or_newer ? JMock.dependencies({:hamcrest => '1.3'}) : JMock.dependencies)
       end
 
@@ -209,7 +209,7 @@ module Buildr #:nodoc:
     private
       def const_missing(const)
         return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated "Please use JUnit.dependencies/.version instead of JUnit::REQUIRES/VERSION"
+        Buildr.application.deprecated 'Please use JUnit.dependencies/.version instead of JUnit::REQUIRES/VERSION'
         dependencies
       end
     end
@@ -312,7 +312,7 @@ module Buildr #:nodoc:
     private
       def const_missing(const)
         return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated "Please use TestNG.dependencies/.version instead of TestNG::REQUIRES/VERSION"
+        Buildr.application.deprecated 'Please use TestNG.dependencies/.version instead of TestNG::REQUIRES/VERSION'
         dependencies
       end
     end
@@ -326,19 +326,19 @@ module Buildr #:nodoc:
     def run(tests, dependencies) #:nodoc:
       cmd_args = []
       cmd_args << '-suitename' << task.project.id
-      cmd_args << '-sourcedir' << task.compile.sources.join(';') if TestNG.version < "6.0"
+      cmd_args << '-sourcedir' << task.compile.sources.join(';') if TestNG.version < '6.0'
       cmd_args << '-log' << '2'
       cmd_args << '-d' << task.report_to.to_s
       exclude_args = options[:excludegroups] || []
       if !exclude_args.empty?
-        cmd_args << '-excludegroups' << exclude_args.join(",")
+        cmd_args << '-excludegroups' << exclude_args.join(',')
       end
       groups_args = options[:groups] || []
       if !groups_args.empty?
-        cmd_args << '-groups' << groups_args.join(",")
+        cmd_args << '-groups' << groups_args.join(',')
       end
       # run all tests in the same suite
-      cmd_args << '-testclass' << (TestNG.version < "6.0" ? test : tests.join(','))
+      cmd_args << '-testclass' << (TestNG.version < '6.0' ? test : tests.join(','))
 
       cmd_args += options[:args] if options[:args]
 
@@ -347,7 +347,7 @@ module Buildr #:nodoc:
 
       tmp = nil
       begin
-        tmp = Tempfile.open("testNG")
+        tmp = Tempfile.open('testNG')
         tmp.write cmd_args.join("\n")
         tmp.close
         Java::Commands.java ['org.testng.TestNG', "@#{tmp.path}"], cmd_options
@@ -387,7 +387,7 @@ module Buildr #:nodoc:
 
     def initialize(task, options) #:nodoc:
       super
-      fail "Missing :frameworks option" unless options[:frameworks]
+      fail 'Missing :frameworks option' unless options[:frameworks]
       @frameworks = options[:frameworks].map do |f|
         framework_options = (options[:options] || {})[f.to_sym] || {}
         f.new(task, framework_options)
