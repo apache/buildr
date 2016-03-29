@@ -1,4 +1,5 @@
 1.4.25 (Pending)
+* Change: BUILDR-712 Update jruby-openssl dependency version or support a range of versions
 
 1.4.24 (2016-03-19)
 * Added:  Support the :no_invoke parameter being passed to Buildr.project() and
