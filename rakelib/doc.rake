@@ -91,7 +91,7 @@ end
 
 # Publish prerequisites to Web site.
 desc "Publish complete web site"
-task 'publish' => %w(site) do
+task 'publish' => %w(site setup-local-site-svn) do
   puts "Uploading new site ..."
   sh 'rsync', '--progress', '--recursive', '--delete', '--exclude=.svn','_site/', 'site'
   task('publish-site-svn').invoke
@@ -100,11 +100,29 @@ end
 
 # Update HTML + PDF documentation (but not rdoc, changelog etc.)
 desc "Publish non-release specific documentation to web site"
-task 'publish-doc' => %w(buildr.pdf _site) do
+task 'publish-doc' => %w(buildr.pdf _site setup-local-site-svn) do
   cp 'buildr.pdf', '_site'
   puts 'Uploading new site ...'
   sh 'rsync', '--progress', '--recursive', '_site/', 'site' # Note: no --delete
+  task('publish-site-svn').invoke
   puts 'Done'
+end
+
+task 'publish-site-svn' do
+  cd 'site'
+  sh 'svn', 'add', '--force', '.'
+  cd '..'
+  sh 'svn', 'commit', 'site', '-m', 'Publish latest site'
+end
+
+desc 'Checkout or update site to local directory'
+task 'setup-local-site-svn' do
+  if File.exist?('site')
+    sh 'svn', 'up', 'site'
+    sh 'svn', 'revert', '--recursive', 'site'
+  else
+    sh 'svn', 'co', 'https://svn.apache.org/repos/asf/buildr/site', 'site'
+  end
 end
 
 rescue Exception => e
