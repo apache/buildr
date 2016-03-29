@@ -37,6 +37,45 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.4.24</name>
+        <created>2016-03-19</created>
+        <revision>1.4.24</revision>
+        <dc:description>
+* Added:  Support the :no_invoke parameter being passed to Buildr.project() and
+          Buildr.projects() to avoid attempting to call invoke when retrieving the projects.
+* Added:  Add `exclude_paths` setting to pmd addon to allow paths to be explicitly excluded.
+* Fixed:  Update jDepend addon to ensure target directories are invoked prior to attempting
+          to analyze directories.
+* Added:  Add jdepend.additional_project_names configuration to jDepend addon to
+          ease merging in the source paths from multiple projects into one jDepend task.
+* Added:  Add findbugs.additional_project_names configuration to Findbugs addon to
+          ease merging in the source paths from multiple projects into one Findbugs task.
+* Added:  Add checkstyle.additional_project_names configuration to Checkstyle addon to
+          ease merging in the source paths from multiple projects into one Checkstyle task.
+* Added:  Add pmd.additional_project_names configuration to PMD addon to ease merging in
+          the source paths from multiple projects into one PMD task.
+* Fixed:  In the PMD addon, check that the source directory exists before adding to
+          sources directories to include.
+* Fixed:  BUILDR-709 - Fix "Exception in jacoco.rb [TypeError : can't convert Array into
+          String]". Submitted By Ross Mahony.
+* Added:  Define the 'activate_jruby_facet' addon that activates the jruby facet in
+          generated IDEA project modules.
+* Change: Update the Intellij IDEA plugin to support marking directories as generated.
+* Change: Update the Intellij IDEA plugin to correctly identify project paths as resource
+          directories.
+* Change: Update the default GWT version used in the GWT addon to the latest release 2.7.0.
+* Fixed:  Fix GWT addon to explicitly add gwt-dev artifact to gwt compile path now that
+          the bug that allowed unintended sharing has been fixed.
+* Fixed:  Fix bug in IDEA module generation that resulted in dependencies in IDEA module
+          using shared references to compile dependencies.
+* Change: Update the checkstyle addon to use checkstyle 6.12.1.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.23</name>
         <created>2015-06-12</created>
         <revision>1.4.23</revision>

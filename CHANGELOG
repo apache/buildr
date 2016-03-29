@@ -1,3 +1,5 @@
+1.4.25 (Pending)
+
 1.4.24 (2016-03-19)
 * Added:  Support the :no_invoke parameter being passed to Buildr.project() and
           Buildr.projects() to avoid attempting to call invoke when retrieving the projects.
