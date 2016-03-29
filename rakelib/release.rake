@@ -13,31 +13,16 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-desc 'Checkout or update dist to local directory'
-task 'setup-local-dist-svn' do
-  if File.exist?('dist')
-    sh 'svn', 'up', 'site'
-    sh 'svn', 'revert', '--recursive', 'dist'
-  else
-    sh 'svn', 'co', 'https://dist.apache.org/repos/dist/release/buildr', 'dist'
-  end
-end
-
-task 'publish-dist-svn' do
-  cd 'dist'
-  sh 'svn', 'add', '--force', '.'
-  cd '..'
-  sh 'svn', 'commit', 'dist', '-m', 'Publish latest release'
-end
-
 desc 'Release the next version of buildr from existing staged repository'
-task 'release' => %w{setup-local-site-svn setup-local-dist-svn} do
+task 'release' do |task, args|
+  user = args.user || ENV['user'] || `whoami`
+  
   # First, we need to get all the staged files from Apache to _release.
   mkpath '_release'
   lambda do
-    url = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
+    url = "home.apache.org:~/public_html/#{spec.name}/#{spec.version}"
     puts "Populating _release directory from #{url} ..."
-    sh 'rsync', '--progress', '--recursive', url, '_release'
+    sh "lftp -e \"mirror public_html/#{spec.name}/#{spec.version} _release/#{spec.version}; bye\" -u #{user} sftp://home.apache.org" 
     puts '[X] Staged files are now in _release'
   end.call
 
