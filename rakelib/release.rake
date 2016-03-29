@@ -13,16 +13,15 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+
 desc 'Release the next version of buildr from existing staged repository'
-task 'release' do |task, args|
-  user = args.user || ENV['user'] || `whoami`
-  
+task 'release' do
   # First, we need to get all the staged files from Apache to _release.
   mkpath '_release'
   lambda do
-    url = "home.apache.org:~/public_html/#{spec.name}/#{spec.version}"
+    url = "people.apache.org:~/public_html/#{spec.name}/#{spec.version}"
     puts "Populating _release directory from #{url} ..."
-    sh "lftp -e \"mirror public_html/#{spec.name}/#{spec.version} _release/#{spec.version}; bye\" -u #{user} sftp://home.apache.org" 
+    sh 'rsync', '--progress', '--recursive', url, '_release'
     puts '[X] Staged files are now in _release'
   end.call
 
