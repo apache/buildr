@@ -412,6 +412,20 @@ module Buildr #:nodoc:
       @callbacks = Project.global_callbacks.dup
     end
 
+    #
+    # Returns the root project for this project.
+    #
+    # If this project is a subproject it will find the top
+    # level project and return it, else it will return itself.
+    #
+    def root_project
+      p = project
+      while p.parent
+        p = p.parent
+      end
+      p
+    end
+
     # :call-seq:
     #   base_dir => path
     #

@@ -2,6 +2,7 @@
 * Change: BUILDR-712 Update jruby-openssl dependency version or support a range of versions
 * Change: Update gwt addon to add the GWT artifacts to project dependencies as specs rather
           than files.
+* Change: Support the project.root_project utility method to retrieve the top level project.
 
 1.4.24 (2016-03-19)
 * Added:  Support the :no_invoke parameter being passed to Buildr.project() and

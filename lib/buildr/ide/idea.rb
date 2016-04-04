@@ -370,7 +370,7 @@ module Buildr #:nodoc:
           end
           default_enable_jsf = webroots.keys.any?{|webroot| File.exist?("#{webroot}/WEB-INF/faces-config.xml")}
           enable_jsf = options[:enable_jsf].nil? ? default_enable_jsf : options[:enable_jsf]
-          enable_jsf = false if root_project.ipr? && root_project.ipr.version >= '13'
+          enable_jsf = false if buildr_project.root_project.ipr? && buildr_project.root_project.ipr.version >= '13'
           f.facet(:type => 'jsf', :name => 'JSF') do |jsf|
             jsf.configuration
           end if enable_jsf
@@ -476,14 +476,6 @@ module Buildr #:nodoc:
       end
 
       protected
-
-      def root_project
-        p = buildr_project
-        while p.parent
-          p = p.parent
-        end
-        p
-      end
 
       def main_dependency_details
         target_dir = buildr_project.compile.target.to_s
