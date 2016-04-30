@@ -1,3 +1,5 @@
+1.4.26 (Pending)
+
 1.4.25 (2016-04-18)
 * Change: BUILDR-712 Update jruby-openssl dependency version or support a range of versions
 * Change: Update gwt addon to add the GWT artifacts to project dependencies as specs rather
