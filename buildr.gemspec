@@ -80,6 +80,7 @@ for those one-off tasks, with a language that's a joy to use.
     spec.add_development_dependency 'jekyll', '3.1.3'
     spec.add_development_dependency 'RedCloth', '4.2.9'
     spec.add_development_dependency 'jekylltask', '1.1.0'
+    spec.add_development_dependency 'pygments.rb', '0.6.3'
     spec.add_development_dependency 'rdoc', '4.2.2'
   end
 
