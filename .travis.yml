@@ -3,12 +3,13 @@ jdk:
   - oraclejdk7
   - openjdk6
 rvm:
-  - 2.1.0
-  - 2.0.0
-  - 1.9.3
-  - 1.8.7
+  - 2.1.9
+  - 2.2.5
+  - 2.3.1
+  - jruby-1.6.7.2
+  - jruby-1.7.25
+  - jruby-9.0.50
   - jruby-19mode
-  - jruby-18mode
 git:
   depth: 10
 scala:
