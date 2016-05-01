@@ -64,7 +64,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'jruby-pageant',        '1.1.1' if $platform.to_s == 'java'
   spec.add_dependency 'rubyzip',              '1.2.0'
   spec.add_dependency 'json_pure',            '1.8.0'
-  spec.add_dependency 'hoe',                  '3.7.1'
+  spec.add_dependency 'hoe',                  '3.15.0'
   spec.add_dependency 'rjb',                  '1.5.4' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
   spec.add_dependency 'atoulme-Antwrap',      '0.7.5'
   spec.add_dependency 'diff-lcs',             '1.2.4'
