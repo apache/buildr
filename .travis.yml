@@ -25,6 +25,7 @@ notifications:
       - commits@buildr.apache.org
       - donaldp@apache.org
       - peter@realityforge.org
+      - toulmean@apache.org
     on_success: always
     on_failure: always
 notifications:
