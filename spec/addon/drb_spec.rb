@@ -99,16 +99,16 @@ describe Buildr::DRbApplication do
 
   describe '.run' do
     it 'starts server if no server is running' do
-      drb.should_receive(:connect).and_raise DRb::DRbConnError
-      drb.should_receive(:run_server!)
-      drb.should_not_receive(:run_client)
+      expect(drb).to receive(:connect).and_raise DRb::DRbConnError
+      expect(drb).to receive(:run_server!)
+      expect(drb).not_to receive(:run_client)
       drb.run
     end
 
     it 'connects to an already started server' do
-      drb.should_receive(:connect).and_return "client"
-      drb.should_receive(:run_client).with "client"
-      drb.should_not_receive(:run_server!)
+      expect(drb).to receive(:connect).and_return "client"
+      expect(drb).to receive(:run_client).with "client"
+      expect(drb).not_to receive(:run_server!)
       drb.run
     end
   end
@@ -118,42 +118,42 @@ describe Buildr::DRbApplication do
     describe 'stdout' do
       it 'is redirected to client' do
         use_stdio
-        Buildr.application.should_receive(:remote_run) do
+        expect(Buildr.application).to receive(:remote_run) do
           $stdout.puts "HELLO"
         end
         remote_run
-        output.should eql("HELLO\n")
+        expect(output).to eql("HELLO\n")
       end
     end
 
     describe 'stderr' do
       it 'is redirected to client' do
         use_stdio
-        Buildr.application.should_receive(:remote_run) do
+        expect(Buildr.application).to receive(:remote_run) do
           $stderr.puts "HELLO"
         end
         remote_run
-        cfg[:err].string.should eql("HELLO\n")
+        expect(cfg[:err].string).to eql("HELLO\n")
       end
     end
 
     describe 'stdin' do
       it 'is redirected to client' do
         use_stdio
-        cfg[:in].should_receive(:gets).and_return("HELLO\n")
+        expect(cfg[:in]).to receive(:gets).and_return("HELLO\n")
         result = nil
-        Buildr.application.should_receive(:remote_run) do
+        expect(Buildr.application).to receive(:remote_run) do
           result = $stdin.gets
         end
         remote_run
-        result.should eql("HELLO\n")
+        expect(result).to eql("HELLO\n")
       end
     end
 
     describe 'server ARGV' do
       it 'is replaced with client argv' do
-        Buildr.application.should_receive(:remote_run) do
-          ARGV.should eql(['hello'])
+        expect(Buildr.application).to receive(:remote_run) do
+          expect(ARGV).to eql(['hello'])
         end
         remote_run 'hello'
       end
@@ -166,8 +166,8 @@ describe Buildr::DRbApplication do
       end
 
       it 'should load the buildfile' do
-        app.should_receive(:top_level)
-        lambda { remote_run }.should run_task('foo')
+        expect(app).to receive(:top_level)
+        expect { remote_run }.to run_task('foo')
       end
     end
 
@@ -181,59 +181,59 @@ describe Buildr::DRbApplication do
       end
 
       it 'should not reload the buildfile' do
-        app.should_not_receive(:reload_buildfile)
-        app.should_receive(:top_level)
+        expect(app).not_to receive(:reload_buildfile)
+        expect(app).to receive(:top_level)
         remote_run
       end
 
       it 'should not define projects again' do
         use_stdio
-        lambda { 2.times { remote_run 'foo:hello' } }.should_not run_task('foo')
-        output.should eql("hi\nhi\n")
+        expect { 2.times { remote_run 'foo:hello' } }.not_to run_task('foo')
+        expect(output).to eql("hi\nhi\n")
       end
 
       it 'should restore task actions' do
         use_stdio
         remote_run 'foo:empty'
-        output.should be_empty
+        expect(output).to be_empty
         2.times { remote_run 'foo:no' }
         remote_run 'foo:empty'
         actions = app.lookup('foo:empty').instance_eval { @actions }
-        actions.should be_empty # as originally defined
-        output.should be_empty
+        expect(actions).to be_empty # as originally defined
+        expect(output).to be_empty
       end
 
       it 'should restore task prerequisites' do
         use_stdio
         remote_run 'foo:empty'
-        output.should be_empty
+        expect(output).to be_empty
         2.times { remote_run 'foo:no' }
         remote_run 'foo:empty'
         pres = app.lookup('foo:empty').send(:prerequisites).map(&:to_s)
-        pres.should be_empty # as originally defined
-        output.should be_empty
+        expect(pres).to be_empty # as originally defined
+        expect(output).to be_empty
       end
 
       it 'should drop runtime created tasks' do
         remote_run 'foo:create'
-        app.lookup('created').should_not be_nil
+        expect(app.lookup('created')).not_to be_nil
         remote_run 'foo:empty'
-        app.lookup('created').should be_nil
+        expect(app.lookup('created')).to be_nil
       end
 
       it 'should restore options' do
         remote_run 'foo:setopt[bar,baz]'
-        app.options.bar.should eql("baz")
+        expect(app.options.bar).to eql("baz")
         remote_run 'foo:empty'
-        app.options.bar.should be_nil
+        expect(app.options.bar).to be_nil
       end
 
       it 'should restore rules' do
         orig = app.instance_eval { @rules.size }
         remote_run 'foo:create'
-        app.instance_eval { @rules.size }.should eql(orig + 1)
+        expect(app.instance_eval { @rules.size }).to eql(orig + 1)
         remote_run 'foo:empty'
-        app.instance_eval { @rules.size }.should eql(orig)
+        expect(app.instance_eval { @rules.size }).to eql(orig)
       end
 
     end
@@ -263,62 +263,62 @@ describe Buildr::DRbApplication do
       end
 
       it 'should reload the buildfile' do
-        app.should_receive(:reload_buildfile)
-        app.should_receive(:top_level)
+        expect(app).to receive(:reload_buildfile)
+        expect(app).to receive(:top_level)
         remote_run
       end
 
       it 'should redefine projects' do
-        lambda { remote_run }.should run_tasks('foo', 'foo:bar')
+        expect { remote_run }.to run_tasks('foo', 'foo:bar')
       end
 
       it 'should remove tasks deleted from buildfile' do
-        app.lookup('foo:delete_me').should_not be_nil
+        expect(app.lookup('foo:delete_me')).not_to be_nil
         remote_run
-        app.lookup('foo:delete_me').should be_nil
+        expect(app.lookup('foo:delete_me')).to be_nil
       end
 
       it 'should redefine tasks actions' do
         actions = app.lookup('foo:empty').instance_eval { @actions }
-        actions.should be_empty # no action
+        expect(actions).to be_empty # no action
         app.lookup('foo:no').invoke # enhance the empty task
         actions = app.lookup('foo:empty').instance_eval { @actions }
-        actions.should_not be_empty
+        expect(actions).not_to be_empty
         remote_run # cause to reload the buildfile
         actions = app.lookup('foo:empty').instance_eval { @actions }
-        actions.should be_empty # as defined on the new buildfile
+        expect(actions).to be_empty # as defined on the new buildfile
       end
 
       it 'should redefine task prerequisites' do
         pres = app.lookup('foo:empty').send(:prerequisites).map(&:to_s)
-        pres.should be_empty # no action
+        expect(pres).to be_empty # no action
         app.lookup('foo:no').invoke # enhance the empty task
         pres = app.lookup('foo:empty').send(:prerequisites).map(&:to_s)
-        pres.should_not be_empty
+        expect(pres).not_to be_empty
         remote_run # cause to reload the buildfile
         pres = app.lookup('foo:empty').send(:prerequisites).map(&:to_s)
-        pres.should be_empty # as defined on the new buildfile
+        expect(pres).to be_empty # as defined on the new buildfile
       end
 
       it 'should drop runtime created tasks' do
         app.lookup('foo:create').invoke
-        app.lookup('created').should_not be_nil
+        expect(app.lookup('created')).not_to be_nil
         remote_run 'foo:empty'
-        app.lookup('created').should be_nil
+        expect(app.lookup('created')).to be_nil
       end
 
       it 'should restore options' do
         app.options.bar = 'baz'
         remote_run 'foo:empty'
-        app.options.bar.should be_nil
+        expect(app.options.bar).to be_nil
       end
 
       it 'should redefine rules' do
         orig = app.instance_eval { @rules.size }
         app.lookup('foo:create').invoke
-        app.instance_eval { @rules.size }.should eql(orig + 1)
+        expect(app.instance_eval { @rules.size }).to eql(orig + 1)
         remote_run 'foo:empty'
-        app.instance_eval { @rules.size }.should eql(orig)
+        expect(app.instance_eval { @rules.size }).to eql(orig)
       end
 
     end

@@ -17,34 +17,34 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 # need to test both with and without SCALA_HOME
-share_as :ScalacCompiler do
+shared_examples "ScalacCompiler" do
 
   it 'should identify itself from source directories' do
     write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }'
-    define('foo').compile.compiler.should eql(:scalac)
+    expect(define('foo').compile.compiler).to eql(:scalac)
   end
 
   it 'should report the language as :scala' do
-    define('foo').compile.using(:scalac).language.should eql(:scala)
+    expect(define('foo').compile.using(:scalac).language).to eql(:scala)
   end
 
   it 'should set the target directory to target/classes' do
     define 'foo' do
-      lambda { compile.using(:scalac) }.should change { compile.target.to_s }.to(File.expand_path('target/classes'))
+      expect { compile.using(:scalac) }.to change { compile.target.to_s }.to(File.expand_path('target/classes'))
     end
   end
 
   it 'should not override existing target directory' do
     define 'foo' do
       compile.into('classes')
-      lambda { compile.using(:scalac) }.should_not change { compile.target }
+      expect { compile.using(:scalac) }.not_to change { compile.target }
     end
   end
 
   it 'should not change existing list of sources' do
     define 'foo' do
       compile.from('sources')
-      lambda { compile.using(:scalac) }.should_not change { compile.sources }
+      expect { compile.using(:scalac) }.not_to change { compile.sources }
     end
   end
 
@@ -55,8 +55,8 @@ share_as :ScalacCompiler do
       package(:jar)
     end
     write 'src/test/DependencyTest.scala', 'class DependencyTest { var d: Dependency = _ }'
-    lambda { define('foo').compile.from('src/test').with(project('dependency')).invoke }.should run_task('foo:compile')
-    file('target/classes/DependencyTest.class').should exist
+    expect { define('foo').compile.from('src/test').with(project('dependency')).invoke }.to run_task('foo:compile')
+    expect(file('target/classes/DependencyTest.class')).to exist
   end
 
   def define_test1_project
@@ -69,15 +69,15 @@ share_as :ScalacCompiler do
   it 'should compile a simple .scala file into a .class file' do
     define_test1_project
     task('test1:compile').invoke
-    file('target/classes/com/example/Test1.class').should exist
+    expect(file('target/classes/com/example/Test1.class')).to exist
   end
 
   it 'should package .class into a .jar file' do
     define_test1_project
     task('test1:package').invoke
-    file('target/test1-1.0.jar').should exist
+    expect(file('target/test1-1.0.jar')).to exist
     Zip::File.open(project('test1').package(:jar).to_s) do |zip|
-      zip.exist?('com/example/Test1.class').should be_true
+      expect(zip.exist?('com/example/Test1.class')).to be_truthy
     end
   end
 
@@ -88,10 +88,10 @@ share_as :ScalacCompiler do
       package(:jar)
     end
     task('test1:package').invoke
-    file('target/test1-1.0.jar').should exist
+    expect(file('target/test1-1.0.jar')).to exist
     Zip::File.open(project('test1').package(:jar).to_s) do |zip|
-      zip.exist?('com/example/Foo.class').should be_true
-      zip.exist?('com/example/Bar.class').should be_true
+      expect(zip.exist?('com/example/Foo.class')).to be_truthy
+      expect(zip.exist?('com/example/Bar.class')).to be_truthy
     end
   end
 
@@ -102,10 +102,10 @@ share_as :ScalacCompiler do
       package(:jar)
     end
     task('test1:package').invoke
-    file('target/test1-1.0.jar').should exist
+    expect(file('target/test1-1.0.jar')).to exist
     Zip::File.open(project('test1').package(:jar).to_s) do |zip|
-      zip.exist?('com/example/Foo.class').should be_true
-      zip.exist?('com/example/Bar.class').should be_true
+      expect(zip.exist?('com/example/Foo.class')).to be_truthy
+      expect(zip.exist?('com/example/Bar.class')).to be_truthy
     end
   end
 end
@@ -115,10 +115,10 @@ end
 if ENV['SCALA_HOME']
   describe 'scala compiler (installed in SCALA_HOME)' do
     it 'requires present SCALA_HOME' do
-      ENV['SCALA_HOME'].should_not be_nil
+      expect(ENV['SCALA_HOME']).not_to be_nil
     end
 
-    it_should_behave_like ScalacCompiler
+    it_should_behave_like "ScalacCompiler"
   end
 end
 
@@ -130,121 +130,121 @@ describe 'scala compiler (downloaded from repository)' do
   end
 
   it 'requires absent SCALA_HOME' do
-    ENV['SCALA_HOME'].should be_nil
+    expect(ENV['SCALA_HOME']).to be_nil
   end
 
-  it_should_behave_like ScalacCompiler
+  it_should_behave_like "ScalacCompiler"
 
   after :all do
     ENV['SCALA_HOME'] = old_home
   end
 end
 
-share_as :ScalacCompiler_CommonOptions do
+shared_examples :ScalacCompiler_CommonOptions do
 
   it 'should set warnings option to false by default' do
-    compile_task.options.warnings.should be_false
+    expect(compile_task.options.warnings).to be_falsey
   end
 
   it 'should set warnings option to true when running with --verbose option' do
     verbose true
-    compile_task.options.warnings.should be_true
+    expect(compile_task.options.warnings).to be_truthy
   end
 
   it 'should use -nowarn argument when warnings is false' do
     compile_task.using(:warnings=>false)
-    scalac_args.should include('-nowarn')
+    expect(scalac_args).to include('-nowarn')
   end
 
   it 'should not use -nowarn argument when warnings is true' do
     compile_task.using(:warnings=>true)
-    scalac_args.should_not include('-nowarn')
+    expect(scalac_args).not_to include('-nowarn')
   end
 
   it 'should not use -verbose argument by default' do
-    scalac_args.should_not include('-verbose')
+    expect(scalac_args).not_to include('-verbose')
   end
 
   it 'should use -verbose argument when running with --trace=scalac option' do
     Buildr.application.options.trace_categories = [:scalac]
-    scalac_args.should include('-verbose')
+    expect(scalac_args).to include('-verbose')
   end
 
   it 'should set debug option to true by default' do
-    compile_task.options.debug.should be_true
+    expect(compile_task.options.debug).to be_truthy
   end
 
   it 'should set debug option to false based on Buildr.options' do
     Buildr.options.debug = false
-    compile_task.options.debug.should be_false
+    expect(compile_task.options.debug).to be_falsey
   end
 
   it 'should set debug option to false based on debug environment variable' do
     ENV['debug'] = 'no'
-    compile_task.options.debug.should be_false
+    expect(compile_task.options.debug).to be_falsey
   end
 
   it 'should set debug option to false based on DEBUG environment variable' do
     ENV['DEBUG'] = 'no'
-    compile_task.options.debug.should be_false
+    expect(compile_task.options.debug).to be_falsey
   end
 
   it 'should set deprecation option to false by default' do
-    compile_task.options.deprecation.should be_false
+    expect(compile_task.options.deprecation).to be_falsey
   end
 
   it 'should use -deprecation argument when deprecation is true' do
     compile_task.using(:deprecation=>true)
-    scalac_args.should include('-deprecation')
+    expect(scalac_args).to include('-deprecation')
   end
 
   it 'should not use -deprecation argument when deprecation is false' do
     compile_task.using(:deprecation=>false)
-    scalac_args.should_not include('-deprecation')
+    expect(scalac_args).not_to include('-deprecation')
   end
 
   it 'should set optimise option to false by default' do
-    compile_task.options.optimise.should be_false
+    expect(compile_task.options.optimise).to be_falsey
   end
 
   it 'should use -optimise argument when deprecation is true' do
     compile_task.using(:optimise=>true)
-    scalac_args.should include('-optimise')
+    expect(scalac_args).to include('-optimise')
   end
 
   it 'should not use -optimise argument when deprecation is false' do
     compile_task.using(:optimise=>false)
-    scalac_args.should_not include('-optimise')
+    expect(scalac_args).not_to include('-optimise')
   end
 
   it 'should not set target option by default' do
-    compile_task.options.target.should be_nil
-    scalac_args.should_not include('-target')
+    expect(compile_task.options.target).to be_nil
+    expect(scalac_args).not_to include('-target')
   end
 
   it 'should use -target:xxx argument if target option set' do
     compile_task.using(:target=>'1.5')
-    scalac_args.should include('-target:jvm-1.5')
+    expect(scalac_args).to include('-target:jvm-1.5')
   end
 
   it 'should not set other option by default' do
-    compile_task.options.other.should be_nil
+    expect(compile_task.options.other).to be_nil
   end
 
   it 'should pass other argument if other option is string' do
     compile_task.using(:other=>'-unchecked')
-    scalac_args.should include('-unchecked')
+    expect(scalac_args).to include('-unchecked')
   end
 
   it 'should pass other argument if other option is array' do
     compile_task.using(:other=>['-unchecked', '-Xprint-types'])
-    scalac_args.should include('-unchecked', '-Xprint-types')
+    expect(scalac_args).to include('-unchecked', '-Xprint-types')
   end
 
   it 'should complain about options it doesn\'t know' do
     write 'source/Test.scala', 'class Test {}'
     compile_task.using(:unknown=>'option')
-    lambda { compile_task.from('source').invoke }.should raise_error(ArgumentError, /no such option/i)
+    expect { compile_task.from('source').invoke }.to raise_error(ArgumentError, /no such option/i)
   end
 
   it 'should inherit options from parent' do
@@ -252,10 +252,10 @@ share_as :ScalacCompiler_CommonOptions do
       compile.using(:warnings=>true, :debug=>true, :deprecation=>true, :target=>'1.4')
       define 'bar' do
         compile.using(:scalac)
-        compile.options.warnings.should be_true
-        compile.options.debug.should be_true
-        compile.options.deprecation.should be_true
-        compile.options.target.should eql('1.4')
+        expect(compile.options.warnings).to be_truthy
+        expect(compile.options.debug).to be_truthy
+        expect(compile.options.deprecation).to be_truthy
+        expect(compile.options.target).to eql('1.4')
       end
     end
   end
@@ -270,7 +270,7 @@ end
 
 describe 'scala compiler 2.8 options' do
 
-  it_should_behave_like ScalacCompiler_CommonOptions
+  it_should_behave_like :ScalacCompiler_CommonOptions
 
   def compile_task
     @compile_task ||= define('foo').compile.using(:scalac)
@@ -282,18 +282,18 @@ describe 'scala compiler 2.8 options' do
 
   it 'should use -g argument when debug option is true' do
     compile_task.using(:debug=>true)
-    scalac_args.should include('-g')
+    expect(scalac_args).to include('-g')
   end
 
   it 'should not use -g argument when debug option is false' do
     compile_task.using(:debug=>false)
-    scalac_args.should_not include('-g')
+    expect(scalac_args).not_to include('-g')
   end
 end if Buildr::Scala.version?(2.8)
 
 describe 'scala compiler 2.9 options' do
 
-  it_should_behave_like ScalacCompiler_CommonOptions
+  it_should_behave_like :ScalacCompiler_CommonOptions
 
   def compile_task
     @compile_task ||= define('foo').compile.using(:scalac)
@@ -306,17 +306,17 @@ describe 'scala compiler 2.9 options' do
   # these specs fail. Somehow the compiler is still in version 2.8
   it 'should use -g:vars argument when debug option is true' do
     compile_task.using(:debug=>true)
-    scalac_args.should include('-g:vars')
+    expect(scalac_args).to include('-g:vars')
   end
 
   it 'should use -g:whatever argument when debug option is \'whatever\'' do
     compile_task.using(:debug=>:whatever)
-    scalac_args.should include('-g:whatever')
+    expect(scalac_args).to include('-g:whatever')
   end
 
   it 'should not use -g argument when debug option is false' do
     compile_task.using(:debug=>false)
-    scalac_args.should_not include('-g')
+    expect(scalac_args).not_to include('-g')
   end
 
 end if Buildr::Scala.version?(2.9)
@@ -333,8 +333,8 @@ describe 'zinc compiler (enabled through Buildr.settings)' do
     project = define('foo')
     compile_task = project.compile.using(:scalac)
     compiler = compile_task.instance_eval { @compiler }
-    compiler.send(:zinc?).should eql(true)
-    compiler.should_receive(:compile_with_zinc).once
+    expect(compiler.send(:zinc?)).to eql(true)
+    expect(compiler).to receive(:compile_with_zinc).once
     compile_task.invoke
   end
 
@@ -342,7 +342,7 @@ describe 'zinc compiler (enabled through Buildr.settings)' do
     Buildr.settings.build['scalac.incremental'] = nil
   end
 
-  it_should_behave_like ScalacCompiler
+  it_should_behave_like "ScalacCompiler"
 end
 
 describe 'zinc compiler (enabled through project.scala_options)' do
@@ -353,8 +353,8 @@ describe 'zinc compiler (enabled through project.scala_options)' do
     project.scalac_options.incremental = true
     compile_task = project.compile.using(:scalac)
     compiler = compile_task.instance_eval { @compiler }
-    compiler.send(:zinc?).should eql(true)
-    compiler.should_receive(:compile_with_zinc).once
+    expect(compiler.send(:zinc?)).to eql(true)
+    expect(compiler).to receive(:compile_with_zinc).once
     compile_task.invoke
   end
 end

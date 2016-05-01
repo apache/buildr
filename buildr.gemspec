@@ -84,12 +84,13 @@ for those one-off tasks, with a language that's a joy to use.
     spec.add_development_dependency 'rdoc', '4.2.2'
   end
 
-  spec.add_development_dependency 'rspec-expectations',   '2.14.3'
-  spec.add_development_dependency 'rspec-mocks',          '2.14.3'
-  spec.add_development_dependency 'rspec-core',           '2.14.5'
-  spec.add_development_dependency 'rspec',                '2.14.1'
-  spec.add_development_dependency 'rspec-retry',          '0.2.1'
-  spec.add_development_dependency 'ci_reporter',          '1.9.0'
+  spec.add_development_dependency 'rspec-expectations',   '3.4.0'
+  spec.add_development_dependency 'rspec-mocks',          '3.4.0'
+  spec.add_development_dependency 'rspec-core',           '3.4.0'
+  spec.add_development_dependency 'rspec',                '3.4.0'
+  spec.add_development_dependency 'rspec-retry',          '0.4.5'
+  spec.add_development_dependency 'ci_reporter',          '2.0.0'
+  spec.add_development_dependency 'ci_reporter_rspec',    '1.0.0'
   # Ideally we would depend on psych when the platform has >= 1.9.2 support and jruby platform version > 1.6.6
   #spec.add_development_dependency 'psych' if RUBY_VERSION >= '1.9.2'
   spec.add_development_dependency 'pygmentize', '0.0.3'

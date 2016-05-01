@@ -19,7 +19,7 @@ shared_examples_for 'packaging' do
     packaging = @packaging
     package_type = @package_type || @packaging
     define 'foo', :version=>'1.0' do
-      package(packaging).type.should eql(package_type) rescue exit!
+      expect(package(packaging).type).to eql(package_type) rescue exit!
     end
   end
 
@@ -27,7 +27,7 @@ shared_examples_for 'packaging' do
     packaging = @packaging
     package_type = @package_type || @packaging
     define 'foo', :version=>'1.0' do
-      package(packaging).to_s.should match(/.#{package_type}$/)
+      expect(package(packaging).to_s).to match(/.#{package_type}$/)
     end
   end
 
@@ -37,27 +37,27 @@ shared_examples_for 'packaging' do
       package(packaging)
       package(packaging, :id=>'other')
     end
-    project('foo').packages.uniq.size.should eql(2)
+    expect(project('foo').packages.uniq.size).to eql(2)
   end
 
   it 'should complain if option not known' do
     packaging = @packaging
     define 'foo', :version=>'1.0' do
-      lambda { package(packaging, :unknown_option=>true) }.should raise_error(ArgumentError, /no such option/)
+      expect { package(packaging, :unknown_option=>true) }.to raise_error(ArgumentError, /no such option/)
     end
   end
 
   it 'should respond to with() and return self' do
     packaging = @packaging
     define 'foo', :version=>'1.0' do
-      package(packaging).with({}).should be(package(packaging))
+      expect(package(packaging).with({})).to be(package(packaging))
     end
   end
 
   it 'should respond to with() and complain if unknown option' do
     packaging = @packaging
     define 'foo', :version=>'1.0' do
-      lambda {  package(packaging).with(:unknown_option=>true) }.should raise_error(ArgumentError, /does not support the option/)
+      expect {  package(packaging).with(:unknown_option=>true) }.to raise_error(ArgumentError, /does not support the option/)
     end
   end
 end

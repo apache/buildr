@@ -100,20 +100,20 @@ describe Buildr::Eclipse do
 
       it 'should not have natures' do
         define('foo')
-        project_natures.should be_empty
+        expect(project_natures).to be_empty
       end
 
       it 'should not have build commands' do
         define('foo')
-        build_commands.should be_empty
+        expect(build_commands).to be_empty
       end
 
       it 'should generate a .project file' do
         define('foo')
         task('eclipse').invoke
         File.open('.project') do |f|
-          REXML::Document.new(f).root.
-            elements.collect("name") { |e| e.text }.should == ['foo']
+          expect(REXML::Document.new(f).root.
+            elements.collect("name") { |e| e.text }).to eq(['foo'])
         end
       end
 
@@ -121,15 +121,15 @@ describe Buildr::Eclipse do
         define('foo') { eclipse.name = 'bar' }
         task('eclipse').invoke
         File.open('.project') do |f|
-          REXML::Document.new(f).root.
-            elements.collect("name") { |e| e.text }.should == ['bar']
+          expect(REXML::Document.new(f).root.
+            elements.collect("name") { |e| e.text }).to eq(['bar'])
         end
       end
 
       it 'should not generate a .classpath file' do
         define('foo')
         task('eclipse').invoke
-        File.exists?('.classpath').should be_false
+        expect(File.exists?('.classpath')).to be_falsey
       end
     end
 
@@ -144,8 +144,8 @@ describe Buildr::Eclipse do
           define('bar')
         end
         task('eclipse').invoke
-        File.exists?('.project').should be_false
-        File.exists?(File.join('bar','.project')).should be_true
+        expect(File.exists?('.project')).to be_falsey
+        expect(File.exists?(File.join('bar','.project'))).to be_truthy
       end
     end
 
@@ -157,12 +157,12 @@ describe Buildr::Eclipse do
 
       it 'should have Java nature' do
         define('foo')
-        project_natures.should include(JAVA_NATURE)
+        expect(project_natures).to include(JAVA_NATURE)
       end
 
       it 'should have Java build command' do
         define('foo')
-        build_commands.should include(JAVA_BUILDER)
+        expect(build_commands).to include(JAVA_BUILDER)
       end
     end
 
@@ -176,8 +176,8 @@ describe Buildr::Eclipse do
         }
         task('eclipse').invoke
         File.open(File.join('foo', '.project')) do |f|
-          REXML::Document.new(f).root.
-            elements.collect("name") { |e| e.text }.should == ['myproject-foo']
+          expect(REXML::Document.new(f).root.
+            elements.collect("name") { |e| e.text }).to eq(['myproject-foo'])
         end
       end
 
@@ -189,8 +189,8 @@ describe Buildr::Eclipse do
         }
         task('eclipse').invoke
         File.open(File.join('foo', '.project')) do |f|
-          REXML::Document.new(f).root.
-            elements.collect("name") { |e| e.text }.should == ['bar']
+          expect(REXML::Document.new(f).root.
+            elements.collect("name") { |e| e.text }).to eq(['bar'])
         end
       end
 
@@ -203,8 +203,8 @@ describe Buildr::Eclipse do
         }
         task('eclipse').invoke
         File.open(File.join('foo', '.project')) do |f|
-          REXML::Document.new(f).root.
-            elements.collect("name") { |e| e.text }.should == ['foo']
+          expect(REXML::Document.new(f).root.
+            elements.collect("name") { |e| e.text }).to eq(['foo'])
         end
       end
     end
@@ -218,14 +218,14 @@ describe Buildr::Eclipse do
       end
 
       it 'should have Scala nature before Java nature' do
-        project_natures.should include(SCALA_NATURE)
-        project_natures.should include(JAVA_NATURE)
-        project_natures.index(SCALA_NATURE).should < project_natures.index(JAVA_NATURE)
+        expect(project_natures).to include(SCALA_NATURE)
+        expect(project_natures).to include(JAVA_NATURE)
+        expect(project_natures.index(SCALA_NATURE)).to be < project_natures.index(JAVA_NATURE)
       end
 
       it 'should have Scala build command and no Java build command' do
-        build_commands.should include(SCALA_BUILDER)
-        build_commands.should_not include(JAVA_BUILDER)
+        expect(build_commands).to include(SCALA_BUILDER)
+        expect(build_commands).not_to include(JAVA_BUILDER)
       end
     end
 
@@ -238,14 +238,14 @@ describe Buildr::Eclipse do
       end
 
       it 'should have Scala nature before Java nature' do
-        project_natures.should include(SCALA_NATURE)
-        project_natures.should include(JAVA_NATURE)
-        project_natures.index(SCALA_NATURE).should < project_natures.index(JAVA_NATURE)
+        expect(project_natures).to include(SCALA_NATURE)
+        expect(project_natures).to include(JAVA_NATURE)
+        expect(project_natures.index(SCALA_NATURE)).to be < project_natures.index(JAVA_NATURE)
       end
 
       it 'should have Scala build command and no Java build command' do
-        build_commands.should include(SCALA_BUILDER)
-        build_commands.should_not include(JAVA_BUILDER)
+        expect(build_commands).to include(SCALA_BUILDER)
+        expect(build_commands).not_to include(JAVA_BUILDER)
       end
     end
 
@@ -260,14 +260,14 @@ describe Buildr::Eclipse do
       end
 
       it 'should have Scala nature before Java nature' do
-        project_natures.should include(SCALA_NATURE)
-        project_natures.should include(JAVA_NATURE)
-        project_natures.index(SCALA_NATURE).should < project_natures.index(JAVA_NATURE)
+        expect(project_natures).to include(SCALA_NATURE)
+        expect(project_natures).to include(JAVA_NATURE)
+        expect(project_natures.index(SCALA_NATURE)).to be < project_natures.index(JAVA_NATURE)
       end
 
       it 'should have Scala build command and no Java build command' do
-        build_commands.should include(SCALA_BUILDER)
-        build_commands.should_not include(JAVA_BUILDER)
+        expect(build_commands).to include(SCALA_BUILDER)
+        expect(build_commands).not_to include(JAVA_BUILDER)
       end
     end
 
@@ -281,16 +281,16 @@ describe Buildr::Eclipse do
 
       it 'should have plugin nature before Java nature' do
         define('foo')
-        project_natures.should include(PLUGIN_NATURE)
-        project_natures.should include(JAVA_NATURE)
-        project_natures.index(PLUGIN_NATURE).should < project_natures.index(JAVA_NATURE)
+        expect(project_natures).to include(PLUGIN_NATURE)
+        expect(project_natures).to include(JAVA_NATURE)
+        expect(project_natures.index(PLUGIN_NATURE)).to be < project_natures.index(JAVA_NATURE)
       end
 
       it 'should have plugin build commands and the Java build command' do
         define('foo')
-        build_commands.should include(PLUGIN_BUILDERS[0])
-        build_commands.should include(PLUGIN_BUILDERS[1])
-        build_commands.should include(JAVA_BUILDER)
+        expect(build_commands).to include(PLUGIN_BUILDERS[0])
+        expect(build_commands).to include(PLUGIN_BUILDERS[1])
+        expect(build_commands).to include(JAVA_BUILDER)
       end
     end
 
@@ -304,16 +304,16 @@ describe Buildr::Eclipse do
 
       it 'should have plugin nature before Java nature' do
         define('foo')
-        project_natures.should include(PLUGIN_NATURE)
-        project_natures.should include(JAVA_NATURE)
-        project_natures.index(PLUGIN_NATURE).should < project_natures.index(JAVA_NATURE)
+        expect(project_natures).to include(PLUGIN_NATURE)
+        expect(project_natures).to include(JAVA_NATURE)
+        expect(project_natures.index(PLUGIN_NATURE)).to be < project_natures.index(JAVA_NATURE)
       end
 
       it 'should have plugin build commands and the Java build command' do
         define('foo')
-        build_commands.should include(PLUGIN_BUILDERS[0])
-        build_commands.should include(PLUGIN_BUILDERS[1])
-        build_commands.should include(JAVA_BUILDER)
+        expect(build_commands).to include(PLUGIN_BUILDERS[0])
+        expect(build_commands).to include(PLUGIN_BUILDERS[1])
+        expect(build_commands).to include(JAVA_BUILDER)
       end
     end
 
@@ -337,7 +337,7 @@ Implementation-Vendor: "Acme Corp."
 Bundle-SymbolicName: acme.plugin.example
 MANIFEST
         define('foo')
-        project_natures.should include(PLUGIN_NATURE)
+        expect(project_natures).to include(PLUGIN_NATURE)
       end
 
       it 'should not have plugin nature if MANIFEST.MF exists but doesn\'t contain "Bundle-SymbolicName:"' do
@@ -352,7 +352,7 @@ Implementation-Version: "build57"
 Implementation-Vendor: "Acme Corp."
 MANIFEST
         define('foo')
-        project_natures.should_not include(PLUGIN_NATURE)
+        expect(project_natures).not_to include(PLUGIN_NATURE)
       end
     end
   end
@@ -368,9 +368,9 @@ MANIFEST
 
       it 'should have SCALA_CONTAINER before JAVA_CONTAINER' do
         define('foo')
-        classpath_containers.should include(SCALA_CONTAINER)
-        classpath_containers.should include(JAVA_CONTAINER)
-        classpath_containers.index(SCALA_CONTAINER).should < classpath_containers.index(JAVA_CONTAINER)
+        expect(classpath_containers).to include(SCALA_CONTAINER)
+        expect(classpath_containers).to include(JAVA_CONTAINER)
+        expect(classpath_containers.index(SCALA_CONTAINER)).to be < classpath_containers.index(JAVA_CONTAINER)
       end
     end
 
@@ -387,8 +387,8 @@ MANIFEST
           define('foo')
           classpath_sources('excluding').each do |excluding_attribute|
             excluding = excluding_attribute.split('|')
-            excluding.should include('**/.svn/')
-            excluding.should include('**/CVS/')
+            expect(excluding).to include('**/.svn/')
+            expect(excluding).to include('**/CVS/')
           end
         end
       end
@@ -398,23 +398,23 @@ MANIFEST
 
         it 'should accept to come from the default directory' do
           define('foo')
-          classpath_sources.should include('src/main/java')
+          expect(classpath_sources).to include('src/main/java')
         end
 
         it 'should accept to come from a user-defined directory' do
           define('foo') { compile path_to('src/java') }
-          classpath_sources.should include('src/java')
+          expect(classpath_sources).to include('src/java')
         end
 
         it 'should accept a file task as a main source folder' do
           define('foo') { compile apt }
-          classpath_sources.should include('target/generated/apt')
+          expect(classpath_sources).to include('target/generated/apt')
         end
 
         it 'should go to the default target directory' do
           define('foo')
-          classpath_specific_output('src/main/java').should be(nil)
-          classpath_default_output.should == 'target/classes'
+          expect(classpath_specific_output('src/main/java')).to be(nil)
+          expect(classpath_default_output).to eq('target/classes')
         end
       end
 
@@ -423,23 +423,23 @@ MANIFEST
 
         it 'should accept to come from the default directory' do
           define('foo')
-          classpath_sources.should include('src/test/java')
+          expect(classpath_sources).to include('src/test/java')
         end
 
         it 'should accept to come from a user-defined directory' do
           define('foo') { test.compile path_to('src/test') }
-          classpath_sources.should include('src/test')
+          expect(classpath_sources).to include('src/test')
         end
 
         it 'should go to the default target directory' do
           define('foo')
-          classpath_specific_output('src/test/java').should == 'target/test/classes'
+          expect(classpath_specific_output('src/test/java')).to eq('target/test/classes')
         end
 
         it 'should accept to be the only code in the project' do
           rm 'src/main/java/Main.java'
           define('foo')
-          classpath_sources.should include('src/test/java')
+          expect(classpath_sources).to include('src/test/java')
         end
       end
 
@@ -452,18 +452,18 @@ MANIFEST
 
         it 'should accept to come from the default directory' do
           define('foo')
-          classpath_sources.should include('src/main/resources')
+          expect(classpath_sources).to include('src/main/resources')
         end
 
         it 'should share a classpath entry if it comes from a directory with code' do
           write 'src/main/java/config.properties'
           define('foo') { resources.from('src/main/java').exclude('**/*.java') }
-          classpath_sources.select { |path| path == 'src/main/java'}.length.should == 1
+          expect(classpath_sources.select { |path| path == 'src/main/java'}.length).to eq(1)
         end
 
         it 'should go to the default target directory' do
           define('foo')
-          classpath_specific_output('src/main/resources').should == 'target/resources'
+          expect(classpath_specific_output('src/main/resources')).to eq('target/resources')
         end
       end
 
@@ -476,18 +476,18 @@ MANIFEST
 
         it 'should accept to come from the default directory' do
           define('foo')
-          classpath_sources.should include('src/test/resources')
+          expect(classpath_sources).to include('src/test/resources')
         end
 
         it 'should share a classpath entry if it comes from a directory with code' do
           write 'src/test/java/config-test.properties'
           define('foo') { test.resources.from('src/test/java').exclude('**/*.java') }
-          classpath_sources.select { |path| path == 'src/test/java'}.length.should == 1
+          expect(classpath_sources.select { |path| path == 'src/test/java'}.length).to eq(1)
         end
 
         it 'should go to the default target directory' do
           define('foo')
-          classpath_specific_output('src/test/resources').should == 'target/test/resources'
+          expect(classpath_specific_output('src/test/resources')).to eq('target/test/resources')
         end
       end
     end
@@ -503,8 +503,8 @@ MANIFEST
         }
         task('eclipse').invoke
         File.open(File.join('bar', '.classpath')) do |f|
-          REXML::Document.new(f).root.
-            elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.should include('/myproject-foo')
+          expect(REXML::Document.new(f).root.
+            elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }).to include('/myproject-foo')
         end
       end
 
@@ -518,8 +518,8 @@ MANIFEST
         }
         task('eclipse').invoke
         File.open(File.join('bar', '.classpath')) do |f|
-          REXML::Document.new(f).root.
-            elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.should include('/eclipsefoo')
+          expect(REXML::Document.new(f).root.
+            elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }).to include('/eclipsefoo')
         end
       end
     end
@@ -532,8 +532,8 @@ MANIFEST
     end
 
     it 'should have a lib artifact reference in the .classpath file' do
-      classpath_xml_elements.collect("classpathentry[@kind='lib']") { |n| n.attributes['path'] }.
-        should include('lib/some-local.jar')
+      expect(classpath_xml_elements.collect("classpathentry[@kind='lib']") { |n| n.attributes['path'] }).
+        to include('lib/some-local.jar')
     end
   end
 
@@ -552,8 +552,8 @@ MANIFEST
     end
 
     it 'supports generating library paths with classpath variables' do
-      classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }.
-        should include('LIBS/some-local.jar')
+      expect(classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }).
+        to include('LIBS/some-local.jar')
     end
   end
 
@@ -564,8 +564,8 @@ MANIFEST
     end
 
     it 'should have src reference in the .classpath file' do
-      classpath_xml_elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }.
-        should include('lib')
+      expect(classpath_xml_elements.collect("classpathentry[@kind='src']") { |n| n.attributes['path'] }).
+        to include('lib')
     end
   end
 
@@ -577,22 +577,22 @@ MANIFEST
     end
 
     it 'should have a reference in the .classpath file relative to the local M2 repo' do
-      classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }.
-        should include('M2_REPO/com/example/library/2.0/library-2.0.jar')
+      expect(classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }).
+        to include('M2_REPO/com/example/library/2.0/library-2.0.jar')
     end
 
     it 'should be downloaded' do
-      file(artifact('com.example:library:jar:2.0').name).should exist
+      expect(file(artifact('com.example:library:jar:2.0').name)).to exist
     end
 
     it 'should have a source artifact reference in the .classpath file' do
-      sourcepath_for_path('M2_REPO/com/example/library/2.0/library-2.0.jar').
-        should == ['M2_REPO/com/example/library/2.0/library-2.0-sources.jar']
+      expect(sourcepath_for_path('M2_REPO/com/example/library/2.0/library-2.0.jar')).
+        to eq(['M2_REPO/com/example/library/2.0/library-2.0-sources.jar'])
     end
 
     it 'should have a javadoc artifact reference in the .classpath file' do
-      javadocpath_for_path('M2_REPO/com/example/library/2.0/library-2.0.jar').
-        should == ['M2_REPO/com/example/library/2.0/library-2.0-javadoc.jar']
+      expect(javadocpath_for_path('M2_REPO/com/example/library/2.0/library-2.0.jar')).
+        to eq(['M2_REPO/com/example/library/2.0/library-2.0-javadoc.jar'])
     end
   end
 
@@ -605,8 +605,8 @@ MANIFEST
       artifact('com.example:library:jar:2.0') { |task| write task.name }
 
       task('eclipse').invoke
-      classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }.
-        should include('PROJ_REPO/com/example/library/2.0/library-2.0.jar')
+      expect(classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }).
+        to include('PROJ_REPO/com/example/library/2.0/library-2.0.jar')
     end
 
     it 'should pick the parent value by default' do
@@ -618,8 +618,8 @@ MANIFEST
           eclipse.options.m2_repo_var = 'BAR2_REPO'
         end
       end
-      project('foo:bar').eclipse.options.m2_repo_var.should eql('FOO_REPO')
-      project('foo:bar2').eclipse.options.m2_repo_var.should eql('BAR2_REPO')
+      expect(project('foo:bar').eclipse.options.m2_repo_var).to eql('FOO_REPO')
+      expect(project('foo:bar2').eclipse.options.m2_repo_var).to eql('BAR2_REPO')
     end
   end
 
@@ -630,7 +630,7 @@ MANIFEST
         compile.using(:javac).with('com.example:library:jar:2.0')
       end
       artifact('com.example:library:jar:2.0') { |task| write task.name }
-      project_natures.should include('dummyNature')
+      expect(project_natures).to include('dummyNature')
     end
 
     it 'should pick the parent value by default' do
@@ -642,15 +642,15 @@ MANIFEST
           eclipse.natures = 'bar2_nature'
         end
       end
-      project('foo:bar').eclipse.natures.should include('foo_nature')
-      project('foo:bar2').eclipse.natures.should include('bar2_nature')
+      expect(project('foo:bar').eclipse.natures).to include('foo_nature')
+      expect(project('foo:bar2').eclipse.natures).to include('bar2_nature')
     end
 
     it 'should handle arrays correctly' do
       define('foo') do
         eclipse.natures ['foo_nature', 'bar_nature']
       end
-      project('foo').eclipse.natures.should == ['foo_nature', 'bar_nature']
+      expect(project('foo').eclipse.natures).to eq(['foo_nature', 'bar_nature'])
     end
   end
 
@@ -661,7 +661,7 @@ MANIFEST
         compile.using(:javac).with('com.example:library:jar:2.0')
       end
       artifact('com.example:library:jar:2.0') { |task| write task.name }
-      build_commands.should include('dummyBuilder')
+      expect(build_commands).to include('dummyBuilder')
     end
 
     it 'should pick the parent value by default' do
@@ -673,15 +673,15 @@ MANIFEST
           eclipse.builders = 'bar2_builder'
         end
       end
-      project('foo:bar').eclipse.builders.should include('foo_builder')
-      project('foo:bar2').eclipse.builders.should include('bar2_builder')
+      expect(project('foo:bar').eclipse.builders).to include('foo_builder')
+      expect(project('foo:bar2').eclipse.builders).to include('bar2_builder')
     end
 
     it 'should handle arrays correctly' do
       define('foo') do
         eclipse.builders ['foo_builder', 'bar_builder']
       end
-      project('foo').eclipse.builders.should == ['foo_builder', 'bar_builder']
+      expect(project('foo').eclipse.builders).to eq(['foo_builder', 'bar_builder'])
     end
   end
 
@@ -692,7 +692,7 @@ MANIFEST
         compile.using(:javac).with('com.example:library:jar:2.0')
       end
       artifact('com.example:library:jar:2.0') { |task| write task.name }
-      classpath_containers.should include('myOlGoodContainer')
+      expect(classpath_containers).to include('myOlGoodContainer')
     end
 
     it 'should pick the parent value by default' do
@@ -704,15 +704,15 @@ MANIFEST
           eclipse.classpath_containers = 'bar2_classpath_containers'
         end
       end
-      project('foo:bar').eclipse.classpath_containers.should include('foo_classpath_containers')
-      project('foo:bar2').eclipse.classpath_containers.should include('bar2_classpath_containers')
+      expect(project('foo:bar').eclipse.classpath_containers).to include('foo_classpath_containers')
+      expect(project('foo:bar2').eclipse.classpath_containers).to include('bar2_classpath_containers')
     end
 
     it 'should handle arrays correctly' do
       define('foo') do
         eclipse.classpath_containers ['foo_cc', 'bar_cc']
       end
-      project('foo').eclipse.classpath_containers.should == ['foo_cc', 'bar_cc']
+      expect(project('foo').eclipse.classpath_containers).to eq(['foo_cc', 'bar_cc'])
     end
   end
 
@@ -725,8 +725,8 @@ MANIFEST
       artifact('com.example:library:jar:2.0') { |task| write task.name }
 
       task('eclipse').invoke
-      classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }.
-        should_not include('M2_REPO/com/example/library/2.0/library-2.0.jar')
+      expect(classpath_xml_elements.collect("classpathentry[@kind='var']") { |n| n.attributes['path'] }).
+        not_to include('M2_REPO/com/example/library/2.0/library-2.0.jar')
     end
     it 'should support string paths' do
       define('foo') do
@@ -736,8 +736,8 @@ MANIFEST
       write project('foo').path_to('path/to/library.jar')
 
       task('eclipse').invoke
-      classpath_xml_elements.collect("classpathentry[@kind='lib']") { |n| n.attributes['path'] }.
-        should_not include('path/to/library.jar')
+      expect(classpath_xml_elements.collect("classpathentry[@kind='lib']") { |n| n.attributes['path'] }).
+        not_to include('path/to/library.jar')
     end
   end
 end

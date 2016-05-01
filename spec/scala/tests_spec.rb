@@ -29,11 +29,11 @@ describe "scalatest version" do
   case
   when Buildr::Scala.version?(2.8)
     it 'should be 1.3 for scala 2.8' do
-      Scala::ScalaTest.dependencies.should include("org.scalatest:scalatest:jar:1.3")
+      expect(Scala::ScalaTest.dependencies).to include("org.scalatest:scalatest:jar:1.3")
     end
   when Buildr::Scala.version?(2.9)
     it 'should be 1.8 for scala 2.9' do
-      Scala::ScalaTest.dependencies.should include("org.scalatest:scalatest_2.9.2:jar:1.8")
+      expect(Scala::ScalaTest.dependencies).to include("org.scalatest:scalatest_2.9.2:jar:1.8")
     end
   end
 end
@@ -52,25 +52,25 @@ describe Buildr::Scala::ScalaTest do
       }
     SCALA
     define 'foo'
-    project('foo').test.framework.should eql(:scalatest)
+    expect(project('foo').test.framework).to eql(:scalatest)
   end
 
   it 'should include Scalatest dependencies' do
     define('foo') { test.using(:scalatest) }
-    project('foo').test.compile.dependencies.should include(*artifacts(Scala::ScalaTest.dependencies))
-    project('foo').test.dependencies.should include(*artifacts(Scala::ScalaTest.dependencies))
+    expect(project('foo').test.compile.dependencies).to include(*artifacts(Scala::ScalaTest.dependencies))
+    expect(project('foo').test.dependencies).to include(*artifacts(Scala::ScalaTest.dependencies))
   end
 
   it 'should include JMock dependencies' do
     define('foo') { test.using(:scalatest) }
-    project('foo').test.compile.dependencies.should include(*artifacts(JMock.dependencies))
-    project('foo').test.dependencies.should include(*artifacts(JMock.dependencies))
+    expect(project('foo').test.compile.dependencies).to include(*artifacts(JMock.dependencies))
+    expect(project('foo').test.dependencies).to include(*artifacts(JMock.dependencies))
   end
 
   it 'should include ScalaCheck dependencies' do
     define('foo') { test.using(:scalatest) }
-    project('foo').test.compile.dependencies.should include(*artifacts(Scala::Check.dependencies))
-    project('foo').test.dependencies.should include(*artifacts(Scala::Check.dependencies))
+    expect(project('foo').test.compile.dependencies).to include(*artifacts(Scala::Check.dependencies))
+    expect(project('foo').test.dependencies).to include(*artifacts(Scala::Check.dependencies))
   end
 
   it 'should set current directory' do
@@ -105,7 +105,7 @@ describe Buildr::Scala::ScalaTest do
       }
     SCALA
     define('foo').test.invoke
-    project('foo').test.tests.should include('com.example.MySuite')
+    expect(project('foo').test.tests).to include('com.example.MySuite')
   end
 
   it 'should ignore classes not extending org.scalatest.FunSuite' do
@@ -115,7 +115,7 @@ describe Buildr::Scala::ScalaTest do
       }
     SCALA
     define('foo').test.invoke
-    project('foo').test.tests.should be_empty
+    expect(project('foo').test.tests).to be_empty
   end
 
   it 'should ignore inner classes' do
@@ -137,7 +137,7 @@ describe Buildr::Scala::ScalaTest do
       }
     SCALA
     define('foo').test.invoke
-    project('foo').test.tests.should eql(['com.example.InnerClassTest'])
+    expect(project('foo').test.tests).to eql(['com.example.InnerClassTest'])
   end
 
   it 'should pass when ScalaTest test case passes' do
@@ -149,7 +149,7 @@ describe Buildr::Scala::ScalaTest do
         }
       }
     SCALA
-    lambda { define('foo').test.invoke }.should_not raise_error
+    expect { define('foo').test.invoke }.not_to raise_error
   end
 
   it 'should fail when ScalaTest test case fails' do
@@ -160,7 +160,7 @@ describe Buildr::Scala::ScalaTest do
         }
       }
     SCALA
-    lambda { define('foo').test.invoke }.should raise_error(RuntimeError, /Tests failed/) rescue nil
+    expect { define('foo').test.invoke }.to raise_error(RuntimeError, /Tests failed/) rescue nil
   end
 
   it 'should report failed test names' do
@@ -172,7 +172,7 @@ describe Buildr::Scala::ScalaTest do
       }
     SCALA
     define('foo').test.invoke rescue
-    project('foo').test.failed_tests.should include('FailingSuite')
+    expect(project('foo').test.failed_tests).to include('FailingSuite')
   end
 
   it 'should report to reports/scalatest/TEST-TestSuiteName.xml' do
@@ -184,10 +184,10 @@ describe Buildr::Scala::ScalaTest do
       }
     SCALA
     define 'foo' do
-      test.report_to.should be(file('reports/scalatest'))
+      expect(test.report_to).to be(file('reports/scalatest'))
     end
     project('foo').test.invoke
-    project('foo').file('reports/scalatest/TEST-PassingSuite.xml').should exist
+    expect(project('foo').file('reports/scalatest/TEST-PassingSuite.xml')).to exist
   end
 
   it 'should report to reports/scalatest/TEST-TestSuiteName.txt' do
@@ -199,10 +199,10 @@ describe Buildr::Scala::ScalaTest do
       }
     SCALA
     define 'foo' do
-      test.report_to.should be(file('reports/scalatest'))
+      expect(test.report_to).to be(file('reports/scalatest'))
     end
     project('foo').test.invoke
-    project('foo').file('reports/scalatest/TEST-PassingSuite.txt').should exist
+    expect(project('foo').file('reports/scalatest/TEST-PassingSuite.txt')).to exist
   end
 
   it 'should pass properties to Suite' do
@@ -249,7 +249,7 @@ describe Buildr::Scala::ScalaTest do
     SCALA
     define('foo')
     project('foo').test.invoke
-    project('foo').test.passed_tests.should include('MySuite')
+    expect(project('foo').test.passed_tests).to include('MySuite')
   end
 
   it 'should fail if ScalaCheck test case fails' do
@@ -285,7 +285,7 @@ describe Buildr::Scala::ScalaTest do
     SCALA
     define('foo')
     project('foo').test.invoke rescue
-    project('foo').test.failed_tests.should include('StringSuite')
+    expect(project('foo').test.failed_tests).to include('StringSuite')
   end
 
 end

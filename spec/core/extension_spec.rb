@@ -34,7 +34,7 @@ describe Extension do
   end
 
   it 'should call Extension.first_time during include' do
-    TestExtension.should_receive(:first_time_called).once
+    expect(TestExtension).to receive(:first_time_called).once
     class Buildr::Project
       include TestExtension
     end
@@ -43,8 +43,8 @@ describe Extension do
   it 'should call before_define and after_define in order when project is defined' do
     begin
       TestExtension.callback do |extension|
-        extension.should_receive(:before_define_called).once.ordered
-        extension.should_receive(:after_define_called).once.ordered
+        expect(extension).to receive(:before_define_called).once.ordered
+        expect(extension).to receive(:after_define_called).once.ordered
       end
       class Buildr::Project
         include TestExtension
@@ -60,15 +60,15 @@ describe Extension do
       extensions = 0
       TestExtension.callback do |extension|
         extensions += 1
-        extension.should_receive(:before_define_called).once.ordered
-        extension.should_receive(:after_define_called).once.ordered
+        expect(extension).to receive(:before_define_called).once.ordered
+        expect(extension).to receive(:after_define_called).once.ordered
       end
       class Buildr::Project
         include TestExtension
       end
       define('foo')
       define('bar')
-      extensions.should equal(2)
+      expect(extensions).to equal(2)
     ensure
       TestExtension.callback { |ignore| }
     end
@@ -80,8 +80,8 @@ describe Extension do
       include ExtensionThreeFour
     end
     define('foo')
-    project('foo').before_order.should == [ :one, :two, :three, :four ]
-    project('foo').after_order.should  == [ :four, :three, :two, :one ]
+    expect(project('foo').before_order).to eq([ :one, :two, :three, :four ])
+    expect(project('foo').after_order).to  eq([ :four, :three, :two, :one ])
   end
 
   it 'should call before_define callbacks when extending project' do
@@ -89,31 +89,31 @@ describe Extension do
       extend ExtensionOneTwo
       extend ExtensionThreeFour
     end
-    project('foo').before_order.should == [ :two, :one, :four, :three ]
-    project('foo').after_order.should  == [ :four, :three, :two, :one ]
+    expect(project('foo').before_order).to eq([ :two, :one, :four, :three ])
+    expect(project('foo').after_order).to  eq([ :four, :three, :two, :one ])
   end
 
   it 'should raise error when including if callback dependencies cannot be satisfied' do
     class Buildr::Project
       include ExtensionOneTwo # missing ExtensionThreeFour
     end
-    lambda { define('foo') }.should raise_error
+    expect { define('foo') }.to raise_error
   end
 
   it 'should raise error when extending if callback dependencies cannot be satisfied' do
-    lambda {
+    expect {
       define('foo') do |project|
         extend ExtensionOneTwo # missing ExtensionThreeFour
       end
-    }.should raise_error
+    }.to raise_error
   end
 
   it 'should ignore dependencies when extending project' do
     define('bar') do |project|
       extend ExtensionThreeFour # missing ExtensionOneTwo
     end
-    project('bar').before_order.should == [:four, :three]
-    project('bar').after_order.should == [:four, :three]
+    expect(project('bar').before_order).to eq([:four, :three])
+    expect(project('bar').after_order).to eq([:four, :three])
   end
 end
 

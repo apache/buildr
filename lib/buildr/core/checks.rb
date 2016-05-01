@@ -43,7 +43,7 @@ module Buildr #:nodoc:
                 args = " " + @expects.map{ |arg| "'#{arg}'" }.join(", ") unless @expects.empty?
                 "Expected #{@actual} to #{name}#{args}"
               end
-              define_method :negative_failure_message do
+              define_method :failure_message_when_negated do
                 args = " " + @expects.map{ |arg| "'#{arg}'" }.join(", ") unless @expects.empty?
                 "Expected #{@actual} to not #{name}#{args}"
               end

@@ -64,7 +64,7 @@ XML
   it 'should respect exclusions when computing transitive dependencies' do
     pom = POM.load(artifact(@app).pom)
     specs = [ 'org.example:library:jar:1.1', 'org.example:foo:jar:2.0' ]
-    pom.dependencies.should eql(specs)
+    expect(pom.dependencies).to eql(specs)
   end
 end
 
@@ -120,6 +120,6 @@ XML
   it 'should respect exclusions when computing transitive dependencies when the pom includes properties' do
     pom = POM.load(artifact(@app).pom)
     specs = {"a.version"=>"1.1", "b.version"=>"1.1", "project.groupId"=>"group", "pom.groupId"=>"group", "groupId"=>"group", "project.artifactId"=>"app", "pom.artifactId"=>"app", "artifactId"=>"app"}
-    pom.properties.should eql(specs)
+    expect(pom.properties).to eql(specs)
   end
 end

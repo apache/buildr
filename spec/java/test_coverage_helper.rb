@@ -39,7 +39,7 @@ module TestCoverageHelper
       "Expected to find at least one element matching '#{@expected_pattern}' among #{@actual_filenames.inspect}, but found none"
     end
 
-    def negative_failure_message
+    def failure_message_when_negated
       "Expected to find no element matching '#{@expected_pattern}' among #{@actual_filenames.inspect}, but found matching element(s) #{@actual_filenames.select(&@pattern_matcher).inspect}"
     end
   end
@@ -77,32 +77,32 @@ shared_examples_for 'test coverage tool' do
       it 'should remove the instrumented directory' do
         mkdir_p test_coverage_config.instrumented_dir.to_s
         task('foo:clean').invoke
-        file(test_coverage_config.instrumented_dir).should_not exist
+        expect(file(test_coverage_config.instrumented_dir)).not_to exist
       end
 
       it 'should remove the reporting directory' do
         mkdir_p test_coverage_config.report_dir
         task('foo:clean').invoke
-        file(test_coverage_config.report_dir).should_not exist
+        expect(file(test_coverage_config.report_dir)).not_to exist
       end
     end
 
     describe 'instrumented directory' do
       it 'should have a default value' do
         define('foo')
-        test_coverage_config.instrumented_dir.should point_to_path('target/instrumented/classes')
+        expect(test_coverage_config.instrumented_dir).to point_to_path('target/instrumented/classes')
       end
 
       it 'should be overridable' do
         toolname = toolname()
         define('foo') { send(toolname).instrumented_dir = path_to('target/coverage/classes') }
-        test_coverage_config.instrumented_dir.should point_to_path('target/coverage/classes')
+        expect(test_coverage_config.instrumented_dir).to point_to_path('target/coverage/classes')
       end
 
       it 'should be created during instrumentation' do
         define('foo')
         task("foo:#{toolname}:instrument").invoke
-        file(test_coverage_config.instrumented_dir).should exist
+        expect(file(test_coverage_config.instrumented_dir)).to exist
       end
     end
 
@@ -113,13 +113,13 @@ shared_examples_for 'test coverage tool' do
 
       it 'should happen after compile' do
         define('foo')
-        lambda { task("foo:#{toolname}:instrument").invoke }.should run_task('foo:compile')
+        expect { task("foo:#{toolname}:instrument").invoke }.to run_task('foo:compile')
       end
 
       it 'should put classes from compile.target in the instrumented directory' do
         define('foo')
         task("foo:#{toolname}:instrument").invoke
-        Dir.entries(instrumented_dir.to_s).should == Dir.entries(project('foo').compile.target.to_s)
+        expect(Dir.entries(instrumented_dir.to_s)).to eq(Dir.entries(project('foo').compile.target.to_s))
       end
 
       it 'should touch instrumented directory if anything instrumented' do
@@ -128,7 +128,7 @@ shared_examples_for 'test coverage tool' do
         mkpath instrumented_dir.to_s
         File.utime(a_long_time_ago, a_long_time_ago, instrumented_dir.to_s)
         task("foo:#{toolname}:instrument").invoke
-        instrumented_dir.timestamp.should be_within(2).of(Time.now)
+        expect(instrumented_dir.timestamp).to be_within(2).of(Time.now)
       end
 
       it 'should not touch instrumented directory if nothing instrumented' do
@@ -137,7 +137,7 @@ shared_examples_for 'test coverage tool' do
         mkpath instrumented_dir.to_s
         [project('foo').compile.target, instrumented_dir].map(&:to_s).each { |dir| File.utime(a_long_time_ago, a_long_time_ago, dir) }
         task("foo:#{toolname}:instrument").invoke
-        instrumented_dir.timestamp.should be_within(2).of(a_long_time_ago)
+        expect(instrumented_dir.timestamp).to be_within(2).of(a_long_time_ago)
       end
     end
 
@@ -145,12 +145,12 @@ shared_examples_for 'test coverage tool' do
       it 'should give priority to instrumented classes over non-instrumented ones' do
         define('foo')
         depends = project('foo').test.dependencies
-        depends.index(test_coverage_config.instrumented_dir).should < depends.index(project('foo').compile.target)
+        expect(depends.index(test_coverage_config.instrumented_dir)).to be < depends.index(project('foo').compile.target)
       end
 
       it 'should have the test coverage tools artifacts' do
         define('foo')
-        artifacts(@tool_module.dependencies).each { |artifact| project('foo').test.dependencies.should include(artifact) }
+        artifacts(@tool_module.dependencies).each { |artifact| expect(project('foo').test.dependencies).to include(artifact) }
       end
     end
 
@@ -158,7 +158,7 @@ shared_examples_for 'test coverage tool' do
       it 'should have html files' do
         define('foo')
         task("foo:#{toolname}:html").invoke
-        test_coverage_config.report_to(:html).should have_files_matching('*.html')
+        expect(test_coverage_config.report_to(:html)).to have_files_matching('*.html')
       end
 
       it 'should contain full source code, including comments' do
@@ -168,7 +168,7 @@ shared_examples_for 'test coverage tool' do
         task("foo:#{toolname}:html").invoke
         html_report_contents = Dir[File.join(test_coverage_config.report_dir, '**/*.html')].map{|path|File.open(path).read}.join
         html_report_contents.force_encoding('ascii-8bit') if RUBY_VERSION >= '1.9'
-        html_report_contents.should =~ /TOKEN/
+        expect(html_report_contents).to match(/TOKEN/)
       end
     end
   end
@@ -183,21 +183,21 @@ shared_examples_for 'test coverage tool' do
       end
 
       it 'should have a default target' do
-        @tool_module.report_to.should point_to_path(File.join('reports', toolname))
+        expect(@tool_module.report_to).to point_to_path(File.join('reports', toolname))
       end
 
       describe 'in html' do
         it 'should be a defined task' do
-          Rake::Task.task_defined?("#{toolname}:html").should be(true)
+          expect(Rake::Task.task_defined?("#{toolname}:html")).to be(true)
         end
 
         it 'should happen after project instrumentation and testing' do
-          lambda { task("#{toolname}:html").invoke }.should run_tasks(["foo:#{toolname}:instrument", 'foo:bar:test'])
+          expect { task("#{toolname}:html").invoke }.to run_tasks(["foo:#{toolname}:instrument", 'foo:bar:test'])
         end
 
         it 'should have html files' do
           task("#{toolname}:html").invoke
-          @tool_module.report_to(:html).should have_files_matching('*.html')
+          expect(@tool_module.report_to(:html)).to have_files_matching('*.html')
         end
 
         it 'should contain full source code, including comments' do
@@ -206,13 +206,13 @@ shared_examples_for 'test coverage tool' do
           task("#{toolname}:html").invoke
           html_report_contents = Dir[File.join(@tool_module.report_to(:html), '**/*.html')].map{|path|File.read(path)}.join
           html_report_contents.force_encoding('ascii-8bit') if RUBY_VERSION >= '1.9'
-          html_report_contents.should =~ /TOKEN/
+          expect(html_report_contents).to match(/TOKEN/)
         end
 
         it 'should handle gracefully a project with no source' do
           define 'baz', :base_dir=>'baz'
           task("#{toolname}:html").invoke
-          lambda { task("#{toolname}:html").invoke }.should_not raise_error
+          expect { task("#{toolname}:html").invoke }.not_to raise_error
         end
       end
     end
@@ -222,12 +222,12 @@ shared_examples_for 'test coverage tool' do
         define('foo')
         mkdir_p @tool_module.report_to
         task("#{toolname}:clean").invoke
-        file(@tool_module.report_to).should_not exist
+        expect(file(@tool_module.report_to)).not_to exist
       end
 
       it 'should be called when calling global clean' do
         define('foo')
-        lambda { task('clean').invoke }.should run_task("#{toolname}:clean")
+        expect { task('clean').invoke }.to run_task("#{toolname}:clean")
       end
     end
   end
@@ -235,23 +235,23 @@ shared_examples_for 'test coverage tool' do
   describe 'project with no source' do
     it 'should not define an html report task' do
       define 'foo'
-      Rake::Task.task_defined?("foo:#{toolname}:html").should be(false)
+      expect(Rake::Task.task_defined?("foo:#{toolname}:html")).to be(false)
     end
 
     it 'should not raise an error when instrumenting' do
       define('foo')
-      lambda { task("foo:#{toolname}:instrument").invoke }.should_not raise_error
+      expect { task("foo:#{toolname}:instrument").invoke }.not_to raise_error
     end
 
     it 'should not add the instrumented directory to the testing classpath' do
       define 'foo'
       depends = project('foo').test.dependencies
-      depends.should_not include(test_coverage_config.instrumented_dir)
+      expect(depends).not_to include(test_coverage_config.instrumented_dir)
     end
 
     it 'should not add the test coverage tools artifacts to the testing classpath' do
       define('foo')
-      @tool_module.dependencies.each { |artifact| project('foo').test.dependencies.should_not include(artifact) }
+      @tool_module.dependencies.each { |artifact| expect(project('foo').test.dependencies).not_to include(artifact) }
     end
   end
 end
