@@ -52,12 +52,8 @@ module Buildr #:nodoc:
           #
           # Parse the MANIFEST.MF entry of a ZIP (or JAR) file and return a new Manifest.
           def from_zip(file)
-            Zip::ZipInputStream::open(file.to_s) do |zip|
-              while (entry = zip.get_next_entry)
-                if entry.name == 'META-INF/MANIFEST.MF'
-                  return Manifest.parse zip.read
-                end
-              end
+            Zip::File.open(file.to_s) do |zip|
+              return Manifest.parse zip.read('META-INF/MANIFEST.MF') if zip.find_entry('META-INF/MANIFEST.MF')
             end
             Manifest.new
           end
@@ -71,7 +67,7 @@ module Buildr #:nodoc:
           def update_manifest(file)
             manifest = from_zip(file)
             result = yield manifest
-            Zip::ZipFile.open(file.to_s) do |zip|
+            Zip::File.open(file.to_s) do |zip|
               zip.get_output_stream('META-INF/MANIFEST.MF') do |out|
                 out.write manifest.to_s
                 out.write "\n"
@@ -469,7 +465,7 @@ module Buildr #:nodoc:
             Manifest.update_manifest(task) do |manifest|
               class_path = manifest.main['Class-Path'].to_s.split
               included_libs = class_path.map { |fn| fn.pathmap('%f') }
-              Zip::ZipFile.foreach(task.to_s) do |entry|
+              Zip::File.foreach(task.to_s) do |entry|
                 included_libs << entry.name.pathmap('%f') if entry.file? && entry.name =~ /^WEB-INF\/lib\/[^\/]+$/
               end
               # Include all other libraries in the classpath.

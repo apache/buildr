@@ -91,13 +91,13 @@ shared_examples_for 'package with manifest' do
   it 'should not exist when manifest=false' do
     package_with_manifest false
     @project.package(@packaging).invoke
-    Zip::ZipFile.open(@project.package(@packaging).to_s) do |zip|
-      zip.file.exist?('META-INF/MANIFEST.MF').should be_false
+    Zip::File.open(@project.package(@packaging).to_s) do |zip|
+      zip.exist?('META-INF/MANIFEST.MF').should be_false
     end
   end
 
   it 'should generate a new manifest for a file that does not have one' do
-    Zip::ZipOutputStream.open 'tmp.zip' do |zip|
+    Zip::OutputStream.open 'tmp.zip' do |zip|
       zip.put_next_entry 'empty.txt'
     end
     begin
@@ -135,7 +135,7 @@ shared_examples_for 'package with manifest' do
     package_with_manifest 'Foo'=>1, :bar=>'Bar'
     package = project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF').should =~ /#{Buildr::Packaging::Java::Manifest::LINE_SEPARATOR}$/ }
+    Zip::File.open(package.to_s) { |zip| zip.read('META-INF/MANIFEST.MF').should =~ /#{Buildr::Packaging::Java::Manifest::LINE_SEPARATOR}$/ }
   end
 
   it 'should break hash manifest lines longer than 72 characters using continuations' do
@@ -160,7 +160,7 @@ shared_examples_for 'package with manifest' do
     package_with_manifest [ { :foo=>'first' }, { :bar=>'second' } ]
     package = project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) { |zip| zip.file.read('META-INF/MANIFEST.MF')[-1].should == ?\n }
+    Zip::File.open(package.to_s) { |zip| zip.read('META-INF/MANIFEST.MF')[-1].should == ?\n }
   end
 
   it 'should break array manifest lines longer than 72 characters using continuations' do
@@ -202,8 +202,8 @@ shared_examples_for 'package with manifest' do
     package_with_manifest  [ {}, { 'Name'=>'first', :Foo=>'first', :bar=>'second' } ]
     package ||= project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) do |zip|
-      permissions = format("%o", zip.file.stat('META-INF/MANIFEST.MF').mode)
+    Zip::File.open(package.to_s) do |zip|
+      permissions = format("%o", zip.find_entry('META-INF/MANIFEST.MF').unix_perms)
       expected_mode = Buildr::Util.win_os? ? /666$/ : /644$/
       permissions.should match expected_mode
     end
@@ -214,7 +214,7 @@ shared_examples_for 'package with manifest' do
     package_with_manifest 'MANIFEST.MF'
     package ||= project('foo').package(@packaging)
     package.invoke
-    Zip::ZipFile.open(package.to_s) do |zip|
+    Zip::File.open(package.to_s) do |zip|
       zip.read('META-INF/MANIFEST.MF').scan(/(Manifest-Version)/m).size.should == 1
     end
   end
@@ -251,7 +251,7 @@ shared_examples_for 'package with manifest' do
     packaging = @packaging
     package = define('foo', :version=>'1.0') { package(packaging) }.packages.first
     package.invoke
-    Zip::ZipFile.open(package.to_s) do |zip|
+    Zip::File.open(package.to_s) do |zip|
       zip.entries.map(&:to_s).should include('META-INF/')
     end
   end
@@ -361,7 +361,7 @@ shared_examples_for 'package with meta_inf' do
     package = project('foo').package(@packaging)
     package.invoke
     assumed = Array(@meta_inf_ignore)
-    Zip::ZipFile.open(package.to_s) do |zip|
+    Zip::File.open(package.to_s) do |zip|
       entries = zip.entries.map(&:name).select { |f| File.dirname(f) == 'META-INF' }.map { |f| File.basename(f) }
       assumed.each { |f| entries.should include(f) }
       yield entries - assumed if block_given?
@@ -435,7 +435,7 @@ describe Packaging, 'jar' do
     write 'src/main/java/Test.java', 'class Test {}'
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
-    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+    Zip::File.open(project('foo').package(:jar).to_s) do |jar|
       entries_to_s = jar.entries.map(&:to_s).delete_if {|entry| entry[-1,1] == "/"}
       # Sometimes META-INF/ is counted as first entry, which is fair game.
       (entries_to_s.first == 'META-INF/MANIFEST.MF' || entries_to_s[1] == 'META-INF/MANIFEST.MF').should be_true
@@ -446,7 +446,7 @@ describe Packaging, 'jar' do
     write 'src/main/java/Test.java', 'class Test {}'
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
-    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+    Zip::File.open(project('foo').package(:jar).to_s) do |jar|
       jar.entries.map(&:to_s).sort.should include('META-INF/MANIFEST.MF', 'Test.class')
     end
   end
@@ -455,7 +455,7 @@ describe Packaging, 'jar' do
     write 'src/main/resources/test/important.properties'
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
-    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+    Zip::File.open(project('foo').package(:jar).to_s) do |jar|
       jar.entries.map(&:to_s).sort.should include('test/important.properties')
     end
   end
@@ -464,7 +464,7 @@ describe Packaging, 'jar' do
     write 'src/main/java/code/Test.java', 'package code ; class Test {}'
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
-    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+    Zip::File.open(project('foo').package(:jar).to_s) do |jar|
       jar.entries.map(&:to_s).sort.should include('code/')
     end
   end
@@ -473,7 +473,7 @@ describe Packaging, 'jar' do
     write 'src/main/resources/test/.config'
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
-    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+    Zip::File.open(project('foo').package(:jar).to_s) do |jar|
       jar.entries.map(&:to_s).sort.should include('test/.config')
     end
   end
@@ -482,7 +482,7 @@ describe Packaging, 'jar' do
     mkpath 'src/main/resources/empty'
     define('foo', :version=>'1.0') { package(:jar) }
     project('foo').package(:jar).invoke
-    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
+    Zip::File.open(project('foo').package(:jar).to_s) do |jar|
       jar.entries.map(&:to_s).sort.should include('empty/')
     end
   end
@@ -497,7 +497,7 @@ describe Packaging, 'jar' do
     write 'src/main/resources/foo.xml', ''
     foo = define('foo', :version => '1.0') { package(:jar).exclude('foo.xml')}
     foo.package(:jar).invoke
-    Zip::ZipFile.open(foo.package(:jar).to_s) do |jar|
+    Zip::File.open(foo.package(:jar).to_s) do |jar|
       jar.entries.map(&:to_s).sort.should_not include('foo.xml')
     end
   end
@@ -519,7 +519,7 @@ describe Packaging, 'war' do
 
   def inspect_war
     project('foo').package(:war).invoke
-    Zip::ZipFile.open(project('foo').package(:war).to_s) do |war|
+    Zip::File.open(project('foo').package(:war).to_s) do |war|
       yield war.entries.map(&:to_s).sort
     end
   end
@@ -678,7 +678,7 @@ describe Packaging, 'aar' do
 
   def inspect_aar
     project('foo').package(:aar).invoke
-    Zip::ZipFile.open(project('foo').package(:aar).to_s) do |aar|
+    Zip::File.open(project('foo').package(:aar).to_s) do |aar|
       yield aar.entries.map(&:to_s).sort
     end
   end
@@ -752,23 +752,23 @@ describe Packaging, 'ear' do
 
   def inspect_ear
     project('foo').package(:ear).invoke
-    Zip::ZipFile.open(project('foo').package(:ear).to_s) do |ear|
+    Zip::File.open(project('foo').package(:ear).to_s) do |ear|
       yield ear.entries.map(&:to_s).sort
     end
   end
 
   def inspect_application_xml
     project('foo').package(:ear).invoke
-    Zip::ZipFile.open(project('foo').package(:ear).to_s) do |ear|
+    Zip::File.open(project('foo').package(:ear).to_s) do |ear|
       yield REXML::Document.new(ear.read('META-INF/application.xml')).root
     end
   end
 
   def inspect_classpath(package)
     project('foo').package(:ear).invoke
-    Zip::ZipFile.open(project('foo').package(:ear).to_s) do |ear|
+    Zip::File.open(project('foo').package(:ear).to_s) do |ear|
       File.open('tmp.zip', 'wb') do |tmp|
-        tmp.write ear.file.read(package)
+        tmp.write ear.read(package)
       end
       manifest = Buildr::Packaging::Java::Manifest.from_zip('tmp.zip')
       yield manifest.main['Class-Path'].split(' ')

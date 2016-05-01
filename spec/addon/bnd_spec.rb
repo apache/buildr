@@ -20,7 +20,7 @@ Sandbox.require_optional_extension 'buildr/bnd'
 def open_zip_file(file = 'target/foo-2.1.3.jar')
   jar_filename = @foo._(file)
   File.should be_exist(jar_filename)
-  Zip::ZipFile.open(jar_filename) do |zip|
+  Zip::File.open(jar_filename) do |zip|
     yield zip
   end
 end
@@ -130,13 +130,13 @@ SRC
 
       it "produces a .jar containing correct .class files for root project" do
         open_zip_file do |zip|
-          zip.file.exist?('com/biz/Foo.class').should be_true
+          zip.exist?('com/biz/Foo.class').should be_true
         end
       end
 
       it "produces a .jar containing resoruces from resource directory root project" do
         open_zip_file do |zip|
-          zip.file.exist?('IRIS-INF/iris.config').should be_true
+          zip.exist?('IRIS-INF/iris.config').should be_true
         end
       end
 
@@ -167,7 +167,7 @@ SRC
 
       it "produces a .jar containing correct .class files for subproject project" do
         open_zip_file('bar/target/foo-bar-2.2.jar') do |zip|
-          zip.file.exist?('com/biz/bar/Bar.class').should be_true
+          zip.exist?('com/biz/bar/Bar.class').should be_true
         end
       end
 

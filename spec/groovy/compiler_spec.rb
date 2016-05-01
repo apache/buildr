@@ -140,8 +140,8 @@ describe 'groovyc compiler' do
     write 'src/main/groovy/some/Example.groovy', 'package some; class Example { }'
     define('foo', :version => '1.0').package.invoke
     file('target/foo-1.0.jar').should exist
-    Zip::ZipFile.open(project('foo').package(:jar).to_s) do |jar|
-      jar.file.exist?('some/Example.class').should be_true
+    Zip::File.open(project('foo').package(:jar).to_s) do |jar|
+      jar.exist?('some/Example.class').should be_true
     end
   end
 

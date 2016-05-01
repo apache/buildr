@@ -680,7 +680,7 @@ describe Packaging, 'zip' do
   it 'should not include META-INF directory' do
     define('foo', :version=>'1.0') { package(:zip) }
     project('foo').package(:zip).invoke
-    Zip::ZipFile.open(project('foo').package(:zip).to_s) do |zip|
+    Zip::File.open(project('foo').package(:zip).to_s) do |zip|
       zip.entries.map(&:to_s).should_not include('META-INF/')
     end
   end

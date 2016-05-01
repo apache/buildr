@@ -57,7 +57,7 @@ module Buildr
     test "include_path", "package", <<-CHECK
 path = File.expand_path("#{TEST_DIR}/include_path/target/proj-1.0.zip")
 assert(File.exist?(path), "File exists?")
-Zip::ZipFile.open(path) {|zip|
+Zip::File.open(path) {|zip|
 assert(!zip.get_entry("distrib/doc/index.html").nil?)
 assert(!zip.get_entry("distrib/lib/slf4j-api-1.6.1.jar").nil?)
 }
@@ -66,7 +66,7 @@ assert(!zip.get_entry("distrib/lib/slf4j-api-1.6.1.jar").nil?)
     test "include_as", "package", <<-CHECK
 path = File.expand_path("#{TEST_DIR}/include_as/target/proj-1.0.zip")
 assert(File.exist? path)
-Zip::ZipFile.open(path) {|zip|
+Zip::File.open(path) {|zip|
 assert(!zip.get_entry("docu/index.html").nil?)
 assert(!zip.get_entry("lib/logging.jar").nil?)
 }

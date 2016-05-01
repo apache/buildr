@@ -70,7 +70,7 @@ describe Buildr::CustomPom do
       ['id-provided', 'id-optional', 'id-runtime', 'id-test'].each do |artifact_id|
         artifact("group:#{artifact_id}:jar:1.0") do |t|
           mkdir_p File.dirname(t.to_s)
-          Zip::ZipOutputStream.open t.to_s do |zip|
+          Zip::OutputStream.open t.to_s do |zip|
             zip.put_next_entry 'empty.txt'
           end
         end

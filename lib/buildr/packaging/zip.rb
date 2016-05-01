@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+require 'zip'
+
 if RUBY_VERSION >= '1.9.0' # Required to properly load RubyZip under Ruby 1.9
   $LOADED_FEATURES.unshift 'ftools'
   require 'fileutils'
@@ -26,29 +28,39 @@ if RUBY_VERSION >= '1.9.0' # Required to properly load RubyZip under Ruby 1.9
   end
 end
 
-require 'zip/zip'
-require 'zip/zipfilesystem'
-
 module Zip #:nodoc:
 
-  class ZipCentralDirectory #:nodoc:
+  class CentralDirectory #:nodoc:
     # Patch to add entries in alphabetical order.
     def write_to_stream(io)
       offset = io.tell
-      @entrySet.sort { |a,b| a.name <=> b.name }.each { |entry| entry.write_c_dir_entry(io) }
-      write_e_o_c_d(io, offset)
+      @entry_set.sort { |a,b| a.name <=> b.name }.each { |entry| entry.write_c_dir_entry(io) }
+      eocd_offset = io.tell
+      cdir_size = eocd_offset - offset
+      write_e_o_c_d(io, offset, cdir_size)
+    end
+  end
+  
+  class File
+    
+    # :call-seq:
+    #   exist() => boolean
+    #
+    # Returns true if this entry exists.
+    def exist?(entry_name)
+      !!find_entry(entry_name)
     end
   end
 
 
-  class ZipEntry
+  class Entry
 
     # :call-seq:
     #   exist() => boolean
     #
     # Returns true if this entry exists.
     def exist?()
-      Zip::ZipFile.open(zipfile) { |zip| zip.file.exist?(@name) }
+      File.open(zipfile) { |zip| zip.exist?(@name) }
     end
 
     # :call-seq:
@@ -56,7 +68,7 @@ module Zip #:nodoc:
     #
     # Returns true if this entry is empty.
     def empty?()
-      Zip::ZipFile.open(zipfile) { |zip| zip.file.read(@name) }.empty?
+      File.open(zipfile) { |zip| zip.read(@name) }.empty?
     end
 
     # :call-seq:
@@ -65,7 +77,7 @@ module Zip #:nodoc:
     # Returns true if this ZIP file entry matches against all the arguments. An argument may be
     # a string or regular expression.
     def contain?(*patterns)
-      content = Zip::ZipFile.open(zipfile) { |zip| zip.file.read(@name) }
+      content = File.open(zipfile) { |zip| zip.read(@name) }
       patterns.map { |pattern| Regexp === pattern ? pattern : Regexp.new(Regexp.escape(pattern.to_s)) }.
         all? { |pattern| content =~ pattern }
     end
@@ -89,7 +101,7 @@ module Zip #:nodoc:
               raise ZipInternalError, "unknown file type #{self.inspect}"
           end
 
-          @externalFileAttributes = (ft << 12 | (@unix_perms & 07777)) << 16
+          @external_file_attributes = (ft << 12 | (@unix_perms & 07777)) << 16
       end
 
       io <<
@@ -105,12 +117,12 @@ module Zip #:nodoc:
          @compressed_size,
          @size,
          @name ? @name.length : 0,
-         @extra ? @extra.c_dir_length : 0,
+         @extra ? @extra.c_dir_size : 0,
          @comment ? comment.to_s.length : 0,
          0,                         # disk number start
-         @internalFileAttributes,   # file type (binary=0, text=1)
-         @externalFileAttributes,   # native filesystem attributes
-         @localHeaderOffset,
+         @internal_file_attributes,   # file type (binary=0, text=1)
+         @external_file_attributes,   # native filesystem attributes
+         @local_header_offset,
          @name,
          @extra,
          @comment
@@ -142,7 +154,7 @@ module Zip #:nodoc:
               raise ZipInternalError, "unknown file type #{self.inspect}"
           end
 
-          @externalFileAttributes = (ft << 12 | (@unix_perms & 07777)) << 16
+          @external_file_attributes = (ft << 12 | (@unix_perms & 07777)) << 16
       end
 
       io <<
@@ -158,12 +170,12 @@ module Zip #:nodoc:
          @compressed_size,
          @size,
          @name ? @name.length : 0,
-         @extra ? @extra.c_dir_length : 0,
+         @extra ? @extra.c_dir_size : 0,
          @comment ? @comment.length : 0,
          0,                         # disk number start
-         @internalFileAttributes,   # file type (binary=0, text=1)
-         @externalFileAttributes,   # native filesystem attributes
-         @localHeaderOffset,
+         @internal_file_attributes,   # file type (binary=0, text=1)
+         @external_file_attributes,   # native filesystem attributes
+         @local_header_offset,
          @name,
          @extra,
          @comment].pack('VCCvvvvvVVVvvvvvVV')
@@ -172,15 +184,6 @@ module Zip #:nodoc:
       io << (@extra ? @extra.to_c_dir_bin : "")
       io << @comment
 
-    end
-  end
-
-  class ZipEntrySet
-    alias_method :original_push, :"<<"
-    alias_method :push, :"<<"
-
-    def <<(entry)
-      original_push(entry) if entry != nil
     end
   end
 end

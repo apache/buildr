@@ -524,7 +524,7 @@ describe "ZipTask" do
 
   def inspect_archive
     entries = {}
-    Zip::ZipFile.open @archive do |zip|
+    Zip::File.open @archive do |zip|
       zip.entries.each do |entry|
         if entry.directory?
           # Ignore the / directory created for empty ZIPs when using java.util.zip.

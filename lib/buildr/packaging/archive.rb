@@ -292,7 +292,7 @@ module Buildr #:nodoc:
 
       def expand(file_map, path)
         @includes = ['*'] if @includes.empty?
-        Zip::ZipFile.open(@zip_file) do |source|
+        Zip::File.open(@zip_file) do |source|
           source.entries.reject { |entry| entry.directory? }.each do |entry|
             if @includes.any? { |pattern| File.fnmatch(pattern, entry.name) } &&
                !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name) }

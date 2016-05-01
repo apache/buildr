@@ -62,7 +62,7 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_dependency 'net-sftp',             '2.1.2'
   # Required for sftp support under windows
   spec.add_dependency 'jruby-pageant',        '1.1.1' if $platform.to_s == 'java'
-  spec.add_dependency 'rubyzip',              '0.9.9'
+  spec.add_dependency 'rubyzip',              '1.2.0'
   spec.add_dependency 'json_pure',            '1.8.0'
   spec.add_dependency 'hoe',                  '3.7.1'
   spec.add_dependency 'rjb',                  '1.5.4' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
