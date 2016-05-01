@@ -3,6 +3,7 @@
 * Change: Update rubyzip to 1.2.0
 * Change: Update hoe to 3.15.0
 * Change: Update net-ssh to 3.1.1
+* Change: Update json_pure to 1.8.3
 
 1.4.25 (2016-04-18)
 * Change: BUILDR-712 Update jruby-openssl dependency version or support a range of versions
