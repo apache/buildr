@@ -426,7 +426,7 @@ module Buildr #:nodoc:
     # which they are returned from #remote, until successful.
     def download
       trace "Downloading #{to_spec}"
-      remote = Buildr.repositories.remote.map { |repo_url| URI === repo_url ? repo_url : URI.parse(repo_url) }
+      remote = Buildr.repositories.remote_uri
       remote = remote.each { |repo_url| repo_url.path += '/' unless repo_url.path[-1] == '/' }
       fail "Unable to download #{to_spec}. No remote repositories defined." if remote.empty?
       exact_success = remote.find do |repo_url|
@@ -649,6 +649,52 @@ module Buildr #:nodoc:
         }
       end
       @remote
+    end
+    
+    # :call-seq:
+    #   remote_uri => Array
+    #
+    # Returns an array of all the remote repositories as instances of URI
+    #
+    # Supports 
+    #  * String urls: "http://example.com/repo"
+    #  * URI: URI.parse( "http://example.com/repo" )
+    #  * Hash: { :url => "http://example.com/repo", :user => "user", :pass => "pass" }
+    #
+    def remote_uri
+      remote
+      
+      uris = []
+      @remote.each do |repo|
+        case repo
+        when nil then
+          # ignore nil
+        when URI then
+          uris << repo
+        when Hash then
+          url = (repo[:url] || repo['url'] )
+          if url
+            uri = URI.parse(url)
+            if ( username = (repo[:username] || repo['username'] || repo[:user] || repo['user']) )
+              uri.user = username
+            end
+            
+            if ( password = (repo[:password] || repo['password'] || repo[:pass] || repo['pass']) )
+              uri.password = password
+            end
+            uris << uri
+          else
+            fail( "Repository Hash format missing url: #{repo}" )
+          end
+          
+        when String then 
+          uris << URI.parse(repo)
+        else 
+          fail( "Unsupported Repository format: #{repo}" )
+        end
+      end
+      
+      uris
     end
 
     # :call-seq:

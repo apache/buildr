@@ -209,6 +209,26 @@ describe Repositories, 'local' do
   end
 end
 
+describe Repositories, 'remote_uri' do
+  before do
+    Buildr.repositories.instance_eval do
+      @local = @remote = @release_to = nil
+    end
+
+    @repos = [ 'https://oss.sonatype.org/', 'http://www.ibiblio.org/maven2', { :url => 'http://repo1.maven.org/maven2', :username => 'user', :password => 'password' } ]
+  end
+  
+  it 'should convert remote to array of uri' do
+      uri = URI.parse( 'http://repo1.maven.org/maven2' )
+      uri.user = 'user' 
+      uri.password = 'password'
+    
+      uris = [ URI.parse( 'https://oss.sonatype.org/'), URI.parse( 'http://www.ibiblio.org/maven2' ), uri ]
+      
+      repositories.remote = @repos
+      repositories.remote_uri.should eql(uris)
+  end
+end
 
 describe Repositories, 'remote' do
   before do
@@ -855,7 +875,6 @@ describe Buildr, '#install' do
     @spec = 'group:id:jar:all:1.0'
     pom = artifact(@spec).pom
     write @file
-    p method(:install)
     install artifact(@spec).from(@file)
     lambda { install.invoke }.should_not change { File.exist?(repositories.locate(pom)) }.to(true)
   end
