@@ -108,6 +108,12 @@ If your repository requires HTTP authentication, you can write,
 repositories.remote << URI.parse("http://user:password@repository.example.com")
 {% endhighlight %}
 
+or
+
+{% highlight ruby %}
+repositories.remote << { :url => "http://repository.example.com", :user => "user", :pass => "password" }
+{% endhighlight %}
+
 If you need to use a proxy server to access remote repositories, you can set the environment variable @HTTP_PROXY@ to the proxy server URL (use @HTTPS_PROXY@ for proxying HTTPS connections).  You can also work without a proxy for certain hosts by specifying the @NO_PROXY@ environment variable.  For example:
 
 {% highlight sh %}
