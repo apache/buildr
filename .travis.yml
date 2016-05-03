@@ -1,16 +1,12 @@
 language: ruby
 jdk:
-  - oraclejdk7
-  - openjdk6
+#  - oraclejdk8 -- will turn this on once scala can be excluded
+  - openjdk7
 rvm:
   - 2.2.5
   - 2.3.1
   - jruby-1.7.25
   - jruby-9.0.5.0
-matrix:
-  exclude:
-    - rvm: jruby-9.0.5.0
-      jdk: openjdk6
 git:
   depth: 10
 scala:

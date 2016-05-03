@@ -58,7 +58,8 @@ for those one-off tasks, with a language that's a joy to use.
   # Tested against these dependencies.
   spec.add_dependency 'rake',                 '0.9.2.2'
   spec.add_dependency 'builder',              '3.2.2'
-  spec.add_dependency 'net-ssh',              '3.1.1'
+  spec.add_dependency 'net-ssh',              '3.1.1' if RUBY_VERSION >= '2.0.0'
+  spec.add_dependency 'net-ssh',              '2.9.4' if RUBY_VERSION < '2.0.0'
   spec.add_dependency 'net-sftp',             '2.1.2'
   # Required for sftp support under windows
   spec.add_dependency 'jruby-pageant',        '1.1.1' if $platform.to_s == 'java'
