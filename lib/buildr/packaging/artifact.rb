@@ -229,6 +229,11 @@ module Buildr #:nodoc:
     def group_path
       group.gsub('.', '/')
     end
+    
+    def extract_type(type)
+      return :jar if type == :bundle
+      type
+    end
 
   end
 
@@ -335,7 +340,7 @@ module Buildr #:nodoc:
       def hash_to_file_name(hash)
         version = "-#{hash[:version]}" if hash[:version]
         classifier = "-#{hash[:classifier]}" if hash[:classifier]
-        "#{hash[:id]}#{version}#{classifier}.#{hash[:type] || DEFAULT_TYPE}"
+        "#{hash[:id]}#{version}#{classifier}.#{extract_type(hash[:type]) || DEFAULT_TYPE}"
       end
 
     end

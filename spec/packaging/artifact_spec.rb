@@ -601,6 +601,10 @@ describe Buildr, '#artifact' do
     artifact(@spec.merge(:type=>nil)).should respond_to(:invoke)
   end
 
+  it 'should use JAR type if type is set to bundle' do
+    artifact(@spec.merge(:type=>:bundle)).to_s.should match('\.jar$')
+  end
+
   it 'should accept string specification' do
     artifact('com.example:library:jar:2.0').should respond_to(:invoke)
   end
