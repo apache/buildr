@@ -9,10 +9,10 @@
 * Change: Update jekyll to 3.1.3
 * Change: Update rdoc to 4.2.2
 * Added:  Travis badge to README.rdoc
-* Added: BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.
-* Fixed: BUILDR-207 remove 'Skipping tests' messages
-* Added: BUILDR-703 release: allow THIS_VERSION to be defined in another file
-* Fixed: BUILDR-674 Artifacts with bundle extension cannot be downloaded by Buildr
+* Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.
+* Fixed:  BUILDR-207 remove 'Skipping tests' messages
+* Added:  BUILDR-703 release: allow THIS_VERSION to be defined in another file
+* Fixed:  BUILDR-674 Artifacts with bundle extension cannot be downloaded by Buildr
 
 1.4.25 (2016-04-18)
 * Change: BUILDR-712 Update jruby-openssl dependency version or support a range of versions
