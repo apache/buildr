@@ -63,7 +63,9 @@ module Buildr #:nodoc:
           end
         end
 
-        file_map.each do |path, content|
+        paths = file_map.keys.sort
+        paths.each do |path|
+          content = file_map[path]
           warn "Warning:  Path in zipfile #{name} contains backslash: #{path}" if path =~ /\\/
           mkpath.call File.dirname(path)
           if content.respond_to?(:call)

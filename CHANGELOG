@@ -14,6 +14,7 @@
 * Added:  BUILDR-703 release: allow THIS_VERSION to be defined in another file
 * Fixed:  BUILDR-674 Artifacts with bundle extension cannot be downloaded by Buildr
 * Fixed:  BUILDR-565 resources are not included in the war if defined after package call
+* Fixed:  BUILDR-621 ZipTask creates zip file with entries not sorted by path causing very slow unzipping.
 
 1.4.25 (2016-04-18)
 * Change: BUILDR-712 Update jruby-openssl dependency version or support a range of versions
