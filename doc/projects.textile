@@ -64,6 +64,19 @@ A project definition requires four pieces of information: the project name, grou
 
 Everything else depends on what that particular project is building.  And it all goes inside the project definition block, the piece of code that comes between @define <name> ..  do@ and @end@.
 
+h2(#instructions_order). Order is important
+When defining your project, the order in which you place instructions matter.
+
+For example, the project below will not pick up resources because they are defined after the package instruction.
+
+{% highlight ruby %}
+define 'testwar' do
+project.version = 1.0
+package(:war)
+project.resources.from(_('src/main/java')).exclude('*.java')
+end
+{% endhighlight ruby %}
+
 
 h2(#dir_structure). The Directory Structure
 
