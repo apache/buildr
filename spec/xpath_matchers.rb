@@ -74,6 +74,7 @@ module RSpec
           ok = true
           return false unless @val == @actual_val
         end
+        return true if !ok && @val.nil?
         return ok
       end
 
