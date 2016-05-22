@@ -21,7 +21,11 @@ if false
 require File.expand_path('../spec_helpers', File.dirname(__FILE__))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'xpath_matchers'))
 
-Sandbox.require_optional_extension 'buildr/custom_pom'
+# Next line should work but does not
+#Sandbox.require_optional_extension 'buildr/custom_pom'
+
+# Next line should not be used but is required
+require 'buildr/custom_pom'
 
 describe Buildr::CustomPom do
 
