@@ -78,7 +78,7 @@ module RSpec
       end
 
       def failure_message
-        "The xpath #{@xpath} did not have the value '#{@val}' It was '#{@actual_val}'"
+        "The xpath #{@xpath} did not have the value #{@val.inspect} it was #{@actual_val.inspect}"
       end
 
       def description
