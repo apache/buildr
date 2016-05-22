@@ -65,7 +65,7 @@ describe Buildr::CustomPom do
     verify_dependency_optional(pom_xml, artifact_id, optional)
   end
 
-  describe "with explicitly specified pom details" do
+  describe 'with explicitly specified pom details' do
     before do
       %w(id-provided id-optional id-runtime id-test).each do |artifact_id|
         artifact("group:#{artifact_id}:jar:1.0") do |t|
@@ -75,7 +75,7 @@ describe Buildr::CustomPom do
           end
         end
       end
-      write 'src/main/java/Example.java', "public class Example {}"
+      write 'src/main/java/Example.java', 'public class Example {}'
 
       @foo = define 'foo' do
         project.group = 'org.myproject'
@@ -100,50 +100,50 @@ describe Buildr::CustomPom do
       end
       task('package').invoke
       @pom_xml = project_pom_xml(@foo)
-      #$stderr.puts @pom_xml.to_s
+      $stderr.puts @pom_xml.to_s
     end
 
-    it "has correct static metadata" do
-      @pom_xml.should match_xpath("/project/modelVersion", '4.0.0')
-      @pom_xml.should match_xpath("/project/parent/groupId", 'org.sonatype.oss')
-      @pom_xml.should match_xpath("/project/parent/artifactId", 'oss-parent')
-      @pom_xml.should match_xpath("/project/parent/version", '7')
+    it 'has correct static metadata' do
+      @pom_xml.should match_xpath('/project/modelVersion', '4.0.0')
+      @pom_xml.should match_xpath('/project/parent/groupId', 'org.sonatype.oss')
+      @pom_xml.should match_xpath('/project/parent/artifactId', 'oss-parent')
+      @pom_xml.should match_xpath('/project/parent/version', '7')
     end
 
-    it "has correct project level metadata" do
-      @pom_xml.should match_xpath("/project/groupId", 'org.myproject')
-      @pom_xml.should match_xpath("/project/artifactId", 'foo')
-      @pom_xml.should match_xpath("/project/version", '1.0')
-      @pom_xml.should match_xpath("/project/packaging", 'jar')
-      @pom_xml.should match_xpath("/project/name", 'foo')
-      @pom_xml.should match_xpath("/project/description", 'foo')
-      @pom_xml.should match_xpath("/project/url", 'https://github.com/jbloggs/myproject')
+    it 'has correct project level metadata' do
+      @pom_xml.should match_xpath('/project/groupId', 'org.myproject')
+      @pom_xml.should match_xpath('/project/artifactId', 'foo')
+      @pom_xml.should match_xpath('/project/version', '1.0')
+      @pom_xml.should match_xpath('/project/packaging', 'jar')
+      @pom_xml.should match_xpath('/project/name', 'foo')
+      @pom_xml.should match_xpath('/project/description', 'foo')
+      @pom_xml.should match_xpath('/project/url', 'https://github.com/jbloggs/myproject')
     end
 
-    it "has correct scm details" do
-      @pom_xml.should match_xpath("/project/scm/connection", 'scm:git:git@github.com:jbloggs/myproject')
-      @pom_xml.should match_xpath("/project/scm/developerConnection", 'scm:git:git@github.com:jbloggs/myproject')
-      @pom_xml.should match_xpath("/project/scm/url", 'git@github.com:jbloggs/myproject')
+    it 'has correct scm details' do
+      @pom_xml.should match_xpath('/project/scm/connection', 'scm:git:git@github.com:jbloggs/myproject')
+      @pom_xml.should match_xpath('/project/scm/developerConnection', 'scm:git:git@github.com:jbloggs/myproject')
+      @pom_xml.should match_xpath('/project/scm/url', 'git@github.com:jbloggs/myproject')
     end
 
-    it "has correct issueManagement details" do
-      @pom_xml.should match_xpath("/project/issueManagement/url", 'https://github.com/jbloggs/myproject/issues')
-      @pom_xml.should match_xpath("/project/issueManagement/system", 'GitHub Issues')
+    it 'has correct issueManagement details' do
+      @pom_xml.should match_xpath('/project/issueManagement/url', 'https://github.com/jbloggs/myproject/issues')
+      @pom_xml.should match_xpath('/project/issueManagement/system', 'GitHub Issues')
     end
 
-    it "has correct developers details" do
-      @pom_xml.should match_xpath("/project/developers/developer/id", 'jbloggs')
-      @pom_xml.should match_xpath("/project/developers/developer/name", 'Joe Bloggs')
-      @pom_xml.should match_xpath("/project/developers/developer/email", 'jbloggs@example.com')
-      @pom_xml.should match_xpath("/project/developers/developer/roles/role", 'Project Lead')
+    it 'has correct developers details' do
+      @pom_xml.should match_xpath('/project/developers/developer/id', 'jbloggs')
+      @pom_xml.should match_xpath('/project/developers/developer/name', 'Joe Bloggs')
+      @pom_xml.should match_xpath('/project/developers/developer/email', 'jbloggs@example.com')
+      @pom_xml.should match_xpath('/project/developers/developer/roles/role', 'Project Lead')
     end
 
-    it "has correct license details" do
+    it 'has correct license details' do
       verify_license(@pom_xml, 'The Apache Software License, Version 2.0', 'http://www.apache.org/licenses/LICENSE-2.0.txt')
       verify_license(@pom_xml, 'GNU General Public License (GPL) version 3.0', 'http://www.gnu.org/licenses/gpl-3.0.html')
     end
 
-    it "has correct dependency details" do
+    it 'has correct dependency details' do
       verify_dependency(@pom_xml, 'id-runtime', 'group', '1.0', nil, nil)
       verify_dependency(@pom_xml, 'id-optional', 'group', '1.0', nil, 'true')
       verify_dependency(@pom_xml, 'id-provided', 'group', '1.0', 'provided', nil)
