@@ -100,7 +100,7 @@ describe Buildr::CustomPom do
       end
       task('package').invoke
       @pom_xml = project_pom_xml(@foo)
-      $stderr.puts @pom_xml.to_s
+      #$stderr.puts @pom_xml.to_s
     end
 
     it 'has correct static metadata' do
