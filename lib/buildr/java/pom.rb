@@ -17,10 +17,10 @@
 module Buildr
   class POM
 
-    POM_TO_SPEC_MAP = { :group=>"groupId", :id=>"artifactId", :type=>"type",
-      :version=>"version", :classifier=>"classifier", :scope=>"scope" }
-    SCOPES_TRANSITIVE = [nil, "compile", "runtime"]
-    SCOPES_WE_USE = SCOPES_TRANSITIVE + ["provided"]
+    POM_TO_SPEC_MAP = { :group=> 'groupId', :id=> 'artifactId', :type=> 'type',
+      :version=> 'version', :classifier=> 'classifier', :scope=> 'scope'}
+    SCOPES_TRANSITIVE = [nil, 'compile', 'runtime']
+    SCOPES_WE_USE = SCOPES_TRANSITIVE + ['provided']
 
     # POM project as Hash (using XmlSimple).
     attr_reader :project
@@ -57,7 +57,7 @@ module Buildr
           end
           pom
         else
-          raise ArgumentError, "Expecting Hash spec, Artifact, file name or file task"
+          raise ArgumentError, 'Expecting Hash spec, Artifact, file name or file task'
         end
       end
 
@@ -92,9 +92,9 @@ module Buildr
       # try to cache dependencies also
       @depends_for_scopes ||= {}
       unless depends = @depends_for_scopes[options]
-        declared = project["dependencies"].first["dependency"] rescue nil
+        declared = project['dependencies'].first['dependency'] rescue nil
         depends = (declared || [])
-        depends = depends.reject { |dep| value_of(dep["optional"]) =~ /true/ } unless options[:optional]
+        depends = depends.reject { |dep| value_of(dep['optional']) =~ /true/ } unless options[:optional]
         depends = depends.map { |dep|
             spec = pom_to_hash(dep, properties)
             apply = managed(spec)
@@ -106,7 +106,7 @@ module Buildr
             if options[:scopes].include?(spec[:scope])
               spec.delete(:scope)
 
-              exclusions = dep["exclusions"].first["exclusion"] rescue nil
+              exclusions = dep['exclusions'].first['exclusion'] rescue nil
               transitive_deps = POM.load(spec).dependencies(:exclusions => exclusions, :scopes => (options[:scopes_transitive] || SCOPES_TRANSITIVE) ) rescue []
 
               [Artifact.to_spec(spec)] + transitive_deps
@@ -129,7 +129,7 @@ module Buildr
           hash[key] = hash["pom.#{key}"] = hash["project.#{key}"] = value_of(value) if value
           hash
         }
-        props = project["properties"].first rescue {}
+        props = project['properties'].first rescue {}
         props = props.inject({}) { |mapped, pair| mapped[pair.first] = value_of(pair.last, props) ; mapped }
         (parent ? parent.properties.merge(props) : props).merge(pom)
       end
@@ -148,7 +148,7 @@ module Buildr
           (parent ? parent.managed(spec) : nil)
       else
         @managed ||= begin
-          managed = project["dependencyManagement"].first["dependencies"].first["dependency"] rescue nil
+          managed = project['dependencyManagement'].first['dependencies'].first['dependency'] rescue nil
           managed ? managed.map { |dep| pom_to_hash(dep, properties) } : []
         end
       end
@@ -179,7 +179,7 @@ module Buildr
         spec[pair.first] = value_of(element[pair.last], substitute) if element[pair.last]
         spec
       }
-      {:scope => "compile", :type => "jar"}.merge(hash)
+      {:scope => 'compile', :type => 'jar'}.merge(hash)
     end
 
   end
