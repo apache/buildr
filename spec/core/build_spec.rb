@@ -678,6 +678,16 @@ shared_examples_for 'a release process' do
       write 'buildfile', 'define foo'
       lambda { @release.extract_version }.should raise_error('Looking for THIS_VERSION = "..." in your Buildfile, none found')
     end
+
+    it 'should use version.rb instead of buildfile, if present' do
+      write 'version.rb', "VERSION_NUMBER = '1.0.0-SNAPSHOT'"
+      @release.extract_version.should == '1.0.0-SNAPSHOT'
+    end
+
+    it 'should complain if there is a version.rb file, but it contains no version number' do
+      write 'version.rb', "#SOMETHING SOMETHING"
+      lambda { @release.extract_version }.should raise_error('Looking for THIS_VERSION = "..." in your Buildfile, none found')
+    end
   end
 
   describe '#with_release_candidate_version' do

@@ -149,11 +149,6 @@ describe Buildr::Application do
       Buildr.application.gems.size.should be(2)
     end
 
-    it 'should return a Gem::Specification for each installed gem' do
-      load_with_yaml
-      Buildr.application.gems.each { |gem| gem.should be_kind_of(Gem::Specification) }
-    end
-
     it 'should parse Gem name correctly' do
       load_with_yaml
       Buildr.application.gems.map(&:name).should include('rspec', 'rake')

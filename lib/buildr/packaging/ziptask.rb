@@ -42,17 +42,17 @@ module Buildr #:nodoc:
     # for example:
     #   package(:jar).entry("META-INF/LICENSE").should contain(/Apache Software License/)
     def entry(entry_name)
-      ::Zip::ZipEntry.new(name, entry_name)
+      ::Zip::Entry.new(name, entry_name)
     end
 
     def entries #:nodoc:
-      @entries ||= Zip::ZipFile.open(name) { |zip| zip.entries }
+      @entries ||= Zip::File.open(name) { |zip| zip.entries }
     end
 
   private
 
     def create_from(file_map)
-      Zip::ZipOutputStream.open name do |zip|
+      Zip::OutputStream.open name do |zip|
         seen = {}
         mkpath = lambda do |dir|
           dirname = (dir[-1..-1] =~ /\/$/) ? dir : dir + '/'
@@ -63,7 +63,9 @@ module Buildr #:nodoc:
           end
         end
 
-        file_map.each do |path, content|
+        paths = file_map.keys.sort
+        paths.each do |path|
+          content = file_map[path]
           warn "Warning:  Path in zipfile #{name} contains backslash: #{path}" if path =~ /\\/
           mkpath.call File.dirname(path)
           if content.respond_to?(:call)
@@ -166,7 +168,7 @@ module Buildr #:nodoc:
           end
         }
       else
-        Zip::ZipFile.open(zip_file.to_s) do |zip|
+        Zip::File.open(zip_file.to_s) do |zip|
           entries = zip.collect
           @paths.each do |path, patterns|
             patterns.map(entries).each do |dest, entry|

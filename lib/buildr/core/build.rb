@@ -353,7 +353,7 @@ module Buildr #:nodoc:
     # Extract the current version number from the buildfile.
     # Raise an error if not found.
     def extract_version
-      buildfile = File.read(Buildr.application.buildfile.to_s)
+      buildfile = File.read(version_file)
       buildfile.scan(THIS_VERSION_PATTERN)[0][2]
     rescue
       fail 'Looking for THIS_VERSION = "..." in your Buildfile, none found'
@@ -373,6 +373,17 @@ module Buildr #:nodoc:
 
     # the initial value of THIS_VERSION
     attr_accessor :this_version
+    
+    # :call-seq:
+    #   version_file()
+    # Provides the file containing the version of the project.
+    # If the project contains a version.rb file next to the Buildr build file,
+    # it is used. Otherwise, always use the buildfile.
+    def version_file
+      version_rb_file = File.dirname(Buildr.application.buildfile.to_s)  + '/version.rb'
+      return version_rb_file if File.exists?(version_rb_file)
+      return Buildr.application.buildfile.to_s
+    end
 
     # :call-seq:
     #   with_release_candidate_version() { |filename| ... }
@@ -390,7 +401,7 @@ module Buildr #:nodoc:
     #   THIS_VERSION = 1.1.0
     # for the release buildfile.
     def with_release_candidate_version
-      release_candidate_buildfile = Buildr.application.buildfile.to_s + '.next'
+      release_candidate_buildfile = version_file + '.next'
 
       release_candidate_buildfile_contents = change_version { |version|
         version.gsub(/-SNAPSHOT$/, "")
@@ -398,7 +409,7 @@ module Buildr #:nodoc:
       File.open(release_candidate_buildfile, 'w') { |file| file.write release_candidate_buildfile_contents }
       begin
         yield release_candidate_buildfile
-        mv release_candidate_buildfile, Buildr.application.buildfile.to_s
+        mv release_candidate_buildfile, version_file
       ensure
         rm release_candidate_buildfile rescue nil
       end
@@ -415,7 +426,7 @@ module Buildr #:nodoc:
     def change_version
       current_version = extract_version
       new_version = yield(current_version)
-      buildfile = File.read(Buildr.application.buildfile.to_s)
+      buildfile = File.read(version_file)
       buildfile.gsub(THIS_VERSION_PATTERN) { |ver| ver.sub(/(["']).*\1/, %Q{"#{new_version}"}) }
     end
 
@@ -451,7 +462,7 @@ module Buildr #:nodoc:
       buildfile = change_version { |version| # THIS_VERSION minus SNAPSHOT
         resolve_next_version(this_version) # THIS_VERSION
       }
-      File.open(Buildr.application.buildfile.to_s, 'w') { |file| file.write buildfile }
+      File.open(version_file, 'w') { |file| file.write buildfile }
     end
 
     # Return the message to use to commit the buildfile with the next version
@@ -498,7 +509,7 @@ module Buildr #:nodoc:
     def tag_release(tag)
       unless this_version == extract_version
         info "Committing buildfile with version number #{extract_version}"
-        Hg.commit File.basename(Buildr.application.buildfile.to_s), message
+        Hg.commit File.basename(version_file), message
         Hg.push if Hg.remote
       end
       info "Tagging release #{tag}"
@@ -510,7 +521,7 @@ module Buildr #:nodoc:
     def update_version_to_next
       super
       info "Current version is now #{extract_version}"
-      Hg.commit File.basename(Buildr.application.buildfile.to_s), message
+      Hg.commit File.basename(version_file), message
       Hg.push if Hg.remote
     end
   end
@@ -546,7 +557,7 @@ module Buildr #:nodoc:
     def tag_release(tag)
       unless this_version == extract_version
         info "Committing buildfile with version number #{extract_version}"
-        Git.commit File.basename(Buildr.application.buildfile.to_s), message
+        Git.commit File.basename(version_file), message
         Git.push if Git.remote
       end
       info "Tagging release #{tag}"
@@ -559,7 +570,7 @@ module Buildr #:nodoc:
     def update_version_to_next
       super
       info "Current version is now #{extract_version}"
-      Git.commit File.basename(Buildr.application.buildfile.to_s), message
+      Git.commit File.basename(version_file), message
       Git.push if Git.remote
     end
   end
@@ -588,7 +599,7 @@ module Buildr #:nodoc:
     def update_version_to_next
       super
       info "Current version is now #{extract_version}"
-      Svn.commit Buildr.application.buildfile.to_s, message
+      Svn.commit version_file, message
     end
   end
 

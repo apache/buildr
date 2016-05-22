@@ -1,4 +1,4 @@
-= Buildr
+= Buildr  {<img src="https://travis-ci.org/apache/buildr.png?branch=master" alt="Build status">}[https://travis-ci.org/apache/buildr]
 
 This is Buildr, the build system that lets you build like you code.
 

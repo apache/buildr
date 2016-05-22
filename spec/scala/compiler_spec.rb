@@ -76,8 +76,8 @@ share_as :ScalacCompiler do
     define_test1_project
     task('test1:package').invoke
     file('target/test1-1.0.jar').should exist
-    Zip::ZipFile.open(project('test1').package(:jar).to_s) do |zip|
-      zip.file.exist?('com/example/Test1.class').should be_true
+    Zip::File.open(project('test1').package(:jar).to_s) do |zip|
+      zip.exist?('com/example/Test1.class').should be_true
     end
   end
 
@@ -89,9 +89,9 @@ share_as :ScalacCompiler do
     end
     task('test1:package').invoke
     file('target/test1-1.0.jar').should exist
-    Zip::ZipFile.open(project('test1').package(:jar).to_s) do |zip|
-      zip.file.exist?('com/example/Foo.class').should be_true
-      zip.file.exist?('com/example/Bar.class').should be_true
+    Zip::File.open(project('test1').package(:jar).to_s) do |zip|
+      zip.exist?('com/example/Foo.class').should be_true
+      zip.exist?('com/example/Bar.class').should be_true
     end
   end
 
@@ -103,9 +103,9 @@ share_as :ScalacCompiler do
     end
     task('test1:package').invoke
     file('target/test1-1.0.jar').should exist
-    Zip::ZipFile.open(project('test1').package(:jar).to_s) do |zip|
-      zip.file.exist?('com/example/Foo.class').should be_true
-      zip.file.exist?('com/example/Bar.class').should be_true
+    Zip::File.open(project('test1').package(:jar).to_s) do |zip|
+      zip.exist?('com/example/Foo.class').should be_true
+      zip.exist?('com/example/Bar.class').should be_true
     end
   end
 end

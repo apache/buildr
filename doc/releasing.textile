@@ -113,6 +113,20 @@ end
 
 The environment variable @NEXT_VERSION@ has precedence over Release.next_version.
 
+h3(#alternate_version_file). Using an alternate version file
+
+To avoid dealing with conflicts over the Buildfile, you can store the version inside version.rb next to it.
+
+version.rb:
+{% highlight ruby %}
+THIS_VERSION = "1.0.0-rc1"
+{% endhighlight %}
+
+Your Buildfile should import version.rb like so:
+{% highlight ruby %}
+require File.join(File.dirname(__FILE__), 'version.rb')
+{% endhighlight %}
+
 h2(#custom_tag_and_msg). How to specify my own tag name and commit message?
 
 As explained earlier, Buildr will create two new commits and a new tag in the version control system. Similarly to @Release.next_version@, the commit message and the tag name can be customized with @Release.message@ and @Release.tag_name@. Both could be strings or procs that would receive the released version @THIS_VERSION@ without @-SNAPSHOT@.

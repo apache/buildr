@@ -29,7 +29,7 @@ module Buildr::Scala
         @installed_version = if Scalac.installed?
           begin
             # try to read the value from the properties file
-            props = Zip::ZipFile.open(File.expand_path('lib/scala-library.jar', Scalac.scala_home)) do |zipfile|
+            props = Zip::File.open(File.expand_path('lib/scala-library.jar', Scalac.scala_home)) do |zipfile|
               zipfile.read 'library.properties'
             end
 

@@ -20,7 +20,7 @@ describe Buildr::Console do
   describe 'console_dimensions' do
 
     it 'should return a value' do
-      Buildr::Console.console_dimensions.should_not be_nil
+      Buildr::Console.console_dimensions.should_not be_nil if $stdout.isatty # have to ask again as stdout may be redirected.
     end if $stdout.isatty && !ENV["TRAVIS"] && !Buildr::Util.win_os?
   end
 

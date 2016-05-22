@@ -261,7 +261,7 @@ module Buildr #:nodoc:
 
     def execute(args) #:nodoc:
       if Buildr.options.test == false
-        info "Skipping tests for #{project.name}"
+        trace "Skipping tests for #{project.name}"
         return
       end
       setup.invoke

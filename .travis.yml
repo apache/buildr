@@ -1,14 +1,12 @@
 language: ruby
 jdk:
+#  - oraclejdk8 -- will turn this on once scala can be excluded
   - oraclejdk7
-  - openjdk6
 rvm:
-  - 2.1.0
-  - 2.0.0
-  - 1.9.3
-  - 1.8.7
-  - jruby-19mode
-  - jruby-18mode
+  - 2.2.5
+  - 2.3.1
+  - jruby-1.7.25
+  - jruby-9.0.5.0
 git:
   depth: 10
 scala:
@@ -27,6 +25,7 @@ notifications:
       - commits@buildr.apache.org
       - donaldp@apache.org
       - peter@realityforge.org
+      - toulmean@apache.org
     on_success: always
     on_failure: always
 notifications:
