@@ -124,7 +124,7 @@ module Buildr
     # properties for groupId, artifactId, version and packaging.
     def properties()
       @properties ||= begin
-        pom = ["groupId", "artifactId", "version", "packaging"].inject({}) { |hash, key|
+        pom = %w(groupId artifactId version packaging).inject({}) { |hash, key|
           value = project[key] || (parent ? parent.project[key] : nil)
           hash[key] = hash["pom.#{key}"] = hash["project.#{key}"] = value_of(value) if value
           hash
