@@ -193,7 +193,7 @@ module Sandbox
     Layout.default = @_sandbox[:layout].clone
 
     $LOAD_PATH.replace @_sandbox[:load_path]
-    ENV["RUBYOPT"] = @_sandbox[:ruby_opt]
+    ENV['RUBYOPT'] = @_sandbox[:ruby_opt]
 
     FileUtils.rm_rf @temp
     mkpath ENV['HOME']
