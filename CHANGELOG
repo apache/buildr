@@ -3,6 +3,9 @@
 * Change: Update gwt addon to add the GWT artifacts to project dependencies as specs rather
           than files.
 * Change: Support the project.root_project utility method to retrieve the top level project.
+* Change: Update the custom_pom addon to generate poms with exclusions section that excludes
+          all transitive dependencies. This is required as buildr dependencies are not
+          transitive while Maven's dependencies are transitive by default.
 
 1.4.24 (2016-03-19)
 * Added:  Support the :no_invoke parameter being passed to Buildr.project() and

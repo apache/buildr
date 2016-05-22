@@ -67,6 +67,8 @@ describe Buildr::CustomPom do
     verify_dependency_version(pom_xml, artifact_id, version)
     verify_dependency_scope(pom_xml, artifact_id, scope)
     verify_dependency_optional(pom_xml, artifact_id, optional)
+    pom_xml.should match_xpath("#{dependency_xpath(artifact_id)}/exclusions/exclusion/groupId", '*')
+    pom_xml.should match_xpath("#{dependency_xpath(artifact_id)}/exclusions/exclusion/artifactId", '*')
   end
 
   describe 'with explicitly specified pom details' do
