@@ -39,13 +39,13 @@ module Buildr
       #  Buildr::Wsgen.java2wsdl(project, %w(com.example.MyService com.example.MyOtherService), :namespace_url => "http://example.com/services")
       #  Buildr::Wsgen.java2wsdl(project, {"com.example.MyService" => {:service_name => 'MiaService', :namespace_url => "http://example.com/it/services"}))
       def java2wsdl(project, classnames, options = {})
-        desc "Generate wsdl from java"
-        project.task("java2wsdl").enhance([project.compile.target])
+        desc 'Generate wsdl from java'
+        project.task('java2wsdl').enhance([project.compile.target])
 
         base_wsdl_dir = File.expand_path(options[:output_dir] || project._(:target, :generated, :wsgen, :main, :wsdl))
         project.iml.main_generated_source_directories << base_wsdl_dir if project.iml?
         project.file(base_wsdl_dir)
-        project.task("java2wsdl").enhance([base_wsdl_dir])
+        project.task('java2wsdl').enhance([base_wsdl_dir])
 
         services = classnames.is_a?(Array) ? classnames.inject({}) {|result, element| result[element] = {}; result} : classnames
 
@@ -69,20 +69,20 @@ module Buildr
             mkdir_p intermediate_dir
 
             args = []
-            args << "-keep"
-            args << "-inlineSchemas" if (options[:inlineSchemas] && ENV_JAVA['java.version'] >= '1.7')
-            args << "-wsdl"
-            args << "-servicename"
+            args << '-keep'
+            args << '-inlineSchemas' if (options[:inlineSchemas] && ENV_JAVA['java.version'] >= '1.7')
+            args << '-wsdl'
+            args << '-servicename'
             args << "{#{namespace_url}}#{service_name}"
-            args << "-portname"
+            args << '-portname'
             args << "{#{namespace_url}}#{service_name}Port"
-            args << "-d "
+            args << '-d'
             args << intermediate_dir
-            args << "-r"
+            args << '-r'
             args << "#{base_wsdl_dir}/META-INF/wsdl"
-            args << "-s"
+            args << '-s'
             args << java_dir
-            args << "-cp"
+            args << '-cp'
             args << cp
             args << classname
 
@@ -90,7 +90,7 @@ module Buildr
             trace command
             sh command
             if $? != 0
-              raise "Problem building wsdl"
+              raise 'Problem building wsdl'
             end
 
             content = IO.read(wsdl_file).gsub('REPLACE_WITH_ACTUAL_URL', "http://example.com/#{service_name}")
@@ -98,7 +98,7 @@ module Buildr
           end
 
           project.file(base_wsdl_dir).enhance([wsdl_file])
-          project.task("java2wsdl").enhance([wsdl_file])
+          project.task('java2wsdl').enhance([wsdl_file])
         end
 
         base_wsdl_dir
@@ -128,10 +128,10 @@ module Buildr
       #  Buildr::Wsgen.wsdl2java(project, {_('src/main/wsdl/MyService.wsdl') => {}}, :package => 'com.example' )
       #  Buildr::Wsgen.wsdl2java(project, {_('src/main/wsdl/MyService.wsdl') => {}}, :wsdl_location => 'file:META-INF/wsdl/SpecificTaskService.wsdl' )
       def wsdl2java(project, wsdls, options = {})
-        desc "Generate java from wsdl"
-        project.task("wsdl2java")
+        desc 'Generate java from wsdl'
+        project.task('wsdl2java')
 
-        ws_dir = File.expand_path(options[:output_dir] || project._(:target, :generated, "ws/main/java"))
+        ws_dir = File.expand_path(options[:output_dir] || project._(:target, :generated, 'ws/main/java'))
         project.file(ws_dir)
         project.task('wsdl2java').enhance([ws_dir])
 
@@ -145,20 +145,20 @@ module Buildr
           project.file(java_file => [project.file(wsdl_file)]) do
             mkdir_p ws_dir
             command = []
-            command << "wsimport"
-            command << "-keep"
-            command << "-Xnocompile"
-            command << "-target"
+            command << 'wsimport'
+            command << '-keep'
+            command << '-Xnocompile'
+            command << '-target'
             command << target
-            command << "-s"
+            command << '-s'
             command << ws_dir
-            command << "-p"
+            command << '-p'
             command << pkg
             if config[:extension]
-              command << "-extension"
+              command << '-extension'
             end
             if wsdl_location
-              command << "-wsdllocation"
+              command << '-wsdllocation'
               command << wsdl_location
             end
             command << wsdl_file
@@ -168,11 +168,11 @@ module Buildr
             if $? != 0
               rm_rf java_file
               puts output
-              raise "Problem building webservices"
+              raise 'Problem building webservices'
             end
             unless File.exist?(java_file)
               puts output
-              raise "Problem building webservices"
+              raise 'Problem building webservices'
             end
             if output =~ /\[WARNING\]/
               puts output
