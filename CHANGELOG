@@ -15,6 +15,7 @@
 * Fixed:  BUILDR-674 Artifacts with bundle extension cannot be downloaded by Buildr
 * Fixed:  BUILDR-565 resources are not included in the war if defined after package call
 * Fixed:  BUILDR-621 ZipTask creates zip file with entries not sorted by path causing very slow unzipping.
+* Fixed:  BUILDR-695 transitive doesn't support ${project.parent.version} in POM.
 * Change: Update the custom_pom addon to generate poms with exclusions section that excludes
           all transitive dependencies. This is required as buildr dependencies are not
           transitive while Maven's dependencies are transitive by default.

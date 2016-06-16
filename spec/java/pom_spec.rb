@@ -123,3 +123,40 @@ XML
     pom.properties.should eql(specs)
   end
 end
+
+describe Buildr::POM do
+  before do
+    repositories.remote = 'http://buildr.apache.org/repository/noexist'
+    @parent = 'group:app-parent:jar:1.1.1'
+    write artifact(@parent).pom.to_s, <<-XML
+<project>
+  <artifactId>app-parent</artifactId>
+  <groupId>group</groupId>
+  <version>1.1.1</version>
+</project>
+XML
+    @app = 'group:app:jar:1.0'
+    write artifact(@app).pom.to_s, <<-XML
+<project>
+  <artifactId>app</artifactId>
+  <groupId>group</groupId>
+  <parent>
+    <groupId>group</groupId>
+    <artifactId>app-parent</artifactId>
+    <version>1.1.1</version>
+  </parent>
+  <dependencies>
+    <dependency>
+      <artifactId>library</artifactId>
+      <groupId>org.example</groupId>
+      <version>${project.parent.version}</version>
+    </dependency>
+  </dependencies>
+</project>
+XML
+  end
+  it "should manage to resolve the version from the parent version" do
+    pom = POM.load(artifact(@app).pom)
+    pom.dependencies.should include('org.example:library:jar:1.1.1')
+  end
+end

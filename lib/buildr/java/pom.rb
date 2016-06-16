@@ -129,6 +129,11 @@ module Buildr
           hash[key] = hash["pom.#{key}"] = hash["project.#{key}"] = value_of(value) if value
           hash
         }
+        pom = %w(groupId artifactId version).inject(pom) { |hash, key|
+          value = parent.project[key]
+          hash[key] = hash["pom.parent.#{key}"] = hash["project.parent.#{key}"] = value_of(value) if value
+          hash
+        } if parent
         props = project['properties'].first rescue {}
         props = props.inject({}) { |mapped, pair| mapped[pair.first] = value_of(pair.last, props) ; mapped }
         (parent ? parent.properties.merge(props) : props).merge(pom)
