@@ -8,6 +8,7 @@
 * Change: Update xml-simple to 1.1.5
 * Change: Update jekyll to 3.1.3
 * Change: Update rdoc to 4.2.2
+* Change: Update ecj to 4.5.1
 * Added:  Travis badge to README.rdoc
 * Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.
 * Fixed:  BUILDR-207 remove 'Skipping tests' messages
@@ -16,6 +17,7 @@
 * Fixed:  BUILDR-565 resources are not included in the war if defined after package call
 * Fixed:  BUILDR-621 ZipTask creates zip file with entries not sorted by path causing very slow unzipping.
 * Fixed:  BUILDR-695 transitive doesn't support ${project.parent.version} in POM.
+* Fixed:  BUILDR-653 Using Eclipse compiler (ECJ)
 * Change: Update the custom_pom addon to generate poms with exclusions section that excludes
           all transitive dependencies. This is required as buildr dependencies are not
           transitive while Maven's dependencies are transitive by default.

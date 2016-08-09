@@ -17,7 +17,7 @@ TEST_DIR = File.dirname(File.expand_path(__FILE__))
 BUILDR = ENV['BUILDR'] || File.expand_path("#{TEST_DIR}/../_buildr")
 
 require 'test/unit'
-require 'zip/zip'
+require 'zip'
 
 module Buildr
   module IntegrationTests
@@ -30,6 +30,7 @@ module Buildr
         def test_#{folder.sub("-", "")}
           begin
             result = `cd #{TEST_DIR}/#{folder} ; #{BUILDR} #{cmd}`
+p result
             assert($?.success?, 'Command success?')
             #{ after_block || "" }
           ensure
@@ -50,6 +51,11 @@ module Buildr
 
     test "helloWorld", "package"
 
+    test "helloWorldEcj", "package", <<-CHECK
+p result
+#assert(::Buildr::Java.classpath.include?(artifact("org.eclipse.jdt.core.compiler:ecj:jar:3.5.1").to_s))
+    CHECK
+
     test "compile_with_parent", "compile"
 
     test "junit3", "test"
@@ -57,7 +63,7 @@ module Buildr
     test "include_path", "package", <<-CHECK
 path = File.expand_path("#{TEST_DIR}/include_path/target/proj-1.0.zip")
 assert(File.exist?(path), "File exists?")
-Zip::File.open(path) {|zip|
+::Zip::File.open(path) {|zip|
 assert(!zip.get_entry("distrib/doc/index.html").nil?)
 assert(!zip.get_entry("distrib/lib/slf4j-api-1.6.1.jar").nil?)
 }
@@ -66,7 +72,7 @@ assert(!zip.get_entry("distrib/lib/slf4j-api-1.6.1.jar").nil?)
     test "include_as", "package", <<-CHECK
 path = File.expand_path("#{TEST_DIR}/include_as/target/proj-1.0.zip")
 assert(File.exist? path)
-Zip::File.open(path) {|zip|
+::Zip::File.open(path) {|zip|
 assert(!zip.get_entry("docu/index.html").nil?)
 assert(!zip.get_entry("lib/logging.jar").nil?)
 }

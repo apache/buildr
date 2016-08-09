@@ -17,6 +17,20 @@ module Buildr #:nodoc:
   module Compiler #:nodoc:
 
     class Ecj < Javac
+      
+      VERSION = "4.5.1"
+      
+      class << self
+        # Current version of ECJ being used.
+        def version
+          Buildr.settings.build['ecj'] || VERSION
+        end
+
+        # ECJ classpath dependencies.
+        def dependencies
+          @dependencies ||= ["org.eclipse.jdt.core.compiler:ecj:jar:#{version}"]
+        end
+      end
 
       OPTIONS = Buildr::Compiler::Javac::OPTIONS
 
@@ -64,6 +78,5 @@ module Buildr #:nodoc:
   end
 end
 
-Java.classpath << "org.eclipse.jdt.core.compiler:ecj:jar:3.5.1"
-# Adding ecj before javac
-Buildr::Compiler.compilers.unshift Buildr::Compiler::Ecj
+Java.classpath <<  lambda { Buildr::Compiler::Ecj.dependencies }
+Buildr::Compiler.compilers << Buildr::Compiler::Ecj
