@@ -33,7 +33,7 @@ end
 
 describe Buildr::Bnd do
   before do
-    repositories.remote << Buildr::Bnd.remote_repository
+    repositories.remote << "http://central.maven.org/maven2"
   end
 
   describe "project.bnd version (assure backward compatibility)" do

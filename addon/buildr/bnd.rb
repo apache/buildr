@@ -30,12 +30,6 @@ module Buildr
         ["biz.aQute:bnd:jar:#{version}"]
       end
 
-      # Repositories containing the requirements
-      def remote_repository
-        Buildr.application.deprecated "'Buildr:Bnd.remote_repository deprecated as the dependencies appear in maven central."
-        "http://www.aqute.biz/repo"
-      end
-
       def bnd_main(*args)
         cp = Buildr.artifacts(self.dependencies).each(&:invoke).map(&:to_s)
         Java::Commands.java 'aQute.bnd.main.bnd', *(args + [{ :classpath => cp }])

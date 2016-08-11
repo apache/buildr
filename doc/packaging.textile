@@ -375,7 +375,7 @@ The bundle packaging format is included as an addon so the build file must expli
 {% highlight ruby %}
 require "buildr/bnd"
 
-repositories.remote << Buildr::Bnd.remote_repository
+repositories.remote << "http://central.maven.org/maven2"
 # uncomment the next version to override the version of bnd
 # Buildr::Bnd.version = '0.0.384'
 
