@@ -42,6 +42,7 @@ module Buildr #:nodoc:
         cmd_args = []
         # tools.jar contains the Java compiler.
         dependencies << Java.tools_jar if Java.tools_jar
+        dependencies << Buildr::Compiler::Ecj.dependencies
         cmd_args << '-classpath' << ('"' + dependencies.join(File::PATH_SEPARATOR) + '"') unless dependencies.empty?
         source_paths = sources.select { |source| File.directory?(source) }
         cmd_args << '-sourcepath' << source_paths.join(File::PATH_SEPARATOR) unless source_paths.empty?
@@ -78,5 +79,4 @@ module Buildr #:nodoc:
   end
 end
 
-Java.classpath <<  lambda { Buildr::Compiler::Ecj.dependencies }
 Buildr::Compiler.compilers << Buildr::Compiler::Ecj
