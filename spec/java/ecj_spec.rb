@@ -77,6 +77,7 @@ describe 'ecj compiler' do
   end
 
   it 'should include tools.jar dependency' do
+    repositories.remote << "http://repo1.maven.org/maven2/"
     write 'src/main/java/UseApt.java', <<-JAVA
     import com.sun.mirror.apt.AnnotationProcessor;
     public class UseApt { }
@@ -228,6 +229,7 @@ describe 'ecj compiler options' do
   end
 
   it 'should complain about options it doesn\'t know' do
+    repositories.remote << "http://repo1.maven.org/maven2/"
     write 'source/Test.java', 'class Test {}'
     compile_task.using(:unknown=>'option')
     lambda { compile_task.from('source').invoke }.should raise_error(ArgumentError, /no such option/i)
