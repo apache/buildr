@@ -83,6 +83,12 @@ assert(!zip.get_entry("lib/logging.jar").nil?)
     %x[cd #{TEST_DIR}/package_war_as_jar ; #{BUILDR} clean]
     assert($?.success?)
     CHECK
+    
+    test "generateFromPom", "--generate pom.xml", <<-CHECK
+    assert(File.exist? "#{TEST_DIR}/generateFromPom/buildfile")
+    assert(File.read("#{TEST_DIR}/generateFromPom/buildfile") !~ /slf4j.version/)
+    CHECK
 
   end
+  
 end
