@@ -26,6 +26,20 @@ The Java compiler supports the following options:
 | @:target@       | Bytecode compatibility (e.g. '1.4'). |
 | @:warnings@     | Issue warnings when compiling.  True when running in verbose mode. |
 
+h3. ECJ
+
+You can use the  "ECJ compiler":http://help.eclipse.org/neon/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Ftasks%2Ftask-using_batch_compiler.htm instead of javac. ECJ abides to the same options as javac.
+For example, to configure the project to use ECJ:
+{% highlight ruby %}
+compile.using :ecj
+{% endhighlight %}
+
+To use a custom version of ECJ, add an entry to your "settings":/settings_profiles.html.
+For example, to set the version of ECJ to 3.5.1, add an entry to your project's @buildr.yml@:
+
+{% highlight yaml %}
+ecj: 3.5.1
+{% endhighlight %}
 
 h3.  Testing with Java
 
