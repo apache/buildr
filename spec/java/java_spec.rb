@@ -51,6 +51,12 @@ else
   end
 end
 
+describe 'Java.classpath' do
+  it 'should issue a warning if the classpath is modified after Java is loaded' do
+    lambda { Java.classpath << 'foo:bar:1.0' }.should show_warning(/Java is already loaded/)
+  end
+end
+
 
 describe 'Java.tools_jar' do
   before do
