@@ -1,4 +1,4 @@
-= Buildr  {<img src="https://travis-ci.org/apache/buildr.png?branch=master" alt="Build status">}[https://travis-ci.org/apache/buildr]
+= Buildr  {<img src="https://travis-ci.org/apache/buildr.svg?branch=master" alt="Build status">}[https://travis-ci.org/apache/buildr] {<img src="http://ruby-gem-downloads-badge.herokuapp.com/buildr?type=total" alt="Buildr total downloads">}[https://rubygems.org/gems/buildr] {<img src="http://ruby-gem-downloads-badge.herokuapp.com/buildr" alt="Latest version downloads">}[https://rubygems.org/gems/buildr]
 
 This is Buildr, the build system that lets you build like you code.
 

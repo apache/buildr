@@ -10,6 +10,7 @@
 * Change: Update rdoc to 4.2.2
 * Change: Update ecj to 4.5.1
 * Added:  Travis badge to README.rdoc
+* Added:  Added Rubygems badges to README.rdoc
 * Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.
 * Fixed:  BUILDR-207 remove 'Skipping tests' messages
 * Added:  BUILDR-703 release: allow THIS_VERSION to be defined in another file
