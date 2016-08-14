@@ -230,6 +230,80 @@ describe Repositories, 'remote_uri' do
   end
 end
 
+describe Repositories, 'mirrors' do
+  before do
+    Buildr.repositories.instance_eval do
+      @local = @remote = @release_to = @mirrors = nil
+    end
+    
+    @repos = [ 'http://www.ibiblio.org/maven2', 'http://repo1.maven.org/maven2' ]
+  end
+  
+  it 'should be empty initially' do
+    repositories.mirrors.should be_empty
+  end
+
+  it 'should be settable' do
+    repositories.mirrors = @repos.first
+    repositories.mirrors.should eql([@repos.first])
+  end
+  
+  it 'should be settable from array' do
+    repositories.mirrors = @repos
+    repositories.mirrors.should eql(@repos)
+  end
+
+  it 'should add and return repositories in order' do
+    @repos.each { |url| repositories.mirrors << url }
+    repositories.mirrors.should eql(@repos)
+  end
+  
+  it 'should log that it is overridding the remote repositories with the mirrors' do
+    @repos.each { |url| repositories.mirrors << url }
+    lambda { repositories.remote }.should show_info /Remote repositories overridden by mirrors /
+  end
+  
+  it 'should load with all repositories specified in settings file' do
+    write 'home/.buildr/settings.yaml', <<-YAML
+    repositories:
+      mirrors:
+      - http://example.com/repository/noexist
+      remote:
+      - http://foobar.com
+    YAML
+    repositories.mirrors.should include('http://example.com/repository/noexist')
+  end
+
+  it 'should load with all repositories specified in build.yaml file' do
+    write 'build.yaml', <<-YAML
+    repositories:
+      mirrors:
+      - http://example.com/repository/noexist
+      remote:
+      - http://foobar.com
+    YAML
+    repositories.mirrors.should include('http://example.com/repository/noexist')
+  end
+
+  it 'should load with all repositories specified in settings and build.yaml files' do
+    write 'home/.buildr/settings.yaml', <<-YAML
+    repositories:
+      mirrors:
+      - http://example.com/repository/noexist
+      remote:
+      - http://foobar.com
+    YAML
+    write 'build.yaml', <<-YAML
+    repositories:
+      mirrors:
+      - http://example.com/repo2
+      remote:
+      - http://foobar.com
+    YAML
+    repositories.mirrors.should include('http://example.com/repository/noexist', 'http://example.com/repo2')
+  end
+end
+
 describe Repositories, 'remote' do
   before do
     Buildr.repositories.instance_eval do

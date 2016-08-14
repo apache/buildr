@@ -628,6 +628,44 @@ module Buildr #:nodoc:
       spec = Artifact.to_hash(spec)
       File.join(local, spec[:group].split('.'), spec[:id], spec[:version], Artifact.hash_to_file_name(spec))
     end
+    
+    # :call-seq:
+    #   mirrors => Array
+    #
+    # Returns an array of all the mirror repository URLs.
+    #
+    # Mirrors override remote repositories defined in the project.
+    # The best way is to add repositories to the user settings file under '$HOME/.buildr/settings.yaml'.
+    # For example:
+    #   repositories:
+    #     mirrors:
+    #     - http://example.com/repository
+    def mirrors
+      unless @mirrors
+        @mirrors = [Buildr.settings.user, Buildr.settings.build].inject([]) { |repos, hash|
+          repos | Array(hash['repositories'] && hash['repositories']['mirrors'])
+        }
+      end
+      @mirrors
+    end
+    
+    # :call-seq:
+    #   remote = Array
+    #   remote = url
+    #   remote = nil
+    #
+    # With a String argument, clears the array and set it to that single URL.
+    #
+    # With an Array argument, clears the array and set it to these specific URLs.
+    #
+    # With nil, clears the array.
+    def mirrors=(urls)
+      case urls
+      when nil then @mirrors = nil
+      when Array then @mirrors = urls.dup
+      else @mirrors = [urls.to_s]
+      end
+    end
 
     # :call-seq:
     #   remote => Array
@@ -648,6 +686,10 @@ module Buildr #:nodoc:
     #     - http://example.com/repo
     #     - http://elsewhere.com/repo
     def remote
+      unless mirrors.empty?
+        info "Remote repositories overridden by mirrors #{mirrors.map(&:to_s).join(", ")}"
+        mirrors
+      end
       unless @remote
         @remote = [Buildr.settings.user, Buildr.settings.build].inject([]) { |repos, hash|
           repos | Array(hash['repositories'] && hash['repositories']['remote'])

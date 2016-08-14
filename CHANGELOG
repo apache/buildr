@@ -21,6 +21,7 @@
 * Fixed:  BUILDR-621 ZipTask creates zip file with entries not sorted by path causing very slow unzipping.
 * Fixed:  BUILDR-695 transitive doesn't support ${project.parent.version} in POM.
 * Fixed:  BUILDR-653 Using Eclipse compiler (ECJ)
+* Fixed:  BUILDR-476 Buildr doesn't respect company repository manager
 * Change: Update the custom_pom addon to generate poms with exclusions section that excludes
           all transitive dependencies. This is required as buildr dependencies are not
           transitive while Maven's dependencies are transitive by default.
