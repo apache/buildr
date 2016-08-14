@@ -308,8 +308,15 @@ module Buildr #:nodoc:
         end
         self
       end
+      
+      BINARY_FILES = [ '*.png', '*.gif', '*.jpg', '*.jpeg' ]
+
+      def is_binary?(content, path)
+        !!path && BINARY_FILES.any? { |glob| File.fnmatch(glob, path) }
+      end
 
       def transform(content, path = nil)
+        return content if is_binary?(content, path)
         type = Regexp === mapper_type ? :regexp : mapper_type
         raise ArgumentError, "Invalid mapper type: #{type.inspect}" unless respond_to?("#{type}_transform", true)
         self.__send__("#{type}_transform", content, path) { |key| config[key] || config[key.to_s.to_sym] }

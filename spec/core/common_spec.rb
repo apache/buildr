@@ -401,6 +401,13 @@ describe Buildr::Filter do
       read(file).should eql("#{File.basename(file)} with value1 and value2")
     end
   end
+  
+  it 'should not apply filters to binary files' do
+    ["jpg", "jpeg", "gif", "png"].each { |ext| write "images/file.#{ext}", 'something' }
+    filter = @filter.from('images').into('target').using('key1'=>'value1', 'key2'=>'value2')
+    filter.instance_variable_get("@mapper").should_not_receive(:maven_transform)
+    filter.run
+  end
 
   it 'should apply hash mapping using Ant style' do
     1.upto(4) { |i| write "src/file#{i}", "file#{i} with @key1@ and @key2@" }
