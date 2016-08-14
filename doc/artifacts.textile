@@ -145,6 +145,20 @@ Buildr downloads artifacts when it needs to use them, for example, to compile a 
 $ buildr artifacts
 {% endhighlight %}
 
+h3(#mirrors). Mirrors
+
+You can specify mirrors to override remote repositories. This is useful when you use a Nexus proxy or Artifactory, for example.
+
+You can use the same syntax as @repositories.remote@, for example:
+
+{% highlight ruby %}
+repositories.mirrors << 'http://corporateserver001.com/repository'
+{% endhighlight %}
+
+This is even more useful when you place this in your user settings.
+
+See the "Settings/Profiles section":/settings_profiles.html.
+
 
 h2(#downloading). Downloading Artifacts
 

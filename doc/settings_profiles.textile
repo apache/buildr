@@ -81,6 +81,10 @@ repositories:
   remote:
    - https://intra.net/maven2
    - http://example.com
+   
+  # specify the corporate mirror
+  mirrors:
+   - http://www.corporateserver001.com/repo
 
   release_to:
     url: http://intra.net/maven2
