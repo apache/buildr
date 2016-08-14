@@ -220,6 +220,11 @@ module Buildr #:nodoc:
           # Enhance the project using the definition block.
           project.enhance { project.instance_exec project, &block } if block
 
+          # Mark the project as defined
+          project.enhance do |project|
+            project.send :define!
+          end
+
           # Top-level project? Invoke the project definition. Sub-project? We don't invoke
           # the project definiton yet (allow project calls to establish order of evaluation),
           # but must do so before the parent project's definition is done.
@@ -253,7 +258,7 @@ module Buildr #:nodoc:
         end
         project ||= @projects[name] # Not found in scope.
         raise "No such project #{name}" unless project
-        project.invoke unless no_invoke || Buildr.application.current_scope.join(":").to_s == project.name.to_s
+        project.invoke unless  project.defined? || no_invoke || Buildr.application.current_scope.join(":").to_s == project.name.to_s
         project
       end
 
@@ -614,7 +619,15 @@ module Buildr #:nodoc:
       @calledback ||= {}
     end
 
+    def defined?
+      @defined
+    end
+
   protected
+    def define!
+      @defined = true
+    end
+    
 
     # :call-seq:
     #   base_dir = dir

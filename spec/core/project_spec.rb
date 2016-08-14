@@ -83,6 +83,16 @@ describe Project do
     Buildr.define('foo') { define('bar') { project('baz:bar') } }
     lambda { project('foo') }.should raise_error(RuntimeError, /Circular dependency/)
   end
+
+  it 'should handle non-circular dependencies' do
+    Buildr.define "root" do
+      define "child" do
+        puts project('root')._('foo.resource')
+      end
+    end
+
+    lambda { project('root') }.should_not raise_error
+  end
 end
 
 describe Project, ' property' do
@@ -533,18 +543,13 @@ describe Buildr, '#project' do
     project('foo:bar').project('baz').should be(project('foo:baz'))
   end
 
-  it 'should fine a project from its parent by proximity' do
+  it 'should find a project from its parent by proximity' do
     define 'foo' do
       define('bar') { define 'baz' }
       define 'baz'
     end
     project('foo').project('baz').should be(project('foo:baz'))
     project('foo:bar').project('baz').should be(project('foo:bar:baz'))
-  end
-
-  it 'should invoke project before returning it' do
-    define('foo').should_receive(:invoke).once
-    project('foo')
   end
 
   it 'should fail if called without a project name' do
