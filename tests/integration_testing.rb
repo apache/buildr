@@ -44,8 +44,7 @@ p result
 
     end
 
-    #BUILDR-320 still not resolved.
-    #test "BUILDR-320", "--trace -P"
+    test "BUILDR-320", "package --trace -P"
 
     test "JavaSystemProperty", "test"
 
