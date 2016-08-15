@@ -15,6 +15,8 @@
 * Added:  Added Rubygems badges to README.rdoc
 * Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.
 * Added:  BUILDR-523 Issue a warning when Java.classpath is modified after Java.load has happened
+* Added:  BUILDR-594 Added support for changing the verification mode of SSL certificates
+* Added:  BUILDR-595 Added support to providing custom SSL certificates
 * Fixed:  BUILDR-207 remove 'Skipping tests' messages
 * Added:  BUILDR-703 release: allow THIS_VERSION to be defined in another file
 * Fixed:  BUILDR-674 Artifacts with bundle extension cannot be downloaded by Buildr
