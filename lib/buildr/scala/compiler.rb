@@ -152,6 +152,9 @@ module Buildr::Scala
         # added in Scala 2.10
         ns.reflect!      'org.scala-lang:scala-reflect:jar:>=' + version
         ns.actors!       'org.scala-lang:scala-actors:jar:>=' + version
+        ns.xml!          'org.scala-lang.modules:scala-xml_2.11:jar:1.0.5'
+        ns.parser_combinators! 'org.scala-lang.modules:scala-parser-combinators_2.11:jar:1.0.4'
+
       end
     end
 
