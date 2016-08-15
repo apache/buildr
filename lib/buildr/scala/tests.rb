@@ -39,8 +39,10 @@ module Buildr::Scala#:nodoc:
         '1.7'
       when Buildr::Scala.version?("2.8.1")
         '1.8'
-      else
+      when Buildr::Scala.version < "2.11"
         '1.10.0'
+      else
+        '1.12.5'
     end
 
     class << self
@@ -53,7 +55,14 @@ module Buildr::Scala#:nodoc:
       end
 
       def artifact
-        Buildr.settings.build['scala.check.artifact'] || "scalacheck_#{Buildr::Scala.version_without_build}"
+        custom = Buildr.settings.build['scala.check.artifact']
+        return custom if !!custom
+        case
+        when Buildr::Scala.version < "2.11"
+          "scalacheck_#{Buildr::Scala.version_without_build}"
+        else
+          "scalacheck_#{Buildr::Scala.version_major_minor}"
+        end
       end
 
       def dependencies
@@ -92,8 +101,10 @@ module Buildr::Scala#:nodoc:
     VERSION = case
       when Buildr::Scala.version?(2.7)
         '1.3'
-      else
+      when Buildr::Scala.version < "2.11"
         '1.8'
+      else
+        '2.2.6'
     end
 
     class << self
@@ -107,24 +118,19 @@ module Buildr::Scala#:nodoc:
         return custom if (custom =~ /:/)
         if Buildr::Scala.version?(2.7, 2.8)
           "org.scalatest:scalatest:jar:#{version}"
-        else
+        elsif Buildr::Scala.version < "2.11"
           "org.scalatest:scalatest_#{Buildr::Scala.version_without_build}:jar:#{version}"
+        else 
+          "org.scalatest:scalatest_#{Buildr::Scala.version_major_minor}:jar:#{version}"
         end
       end
 
       def dependencies
-        [specs] + Check.dependencies + JMock.dependencies + JUnit.dependencies + Mockito.dependencies
+        [specs] + Check.dependencies + JMock.dependencies + JUnit.dependencies + Mockito.dependencies + ["org.scala-lang.modules:scala-xml_2.11:jar:1.0.5"]
       end
 
       def applies_to?(project) #:nodoc:
         !Dir[project.path_to(:source, :test, :scala, '**/*.scala')].empty?
-      end
-
-    private
-      def const_missing(const)
-        return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated "Please use Scala::Test.dependencies/.version instead of ScalaTest::REQUIRES/VERSION"
-        dependencies
       end
     end
 

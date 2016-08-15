@@ -24,7 +24,7 @@ repositories.remote << 'https://oss.sonatype.org/content/groups/scala-tools'
 
 # Force Scala version for specs; don't want to rely on SCALA_HOME
 module Buildr::Scala
-  SCALA_VERSION_FOR_SPECS = ENV["SCALA_VERSION"] || "2.9.2"
+  SCALA_VERSION_FOR_SPECS = ENV["SCALA_VERSION"] || "2.11.8"
 end
 Buildr.settings.build['scala.version'] = Buildr::Scala::SCALA_VERSION_FOR_SPECS
 

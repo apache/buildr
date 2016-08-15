@@ -47,7 +47,14 @@ module Buildr::Scala #:nodoc:
       end
 
       def artifact
-        Buildr.settings.build['scala.specs.artifact'] || "specs_#{Buildr::Scala.version_without_build}"
+        custom = Buildr.settings.build['scala.specs.artifact']
+        return custom unless custom.nil?
+        
+        if Buildr::Scala.version >= "2.11"
+          "specs_2.10"
+        else
+          "specs_#{Buildr::Scala.version_without_build}"
+        end
       end
 
       def dependencies
@@ -56,7 +63,7 @@ module Buildr::Scala #:nodoc:
           # Add utility classes (e.g. SpecsSingletonRunner) and other dependencies
           @dependencies |= [ File.join(File.dirname(__FILE__)) ] +
                            specs +
-                           Check.dependencies + JUnit.dependencies + Scalac.dependencies
+                           Check.dependencies + JUnit.dependencies + Scalac.dependencies + ["org.scala-lang.modules:scala-xml_2.11:jar:1.0.5"]
         end
         @dependencies
       end
@@ -136,8 +143,10 @@ module Buildr::Scala #:nodoc:
         '1.5'
       when Buildr::Scala.version?("2.9")
         '1.11'
+      when  Buildr::Scala.version?("2.10")
+        '1.12.3'
       else
-        '1.12.3' # default for Scala 2.10 and beyond
+        '3.7' # default for Scala 2.11 and beyond
     end
 
     class << self
@@ -148,7 +157,7 @@ module Buildr::Scala #:nodoc:
 
       def specs
         custom = Buildr.settings.build['scala.specs2']
-        [ (custom =~ /:/) ? custom : "org.specs2:#{artifact}:jar:#{version}" ]
+        [ (custom =~ /:/) ? custom : "org.specs2:#{artifact}:pom:#{version}" ]
       end
 
       def artifact
@@ -156,14 +165,26 @@ module Buildr::Scala #:nodoc:
           when Buildr.settings.build['scala.specs2.artifact']
             Buildr.settings.build['scala.specs2.artifact']
           else
-            "specs2_#{Buildr::Scala.version_without_build}"
+            if Buildr::Scala.version < "2.11"
+              "specs2_#{Buildr::Scala.version_without_build_number}"
+            else
+              "specs2_#{Buildr::Scala.version_major_minor}"
+            end
+        end
+      end
+      
+      def type
+        if Buildr::Scala.version < "2.11"
+          "jar"
+        else
+          "pom"
         end
       end
 
       def scalaz_dependencies
         if Buildr::Scala.version?("2.8")
           []
-        else
+        elsif Buildr::Scala.version < "2.11"
           default_version = "6.0.1"
           custom_version = Buildr.settings.build['scala.specs2-scalaz']
           version = (custom_version =~ /:/) ? Buildr.artifact(custom_version).version : default_version
@@ -173,6 +194,16 @@ module Buildr::Scala #:nodoc:
           custom_spec = Buildr.settings.build['scala.specs2-scalaz']
           spec = [ (custom_spec =~ /:/) ? custom_spec : "org.specs2:#{artifact}:jar:#{version}" ]
           Buildr.transitive(spec, :scopes => [nil, "compile", "runtime", "provided", "optional"], :optional => true)
+        else
+          default_version = "7.2.2"
+          custom_version = Buildr.settings.build['scala.specs2-scalaz']
+          version = (custom_version =~ /:/) ? Buildr.artifact(custom_version).version : default_version
+
+          artifact = Buildr.settings.build['scala.specs2-scalaz.artifact'] || "scalaz-core_#{Buildr::Scala.version_major_minor}"
+
+          custom_spec = Buildr.settings.build['scala.specs2-scalaz']
+          spec = [ (custom_spec =~ /:/) ? custom_spec : "org.scalaz:#{artifact}:jar:#{version}" ]
+          [Buildr.transitive(spec, :scopes => [nil, "compile", "runtime", "provided", "optional"], :optional => true), "org.scala-lang.modules:scala-xml_2.11:jar:1.0.1"]
         end
       end
 

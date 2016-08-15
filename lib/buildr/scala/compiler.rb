@@ -15,7 +15,7 @@
 
 # The Scala Module
 module Buildr::Scala
-  DEFAULT_VERSION = '2.9.2'
+  DEFAULT_VERSION = '2.11.8'
 
   class << self
 
@@ -65,6 +65,12 @@ module Buildr::Scala
     def version_without_build
       version.split('-')[0]
     end
+    
+    # returns Scala version without tiny number.
+    # e.g.  "2.11.8" => "2.11"
+    def version_major_minor
+      version.split('.')[0..1].join('.')
+    end
   end
 
   # Scalac compiler:
@@ -81,9 +87,9 @@ module Buildr::Scala
   # * :other       -- Array of options to pass to the Scalac compiler as is, e.g. -Xprint-types
   class Scalac < Buildr::Compiler::Base
 
-    DEFAULT_ZINC_VERSION  = '0.1.0'
-    DEFAULT_SBT_VERSION   = '0.12.0'
-    DEFAULT_JLINE_VERSION = '1.0'
+    DEFAULT_ZINC_VERSION  = '1.0.0-X1'
+    DEFAULT_SBT_VERSION   = '0.13.12'
+    DEFAULT_JLINE_VERSION = '2.14.2'
 
     class << self
       def scala_home
@@ -115,9 +121,7 @@ module Buildr::Scala
           REQUIRES.artifacts.map(&:to_s)
         end
 
-        zinc_dependencies = ZINC_REQUIRES.artifacts.map(&:to_s)
-
-        (scala_dependencies + zinc_dependencies).compact
+        scala_dependencies.compact
       end
 
       def use_fsc
@@ -152,10 +156,8 @@ module Buildr::Scala
     end
 
     ZINC_REQUIRES = ArtifactNamespace.for(self) do |ns|
-      zinc_version  = Buildr.settings.build['zinc.version']  || DEFAULT_ZINC_VERSION
       sbt_version   = Buildr.settings.build['sbt.version']   || DEFAULT_SBT_VERSION
       jline_version = Buildr.settings.build['jline.version'] || DEFAULT_JLINE_VERSION
-      ns.zinc!          "com.typesafe.zinc:zinc:jar:>=#{zinc_version}"
       ns.sbt_interface! "com.typesafe.sbt:sbt-interface:jar:>=#{sbt_version}"
       ns.incremental!   "com.typesafe.sbt:incremental-compiler:jar:>=#{sbt_version}"
       ns.compiler_interface_sources! "com.typesafe.sbt:compiler-interface:jar:sources:>=#{sbt_version}"
@@ -184,11 +186,7 @@ module Buildr::Scala
     end
 
     def compile(sources, target, dependencies) #:nodoc:
-      if zinc?
-        compile_with_zinc(sources, target, dependencies)
-      else
-        compile_with_scalac(sources, target, dependencies)
-      end
+      compile_with_scalac(sources, target, dependencies)
     end
 
     def compile_with_scalac(sources, target, dependencies) #:nodoc:
@@ -243,37 +241,6 @@ module Buildr::Scala
       end
     end
 
-    def compile_with_zinc(sources, target, dependencies) #:nodoc:
-
-      dependencies.unshift target
-
-      cmd_args = []
-      cmd_args << '-sbt-interface' << REQUIRES.sbt_interface.artifact
-      cmd_args << '-compiler-interface' << REQUIRES.compiler_interface_sources.artifact
-      cmd_args << '-scala-library' << dependencies.find { |d| d =~ /scala-library/ }
-      cmd_args << '-scala-compiler' << dependencies.find { |d| d =~ /scala-compiler/ }
-      cmd_args << '-classpath' << dependencies.join(File::PATH_SEPARATOR)
-      source_paths = sources.select { |source| File.directory?(source) }
-      cmd_args << '-Ssourcepath' << ("-S" + source_paths.join(File::PATH_SEPARATOR)) unless source_paths.empty?
-      cmd_args << '-d' << File.expand_path(target)
-      cmd_args += scalac_args
-      cmd_args << "-debug" if trace?(:scalac)
-
-      cmd_args.map!(&:to_s)
-
-      cmd_args += files_from_sources(sources)
-
-      unless Buildr.application.options.dryrun
-        trace((['com.typesafe.zinc.Main.main'] + cmd_args).join(' '))
-
-        begin
-          Java::Commands.java 'com.typesafe.zinc.Main', *(cmd_args + [{ :classpath => Scalac.dependencies}])
-        rescue => e
-          fail "Zinc compiler crashed:\n#{e.inspect}\n#{e.backtrace.join("\n")}"
-        end
-      end
-    end
-
   protected
 
     # :nodoc: see Compiler:Base
@@ -318,10 +285,6 @@ module Buildr::Scala
 
   private
 
-    def zinc?
-      (options[:incremental] || @project.scalac_options.incremental || (Buildr.settings.build['scalac.incremental'].to_s == "true"))
-    end
-
     def count(file, pattern)
       count = 0
       File.open(file, "r") do |infile|
@@ -351,11 +314,7 @@ module Buildr::Scala
       args << "-optimise" if options[:optimise]
       args << "-target:jvm-" + options[:target].to_s if options[:target]
       args += Array(options[:other])
-      if zinc?
-        args.map { |arg| "-S" + arg } + Array(options[:zinc_options])
-      else
-        args
-      end
+      args
     end
   end
 

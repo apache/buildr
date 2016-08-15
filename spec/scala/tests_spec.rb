@@ -208,17 +208,13 @@ describe Buildr::Scala::ScalaTest do
   it 'should pass properties to Suite' do
     write 'src/test/scala/PropertyTestSuite.scala', <<-SCALA
       import org.scalatest._
-      class PropertyTestSuite extends FunSuite {
-        var configMap = Map[String, Any]()
-        test("testProperty") {
+      import org.scalatest.fixture.FunSuite
+      import org.scalatest.fixture.ConfigMapFixture
+      
+      class PropertyTestSuite extends FunSuite with ConfigMapFixture {
+        
+        test("testProperty") { (configMap: Map[String, Any]) =>
           assert(configMap("name") === "value")
-        }
-
-        protected override def runTests(testName: Option[String], reporter: Reporter, stopper: Stopper,
-                                        filter: Filter, configMap: Map[String, Any],
-                                        distributor: Option[Distributor], tracker: Tracker) {
-          this.configMap = configMap
-          super.runTests(testName, reporter, stopper, filter, configMap, distributor, tracker)
         }
       }
     SCALA
