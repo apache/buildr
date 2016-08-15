@@ -155,6 +155,11 @@ share_as :ScalacCompiler_CommonOptions do
     compile_task.using(:warnings=>false)
     scalac_args.should include('-nowarn')
   end
+  
+  it 'should pass options to javac' do
+    compile_task.using(:warnings=>false)
+    javac_args.should include('-nowarn')
+  end
 
   it 'should not use -nowarn argument when warnings is true' do
     compile_task.using(:warnings=>true)
@@ -277,6 +282,10 @@ describe 'scala compiler options' do
 
   def scalac_args
     compile_task.instance_eval { @compiler }.send(:scalac_args)
+  end
+  
+  def javac_args
+    compile_task.instance_eval { @compiler }.instance_eval { @java }.send(:javac_args)
   end
 
   # these specs fail. Somehow the compiler is still in version 2.8

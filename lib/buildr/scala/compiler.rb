@@ -179,12 +179,17 @@ module Buildr::Scala
 
     def initialize(project, options) #:nodoc:
       super
+      # use common options also for javac
+      
+      options[:javac] ||= Buildr::Compiler::Javac::OPTIONS.inject({}) do |hash, option|
+        hash[option] = options[option]
+        hash
+      end
       options[:debug] = Buildr.options.debug if options[:debug].nil?
       options[:warnings] = verbose if options[:warnings].nil?
       options[:deprecation] ||= false
       options[:optimise] ||= false
       options[:make] ||= :transitivenocp if Scala.version? 2.8
-      options[:javac] ||= {}
       @java = Javac.new(project, options[:javac])
     end
 
