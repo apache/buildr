@@ -24,9 +24,10 @@ public class Specs2Runner {
   public static void main(String[] args) {
       try {
           ClassLoader loader = Thread.currentThread().getContextClassLoader();
-          Class clazz = loader.loadClass("org.specs2.runner.ClassRunner");
-          Object instance = clazz.newInstance();
-          Method main = clazz.getMethod("main", String[].class);
+          Class clazz = loader.loadClass("org.specs2.runner.ClassRunner$");
+          Field singleton = clazz.getField("MODULE$");
+          Object instance = singleton.get(null);
+          Method main = clazz.getMethod("run", String[].class);
           main.invoke(instance, new Object[] { args });
       } catch (Exception e) {
           throw new RuntimeException(e);

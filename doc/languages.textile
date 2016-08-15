@@ -351,7 +351,7 @@ h4. Specs
 
 Specs is automatically selected whenever there are @.scala@ source files under the @src/spec/scala@ directory.  It is also possible to force selection of the test framework by using the @test.using :specs@ directive.  This can sometimes be useful when Scala sources may be found in *both* @src/test/scala@ and @src/spec/scala@.  Normally in such cases, ScalaTest will have selection precedence, meaning that in case of a conflict between it and Specs, ScalaTest will be chosen.
 
-Any objects which extend the @org.specs.Specification@ superclass will be automatically detected and run.  Note that any *classes* which extend @Specification@ will also be invoked.  As such classes will not have a @main@ method, such an invocation will raise an error.
+Any objects which extend the @org.specs.Specification@ or @org.specs2.Specification@ superclass will be automatically detected and run.  Note that any *classes* which extend @Specification@ will also be invoked.  As such classes will not have a @main@ method, such an invocation will raise an error.
 
 A simple specification might look like this:
 

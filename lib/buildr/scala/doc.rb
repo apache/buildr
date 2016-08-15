@@ -80,7 +80,6 @@ module Buildr #:nodoc:
 
     class VScaladoc < Base
       VERSION = '1.2-m1'
-      Buildr.repositories.remote << 'https://oss.sonatype.org/content/groups/scala-tools'
 
       class << self
         def dependencies
