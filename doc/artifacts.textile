@@ -212,6 +212,15 @@ export SSL_CA_CERTS=/Users/john/certs
 buildr package
 {% endhighlight %}
 
+You can also change the OpenSSL verify mode so it won't barf on your certificate. Use the environment variable @SSL_VERIFY_MODE@ to specify one of the following: @VERIFY_NONE@, @VERIFY_PEER@, @VERIFY_CLIENT_ONCE@, @VERIFY_FAIL_IF_NO_PEER_CERT@. See @OpenSSL::SSL@ for more info.
+
+For example:
+{% highlight bash %}
+# Don't verify certificates
+export SSL_VERIFY_MODE=VERIFY_NONE
+buildr package
+{% endhighlight %}
+
 h2(#install_upload). Install and Upload
 
 Generally you use artifacts that download from remote repositories into the local repository, or artifacts packaged by the project itself (see "Packaging":packaging.html), which are then installed into the local repository and uploaded to the release server.

@@ -248,10 +248,17 @@ describe URI::HTTP, '#read' do
   end
   
   it 'should use custom SSL CA certificates if provided through the environment variable SSL_CA_CERTS' do
-    ENV['SSL_CA_CERTS'] = 'tmp/certs'
+    ENV['SSL_VERIFY_MODE'] = 'VERIFY_PEER'
     Net::HTTP.should_receive(:new).with(@host_domain, 443).and_return(@http)
     @http.should_receive(:use_ssl=).with(true)
     @http.should_receive(:verify_mode=).with(OpenSSL::SSL::VERIFY_PEER)
+    URI(@uri.to_s.sub(/http/, 'https')).read
+  end
+  
+  it 'should use custom verify mode if provided through the environment variable SSL_VERIFY_MODE' do
+    ENV['SSL_CA_CERTS'] = 'tmp/certs'
+    Net::HTTP.should_receive(:new).with(@host_domain, 443).and_return(@http)
+    @http.should_receive(:use_ssl=).with(true)
     @http.should_receive(:ca_path=).with('tmp/certs')
     URI(@uri.to_s.sub(/http/, 'https')).read
   end
