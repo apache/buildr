@@ -1,6 +1,6 @@
 language: ruby
 jdk:
-  - oraclejdk8 -- will turn this on once scala can be excluded
+  - oraclejdk8
   - oraclejdk7
 rvm:
   - 2.3.1
