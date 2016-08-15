@@ -10,6 +10,7 @@
 * Change: Update rdoc to 4.2.2
 * Change: Update ecj to 4.5.1
 * Change: Added jekyll-textile-converter 0.1.0 to generate the site.
+* Change: Move to default on Scala 2.11.
 * Added:  Travis badge to README.rdoc
 * Added:  Added Rubygems badges to README.rdoc
 * Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.
