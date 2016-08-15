@@ -75,14 +75,14 @@ describe 'ecj compiler' do
       file('target/classes/DependencyTest.class').should exist
     end
   end
-
+  
   it 'should include tools.jar dependency' do
     repositories.remote << "http://repo1.maven.org/maven2/"
     write 'src/main/java/UseJarSigner.java', <<-JAVA
-    import sun.security.tools.jarsigner.Main;
+    import sun.tools.jar.Manifest;
     public class UseJarSigner { }
     JAVA
-    define('foo').compile.using(:ecj).invoke
+    define('foo').compile.invoke
     file('target/classes/UseJarSigner.class').should exist
   end
 

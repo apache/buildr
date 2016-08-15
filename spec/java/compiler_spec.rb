@@ -100,7 +100,7 @@ describe 'javac compiler' do
 
   it 'should include tools.jar dependency' do
     write 'src/main/java/UseJarSigner.java', <<-JAVA
-    import sun.security.tools.jarsigner.Main;
+    import sun.tools.jar.Manifest;
     public class UseJarSigner { }
     JAVA
     define('foo').compile.invoke
