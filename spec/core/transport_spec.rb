@@ -246,6 +246,15 @@ describe URI::HTTP, '#read' do
     @http.should_receive(:use_ssl=).with(true)
     URI(@uri.to_s.sub(/http/, 'https')).read
   end
+  
+  it 'should use custom SSL CA certificates if provided through the environment variable SSL_CA_CERTS' do
+    ENV['SSL_CA_CERTS'] = 'tmp/certs'
+    Net::HTTP.should_receive(:new).with(@host_domain, 443).and_return(@http)
+    @http.should_receive(:use_ssl=).with(true)
+    @http.should_receive(:verify_mode=).with(OpenSSL::SSL::VERIFY_PEER)
+    @http.should_receive(:ca_path=).with('tmp/certs')
+    URI(@uri.to_s.sub(/http/, 'https')).read
+  end
 
   it 'should use proxy from environment variable HTTP_PROXY when using http' do
     ENV['HTTP_PROXY'] = @proxy

@@ -198,6 +198,19 @@ Since we ordered the calls to @artifact@ first and @download@ second, we know th
 
 Magic.
 
+h3(#ssl). SSL and Self-signed certificates
+
+There's always that Maven repository you learnt to hate, because it's using a faulty SSL certificate, or a self-signed one.
+
+On top of installing that certificate everywhere, it's messing with your build!
+
+To get out of there, you can use the environment variable SSL_CA_CERTS to point at a folder containing your certificates.
+For example:
+
+{% highlight bash %}
+export SSL_CA_CERTS=/Users/john/certs
+buildr package
+{% endhighlight %}
 
 h2(#install_upload). Install and Upload
 

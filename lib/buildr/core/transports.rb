@@ -279,6 +279,10 @@ module URI
         headers['User-Agent'] = "Buildr-#{Buildr::VERSION}"
         request = Net::HTTP::Get.new(request_uri.empty? ? '/' : request_uri, headers)
         request.basic_auth self.user, self.password if self.user
+        if ENV['SSL_CA_CERTS']
+          http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+          http.ca_path = ENV['SSL_CA_CERTS']
+        end
         http.request request do |response|
           case response
           when Net::HTTPNotModified
