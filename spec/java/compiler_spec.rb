@@ -99,12 +99,12 @@ describe 'javac compiler' do
   end
 
   it 'should include tools.jar dependency' do
-    write 'src/main/java/UseApt.java', <<-JAVA
-      import com.sun.mirror.apt.AnnotationProcessor;
-      public class UseApt { }
+    write 'src/main/java/UseJarSigner.java', <<-JAVA
+    import sun.security.tools.jarsigner.Main;
+    public class UseJarSigner { }
     JAVA
     define('foo').compile.invoke
-    file('target/classes/UseApt.class').should exist
+    file('target/classes/UseJarSigner.class').should exist
   end
 
   it 'should ignore package-info.java files in up-to-date check' do
