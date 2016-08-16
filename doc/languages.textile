@@ -238,6 +238,8 @@ h4. Fast Scala Compiler
 
 You may use @fsc@, the Fast Scala Compiler, which submits compilation jobs to a  compilation daemon, by setting the environment variable @USE_FSC@ to @yes@. Note that @fsc@ _may_ cache class libraries -- don't forget to run @fsc -reset@ if  you upgrade a library.
 
+(Note @fsc@ is not compatible with @zinc@ incremental compilation.)
+
 h4. Rebuild detection
 
 *Scala 2.7*
@@ -267,6 +269,38 @@ Effectively, this is telling the Scala compiler to ignore the information it has
 To avoid unusual behavior, compiler-level change detection is disabled whenever the joint Scala-Java compiler is used.  Thus, any @.java@ files in a project handled by the Scala compiler will cause the @:make@ option to be ignored and revert to the exclusive use of Buildr's change detection mechanism (as described above).
 
 *Scala 2.9 and later*
+
+Starting with Buildr 1.4.8, Buildr integrates with the "Zinc":https://github.com/typesafehub/zinc incremental compilation wrapper for @scalac@.  Incremental compilation can be enabled 3 ways,
+
+1) By setting the compiler's option directly,
+
+{% highlight ruby %}
+compile.using :incremental => true
+
+compile.options.incremental = true  # same as above
+{% endhighlight %}
+
+Note that this won't enable incremental compilation for both @compile@ and @test.compile@, you would have to set options on both.  For this reason, it's recommended that you set the option on the project instead (see below).
+
+2) By setting the project's @scalac_options.incremental@,
+
+{% highlight ruby %}
+project.scalac_options.incremental = true
+{% endhighlight %}
+
+3) By setting the global @scalac.incremental@ option,
+
+in your @buildfile@:
+
+{% highlight ruby %}
+Buildr.settings.build['scalac.incremental'] = true
+{% endhighlight %}
+
+or in your @build.yaml@:
+
+{% highlight yaml %}
+scalac.incremental: true
+{% endhighlight %}
 
 h4. Support for different Scala versions
 

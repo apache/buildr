@@ -87,7 +87,7 @@ module Buildr::Scala
   # * :other       -- Array of options to pass to the Scalac compiler as is, e.g. -Xprint-types
   class Scalac < Buildr::Compiler::Base
 
-    DEFAULT_ZINC_VERSION  = '1.0.0-X1'
+    DEFAULT_ZINC_VERSION  = '0.3.12'
     DEFAULT_SBT_VERSION   = '0.13.12'
     DEFAULT_JLINE_VERSION = '2.14.2'
 
@@ -121,7 +121,9 @@ module Buildr::Scala
           REQUIRES.artifacts.map(&:to_s)
         end
 
-        scala_dependencies.compact
+        zinc_dependencies = ZINC_REQUIRES.artifacts.map(&:to_s)
+
+        (scala_dependencies + zinc_dependencies).compact
       end
 
       def use_fsc
@@ -159,8 +161,10 @@ module Buildr::Scala
     end
 
     ZINC_REQUIRES = ArtifactNamespace.for(self) do |ns|
+      zinc_version  = Buildr.settings.build['zinc.version']  || DEFAULT_ZINC_VERSION
       sbt_version   = Buildr.settings.build['sbt.version']   || DEFAULT_SBT_VERSION
       jline_version = Buildr.settings.build['jline.version'] || DEFAULT_JLINE_VERSION
+      ns.zinc!          "com.typesafe.zinc:zinc:jar:>=#{zinc_version}"
       ns.sbt_interface! "com.typesafe.sbt:sbt-interface:jar:>=#{sbt_version}"
       ns.incremental!   "com.typesafe.sbt:incremental-compiler:jar:>=#{sbt_version}"
       ns.compiler_interface_sources! "com.typesafe.sbt:compiler-interface:jar:sources:>=#{sbt_version}"
@@ -194,7 +198,11 @@ module Buildr::Scala
     end
 
     def compile(sources, target, dependencies) #:nodoc:
-      compile_with_scalac(sources, target, dependencies)
+      if zinc?
+        compile_with_zinc(sources, target, dependencies)
+      else
+        compile_with_scalac(sources, target, dependencies)
+      end
     end
 
     def compile_with_scalac(sources, target, dependencies) #:nodoc:
@@ -249,6 +257,37 @@ module Buildr::Scala
       end
     end
 
+    def compile_with_zinc(sources, target, dependencies) #:nodoc:
+
+      dependencies.unshift target
+
+      cmd_args = []
+      cmd_args << '-sbt-interface' << REQUIRES.sbt_interface.artifact
+      cmd_args << '-compiler-interface' << REQUIRES.compiler_interface_sources.artifact
+      cmd_args << '-scala-library' << dependencies.find { |d| d =~ /scala-library/ }
+      cmd_args << '-scala-compiler' << dependencies.find { |d| d =~ /scala-compiler/ }
+      cmd_args << '-scala-extra' << dependencies.find { |d| d =~ /scala-reflect/ }
+      cmd_args << '-classpath' << (dependencies + [ File.join(File.dirname(__FILE__)) ]).join(File::PATH_SEPARATOR)
+      source_paths = sources.select { |source| File.directory?(source) }
+      cmd_args << '-Ssourcepath' << ("-S" + source_paths.join(File::PATH_SEPARATOR)) unless source_paths.empty?
+      cmd_args << '-d' << File.expand_path(target)
+      cmd_args += scalac_args
+      cmd_args << "-debug" if trace?(:scalac)
+
+      cmd_args.map!(&:to_s)
+
+      cmd_args += files_from_sources(sources)
+
+      unless Buildr.application.options.dryrun
+        trace((['org.apache.buildr.ZincRunner'] + cmd_args).join(' '))
+        begin
+          Java::Commands.java 'org.apache.buildr.ZincRunner', *(cmd_args + [{ :classpath => Scalac.dependencies + [ File.join(File.dirname(__FILE__)) ]}])
+        rescue => e
+          fail "Zinc compiler crashed:\n#{e.inspect}\n#{e.backtrace.join("\n")}"
+        end
+      end
+    end
+
   protected
 
     # :nodoc: see Compiler:Base
@@ -293,6 +332,10 @@ module Buildr::Scala
 
   private
 
+    def zinc?
+      (options[:incremental] || @project.scalac_options.incremental || (Buildr.settings.build['scalac.incremental'].to_s == "true"))
+    end
+
     def count(file, pattern)
       count = 0
       File.open(file, "r") do |infile|
@@ -322,7 +365,11 @@ module Buildr::Scala
       args << "-optimise" if options[:optimise]
       args << "-target:jvm-" + options[:target].to_s if options[:target]
       args += Array(options[:other])
-      args
+      if zinc?
+        args.map { |arg| "-S" + arg } + Array(options[:zinc_options])
+      else
+        args
+      end
     end
   end
 

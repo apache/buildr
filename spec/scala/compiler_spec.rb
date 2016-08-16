@@ -272,7 +272,31 @@ share_as :ScalacCompiler_CommonOptions do
   end
 end
 
-describe 'scala compiler options' do
+
+describe 'scala compiler 2.8 options' do
+
+  it_should_behave_like ScalacCompiler_CommonOptions
+
+  def compile_task
+    @compile_task ||= define('foo').compile.using(:scalac)
+  end
+
+  def scalac_args
+    compile_task.instance_eval { @compiler }.send(:scalac_args)
+  end
+
+  it 'should use -g argument when debug option is true' do
+    compile_task.using(:debug=>true)
+    scalac_args.should include('-g')
+  end
+
+  it 'should not use -g argument when debug option is false' do
+    compile_task.using(:debug=>false)
+    scalac_args.should_not include('-g')
+  end
+end if Buildr::Scala.version?(2.8)
+
+describe 'scala compiler 2.9 options' do
 
   it_should_behave_like ScalacCompiler_CommonOptions
 
@@ -304,5 +328,41 @@ describe 'scala compiler options' do
     scalac_args.should_not include('-g')
   end
 
+end if Buildr::Scala.version?(2.9)
+
+describe 'zinc compiler (enabled through Buildr.settings)' do
+  before :each do
+    Buildr.settings.build['scalac.incremental'] = true
+  end
+
+  it 'should compile with zinc' do
+    write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }'
+    project = define('foo')
+    compile_task = project.compile.using(:scalac)
+    compiler = compile_task.instance_eval { @compiler }
+    compiler.send(:zinc?).should eql(true)
+    compiler.should_receive(:compile_with_zinc).once
+    compile_task.invoke
+  end
+  
+  it_should_behave_like ScalacCompiler
+
+  after :each do
+    Buildr.settings.build['scalac.incremental'] = nil
+  end
+
 end
 
+describe 'zinc compiler (enabled through project.scala_options)' do
+
+  it 'should compile with zinc' do
+    write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }'
+    project = define('foo')
+    project.scalac_options.incremental = true
+    compile_task = project.compile.using(:scalac)
+    compiler = compile_task.instance_eval { @compiler }
+    compiler.send(:zinc?).should eql(true)
+    compiler.should_receive(:compile_with_zinc).once
+    compile_task.invoke
+  end
+end
