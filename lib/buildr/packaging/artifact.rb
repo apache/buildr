@@ -35,6 +35,7 @@ module Buildr #:nodoc:
   module ActsAsArtifact
 
     ARTIFACT_ATTRIBUTES = [:group, :id, :type, :classifier, :version]
+    MAVEN_METADATA = "maven_metadata.xml"
 
     class << self
     private
@@ -74,6 +75,11 @@ module Buildr #:nodoc:
 
     def snapshot?
       version =~ /-SNAPSHOT$/
+    end
+    
+    def final_version
+      return version unless snapshot?
+      Time.now.strftime("%Y%m%d.%H%M%S")
     end
 
     # :call-seq:
@@ -151,6 +157,27 @@ module Buildr #:nodoc:
         end
       end
     end
+    
+    # :call-seq:
+    #   maven_metadata_xml => string
+    #
+    # Creates Maven Metadata XML content for this artifact.
+    def maven_metadata_xml
+      xml = Builder::XmlMarkup.new(:indent=>2)
+      xml.instruct!
+      xml.metadata do
+        xml.groupId       group
+        xml.artifactId    id
+        xml.version       version
+        xml.versioning do
+          xml.snapshot do
+            xml.timestamp final_version
+            xml.buildNumber 1
+          end
+          xml.lastupdated Time.now.strftime("%Y%m%d%H%M%S")
+        end
+      end
+    end
 
     def install
       invoke
@@ -201,7 +228,7 @@ module Buildr #:nodoc:
       uri.user = upload_to[:username] if upload_to[:username]
       uri.password = upload_to[:password] if upload_to[:password]
 
-      path = group.gsub('.', '/') + "/#{id}/#{version}/#{File.basename(name)}"
+      path = group.gsub('.', '/') + "/#{id}/#{version}/#{upload_name}"
 
       unless task = Buildr.application.lookup(uri+path)
         deps = [self]
@@ -212,6 +239,10 @@ module Buildr #:nodoc:
           options = upload_to[:options] || {:permissions => upload_to[:permissions]}
           info "Deploying #{to_spec}"
           URI.upload uri + path, name, options
+          if snapshot? && pom != self
+             maven_metadata = group.gsub('.', '/') + "/#{id}/#{version}/#{MAVEN_METADATA}"
+             URI.upload uri + maven_metadata, MAVEN_METADATA, :permissions => upload_to[:permissions]
+          end
         end
       end
       task
@@ -228,6 +259,11 @@ module Buildr #:nodoc:
 
     def group_path
       group.gsub('.', '/')
+    end
+    
+    def upload_name
+      return File.basename(name) unless snapshot?
+      return File.basename(name).gsub(/SNAPSHOT/, "#{final_version}-1")
     end
     
     def extract_type(type)
@@ -400,6 +436,7 @@ module Buildr #:nodoc:
       unless @content
         enhance do
           write name, self.content
+          write MAVEN_METADATA, maven_metadata_xml if snapshot?
         end
 
         class << self

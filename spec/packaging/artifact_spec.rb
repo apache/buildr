@@ -1026,6 +1026,24 @@ describe ActsAsArtifact, '#upload' do
     write repositories.locate(artifact.pom)
     lambda { artifact.upload }.should raise_error(Exception, /where to upload/)
   end
+  
+  it 'should upload SNAPSHOT with timestamped unique version and maven metadata' do
+    artifact = artifact('com.example:library:jar:2.0-SNAPSHOT')
+    # Prevent artifact from downloading anything.
+    write repositories.locate(artifact)
+    write repositories.locate(artifact.pom)
+
+    time = Time.gm(2011,"mar",11,14,02,36,123)
+    Time.stub(:now).and_return(time)
+
+    URI.should_receive(:upload).once.
+    with(URI.parse('sftp://example.com/base/com/example/library/2.0-SNAPSHOT/library-2.0-20110311.140236-1.pom'), artifact.pom.to_s, anything)
+    URI.should_receive(:upload).once.
+    with(URI.parse('sftp://example.com/base/com/example/library/2.0-SNAPSHOT/library-2.0-20110311.140236-1.jar'), artifact.to_s, anything)
+    URI.should_receive(:upload).once.
+    with(URI.parse('sftp://example.com/base/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), "maven_metadata.xml", anything)
+    verbose(false) { artifact.upload(:url=>'sftp://example.com/base') }
+  end
 
   it 'should accept repositories.release_to setting' do
     artifact = artifact('com.example:library:jar:2.0')
@@ -1039,28 +1057,36 @@ describe ActsAsArtifact, '#upload' do
   end
 
   it 'should use repositories.release_to setting even for snapshots when snapshot_to is not set' do
+    time = Time.gm(2016,"nov",11,14,02,36,123)
+    Time.stub(:now).and_return(time)
     artifact = artifact('com.example:library:jar:2.0-SNAPSHOT')
     # Prevent artifact from downloading anything.
     write repositories.locate(artifact)
     write repositories.locate(artifact.pom)
     URI.should_receive(:upload).once.
-      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/library-2.0-SNAPSHOT.pom'), artifact.pom.to_s, anything)
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.pom'), artifact.pom.to_s, anything)
     URI.should_receive(:upload).once.
-      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/library-2.0-SNAPSHOT.jar'), artifact.to_s, anything)
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.jar'), artifact.to_s, anything)
+    URI.should_receive(:upload).once.
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), "maven_metadata.xml", anything)
     repositories.release_to = 'sftp://buildr.apache.org/repository/noexist/base'
     artifact.upload
     lambda { artifact.upload }.should_not raise_error
   end
 
   it 'should use repositories.snapshot_to setting when snapshot_to is set' do
+    time = Time.gm(2016,"nov",11,14,02,36,123)
+    Time.stub(:now).and_return(time)
     artifact = artifact('com.example:library:jar:2.0-SNAPSHOT')
     # Prevent artifact from downloading anything.
     write repositories.locate(artifact)
     write repositories.locate(artifact.pom)
     URI.should_receive(:upload).once.
-      with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/library-2.0-SNAPSHOT.pom'), artifact.pom.to_s, anything)
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.pom'), artifact.pom.to_s, anything)
     URI.should_receive(:upload).once.
-      with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/library-2.0-SNAPSHOT.jar'), artifact.to_s, anything)
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.jar'), artifact.to_s, anything)
+      URI.should_receive(:upload).once.
+        with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), "maven_metadata.xml", anything)
     repositories.release_to = 'sftp://buildr.apache.org/repository/noexist/base'
     repositories.snapshot_to = 'sftp://buildr.apache.org/repository/noexist/snapshot'
     artifact.upload
