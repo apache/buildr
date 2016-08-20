@@ -22,7 +22,7 @@ repositories.remote << 'http://repo1.maven.org/maven2'
 repositories.remote << 'https://oss.sonatype.org/content/groups/scala-tools'
 
 define 'buildr' do
-  compile.using :source=>'1.5', :target=>'1.5', :debug=>false
+  compile.using :source=>'1.7', :target=>'1.7', :debug=>false
 
   define 'java' do
     compile.using(:javac).from(FileList['lib/buildr/java/**/*.java']).into('lib/buildr/java')
