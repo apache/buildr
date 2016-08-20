@@ -1086,7 +1086,7 @@ describe ActsAsArtifact, '#upload' do
     URI.should_receive(:upload).once.
       with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.jar'), artifact.to_s, anything)
       URI.should_receive(:upload).once.
-        with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), "maven_metadata.xml", anything)
+        with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), "maven_metadata.xml", anything)
     repositories.release_to = 'sftp://buildr.apache.org/repository/noexist/base'
     repositories.snapshot_to = 'sftp://buildr.apache.org/repository/noexist/snapshot'
     artifact.upload
