@@ -214,9 +214,6 @@ module Buildr #:nodoc:
               project.send :call_callbacks, :after_define
             end
           end
-          project.enhance do |project|
-            @on_define.each { |extension| extension[project] }
-          end if @on_define
           # Enhance the project using the definition block.
           project.enhance { project.instance_exec project, &block } if block
 

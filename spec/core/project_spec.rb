@@ -328,70 +328,22 @@ describe Project, '#path_to' do
 end
 
 
-describe Project, '#on_define' do
-  it 'should be called when project is defined' do
-    names = []
-    Project.on_define { |project| names << project.name }
-    define 'foo' ; define 'bar'
-    names.should eql(['foo', 'bar'])
-  end
-
-  it 'should be called with project object' do
-    Project.on_define { |project| project.name.should eql('foo') }
-    define('foo')
-  end
-
-  it 'should be called with project object and set properties' do
-    Project.on_define { |project| project.version.should eql('2.0') }
-    define('foo', :version=>'2.0')
-  end
-
-  it 'should execute in namespace of project' do
-    scopes = []
-    Project.on_define { |project| scopes << Buildr.application.current_scope }
-    define('foo') { define 'bar' }
-    scopes.should eql([['foo'], ['foo', 'bar']])
-  end
-
-  it 'should be called before project block' do
-    order = []
-    Project.on_define { |project| order << 'on_define' }
-    define('foo') { order << 'define' }
-    order.should eql(['on_define', 'define'])
-  end
-
-  it 'should accept enhancement and call it after project block' do
-    order = []
-    Project.on_define { |project| project.enhance { order << 'enhance' } }
-    define('foo') { order << 'define' }
-    order.should eql(['define', 'enhance'])
-  end
-
-  it 'should accept enhancement and call it with project' do
-    Project.on_define { |project| project.enhance { |project| project.name.should eql('foo') } }
-    define('foo')
-  end
-
-  it 'should execute enhancement in namespace of project' do
-    scopes = []
-    Project.on_define { |project| project.enhance { scopes << Buildr.application.current_scope } }
-    define('foo') { define 'bar' }
-    scopes.should eql([['foo'], ['foo', 'bar']])
-  end
-
-  it 'should be removed in version 1.5 since it was deprecated in version 1.3' do
-    Buildr::VERSION.should < '1.5'
-  end
-end
-
-
 describe Rake::Task, ' recursive' do
   before do
-    @order = []
-    Project.on_define do |project| # TODO on_define is deprecated
-      project.recursive_task('doda') { @order << project.name }
-    end
-    define('foo') { define('bar') { define('baz') } }
+    define('foo') {
+      @order = []
+      def order
+        @order
+      end
+      recursive_task('doda') { project('foo').order << 'foo' }
+      define('bar') { 
+        recursive_task('doda') { project('foo').order << 'foo:bar' }
+        define('baz') {
+          recursive_task('doda') { project('foo').order << 'foo:bar:baz' }
+        }
+      }
+    }
+    @order = project('foo').order
   end
 
   it 'should invoke same task in child project' do
@@ -626,11 +578,12 @@ end
 describe Rake::Task, ' local directory' do
   before do
     @task = Project.local_task(task(('doda')))
-    Project.on_define { |project| task('doda') { |task| @task.from project.name } }
+    
   end
 
   it 'should execute project in local directory' do
     define 'foo'
+    project('foo').tap { |project| task('doda') { |task| @task.from project.name } }
     @task.should_receive(:from).with('foo')
     @task.invoke
   end
@@ -638,18 +591,24 @@ describe Rake::Task, ' local directory' do
   it 'should execute sub-project in local directory' do
     @task.should_receive(:from).with('foo:bar')
     define('foo') { define 'bar' }
+    project('foo:bar').tap { |project| task('doda') { |task| @task.from project.name } }
     in_original_dir(project('foo:bar').base_dir) { @task.invoke }
   end
 
   it 'should do nothing if no project in local directory' do
     @task.should_not_receive(:from)
-    define('foo') { define 'bar' }
+    define('foo') {
+      task('doda') { |task| @task.from project.name }
+      define 'bar'
+    }
+    
     in_original_dir('../not_foo') { @task.invoke }
   end
 
   it 'should find closest project that matches current directory' do
     mkpath 'bar/src/main'
     define('foo') { define 'bar' }
+    project('foo:bar').tap { |project| task('doda') { |task| @task.from project.name } }
     @task.should_receive(:from).with('foo:bar')
     in_original_dir('bar/src/main') { @task.invoke }
   end
