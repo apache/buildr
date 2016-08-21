@@ -330,7 +330,7 @@ module Buildr
         ['--rules', "Trace the rules resolution.",
           lambda { |value| options.trace_rules = true }
         ],
-        ['--no-search', '--nosearch', '-N', "Do not search parent directories for the Rakefile.",
+        ['--no-search', '--nosearch', '-N', "Do not search parent directories for the Buildfile.",
           lambda { |value| options.nosearch = true }
         ],
         ['--silent', '-s', "Like --quiet, but also suppresses the 'in directory' announcement.",
