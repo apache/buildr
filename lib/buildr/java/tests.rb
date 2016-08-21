@@ -108,13 +108,6 @@ module Buildr #:nodoc:
         end
         @dependencies
       end
-
-    private
-      def const_missing(const)
-        return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated 'Please use JMock.dependencies/.version instead of JMock::REQUIRES/VERSION'
-        dependencies
-      end
     end
   end
 

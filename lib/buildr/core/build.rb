@@ -56,30 +56,6 @@ module Buildr #:nodoc:
 
     after_define(:build)
 
-    # *Deprecated:* Use +path_to(:target)+ instead.
-    def target
-      Buildr.application.deprecated 'Use path_to(:target) instead'
-      layout.expand(:target)
-    end
-
-    # *Deprecated:* Use Layout instead.
-    def target=(dir)
-      Buildr.application.deprecated 'Use Layout instead'
-      layout[:target] = _(dir)
-    end
-
-    # *Deprecated:* Use +path_to(:reports)+ instead.
-    def reports()
-      Buildr.application.deprecated 'Use path_to(:reports) instead'
-      layout.expand(:reports)
-    end
-
-    # *Deprecated:* Use Layout instead.
-    def reports=(dir)
-      Buildr.application.deprecated 'Use Layout instead'
-      layout[:reports] = _(dir)
-    end
-
     # :call-seq:
     #    build(*prereqs) => task
     #    build { |task| .. } => task

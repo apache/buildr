@@ -79,13 +79,6 @@ module Buildr::Scala#:nodoc:
           ["#{group}:#{artifact}:jar:#{version}"]
         end
       end
-
-    private
-      def const_missing(const)
-        return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated "Please use Scala::Check.dependencies/.version instead of ScalaCheck::REQUIRES/VERSION"
-        dependencies
-      end
     end
   end
 
@@ -214,13 +207,6 @@ module Buildr::Scala#:nodoc:
 
   end # ScalaTest
 
-end
-
-
-# Backwards compatibility stuff.  Remove in 1.5.
-module Buildr#:nodoc:
-  ScalaCheck = Scala::Check
-  ScalaTest = Scala::ScalaTest
 end
 
 Buildr::TestFramework << Buildr::Scala::ScalaTest

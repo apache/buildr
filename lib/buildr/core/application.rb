@@ -106,8 +106,7 @@ module Buildr
 
   class Application < Rake::Application #:nodoc:
 
-    # Deprecated: rakefile/Rakefile, removed in 1.5
-    DEFAULT_BUILDFILES = ['buildfile', 'Buildfile', 'buildfile.rb', 'Buildfile.rb'] + DEFAULT_RAKEFILES
+    DEFAULT_BUILDFILES = ['buildfile', 'Buildfile', 'buildfile.rb', 'Buildfile.rb']
 
     attr_reader :rakefiles, :requires
     private :rakefiles, :requires

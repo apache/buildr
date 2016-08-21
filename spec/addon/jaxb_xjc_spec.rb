@@ -15,7 +15,6 @@
 
 require File.expand_path('../spec_helpers', File.dirname(__FILE__))
 
-if Java.java.lang.System.getProperty("java.runtime.version") >= "1.6"
 Sandbox.require_optional_extension 'buildr/jaxb_xjc'
 
 XSD_CONTENT = <<XSD
@@ -125,6 +124,3 @@ describe Buildr::JaxbXjc do
   end
 end
 
-elsif Buildr::VERSION >= '1.5'
-  raise "JVM version guard in #{__FILE__} should be removed since it is assumed that Java 1.5 is no longer supported."
-end

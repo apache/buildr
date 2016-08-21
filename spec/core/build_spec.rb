@@ -149,57 +149,6 @@ describe Project, '#clean' do
   end
 end
 
-
-describe Project, '#target' do
-  before :each do
-    @project = define('foo', :layout=>Layout.new)
-  end
-
-  it 'should default to target' do
-    @project.target.should eql('target')
-  end
-
-  it 'should set layout :target' do
-    @project.target = 'bar'
-    @project.layout.expand(:target).should point_to_path('bar')
-  end
-
-  it 'should come from layout :target' do
-    @project.layout[:target] = 'baz'
-    @project.target.should eql('baz')
-  end
-
-  it 'should be removed in version 1.5 since it was deprecated in version 1.3' do
-    Buildr::VERSION.should < '1.5'
-  end
-end
-
-
-describe Project, '#reports' do
-  before :each do
-    @project = define('foo', :layout=>Layout.new)
-  end
-
-  it 'should default to reports' do
-    @project.reports.should eql('reports')
-  end
-
-  it 'should set layout :reports' do
-    @project.reports = 'bar'
-    @project.layout.expand(:reports).should point_to_path('bar')
-  end
-
-  it 'should come from layout :reports' do
-    @project.layout[:reports] = 'baz'
-    @project.reports.should eql('baz')
-  end
-
-  it 'should be removed in version 1.5 since it was deprecated in version 1.3' do
-    Buildr::VERSION.should < '1.5'
-  end
-end
-
-
 describe Hg do
   describe '#current_branch' do
     it 'should return the correct branch' do

@@ -20,6 +20,11 @@
 * Change: Remove Buildr::TestTask responding to :using with .using('foo','bar'), deprecated in version 1.3
 * Change: Remove addon/buildr/cobertura.rb, deprecated since 1.3.4
 * Change: Remove addon/buildr/emma.rb, deprecated since 1.3.4
+* Change: Remove support for Rakefile/rakefile, deprecated.
+* Change: Remove project#target, project#reports, deprecated.
+* Change: Remove JBehave::REQUIRES, deprecated.
+* Change: Remove JMock::REQUIRES, deprecated.
+* Change: Remove ScalaCheck::REQUIRES, deprecated.
 * Added:  Travis badge to README.rdoc
 * Added:  Added Rubygems badges to README.rdoc
 * Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.

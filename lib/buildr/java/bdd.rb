@@ -309,13 +309,6 @@ module Buildr #:nodoc:
           **/*Behaviour.java **/*Behavior.java
         }.any? { |glob| !Dir[project.path_to(:source, bdd_dir, lang, glob)].empty? }
       end
-
-    private
-      def const_missing(const)
-        return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated 'Please use JBehave.dependencies/.version instead of JBehave::REQUIRES/VERSION'
-        dependencies
-      end
     end
 
     def tests(dependencies) #:nodoc:
