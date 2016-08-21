@@ -998,6 +998,7 @@ end
 
 
 describe ActsAsArtifact, '#upload' do
+  
   it 'should be used to upload artifact' do
     artifact = artifact('com.example:library:jar:2.0')
     # Prevent artifact from downloading anything.
@@ -1040,8 +1041,8 @@ describe ActsAsArtifact, '#upload' do
     with(URI.parse('sftp://example.com/base/com/example/library/2.0-SNAPSHOT/library-2.0-20110311.140236-1.pom'), artifact.pom.to_s, anything)
     URI.should_receive(:upload).once.
     with(URI.parse('sftp://example.com/base/com/example/library/2.0-SNAPSHOT/library-2.0-20110311.140236-1.jar'), artifact.to_s, anything)
-    URI.should_receive(:upload).once.
-    with(URI.parse('sftp://example.com/base/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), "maven_metadata.xml", anything)
+    URI.should_receive(:write).once.
+    with(URI.parse('sftp://example.com/base/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), anything, anything)
     verbose(false) { artifact.upload(:url=>'sftp://example.com/base') }
   end
 
@@ -1067,8 +1068,8 @@ describe ActsAsArtifact, '#upload' do
       with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.pom'), artifact.pom.to_s, anything)
     URI.should_receive(:upload).once.
       with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.jar'), artifact.to_s, anything)
-    URI.should_receive(:upload).once.
-      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), "maven_metadata.xml", anything)
+    URI.should_receive(:write).once.
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), anything, anything)
     repositories.release_to = 'sftp://buildr.apache.org/repository/noexist/base'
     artifact.upload
     lambda { artifact.upload }.should_not raise_error
@@ -1085,8 +1086,8 @@ describe ActsAsArtifact, '#upload' do
       with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.pom'), artifact.pom.to_s, anything)
     URI.should_receive(:upload).once.
       with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.jar'), artifact.to_s, anything)
-      URI.should_receive(:upload).once.
-        with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), "maven_metadata.xml", anything)
+      URI.should_receive(:write).once.
+        with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), anything, anything)
     repositories.release_to = 'sftp://buildr.apache.org/repository/noexist/base'
     repositories.snapshot_to = 'sftp://buildr.apache.org/repository/noexist/snapshot'
     artifact.upload
@@ -1101,8 +1102,6 @@ describe ActsAsArtifact, '#upload' do
     repositories.snapshot_to = 'sftp://buildr.apache.org/repository/noexist/snapshot'
     lambda { artifact.upload }.should raise_error(Exception, /where to upload/)
   end
-
-
 end
 
 

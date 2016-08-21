@@ -241,7 +241,7 @@ module Buildr #:nodoc:
           URI.upload uri + path, name, options
           if snapshot? && pom != self
              maven_metadata = group.gsub('.', '/') + "/#{id}/#{version}/#{MAVEN_METADATA}"
-             URI.upload uri + maven_metadata, MAVEN_METADATA, :permissions => upload_to[:permissions]
+             URI.write uri + maven_metadata, maven_metadata_xml, :permissions => upload_to[:permissions]
           end
         end
       end
@@ -436,7 +436,6 @@ module Buildr #:nodoc:
       unless @content
         enhance do
           write name, self.content
-          write MAVEN_METADATA, maven_metadata_xml if snapshot?
         end
 
         class << self
