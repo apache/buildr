@@ -548,7 +548,8 @@ describe Buildr::Project, '#test.compile' do
   end
 
   it 'should compile to target/test/<code>' do
-    define 'foo', :target=>'targeted' do
+    define 'foo' do
+      layout[:target] = _('targeted')
       test.compile.using(:javac)
       test.compile.target.should eql(file('targeted/test/classes'))
     end
@@ -600,7 +601,10 @@ describe Buildr::Project, '#test.resources' do
 
   it 'should copy to the resources target directory' do
     write 'src/test/resources/config.xml', '</xml>'
-    define('foo', :target=>'targeted').test.invoke
+    define('foo') do
+      layout[:target] = _('targeted')
+    end.test.invoke
+    
     file('targeted/test/resources/config.xml').should contain('</xml>')
   end
 
