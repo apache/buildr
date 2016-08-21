@@ -168,6 +168,7 @@ EOF
           if natures && natures.index('org.eclipse.pde.PluginNature')
             script << "  package(:jar)"
           end
+          script << "  dependencies ||= []"
           if mf && mf.main['Require-Bundle']
             mf.main['Require-Bundle'].split(',').each do
               |bundle|

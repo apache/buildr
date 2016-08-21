@@ -116,6 +116,7 @@ describe Buildr::Generate do
       buildFile = File.join(top, 'buildfile')
       file(buildFile).should exist
       file(buildFile).should contain("GROUP = \"#{top}\"")
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
 
@@ -127,17 +128,19 @@ describe Buildr::Generate do
       file(buildFile).should exist
       file(buildFile).should contain('define "single"')
       file(buildFile).should_not contain('define "myproject"')
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
 
-      it 'should honour Bundle-Version in MANIFEST.MF' do
-	define('bundle_version')
-	buildFile = File.join(top, 'buildfile')
-	file(buildFile).should exist
-	file(buildFile).should contain('define "single"')
-	file(buildFile).should contain('define "single", :version => "1.1"')
-	lambda { Buildr.application.run }.should_not raise_error
-      end
+    it 'should honour Bundle-Version in MANIFEST.MF' do
+      define('bundle_version')
+      buildFile = File.join(top, 'buildfile')
+      file(buildFile).should exist
+      file(buildFile).should contain('define "single"')
+      file(buildFile).should contain('define "single", :version => "1.1"')
+      chdir(top)
+      lambda { Buildr.application.run }.should_not raise_error
+    end
 
     it "should pass source in build.properties to layout[:source, :main, :java] and layout[:source, :main, :scala]" do
       define('layout_source')
@@ -147,6 +150,7 @@ describe Buildr::Generate do
       file(buildFile).should contain('define "single"')
       file(buildFile).should contain('layout[:source, :main, :java]')
       file(buildFile).should contain('layout[:source, :main, :scala]')
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
 
@@ -159,6 +163,7 @@ describe Buildr::Generate do
       file(buildFile).should contain('layout[:target, :main]')
       file(buildFile).should contain('layout[:target, :main, :java]')
       file(buildFile).should contain('layout[:target, :main, :scala]')
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
 
@@ -168,6 +173,7 @@ describe Buildr::Generate do
       file(buildFile).should exist
       file(buildFile).should contain('define')
       file(buildFile).should contain('package(:jar)')
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
 
@@ -183,6 +189,7 @@ describe Buildr::Generate do
       buildFile = File.join(top, 'buildfile')
       file(buildFile).should exist
       file(buildFile).should contain('define "singleSymbolicName"')
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
   end
@@ -198,6 +205,7 @@ describe Buildr::Generate do
       buildFile = File.join(top, 'buildfile')
       file(buildFile).should exist
       file(buildFile).should contain('define "singleSymbolicName"')
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
   end
@@ -218,6 +226,7 @@ describe Buildr::Generate do
       buildFile = File.join(top, 'buildfile')
       file(buildFile).should contain("GROUP = \"#{top}\"")
       file(buildFile).should contain('define "single"')
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
 
@@ -227,6 +236,7 @@ describe Buildr::Generate do
       file(buildFile).should exist
       file(buildFile).should contain('define "single"')
       file(buildFile).should contain('define "single", :version => "1.1", :base_dir => "nested/single"')
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
 
@@ -251,6 +261,7 @@ describe Buildr::Generate do
       file(buildFile).should exist
       file(buildFile).should contain('compile.with dependencies')
       file(buildFile).should contain('resources')
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
                                                            #dependencies << projects("first")
@@ -258,10 +269,12 @@ describe Buildr::Generate do
     it 'should honour Require-Bundle in MANIFEST.MF' do
       define('base_dir')
       buildFile = File.join(top, 'buildfile')
+
       file(buildFile).should exist
       file(buildFile).should contain(/define "second"/)
       file(buildFile).should contain(                     /dependencies << projects\("first"\)/)
       file(buildFile).should contain(/define "second".*do.*dependencies << projects\("first"\).* end/m)
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
 
@@ -272,6 +285,7 @@ describe Buildr::Generate do
       file(buildFile).should exist
 #      system("cat #{buildFile}")  # if $VERBOSE
       file(buildFile).should contain('define "first"')
+      chdir(top)
       lambda { Buildr.application.run }.should_not raise_error
     end
 
