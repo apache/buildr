@@ -128,11 +128,3 @@ describe 'Java#java' do
     ENV['JAVA_HOME'] = @old_home
   end
 end
-
-
-describe Java::JavaWrapper do
-  it 'should be removed in version 1.5 since it was deprecated in version 1.3' do
-    Buildr::VERSION.should < '1.5'
-    lambda { Java::JavaWrapper }.should_not raise_error
-  end
-end

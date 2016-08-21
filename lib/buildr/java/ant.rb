@@ -37,12 +37,6 @@ module Buildr #:nodoc:
         @dependencies ||= ["org.apache.ant:ant:jar:#{version}", "org.apache.ant:ant-launcher:jar:#{version}"]
       end
 
-    private
-      def const_missing(const)
-        return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated "Please use Ant.dependencies/.version instead of Ant::REQUIRES/VERSION"
-        dependencies
-      end
     end
 
 

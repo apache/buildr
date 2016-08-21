@@ -302,7 +302,7 @@ unless defined?(SpecHelpers)
 
     def suppress_stdout
       stdout = $stdout
-      $stdout = StringIO.new
+      #$stdout = StringIO.new
       begin
         yield
       ensure

@@ -29,9 +29,4 @@ describe Buildr::Ant do
     end
   end
 
-  it 'should have REQUIRES up to version 1.5 since it was deprecated in version 1.3.3' do
-    Buildr::VERSION.should < '1.5'
-    lambda { Ant::REQUIRES }.should_not raise_error
-  end
-
 end

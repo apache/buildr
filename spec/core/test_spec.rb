@@ -141,13 +141,6 @@ describe Buildr::TestTask do
     test_task.options[:bar].should eql('BAR')
   end
 
-  it 'should respond to :using with deprecated parameter style and set value options to true, up to version 1.5 since this usage was deprecated in version 1.3' do
-    Buildr::VERSION.should < '1.5'
-    test_task.using('foo', 'bar')
-    test_task.options[:foo].should eql(true)
-    test_task.options[:bar].should eql(true)
-  end
-
   it 'should start without pre-selected test framework' do
     test_task.framework.should be_nil
   end

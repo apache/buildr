@@ -205,13 +205,6 @@ module Buildr #:nodoc:
       def ant_taskdef #:nodoc:
         "org.apache.ant:ant-junit:jar:#{Ant.version}"
       end
-
-    private
-      def const_missing(const)
-        return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated 'Please use JUnit.dependencies/.version instead of JUnit::REQUIRES/VERSION'
-        dependencies
-      end
     end
 
     def tests(dependencies) #:nodoc:
@@ -307,13 +300,6 @@ module Buildr #:nodoc:
       def dependencies
         return ["org.testng:testng:jar:jdk15:#{version}"] + JMock.dependencies if version < "6.0"
         ["org.testng:testng:jar:#{version}",'com.beust:jcommander:jar:1.27'] + JMock.dependencies
-      end
-
-    private
-      def const_missing(const)
-        return super unless const == :REQUIRES # TODO: remove in 1.5
-        Buildr.application.deprecated 'Please use TestNG.dependencies/.version instead of TestNG::REQUIRES/VERSION'
-        dependencies
       end
     end
 

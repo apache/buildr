@@ -15,48 +15,6 @@
 
 module Java #:nodoc:
 
-  # *Deprecated:* In earlier versions, Java.wrapper served as a wrapper around RJB/JRuby.
-  # From this version forward, we apply with JRuby style for importing Java classes:
-  #   Java.java.lang.String.new('hai!')
-  # You still need to call Java.load before using any Java code: it resolves, downloads
-  # and installs various dependencies that are required on the classpath before calling
-  # any Java code (e.g. Ant and its tasks).
-  class JavaWrapper
-
-    include Singleton
-
-    # *Deprecated:* Append to Java.classpath directly.
-    def classpath
-      Buildr.application.deprecated 'Append to Java.classpath instead.'
-      ::Java.classpath
-    end
-
-    def classpath=(paths)
-      fail 'Deprecated: Append to Java.classpath, you cannot replace the classpath.'
-    end
-
-    # *Deprecated:* No longer necessary.
-    def setup
-      Buildr.application.deprecated 'See documentation for new way to access Java code.'
-      yield self if block_given?
-    end
-
-    # *Deprecated:* Use Java.load instead.
-    def load
-      Buildr.application.deprecated 'Use Java.load instead.'
-      ::Java.load
-    end
-
-    alias :onload :setup
-
-    # *Deprecated:* Use Java.pkg.pkg.ClassName to import a Java class.
-    def import(class_name)
-      Buildr.application.deprecated 'Use Java.pkg.pkg.ClassName to import a Java class.'
-      ::Java.instance_eval(class_name)
-    end
-  end
-
-
   class << self
 
     # *Deprecated*: Use Java::Commands.java instead.
@@ -96,24 +54,6 @@ module Java #:nodoc:
       Buildr.application.deprecated 'Use ENV[\'JAVA_HOME\'] instead.'
       ENV['JAVA_HOME']
     end
-
-    # *Deprecated:* In earlier versions, Java.wrapper served as a wrapper around RJB/JRuby.
-    # From this version forward, we apply with JRuby style for importing Java classes:
-    #   Java.java.lang.String.new('hai!')
-    # You still need to call Java.load before using any Java code: it resolves, downloads
-    # and installs various dependencies that are required on the classpath before calling
-    # any Java code (e.g. Ant and its tasks).
-    def wrapper
-      Buildr.application.deprecated 'See documentation for new way to access Java code.'
-      if block_given?
-        Java.load
-        yield JavaWrapper.instance
-      else
-        JavaWrapper.instance
-      end
-    end
-
-    alias :rjb :wrapper
 
   end
 

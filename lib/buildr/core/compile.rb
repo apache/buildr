@@ -277,18 +277,6 @@ module Buildr #:nodoc:
       self
     end
 
-    # *Deprecated*: Use dependencies instead.
-    def classpath
-      Buildr.application.deprecated 'Use dependencies instead.'
-      dependencies
-    end
-
-    # *Deprecated*: Use dependencies= instead.
-    def classpath=(artifacts)
-      Buildr.application.deprecated 'Use dependencies= instead.'
-      self.dependencies = artifacts
-    end
-
     # Compilation dependencies.
     attr_accessor :dependencies
 

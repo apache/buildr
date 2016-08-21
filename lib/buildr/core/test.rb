@@ -357,13 +357,11 @@ module Buildr #:nodoc:
     def using(*args)
       args.pop.each { |key, value| options[key.to_sym] = value } if Hash === args.last
       args.each do |name|
+        info name
         if TestFramework.has?(name)
           self.framework = name
         elsif name == :integration
           options[:integration] = true
-        else
-          Buildr.application.deprecated "Please replace with using(:#{name}=>true)"
-          options[name.to_sym] = true
         end
       end
       self
