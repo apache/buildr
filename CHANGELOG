@@ -25,6 +25,7 @@
 * Change: Remove JBehave::REQUIRES, deprecated.
 * Change: Remove JMock::REQUIRES, deprecated.
 * Change: Remove ScalaCheck::REQUIRES, deprecated.
+* Change: Change Eclipse Scala project natures from ch.epfl.lamp.sdt.core.scalanature to org.scala-ide.sdt.core.scalanature
 * Added:  Travis badge to README.rdoc
 * Added:  Added Rubygems badges to README.rdoc
 * Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.

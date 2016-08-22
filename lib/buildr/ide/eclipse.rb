@@ -460,9 +460,9 @@ module Buildr #:nodoc:
     module Scala
       include Extension
 
-      NATURE    = 'ch.epfl.lamp.sdt.core.scalanature'
-      CONTAINER = 'ch.epfl.lamp.sdt.launching.SCALA_CONTAINER'
-      BUILDER   = 'ch.epfl.lamp.sdt.core.scalabuilder'
+      NATURE    = 'org.scala-ide.sdt.core.scalanature'
+      CONTAINER = 'org.scala-ide.sdt.launching.SCALA_CONTAINER'
+      BUILDER   = 'org.scala-ide.sdt.core.scalabuilder'
 
       after_define :eclipse => :eclipse_scala
       after_define :eclipse_scala do |project|
