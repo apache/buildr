@@ -445,7 +445,7 @@ define 'myproject' do
   project.group = 'org.myproject'
   project.version = '1.0'
 
-  pom.add_apache2_license
+  pom.add_apache_v2_license
   pom.add_github_project('jbloggs/myproject')
   pom.add_developer('jbloggs', 'Joe Bloggs')
   pom.provided_dependencies.concat [:javax_servlet]
