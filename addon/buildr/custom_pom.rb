@@ -213,7 +213,7 @@ module Buildr
             optional_deps = Buildr.artifacts(project.pom.optional_dependencies).collect { |d| d.to_s }
             deps =
               Buildr.artifacts(project.compile.dependencies).
-                select { |d| d.is_a?(Artifact) }.
+                select { |d| d.is_a?(ActsAsArtifact) }.
                 collect do |d|
                 f = d.to_s
                 scope = provided_deps.include?(f) ? 'provided' :
@@ -221,7 +221,7 @@ module Buildr
                     'compile'
                 d.to_hash.merge(:scope => scope, :optional => optional_deps.include?(f))
               end + Buildr.artifacts(project.test.compile.dependencies).
-                select { |d| d.is_a?(Artifact) && !project.compile.dependencies.include?(d) }.collect { |d| d.to_hash.merge(:scope => 'test') }
+                select { |d| d.is_a?(ActsAsArtifact) && !project.compile.dependencies.include?(d) }.collect { |d| d.to_hash.merge(:scope => 'test') }
             deps.each do |dependency|
               xml.dependency do
                 xml.groupId dependency[:group]
