@@ -63,10 +63,8 @@
             </ol>
           </li>
           <li>
-            <form action='http://www.google.com/cse' id='searchbox_003673095760649043902:ogcgrzu0l2y'>
-              <input name='cx' type='hidden' value='003673095760649043902:ogcgrzu0l2y'>
-              <input name='cof' type='hidden' value='FORID:0'>
-              <input name='q' size='20' type='text'>
+            <form action='http://www.google.com/' onsubmit="document.getElementById('gQuery').value += ' site:buildr.apache.org'">
+              <input name='q' size='20' type='text' id='gQuery'>
               <input name='sa' type='submit' value='Search'>
               <img alt='Google Custom Search' src='http://www.google.com/coop/images/google_custom_search_smnar.gif'>
             </form>
