@@ -41,7 +41,7 @@ public class JavaTestFilter {
     for (int i = 0 ; i < paths.length ; ++i) {
       File file = new File(paths[i]).getCanonicalFile();
       if (file.exists())
-        urls[i] = file.toURL();
+        urls[i] = file.toURI().toURL();
       else
         throw new IOException("No file or directory with the name " + file);
     }

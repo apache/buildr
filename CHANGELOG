@@ -47,6 +47,7 @@
 * Fixed:  BUILDR-620 resources.filter should not run on non-text files
 * Fixed:  BUILDR-489 Java + Scala joint compiler fails if default encoding and source file encoding are not same and special characters have been used in source code
 * Fixed:  BUILDR-486 Buildr-generated poms should include dependencies
+* Fixed:  BUILDR-723 JavaTestFilter is unable to parse paths containing %2F
 * Change: Update the custom_pom addon to generate poms with exclusions section that excludes
           all transitive dependencies. This is required as buildr dependencies are not
           transitive while Maven's dependencies are transitive by default.
