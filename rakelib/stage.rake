@@ -85,13 +85,6 @@ task 'prepare' do |task, args|
     sh 'prince --version'
     puts '[X] We have prince available'
   end.call
-  
-  # Need lftp to push the stage website to home.apache.org
-  lambda do
-    puts 'Checking that lftp is available...'
-    sh 'lftp --version'
-    puts '[X] We have lftp available'
-  end.call
 
   raise "Can not run stage process under jruby" if RUBY_PLATFORM[/java/]
   raise "Can not run staging process under older rubies" unless RUBY_VERSION >= '1.9'
@@ -182,10 +175,13 @@ p>. ("Release signing keys":#{official}/KEYS)
   end.call
 
 
-  # Move everything over to home.apache.org so we can vote on it.
+  # Move everything over to https://dist.apache.org/repos/dist/dev/buildr so we can vote on it.
   lambda do
     puts "Uploading _staged directory ..."
-    sh "lftp -e \"mirror -R _staged public_html/buildr/#{spec.version}; bye\" -u #{user} sftp://home.apache.org" 
+    sh "svn mkdir https://dist.apache.org/repos/dist/dev/buildr/#{spec.version}"
+    sh "svn checkout https://dist.apache.org/repos/dist/dev/buildr/#{spec.version} ."
+    sh "svn add *"
+     sh "svn commit -m 'Uploading Buildr RC #{spec.version}'"
     puts "[X] Uploaded _staged directory"
   end.call
 
@@ -194,7 +190,7 @@ p>. ("Release signing keys":#{official}/KEYS)
   # email for you and vote on it.
   lambda do
     # Need to know who you are on Apache, local user may be different (see .ssh/config).
-    base_url = "http://home.apache.org/~#{user}/buildr/#{spec.version}"
+    base_url = "https://dist.apache.org/repos/dist/dev/buildr/#{spec.version}"
     # Need changes for this release only.
     changelog = File.read('CHANGELOG').scan(/(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/)
     changes = changelog[0][2]
