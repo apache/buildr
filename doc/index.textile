@@ -46,28 +46,22 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-Highlights from Buildr 1.4.25 (2016-04-18)
-* Change: BUILDR-712 Update jruby-openssl dependency version or support a range of versions
-* Change: Update gwt addon to add the GWT artifacts to project dependencies as specs rather
-          than files.
-* Change: Support the project.root_project utility method to retrieve the top level project.
-
-Highlights from Buildr 1.4.24 (2016-03-19)
-* Added:  Support the :no_invoke parameter being passed to Buildr.project() and
-          Buildr.projects() to avoid attempting to call invoke when retrieving the projects.
-* Added:  Add `exclude_paths` setting to pmd addon to allow paths to be explicitly excluded.
-* Fixed:  Update jDepend addon to ensure target directories are invoked prior to attempting
-          to analyze directories.
-* Added:  Add jdepend.additional_project_names configuration to jDepend addon to
-          ease merging in the source paths from multiple projects into one jDepend task.
-* Added:  Add findbugs.additional_project_names configuration to Findbugs addon to
-          ease merging in the source paths from multiple projects into one Findbugs task.
-* Added:  Add checkstyle.additional_project_names configuration to Checkstyle addon to
-          ease merging in the source paths from multiple projects into one Checkstyle task.
-* Added:  Add pmd.additional_project_names configuration to PMD addon to ease merging in
-          the source paths from multiple projects into one PMD task.
-* Change: Update the default GWT version used in the GWT addon to the latest release 2.7.0.
-* Change: Update the checkstyle addon to use checkstyle 6.12.1.
+Highlights from Buildr 1.5.0 (2016-09-16)
+* Change: Move to default on Scala 2.11.
+* Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.
+* Added:  BUILDR-572 Allow to upload unique version (timestamp based) snapshot artifacts to a repository. Submitted by Brice Figureau.
+* Added:  BUILDR-703 release: allow THIS_VERSION to be defined in another file
+* Fixed:  BUILDR-565 resources are not included in the war if defined after package call
+* Fixed:  BUILDR-621 ZipTask creates zip file with entries not sorted by path causing very slow unzipping.
+* Fixed:  BUILDR-695 transitive doesn't support ${project.parent.version} in POM.
+* Fixed:  BUILDR-653 Using Eclipse compiler (ECJ)
+* Fixed:  BUILDR-476 Buildr doesn't respect company repository manager
+* Fixed:  BUILDR-454 Definition-level parent-child references-by-name fail in 1.4.0 but not in 1.3.5. Submitted by Rhett Sutphin.
+* Fixed:  BUILDR-620 resources.filter should not run on non-text files
+* Fixed:  BUILDR-486 Buildr-generated poms should include dependencies
+* Change: Update the custom_pom addon to generate poms with exclusions section that excludes
+          all transitive dependencies. This is required as buildr dependencies are not
+          transitive while Maven's dependencies are transitive by default.
 
 This is a partial list -- see the "CHANGELOG":CHANGELOG for full details.
 
