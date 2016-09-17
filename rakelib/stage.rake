@@ -178,10 +178,10 @@ p>. ("Release signing keys":#{official}/KEYS)
   # Move everything over to https://dist.apache.org/repos/dist/dev/buildr so we can vote on it.
   lambda do
     puts "Uploading _staged directory ..."
-    sh "svn mkdir https://dist.apache.org/repos/dist/dev/buildr/#{spec.version}"
-    sh "svn checkout https://dist.apache.org/repos/dist/dev/buildr/#{spec.version} ."
-    sh "svn add *"
-     sh "svn commit -m 'Uploading Buildr RC #{spec.version}'"
+    sh "svn mkdir https://dist.apache.org/repos/dist/dev/buildr/#{spec.version} -m 'Creating Buildr release candidate #{spec.version}'"
+    sh "cd _staged; svn checkout https://dist.apache.org/repos/dist/dev/buildr/#{spec.version} ."
+    sh "cd _staged; svn add *"
+     sh "cd _staged; svn commit -m 'Uploading Buildr RC #{spec.version}'"
     puts "[X] Uploaded _staged directory"
   end.call
 
