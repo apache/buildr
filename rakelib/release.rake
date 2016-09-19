@@ -20,9 +20,9 @@ task 'release' do |task, args|
   # First, we need to get all the staged files from Apache to _release.
   mkpath '_release'
   lambda do
-    url = "home.apache.org:~/public_html/#{spec.name}/#{spec.version}"
+    url = "https://dist.apache.org/repos/dist/dev/buildr/#{spec.version}"
     puts "Populating _release directory from #{url} ..."
-    sh "lftp -e \"mirror public_html/#{spec.name}/#{spec.version} _release/#{spec.version}; bye\" -u #{user} sftp://home.apache.org" 
+    sh "svn co #{url} _release/#{spec.version}" 
     puts '[X] Staged files are now in _release'
   end.call
 
