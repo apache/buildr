@@ -19,6 +19,7 @@ require 'digest/sha1'
 gpg_cmd = 'gpg2'
 
 STAGE_DATE = ENV['STAGE_DATE'] ||  Time.now.strftime('%Y-%m-%d')
+RC_VERSION = ENV['RC_VERSION'] || ""
 
 task 'prepare' do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
@@ -178,10 +179,10 @@ p>. ("Release signing keys":#{official}/KEYS)
   # Move everything over to https://dist.apache.org/repos/dist/dev/buildr so we can vote on it.
   lambda do
     puts "Uploading _staged directory ..."
-    sh "svn mkdir https://dist.apache.org/repos/dist/dev/buildr/#{spec.version} -m 'Creating Buildr release candidate #{spec.version}'"
-    sh "cd _staged; svn checkout https://dist.apache.org/repos/dist/dev/buildr/#{spec.version} ."
+    sh "svn mkdir https://dist.apache.org/repos/dist/dev/buildr/#{spec.version}#{RC_VERSION} -m 'Creating Buildr release candidate #{spec.version}#{RC_VERSION}'"
+    sh "cd _staged; svn checkout https://dist.apache.org/repos/dist/dev/buildr/#{spec.version}#{RC_VERSION} ."
     sh "cd _staged; svn add *"
-     sh "cd _staged; svn commit -m 'Uploading Buildr RC #{spec.version}'"
+     sh "cd _staged; svn commit -m 'Uploading Buildr RC #{spec.version}#{RC_VERSION}'"
     puts "[X] Uploaded _staged directory"
   end.call
 
