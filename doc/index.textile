@@ -46,7 +46,7 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
-Highlights from Buildr 1.5.0 (2016-09-16)
+Highlights from Buildr 1.5.0 (2016-09-23)
 * Change: Move to default on Scala 2.11.
 * Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.
 * Added:  BUILDR-572 Allow to upload unique version (timestamp based) snapshot artifacts to a repository. Submitted by Brice Figureau.
