@@ -37,6 +37,70 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.5.0</name>
+        <created>2016-09-23</created>
+        <revision>1.5.0</revision>
+        <dc:description>
+* Change: Update RJB to 1.5.4
+* Change: Update rubyzip to 1.2.0
+* Change: Update hoe to 3.15.0
+* Change: Update net-ssh to 3.1.1
+* Change: Update json_pure to 1.8.3
+* Change: Update diff-lcs to 1.2.5
+* Change: Update xml-simple to 1.1.5
+* Change: Update jekyll to 3.1.3
+* Change: Update rdoc to 4.2.2
+* Change: Update ecj to 4.5.1
+* Change: Added jekyll-textile-converter 0.1.0 to generate the site.
+* Change: Move to default on Scala 2.11.
+* Change: Remove Buildr::Project#on_define, deprecated in 1.3
+* Change: Remove JavaWrapper, deprecated in 1.3
+* Change: Remove JUnit::REQUIRES, deprecated in 1.3.3
+* Change: Remove TestNG::REQUIRES, deprecated in 1.3.3
+* Change: Remove Buildr::Ant::REQUIRES, deprecated in version 1.3.3
+* Change: Remove Buildr::CompileTask#classpath, deprecated in version 1.3
+* Change: Remove Buildr::TestTask responding to :using with .using('foo','bar'), deprecated in version 1.3
+* Change: Remove addon/buildr/cobertura.rb, deprecated since 1.3.4
+* Change: Remove addon/buildr/emma.rb, deprecated since 1.3.4
+* Change: Remove support for Rakefile/rakefile, deprecated.
+* Change: Remove project#target, project#reports, deprecated.
+* Change: Remove JBehave::REQUIRES, deprecated.
+* Change: Remove JMock::REQUIRES, deprecated.
+* Change: Remove ScalaCheck::REQUIRES, deprecated.
+* Change: Change Eclipse Scala project natures from ch.epfl.lamp.sdt.core.scalanature to org.scala-ide.sdt.core.scalanature
+* Change: Fix the custom Google search widget on the website.
+* Change: BUILDR-722 Remove links and image of the buildr book from the website.
+* Added:  Travis badge to README.rdoc
+* Added:  Added Rubygems badges to README.rdoc
+* Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.
+* Added:  BUILDR-523 Issue a warning when Java.classpath is modified after Java.load has happened
+* Added:  BUILDR-594 Added support for changing the verification mode of SSL certificates
+* Added:  BUILDR-595 Added support to providing custom SSL certificates
+* Added:  BUILDR-572 Allow to upload unique version (timestamp based) snapshot artifacts to a repository. Submitted by Brice Figureau.
+* Fixed:  BUILDR-207 remove 'Skipping tests' messages
+* Added:  BUILDR-703 release: allow THIS_VERSION to be defined in another file
+* Fixed:  BUILDR-674 Artifacts with bundle extension cannot be downloaded by Buildr
+* Fixed:  BUILDR-565 resources are not included in the war if defined after package call
+* Fixed:  BUILDR-621 ZipTask creates zip file with entries not sorted by path causing very slow unzipping.
+* Fixed:  BUILDR-695 transitive doesn't support ${project.parent.version} in POM.
+* Fixed:  BUILDR-653 Using Eclipse compiler (ECJ)
+* Fixed:  BUILDR-476 Buildr doesn't respect company repository manager
+* Fixed:  BUILDR-454 Definition-level parent-child references-by-name fail in 1.4.0 but not in 1.3.5. Submitted by Rhett Sutphin.
+* Fixed:  BUILDR-620 resources.filter should not run on non-text files
+* Fixed:  BUILDR-489 Java + Scala joint compiler fails if default encoding and source file encoding are not same and special characters have been used in source code
+* Fixed:  BUILDR-486 Buildr-generated poms should include dependencies
+* Fixed:  BUILDR-723 JavaTestFilter is unable to parse paths containing %2F
+* Change: Update the custom_pom addon to generate poms with exclusions section that excludes
+          all transitive dependencies. This is required as buildr dependencies are not
+          transitive while Maven's dependencies are transitive by default.
+* Change: Remove the BND aqute maven repository, as it was decomissioned. Use Maven Central instead.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.4.25</name>
         <created>2016-04-18</created>
         <revision>1.4.25</revision>

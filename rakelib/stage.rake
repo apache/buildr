@@ -191,7 +191,7 @@ p>. ("Release signing keys":#{official}/KEYS)
   # email for you and vote on it.
   lambda do
     # Need to know who you are on Apache, local user may be different (see .ssh/config).
-    base_url = "https://dist.apache.org/repos/dist/dev/buildr/#{spec.version}"
+    base_url = "https://dist.apache.org/repos/dist/dev/buildr/#{spec.version}#{RC_VERSION}"
     # Need changes for this release only.
     changelog = File.read('CHANGELOG').scan(/(^(\d+\.\d+(?:\.\d+)?)\s+\(\d{4}-\d{2}-\d{2}\)\s*((:?^[^\n]+\n)*))/)
     changes = changelog[0][2]

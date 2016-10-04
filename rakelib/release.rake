@@ -13,6 +13,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
+RC_VERSION = ENV['RC_VERSION'] || ""
+
 desc 'Release the next version of buildr from existing staged repository'
 task 'release' do |task, args|
   user = args.user || ENV['user'] || `whoami`
@@ -20,9 +22,9 @@ task 'release' do |task, args|
   # First, we need to get all the staged files from Apache to _release.
   mkpath '_release'
   lambda do
-    url = "https://dist.apache.org/repos/dist/dev/buildr/#{spec.version}"
+    url = "https://dist.apache.org/repos/dist/dev/buildr/#{spec.version}#{RC_VERSION}"
     puts "Populating _release directory from #{url} ..."
-    sh "svn co #{url} _release/#{spec.version}" 
+    sh "svn co #{url} _release/#{spec.version}"
     puts '[X] Staged files are now in _release'
   end.call
 
