@@ -33,7 +33,6 @@ require 'find'
 require 'uri'
 require 'stringio'
 require 'fileutils'
-require 'orderedhash'
 require 'securerandom'
 
 require 'buildr/rspec_check'

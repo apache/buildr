@@ -64,16 +64,14 @@ for those one-off tasks, with a language that's a joy to use.
   # Required for sftp support under windows
   spec.add_dependency 'jruby-pageant',        '1.1.1' if $platform.to_s == 'java'
   spec.add_dependency 'rubyzip',              '1.2.0'
-  spec.add_dependency 'json_pure',            '1.8.3'
-  spec.add_dependency 'hoe',                  '3.15.0'
+  spec.add_dependency 'json_pure',            '2.0.2'
   spec.add_dependency 'rjb',                  '1.5.4' if ($platform.to_s == 'x86-mswin32' || $platform.to_s == 'ruby')
   spec.add_dependency 'atoulme-Antwrap',      '0.7.5'
   spec.add_dependency 'diff-lcs',             '1.2.5'
   spec.add_dependency 'xml-simple',           '1.1.5'
   spec.add_dependency 'minitar',              '0.5.4'
-  spec.add_dependency 'jruby-openssl',        '~> 0.9.16' if $platform.to_s == 'java'
+  spec.add_dependency 'jruby-openssl',        '~> 0.9.17' if $platform.to_s == 'java'
   spec.add_dependency 'bundler'
-  spec.add_dependency 'orderedhash',          '0.0.6'
   spec.add_dependency 'win32console'          '1.3.2' if $platform.to_s == 'x86-mswin32'
 
   # Unable to get this consistently working under jruby on windows
@@ -86,6 +84,7 @@ for those one-off tasks, with a language that's a joy to use.
     spec.add_development_dependency 'jekyll-textile-converter', '0.1.0'
   end
 
+  spec.add_development_dependency 'hoe',                  '3.15.1'
   spec.add_development_dependency 'rspec-expectations',   '2.14.3'
   spec.add_development_dependency 'rspec-mocks',          '2.14.3'
   spec.add_development_dependency 'rspec-core',           '2.14.5'

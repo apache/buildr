@@ -327,7 +327,7 @@ module Buildr #:nodoc:
 
       # Make sure we're the last enhancements, so other enhancements can add content.
       enhance do
-        @file_map = OrderedHash.new
+        @file_map = {}
         enhance do
           send 'create' if respond_to?(:create)
           # We're here because the archive file does not exist, or one of the files is newer than the archive contents;
@@ -360,7 +360,7 @@ module Buildr #:nodoc:
     #
     #    package(:jar).clean.include path_to('desired/content')
     def clean
-      @paths = OrderedHash.new
+      @paths = {}
       @paths[''] = Path.new(self, '')
       @prepares = []
       self
@@ -485,7 +485,7 @@ module Buildr #:nodoc:
       @prepares.each { |prepare| prepare.call(self) }
       @prepares.clear
 
-      file_map = OrderedHash.new
+      file_map = {}
       @paths.each do |name, path|
         path.add_files(file_map)
       end
