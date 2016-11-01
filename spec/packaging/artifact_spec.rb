@@ -1042,7 +1042,7 @@ describe ActsAsArtifact, '#upload' do
     URI.should_receive(:upload).once.
     with(URI.parse('sftp://example.com/base/com/example/library/2.0-SNAPSHOT/library-2.0-20110311.140236-1.jar'), artifact.to_s, anything)
     URI.should_receive(:write).once.
-    with(URI.parse('sftp://example.com/base/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), anything, anything)
+    with(URI.parse('sftp://example.com/base/com/example/library/2.0-SNAPSHOT/maven-metadata.xml'), anything, anything)
     verbose(false) { artifact.upload(:url=>'sftp://example.com/base') }
   end
 
@@ -1069,7 +1069,7 @@ describe ActsAsArtifact, '#upload' do
     URI.should_receive(:upload).once.
       with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.jar'), artifact.to_s, anything)
     URI.should_receive(:write).once.
-      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), anything, anything)
+      with(URI.parse('sftp://buildr.apache.org/repository/noexist/base/com/example/library/2.0-SNAPSHOT/maven-metadata.xml'), anything, anything)
     repositories.release_to = 'sftp://buildr.apache.org/repository/noexist/base'
     artifact.upload
     lambda { artifact.upload }.should_not raise_error
@@ -1087,7 +1087,7 @@ describe ActsAsArtifact, '#upload' do
     URI.should_receive(:upload).once.
       with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/library-2.0-20161111.140236-1.jar'), artifact.to_s, anything)
       URI.should_receive(:write).once.
-        with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/maven_metadata.xml'), anything, anything)
+        with(URI.parse('sftp://buildr.apache.org/repository/noexist/snapshot/com/example/library/2.0-SNAPSHOT/maven-metadata.xml'), anything, anything)
     repositories.release_to = 'sftp://buildr.apache.org/repository/noexist/base'
     repositories.snapshot_to = 'sftp://buildr.apache.org/repository/noexist/snapshot'
     artifact.upload

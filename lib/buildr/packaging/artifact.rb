@@ -35,7 +35,7 @@ module Buildr #:nodoc:
   module ActsAsArtifact
 
     ARTIFACT_ATTRIBUTES = [:group, :id, :type, :classifier, :version]
-    MAVEN_METADATA = "maven_metadata.xml"
+    MAVEN_METADATA = "maven-metadata.xml"
 
     class << self
     private
