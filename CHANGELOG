@@ -2,7 +2,6 @@
 * Change: Remove orderedhash gem.
 * Change: Update jruby-openssl to 0.9.17
 * Change: Move hoe to the development dependencies
-* Change: Update json_pure to 2.0.2
 * Fixed:  BUILDR-728 Snapshots metadata incorrectly created
 * Fixed:  BUILDR-718 Deprecate SVN repository - remove links to SVN
 
