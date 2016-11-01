@@ -12,7 +12,7 @@ All our discussions are done in the open, over "email":mailing_lists.html, and t
 
 h2(#mailing_lists).  Mailing Lists
 
-We run two mailing lists, the "users":http://buildr.markmail.org/search/list:users mailing list for developers working with Buildr, that would be you if you're using Buildr or interested in using it.  There's the "dev":http://buildr.markmail.org/search/list:dev mailing list for talking about development of Buildr itself. There's also "commits":http://buildr.markmail.org/search/list:commits mailing list for following SVN commits and JIRA issues.
+We run two mailing lists, the "users":http://buildr.markmail.org/search/list:users mailing list for developers working with Buildr, that would be you if you're using Buildr or interested in using it.  There's the "dev":http://buildr.markmail.org/search/list:dev mailing list for talking about development of Buildr itself. There's also "commits":http://buildr.markmail.org/search/list:commits mailing list for following Git commits and JIRA issues.
 
 Check the "mailing lists":mailing_lists.html page for more information on subscribing, searching and posting to the mailing list.
 
@@ -65,34 +65,17 @@ If you want to get your patch accepted quickly:
 
 If you don't know how to fix it, but can at least write a spec for the correct behavior (which, obviously would fail), do just that.  A spec is preferred to a fix.
 
-h3.  Working on a new feature?
-
-If you want to work on a cool new feature, but not quite ready to submit a patch, there's still a way you can get the Buildr community involved.  We're experimenting with using Git for that.  You can use Git to maintain a fork of Buildr that can keep up with changes in the main branch (tip: use @git rebase@), while developing your own changes/features on it.
-
-That way you can get other people involved, checking out the code, and eventually merge it back with the main branch.  Check out the "Git section":#git below and the post "Git forking for fun and profit":http://blog.labnotes.org/2008/04/30/git-forking-for-fun-and-profit/.
-
-
 h2(#edge).  Living on the edge
 
 Did we mention Buildr is an open source project?  In fact, when you install Buildr you get all the source code, documentation, test case and everything you need to use it, extend it and patch it.  Have a look in your Gem directory.
 
 h3(#git).  GIT
 
-But if you want to work with the latest and greatest, you'll want to check out Buildr from source control. You can use the "official Apache Git clone.":http://git.apache.org  This clone is maintained by the ASF and kept in sync with the SVN repository (though, in practice there may be some delay in cloning recent commits).  Apache's Git hosting supports both git:// and http:// protocols (you should use git:// if at all possible as it is faster than http://):
+If you want to work with the latest and greatest, you'll want to check out Buildr from source control. You can use the "official Apache Buildr Github  clone.":https://github.com/apache/buildr  This clone is maintained by Github aand kept in sync with the "ASF Git repository":https://git-wip-us.apache.org/repos/asf?p=buildr.git
 
 {% highlight sh %}
-$ git clone git://git.apache.org/buildr.git
-# or...
-$ git clone http://git.apache.org/buildr.git
+$ git clone git@github.com:apache/buildr.git
 {% endhighlight %}
-
-If you want to learn more about Git, you can start by watching Scott Chacon’s "Git presentation":http://en.oreilly.com/rails2008/public/asset/attachment/2816 (PDF), or any of the "Git screencasts":http://www.gitcasts.com/.  For more, there's also the "Git Internals book":http://peepcode.com/products/git-internals-pdf.
-
-And keep this "Git cheat sheet":http://ktown.kde.org/~zrusin/git/git-cheat-sheet-medium.png close at hand. Very useful.
-
-h4. GitHub
-
-You are also welcome to fork or clone the "Buildr repository on GitHub":http://github.com/apache/buildr.  This repository is just an exact mirror of the official Apache Git clone referenced above (updated every 30 minutes).
 
 h3. Working with Source Code
 

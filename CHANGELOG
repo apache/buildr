@@ -4,6 +4,7 @@
 * Change: Move hoe to the development dependencies
 * Change: Update json_pure to 2.0.2
 * Fixed:  BUILDR-728 Snapshots metadata incorrectly created
+* Fixed:  BUILDR-718 Deprecate SVN repository - remove links to SVN
 
 1.5.0 (2016-09-23)
 * Change: Update RJB to 1.5.4
