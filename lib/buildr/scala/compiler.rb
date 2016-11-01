@@ -90,6 +90,7 @@ module Buildr::Scala
     DEFAULT_ZINC_VERSION  = '0.3.12'
     DEFAULT_SBT_VERSION   = '0.13.12'
     DEFAULT_JLINE_VERSION = '2.14.2'
+    DEFAULT_SCALAMAIN_VERSION = '1.0.0'
 
     class << self
       def scala_home
@@ -164,11 +165,13 @@ module Buildr::Scala
       zinc_version  = Buildr.settings.build['zinc.version']  || DEFAULT_ZINC_VERSION
       sbt_version   = Buildr.settings.build['sbt.version']   || DEFAULT_SBT_VERSION
       jline_version = Buildr.settings.build['jline.version'] || DEFAULT_JLINE_VERSION
+      scalamain_version = Buildr.settings.build['scalamain.version'] || DEFAULT_SCALAMAIN_VERSION
       ns.zinc!          "com.typesafe.zinc:zinc:jar:>=#{zinc_version}"
       ns.sbt_interface! "com.typesafe.sbt:sbt-interface:jar:>=#{sbt_version}"
       ns.incremental!   "com.typesafe.sbt:incremental-compiler:jar:>=#{sbt_version}"
       ns.compiler_interface_sources! "com.typesafe.sbt:compiler-interface:jar:sources:>=#{sbt_version}"
       ns.jline!        "jline:jline:jar:>=#{jline_version}"
+      ns.scalamain!    "io.tmio:scalamain:jar:>=#{scalamain_version}"
     end
 
     Javac = Buildr::Compiler::Javac
@@ -279,9 +282,9 @@ module Buildr::Scala
       cmd_args += files_from_sources(sources)
 
       unless Buildr.application.options.dryrun
-        trace((['org.apache.buildr.ZincRunner'] + cmd_args).join(' '))
+        trace((['io.tmio.scalamain.Main', 'com.typesafe.zinc.Main', 'main'] + cmd_args).join(' '))
         begin
-          Java::Commands.java 'org.apache.buildr.ZincRunner', *(cmd_args + [{ :classpath => Scalac.dependencies + [ File.join(File.dirname(__FILE__)) ]}])
+          Java::Commands.java 'io.tmio.scalamain.Main', *(['com.typesafe.zinc.Main', 'main'] + cmd_args + [{ :classpath => Scalac.dependencies + [ File.join(File.dirname(__FILE__)) ]}])
         rescue => e
           fail "Zinc compiler crashed:\n#{e.inspect}\n#{e.backtrace.join("\n")}"
         end

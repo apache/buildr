@@ -92,7 +92,7 @@ module Buildr::Scala #:nodoc:
         unless @dependencies
           super
 
-          # Add utility classes (e.g. SpecsSingletonRunner) and other dependencies
+          # Add utility classes and other dependencies
           options = {
             :scopes => [nil, "compile", "runtime", "provided", "optional"],
             :optional => true
@@ -144,10 +144,10 @@ module Buildr::Scala #:nodoc:
                       :classpath => dependencies,
                       :name => false }
 
-      runner = 'org.apache.buildr.Specs2Runner'
+      runner = 'org.specs2.runner.ClassRunner'
       specs.inject [] do |passed, spec|
         begin
-          Java::Commands.java(runner, spec, cmd_options)
+          Java::Commands.java('io.tmio.scalamain.Main', runner, 'run', spec, cmd_options)
         rescue => e
           passed
         else
