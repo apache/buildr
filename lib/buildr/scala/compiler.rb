@@ -90,7 +90,7 @@ module Buildr::Scala
     DEFAULT_ZINC_VERSION  = '0.3.12'
     DEFAULT_SBT_VERSION   = '0.13.12'
     DEFAULT_JLINE_VERSION = '2.14.2'
-    DEFAULT_SCALAMAIN_VERSION = '1.0.0'
+    DEFAULT_SCALAMAIN_VERSION = '1.0.3'
 
     class << self
       def scala_home
