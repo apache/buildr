@@ -5,7 +5,6 @@
 * Fixed:  BUILDR-728 Snapshots metadata incorrectly created
 * Fixed:  BUILDR-718 Deprecate SVN repository - remove links to SVN
 * Change: BUILDR-724 Use scalamain to call scala projects
-* Change: Update json_pure to 2.0.2
 * Change: BUILDR-719 Change User-Agent when uploading artifacts
 
 1.5.0 (2016-09-23)
