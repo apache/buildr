@@ -420,6 +420,14 @@ describe URI::HTTP, '#write' do
     end
     @uri.write @content
   end
+  
+  it 'should set User-Agent header' do
+    @http.should_receive(:request) do |request|
+      request['User-Agent'].should == "Buildr-#{Buildr::VERSION}"
+      Net::HTTPOK.new(nil, nil, nil)
+    end
+    @uri.write @content
+  end
 
   it 'should send entire content' do
     @http.should_receive(:request) do |request|

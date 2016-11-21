@@ -332,7 +332,7 @@ module URI
         while chunk = yield(RW_CHUNK_SIZE)
           content << chunk
         end
-        headers = { 'Content-MD5'=>Digest::MD5.hexdigest(content.string), 'Content-Type'=>'application/octet-stream' }
+        headers = { 'Content-MD5'=>Digest::MD5.hexdigest(content.string), 'Content-Type'=>'application/octet-stream', 'User-Agent'=>"Buildr-#{Buildr::VERSION}" }
         request = Net::HTTP::Put.new(request_uri.empty? ? '/' : request_uri, headers)
         request.basic_auth self.user, self.password if self.user
         response = nil
