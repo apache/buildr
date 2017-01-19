@@ -1081,6 +1081,7 @@ module Buildr #:nodoc:
         add_to_composite_component(self.configurations) do |xml|
           xml.configuration(:name => configuration_name, :type => 'GlassfishConfiguration', :factoryName => 'Remote', :default => false, :APPLICATION_SERVER_NAME => server_name) do |xml|
             xml.option(:name => 'LOCAL', :value => 'false')
+            xml.option(:name => 'OPEN_IN_BROWSER', :value => 'false')
             xml.option(:name => 'UPDATING_POLICY', :value => 'hot-swap-classes')
 
             xml.deployment do |deployment|
