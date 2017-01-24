@@ -536,7 +536,6 @@ module Buildr #:nodoc:
           generate_initial_order_entries(xml)
           project_dependencies = []
 
-
           self.main_dependency_details.each do |dependency_path, export, source_path|
             next unless export
             generate_lib(xml, dependency_path, export, source_path, project_dependencies)
