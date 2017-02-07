@@ -84,6 +84,7 @@ require 'buildr/java/packaging'
 require 'buildr/java/commands'
 require 'buildr/java/doc'
 require 'buildr/java/deprecated'
+require 'buildr/java/custom_pom'
 require 'buildr/ide/idea'
 require 'buildr/ide/eclipse'
 
