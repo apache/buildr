@@ -23,10 +23,11 @@ module Buildr
   #
   #   protoc _("path/to/proto/files")
   #
-  # and also supports two options,
+  # and also supports three options,
   #
-  #  :output => "target/generated/protoc"  # this is the default
-  #  :lang => "java"                       # defaults to compile.language
+  #  :include => ["path/to/proto", "src/main/resources/proto" # the directories in which to search for imports
+  #  :output => "target/generated/protoc"                     # this is the default
+  #  :lang => "java"                                          # defaults to compile.language
   #
   module Protobuf
     class << self
@@ -42,7 +43,7 @@ module Buildr
 
         command_line << "--#{options[:lang]}_out=#{options[:output]}" if options[:output]
 
-        (paths_from_sources(*args) + options[:include]).each { |i| command_line << "-I#{i}" }
+        options[:include].each { |i| command_line << "-I#{i}" }
 
         command_line += files_from_sources(*args)
 
@@ -57,10 +58,6 @@ module Buildr
 
       def files_from_sources(*args)
         args.flatten.map(&:to_s).collect { |f| File.directory?(f) ? FileList[f + "/**/*.proto"] : f }.flatten
-      end
-
-      def paths_from_sources(*args)
-        args.flatten.map(&:to_s).collect { |f| File.directory?(f) ? f : File.dirname(f) }
       end
     end
 
