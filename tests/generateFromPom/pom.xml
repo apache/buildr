@@ -115,10 +115,10 @@
 			<version>3.8.2</version>
 		</dependency>
 		<!--  Unfortunately, untill http://jira.springframework.org/browse/OSGI-564
-			is resolved we can't use BRITS provided Log4J and have to rely on 
+			is resolved we can't use BRITS provided Log4J and have to rely on
 			dependancy specified by Spring-DM 1.2.0-m1.
 			Once this bug is fixed, we can switch to BRITS on this dependancy -->
-		<!-- 
+		<!--
 			<dependency>
 			<groupId>org.apache.log4j</groupId>
 			<artifactId>com.springsource.org.apache.log4j</artifactId>
@@ -250,7 +250,7 @@
 			</artifactId>
 			<version>1.8.0</version>
 		</dependency>
-	<!-- 
+	<!--
 		<dependency>
 			<groupId>org.apache.myfaces</groupId>
 			<artifactId>
@@ -300,7 +300,7 @@
 			</name>
 			<url>http://repository.springsource.com/maven/bundles/external</url>
 		</repository>
-<repository>  
+<repository>
 <id>com.springsource.repository.bundles.release</id>
 <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
 <url>http://repository.springsource.com/maven/bundles/release</url>

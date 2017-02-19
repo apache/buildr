@@ -155,7 +155,7 @@ share_as :ScalacCompiler_CommonOptions do
     compile_task.using(:warnings=>false)
     scalac_args.should include('-nowarn')
   end
-  
+
   it 'should pass options to javac' do
     compile_task.using(:warnings=>false)
     javac_args.should include('-nowarn')
@@ -307,7 +307,7 @@ describe 'scala compiler 2.9 options' do
   def scalac_args
     compile_task.instance_eval { @compiler }.send(:scalac_args)
   end
-  
+
   def javac_args
     compile_task.instance_eval { @compiler }.instance_eval { @java }.send(:javac_args)
   end
@@ -344,7 +344,7 @@ describe 'zinc compiler (enabled through Buildr.settings)' do
     compiler.should_receive(:compile_with_zinc).once
     compile_task.invoke
   end
-  
+
   it_should_behave_like ScalacCompiler
 
   after :each do

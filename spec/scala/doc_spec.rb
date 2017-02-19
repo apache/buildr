@@ -88,4 +88,3 @@ describe "package(:scaladoc)" do
     scaladoc.should contain('Foo.html')
   end
 end
-

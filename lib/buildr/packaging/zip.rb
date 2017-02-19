@@ -40,9 +40,9 @@ module Zip #:nodoc:
       write_e_o_c_d(io, offset, cdir_size)
     end
   end
-  
+
   class File
-    
+
     # :call-seq:
     #   exist() => boolean
     #

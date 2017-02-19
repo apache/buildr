@@ -415,7 +415,7 @@ describe Buildr::TestNG do
     project('foo').test.compile.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
     project('foo').test.dependencies.should include(artifact("#{group}:jmock:jar:#{JMock.version}"))
   end
-  
+
   it 'should parse test classes in paths containing escaped sequences' do
     write 'bar%2F/src/test/java/com/example/AnnotatedClass.java', <<-JAVA
       package com.example;

@@ -217,14 +217,14 @@ describe Repositories, 'remote_uri' do
 
     @repos = [ 'https://oss.sonatype.org/', 'http://www.ibiblio.org/maven2', { :url => 'http://repo1.maven.org/maven2', :username => 'user', :password => 'password' } ]
   end
-  
+
   it 'should convert remote to array of uri' do
       uri = URI.parse( 'http://repo1.maven.org/maven2' )
-      uri.user = 'user' 
+      uri.user = 'user'
       uri.password = 'password'
-    
+
       uris = [ URI.parse( 'https://oss.sonatype.org/'), URI.parse( 'http://www.ibiblio.org/maven2' ), uri ]
-      
+
       repositories.remote = @repos
       repositories.remote_uri.should eql(uris)
   end
@@ -235,10 +235,10 @@ describe Repositories, 'mirrors' do
     Buildr.repositories.instance_eval do
       @local = @remote = @release_to = @mirrors = nil
     end
-    
+
     @repos = [ 'http://www.ibiblio.org/maven2', 'http://repo1.maven.org/maven2' ]
   end
-  
+
   it 'should be empty initially' do
     repositories.mirrors.should be_empty
   end
@@ -247,7 +247,7 @@ describe Repositories, 'mirrors' do
     repositories.mirrors = @repos.first
     repositories.mirrors.should eql([@repos.first])
   end
-  
+
   it 'should be settable from array' do
     repositories.mirrors = @repos
     repositories.mirrors.should eql(@repos)
@@ -257,12 +257,12 @@ describe Repositories, 'mirrors' do
     @repos.each { |url| repositories.mirrors << url }
     repositories.mirrors.should eql(@repos)
   end
-  
+
   it 'should log that it is overridding the remote repositories with the mirrors' do
     @repos.each { |url| repositories.mirrors << url }
     lambda { repositories.remote }.should show_info /Remote repositories overridden by mirrors /
   end
-  
+
   it 'should load with all repositories specified in settings file' do
     write 'home/.buildr/settings.yaml', <<-YAML
     repositories:
@@ -998,7 +998,7 @@ end
 
 
 describe ActsAsArtifact, '#upload' do
-  
+
   it 'should be used to upload artifact' do
     artifact = artifact('com.example:library:jar:2.0')
     # Prevent artifact from downloading anything.
@@ -1027,7 +1027,7 @@ describe ActsAsArtifact, '#upload' do
     write repositories.locate(artifact.pom)
     lambda { artifact.upload }.should raise_error(Exception, /where to upload/)
   end
-  
+
   it 'should upload SNAPSHOT with timestamped unique version and maven metadata' do
     artifact = artifact('com.example:library:jar:2.0-SNAPSHOT')
     # Prevent artifact from downloading anything.

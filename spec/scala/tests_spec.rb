@@ -208,9 +208,9 @@ describe Buildr::Scala::ScalaTest do
       import org.scalatest._
       import org.scalatest.fixture.FunSuite
       import org.scalatest.fixture.ConfigMapFixture
-      
+
       class PropertyTestSuite extends FunSuite with ConfigMapFixture {
-        
+
         test("testProperty") { (configMap: Map[String, Any]) =>
           assert(configMap("name") === "value")
         }
@@ -283,4 +283,3 @@ describe Buildr::Scala::ScalaTest do
   end
 
 end
-

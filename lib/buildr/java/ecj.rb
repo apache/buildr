@@ -17,9 +17,9 @@ module Buildr #:nodoc:
   module Compiler #:nodoc:
 
     class Ecj < Javac
-      
+
       VERSION = "4.5.1"
-      
+
       class << self
         # Current version of ECJ being used.
         def version

@@ -118,4 +118,3 @@ describe Buildr::Scala::Specs2 do
     project('foo').test.failed_tests.should include('StringSpecs$')
   end
 end
-

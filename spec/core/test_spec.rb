@@ -604,7 +604,7 @@ describe Buildr::Project, '#test.resources' do
     define('foo') do
       layout[:target] = _('targeted')
     end.test.invoke
-    
+
     file('targeted/test/resources/config.xml').should contain('</xml>')
   end
 

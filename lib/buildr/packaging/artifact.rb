@@ -76,7 +76,7 @@ module Buildr #:nodoc:
     def snapshot?
       version =~ /-SNAPSHOT$/
     end
-    
+
     def final_version
       return version unless snapshot?
       Time.now.strftime("%Y%m%d.%H%M%S")
@@ -157,7 +157,7 @@ module Buildr #:nodoc:
         end
       end
     end
-    
+
     # :call-seq:
     #   maven_metadata_xml => string
     #
@@ -260,12 +260,12 @@ module Buildr #:nodoc:
     def group_path
       group.gsub('.', '/')
     end
-    
+
     def upload_name
       return File.basename(name) unless snapshot?
       return File.basename(name).gsub(/SNAPSHOT/, "#{final_version}-1")
     end
-    
+
     def extract_type(type)
       return :jar if type == :bundle
       type
@@ -664,7 +664,7 @@ module Buildr #:nodoc:
       spec = Artifact.to_hash(spec)
       File.join(local, spec[:group].split('.'), spec[:id], spec[:version], Artifact.hash_to_file_name(spec))
     end
-    
+
     # :call-seq:
     #   mirrors => Array
     #
@@ -684,7 +684,7 @@ module Buildr #:nodoc:
       end
       @mirrors
     end
-    
+
     # :call-seq:
     #   remote = Array
     #   remote = url
@@ -733,20 +733,20 @@ module Buildr #:nodoc:
       end
       @remote
     end
-    
+
     # :call-seq:
     #   remote_uri => Array
     #
     # Returns an array of all the remote repositories as instances of URI
     #
-    # Supports 
+    # Supports
     #  * String urls: "http://example.com/repo"
     #  * URI: URI.parse( "http://example.com/repo" )
     #  * Hash: { :url => "http://example.com/repo", :user => "user", :pass => "pass" }
     #
     def remote_uri
       remote
-      
+
       uris = []
       @remote.each do |repo|
         case repo
@@ -761,7 +761,7 @@ module Buildr #:nodoc:
             if ( username = (repo[:username] || repo['username'] || repo[:user] || repo['user']) )
               uri.user = username
             end
-            
+
             if ( password = (repo[:password] || repo['password'] || repo[:pass] || repo['pass']) )
               uri.password = password
             end
@@ -769,14 +769,14 @@ module Buildr #:nodoc:
           else
             fail( "Repository Hash format missing url: #{repo}" )
           end
-          
-        when String then 
+
+        when String then
           uris << URI.parse(repo)
-        else 
+        else
           fail( "Unsupported Repository format: #{repo}" )
         end
       end
-      
+
       uris
     end
 

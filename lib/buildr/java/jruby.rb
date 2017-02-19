@@ -75,19 +75,19 @@ module Java
       @classpath ||= begin
         classpath = []
         class << classpath
-          
+
           def new_add(*args)
             warn 'Java is already loaded' if Java.loaded?
             send(:old_add, *args)
           end
-          
+
           alias_method :old_add, :<<
           alias_method :<<, :new_add
         end
         classpath
       end
     end
-    
+
     # Returns true if the JVM is loaded with all the libraries loaded on the classpath.
     def loaded?
       @loaded

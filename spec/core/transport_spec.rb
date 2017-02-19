@@ -246,7 +246,7 @@ describe URI::HTTP, '#read' do
     @http.should_receive(:use_ssl=).with(true)
     URI(@uri.to_s.sub(/http/, 'https')).read
   end
-  
+
   it 'should use custom SSL CA certificates if provided through the environment variable SSL_CA_CERTS' do
     ENV['SSL_VERIFY_MODE'] = 'VERIFY_PEER'
     Net::HTTP.should_receive(:new).with(@host_domain, 443).and_return(@http)
@@ -254,7 +254,7 @@ describe URI::HTTP, '#read' do
     @http.should_receive(:verify_mode=).with(OpenSSL::SSL::VERIFY_PEER)
     URI(@uri.to_s.sub(/http/, 'https')).read
   end
-  
+
   it 'should use custom verify mode if provided through the environment variable SSL_VERIFY_MODE' do
     ENV['SSL_CA_CERTS'] = 'tmp/certs'
     Net::HTTP.should_receive(:new).with(@host_domain, 443).and_return(@http)
@@ -420,7 +420,7 @@ describe URI::HTTP, '#write' do
     end
     @uri.write @content
   end
-  
+
   it 'should set User-Agent header' do
     @http.should_receive(:request) do |request|
       request['User-Agent'].should == "Buildr-#{Buildr::VERSION}"

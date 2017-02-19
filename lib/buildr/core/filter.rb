@@ -308,7 +308,7 @@ module Buildr #:nodoc:
         end
         self
       end
-      
+
       BINARY_FILES = [ '*.png', '*.gif', '*.jpg', '*.jpeg' ]
 
       def is_binary?(content, path)

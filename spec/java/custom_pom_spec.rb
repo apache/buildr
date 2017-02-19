@@ -145,7 +145,7 @@ describe Buildr::CustomPom do
       verify_dependency(@pom_xml, 'id-test', 'group', '1.0', 'test', nil)
     end
   end
-  
+
   describe 'with a multi-module project' do
     before do
       write 'foo/src/main/java/Foo.java', 'public class Foo {}'
@@ -161,10 +161,10 @@ describe Buildr::CustomPom do
         end
       end
       task('package').invoke
-      
+
       @pom_xml = project_pom_xml(project('myproject:bar'))
     end
-    
+
     it 'should add foo to the dependencies of bar\'s pom.xml' do
       verify_dependency(@pom_xml, 'myproject-foo', 'group', '1.0', nil, nil)
     end

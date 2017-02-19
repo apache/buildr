@@ -18,7 +18,7 @@ RC_VERSION = ENV['RC_VERSION'] || ""
 desc 'Release the next version of buildr from existing staged repository'
 task 'release' do |task, args|
   user = args.user || ENV['user'] || `whoami`
-  
+
   # First, we need to get all the staged files from Apache to _release.
   mkpath '_release'
   lambda do

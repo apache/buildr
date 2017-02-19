@@ -53,7 +53,7 @@ module Buildr::Scala #:nodoc:
             end
         end
       end
-      
+
       def type
         if Buildr::Scala.version < "2.11"
           "jar"

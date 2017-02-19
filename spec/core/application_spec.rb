@@ -33,7 +33,7 @@ describe Buildr::Application do
     before(:each) do
       FileUtils.touch 'Buildfile'
     end
-    
+
     it 'should execute *_load methods in order' do
       order = [:load_gems, :load_artifact_ns, :load_tasks, :raw_load_buildfile]
       order.each { |method| Buildr.application.should_receive(method).ordered }

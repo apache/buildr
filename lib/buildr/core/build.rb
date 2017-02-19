@@ -349,7 +349,7 @@ module Buildr #:nodoc:
 
     # the initial value of THIS_VERSION
     attr_accessor :this_version
-    
+
     # :call-seq:
     #   version_file()
     # Provides the file containing the version of the project.

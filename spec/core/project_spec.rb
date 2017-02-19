@@ -336,7 +336,7 @@ describe Rake::Task, ' recursive' do
         @order
       end
       recursive_task('doda') { project('foo').order << 'foo' }
-      define('bar') { 
+      define('bar') {
         recursive_task('doda') { project('foo').order << 'foo:bar' }
         define('baz') {
           recursive_task('doda') { project('foo').order << 'foo:bar:baz' }
@@ -578,7 +578,7 @@ end
 describe Rake::Task, ' local directory' do
   before do
     @task = Project.local_task(task(('doda')))
-    
+
   end
 
   it 'should execute project in local directory' do
@@ -601,7 +601,7 @@ describe Rake::Task, ' local directory' do
       task('doda') { |task| @task.from project.name }
       define 'bar'
     }
-    
+
     in_original_dir('../not_foo') { @task.invoke }
   end
 

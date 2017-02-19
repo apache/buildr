@@ -113,7 +113,7 @@ module Buildr::Scala#:nodoc:
           "org.scalatest:scalatest:jar:#{version}"
         elsif Buildr::Scala.version < "2.11"
           "org.scalatest:scalatest_#{Buildr::Scala.version_without_build}:jar:#{version}"
-        else 
+        else
           "org.scalatest:scalatest_#{Buildr::Scala.version_major_minor}:jar:#{version}"
         end
       end

@@ -123,4 +123,3 @@ describe Buildr::JaxbXjc do
     end
   end
 end
-

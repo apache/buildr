@@ -75,7 +75,7 @@ describe 'ecj compiler' do
       file('target/classes/DependencyTest.class').should exist
     end
   end
-  
+
   it 'should include tools.jar dependency' do
     repositories.remote << "http://repo1.maven.org/maven2/"
     write 'src/main/java/UseJarSigner.java', <<-JAVA
@@ -290,7 +290,7 @@ describe 'ecj compiler options' do
     }
     redirect_java_err { foo.compile.invoke }.should match(/warning/)
   end
-  
+
   it 'should pick Ecj version from ecj build settings' do
     begin
       Buildr::Compiler::Ecj.instance_eval { @dependencies = nil }

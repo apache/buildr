@@ -624,7 +624,7 @@ module Buildr #:nodoc:
     def define!
       @defined = true
     end
-    
+
 
     # :call-seq:
     #   base_dir = dir

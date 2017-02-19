@@ -65,7 +65,7 @@ module Buildr::Scala
     def version_without_build
       version.split('-')[0]
     end
-    
+
     # returns Scala version without tiny number.
     # e.g.  "2.11.8" => "2.11"
     def version_major_minor
@@ -187,7 +187,7 @@ module Buildr::Scala
     def initialize(project, options) #:nodoc:
       super
       # use common options also for javac
-      
+
       options[:javac] ||= Buildr::Compiler::Javac::OPTIONS.inject({}) do |hash, option|
         hash[option] = options[option]
         hash
