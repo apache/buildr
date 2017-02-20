@@ -21,8 +21,8 @@ module Buildr
         @@version
       end
 
-      def version=(newVersion)
-        @@version = newVersion
+      def version=(version)
+        @@version = version
       end
 
       # The specs for requirements
