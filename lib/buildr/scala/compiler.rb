@@ -20,7 +20,7 @@ module Buildr::Scala
   class << self
 
     def version_str
-      warn "Use of Scala.version_str is deprecated.  Use Scala.version instead"
+      warn 'Use of Scala.version_str is deprecated. Use Scala.version instead'
       version
     end
 
@@ -128,7 +128,7 @@ module Buildr::Scala
       end
 
       def use_fsc
-        use_installed? && ENV["USE_FSC"] =~ /^(yes|on|true)$/i
+        use_installed? && ENV['USE_FSC'] =~ /^(yes|on|true)$/i
       end
 
       def applies_to?(project, task) #:nodoc:
@@ -275,7 +275,7 @@ module Buildr::Scala
       cmd_args << '-Ssourcepath' << ("-S" + source_paths.join(File::PATH_SEPARATOR)) unless source_paths.empty?
       cmd_args << '-d' << File.expand_path(target)
       cmd_args += scalac_args
-      cmd_args << "-debug" if trace?(:scalac)
+      cmd_args << '-debug' if trace?(:scalac)
 
       cmd_args.map!(&:to_s)
 
@@ -341,7 +341,7 @@ module Buildr::Scala
 
     def count(file, pattern)
       count = 0
-      File.open(file, "r") do |infile|
+      File.open(file, 'r') do |infile|
         while (line = infile.gets)
           count += 1 if line.match(pattern)
         end
@@ -357,19 +357,19 @@ module Buildr::Scala
     # Returns Scalac command line arguments from the set of options.
     def scalac_args #:nodoc:
       args = []
-      args << "-nowarn" unless options[:warnings]
-      args << "-verbose" if trace?(:scalac)
-      if options[:debug] == true
-        args << (Scala.version?(2.7, 2.8) ? "-g" : "-g:vars")
+      args << '-nowarn' unless options[:warnings]
+      args << '-verbose' if trace?(:scalac)
+      if !!options[:debug]
+        args << (Scala.version?(2.7, 2.8) ? '-g' : '-g:vars')
       elsif options[:debug]
         args << "-g:#{options[:debug]}"
       end
-      args << "-deprecation" if options[:deprecation]
-      args << "-optimise" if options[:optimise]
-      args << "-target:jvm-" + options[:target].to_s if options[:target]
+      args << '-deprecation' if options[:deprecation]
+      args << '-optimise' if options[:optimise]
+      args << '-target:jvm-' + options[:target].to_s if options[:target]
       args += Array(options[:other])
       if zinc?
-        args.map { |arg| "-S" + arg } + Array(options[:zinc_options])
+        args.map { |arg| '-S' + arg } + Array(options[:zinc_options])
       else
         args
       end

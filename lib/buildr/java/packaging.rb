@@ -223,11 +223,10 @@ module Buildr #:nodoc:
         #   package(:jar).with(:manifest=>'MANIFEST_MF')
         def with(*args)
           super args.pop if Hash === args.last
-          fail "package.with() should not contain nil values" if args.include? nil
+          fail 'package.with() should not contain nil values' if args.include? nil
           include :from=>args if args.size > 0
           self
         end
-
       end
 
 
@@ -521,8 +520,8 @@ module Buildr #:nodoc:
           buffer = ""
           xml = Builder::XmlMarkup.new(:target=>buffer, :indent => 2)
           xml.declare! :DOCTYPE, :application, :PUBLIC,
-          "-//Sun Microsystems, Inc.//DTD J2EE Application 1.2//EN",
-          "http://java.sun.com/j2ee/dtds/application_1_2.dtd"
+                       '-//Sun Microsystems, Inc.//DTD J2EE Application 1.2//EN',
+                       'http://java.sun.com/j2ee/dtds/application_1_2.dtd'
           xml.application do
             xml.tag! 'display-name', display_name
             desc = self.description || @project.comment

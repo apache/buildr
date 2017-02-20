@@ -101,14 +101,14 @@ module Buildr
           bnd_filename = filename.sub /(\.jar)?$/, '.bnd'
 
           params = self.to_params
-          params["-output"] = filename
+          params['-output'] = filename
           File.open(bnd_filename, 'w') do |f|
             f.print params.collect { |k, v| "#{k}=#{v}" }.join("\n")
           end
 
           Buildr::Bnd.bnd_main( bnd_filename )
           begin
-            Buildr::Bnd.bnd_main( "print", "-verify", filename )
+            Buildr::Bnd.bnd_main('print', '-verify', filename )
           rescue => e
             rm filename
             raise e
@@ -127,7 +127,7 @@ module Buildr
 
       def package_as_bundle(filename)
         project.task('bnd:print' => [filename]) do |task|
-          Buildr::Bnd.bnd_main("print", filename)
+          Buildr::Bnd.bnd_main('print', filename)
         end
 
         dirname = File.dirname(filename)

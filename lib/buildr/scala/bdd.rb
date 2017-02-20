@@ -20,11 +20,11 @@ module Buildr::Scala #:nodoc:
     @bdd_dir = :spec
 
     VERSION = case
-      when Buildr::Scala.version?("2.8.0"),  Buildr::Scala.version?("2.8.1"), Buildr::Scala.version?("2.8.2")
+      when Buildr::Scala.version?('2.8.0'),  Buildr::Scala.version?('2.8.1'), Buildr::Scala.version?('2.8.2')
         '1.5'
-      when Buildr::Scala.version?("2.9")
+      when Buildr::Scala.version?('2.9')
         '1.11'
-      when  Buildr::Scala.version?("2.10")
+      when  Buildr::Scala.version?('2.10')
         '1.12.3'
       else
         '3.7' # default for Scala 2.11 and beyond
@@ -46,7 +46,7 @@ module Buildr::Scala #:nodoc:
           when Buildr.settings.build['scala.specs2.artifact']
             Buildr.settings.build['scala.specs2.artifact']
           else
-            if Buildr::Scala.version < "2.11"
+            if Buildr::Scala.version < '2.11'
               "specs2_#{Buildr::Scala.version_without_build_number}"
             else
               "specs2_#{Buildr::Scala.version_major_minor}"
@@ -55,18 +55,18 @@ module Buildr::Scala #:nodoc:
       end
 
       def type
-        if Buildr::Scala.version < "2.11"
-          "jar"
+        if Buildr::Scala.version < '2.11'
+          'jar'
         else
-          "pom"
+          'pom'
         end
       end
 
       def scalaz_dependencies
-        if Buildr::Scala.version?("2.8")
+        if Buildr::Scala.version?('2.8')
           []
-        elsif Buildr::Scala.version < "2.11"
-          default_version = "6.0.1"
+        elsif Buildr::Scala.version < '2.11'
+          default_version = '6.0.1'
           custom_version = Buildr.settings.build['scala.specs2-scalaz']
           version = (custom_version =~ /:/) ? Buildr.artifact(custom_version).version : default_version
 
@@ -74,9 +74,9 @@ module Buildr::Scala #:nodoc:
 
           custom_spec = Buildr.settings.build['scala.specs2-scalaz']
           spec = [ (custom_spec =~ /:/) ? custom_spec : "org.specs2:#{artifact}:jar:#{version}" ]
-          Buildr.transitive(spec, :scopes => [nil, "compile", "runtime", "provided", "optional"], :optional => true)
+          Buildr.transitive(spec, :scopes => [nil, 'compile', 'runtime', 'provided', 'optional'], :optional => true)
         else
-          default_version = "7.2.2"
+          default_version = '7.2.2'
           custom_version = Buildr.settings.build['scala.specs2-scalaz']
           version = (custom_version =~ /:/) ? Buildr.artifact(custom_version).version : default_version
 
@@ -84,7 +84,7 @@ module Buildr::Scala #:nodoc:
 
           custom_spec = Buildr.settings.build['scala.specs2-scalaz']
           spec = [ (custom_spec =~ /:/) ? custom_spec : "org.scalaz:#{artifact}:jar:#{version}" ]
-          [Buildr.transitive(spec, :scopes => [nil, "compile", "runtime", "provided", "optional"], :optional => true), "org.scala-lang.modules:scala-xml_2.11:jar:1.0.1"]
+          [Buildr.transitive(spec, :scopes => [nil, 'compile', 'runtime', 'provided', 'optional'], :optional => true), 'org.scala-lang.modules:scala-xml_2.11:jar:1.0.1']
         end
       end
 
@@ -94,7 +94,7 @@ module Buildr::Scala #:nodoc:
 
           # Add utility classes and other dependencies
           options = {
-            :scopes => [nil, "compile", "runtime", "provided", "optional"],
+            :scopes => [nil, 'compile', 'runtime', 'provided', 'optional'],
             :optional => true
           }
           @dependencies |= [ File.join(File.dirname(__FILE__)) ] + Buildr.transitive(specs, options) +
@@ -113,7 +113,7 @@ module Buildr::Scala #:nodoc:
     private
 
       def find(file, pattern)
-        File.open(file, "r") do |infile|
+        File.open(file, 'r') do |infile|
           while (line = infile.gets)
             return true if line.match(pattern)
           end
@@ -137,7 +137,7 @@ module Buildr::Scala #:nodoc:
     end
 
     def run(specs, dependencies)  #:nodoc:
-      properties = { "specs2.outDir" => task.compile.target.to_s }
+      properties = {'specs2.outDir' => task.compile.target.to_s }
 
       cmd_options = { :properties => options[:properties].merge(properties),
                       :java_args => options[:java_args],
