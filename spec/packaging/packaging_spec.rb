@@ -356,7 +356,7 @@ describe Project, '#package' do
   end
 
   it 'should create POM artifact that creates its own POM' do
-    define('foo', :group=>'bar', :version=>'1.0') { package(:jar, :classifier=>'srcs') }
+    define('foo', :group=>'bar', :version=>'1.0') { package(:jar) }
     pom = project('foo').packages.first.pom
     pom.invoke
     read(pom.to_s).should eql(<<-POM
