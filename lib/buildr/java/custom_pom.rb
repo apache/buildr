@@ -256,31 +256,6 @@ module Buildr
         end
         @pom
       end
-
-      after_define do |project|
-        project.packages.select { |pkg| pkg.is_a?(ActsAsArtifact) }.each do |pkg|
-          if pkg.type.to_s == 'jar' && pkg.classifier.nil?
-            class << pkg
-              def pom_xml
-                self.pom.content
-              end
-
-              def pom
-                unless @pom
-                  pom_filename = Util.replace_extension(name, 'pom')
-                  spec = {:group => group, :id => id, :version => version, :type => :pom}
-                  @pom = Buildr.artifact(spec, pom_filename)
-                  buildr_project = Buildr.project(self.scope.join(':'))
-                  @pom.content Buildr::CustomPom.pom_xml(buildr_project, self)
-                end
-                @pom
-              end
-            end
-            pkg.instance_variable_set('@pom', nil)
-            pkg.enhance([pkg.pom.to_s])
-          end
-        end
-      end
     end
   end
 end

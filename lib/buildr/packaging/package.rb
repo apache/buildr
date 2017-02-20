@@ -168,6 +168,7 @@ module Buildr #:nodoc:
         else
           # Make it an artifact using the specifications, and tell it how to create a POM.
           package.extend ActsAsArtifact
+          package.buildr_project = self
           package.send :apply_spec, spec.only(*Artifact::ARTIFACT_ATTRIBUTES)
 
           # Create pom associated with package
@@ -177,7 +178,7 @@ module Buildr #:nodoc:
                 pom_filename = Util.replace_extension(self.name, 'pom')
                 spec = {:group=>group, :id=>id, :version=>version, :type=>:pom}
                 @pom = Buildr.artifact(spec, pom_filename)
-                @pom.content @pom.pom_xml
+                @pom.content Buildr::CustomPom.pom_xml(self.buildr_project, self)
               end
               @pom
             end

@@ -210,6 +210,9 @@ module Buildr #:nodoc:
 
         def initialize(*args) #:nodoc:
           super
+          enhance do
+            pom.invoke rescue nil if pom && pom != self && classifier.nil?
+          end
         end
 
         # :call-seq:

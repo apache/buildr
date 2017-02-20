@@ -73,6 +73,8 @@ module Buildr #:nodoc:
     # Optional artifact classifier.
     attr_reader :classifier
 
+    attr_accessor :buildr_project
+
     def snapshot?
       version =~ /-SNAPSHOT$/
     end
@@ -145,15 +147,19 @@ module Buildr #:nodoc:
     #
     # Creates POM XML for this artifact.
     def pom_xml
-      Proc.new do
-        xml = Builder::XmlMarkup.new(:indent=>2)
-        xml.instruct!
-        xml.project do
-          xml.modelVersion  '4.0.0'
-          xml.groupId       group
-          xml.artifactId    id
-          xml.version       version
-          xml.classifier    classifier if classifier
+      if self.buildr_project
+        Buildr::CustomPom.pom_xml(self.buildr_project, self)
+      else
+        Proc.new do
+          xml = Builder::XmlMarkup.new(:indent => 2)
+          xml.instruct!
+          xml.project do
+            xml.modelVersion '4.0.0'
+            xml.groupId group
+            xml.artifactId id
+            xml.version version
+            xml.classifier classifier if classifier
+          end
         end
       end
     end

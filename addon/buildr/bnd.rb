@@ -96,6 +96,8 @@ module Buildr
         super
         @params = {}
         enhance do
+          pom.invoke rescue nil if pom && pom != self && classifier.nil?
+
           filename = self.name
           # Generate BND file with same name as target jar but different extension
           bnd_filename = filename.sub /(\.jar)?$/, '.bnd'
