@@ -117,7 +117,7 @@ module Buildr::Scala
 
       def dependencies
         scala_dependencies = if use_installed?
-          ['scala-library', 'scala-compiler'].map { |s| File.expand_path("lib/#{s}.jar", scala_home) }
+          %w(scala-library scala-compiler).map { |s| File.expand_path("lib/#{s}.jar", scala_home) }
         else
           REQUIRES.artifacts.map(&:to_s)
         end
@@ -282,9 +282,9 @@ module Buildr::Scala
       cmd_args += files_from_sources(sources)
 
       unless Buildr.application.options.dryrun
-        trace((['io.tmio.scalamain.Main', 'com.typesafe.zinc.Main', 'main'] + cmd_args).join(' '))
+        trace((%w(io.tmio.scalamain.Main com.typesafe.zinc.Main main) + cmd_args).join(' '))
         begin
-          Java::Commands.java 'io.tmio.scalamain.Main', *(['com.typesafe.zinc.Main', 'main'] + cmd_args + [{ :classpath => Scalac.dependencies + [ File.join(File.dirname(__FILE__)) ]}])
+          Java::Commands.java 'io.tmio.scalamain.Main', *(%w(com.typesafe.zinc.Main main) + cmd_args + [{:classpath => Scalac.dependencies + [File.join(File.dirname(__FILE__)) ]}])
         rescue => e
           fail "Zinc compiler crashed:\n#{e.inspect}\n#{e.backtrace.join("\n")}"
         end
@@ -306,7 +306,7 @@ module Buildr::Scala
 
         sources.each do |source|
           # try to extract package name from .java or .scala files
-          if ['.java', '.scala'].include? File.extname(source)
+          if %w(.java .scala).include? File.extname(source)
             name = File.basename(source).split(".")[0]
             package = findFirst(source, /^\s*package\s+([^\s;]+)\s*;?\s*/)
             packages = count(source, /^\s*package\s+([^\s;]+)\s*;?\s*/)

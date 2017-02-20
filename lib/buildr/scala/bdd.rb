@@ -133,7 +133,7 @@ module Buildr::Scala #:nodoc:
     end
 
     def tests(dependencies)
-      filter_classes(dependencies, :interfaces => ['org.specs2.Specification', 'org.specs2.mutable.Specification'])
+      filter_classes(dependencies, :interfaces => %w(org.specs2.Specification org.specs2.mutable.Specification))
     end
 
     def run(specs, dependencies)  #:nodoc:

@@ -1214,7 +1214,7 @@ end
 describe Buildr, '#transitive' do
   before do
     repositories.remote = 'http://buildr.apache.org/repository/noexist'
-    @simple = [ 'saxon:saxon:jar:8.4', 'saxon:saxon-dom:jar:8.4', 'saxon:saxon-xpath:jar:8.4' ]
+    @simple = %w(saxon:saxon:jar:8.4 saxon:saxon-dom:jar:8.4 saxon:saxon-xpath:jar:8.4)
     @simple.map { |spec| artifact(spec).pom }.each { |task| write task.name, task.pom_xml.call }
     @provided = @simple.first
     @complex = 'group:app:jar:1.0'
