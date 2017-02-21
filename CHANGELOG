@@ -1,4 +1,7 @@
 1.5.1 (Pending)
+* Fixed:  GWT Addon: The GWT project publishes invalid jars that can not be included on source path when
+          the javadoc tool is executing. Work around this issue in GWT by removing them from the documentation
+          class path.
 * Change: IDEA: Change the ordering of dependencies in the IDE module descriptor such that test dependencies are
           first to allow test dependencies to override/shadow compile dependencies.
 * Fixed:  IDEA: Correctly configure the IDE module if the language level differs from the root project language level.
