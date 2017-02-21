@@ -538,14 +538,27 @@ module Buildr #:nodoc:
           generate_initial_order_entries(xml)
           project_dependencies = []
 
+          # If a project dependency occurs as a main dependency then add it to the list
+          # that are excluded from list of test modules
           self.main_dependency_details.each do |dependency_path, export, source_path|
             next unless export
-            generate_lib(xml, dependency_path, export, source_path, project_dependencies)
+            project_for_dependency = Buildr.projects.detect do |project|
+              [project.packages, project.compile.target, project.resources.target, project.test.compile.target, project.test.resources.target].flatten.
+                detect { |artifact| artifact.to_s == dependency_path }
+            end
+            project_dependencies << project_for_dependency if project_for_dependency
           end
 
+          main_project_dependencies = project_dependencies.dup
           self.test_dependency_details.each do |dependency_path, export, source_path|
             next if export
             generate_lib(xml, dependency_path, export, source_path, project_dependencies)
+          end
+
+          test_project_dependencies = project_dependencies - main_project_dependencies
+          self.main_dependency_details.each do |dependency_path, export, source_path|
+            next unless export
+            generate_lib(xml, dependency_path, export, source_path, test_project_dependencies)
           end
 
           xml.orderEntryProperties

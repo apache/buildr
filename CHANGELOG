@@ -1,4 +1,6 @@
 1.5.1 (Pending)
+* Change: IDEA: Change the ordering of dependencies in the IDE module descriptor such that test dependencies are
+          first to allow test dependencies to override/shadow compile dependencies.
 * Fixed:  IDEA: Correctly configure the IDE module if the language level differs from the root project language level.
 * Change: Add css2gss task to gwt addon to support conveting from deprecated css syntax to modern gss syntax.
 * Change: Add support for gwt 2.8.0 to gwt addon.
