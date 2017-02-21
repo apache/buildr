@@ -145,10 +145,25 @@ module Buildr
 
         Java::Commands.java 'com.google.gwt.dev.codeserver.CodeServer', *(args + [{:classpath => cp, :properties => properties, :java_args => java_args, :pathing_jar => false}])
       end
+
+      def gwt_css2gss(filenames, options = {})
+        cp = Buildr.artifacts(self.dependencies(options[:version])).each(&:invoke).map(&:to_s)
+        properties = options[:properties] ? options[:properties].dup : {}
+        java_args = options[:java_args] ? options[:java_args].dup : {}
+        Java::Commands.java 'com.google.gwt.resources.converter.Css2Gss', *([filenames] + [{ :classpath => cp, :properties => properties, :java_args => java_args, :pathing_jar => false }])
+      end
     end
 
     module ProjectExtension
       include Extension
+
+      first_time do
+        desc 'Run C22 to GSS converter. Set css files via environment variable CSS_FILES'
+        task('css2gss') do
+          raise 'Please specify css files or directory via variable CSS_FILES' unless ENV['CSS_FILES']
+          Buildr::GWT.gwt_css2gss(ENV['CSS_FILES'].to_s.split(' '))
+        end
+      end
 
       def gwt(module_names, options = {})
         p = options[:target_project]

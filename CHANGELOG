@@ -1,4 +1,5 @@
 1.5.1 (Pending)
+* Change: Add css2gss task to gwt addon to support conveting from deprecated css syntax to modern gss syntax.
 * Change: Add support for gwt 2.8.0 to gwt addon.
 * Change: Remove orderedhash gem.
 * Change: Update jruby-openssl to 0.9.17
