@@ -64,7 +64,7 @@
 * Change: Update the custom_pom addon to generate poms with exclusions section that excludes
           all transitive dependencies. This is required as buildr dependencies are not
           transitive while Maven's dependencies are transitive by default.
-* Change: Remove the BND aqute maven repository, as it was decomissioned. Use Maven Central instead.
+* Change: Remove the BND aqute maven repository, as it was decommissioned. Use Maven Central instead.
 
 1.4.25 (2016-04-18)
 * Change: BUILDR-712 Update jruby-openssl dependency version or support a range of versions
