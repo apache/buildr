@@ -54,8 +54,10 @@ module Buildr
           args << log_level
         end
         args << '-strict'
-        args << '-style'
-        args << style
+        unless style == 'OBFUSCATED'
+          args << '-style'
+          args << style
+        end
         args << '-localWorkers'
         args << workers
         args << '-war'
