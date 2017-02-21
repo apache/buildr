@@ -15,7 +15,6 @@
 
 module Buildr
   module GWT
-
     class << self
 
       def version=(version)
