@@ -22,7 +22,7 @@ module Buildr
       end
 
       def version
-        @version || Buildr.settings.build['gwt'] || '2.7.0'
+        @version || Buildr.settings.build['gwt'] || '2.8.0'
       end
 
       # The specs for requirements
@@ -33,11 +33,49 @@ module Buildr
         gwt_dev_jar = "com.google.gwt:gwt-dev:jar:#{v}"
         if v <= '2.6.1'
           [gwt_dev_jar] + validation_deps
-        else
+        elsif v == '2.7.0'
           [
             gwt_dev_jar,
             'org.ow2.asm:asm:jar:5.0.3'
           ] + validation_deps
+        elsif v == '2.8.0'
+          %w(
+              com.google.jsinterop:jsinterop-annotations:jar:1.0.1
+              com.google.jsinterop:jsinterop-annotations:jar:sources:1.0.1
+              org.w3c.css:sac:jar:1.3
+              com.google.gwt:gwt-dev:jar:2.8.0
+              com.google.gwt:gwt-user:jar:2.8.0
+              com.google.code.gson:gson:jar:2.6.2
+              org.ow2.asm:asm:jar:5.0.3
+              org.ow2.asm:asm-util:jar:5.0.3
+              org.ow2.asm:asm-tree:jar:5.0.3
+              org.ow2.asm:asm-commons:jar:5.0.3
+              colt:colt:jar:1.2.0
+              ant:ant:jar:1.6.5
+              commons-collections:commons-collections:jar:3.2.2
+              commons-io:commons-io:jar:2.4
+              com.ibm.icu:icu4j:jar:50.1.1
+              tapestry:tapestry:jar:4.0.2
+
+              javax.annotation:javax.annotation-api:jar:1.2
+              javax.servlet:javax.servlet-api:jar:3.1.0
+              org.eclipse.jetty:jetty-annotations:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-continuation:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-http:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-io:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-jndi:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-plus:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-security:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-server:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-servlet:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-servlets:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-util:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-webapp:jar:9.2.14.v20151106
+              org.eclipse.jetty:jetty-xml:jar:9.2.14.v20151106
+              org.eclipse.jetty.toolchain:jetty-schemas:jar:3.1.M0
+          ) + validation_deps
+        else
+          raise "Unknown GWT version #{v}"
         end
       end
 
@@ -72,7 +110,7 @@ module Buildr
           args << '-draftCompile'
         end
 
-        if options[:enable_closure_compiler].nil? || options[:enable_closure_compiler]
+        if options[:enable_closure_compiler] && options[:version] == '2.7.0'
           args << '-XenableClosureCompiler'
         end
 
