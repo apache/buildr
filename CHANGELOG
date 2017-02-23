@@ -1,4 +1,7 @@
 1.5.1 (Pending)
+* Change: In the 'buildr/git_auto_version' addon strip out any versions that start with a 'v' character as
+          most projects on git repositories prefix version tags with a "v" to avoid collisions with any branchs
+          named after the version which are typically without the "v" character.
 * Fixed:  GWT Addon: The GWT project publishes invalid jars that can not be included on source path when
           the javadoc tool is executing. Work around this issue in GWT by removing them from the documentation
           class path.

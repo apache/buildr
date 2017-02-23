@@ -22,7 +22,9 @@ module Buildr
         unless project.version
           version_suffix = ENV['BUILD_NUMBER'] ? "-#{ENV['BUILD_NUMBER']}" : ''
           version_prefix = ENV['VERSION_PREFIX'] ? "#{ENV['VERSION_PREFIX']}-" : ''
-          project.version = version_prefix + `git describe --tags --always`.strip + version_suffix
+          git_version = `git describe --tags --always`.strip
+          git_version = git_version.gsub(/^v([0-9])/, '\1')
+          project.version = version_prefix + git_version + version_suffix
         end
       end
     end
