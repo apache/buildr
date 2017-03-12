@@ -46,6 +46,13 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
+Highlights from Buildr 1.5.1 (2017-03-11)
+* Change: Add css2gss task to gwt addon to support conveting from deprecated css syntax to modern gss syntax.
+* Change: Add support for gwt 2.8.0 to gwt addon.
+* Change: Update jruby-openssl to 0.9.17
+* Change: BUILDR-719 Change User-Agent when uploading artifacts
+* Change: BUILDR-709 Integrate `buildr/custom_pom` into core and just make it the default pom generated.
+
 Highlights from Buildr 1.5.0 (2016-09-23)
 * Change: Move to default on Scala 2.11.
 * Added:  BUILDR-577 Allow remote repo to be added with http basic auth support. Submitted by Michael Guymon.
