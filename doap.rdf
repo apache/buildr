@@ -37,6 +37,38 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.5.1</name>
+        <created>2017-03-11</created>
+        <revision>1.5.1</revision>
+        <dc:description>
+* Change: In the 'buildr/git_auto_version' addon strip out any versions that start with a 'v' character as
+          most projects on git repositories prefix version tags with a "v" to avoid collisions with any branchs
+          named after the version which are typically without the "v" character.
+* Fixed:  GWT Addon: The GWT project publishes invalid jars that can not be included on source path when
+          the javadoc tool is executing. Work around this issue in GWT by removing them from the documentation
+          class path.
+* Change: IDEA: Change the ordering of dependencies in the IDE module descriptor such that test dependencies are
+          first to allow test dependencies to override/shadow compile dependencies.
+* Fixed:  IDEA: Correctly configure the IDE module if the language level differs from the root project language level.
+* Change: Add css2gss task to gwt addon to support conveting from deprecated css syntax to modern gss syntax.
+* Change: Add support for gwt 2.8.0 to gwt addon.
+* Change: Remove orderedhash gem.
+* Change: Update jruby-openssl to 0.9.17
+* Change: Move hoe to the development dependencies
+* Fixed:  BUILDR-728 Snapshots metadata incorrectly created
+* Fixed:  BUILDR-718 Deprecate SVN repository - remove links to SVN
+* Change: BUILDR-724 Use scalamain to call scala projects
+* Change: BUILDR-719 Change User-Agent when uploading artifacts
+* Change: Set the OPEN_IN_BROWSER to false when building idea launch targets via add_glassfish_remote_configuration.
+* Change: BUILDR-709 Integrate `buildr/custom_pom` into core and just make it the default pom generated.
+* Fixed:  BUILDR-563 protobuf addon including source directories to protoc breaks build
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.5.0</name>
         <created>2016-09-23</created>
         <revision>1.5.0</revision>

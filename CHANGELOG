@@ -1,3 +1,5 @@
+1.5.2 (Pending)
+
 1.5.1 (2017-03-11)
 * Change: In the 'buildr/git_auto_version' addon strip out any versions that start with a 'v' character as
           most projects on git repositories prefix version tags with a "v" to avoid collisions with any branchs
