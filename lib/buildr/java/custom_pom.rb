@@ -161,7 +161,6 @@ module Buildr
           candidates = project.packages.select{|p| p.classifier.nil? }.collect{|p|p.type.to_s}
           packaging = !candidates.empty? ? candidates[0] : (project.compile.packaging || :zip).to_s
           xml.packaging packaging
-          xml.classifier package.classifier if package.classifier
 
           xml.name project.pom.name if project.pom.name
           xml.description project.pom.description if project.pom.description
