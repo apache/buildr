@@ -25,8 +25,7 @@ module Buildr
         ]
       end
 
-      def sonar(jdbc_url, jdbc_driver_class_name, jdbc_username, jdbc_password, host_url, project_name, key, sources, binaries, libraries)
-
+      def sonar(jdbc_url, jdbc_driver_class_name, jdbc_username, jdbc_password, host_url, project_name, key, project_version, sources, binaries, libraries)
         # Build the artifacts for FindBugs to analyse
         Buildr.artifacts(binaries).each(&:invoke)
 
@@ -38,7 +37,7 @@ module Buildr
           ant.property :name => 'sonar.projectName', :value => project_name
 
           ant.property :name => 'sonar.projectKey', :value => key
-          ant.property :name => 'sonar.projectVersion', :value => '1.0'
+          ant.property :name => 'sonar.projectVersion', :value => project_version
 
           ant.property :name => 'sonar.jdbc.url', :value => jdbc_url
           ant.property :name => 'sonar.jdbc.driverClassName', :value => jdbc_driver_class_name
@@ -68,6 +67,7 @@ module Buildr
       attr_accessor :host_url
       attr_accessor :key
       attr_accessor :project_name
+      attr_accessor :project_version
 
       attr_writer :sources
       def sources
@@ -86,6 +86,10 @@ module Buildr
 
       def enabled?
         !!@enabled
+      end
+
+      def project_version
+        @project_version || '1.0'
       end
 
       protected
@@ -123,6 +127,7 @@ module Buildr
               project.sonar.host_url,
               project.sonar.project_name,
               project.sonar.key,
+              project.sonar.project_version,
               sources,
               binaries,
               libraries
