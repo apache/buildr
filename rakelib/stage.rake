@@ -70,7 +70,7 @@ task 'prepare' do |task, args|
   lambda do
     gpg_arg or fail 'Please run with gpg=<argument for gpg --local-user>'
     gpg_ok = `gpg2 --list-keys #{gpg_arg}` rescue nil
-    if !$?.success?
+    unless $?.success?
       gpg_ok = `gpg --list-keys #{gpg_arg}`
       gpg_cmd = 'gpg'
     end
