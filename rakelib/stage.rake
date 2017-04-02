@@ -21,10 +21,7 @@ gpg_cmd = 'gpg2'
 STAGE_DATE = ENV['STAGE_DATE'] ||  Time.now.strftime('%Y-%m-%d')
 RC_VERSION = ENV['RC_VERSION'] || ''
 
-task 'prepare' do |task, args|
-  gpg_arg = args.gpg || ENV['gpg']
-  user = args.user || ENV['user'] || `whoami`
-
+task 'prepare' do
   # Update source files to next release number.
   lambda do
     current_version = spec.version.to_s.split('.').map { |v| v.to_i }.
@@ -68,7 +65,10 @@ task 'prepare' do |task, args|
 
   # Need GPG to sign the packages.
   lambda do
-    gpg_arg or fail 'Please run with gpg=<argument for gpg --local-user>'
+    raise "ENV['GPG_USER'] not specified" unless ENV['GPG_USER']
+
+    gpg_arg = ENV['GPG_USER']
+    gpg_arg or fail 'Please run with GPG_USER=<argument for gpg --local-user>'
     gpg_ok = `gpg2 --list-keys #{gpg_arg}` rescue nil
     unless $?.success?
       gpg_ok = `gpg --list-keys #{gpg_arg}`
@@ -91,8 +91,7 @@ task 'prepare' do |task, args|
   raise 'Can not run staging process under older rubies' unless RUBY_VERSION >= '1.9'
 end
 
-task 'stage' => %w(clobber prepare) do |task, args|
-  gpg_arg = args.gpg || ENV['gpg']
+task 'stage' => %w(clobber prepare) do
   mkpath '_staged'
 
   lambda do
@@ -128,7 +127,23 @@ task 'stage' => %w(clobber prepare) do |task, args|
       bytes = File.open(pkg, 'rb') { |file| file.read }
       File.open(pkg + '.md5', 'w') { |file| file.write Digest::MD5.hexdigest(bytes) << ' ' << File.basename(pkg) }
       File.open(pkg + '.sha1', 'w') { |file| file.write Digest::SHA1.hexdigest(bytes) << ' ' << File.basename(pkg) }
-      sh gpg_cmd, '--local-user', gpg_arg, '--armor', '--output', pkg + '.asc', '--detach-sig', pkg, :verbose=>true
+
+      cmd = []
+      cmd << gpg_cmd
+      cmd << '--local-user'
+      cmd << ENV['GPG_USER']
+      cmd << '--armor'
+      if ENV['GPG_PASS']
+        cmd << '--batch'
+        cmd << '--passphrase'
+        cmd << ENV['GPG_PASS']
+      end
+      cmd << '--output'
+      cmd << pkg + '.asc'
+      cmd << '--detach-sig'
+      cmd << pkg
+
+      sh *cmd, :verbose=>true
     end
     cp 'etc/KEYS', '_staged/dist'
     puts '[X] Created and signed release packages in _staged/dist'

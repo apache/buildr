@@ -13,12 +13,10 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-RC_VERSION = ENV['RC_VERSION'] || ""
+RC_VERSION = ENV['RC_VERSION'] || ''
 
 desc 'Release the next version of buildr from existing staged repository'
-task 'release' do |task, args|
-  user = args.user || ENV['user'] || `whoami`
-
+task 'release' do
   # First, we need to get all the staged files from Apache to _release.
   mkpath '_release'
   lambda do
