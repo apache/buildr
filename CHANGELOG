@@ -1,4 +1,5 @@
 1.5.2 (Pending)
+* Change: Update TestNG version to 6.11.
 * Change: BUILDR-731 - Enhance Sonar addon to support configuration of the project version. Submitted by Ross Mahony.
 * Fixed:  Fix pom generation to eliminate invalid `classifier` element from being added to POM.
 

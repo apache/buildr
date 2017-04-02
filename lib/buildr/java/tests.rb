@@ -283,7 +283,7 @@ module Buildr #:nodoc:
   # * :args -- Arguments passed to the TestNG command line runner.
   class TestNG < TestFramework::Java
 
-    VERSION = '6.8.7'
+    VERSION = '6.11'
 
     class << self
       def version
