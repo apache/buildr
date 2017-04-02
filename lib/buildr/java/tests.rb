@@ -291,7 +291,7 @@ module Buildr #:nodoc:
       end
 
       def dependencies
-        return ["org.testng:testng:jar:jdk15:#{version}"] + JMock.dependencies if version < "6.0"
+        return ["org.testng:testng:jar:jdk15:#{version}"] + JMock.dependencies if version < '6.0'
         ["org.testng:testng:jar:#{version}",'com.beust:jcommander:jar:1.27'] + JMock.dependencies
       end
     end
