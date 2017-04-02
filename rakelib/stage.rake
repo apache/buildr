@@ -93,7 +93,6 @@ end
 
 task 'stage' => %w(clobber prepare) do |task, args|
   gpg_arg = args.gpg || ENV['gpg']
-  user = args.user || ENV['user'] || `whoami`
   mkpath '_staged'
 
   lambda do
