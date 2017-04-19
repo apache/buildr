@@ -22,7 +22,7 @@ module Buildr #:nodoc:
   module Ant
 
     # Which version of Ant we're using by default.
-    VERSION = '1.8.3'
+    VERSION = '1.9.7'
 
     class << self
       # Current version of Ant being used.
