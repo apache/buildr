@@ -1,4 +1,5 @@
 1.5.3 (Pending)
+* Change: Add support for gwt 2.8.1 to gwt addon.
 * Fixed:  Avoid error "undefined local variable or method `pom'" when invoking the `JarTask` without it being
   registered through the `package` helper`. Reported by Dieter Vrancken.
 
