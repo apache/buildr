@@ -1,4 +1,6 @@
 1.5.3 (Pending)
+* Fixed:  Avoid error "undefined local variable or method `pom'" when invoking the `JarTask` without it being
+  registered through the `package` helper`. Reported by Dieter Vrancken.
 
 1.5.2 (2017-04-03)
 * Change: Update TestNG version to 6.11.
