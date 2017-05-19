@@ -37,6 +37,20 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.5.3</name>
+        <created>2017-05-17</created>
+        <revision>1.5.3</revision>
+        <dc:description>
+* Change: Add support for gwt 2.8.1 to gwt addon.
+* Fixed:  Avoid error "undefined local variable or method `pom'" when invoking the `JarTask` without it being
+  registered through the `package` helper`. Reported by Dieter Vrancken.
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.5.2</name>
         <created>2017-04-03</created>
         <revision>1.5.2</revision>
