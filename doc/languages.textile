@@ -490,6 +490,29 @@ end
 
 The @doc@ task is *not* joint-compilation aware.  Thus, it will only generate ScalaDoc for mixed-source projects, it will not attempt to generate both JavaDoc and ScalaDoc.
 
+h2(#kotlin). Kotlin
+
+h3. Compiling Kotlin
+
+To start using Kotlin, you must first require it on your Buildfile:
+
+{% highlight ruby %}
+require 'buildr/kotlin'
+{% endhighlight %}
+
+Any project with a .kt file under the @src/main/kotlin@ directory (by default), compiling them into @target/classes@.
+
+If the project has any java files, they will be compiled using javac.
+
+|_. Option        |_. Usage |
+| @verbose@           | Asks the compiler for verbose output, true when running in verbose mode. |
+| @fork@              | Whether to execute groovyc using a spawned instance of the JVM.  Defaults to no. |
+| @warnings@          | Issue warnings when compiling.  True when running in verbose mode. |
+| @debug@             | Generates bytecode with debugging information.  Set from the debug environment variable/global option. |
+| @optimize@          | Generates faster bytecode by applying optimisations to the program. |
+| @noStdlib@          | Include the Kotlin runtime libraries from KOTLIN_HOME in the classpath of the compiler. |
+| @target@            | Bytecode compatibility. |
+| @javac@             | Hash of options passed to the ant javac task. |
 
 h2(#groovy). Groovy
 
@@ -526,7 +549,6 @@ The Groovy compiler supports the following options:
 | @source@            | Source code compatibility. |
 | @target@            | Bytecode compatibility. |
 | @javac@             | Hash of options passed to the ant javac task. |
-
 
 h3. Testing with Groovy
 

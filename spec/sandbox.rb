@@ -39,6 +39,7 @@ require 'buildr/groovy'
 require 'buildr/scala'
 require 'buildr/bnd'
 require 'buildr/jaxb_xjc'
+require 'buildr/kotlin'
 
 Java.load # Anything added to the classpath.
 artifacts(
