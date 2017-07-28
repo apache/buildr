@@ -1,5 +1,6 @@
 1.5.4 (Pending)
 * Added: Support to compiling Kotlin
+* Fixed: Remove section on development builds in the Contributing section.
 
 1.5.3 (2017-05-17)
 * Change: Add support for gwt 2.8.1 to gwt addon.

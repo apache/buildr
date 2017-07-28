@@ -99,25 +99,6 @@ The _install_ task creates a Gem in your working directory (_pkg/_) and install 
 
 Both _setup_ and _install_ tasks use the @sudo@ command on platforms that require it (i.e. not Windows), so there's no need to run @sudo rake@ when working with the Buildr source code.
 
-
-h3. Using development build
-
-Occasionally we'll make development builds from the current code in trunk/head. We appreciate if you can take the time to test those out and report any bugs. To install development builds, use the Gem repository at @people.apache.org/~assaf/buildr/snapshot@:
-
-{% highlight sh %}
-gem source --add http://people.apache.org/~assaf/buildr/snapshot/
-{% endhighlight %}
-
-Since Ruby Gems uses version numbers to detect new releases, if you installed Buildr from a snapshot and want to upgrade to a newer snapshot or the latest official release, you need to use @gem install buildr@ rather than @gem upgrade@.
-
-If you want to go back to using the RubyForge releases:
-
-{% highlight sh %}
-gem source --remove http://people.apache.org/~assaf/buildr/snapshot/
-gem install buildr
-{% endhighlight %}
-
-
 h2(#testing).  Tested and Documented
 
 Two things we definitely encourage!
