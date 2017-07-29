@@ -49,7 +49,7 @@ module Buildr #:nodoc:
       @entries ||= Zip::File.open(name) { |zip| zip.entries }
     end
 
-  private
+    private
 
     def create_from(file_map)
       Zip::OutputStream.open name do |zip|
@@ -65,21 +65,32 @@ module Buildr #:nodoc:
 
         paths = file_map.keys.sort
         paths.each do |path|
-          content = file_map[path]
+          contents = file_map[path]
           warn "Warning:  Path in zipfile #{name} contains backslash: #{path}" if path =~ /\\/
-          mkpath.call File.dirname(path)
-          if content.respond_to?(:call)
-            entry = zip.put_next_entry(path, compression_level)
-            entry.unix_perms = content.mode & 07777 if content.respond_to?(:mode)
-            content.call zip
-          elsif content.nil? || File.directory?(content.to_s)
-            mkpath.call path
-          else
-            entry = zip.put_next_entry(path, compression_level)
-            File.open content.to_s, 'rb' do |is|
-              entry.unix_perms = is.stat.mode & 07777
-              while data = is.read(4096)
-                zip << data
+          
+          entry_created = false
+          [contents].flatten.each do |content|
+            if content.respond_to?(:call)
+              unless entry_created
+                entry = zip.put_next_entry(path, compression_level) unless entry_created
+                entry.unix_perms = content.mode & 07777 if content.respond_to?(:mode)
+                entry_created = true
+              end
+              content.call zip
+            elsif content.nil? || File.directory?(content.to_s)
+              mkpath.call path
+            else
+              File.open content.to_s, 'rb' do |is|
+                unless entry_created
+                  entry = zip.put_next_entry(path, compression_level)
+                  entry.unix_perms = is.stat.mode & 07777
+                  entry_created = true
+                end
+                
+                
+                while data = is.read(4096)
+                  zip << data
+                end
               end
             end
           end
@@ -304,7 +315,7 @@ module Buildr #:nodoc:
           if entry.name =~ /^#{@path}/
             short = entry.name.sub(@path, '')
             if includes.any? { |pat| File.fnmatch(pat, short) } &&
-               !excludes.any? { |pat| File.fnmatch(pat, short) }
+              !excludes.any? { |pat| File.fnmatch(pat, short) }
               map[short] = entry
             end
           end

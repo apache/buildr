@@ -306,6 +306,20 @@ shared_examples_for 'ArchiveTask' do
       inspect_archive.should be_empty
     end
   end
+  
+  it 'should merge archives, aggregating file contents' do
+    @files = %w{foo1 foo2}.map { |folder| File.join(@dir, folder) }.
+      map do |dir|
+        txt_file = File.join(dir, 'test1.txt')
+        write txt_file, content_for('test1.txt')
+        zip(File.join(dir, 'test1.zip')).include(txt_file)
+      end
+    archive(@archive).merge(@files).aggregate("test1.txt")
+    archive(@archive).invoke
+    inspect_archive do |archive|
+      archive['test1.txt'].should eql(content_for('test1.txt') * @files.size)
+    end
+  end
 
   it 'should expand another archive file into path' do
     create_for_merge do |src|

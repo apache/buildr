@@ -267,6 +267,11 @@ module Buildr #:nodoc:
         @expanders.each { |expander| expander.exclude(*files) }
         self
       end
+      
+      def aggregate(*files)
+        @expanders.each { |expander| expander.aggregate(*files) }
+        self
+      end
     end
 
 
@@ -277,6 +282,7 @@ module Buildr #:nodoc:
         @zip_file = zip_file.to_s
         @includes = []
         @excludes = []
+        @aggregates = []
       end
 
       def include(*files)
@@ -289,6 +295,11 @@ module Buildr #:nodoc:
         @excludes |= files
         self
       end
+      
+      def aggregate(*files)
+        @aggregates |= files
+        self
+      end
 
       def expand(file_map, path)
         @includes = ['*'] if @includes.empty?
@@ -298,7 +309,11 @@ module Buildr #:nodoc:
                !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name) }
               dest = path =~ /^\/?$/ ? entry.name : Util.relative_path(path + "/" + entry.name)
               trace "Adding #{dest}"
-              file_map[dest] = ZipEntryData.new(source, entry)
+              if @aggregates.any? { |pattern| File.fnmatch(pattern, entry.name) }
+                file_map[dest] << ZipEntryData.new(source, entry)
+              else
+                file_map[dest] = ZipEntryData.new(source, entry)
+              end
             end
           end
         end
@@ -327,7 +342,7 @@ module Buildr #:nodoc:
 
       # Make sure we're the last enhancements, so other enhancements can add content.
       enhance do
-        @file_map = {}
+        @file_map = Hash.new {|h,k| h[k]=[]}
         enhance do
           send 'create' if respond_to?(:create)
           # We're here because the archive file does not exist, or one of the files is newer than the archive contents;
@@ -485,7 +500,7 @@ module Buildr #:nodoc:
       @prepares.each { |prepare| prepare.call(self) }
       @prepares.clear
 
-      file_map = {}
+      file_map = Hash.new {|h,k| h[k]=[]}
       @paths.each do |name, path|
         path.add_files(file_map)
       end

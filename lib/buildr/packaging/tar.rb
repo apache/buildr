@@ -72,7 +72,7 @@ module Buildr #:nodoc:
       end
     end
 
-  private
+    private
 
     def create_from(file_map)
       if gzip
@@ -90,22 +90,38 @@ module Buildr #:nodoc:
       Archive::Tar::Minitar::Writer.open(out) do |tar|
         options = { :mode=>mode || '0755', :mtime=>Time.now }
 
-        file_map.each do |path, content|
-          if content.respond_to?(:call)
-            tar.add_file(path, content.respond_to?(:mode) ? options.merge(:mode => content.mode) : options) { |os, _| content.call os }
-          elsif content.nil?
-          elsif File.directory?(content.to_s)
-            stat = File.stat(content.to_s)
+        file_map.each do |path, contents|
+          if contents.nil?
+          elsif File.directory?(contents.to_s)
+            stat = File.stat(contents.to_s)
             tar.mkdir(path, options.merge(:mode=>stat.mode, :mtime=>stat.mtime, :uid=>stat.uid, :gid=>stat.gid))
           else
-            File.open content.to_s, 'rb' do |is|
-              tar.add_file path, options.merge(:mode=>is.stat.mode, :mtime=>is.stat.mtime, :uid=>is.stat.uid, :gid=>is.stat.gid) do |os, opts|
-                while data = is.read(4096)
-                  os.write(data)
+            contents = [contents].flatten
+            
+            combined_options = options
+            if File.exists?(contents.first.to_s)
+              stat = File.stat(contents.first.to_s)
+              combined_options = options.merge(:mode=> stat.mode, :mtime=> stat.mtime, :uid=>stat.uid, :gid=> stat.gid)
+            elsif contents.first.respond_to?(:mode)
+              combined_options = combined_options.merge(:mode => contents.first.mode)
+            end
+              
+            
+            tar.add_file path, combined_options do |os, opts|
+              [contents].flatten.each do |content|
+                if content.respond_to?(:call)
+                  content.call os
+                else
+                  File.open content.to_s, 'rb' do |is| 
+                    while data = is.read(4096)
+                      os.write(data)
+                    end
+                  end
                 end
               end
             end
           end
+          
         end
       end
     end
@@ -128,7 +144,7 @@ module Buildr #:nodoc:
     def contain?(*patterns)
       content = read_content_from_tar
       patterns.map { |pattern| Regexp === pattern ? pattern : Regexp.new(Regexp.escape(pattern.to_s)) }.
-        all? { |pattern| content =~ pattern }
+      all? { |pattern| content =~ pattern }
     end
 
     # :call-seq:
