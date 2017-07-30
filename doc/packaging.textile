@@ -142,6 +142,8 @@ For example, when you use @package :jar@, under the hood it specifies to include
 
 If you need to get rid of all the included files, call the @clean@ method. Some packaging types default to adding various files and directories, for example, JAR packaging will include all the compiled classes and resources.
 
+h2(#merging). Merging archives
+
 You can also merge two ZIP files together, expanding the content of one ZIP into the other.  For example:
 
 {% highlight ruby %}
@@ -153,6 +155,25 @@ If you need to be more selective, you can apply the include/exclude pattern to t
 {% highlight ruby %}
 # Everything but the libs
 package(:zip).merge(_('bigbad.war')).exclude('libs/**/*')
+{% endhighlight %}
+
+h3(#transforming). Transforming files while merging them
+
+You may need to have special treatment for files that you are merging from multiple locations.
+
+If you wish to concatenate the file contents, you can perform the following:
+
+{% highlight ruby %}
+package(:zip).merge(_('part1.zip'), _('part2.zip')).concatenate('META-INF/services/spring.providers')
+{% endhighlight %}
+
+If you need to transform the file contents to assemble the final output, you can work with the @transform@ method.
+The transform method takes a block to process the contents of all the matching paths, as the zip file is assembled.
+
+{% highlight ruby %}
+package(:zip).merge(_('part1.zip'), _('part2.zip')).transform('plugin.xml') do |plugin_xml_files|
+  return "<plugin>#{plugin_xml_files.map {|xml| xml.match('<plugin>(.*)</plugin>')[1]}}</plugin>"
+end
 {% endhighlight %}
 
 
