@@ -268,8 +268,8 @@ module Buildr #:nodoc:
         self
       end
       
-      def aggregate(*files)
-        @expanders.each { |expander| expander.aggregate(*files) }
+      def concatenate(*files)
+        @expanders.each { |expander| expander.concatenate(*files) }
         self
       end
     end
@@ -282,7 +282,7 @@ module Buildr #:nodoc:
         @zip_file = zip_file.to_s
         @includes = []
         @excludes = []
-        @aggregates = []
+        @concatenates = []
       end
 
       def include(*files)
@@ -296,8 +296,8 @@ module Buildr #:nodoc:
         self
       end
       
-      def aggregate(*files)
-        @aggregates |= files
+      def concatenate(*files)
+        @concatenates |= files
         self
       end
 
@@ -309,7 +309,7 @@ module Buildr #:nodoc:
                !@excludes.any? { |pattern| File.fnmatch(pattern, entry.name) }
               dest = path =~ /^\/?$/ ? entry.name : Util.relative_path(path + "/" + entry.name)
               trace "Adding #{dest}"
-              if @aggregates.any? { |pattern| File.fnmatch(pattern, entry.name) }
+              if @concatenates.any? { |pattern| File.fnmatch(pattern, entry.name) }
                 file_map[dest] << ZipEntryData.new(source, entry)
               else
                 file_map[dest] = ZipEntryData.new(source, entry)
