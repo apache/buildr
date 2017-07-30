@@ -2,6 +2,7 @@
 * Added: Support to compiling Kotlin
 * Fixed: Remove section on development builds in the Contributing section.
 * Added: New way to concatenate file contents when merging several archives together.
+* Added: New way to transform file contents when merging several archives together.
 
 1.5.3 (2017-05-17)
 * Change: Add support for gwt 2.8.1 to gwt addon.

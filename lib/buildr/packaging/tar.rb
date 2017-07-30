@@ -74,23 +74,25 @@ module Buildr #:nodoc:
 
     private
 
-    def create_from(file_map)
+    def create_from(file_map, transform_map)
       if gzip
         StringIO.new.tap do |io|
-          create_tar io, file_map
+          create_tar io, file_map, transform_map
           io.seek 0
           Zlib::GzipWriter.open(name) { |gzip| gzip.write io.read }
         end
       else
-        File.open(name, 'wb') { |file| create_tar file, file_map }
+        File.open(name, 'wb') { |file| create_tar file, file_map, transform_map }
       end
     end
 
-    def create_tar(out, file_map)
+    def create_tar(out, file_map, transform_map)
       Archive::Tar::Minitar::Writer.open(out) do |tar|
         options = { :mode=>mode || '0755', :mtime=>Time.now }
 
         file_map.each do |path, contents|
+          to_transform = []
+          transform = transform_map.key?(path)
           if contents.nil?
           elsif File.directory?(contents.to_s)
             stat = File.stat(contents.to_s)
@@ -110,14 +112,31 @@ module Buildr #:nodoc:
             tar.add_file path, combined_options do |os, opts|
               [contents].flatten.each do |content|
                 if content.respond_to?(:call)
-                  content.call os
+                  if transform
+                    output = StringIO.new
+                    content.call output
+                    to_transform << output.string
+                  else
+                    content.call os
+                  end
                 else
                   File.open content.to_s, 'rb' do |is| 
-                    while data = is.read(4096)
-                      os.write(data)
+                    if transform
+                      output = StringIO.new
+                      while data = is.read(4096)
+                        output << data
+                      end
+                      to_transform << output.string
+                    else
+                      while data = is.read(4096)
+                        os.write(data)
+                      end
                     end
                   end
                 end
+              end
+              if transform_map.key?(path)
+                os.write(transform_map[path].call(to_transform))
               end
             end
           end

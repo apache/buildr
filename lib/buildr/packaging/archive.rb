@@ -112,9 +112,9 @@ module Buildr #:nodoc:
         expanders = files.collect do |file|
           @sources << proc { file.to_s }
           expander = ZipExpander.new(file)
-          @actions << proc do |file_map|
+          @actions << proc do |file_map, transform_map|
             file.invoke() if file.is_a?(Rake::Task)
-            expander.expand(file_map, path)
+            expander.expand(file_map, transform_map, path)
           end
           expander
         end
@@ -133,8 +133,8 @@ module Buildr #:nodoc:
         @sources.map{ |source| source.call }.flatten
       end
 
-      def add_files(file_map) #:nodoc:
-        @actions.each { |action| action.call(file_map) }
+      def add_files(file_map, transform_map) #:nodoc:
+        @actions.each { |action| action.call(file_map, transform_map) }
       end
 
       # :call-seq:
@@ -272,6 +272,11 @@ module Buildr #:nodoc:
         @expanders.each { |expander| expander.concatenate(*files) }
         self
       end
+      
+      def transform(*files, &block)
+        @expanders.each { |expander| expander.transform(*files, &block) }
+        self
+      end
     end
 
 
@@ -283,6 +288,7 @@ module Buildr #:nodoc:
         @includes = []
         @excludes = []
         @concatenates = []
+        @transforms = {}
       end
 
       def include(*files)
@@ -300,8 +306,13 @@ module Buildr #:nodoc:
         @concatenates |= files
         self
       end
+      
+      def transform(*files, &block)
+        @transforms[[files].flatten] = block
+        self
+      end
 
-      def expand(file_map, path)
+      def expand(file_map, transform_map, path)
         @includes = ['*'] if @includes.empty?
         Zip::File.open(@zip_file) do |source|
           source.entries.reject { |entry| entry.directory? }.each do |entry|
@@ -311,6 +322,14 @@ module Buildr #:nodoc:
               trace "Adding #{dest}"
               if @concatenates.any? { |pattern| File.fnmatch(pattern, entry.name) }
                 file_map[dest] << ZipEntryData.new(source, entry)
+              elsif @transforms.each_pair.detect do |transform, transform_block|\
+                  if transform.any? { |pattern| File.fnmatch(pattern, entry.name) }
+                    file_map[dest] << ZipEntryData.new(source, entry)
+                    
+                    transform_map[dest] = transform_block
+                    true
+                  end
+                end
               else
                 file_map[dest] = ZipEntryData.new(source, entry)
               end
@@ -343,6 +362,7 @@ module Buildr #:nodoc:
       # Make sure we're the last enhancements, so other enhancements can add content.
       enhance do
         @file_map = Hash.new {|h,k| h[k]=[]}
+        @transform_map = {}
         enhance do
           send 'create' if respond_to?(:create)
           # We're here because the archive file does not exist, or one of the files is newer than the archive contents;
@@ -353,9 +373,9 @@ module Buildr #:nodoc:
           begin
             @paths.each do |name, object|
               @file_map[name] = nil unless name.empty?
-              object.add_files(@file_map)
+              object.add_files(@file_map, @transform_map)
             end
-            create_from @file_map
+            create_from @file_map, @transform_map
           rescue
             rm name rescue nil
             raise
@@ -501,8 +521,9 @@ module Buildr #:nodoc:
       @prepares.clear
 
       file_map = Hash.new {|h,k| h[k]=[]}
+      transform_map = {}
       @paths.each do |name, path|
-        path.add_files(file_map)
+        path.add_files(file_map, transform_map)
       end
 
       # filter out Procs (dynamic content), nils and others
