@@ -25,6 +25,6 @@
 /Gemfile.lock
 *.rbc
 /site
-/lib/buildr/scala/org/apache/buildr/Specs2Runner.class
 .bundle
 .DS_Store
+*.class
