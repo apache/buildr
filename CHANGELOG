@@ -4,6 +4,7 @@
 * Added: New way to concatenate file contents when merging several archives together.
 * Added: New way to transform file contents when merging several archives together.
 * Fixed: Removed .class files from being checked in.
+* Added: Support both Jetty 6 and Jetty 9 as addons. Added integration tests to cover their use.
 
 1.5.3 (2017-05-17)
 * Change: Add support for gwt 2.8.1 to gwt addon.

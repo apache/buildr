@@ -36,25 +36,16 @@ module Buildr
   # existing server. Since you are using Jetty across several builds, you will want to
   # cleanup any mess created by each build. You can use the #setup and #teardown tasks,
   # which are called when Jetty is first used in the build, and when the build ends.
-  class Jetty
+  class Jetty6
 
     # Which version of Jetty we're using by default (change with options.jetty.version).
-    VERSION = '9.4.6.v20170531'
-    SLF4J_VERSION = '1.7.25'
+    VERSION = "6.1.3"
+    SLF4J_VERSION = "1.4.3"
 
     # Libraries used by Jetty.
-    REQUIRES = [ "org.eclipse.jetty:jetty-server:jar:#{VERSION}",
-      "org.eclipse.jetty:jetty-webapp:jar:#{VERSION}",
-      "org.eclipse.jetty:jetty-http:jar:#{VERSION}",
-      "org.eclipse.jetty:jetty-util:jar:#{VERSION}",
-      "org.eclipse.jetty:jetty-io:jar:#{VERSION}",
-      "org.eclipse.jetty:jetty-servlet:jar:#{VERSION}",
-      "org.eclipse.jetty:jetty-security:jar:#{VERSION}",
-      "org.eclipse.jetty:jetty-xml:jar:#{VERSION}",
-      "org.slf4j:slf4j-api:jar:#{SLF4J_VERSION}",
-      "org.slf4j:slf4j-simple:jar:#{SLF4J_VERSION}", 
-      "org.slf4j:jcl-over-slf4j:jar:#{SLF4J_VERSION}",
-      'javax.servlet:javax.servlet-api:jar:3.1.0' ]
+    REQUIRES = [ "org.mortbay.jetty:jetty:jar:#{VERSION}", "org.mortbay.jetty:jetty-util:jar:#{VERSION}",
+      "org.mortbay.jetty:servlet-api-2.5:jar:#{VERSION}", "org.slf4j:slf4j-api:jar:#{SLF4J_VERSION}",
+      "org.slf4j:slf4j-simple:jar:#{SLF4J_VERSION}", "org.slf4j:jcl104-over-slf4j:jar:#{SLF4J_VERSION}" ]
 
     Java.classpath <<  REQUIRES
     Java.classpath << File.dirname(__FILE__)
@@ -69,7 +60,7 @@ module Buildr
       #
       # Returns an instance of Jetty.
       def instance()
-        @instance ||= Jetty.new("jetty", URL)
+        @instance ||= Jetty6.new("jetty", URL)
       end
 
     end
@@ -99,7 +90,7 @@ module Buildr
         port = URI.parse(url).port
         puts "Starting Jetty at http://localhost:#{port}" if verbose
         Java.load
-        jetty = Java.org.apache.buildr.JettyWrapper.new(port)
+        jetty = Java.org.apache.buildr.Jetty6Wrapper.new(port)
         sync << "Started" if sync
         sleep # Forever
       rescue Interrupt # Stopped from console
@@ -235,9 +226,9 @@ module Buildr
 
   namespace "jetty" do
     desc "Start an instance of Jetty running in the background"
-    task("start") { Jetty.instance.start }
+    task("start") { Jetty6.instance.start }
     desc "Stop an instance of Jetty running in the background"
-    task("stop") { Jetty.instance.stop }
+    task("stop") { Jetty6.instance.stop }
   end
 
   # :call-seq:
@@ -246,7 +237,7 @@ module Buildr
   # Returns a Jetty object. You can use this to discover the Jetty#use task,
   # configure the Jetty#setup and Jetty#teardown tasks, deploy and undeploy to Jetty.
   def jetty()
-    @jetty ||= Jetty.instance
+    @jetty ||= Jetty6.instance
   end
 
 end

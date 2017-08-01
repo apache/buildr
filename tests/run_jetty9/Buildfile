@@ -1,0 +1,13 @@
+require 'buildr/jetty'
+require 'readline'
+ 
+define "webapp", :group => 'com.example', :version => '1.0' do
+  compile.with(Buildr::Jetty::REQUIRES)
+  
+  task("deploy-app"=>[package(:war), jetty.use]) do |task|
+    class << task ; attr_accessor :url, :path ; end
+    task.url = "http://localhost:8080/hello"
+    task.path = jetty.deploy(task.url, task.prerequisites.first)
+  end
+ 
+end

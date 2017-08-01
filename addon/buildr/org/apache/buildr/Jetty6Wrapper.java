@@ -17,14 +17,14 @@
 
 package org.apache.buildr;
 
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.webapp.WebAppClassLoader;
+import org.mortbay.jetty.Server;
+import org.mortbay.jetty.Request;
+import org.mortbay.jetty.Handler;
+import org.mortbay.jetty.handler.AbstractHandler;
+import org.mortbay.jetty.handler.ContextHandler;
+import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.webapp.WebAppContext;
+import org.mortbay.jetty.webapp.WebAppClassLoader;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -35,12 +35,12 @@ import java.util.HashMap;
 /**
  * @author Matthieu Riou <mriou at apache dot org>
  */
-public class JettyWrapper {
+public class Jetty6Wrapper {
 
     private Server _server;
     private ContextHandlerCollection _handlerColl;
 
-    public JettyWrapper(int port) throws Exception {
+    public Jetty6Wrapper(int port) throws Exception {
         _server = new Server(port);
         // Adding the buildr handler to control our server lifecycle
         ContextHandler context = new ContextHandler();
@@ -51,7 +51,7 @@ public class JettyWrapper {
         _handlerColl = new ContextHandlerCollection();
         _handlerColl.setHandlers(new Handler[] {context});
 
-        _server.setHandler(_handlerColl);
+        _server.addHandler(_handlerColl);
         _server.start();
     }
 
@@ -69,8 +69,8 @@ public class JettyWrapper {
 
         private HashMap _apps = new HashMap();
 
-        public void handle(String string, Request req, HttpServletRequest request,
-                           HttpServletResponse response) throws IOException, ServletException {
+        public void handle(String string, HttpServletRequest request,
+                           HttpServletResponse response, int i) throws IOException, ServletException {
             response.setContentType("text/html");
             if (request.getPathInfo().equals("/")) {
                 response.getWriter().println("Alive");
@@ -92,8 +92,8 @@ public class JettyWrapper {
 
                     context = new WebAppContext(webapp, path);
                     context.setConfigurationClasses(new String[] {
-                        "org.eclipse.jetty.webapp.WebInfConfiguration",
-                        "org.eclipse.jetty.webapp.WebXmlConfiguration"});
+                        "org.mortbay.jetty.webapp.WebInfConfiguration",
+                        "org.mortbay.jetty.webapp.WebXmlConfiguration"});
                     context.setClassLoader(new WebAppClassLoader(context));
 
                     _handlerColl.addHandler(context);
