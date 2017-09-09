@@ -27,7 +27,13 @@ module Buildr
 
       # The specs for requirements
       def dependencies
-        ["biz.aQute:bnd:jar:#{version}"]
+        if Gem::Version.new(version) <= Gem::Version.new('1.50.0')
+          ["biz.aQute:bnd:jar:#{version}"]
+        elsif Gem::Version.new(version) <= Gem::Version.new('2.4.0')
+          ["biz.aQute.bnd:bnd:jar:#{version}"]
+        else
+          ["biz.aQute.bnd:biz.aQute.bnd:jar:#{version}"]
+        end
       end
 
       def bnd_main(*args)
@@ -110,7 +116,7 @@ module Buildr
 
           Buildr::Bnd.bnd_main( bnd_filename )
           begin
-            Buildr::Bnd.bnd_main('print', '-verify', filename )
+            Buildr::Bnd.bnd_main('print', '-v', filename )
           rescue => e
             rm filename
             raise e

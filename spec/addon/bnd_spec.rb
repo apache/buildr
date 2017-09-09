@@ -55,35 +55,95 @@ package com.biz.bar;
 public class Bar {}
 SRC
 
-        @foo = define "foo" do
-          project.version = "2.1.3"
-          project.group = "mygroup"
-          manifest["Magic-Food"] = "Chocolate"
-          manifest["Magic-Drink"] = "Wine"
+      @foo = define "foo" do
+        project.version = "2.1.3"
+        project.group = "mygroup"
+        manifest["Magic-Food"] = "Chocolate"
+        manifest["Magic-Drink"] = "Wine"
+        package(:bundle).tap do |bnd|
+          bnd["Export-Package"] = "com.*"
+        end
+
+        define "bar" do
+          project.version = "2.2"
           package(:bundle).tap do |bnd|
+            bnd["Magic-Food"] = "Cheese"
             bnd["Export-Package"] = "com.*"
           end
-
-          define "bar" do
-            project.version = "2.2"
-            package(:bundle).tap do |bnd|
-              bnd["Magic-Food"] = "Cheese"
-              bnd["Export-Package"] = "com.*"
-            end
-          end
-        end
-        task('package').invoke
-      end
-
-      it "version 0.0.384 does not export the version and wrong import-package" do
-        open_main_manifest_section do |attribs|
-          attribs['Bundle-Name'].should eql('foo')
-          attribs['Bundle-Version'].should eql('2.1.3')
-          attribs['Bundle-SymbolicName'].should eql('mygroup.foo')
-          attribs['Export-Package'].should eql('com.biz')
-          attribs['Import-Package'].should eql('com.biz')
         end
       end
+      task('package').invoke
+    end
+
+    it "version 0.0.384 does not export the version and wrong import-package" do
+      open_main_manifest_section do |attribs|
+        attribs['Bundle-Name'].should eql('foo')
+        attribs['Bundle-Version'].should eql('2.1.3')
+        attribs['Bundle-SymbolicName'].should eql('mygroup.foo')
+        attribs['Export-Package'].should eql('com.biz')
+        attribs['Import-Package'].should eql('com.biz')
+      end
+    end
+  end
+
+  describe "project.bnd version 2.4.0 (assure forwward compatibility)" do
+    after do
+      STDERR.puts("forward compatibility: used #{Buildr::Bnd.version} restoring #{@savedVersion}")
+      Buildr::Bnd.version = @savedVersion
+    end
+
+    before do
+      @savedVersion = Buildr::Bnd.version
+      Buildr::Bnd.version = '2.4.0'
+      write "src/main/java/com/biz/Foo.java", <<SRC
+package com.biz;
+public class Foo {}
+SRC
+
+      @foo = define "foo" do
+        project.version = "2.1.3"
+        project.group = "mygroup"
+        package(:bundle).tap do |bnd|
+          bnd["Export-Package"] = "com.*"
+        end
+      end
+      task('package').invoke
+    end
+
+    it "produces a .bnd and a .jar in the correct location for root project" do
+      File.should be_exist(@foo._("target/foo-2.1.3.bnd"))
+      File.should be_exist(@foo._("target/foo-2.1.3.jar"))
+    end
+  end
+
+  describe "project.bnd version 3.4.0 (assure forward compatibility)" do
+    after do
+      STDERR.puts("forward compatibility: used #{Buildr::Bnd.version} restoring #{@savedVersion}")
+      Buildr::Bnd.version = @savedVersion
+    end
+
+    before do
+      @savedVersion = Buildr::Bnd.version
+      Buildr::Bnd.version = '3.4.0'
+      write "src/main/java/com/biz/Foo.java", <<SRC
+package com.biz;
+public class Foo {}
+SRC
+
+      @foo = define "foo" do
+        project.version = "2.1.3"
+        project.group = "mygroup"
+        package(:bundle).tap do |bnd|
+          bnd["Export-Package"] = "com.*"
+        end
+      end
+      task('package').invoke
+    end
+
+    it "produces a .bnd and a .jar in the correct location for root project" do
+      File.should be_exist(@foo._("target/foo-2.1.3.bnd"))
+      File.should be_exist(@foo._("target/foo-2.1.3.jar"))
+    end
   end
 
   describe "package :bundle" do
