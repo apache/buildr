@@ -182,7 +182,7 @@ module Buildr #:nodoc:
               end
               @pom
             end
-          end
+          end if package.classifier.nil?
 
           file(Buildr.repositories.locate(package)=>package) { package.install }
 
@@ -190,7 +190,8 @@ module Buildr #:nodoc:
           # register it as an artifact. The later is required so if we look up the spec
           # we find the package in the project's target directory, instead of finding it
           # in the local repository and attempting to install it.
-          Artifact.register package, package.pom
+          Artifact.register package
+          Artifact.register package.pom if package.classifier.nil?
         end
 
         task('install')   { package.install if package.respond_to?(:install) }

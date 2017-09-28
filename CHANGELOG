@@ -1,4 +1,9 @@
 1.5.4 (Pending)
+* Fixed: Ensure that the pom is attached to the jar artifact with empty classifier rather than the last
+         artifact of a type defined. Otherwise a project that defines multiple artifacts of the same type
+         (i.e. `package(:jar)` and `package(:jar, :classifier => :gwt)`) could have the pom named after
+         the package with the classifier rather than the package without a classifer. (i.e. the pom could
+         be incorrectly defined as `mypackage-1.0.0-gwt.pom` rather than `mypackage-1.0.0.pom`).
 * Added: GWT Addon: Added support for `:js_exports` boolean to enable "JsInteropExports".
 * Added: BUILDR-732 - Support bnd version 2.1.0 or more. Submitted By Eric Bruneton.
 * Added: Support to compiling Kotlin
