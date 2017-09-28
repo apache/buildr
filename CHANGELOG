@@ -1,4 +1,5 @@
 1.5.4 (Pending)
+* Added: GWT Addon: Added support for `:js_exports` boolean to enable "JsInteropExports".
 * Added: BUILDR-732 - Support bnd version 2.1.0 or more. Submitted By Eric Bruneton.
 * Added: Support to compiling Kotlin
 * Fixed: Remove section on development builds in the Contributing section.
