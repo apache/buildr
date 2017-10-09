@@ -1010,7 +1010,7 @@ module Buildr #:nodoc:
           xml.RunnerSettings(:RunnerId => 'Run')
           xml.ConfigurationWrapper(:RunnerId => 'Run')
           xml.ConfigurationWrapper(:RunnerId => 'Debug')
-          xml.method()
+          xml.method
         end
       end
 
