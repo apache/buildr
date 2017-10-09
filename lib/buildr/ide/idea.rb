@@ -1001,7 +1001,7 @@ module Buildr #:nodoc:
           xml.option(:name => 'USE_SUPER_DEV_MODE', :value => super_dev)
           xml.option(:name => 'SHELL_PARAMETERS', :value => shell_parameters) if shell_parameters
 
-          xml.RunnerSettings(:RunnerId => 'Debug') do |xml|
+          xml.RunnerSettings(:RunnerId => 'Debug') do
             xml.option(:name => 'DEBUG_PORT', :value => '')
             xml.option(:name => 'TRANSPORT', :value => 0)
             xml.option(:name => 'LOCAL', :value => true)
