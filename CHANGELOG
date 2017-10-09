@@ -5,6 +5,7 @@
          the package with the classifier rather than the package without a classifer. (i.e. the pom could
          be incorrectly defined as `mypackage-1.0.0-gwt.pom` rather than `mypackage-1.0.0.pom`).
 * Added: GWT Addon: Added support for `:js_exports` boolean to enable "JsInteropExports".
+* Added: IDEA Extension: Added support for `:open_in_browser` boolean passed to `ipr.add_gwt_configuration`
 * Added: BUILDR-732 - Support bnd version 2.1.0 or more. Submitted By Eric Bruneton.
 * Added: Support to compiling Kotlin
 * Fixed: Remove section on development builds in the Contributing section.

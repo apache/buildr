@@ -997,6 +997,8 @@ module Buildr #:nodoc:
           xml.option(:name => 'RUN_PAGE', :value => launch_page) if launch_page
           xml.option(:name => 'GWT_MODULE', :value => gwt_module) if gwt_module
 
+          # noinspection RubySimplifyBooleanInspection
+          xml.option(:name => 'OPEN_IN_BROWSER', :value => false) if options[:open_in_browser] == false
           xml.option(:name => 'START_JAVASCRIPT_DEBUGGER', :value => start_javascript_debugger)
           xml.option(:name => 'USE_SUPER_DEV_MODE', :value => super_dev)
           xml.option(:name => 'SHELL_PARAMETERS', :value => shell_parameters) if shell_parameters
