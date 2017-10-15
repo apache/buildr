@@ -4,6 +4,7 @@
          (i.e. `package(:jar)` and `package(:jar, :classifier => :gwt)`) could have the pom named after
          the package with the classifier rather than the package without a classifer. (i.e. the pom could
          be incorrectly defined as `mypackage-1.0.0-gwt.pom` rather than `mypackage-1.0.0.pom`).
+* Added: GWT Addon: Add support for GWT 2.8.2 release.
 * Added: GWT Addon: Added support for `:js_exports` boolean to enable "JsInteropExports".
 * Added: IDEA Extension: Added support for `:open_in_browser` boolean passed to `ipr.add_gwt_configuration`
 * Added: BUILDR-732 - Support bnd version 2.1.0 or more. Submitted By Eric Bruneton.
