@@ -1,4 +1,5 @@
 1.5.4 (Pending)
+* Fixed: BUILDR-733 - Escape classpath entries in the pathing jar manifest. Submitted by Glenn Croes.
 * Fixed: Ensure that the pom is attached to the jar artifact with empty classifier rather than the last
          artifact of a type defined. Otherwise a project that defines multiple artifacts of the same type
          (i.e. `package(:jar)` and `package(:jar, :classifier => :gwt)`) could have the pom named after
