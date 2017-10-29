@@ -18,7 +18,7 @@ module Buildr
   # WARNING: Experimental and may change radically.
   module JaCoCo
     class << self
-      VERSION = '0.7.2.201409121644'
+      VERSION = '0.7.9'
 
       def version
         @version || Buildr.settings.build['jacoco'] || VERSION
@@ -37,7 +37,7 @@ module Buildr
           "org.jacoco:org.jacoco.report:jar:#{version}",
           "org.jacoco:org.jacoco.core:jar:#{version}",
           "org.jacoco:org.jacoco.ant:jar:#{version}",
-          'org.ow2.asm:asm-debug-all:jar:5.0.1'
+          'org.ow2.asm:asm-debug-all:jar:5.2'
         ]
       end
     end
