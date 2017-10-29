@@ -1,4 +1,5 @@
 1.5.4 (Pending)
+* Fixed:  JaCoCo Addon: Projects that have jacoco disabled will no longer appear in the JaCoCo reports.
 * Change: JaCoCo Addon: Update JaCoCo version to 0.7.9.
 * Fixed:  BUILDR-733 - Escape classpath entries in the pathing jar manifest. Submitted by Glenn Croes.
 * Fixed:  Ensure that the pom is attached to the jar artifact with empty classifier rather than the last

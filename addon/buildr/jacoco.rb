@@ -185,19 +185,19 @@ module Buildr
             end
             ant.report do |ant|
               ant.executiondata do |ant|
-                Buildr.projects.each do |project|
+                Buildr.projects.select{|p|p.jacoco.enabled?}.each do |project|
                   ant.fileset :file=>project.jacoco.destfile if File.exist?(project.jacoco.destfile)
                 end
               end
 
               ant.structure(:name => 'Jacoco Report') do |ant|
                 ant.classfiles do |ant|
-                  Buildr.projects.map(&:compile).map(&:target).flatten.map(&:to_s).each do |src|
+                  Buildr.projects.select{|p|p.jacoco.enabled?}.map(&:compile).map(&:target).flatten.map(&:to_s).each do |src|
                     ant.fileset :dir=>src.to_s if File.exist?(src)
                   end
                 end
                 ant.sourcefiles(:encoding => 'UTF-8') do |ant|
-                  Buildr.projects.map(&:compile).map(&:sources).flatten.map(&:to_s).each do |src|
+                  Buildr.projects.select{|p|p.jacoco.enabled?}.map(&:compile).map(&:sources).flatten.map(&:to_s).each do |src|
                     ant.fileset :dir=>src.to_s if File.exist?(src)
                   end
                 end
