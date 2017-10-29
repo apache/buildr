@@ -1,20 +1,20 @@
 1.5.4 (Pending)
-* Fixed: BUILDR-733 - Escape classpath entries in the pathing jar manifest. Submitted by Glenn Croes.
-* Fixed: Ensure that the pom is attached to the jar artifact with empty classifier rather than the last
-         artifact of a type defined. Otherwise a project that defines multiple artifacts of the same type
-         (i.e. `package(:jar)` and `package(:jar, :classifier => :gwt)`) could have the pom named after
-         the package with the classifier rather than the package without a classifer. (i.e. the pom could
-         be incorrectly defined as `mypackage-1.0.0-gwt.pom` rather than `mypackage-1.0.0.pom`).
-* Added: GWT Addon: Add support for GWT 2.8.2 release.
-* Added: GWT Addon: Added support for `:js_exports` boolean to enable "JsInteropExports".
-* Added: IDEA Extension: Added support for `:open_in_browser` boolean passed to `ipr.add_gwt_configuration`
-* Added: BUILDR-732 - Support bnd version 2.1.0 or more. Submitted By Eric Bruneton.
-* Added: Support to compiling Kotlin
-* Fixed: Remove section on development builds in the Contributing section.
-* Added: New way to concatenate file contents when merging several archives together.
-* Added: New way to transform file contents when merging several archives together.
-* Fixed: Removed .class files from being checked in.
-* Added: Support both Jetty 6 and Jetty 9 as addons. Added integration tests to cover their use.
+* Fixed:  BUILDR-733 - Escape classpath entries in the pathing jar manifest. Submitted by Glenn Croes.
+* Fixed:  Ensure that the pom is attached to the jar artifact with empty classifier rather than the last
+          artifact of a type defined. Otherwise a project that defines multiple artifacts of the same type
+          (i.e. `package(:jar)` and `package(:jar, :classifier => :gwt)`) could have the pom named after
+          the package with the classifier rather than the package without a classifer. (i.e. the pom could
+          be incorrectly defined as `mypackage-1.0.0-gwt.pom` rather than `mypackage-1.0.0.pom`).
+* Added:  GWT Addon: Add support for GWT 2.8.2 release.
+* Added:  GWT Addon: Added support for `:js_exports` boolean to enable "JsInteropExports".
+* Added:  IDEA Extension: Added support for `:open_in_browser` boolean passed to `ipr.add_gwt_configuration`
+* Added:  BUILDR-732 - Support bnd version 2.1.0 or more. Submitted By Eric Bruneton.
+* Added:  Support to compiling Kotlin
+* Fixed:  Remove section on development builds in the Contributing section.
+* Added:  New way to concatenate file contents when merging several archives together.
+* Added:  New way to transform file contents when merging several archives together.
+* Fixed:  Removed .class files from being checked in.
+* Added:  Support both Jetty 6 and Jetty 9 as addons. Added integration tests to cover their use.
 
 1.5.3 (2017-05-17)
 * Change: Add support for gwt 2.8.1 to gwt addon.
