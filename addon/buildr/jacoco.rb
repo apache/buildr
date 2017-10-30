@@ -146,21 +146,21 @@ module Buildr
               desc 'Generate JaCoCo reports.'
               task 'reports' do
                 Buildr.ant 'jacoco' do |ant|
-                  ant.taskdef(:resource => 'org/jacoco/ant/antlib.xml') do |ant|
+                  ant.taskdef(:resource => 'org/jacoco/ant/antlib.xml') do
                     ant.classpath :path => Buildr.artifacts(Buildr::JaCoCo.ant_spec).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
                   end
-                  ant.report do |ant|
-                    ant.executiondata do |ant|
+                  ant.report do
+                    ant.executiondata do
                       ant.file :file => project.jacoco.destfile
                     end
 
-                    ant.structure(:name => project.name) do |ant|
+                    ant.structure(:name => project.name) do
                       if project.compile.target
-                        ant.classfiles do |ant|
+                        ant.classfiles do
                           ant.fileset :dir => project.compile.target
                         end
                       end
-                      ant.sourcefiles(:encoding => 'UTF-8') do |ant|
+                      ant.sourcefiles(:encoding => 'UTF-8') do
                         project.compile.sources.each do |path|
                           ant.fileset :dir => path.to_s
                         end
@@ -179,24 +179,24 @@ module Buildr
       namespace 'jacoco' do
         desc 'Generate JaCoCo reports.'
         task 'report' do
-          Buildr.ant 'jacoco' do |ant|
-            ant.taskdef(:resource => 'org/jacoco/ant/antlib.xml') do |ant|
+          Buildr.ant('jacoco') do |ant|
+            ant.taskdef(:resource => 'org/jacoco/ant/antlib.xml') do
               ant.classpath :path => Buildr.artifacts(Buildr::JaCoCo.ant_spec).each(&:invoke).map(&:to_s).join(File::PATH_SEPARATOR)
             end
-            ant.report do |ant|
-              ant.executiondata do |ant|
+            ant.report do
+              ant.executiondata do
                 Buildr.projects.select{|p|p.jacoco.enabled?}.each do |project|
                   ant.fileset :file=>project.jacoco.destfile if File.exist?(project.jacoco.destfile)
                 end
               end
 
-              ant.structure(:name => 'Jacoco Report') do |ant|
-                ant.classfiles do |ant|
+              ant.structure(:name => 'Jacoco Report') do
+                ant.classfiles do
                   Buildr.projects.select{|p|p.jacoco.enabled?}.map(&:compile).map(&:target).flatten.map(&:to_s).each do |src|
                     ant.fileset :dir=>src.to_s if File.exist?(src)
                   end
                 end
-                ant.sourcefiles(:encoding => 'UTF-8') do |ant|
+                ant.sourcefiles(:encoding => 'UTF-8') do
                   Buildr.projects.select{|p|p.jacoco.enabled?}.map(&:compile).map(&:sources).flatten.map(&:to_s).each do |src|
                     ant.fileset :dir=>src.to_s if File.exist?(src)
                   end
