@@ -72,8 +72,14 @@ module Buildr
     module ProjectExtension
       include Extension
 
+      attr_writer :gpg
+
+      def gpg?
+        @gpg.nil? ? true : !!@gpg
+      end
+
       after_define do |project|
-        Buildr::GPG.sign_and_upload_all_packages(project)
+        Buildr::GPG.sign_and_upload_all_packages(project) if project.gpg?
       end
     end
   end

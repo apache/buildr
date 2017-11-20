@@ -1,4 +1,7 @@
 1.5.4 (Pending)
+* Added:  GPG Addon: Add boolean configuration setting `project.gpg` that can be set to false via
+          `project.gpg = false` to avoid signing and uploading packages. This is useful when some
+          projects are not intended for publishing.
 * Fixed:  JaCoCo Addon: Projects that have jacoco disabled will no longer appear in the JaCoCo reports.
 * Change: JaCoCo Addon: Update JaCoCo version to 0.7.9.
 * Fixed:  BUILDR-733 - Escape classpath entries in the pathing jar manifest. Submitted by Glenn Croes.
