@@ -23,10 +23,10 @@ module Buildr
       # The specs for requirements
       def dependencies
         %w(
-          com.google.code.findbugs:findbugs:jar:3.0.0
+          com.google.code.findbugs:findbugs:jar:3.0.1
           com.google.code.findbugs:jFormatString:jar:3.0.0
           com.google.code.findbugs:bcel-findbugs:jar:6.0
-          com.google.code.findbugs:annotations:jar:3.0.0
+          com.google.code.findbugs:annotations:jar:3.0.1
           org.ow2.asm:asm-debug-all:jar:5.0.2
           commons-lang:commons-lang:jar:2.6
           dom4j:dom4j:jar:1.6.1

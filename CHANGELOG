@@ -1,4 +1,5 @@
 1.5.4 (Pending)
+* Added:  Findbugs Addon: Upgrade to version 3.0.1 of findbugs.
 * Added:  GPG Addon: Add boolean configuration setting `project.gpg` that can be set to false via
           `project.gpg = false` to avoid signing and uploading packages. This is useful when some
           projects are not intended for publishing.
