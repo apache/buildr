@@ -46,22 +46,30 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
+Highlights from Buildr 1.5.4 (2017-11-29)
+* Added:  Findbugs Addon: Upgrade to version 3.0.1 of findbugs.
+* Added:  GPG Addon: Add boolean configuration setting `project.gpg` that can be set to false via
+          `project.gpg = false` to avoid signing and uploading packages. This is useful when some
+          projects are not intended for publishing.
+* Fixed:  JaCoCo Addon: Projects that have jacoco disabled will no longer appear in the JaCoCo reports.
+* Change: JaCoCo Addon: Update JaCoCo version to 0.7.9.
+* Fixed:  BUILDR-733 - Escape classpath entries in the pathing jar manifest. Submitted by Glenn Croes.
+* Fixed:  Ensure that the pom is attached to the jar artifact with empty classifier rather than the last
+          artifact of a type defined. Otherwise a project that defines multiple artifacts of the same type
+          (i.e. `package(:jar)` and `package(:jar, :classifier => :gwt)`) could have the pom named after
+          the package with the classifier rather than the package without a classifer. (i.e. the pom could
+          be incorrectly defined as `mypackage-1.0.0-gwt.pom` rather than `mypackage-1.0.0.pom`).
+* Added:  GWT Addon: Add support for GWT 2.8.2 release and make it the default version unless otherwise specified.
+* Added:  BUILDR-732 - Support bnd version 2.1.0 or more. Submitted By Eric Bruneton.
+* Added:  Support to compiling Kotlin
+* Added:  New way to concatenate file contents when merging several archives together.
+* Added:  New way to transform file contents when merging several archives together.
+* Added:  Support both Jetty 6 and Jetty 9 as addons. Added integration tests to cover their use.
+
 Highlights from Buildr 1.5.3 (2017-05-17)
 * Change: Add support for gwt 2.8.1 to gwt addon.
 * Fixed:  Avoid error "undefined local variable or method `pom'" when invoking the `JarTask` without it being
   registered through the `package` helper`. Reported by Dieter Vrancken.
-
-Highlights from Buildr 1.5.2 (2017-04-03)
-* Change: Update TestNG version to 6.11.
-* Change: BUILDR-731 - Enhance Sonar addon to support configuration of the project version. Submitted by Ross Mahony.
-* Fixed:  Fix pom generation to eliminate invalid `classifier` element from being added to POM.
-
-Highlights from Buildr 1.5.1 (2017-03-11)
-* Change: Add css2gss task to gwt addon to support conveting from deprecated css syntax to modern gss syntax.
-* Change: Add support for gwt 2.8.0 to gwt addon.
-* Change: Update jruby-openssl to 0.9.17
-* Change: BUILDR-719 Change User-Agent when uploading artifacts
-* Change: BUILDR-709 Integrate `buildr/custom_pom` into core and just make it the default pom generated.
 
 This is a partial list -- see the "CHANGELOG":CHANGELOG for full details.
 
