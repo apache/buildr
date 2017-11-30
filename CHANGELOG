@@ -1,4 +1,5 @@
 1.5.5 (Pending)
+* Added:  IDEA Extension: Added support for passing `:iml_name` parameter to `ipr.add_gwt_configuration`
 
 1.5.4 (2017-11-29)
 * Added:  Findbugs Addon: Upgrade to version 3.0.1 of findbugs.

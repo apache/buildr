@@ -991,7 +991,7 @@ module Buildr #:nodoc:
         start_javascript_debugger = options[:start_javascript_debugger].nil? ? true : !!options[:start_javascript_debugger]
 
         add_configuration(name, 'GWT.ConfigurationType', 'GWT Configuration', false, :singleton => singleton) do |xml|
-          xml.module(:name => project.iml.name)
+          xml.module(:name => options[:iml_name] || project.iml.name)
 
           xml.option(:name => 'VM_PARAMETERS', :value => vm_parameters)
           xml.option(:name => 'RUN_PAGE', :value => launch_page) if launch_page
