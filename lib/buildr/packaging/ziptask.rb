@@ -68,6 +68,10 @@ module Buildr #:nodoc:
           contents = file_map[path]
           warn "Warning:  Path in zipfile #{name} contains backslash: #{path}" if path =~ /\\/
 
+          # Must ensure that the directory entry is created for intermediate paths, otherwise
+          # zips can be created without entries for directories which can break some tools
+          mkpath.call File.dirname(path)
+
           entry_created = false
           to_transform = []
           transform = transform_map.key?(path)
