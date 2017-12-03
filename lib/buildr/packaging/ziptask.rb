@@ -67,7 +67,7 @@ module Buildr #:nodoc:
         paths.each do |path|
           contents = file_map[path]
           warn "Warning:  Path in zipfile #{name} contains backslash: #{path}" if path =~ /\\/
-          
+
           entry_created = false
           to_transform = []
           transform = transform_map.key?(path)
