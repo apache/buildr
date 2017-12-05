@@ -46,6 +46,12 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
+Highlights from Buildr 1.5.5 (2017-12-06)
+* Fixed:  The concatenation extension released as part of 1.5.4 changed the way zip archives were
+          constructed so that entries for some intermediate directories were elided. For most consumers
+          of zip files this had no impact but some tools require the entries during scanning. (i.e. Older
+          versions of Jruby that loaded ruby scripts from within a jar).
+
 Highlights from Buildr 1.5.4 (2017-11-29)
 * Added:  Findbugs Addon: Upgrade to version 3.0.1 of findbugs.
 * Added:  GPG Addon: Add boolean configuration setting `project.gpg` that can be set to false via
