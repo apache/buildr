@@ -37,6 +37,22 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <release>
       <Version>
+        <name>1.5.5</name>
+        <created>2017-12-06</created>
+        <revision>1.5.5</revision>
+        <dc:description>
+* Fixed:  The concatenation extension released as part of 1.5.4 changed the way zip archives were
+          constructed so that entries for some intermediate directories were elided. For most consumers
+          of zip files this had no impact but some tools require the entries during scanning. (i.e. Older
+          versions of Jruby that loaded ruby scripts from within a jar).
+* Added:  IDEA Extension: Added support for passing `:iml_name` parameter to `ipr.add_gwt_configuration`
+
+        </dc:description>
+      </Version>
+    </release>
+
+    <release>
+      <Version>
         <name>1.5.4</name>
         <created>2017-11-29</created>
         <revision>1.5.4</revision>
