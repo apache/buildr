@@ -1,5 +1,7 @@
 1.5.6 (Pending)
 * Change: JaCoCo Addon: Update JaCoCo version to 0.8.0 which in turns supports Java9.
+* Added:  GWT Addon: Added support for `:gwtc_args` parameter to supply arbitrary parameters to
+          the GWT compiler.
 
 1.5.5 (2017-12-06)
 * Fixed:  The concatenation extension released as part of 1.5.4 changed the way zip archives were

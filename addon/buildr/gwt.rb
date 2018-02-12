@@ -181,6 +181,9 @@ module Buildr
         if options[:draft_compile]
           args << '-draftCompile'
         end
+        if options[:gwtc_args]
+          args += options[:gwtc_args]
+        end
 
         if options[:enable_closure_compiler] && options[:version] == '2.7.0'
           args << '-XenableClosureCompiler'
