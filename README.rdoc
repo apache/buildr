@@ -66,10 +66,7 @@ When prompted for a platform, select mswin32.
 
 On Linux/BSD/Cygwin, use your default package manager, for example, for Ubuntu:
 
-$ sudo apt-get install ruby
-$ sudo apt-get install ruby1.8-dev
-$ sudo apt-get install build-essential
-$ sudo apt-get install libopenssl-ruby
+  $ sudo apt-get install ruby ruby1.8-dev build-essential libopenssl-ruby
 
 Before installing Buildr, please set the JAVA_HOME environment variable to
 point to your JDK distribution.  Next, use Ruby Gem to install Buildr:
