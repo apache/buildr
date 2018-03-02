@@ -211,7 +211,7 @@ module URI
         end
       elsif source.respond_to?(:read)
         digests = (options[:digests] || [:md5, :sha1]).
-          inject({}) { |hash, name| hash[name] = Digest.const_get(name.to_s.upcase).new ; hash }
+          inject({}) { |hash, name| hash[name] = name.to_s == 'sha512' ? Digest::SHA2.new(512) : Digest.const_get(name.to_s.upcase).new ; hash}
         size = source.stat.size rescue nil
         write (options).merge(:progress=>verbose && size, :size=>size) do |bytes|
           source.read(bytes).tap do |chunk|
