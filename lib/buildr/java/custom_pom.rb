@@ -128,6 +128,14 @@ module Buildr
       @runtime_dependencies = runtime_dependencies
     end
 
+    def additional_dependencies
+      @additional_dependencies ||= []
+    end
+
+    def additional_dependencies=(additional_dependencies)
+      @additional_dependencies = additional_dependencies
+    end
+
     def optional_dependencies
       @optional_dependencies ||= []
     end
@@ -214,6 +222,7 @@ module Buildr
 
         provided_deps = Buildr.artifacts(project.pom.provided_dependencies)
         runtime_deps = Buildr.artifacts(project.pom.runtime_dependencies)
+        additional_deps = Buildr.artifacts(project.pom.additional_dependencies)
         optional_deps = Buildr.artifacts(project.pom.optional_dependencies).collect{|dep| dep.to_s}
 
         done = []
@@ -227,6 +236,10 @@ module Buildr
           select {|d| d.is_a?(ActsAsArtifact)}.
           select {|d| !done.include?(d.to_s)}.
           collect {|dep| done << dep.to_s; dep.to_hash.merge(:scope => 'runtime', :optional => optional_deps.include?(dep.to_s))}
+        deps += additional_deps.
+          select {|d| d.is_a?(ActsAsArtifact)}.
+          select {|d| !done.include?(d.to_s)}.
+          collect {|dep| done << dep.to_s; dep.to_hash.merge(:scope => 'compile', :optional => optional_deps.include?(dep.to_s))}
 
         deps +=
           Buildr.artifacts(project.compile.dependencies).

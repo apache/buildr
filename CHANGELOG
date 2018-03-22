@@ -1,4 +1,7 @@
 1.5.6 (Pending)
+* Added:  Add support for adding dependencies to the pom via the `pom.additional_dependencies` configuration
+          setting. These dependencies are `compile` scope and are in addition to any derived from the normal
+          compile dependencies.
 * Fixed:  Dependencies added as `pom.provided_dependencies` or `pom.runtime_dependencies` and not included
           as compile dependencies were incorrectly omitted from pom.
 * Fixed:  Dependencies added as `pom.provided_dependencies` and `pom.runtime_dependencies` were being
