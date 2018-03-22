@@ -240,26 +240,26 @@ module Buildr
           deps += provided_deps.
             select {|d| d.is_a?(ActsAsArtifact)}.
             select {|d| !done.include?(d.to_s)}.
-            collect {|dep| done << dep.to_s; dep.to_hash.merge(:scope => 'provided', :optional => optional_deps.include?(dep.to_s), :include_transitive => include_transitive_deps.include?(dep.to_s))}
+            collect {|dep| done << dep.to_s; dep.to_hash.merge(:scope => 'provided', :optional => optional_deps.include?(dep.to_s), :include_transitive => include_transitive_deps.include?(dep.to_s), :artifact => dep)}
           deps += runtime_deps.
             select {|d| d.is_a?(ActsAsArtifact)}.
             select {|d| !done.include?(d.to_s)}.
-            collect {|dep| done << dep.to_s; dep.to_hash.merge(:scope => 'runtime', :optional => optional_deps.include?(dep.to_s), :include_transitive => include_transitive_deps.include?(dep.to_s))}
+            collect {|dep| done << dep.to_s; dep.to_hash.merge(:scope => 'runtime', :optional => optional_deps.include?(dep.to_s), :include_transitive => include_transitive_deps.include?(dep.to_s), :artifact => dep)}
           deps += additional_deps.
             select {|d| d.is_a?(ActsAsArtifact)}.
             select {|d| !done.include?(d.to_s)}.
-            collect {|dep| done << dep.to_s; dep.to_hash.merge(:scope => 'compile', :optional => optional_deps.include?(dep.to_s), :include_transitive => include_transitive_deps.include?(dep.to_s))}
+            collect {|dep| done << dep.to_s; dep.to_hash.merge(:scope => 'compile', :optional => optional_deps.include?(dep.to_s), :include_transitive => include_transitive_deps.include?(dep.to_s), :artifact => dep)}
 
           deps +=
             Buildr.artifacts(project.compile.dependencies).
               select {|d| d.is_a?(ActsAsArtifact)}.
               select {|d| !done.include?(d.to_s)}.
-              collect {|d| done << d.to_s; d.to_hash.merge(:scope => 'compile', :optional => optional_deps.include?(d.to_s), :include_transitive => include_transitive_deps.include?(d.to_s))}
+              collect {|d| done << d.to_s; d.to_hash.merge(:scope => 'compile', :optional => optional_deps.include?(d.to_s), :include_transitive => include_transitive_deps.include?(d.to_s), :artifact => d)}
 
           deps += Buildr.artifacts(project.test.compile.dependencies).
             select {|d| d.is_a?(ActsAsArtifact)}.
             select {|d| !done.include?(d.to_s)}.
-            collect {|d| d.to_hash.merge(:scope => 'test', :include_transitive => include_transitive_deps.include?(d.to_s))}
+            collect {|d| d.to_hash.merge(:scope => 'test', :include_transitive => include_transitive_deps.include?(d.to_s), :artifact => d)}
 
           xml.dependencies do
             deps.select {|dependency| project.pom.dependency_filter.nil? ? true : project.pom.dependency_filter.call(dependency)}.each do |dependency|
