@@ -228,7 +228,7 @@ module Buildr
             end
           end unless project.pom.developers.empty?
 
-        provided_deps = Buildr.artifacts(project.pom.provided_dependencies)
+          provided_deps = Buildr.artifacts(project.pom.provided_dependencies)
           runtime_deps = Buildr.artifacts(project.pom.runtime_dependencies)
           additional_deps = Buildr.artifacts(project.pom.additional_dependencies)
           include_transitive_deps = Buildr.artifacts(project.pom.include_transitive_dependencies).collect {|dep| dep.to_s}
