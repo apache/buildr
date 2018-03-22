@@ -1214,11 +1214,11 @@ end
 describe Buildr, '#transitive' do
   before do
     repositories.remote = 'http://buildr.apache.org/repository/noexist'
-    write artifact('org.sonatype.oss:oss-parent:pom:7').pom.to_s, <<-XML
+    write artifact('org.sonatype.oss:oss-parent:pom:8').pom.to_s, <<-XML
 <project>
   <artifactId>oss-parent</artifactId>
   <groupId>org.sonatype.oss</groupId>
-  <version>7</version>
+  <version>8</version>
 </project>
 XML
 

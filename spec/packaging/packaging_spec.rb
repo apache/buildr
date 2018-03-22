@@ -366,7 +366,7 @@ describe Project, '#package' do
   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>7</version>
+    <version>8</version>
   </parent>
   <groupId>bar</groupId>
   <artifactId>foo</artifactId>

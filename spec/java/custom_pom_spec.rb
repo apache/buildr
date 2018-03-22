@@ -102,7 +102,7 @@ describe Buildr::CustomPom do
       @pom_xml.should match_xpath('/project/modelVersion', '4.0.0')
       @pom_xml.should match_xpath('/project/parent/groupId', 'org.sonatype.oss')
       @pom_xml.should match_xpath('/project/parent/artifactId', 'oss-parent')
-      @pom_xml.should match_xpath('/project/parent/version', '7')
+      @pom_xml.should match_xpath('/project/parent/version', '8')
     end
 
     it 'has correct project level metadata' do

@@ -153,7 +153,7 @@ module Buildr
           xml.parent do
             xml.groupId 'org.sonatype.oss'
             xml.artifactId 'oss-parent'
-            xml.version '7'
+            xml.version '8'
           end
           xml.groupId project.group
           xml.artifactId project.id
