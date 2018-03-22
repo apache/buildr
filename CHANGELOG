@@ -1,4 +1,9 @@
 1.5.6 (Pending)
+* Fixed:  Dependencies added as `pom.provided_dependencies` or `pom.runtime_dependencies` and not included
+          as compile dependencies were incorrectly omitted from pom.
+* Fixed:  Dependencies added as `pom.provided_dependencies` and `pom.runtime_dependencies` were being
+          incorrectly duplicated within the pom dependencies section. Now provided dependency scope takes
+          precedence over runtime scoped dependency.
 * Fixed:  Dependencies added to POMs will specify the classifier unless it is the default value.
 * Added:  Add the `project.pom.dependency_filter` configuration property that can be set to a proc. The proc
           accepts a dependency and returns a boolean that determines whether the dependency is included in

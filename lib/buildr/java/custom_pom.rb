@@ -212,20 +212,32 @@ module Buildr
             end
           end unless project.pom.developers.empty?
 
-          provided_deps = Buildr.artifacts(project.pom.provided_dependencies).collect { |d| d.to_s }
-          runtime_deps = Buildr.artifacts(project.pom.runtime_dependencies).collect { |d| d.to_s }
-          optional_deps = Buildr.artifacts(project.pom.optional_dependencies).collect { |d| d.to_s }
-          deps =
-            Buildr.artifacts(project.compile.dependencies).
-              select { |d| d.is_a?(ActsAsArtifact) }.
-              collect do |d|
-              f = d.to_s
-              scope = provided_deps.include?(f) ? 'provided' :
-                runtime_deps.include?(f) ? 'runtime' :
-                  'compile'
-              d.to_hash.merge(:scope => scope, :optional => optional_deps.include?(f))
-            end + Buildr.artifacts(project.test.compile.dependencies).
-              select { |d| d.is_a?(ActsAsArtifact) && !project.compile.dependencies.include?(d) }.collect { |d| d.to_hash.merge(:scope => 'test') }
+        provided_deps = Buildr.artifacts(project.pom.provided_dependencies)
+        runtime_deps = Buildr.artifacts(project.pom.runtime_dependencies)
+        optional_deps = Buildr.artifacts(project.pom.optional_dependencies).collect{|dep| dep.to_s}
+
+        done = []
+
+        deps = []
+        deps += provided_deps.
+          select {|d| d.is_a?(ActsAsArtifact)}.
+          select {|d| !done.include?(d.to_s)}.
+          collect {|dep| done << dep.to_s; dep.to_hash.merge(:scope => 'provided', :optional => optional_deps.include?(dep.to_s))}
+        deps += runtime_deps.
+          select {|d| d.is_a?(ActsAsArtifact)}.
+          select {|d| !done.include?(d.to_s)}.
+          collect {|dep| done << dep.to_s; dep.to_hash.merge(:scope => 'runtime', :optional => optional_deps.include?(dep.to_s))}
+
+        deps +=
+          Buildr.artifacts(project.compile.dependencies).
+            select {|d| d.is_a?(ActsAsArtifact)}.
+            select {|d| !done.include?(d.to_s)}.
+            collect {|d| done << d.to_s; d.to_hash.merge(:scope => 'compile', :optional => optional_deps.include?(d.to_s))}
+
+        deps += Buildr.artifacts(project.test.compile.dependencies).
+          select {|d| d.is_a?(ActsAsArtifact)}.
+          select {|d| !done.include?(d.to_s)}.
+          collect {|d| d.to_hash.merge(:scope => 'test')}
 
           xml.dependencies do
             deps.select{|dependency| project.pom.dependency_filter.nil? ? true : project.pom.dependency_filter.call(dependency) }.each do |dependency|
