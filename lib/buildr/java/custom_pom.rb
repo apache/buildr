@@ -233,8 +233,8 @@ module Buildr
                 xml.groupId dependency[:group]
                 xml.artifactId dependency[:id]
                 xml.version dependency[:version]
-                xml.scope dependency[:scope] unless dependency[:scope] == 'compile'
                 xml.classifier dependency[:classifier] unless dependency[:classifier] == 'jar'
+                xml.scope dependency[:scope] unless dependency[:scope] == 'compile'
                 xml.optional true if dependency[:optional]
                 xml.exclusions do
                   xml.exclusion do
