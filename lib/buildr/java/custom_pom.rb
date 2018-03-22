@@ -136,6 +136,10 @@ module Buildr
       @optional_dependencies = optional_dependencies
     end
 
+    # Property that accepts a proc that accepts a dependency and returns a boolean to
+    # determine whether dependency is included in pom or not.
+    attr_accessor :dependency_filter
+
     protected
 
     def associate_project(buildr_project)
@@ -224,7 +228,7 @@ module Buildr
               select { |d| d.is_a?(ActsAsArtifact) && !project.compile.dependencies.include?(d) }.collect { |d| d.to_hash.merge(:scope => 'test') }
 
           xml.dependencies do
-            deps.each do |dependency|
+            deps.select{|dependency| project.pom.dependency_filter.nil? ? true : project.pom.dependency_filter.call(dependency) }.each do |dependency|
               xml.dependency do
                 xml.groupId dependency[:group]
                 xml.artifactId dependency[:id]
