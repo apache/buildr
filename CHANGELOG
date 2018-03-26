@@ -4,6 +4,8 @@
 * Added:  Add support for adding dependencies to the pom via the `pom.additional_dependencies` configuration
           setting. These dependencies are `compile` scope and are in addition to any derived from the normal
           compile dependencies.
+* Fixed:  GWT Addon: Use version `1.0.2` of the `com.google.jsinterop:jsinterop-annotations:jar` artifact
+          when using GWT 2.8.2 to align with version shipped with GWT.
 * Fixed:  Dependencies added as `pom.provided_dependencies` or `pom.runtime_dependencies` and not included
           as compile dependencies were incorrectly omitted from pom.
 * Fixed:  Dependencies added as `pom.provided_dependencies` and `pom.runtime_dependencies` were being

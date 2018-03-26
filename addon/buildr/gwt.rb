@@ -112,8 +112,8 @@ module Buildr
           ) + validation_deps
         elsif v == '2.8.2'
           %w(
-              com.google.jsinterop:jsinterop-annotations:jar:1.0.1
-              com.google.jsinterop:jsinterop-annotations:jar:sources:1.0.1
+              com.google.jsinterop:jsinterop-annotations:jar:1.0.2
+              com.google.jsinterop:jsinterop-annotations:jar:sources:1.0.2
               org.w3c.css:sac:jar:1.3
               com.google.gwt:gwt-dev:jar:2.8.2
               com.google.gwt:gwt-user:jar:2.8.2
