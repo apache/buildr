@@ -1,4 +1,8 @@
 1.5.6 (Pending)
+* Fixed:  Ensure that the username and passwords declared for repositories are correctly url encoded for
+          the upload repositories when converted to a URL. (i.e. Ensure `Buildr.repositories.release_to`
+          and `Buildr.repositories.snapshot_to` settings can have usernames and passwords with special
+          characters).
 * Added:  Add support for allowing some dependencies to include transitive dependencies via the
           `pom.include_transitive_dependencies` configuration setting.
 * Added:  Add support for adding dependencies to the pom via the `pom.additional_dependencies` configuration

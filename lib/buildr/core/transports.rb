@@ -278,7 +278,7 @@ module URI
         headers['Cache-Control'] = 'no-cache'
         headers['User-Agent'] = "Buildr-#{Buildr::VERSION}"
         request = Net::HTTP::Get.new(request_uri.empty? ? '/' : request_uri, headers)
-        request.basic_auth self.user, self.password if self.user
+        request.basic_auth URI.decode(self.user), URI.decode(self.password) if self.user
         http.verify_mode = ::OpenSSL::SSL.const_get(ENV['SSL_VERIFY_MODE']) if ENV['SSL_VERIFY_MODE']
         http.ca_path = ENV['SSL_CA_CERTS'] if ENV['SSL_CA_CERTS']
         http.request request do |response|
