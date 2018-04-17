@@ -30,6 +30,11 @@
 * Added:  Add support for sha512 digests to be generated for files during the upload. This is typically
           configured by adding `sha512` to the list of digests via a line such as:
           `repositories.release_to[:options] = {:digests => [:md5, :sha1, :sha512]}`
+* Fixed:  The default upload tasks would often get a ReadTimeout when uploading using http to a remote
+          server that did not have `KeepAlive` socket option enabled and the upload took more than 60
+          seconds (the default socket read timeout). Some commercial maven repositories could trigger
+          this scenario during upload of even modest size artifacts. Default the read_timeout to 10 minutes
+          when during upload to work address this issue.
 
 1.5.5 (2017-12-06)
 * Fixed:  The concatenation extension released as part of 1.5.4 changed the way zip archives were

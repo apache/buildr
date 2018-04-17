@@ -327,6 +327,7 @@ module URI
     def write_internal(options, &block) #:nodoc:
       options ||= {}
       connect do |http|
+        http.read_timeout = 500
         trace "Uploading to #{path}"
         content = StringIO.new
         while chunk = yield(RW_CHUNK_SIZE)
