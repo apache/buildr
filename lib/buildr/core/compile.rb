@@ -185,7 +185,7 @@ module Buildr #:nodoc:
               each { |file| map[file] = File.join(target, Util.relative_path(file, source).ext(target_ext)) }
           else
             # try to extract package name from .java or .scala files
-            if ['.java', '.scala', '.groovy'].include? File.extname(source)
+            if %w(.java .scala .groovy).include? File.extname(source)
               package = findFirst(source, /^\s*package\s+([^\s;]+)\s*;?\s*/)
               map[source] = package ? File.join(target, package[1].gsub('.', '/'), File.basename(source).ext(target_ext)) : target
             elsif
