@@ -335,7 +335,7 @@ module URI
         end
         headers = { 'Content-MD5'=>Digest::MD5.hexdigest(content.string), 'Content-Type'=>'application/octet-stream', 'User-Agent'=>"Buildr-#{Buildr::VERSION}" }
         request = Net::HTTP::Put.new(request_uri.empty? ? '/' : request_uri, headers)
-        request.basic_auth self.user, self.password if self.user
+        request.basic_auth URI.decode(self.user), URI.decode(self.password) if self.user
         response = nil
         with_progress_bar options[:progress], path.split('/').last, content.size do |progress|
           request.content_length = content.size
