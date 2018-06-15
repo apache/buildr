@@ -2,6 +2,10 @@
 * Fixed:  The fix that allowed special characters in usernames and passwords was only partially applied
           in the `1.5.6` release. The complete fix that correctly decoded usernames and passwords before
           passing them to HTTP library is now been applied.
+* Change: GWT Addon: Added support for `:skip_merge_gwt_dependencies` parameter that makes it possible to
+          avoid adding GWT dependencies to the project directly and thus the associated POM. This will be
+          required to support GWT3.x and GWT2.x simultaneously as well as making it easier to manage
+          dependencies in the POMs.
 
 1.5.6 (2018-05-10)
 * Fixed:  Ensure that the username and passwords declared for repositories are correctly url encoded for

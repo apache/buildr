@@ -274,8 +274,10 @@ module Buildr
         Buildr::GWT.dependencies(version).each do |d|
           a = artifact(d)
           a.invoke if a.respond_to?(:invoke)
-          project.iml.main_dependencies << a unless !project.iml? || existing_deps.include?(a.to_s)
-          project.compile.dependencies << a unless existing_deps.include?(a.to_s)
+          unless options[:skip_merge_gwt_dependencies]
+            project.iml.main_dependencies << a unless !project.iml? || existing_deps.include?(a.to_s)
+            project.compile.dependencies << a unless existing_deps.include?(a.to_s)
+          end
           additional_gwt_deps << a
         end
 
