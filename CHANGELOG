@@ -6,6 +6,12 @@
           avoid adding GWT dependencies to the project directly and thus the associated POM. This will be
           required to support GWT3.x and GWT2.x simultaneously as well as making it easier to manage
           dependencies in the POMs.
+* Change: Javadoc: If the user does not supply an explicit `:sourcepath` to the doc/javadoc tool then
+          default the value to `project.compile.sources`. This will stop javadoc from scanning the classpath
+          for `*.java` files which can cause issues with projects that include `sources` classifier artifacts
+          on the classpath. This is particularly relevant for GWT based projects that include artifacts with
+          source embedded in the artifacts. This change also made it possible to remove an ugly hack in the
+          GWT addon that removed the gwt artifacts from the javadoc path.
 
 1.5.6 (2018-05-10)
 * Fixed:  Ensure that the username and passwords declared for repositories are correctly url encoded for

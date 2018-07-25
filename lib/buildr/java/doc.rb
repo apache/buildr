@@ -61,6 +61,7 @@ module Buildr #:nodoc:
           end
         [:sourcepath, :classpath].each do |option|
           Array(options[option]).flatten.tap do |paths|
+            paths = project.compile.sources if :sourcepath == option && options[option].nil?
             cmd_args << "-#{option}" << paths.flatten.map(&:to_s).join(File::PATH_SEPARATOR) unless paths.empty?
           end
         end

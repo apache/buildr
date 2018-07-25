@@ -236,11 +236,6 @@ module Buildr
     module ProjectExtension
       include Extension
 
-      after_define(:doc) do |project|
-        # Remove gwt artifacts when performing javadocs as the gwt jars have invalid source files
-        project.doc.classpath.delete_if { |f| f.to_s =~ /.*\/com\/google\/gwt\/gwt-.*/ }
-      end
-
       first_time do
         desc 'Run C22 to GSS converter. Set css files via environment variable CSS_FILES'
         task('css2gss') do
