@@ -114,7 +114,7 @@
 			<artifactId>com.springsource.junit</artifactId>
 			<version>3.8.2</version>
 		</dependency>
-		<!--  Unfortunately, untill http://jira.springframework.org/browse/OSGI-564
+		<!--  Unfortunately, until http://jira.springframework.org/browse/OSGI-564
 			is resolved we can't use BRITS provided Log4J and have to rely on
 			dependancy specified by Spring-DM 1.2.0-m1.
 			Once this bug is fixed, we can switch to BRITS on this dependancy -->
