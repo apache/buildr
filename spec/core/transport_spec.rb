@@ -375,6 +375,7 @@ describe URI::HTTP, '#write' do
     @uri = URI('http://john:secret@host.domain/foo/bar/baz.jar')
     @http = double('Net::HTTP')
     @http.stub(:request).and_return(Net::HTTPOK.new(nil, nil, nil))
+    @http.should_receive(:read_timeout=).with(500)
     Net::HTTP.stub(:new).and_return(@http)
   end
 
