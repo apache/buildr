@@ -11,8 +11,8 @@ scala:
   - 2.11.8
 install:
   - source ci-setup.sh
-  - export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx700M"
-  - export JAVA_OPTS="-Xmx700m -XX:MaxPermSize=312m"
+  - export JRUBY_OPTS="--J-Xmx700M"
+  - export JAVA_OPTS="-Xmx700m"
 script: rake ci
 notifications:
   email:
