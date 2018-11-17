@@ -3,9 +3,9 @@ jdk:
   - oraclejdk8
   - oraclejdk7
 rvm:
-  - 2.3.1
-  - jruby-1.7.25
-  - jruby-9.0.5.0
+  - 2.5.3
+  - jruby-1.7.27
+  - jruby-9.2.4.0
 git:
   depth: 10
 scala:
