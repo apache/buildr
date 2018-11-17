@@ -65,7 +65,6 @@ module Buildr #:nodoc:
           spec.name = id
           spec.version = version.gsub('-','.') # RubyGems doesn't like '-' in version numbers
           spec.summary = full_comment
-          spec.has_rdoc = true
           spec.rdoc_options << '--title' << comment
           spec.require_path = 'lib'
         end
