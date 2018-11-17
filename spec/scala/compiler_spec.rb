@@ -118,7 +118,7 @@ if ENV['SCALA_HOME']
       ENV['SCALA_HOME'].should_not be_nil
     end
 
-    it_should_behave_like ScalacCompiler
+    it_should_behave_like 'ScalacCompiler'
   end
 end
 
@@ -133,7 +133,7 @@ describe 'scala compiler (downloaded from repository)' do
     ENV['SCALA_HOME'].should be_nil
   end
 
-  it_should_behave_like ScalacCompiler
+  it_should_behave_like 'ScalacCompiler'
 
   after :all do
     ENV['SCALA_HOME'] = old_home
@@ -275,7 +275,7 @@ end
 
 describe 'scala compiler 2.8 options' do
 
-  it_should_behave_like ScalacCompiler_CommonOptions
+  it_should_behave_like 'ScalacCompiler_CommonOptions'
 
   def compile_task
     @compile_task ||= define('foo').compile.using(:scalac)
@@ -298,7 +298,7 @@ end if Buildr::Scala.version?(2.8)
 
 describe 'scala compiler 2.9 options' do
 
-  it_should_behave_like ScalacCompiler_CommonOptions
+  it_should_behave_like 'ScalacCompiler_CommonOptions'
 
   def compile_task
     @compile_task ||= define('foo').compile.using(:scalac)
@@ -345,7 +345,7 @@ describe 'zinc compiler (enabled through Buildr.settings)' do
     compile_task.invoke
   end
 
-  it_should_behave_like ScalacCompiler
+  it_should_behave_like 'ScalacCompiler'
 
   after :each do
     Buildr.settings.build['scalac.incremental'] = nil
