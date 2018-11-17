@@ -11,7 +11,7 @@ scala:
   - 2.11.8
 install:
   - source ci-setup.sh
-  - export JRUBY_OPTS="--J-Xmx700M"
+  - export JRUBY_OPTS="-J-Xmx700M"
   - export JAVA_OPTS="-Xmx700m"
 script: rake ci
 notifications:
