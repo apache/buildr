@@ -17,7 +17,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 # need to test both with and without SCALA_HOME
-share_as :ScalacCompiler do
+RSpec.shared_examples 'ScalacCompiler' do
 
   it 'should identify itself from source directories' do
     write 'src/main/scala/com/example/Test.scala', 'package com.example; class Test { val i = 1 }'
@@ -140,7 +140,7 @@ describe 'scala compiler (downloaded from repository)' do
   end
 end
 
-share_as :ScalacCompiler_CommonOptions do
+RSpec.shared_examples 'ScalacCompiler_CommonOptions' do
 
   it 'should set warnings option to false by default' do
     compile_task.options.warnings.should be_false

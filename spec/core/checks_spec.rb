@@ -343,7 +343,7 @@ end
 
 describe Buildr::Checks::Expectation do
 
-  shared_examples_for 'all archive types' do
+  RSpec.shared_examples 'all archive types' do
 
     before do
       archive = @archive

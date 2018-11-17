@@ -53,7 +53,7 @@ module TestCoverageHelper
   end
 end
 
-shared_examples_for 'test coverage tool' do
+RSpec.shared_examples 'test coverage tool' do
   include TestCoverageHelper
 
   def toolname

@@ -14,7 +14,7 @@
 # the License.
 
 
-shared_examples_for 'packaging' do
+RSpec.shared_examples 'packaging' do
   it 'should create artifact of proper type' do
     packaging = @packaging
     package_type = @package_type || @packaging

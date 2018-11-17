@@ -17,7 +17,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
 # need to test both with and without KOTLIN_HOME
-share_as :KotlincCompiler do
+RSpec.shared_examples 'KotlincCompiler' do
 
   it 'should identify itself from source directories' do
     write 'src/main/kotlin/com/example/Test.kt', "package com.example\n class Test { }"
@@ -110,7 +110,7 @@ share_as :KotlincCompiler do
   end
 end
 
-share_as :KotlincCompiler_CommonOptions do
+RSpec.shared_examples 'KotlincCompiler_CommonOptions' do
 
   it 'should set warnings option to false by default' do
     compile_task.options.warnings.should be_false
