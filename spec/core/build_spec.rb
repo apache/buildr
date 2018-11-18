@@ -16,7 +16,7 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'spec_helpers'))
 
-shared_examples_for 'local task' do
+RSpec.shared_examples 'local task' do
   it "should execute task for project in current directory" do
     define 'foobar'
     lambda { @task.invoke }.should run_task("foobar:#{@task.name}")
@@ -387,7 +387,7 @@ describe Release do
 end
 
 
-shared_examples_for 'a release process' do
+RSpec.shared_examples 'a release process' do
 
   describe '#make' do
     before do
