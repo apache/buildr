@@ -428,7 +428,7 @@ describe Buildr::CompileTask, '#invoke' do
 end
 
 
-shared_examples_for 'accessor task' do
+RSpec.shared_examples 'accessor task' do
   it 'should return a task' do
     define('foo').send(@task_name).should be_kind_of(Rake::Task)
   end

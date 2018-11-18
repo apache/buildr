@@ -53,7 +53,7 @@ describe Project, '#manifest' do
 end
 
 
-shared_examples_for 'package with manifest' do
+RSpec.shared_examples 'package with manifest' do
   before do
     @long_line = 'No line may be longer than 72 bytes (not characters), in its UTF8-encoded form. If a value would make the initial line longer than this, it should be continued on extra lines (each starting with a single SPACE).'
   end
@@ -347,7 +347,7 @@ describe Project, '#meta_inf' do
 end
 
 
-shared_examples_for 'package with meta_inf' do
+RSpec.shared_examples 'package with meta_inf' do
 
   def package_with_meta_inf(meta_inf = nil)
     packaging = @packaging
@@ -1258,7 +1258,7 @@ describe Packaging, 'test_jar' do
   end
 end
 
-shared_examples_for 'package_with_' do
+RSpec.shared_examples 'package_with_' do
 
   def prepare(options = {})
     packager = "package_with_#{@packaging}"

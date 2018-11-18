@@ -60,7 +60,7 @@ module ArchiveTaskHelpers
   end
 end
 
-shared_examples_for 'ArchiveTask' do
+RSpec.shared_examples 'ArchiveTask' do
   include ArchiveTaskHelpers
 
   before(:each) do
