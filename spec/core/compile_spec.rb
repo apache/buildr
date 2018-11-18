@@ -141,7 +141,7 @@ describe Buildr::CompileTask, '#compiler' do
     end
   end
 
-  it 'should allow supressing compilation' do
+  it 'should allow suppressing compilation' do
     write 'src/main/java/package/Test.java', 'class Test {}'
     define 'foo' do
       compile.sources.clear
