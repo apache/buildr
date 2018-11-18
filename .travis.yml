@@ -1,10 +1,9 @@
 language: ruby
 jdk:
   - oraclejdk8
-  - oraclejdk7
 rvm:
   - 2.3.1
-  - jruby-1.7.25
+  - jruby-1.7.27
   - jruby-9.0.5.0
 git:
   depth: 10
@@ -12,8 +11,8 @@ scala:
   - 2.11.8
 install:
   - source ci-setup.sh
-  - export JRUBY_OPTS="-J-XX:MaxPermSize=312m -J-Xmx700M"
-  - export JAVA_OPTS="-Xmx700m -XX:MaxPermSize=312m"
+  - export JRUBY_OPTS="-J-Xmx700M"
+  - export JAVA_OPTS="-Xmx700m"
 script: rake ci
 notifications:
   email:
