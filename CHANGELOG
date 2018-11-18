@@ -13,6 +13,7 @@
           source embedded in the artifacts. This change also made it possible to remove an ugly hack in the
           GWT addon that removed the gwt artifacts from the javadoc path.
 * Change: Drop deprecated Gem::Specification#has_rdoc= (no replacement) method. Submitted by Olle Jonsson.
+* Change: Use https protocol to access Gem metadata. Submitted by Olle Jonsson.
 
 1.5.6 (2018-05-10)
 * Fixed:  Ensure that the username and passwords declared for repositories are correctly url encoded for
