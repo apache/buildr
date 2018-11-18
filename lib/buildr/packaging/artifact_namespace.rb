@@ -130,7 +130,7 @@ module Buildr #:nodoc:
   # Sometimes users would need to change the default artifact versions used by some
   # module, for example, the XMLBeans compiler needs this, because of compatibility
   # issues. Another example would be to select the groovy version to use on all our
-  # projects so that Buildr modules requiring groovy jars can use user prefered versions.
+  # projects so that Buildr modules requiring groovy jars can use user preferred versions.
   #
   # To meet this goal, an ArtifactNamespace allows to specify ArtifactRequirement objects.
   # In fact the only difference with the examples you have already seen is that requirements
@@ -194,7 +194,7 @@ module Buildr #:nodoc:
   #
   # A more advanced example using ArtifactRequirement listeners is included
   # in the artifact_namespace_spec.rb description for 'Extension using ArtifactNamespace'
-  # That's it for addon writers, now, users can select their prefered version with
+  # That's it for addon writers, now, users can select their preferred version with
   # something like:
   #
   #    require 'buildr/xmlbeans'
@@ -413,7 +413,7 @@ module Buildr #:nodoc:
       # The last part consist of a VersionRequirement.
       #                                     ->  ( >2 & <4)
       #
-      # VersionRequirement supports RubyGem's comparision operators
+      # VersionRequirement supports RubyGem's comparison operators
       # in adition to parens, logical and, logical or and negation.
       # See the docs for VersionRequirement for more info on operators.
       def initialize(spec)

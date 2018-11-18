@@ -127,7 +127,7 @@ module Buildr #:nodoc:
   #   buildr compile
   # from the command line, it will execute the compile task of the current project.
   #
-  # Projects and sub-projects follow a directory heirarchy. The Buildfile is assumed to
+  # Projects and sub-projects follow a directory hierarchy. The Buildfile is assumed to
   # reside in the same directory as the top-level project, and each sub-project is
   # contained in a sub-directory in the same name. For example:
   #   /home/foo
@@ -223,7 +223,7 @@ module Buildr #:nodoc:
           end
 
           # Top-level project? Invoke the project definition. Sub-project? We don't invoke
-          # the project definiton yet (allow project calls to establish order of evaluation),
+          # the project definition yet (allow project calls to establish order of evaluation),
           # but must do so before the parent project's definition is done.
           project.parent.enhance { project.invoke } if project.parent
         end
