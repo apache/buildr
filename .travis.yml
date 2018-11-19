@@ -14,7 +14,7 @@ install:
   - source ci-setup.sh
   - export JRUBY_OPTS="-J-Xmx700M"
   - export JAVA_OPTS="-Xmx700m"
-script: rake ci
+script: bundle exec rake ci
 notifications:
   email:
     recipients:
