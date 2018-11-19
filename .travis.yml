@@ -23,5 +23,4 @@ notifications:
       - toulmean@apache.org
     on_success: always
     on_failure: always
-notifications:
   irc: "irc.freenode.org#buildr"
