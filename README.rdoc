@@ -28,8 +28,8 @@ http://buildr.apache.org/
 === RTFM
 
 * Buildr documentation: http://buildr.apache.org
-* More about Rake: http://docs.rubyrake.org
-* Antwrap documentation: http://antwrap.rubyforge.org
+* More about Rake: https://github.com/ruby/rake
+* Antwrap documentation: https://rubygems.org/gems/Antwrap
 
 
 === Mailing list
