@@ -48,7 +48,6 @@ define 'buildr' do
       spec.author             = 'Apache Buildr'
       spec.email              = 'users@buildr.apache.org'
       spec.homepage           = "http://buildr.apache.org"
-      spec.rubyforge_project  = 'buildr'
       spec.extra_rdoc_files   = legal
       spec.rdoc_options << '--webcvs' << 'https://github.com/apache/buildr'
       spec.add_dependency 'buildr', '~> 1.3'
