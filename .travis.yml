@@ -10,10 +10,12 @@ git:
   depth: 10
 scala:
   - 2.11.8
+env:
+  global:
+    - JRUBY_OPTS="-J-Xmx700M"
+    - JAVA_OPTS="-Xmx700m"
 install:
   - source ci-setup.sh
-  - export JRUBY_OPTS="-J-Xmx700M"
-  - export JAVA_OPTS="-Xmx700m"
 script: bundle exec rake ci
 notifications:
   email:
