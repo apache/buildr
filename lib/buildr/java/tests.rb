@@ -376,7 +376,7 @@ module Buildr #:nodoc:
     def dependencies #:nodoc:
       unless @dependencies
         @dependencies = TestFramework::Java.dependencies
-        @dependencies += @frameworks.map { |f| f.dependencies }.flatten
+        @dependencies += @frameworks.map(&:dependencies).flatten
       end
       @dependencies
     end
