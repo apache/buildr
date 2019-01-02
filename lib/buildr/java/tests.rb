@@ -309,11 +309,11 @@ module Buildr #:nodoc:
       cmd_args << '-log' << '2'
       cmd_args << '-d' << task.report_to.to_s
       exclude_args = options[:excludegroups] || []
-      if !exclude_args.empty?
+      unless exclude_args.empty?
         cmd_args << '-excludegroups' << exclude_args.join(',')
       end
       groups_args = options[:groups] || []
-      if !groups_args.empty?
+      unless groups_args.empty?
         cmd_args << '-groups' << groups_args.join(',')
       end
       # run all tests in the same suite
