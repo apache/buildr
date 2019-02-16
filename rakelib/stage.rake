@@ -18,8 +18,8 @@ require 'digest/sha1'
 
 gpg_cmd = 'gpg2'
 
-STAGE_DATE = ENV['STAGE_DATE'] ||  Time.now.strftime('%Y-%m-%d')
-RC_VERSION = ENV['RC_VERSION'] || ''
+STAGE_DATE = ENV['STAGE_DATE'] ||  Time.now.strftime('%Y-%m-%d') unless defined?(STAGE_DATE)
+RC_VERSION = ENV['RC_VERSION'] || '' unless defined?(RC_VERSION)
 
 task 'prepare' do
   # Update source files to next release number.
