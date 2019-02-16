@@ -46,6 +46,24 @@ So let's get started.  You can "read the documentation online":quick_start.html,
 
 h2(#news).  What's New
 
+Highlights from Buildr 1.5.7 (2019-02-16)
+* Fixed:  The fix that allowed special characters in usernames and passwords was only partially applied
+          in the `1.5.6` release. The complete fix that correctly decoded usernames and passwords before
+          passing them to HTTP library is now been applied.
+* Change: GWT Addon: Added support for `:skip_merge_gwt_dependencies` parameter that makes it possible to
+          avoid adding GWT dependencies to the project directly and thus the associated POM. This will be
+          required to support GWT3.x and GWT2.x simultaneously as well as making it easier to manage
+          dependencies in the POMs.
+* Change: Javadoc: If the user does not supply an explicit `:sourcepath` to the doc/javadoc tool then
+          default the value to `project.compile.sources`. This will stop javadoc from scanning the classpath
+          for `*.java` files which can cause issues with projects that include `sources` classifier artifacts
+          on the classpath. This is particularly relevant for GWT based projects that include artifacts with
+          source embedded in the artifacts. This change also made it possible to remove an ugly hack in the
+          GWT addon that removed the gwt artifacts from the javadoc path.
+* Change: Drop deprecated Gem::Specification#has_rdoc= (no replacement) method. Submitted by Olle Jonsson.
+* Change: Use https protocol to access Gem metadata. Submitted by Olle Jonsson.
+* Change: Change RSpec shared_context usage to avoid warnings. Submitted by Olle Jonsson.
+
 Highlights from Buildr 1.5.6 (2018-05-10)
 * Fixed:  Ensure that the username and passwords declared for repositories are correctly url encoded for
           the upload repositories when converted to a URL. (i.e. Ensure `Buildr.repositories.release_to`
