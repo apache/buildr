@@ -132,7 +132,7 @@ DOAP
   lambda do
     changes = File.read("_release/#{spec.version}/CHANGES")[/.*?\n(.*)/m, 1]
     email = <<-EMAIL
-To: users@buildr.apache.org, announce@apache.org
+To: users@buildr.apache.org
 Subject: [ANNOUNCE] Apache Buildr #{spec.version} released
 
 #{spec.description}
