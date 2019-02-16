@@ -961,6 +961,7 @@ module Buildr #:nodoc:
 
    private
     def get(name, include_parents = true, include_subs = true, include_self = true) #:nodoc:
+      artifact = nil
       if include_subs && name.to_s[/_/] # try sub namespaces first
         sub, parts = self, name.to_s.split('_')
         sub_name = parts.shift.to_sym
@@ -980,7 +981,7 @@ module Buildr #:nodoc:
           artifact = registry.parent.get(name, true)
         end
       end
-      artifact = artifact.call if artifact.respond_to?(:call)
+      artifact = artifact.call if artifact && artifact.respond_to?(:call)
       artifact
     end
 
