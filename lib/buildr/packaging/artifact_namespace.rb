@@ -720,10 +720,10 @@ module Buildr #:nodoc:
           previous = get(unvers, false) || get(name, false)
           if previous # have previous on current namespace
             if previous.requirement # we must satisfy the requirement
-              unless unvers # we only have the version
-                satisfied = previous.requirement.satisfied_by?(artifact.version)
-              else
+              if unvers
                 satisfied = previous.satisfied_by?(artifact)
+              else # we only have the version
+                satisfied = previous.requirement.satisfied_by?(artifact.version)
               end
               raise "Unsatisfied dependency #{previous} " +
                 "not satisfied by #{artifact}" unless satisfied
@@ -961,6 +961,7 @@ module Buildr #:nodoc:
 
    private
     def get(name, include_parents = true, include_subs = true, include_self = true) #:nodoc:
+      artifact = nil
       if include_subs && name.to_s[/_/] # try sub namespaces first
         sub, parts = self, name.to_s.split('_')
         sub_name = parts.shift.to_sym
@@ -980,7 +981,7 @@ module Buildr #:nodoc:
           artifact = registry.parent.get(name, true)
         end
       end
-      artifact = artifact.call if artifact.respond_to?(:call)
+      artifact = artifact.call if artifact && artifact.respond_to?(:call)
       artifact
     end
 
