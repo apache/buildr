@@ -1,3 +1,5 @@
+1.5.8 (Pending)
+
 1.5.7 (2019-02-16)
 * Fixed:  The fix that allowed special characters in usernames and passwords was only partially applied
           in the `1.5.6` release. The complete fix that correctly decoded usernames and passwords before
