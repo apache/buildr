@@ -720,10 +720,10 @@ module Buildr #:nodoc:
           previous = get(unvers, false) || get(name, false)
           if previous # have previous on current namespace
             if previous.requirement # we must satisfy the requirement
-              unless unvers # we only have the version
-                satisfied = previous.requirement.satisfied_by?(artifact.version)
-              else
+              if unvers
                 satisfied = previous.satisfied_by?(artifact)
+              else # we only have the version
+                satisfied = previous.requirement.satisfied_by?(artifact.version)
               end
               raise "Unsatisfied dependency #{previous} " +
                 "not satisfied by #{artifact}" unless satisfied
