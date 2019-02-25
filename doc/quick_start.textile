@@ -67,7 +67,7 @@ h2(#dependencies). Dependencies
 So far, we have seen how Buildr can automatically infer what amounts to dozens of lines of @build.xml@ contents, all based on a buildfile and a directory structure.  However, the best is yet to come.  Buildr also provides Maven-style dependency management (but without the long loading times!).  In other words, you specify each dependent library using a string descriptor and Buildr figures out how to download and configure your classpath (the library descriptors are just a Ruby array, therefore they are separated by commas (@,@)).  You must specify at least one remote repository so that Buildr knows from where to download these libraries.  For example, we can configure our project to reference the "Apache Commons CLI":http://commons.apache.org/cli/ library and download libraries from the Ibiblio repository:
 
 {% highlight ruby %}
-repositories.remote << 'http://www.ibiblio.org/maven2'
+repositories.remote << 'https://repo1.maven.org/maven2'
 
 define 'killer-app' do
   project.version = '0.1.0'
@@ -83,7 +83,7 @@ p(tip). You can search the global repository of artifacts at sites like "MvnBrow
 Unfortunately, not all libraries are quite as simple as Commons CLI.  Many libraries (such as Apache Wicket) have dependencies of their own.  While we may be able to _compile_ against Apache Wicket without these extra libraries on our classpath, we cannot actually _run_ our application without its transitive dependencies. To avoid tracking down each of these dependencies and adding them manually, we can simply use the @transitive@ directive (this is how Maven behaves by default):
 
 {% highlight ruby %}
-repositories.remote << 'http://www.ibiblio.org/maven2'
+repositories.remote << 'https://repo1.maven.org/maven2'
 
 define 'killer-app' do
   project.version = '0.1.0'
@@ -95,7 +95,7 @@ end
 The @compile.with@ property accepts a full array of comma-separated artifacts, making it possible to specify any number of dependencies as necessary.  Of course, such a long list of verbose string descriptors could get very tiresome and messy.  For this reason, it is conventional to assign each dependency to a constant (e.g. @WICKET@) which is declared just above the project in the buildfile and passed to @compile.with@ in a clean, easy-to-read style:
 
 {% highlight ruby %}
-repositories.remote << 'http://www.ibiblio.org/maven2'
+repositories.remote << 'https://repo1.maven.org/maven2'
 
 WICKET = transitive('org.apache.wicket:wicket:jar:1.4-rc6')
 SLF4J = 'org.slf4j:slf4j-jdk14:jar:1.5.8'

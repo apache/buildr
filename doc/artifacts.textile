@@ -99,7 +99,7 @@ Buildr can download artifacts for you, but only if you tell it where to find the
 When you call @repositories.remote@, you get an array of URLs for the various remote repositories.  Initially, it's an empty array, to which you can add new repositories.  For example:
 
 {% highlight ruby %}
-repositories.remote << 'http://www.ibiblio.org/maven2/'
+repositories.remote << 'https://repo1.maven.org/maven2'
 {% endhighlight %}
 
 If your repository requires HTTP authentication, you can write,
@@ -171,7 +171,7 @@ artifacts(OPENJPA).each(&:invoke)
 
 When you let Buildr download artifacts for you, or by invoking the artifact task yourself, it scans through the remote repositories assuming each repository follows the Maven 2 structure.  Starting from the root repository URL, it will look for each artifact using the path @group/id/version/id-version.type@ (or ...@/id-version-classifier.type@).  The group identifier becomes a path by turning periods (@.@) into slashes (@/@). So to find @org.apache.axis2:axis2:jar:1.2@, we're going to look for @org/apache/axis2/axis2/1.2/axis2-1.2.jar@.
 
-You'll find a lot of open source Java libraries in public repositories that support this structure (for example, the "Ibiblio Maven":http://www.ibiblio.org/maven2/ repository).  And, of course, every remote repository you setup for your projects.
+You'll find a lot of open source Java libraries in public repositories that support this structure (for example, the "Maven Central":https://repo1.maven.org/maven2 repository).  And, of course, every remote repository you setup for your projects.
 
 But there are exceptions to the rule.  Say we want to download the Dojo widget library and use it in our project.  It's available from the Dojo Web site, but that site doesn't follow the Maven repository conventions, so our feeble attempt to use existing remote repositories will fail.
 

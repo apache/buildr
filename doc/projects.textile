@@ -26,7 +26,7 @@ AXIS_OF_WS = [AXIOM, AXIS2]
 OPENJPA = ['org.apache.openjpa:openjpa:jar:1.2.0',
   'net.sourceforge.serp:serp:jar:1.12.0']
 
-repositories.remote << 'http://www.ibiblio.org/maven2/'
+repositories.remote << 'https://repo1.maven.org/maven2'
 
 desc 'Code. Build. ??? Profit!'
 define 'killer-app' do

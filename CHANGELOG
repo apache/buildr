@@ -1,6 +1,8 @@
 1.5.8 (Pending)
 * Fixed:  Changed references to `https://repo1.maven.org/maven2` to use https where possible.
 * Change: Use the `zapwhite` gem to manage file whitespace within repository.
+* Fixed:  Replace references to long removed `http://www.ibiblio.org/maven2/` repository with
+          `https://repo1.maven.org/maven2`.
 
 1.5.7 (2019-02-16)
 * Fixed:  The fix that allowed special characters in usernames and passwords was only partially applied

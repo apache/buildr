@@ -1419,7 +1419,7 @@ describe Buildr::IntellijIdea do
         touch 'foo/src/main/java/foo/Foo.java' # needed so that buildr will treat as a java project
         artifact('group:id:jar:1.0') { |t| write t.to_s }
         define "root" do
-          repositories.remote << 'http://mirrors.ibiblio.org/pub/mirrors/maven2/'
+          repositories.remote << 'https://repo1.maven.org/maven2'
           project.version = "2.5.2"
           define 'foo' do
             resources.from _(:source, :main, :resources)

@@ -96,7 +96,7 @@ module Buildr #:nodoc:
 
     def remote_versions(art, base, from = :metadata, fallback = true)
       path = (art[:group].split(/\./) + [art[:id]]).flatten.join('/')
-      base ||= "http://mirrors.ibiblio.org/pub/mirrors/maven2"
+      base ||= "https://repo1.maven.org/maven2"
       uris = {:metadata => "#{base}/#{path}/maven-metadata.xml"}
       uris[:listing] = "#{base}/#{path}/" if base =~ /^https?:/
         xml = nil

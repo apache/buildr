@@ -215,7 +215,7 @@ describe Repositories, 'remote_uri' do
       @local = @remote = @release_to = nil
     end
 
-    @repos = [ 'https://oss.sonatype.org/', 'http://www.ibiblio.org/maven2', { :url => 'https://repo1.maven.org/maven2', :username => 'user', :password => 'password' } ]
+    @repos = [ 'https://oss.sonatype.org/', { :url => 'https://repo1.maven.org/maven2', :username => 'user', :password => 'password' } ]
   end
 
   it 'should convert remote to array of uri' do
@@ -223,7 +223,7 @@ describe Repositories, 'remote_uri' do
       uri.user = 'user'
       uri.password = 'password'
 
-      uris = [ URI.parse( 'https://oss.sonatype.org/'), URI.parse( 'http://www.ibiblio.org/maven2' ), uri ]
+      uris = [ URI.parse( 'https://oss.sonatype.org/'), uri ]
 
       repositories.remote = @repos
       repositories.remote_uri.should eql(uris)
@@ -236,7 +236,7 @@ describe Repositories, 'mirrors' do
       @local = @remote = @release_to = @mirrors = nil
     end
 
-    @repos = [ 'http://www.ibiblio.org/maven2', 'https://repo1.maven.org/maven2' ]
+    @repos = %w(http://www.ibiblio.org/maven2 https://repo1.maven.org/maven2)
   end
 
   it 'should be empty initially' do
@@ -310,7 +310,7 @@ describe Repositories, 'remote' do
       @local = @remote = @release_to = nil
     end
 
-    @repos = [ 'http://www.ibiblio.org/maven2', 'https://repo1.maven.org/maven2' ]
+    @repos = %w(http://www.ibiblio.org/maven2 https://repo1.maven.org/maven2)
   end
 
   it 'should be empty initially' do
