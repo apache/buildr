@@ -306,7 +306,7 @@ RSpec.shared_examples 'ArchiveTask' do
       inspect_archive.should be_empty
     end
   end
-  
+
   it 'should merge archives, concatenate file contents' do
     @files = %w{foo1 foo2}.map { |folder| File.join(@dir, folder) }.
       map do |dir|
@@ -320,7 +320,7 @@ RSpec.shared_examples 'ArchiveTask' do
       archive['test1.txt'].should eql(content_for('test1.txt') * @files.size)
     end
   end
-  
+
   it 'should merge archives, transforming file contents' do
     @files = %w{foo1 foo2}.map { |folder| File.join(@dir, folder) }.
       map do |dir|

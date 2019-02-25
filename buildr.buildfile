@@ -33,7 +33,7 @@ define 'buildr' do
   define 'scala' do
     compile.using(:javac).from(FileList['lib/buildr/scala/**/*.java']).into('lib/buildr/scala')
   end
-  
+
   define 'kotlin' do
     compile.using(:javac).from(FileList['lib/buildr/kotlin/**/*.java']).into('lib/buildr/kotlin').with(Buildr::Kotlin::Kotlinc.dependencies)
   end

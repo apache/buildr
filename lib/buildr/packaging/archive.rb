@@ -267,12 +267,12 @@ module Buildr #:nodoc:
         @expanders.each { |expander| expander.exclude(*files) }
         self
       end
-      
+
       def concatenate(*files)
         @expanders.each { |expander| expander.concatenate(*files) }
         self
       end
-      
+
       def transform(*files, &block)
         @expanders.each { |expander| expander.transform(*files, &block) }
         self
@@ -301,12 +301,12 @@ module Buildr #:nodoc:
         @excludes |= files
         self
       end
-      
+
       def concatenate(*files)
         @concatenates |= files
         self
       end
-      
+
       def transform(*files, &block)
         @transforms[[files].flatten] = block
         self
@@ -325,7 +325,7 @@ module Buildr #:nodoc:
               elsif @transforms.each_pair.detect do |transform, transform_block|\
                   if transform.any? { |pattern| File.fnmatch(pattern, entry.name) }
                     file_map[dest] << ZipEntryData.new(source, entry)
-                    
+
                     transform_map[dest] = transform_block
                     true
                   end

@@ -8,11 +8,10 @@ unless File.exist? File.join("lib", File.basename(LOG4J.to_s))
 end
 
 define "parent" do
-  
+
   define "child" do
-    
+
     compile.with project.parent.path_to(File.join("lib", File.basename(LOG4J.to_s)))
-    
+
   end
 end
-  

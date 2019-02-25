@@ -99,7 +99,7 @@ module Buildr #:nodoc:
             tar.mkdir(path, options.merge(:mode=>stat.mode, :mtime=>stat.mtime, :uid=>stat.uid, :gid=>stat.gid))
           else
             contents = [contents].flatten
-            
+
             combined_options = options
             if File.exists?(contents.first.to_s)
               stat = File.stat(contents.first.to_s)
@@ -107,8 +107,8 @@ module Buildr #:nodoc:
             elsif contents.first.respond_to?(:mode)
               combined_options = combined_options.merge(:mode => contents.first.mode)
             end
-              
-            
+
+
             tar.add_file path, combined_options do |os, opts|
               [contents].flatten.each do |content|
                 if content.respond_to?(:call)
@@ -120,7 +120,7 @@ module Buildr #:nodoc:
                     content.call os
                   end
                 else
-                  File.open content.to_s, 'rb' do |is| 
+                  File.open content.to_s, 'rb' do |is|
                     if transform
                       output = StringIO.new
                       while data = is.read(4096)
@@ -140,7 +140,7 @@ module Buildr #:nodoc:
               end
             end
           end
-          
+
         end
       end
     end

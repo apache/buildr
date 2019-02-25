@@ -182,7 +182,7 @@ RSpec.shared_examples 'KotlincCompiler_CommonOptions' do
     compile_task.using(:optimize=>false)
     kotlinc_args.noOptimize.should be_true
   end
-  
+
   it 'should set noStdlib option to true by default' do
     compile_task.options.noStdlib.should be_true
     kotlinc_args.noStdlib.should be_true
@@ -200,7 +200,7 @@ RSpec.shared_examples 'KotlincCompiler_CommonOptions' do
 
   it 'should not set other option by default' do
     compile_task.options.other.should be_nil
-  end  
+  end
 
   it 'should complain about options it doesn\'t know' do
     write 'source/Test.kt', 'class Test {}'
@@ -235,7 +235,7 @@ if Java.java.lang.System.getProperty("java.runtime.version") >= "1.8"
       it 'requires present KOTLIN_HOME' do
         ENV['KOTLIN_HOME'].should_not be_nil
       end
-    
+
       def compile_task
         @compile_task ||= define('foo').compile.using(:kotlinc)
       end
@@ -255,11 +255,11 @@ if Java.java.lang.System.getProperty("java.runtime.version") >= "1.8"
     it 'requires absent KOTLIN_HOME' do
       ENV['KOTLIN_HOME'].should be_nil
     end
-  
+
     def compile_task
       @compile_task ||= define('foo').compile.using(:kotlinc)
     end
-  
+
     def kotlinc_args
       compile_task.instance_eval { @compiler }.send(:kotlinc_args)
     end

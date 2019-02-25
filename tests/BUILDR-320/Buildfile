@@ -13,17 +13,17 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-define "whole" do 
-  define 'sub' do 
-    define 'C' do 
-      compile.with project('sub:B') 
-    end 
-     
-    define 'A' do 
-    end 
+define "whole" do
+  define 'sub' do
+    define 'C' do
+      compile.with project('sub:B')
+    end
 
-    define 'B' do 
-      compile.with project('sub:A') 
-    end 
-  end 
+    define 'A' do
+    end
+
+    define 'B' do
+      compile.with project('sub:A')
+    end
+  end
 end

@@ -140,15 +140,15 @@ module Buildr::Kotlin
         hash[option] = options[option]
         hash
       end
-      
+
       options[:debug] = Buildr.options.debug || trace?(:kotlinc) if options[:debug].nil?
       options[:warnings] = verbose if options[:warnings].nil?
       options[:optimize] = false if options[:optimize].nil?
       options[:noStdlib] = true if options[:noStdlib].nil?
       @java = Javac.new(project, options[:javac])
     end
-    
-    
+
+
 
     def compile(sources, target, dependencies) #:nodoc:
       check_options(options, OPTIONS)

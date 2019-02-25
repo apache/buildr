@@ -14,7 +14,7 @@
 # the License.
 
 define "helloWorld", :version => "1.0", :group => "org.buildr" do
-  
+
   package(:jar)
-  
+
 end

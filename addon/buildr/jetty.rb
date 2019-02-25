@@ -52,7 +52,7 @@ module Buildr
       "org.eclipse.jetty:jetty-security:jar:#{VERSION}",
       "org.eclipse.jetty:jetty-xml:jar:#{VERSION}",
       "org.slf4j:slf4j-api:jar:#{SLF4J_VERSION}",
-      "org.slf4j:slf4j-simple:jar:#{SLF4J_VERSION}", 
+      "org.slf4j:slf4j-simple:jar:#{SLF4J_VERSION}",
       "org.slf4j:jcl-over-slf4j:jar:#{SLF4J_VERSION}",
       'javax.servlet:javax.servlet-api:jar:3.1.0' ]
 

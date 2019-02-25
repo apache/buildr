@@ -18,7 +18,7 @@ SLF4J_API = "org.slf4j:slf4j-api:jar:1.6.1"
 
 define "proj" do
   project.version = "1.0"
-  project.group = "org.example"  
+  project.group = "org.example"
   package(:zip).include(_("doc"), :path => "distrib")
   package(:zip).include(artifact(SLF4J_API), :path => "distrib/lib")
 end

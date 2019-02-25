@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageLocation;
 
 
 public class KotlinMessageCollector implements MessageCollector {
-    
+
     public void report(CompilerMessageSeverity severity, String message, CompilerMessageLocation location) {
         switch(severity) {
             case ERROR:
@@ -35,11 +35,11 @@ public class KotlinMessageCollector implements MessageCollector {
                 break;
         }
     }
-    
+
     public boolean hasErrors() {
         return false;
     }
-    
+
     public void clear() {
         // not implemented
     }

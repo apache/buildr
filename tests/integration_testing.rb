@@ -109,7 +109,7 @@ assert(!zip.get_entry("lib/logging.jar").nil?)
 
       end
     end
-    
+
     class RunJetty9 < Test::Unit::TestCase
 
       def test_RunJetty9
