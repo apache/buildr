@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-RC_VERSION = ENV['RC_VERSION'] || ''
+RC_VERSION = ENV['RC_VERSION'] || '' unless defined?(RC_VERSION)
 
 desc 'Release the next version of buildr from existing staged repository'
 task 'release' do
