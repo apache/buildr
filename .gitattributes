@@ -1,0 +1,25 @@
+# DO NOT EDIT: File is auto-generated
+* -text
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.css text
+*.gemspec text
+*.html text
+*.java text
+*.png binary
+*.rake text
+*.rb text
+*.rdoc text
+*.sh text
+*.sh text eol=lf
+*.textile text
+*.txt text
+*.xml text
+*.xsl text
+*.yml text
+.gitignore text
+Buildfile text
+CHANGELOG text
+Gemfile text
+LICENSE text
+Rakefile text
