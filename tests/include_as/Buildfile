@@ -13,7 +13,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-repositories.remote =  ["http://repo1.maven.org/maven2"]
+repositories.remote =  ["https://repo1.maven.org/maven2"]
 SLF4J_API = "org.slf4j:slf4j-api:jar:1.6.1"
 
 define "proj" do

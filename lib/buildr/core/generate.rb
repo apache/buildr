@@ -81,7 +81,7 @@ GROUP = "#{name}"
 COPYRIGHT = ""
 
 # Specify Maven 2.0 remote repositories here, like this:
-repositories.remote << "http://repo1.maven.org/maven2"
+repositories.remote << "https://repo1.maven.org/maven2"
 
 desc "The #{name.capitalize} project"
 define "#{name}" do
@@ -267,7 +267,7 @@ EOF
             legacy = repository["layout"].to_s =~ /legacy/
             !legacy
           } rescue nil
-          repositories = [{"name" => "Standard maven2 repository", "url" => "http://repo1.maven.org/maven2"}] if repositories.nil? || repositories.empty?
+          repositories = [{"name" => "Standard maven2 repository", "url" => "https://repo1.maven.org/maven2"}] if repositories.nil? || repositories.empty?
           repositories.each do |repository|
             name, url = repository["name"], repository["url"]
             script << "# #{name}"

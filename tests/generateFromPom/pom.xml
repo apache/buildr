@@ -276,7 +276,7 @@
 		<pluginRepository>
 			<id>maven-repo</id>
 			<name>maven repo</name>
-			<url>http://repo1.maven.org/maven2/</url>
+			<url>https://repo1.maven.org/maven2/</url>
 		</pluginRepository>
 		<pluginRepository>
 			<id>atlassian-m2-repository</id>

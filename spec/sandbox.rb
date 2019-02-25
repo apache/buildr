@@ -18,7 +18,7 @@
 # that the code requires several artifacts. So we establish them first using the real local
 # repository and cache these across test cases.
 Buildr.application.instance_eval { @rakefile = File.expand_path('buildfile') }
-repositories.remote << 'http://repo1.maven.org/maven2'
+repositories.remote << 'https://repo1.maven.org/maven2'
 repositories.remote << 'https://oss.sonatype.org/content/groups/scala-tools'
 
 

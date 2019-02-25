@@ -1,5 +1,5 @@
 
-repositories.remote << "http://repo1.maven.org/maven2"
+repositories.remote << "https://repo1.maven.org/maven2"
 Buildr.settings.build['junit'] = '3.8.1'
 
 define "foo" do

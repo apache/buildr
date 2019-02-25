@@ -19,7 +19,7 @@ require 'buildr/jetty6'
 require 'buildr/nailgun'
 require 'buildr/scala'
 require 'buildr/kotlin'
-repositories.remote << 'http://repo1.maven.org/maven2'
+repositories.remote << 'https://repo1.maven.org/maven2'
 
 repositories.remote << 'https://oss.sonatype.org/content/groups/scala-tools'
 
