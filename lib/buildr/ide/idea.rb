@@ -342,10 +342,7 @@ module Buildr #:nodoc:
         buildr_project.assets.paths.each {|p| default_webroots[p] = '/' }
         webroots = options[:webroots] || default_webroots
         default_deployment_descriptors = []
-        ['web.xml', 'sun-web.xml', 'glassfish-web.xml', 'jetty-web.xml', 'geronimo-web.xml',
-         'context.xml', 'weblogic.xml',
-         'jboss-deployment-structure.xml', 'jboss-web.xml',
-         'ibm-web-bnd.xml', 'ibm-web-ext.xml', 'ibm-web-ext-pme.xml'].
+        %w(web.xml sun-web.xml glassfish-web.xml jetty-web.xml geronimo-web.xml context.xml weblogic.xml jboss-deployment-structure.xml jboss-web.xml ibm-web-bnd.xml ibm-web-ext.xml ibm-web-ext-pme.xml).
           each do |descriptor|
           webroots.each_pair do |path, relative_url|
             next unless relative_url == '/'
@@ -446,9 +443,7 @@ module Buildr #:nodoc:
         ejb_roots = options[:ejb_roots] || default_ejb_roots
 
         default_deployment_descriptors = []
-        ['ejb-jar.xml', 'glassfish-ejb-jar.xml', 'ibm-ejb-jar-bnd.xml', 'ibm-ejb-jar-ext-pme.xml', 'ibm-ejb-jar-ext.xml',
-         'jboss.xml', 'jbosscmp-jdbc.xml', 'openejb-jar.xml', 'sun-cmp-mapping.xml', 'sun-ejb-jar.xml',
-         'weblogic-cmp-rdbms-jar.xml', 'weblogic-ejb-jar.xml'].
+        %w(ejb-jar.xml glassfish-ejb-jar.xml ibm-ejb-jar-bnd.xml ibm-ejb-jar-ext-pme.xml ibm-ejb-jar-ext.xml jboss.xml jbosscmp-jdbc.xml openejb-jar.xml sun-cmp-mapping.xml sun-ejb-jar.xml weblogic-cmp-rdbms-jar.xml weblogic-ejb-jar.xml).
           each do |descriptor|
           ejb_roots.each do |path|
             d = "#{path}/WEB-INF/#{descriptor}"
