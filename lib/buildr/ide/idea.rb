@@ -478,12 +478,18 @@ module Buildr #:nodoc:
           dependency_path = d.to_s
           export = true
           source_path = nil
+          annotations_path = nil
           if d.respond_to?(:to_spec_hash)
             source_spec = d.to_spec_hash.merge(:classifier => 'sources')
             source_path = Buildr.artifact(source_spec).to_s
             source_path = nil unless File.exist?(source_path)
           end
-          [dependency_path, export, source_path]
+          if d.respond_to?(:to_spec_hash)
+            annotations_spec = d.to_spec_hash.merge(:classifier => 'annotations')
+            annotations_path = Buildr.artifact(annotations_spec).to_s
+            annotations_path = nil unless File.exist?(annotations_path)
+          end
+          [dependency_path, export, source_path, annotations_path]
         end
       end
 
@@ -494,12 +500,18 @@ module Buildr #:nodoc:
           dependency_path = d.to_s
           export = main_dependencies_paths.include?(dependency_path)
           source_path = nil
+          annotations_path = nil
           if d.respond_to?(:to_spec_hash)
             source_spec = d.to_spec_hash.merge(:classifier => 'sources')
             source_path = Buildr.artifact(source_spec).to_s
             source_path = nil unless File.exist?(source_path)
           end
-          [dependency_path, export, source_path]
+          if d.respond_to?(:to_spec_hash)
+            annotations_spec = d.to_spec_hash.merge(:classifier => 'annotations')
+            annotations_path = Buildr.artifact(annotations_spec).to_s
+            annotations_path = nil unless File.exist?(annotations_path)
+          end
+          [dependency_path, export, source_path, annotations_path]
         end
       end
 
@@ -545,22 +557,22 @@ module Buildr #:nodoc:
           end
 
           main_project_dependencies = project_dependencies.dup
-          self.test_dependency_details.each do |dependency_path, export, source_path|
+          self.test_dependency_details.each do |dependency_path, export, source_path, annotations_path|
             next if export
-            generate_lib(xml, dependency_path, export, source_path, project_dependencies)
+            generate_lib(xml, dependency_path, export, source_path, annotations_path, project_dependencies)
           end
 
           test_project_dependencies = project_dependencies - main_project_dependencies
-          self.main_dependency_details.each do |dependency_path, export, source_path|
+          self.main_dependency_details.each do |dependency_path, export, source_path, annotations_path|
             next unless export
-            generate_lib(xml, dependency_path, export, source_path, test_project_dependencies)
+            generate_lib(xml, dependency_path, export, source_path, annotations_path, test_project_dependencies)
           end
 
           xml.orderEntryProperties
         end
       end
 
-      def generate_lib(xml, dependency_path, export, source_path, project_dependencies)
+      def generate_lib(xml, dependency_path, export, source_path, annotations_path, project_dependencies)
         project_for_dependency = Buildr.projects.detect do |project|
           [project.packages, project.compile.target, project.resources.target, project.test.compile.target, project.test.resources.target].flatten.
             detect { |artifact| artifact.to_s == dependency_path }
@@ -573,7 +585,7 @@ module Buildr #:nodoc:
           end
           project_dependencies << project_for_dependency
         else
-          generate_module_lib(xml, url_for_path(dependency_path), export, (source_path ? url_for_path(source_path) : nil), !export)
+          generate_module_lib(xml, url_for_path(dependency_path), export, (source_path ? url_for_path(source_path) : nil), (annotations_path ? url_for_path(annotations_path) : nil), !export)
         end
       end
 
@@ -649,12 +661,15 @@ module Buildr #:nodoc:
         xml.orderEntry attribs
       end
 
-      def generate_module_lib(xml, path, export, source_path, test = false)
+      def generate_module_lib(xml, path, export, source_path, annotations_path, test = false)
         attribs = {:type => 'module-library'}
         attribs[:exported] = '' if export
         attribs[:scope] = 'TEST' if test
         xml.orderEntry attribs do
           xml.library do
+            xml.ANNOTATIONS do
+              xml.root :url => annotations_path
+            end if annotations_path
             xml.CLASSES do
               xml.root :url => path
             end
