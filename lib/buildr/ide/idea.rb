@@ -212,6 +212,10 @@ module Buildr #:nodoc:
         'iml'
       end
 
+      def annotation_paths
+        @annotation_paths ||= [buildr_project._(:source, :main, :annotations)].select {|p| File.exist?(p)}
+      end
+
       def main_source_directories
         @main_source_directories ||= [buildr_project.compile.sources].flatten.compact
       end
@@ -609,6 +613,14 @@ module Buildr #:nodoc:
         xml.output(:url => file_path(self.main_output_dir.to_s))
         xml.tag!('output-test', :url => file_path(self.test_output_dir.to_s))
         xml.tag!('exclude-output')
+        paths = self.annotation_paths
+        unless paths.empty?
+          xml.tag!('annotation-paths') do |xml|
+            paths.each do |path|
+              xml.root(:url=> file_path(path))
+            end
+          end
+        end
       end
 
       def generate_content(xml)
