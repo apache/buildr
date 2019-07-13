@@ -3,7 +3,11 @@
 * Change: Use the `zapwhite` gem to manage file whitespace within repository.
 * Fixed:  Replace references to long removed `http://www.ibiblio.org/maven2/` repository with
           `https://repo1.maven.org/maven2`.
-* Fixed: Ensure pom files used in tests use https when referring to maven repositories.
+* Fixed:  Ensure pom files used in tests use https when referring to maven repositories.
+* Added:  Add support for downloading external annotations and attaching them to IntelliJ IDEA module dependencies.
+* Added:  Detect external annotations in the local project and add them to the generated IntelliJ IDEA
+          module when generating. The default location is `src/main/annotations` but other locations
+          can be specified by modifying the `project.iml.annotation_paths` property.
 
 1.5.7 (2019-02-16)
 * Fixed:  The fix that allowed special characters in usernames and passwords was only partially applied

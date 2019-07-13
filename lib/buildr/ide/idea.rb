@@ -212,6 +212,10 @@ module Buildr #:nodoc:
         'iml'
       end
 
+      def annotation_paths
+        @annotation_paths ||= [buildr_project._(:source, :main, :annotations)].select {|p| File.exist?(p)}
+      end
+
       def main_source_directories
         @main_source_directories ||= [buildr_project.compile.sources].flatten.compact
       end
@@ -342,10 +346,7 @@ module Buildr #:nodoc:
         buildr_project.assets.paths.each {|p| default_webroots[p] = '/' }
         webroots = options[:webroots] || default_webroots
         default_deployment_descriptors = []
-        ['web.xml', 'sun-web.xml', 'glassfish-web.xml', 'jetty-web.xml', 'geronimo-web.xml',
-         'context.xml', 'weblogic.xml',
-         'jboss-deployment-structure.xml', 'jboss-web.xml',
-         'ibm-web-bnd.xml', 'ibm-web-ext.xml', 'ibm-web-ext-pme.xml'].
+        %w(web.xml sun-web.xml glassfish-web.xml jetty-web.xml geronimo-web.xml context.xml weblogic.xml jboss-deployment-structure.xml jboss-web.xml ibm-web-bnd.xml ibm-web-ext.xml ibm-web-ext-pme.xml).
           each do |descriptor|
           webroots.each_pair do |path, relative_url|
             next unless relative_url == '/'
@@ -446,9 +447,7 @@ module Buildr #:nodoc:
         ejb_roots = options[:ejb_roots] || default_ejb_roots
 
         default_deployment_descriptors = []
-        ['ejb-jar.xml', 'glassfish-ejb-jar.xml', 'ibm-ejb-jar-bnd.xml', 'ibm-ejb-jar-ext-pme.xml', 'ibm-ejb-jar-ext.xml',
-         'jboss.xml', 'jbosscmp-jdbc.xml', 'openejb-jar.xml', 'sun-cmp-mapping.xml', 'sun-ejb-jar.xml',
-         'weblogic-cmp-rdbms-jar.xml', 'weblogic-ejb-jar.xml'].
+        %w(ejb-jar.xml glassfish-ejb-jar.xml ibm-ejb-jar-bnd.xml ibm-ejb-jar-ext-pme.xml ibm-ejb-jar-ext.xml jboss.xml jbosscmp-jdbc.xml openejb-jar.xml sun-cmp-mapping.xml sun-ejb-jar.xml weblogic-cmp-rdbms-jar.xml weblogic-ejb-jar.xml).
           each do |descriptor|
           ejb_roots.each do |path|
             d = "#{path}/WEB-INF/#{descriptor}"
@@ -483,12 +482,18 @@ module Buildr #:nodoc:
           dependency_path = d.to_s
           export = true
           source_path = nil
+          annotations_path = nil
           if d.respond_to?(:to_spec_hash)
             source_spec = d.to_spec_hash.merge(:classifier => 'sources')
             source_path = Buildr.artifact(source_spec).to_s
             source_path = nil unless File.exist?(source_path)
           end
-          [dependency_path, export, source_path]
+          if d.respond_to?(:to_spec_hash)
+            annotations_spec = d.to_spec_hash.merge(:classifier => 'annotations')
+            annotations_path = Buildr.artifact(annotations_spec).to_s
+            annotations_path = nil unless File.exist?(annotations_path)
+          end
+          [dependency_path, export, source_path, annotations_path]
         end
       end
 
@@ -499,12 +504,18 @@ module Buildr #:nodoc:
           dependency_path = d.to_s
           export = main_dependencies_paths.include?(dependency_path)
           source_path = nil
+          annotations_path = nil
           if d.respond_to?(:to_spec_hash)
             source_spec = d.to_spec_hash.merge(:classifier => 'sources')
             source_path = Buildr.artifact(source_spec).to_s
             source_path = nil unless File.exist?(source_path)
           end
-          [dependency_path, export, source_path]
+          if d.respond_to?(:to_spec_hash)
+            annotations_spec = d.to_spec_hash.merge(:classifier => 'annotations')
+            annotations_path = Buildr.artifact(annotations_spec).to_s
+            annotations_path = nil unless File.exist?(annotations_path)
+          end
+          [dependency_path, export, source_path, annotations_path]
         end
       end
 
@@ -550,22 +561,22 @@ module Buildr #:nodoc:
           end
 
           main_project_dependencies = project_dependencies.dup
-          self.test_dependency_details.each do |dependency_path, export, source_path|
+          self.test_dependency_details.each do |dependency_path, export, source_path, annotations_path|
             next if export
-            generate_lib(xml, dependency_path, export, source_path, project_dependencies)
+            generate_lib(xml, dependency_path, export, source_path, annotations_path, project_dependencies)
           end
 
           test_project_dependencies = project_dependencies - main_project_dependencies
-          self.main_dependency_details.each do |dependency_path, export, source_path|
+          self.main_dependency_details.each do |dependency_path, export, source_path, annotations_path|
             next unless export
-            generate_lib(xml, dependency_path, export, source_path, test_project_dependencies)
+            generate_lib(xml, dependency_path, export, source_path, annotations_path, test_project_dependencies)
           end
 
           xml.orderEntryProperties
         end
       end
 
-      def generate_lib(xml, dependency_path, export, source_path, project_dependencies)
+      def generate_lib(xml, dependency_path, export, source_path, annotations_path, project_dependencies)
         project_for_dependency = Buildr.projects.detect do |project|
           [project.packages, project.compile.target, project.resources.target, project.test.compile.target, project.test.resources.target].flatten.
             detect { |artifact| artifact.to_s == dependency_path }
@@ -578,7 +589,7 @@ module Buildr #:nodoc:
           end
           project_dependencies << project_for_dependency
         else
-          generate_module_lib(xml, url_for_path(dependency_path), export, (source_path ? url_for_path(source_path) : nil), !export)
+          generate_module_lib(xml, url_for_path(dependency_path), export, (source_path ? url_for_path(source_path) : nil), (annotations_path ? url_for_path(annotations_path) : nil), !export)
         end
       end
 
@@ -602,6 +613,14 @@ module Buildr #:nodoc:
         xml.output(:url => file_path(self.main_output_dir.to_s))
         xml.tag!('output-test', :url => file_path(self.test_output_dir.to_s))
         xml.tag!('exclude-output')
+        paths = self.annotation_paths
+        unless paths.empty?
+          xml.tag!('annotation-paths') do |xml|
+            paths.each do |path|
+              xml.root(:url=> file_path(path))
+            end
+          end
+        end
       end
 
       def generate_content(xml)
@@ -654,12 +673,15 @@ module Buildr #:nodoc:
         xml.orderEntry attribs
       end
 
-      def generate_module_lib(xml, path, export, source_path, test = false)
+      def generate_module_lib(xml, path, export, source_path, annotations_path, test = false)
         attribs = {:type => 'module-library'}
         attribs[:exported] = '' if export
         attribs[:scope] = 'TEST' if test
         xml.orderEntry attribs do
           xml.library do
+            xml.ANNOTATIONS do
+              xml.root :url => annotations_path
+            end if annotations_path
             xml.CLASSES do
               xml.root :url => path
             end

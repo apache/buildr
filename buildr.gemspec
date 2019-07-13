@@ -97,5 +97,5 @@ for those one-off tasks, with a language that's a joy to use.
   spec.add_development_dependency 'saikuro_treemap', '0.2.0'
   spec.add_development_dependency 'atoulme-Saikuro', '1.2.1'
   # Used to manage whitespace of files within repository
-  spec.add_development_dependency 'zapwhite', '2.10.0'
+  spec.add_development_dependency 'zapwhite', '2.14.0'
 end
