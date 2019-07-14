@@ -24,7 +24,7 @@ module Buildr #:nodoc:
         if project.doc.engine? Javadoc
           options = project.doc.options
           options[:windowtitle] = (project.comment || project.name) unless options[:windowtitle]
-          options[:sourcepath] = project.compile.sources.join(File::PATH_SEPARATOR) unless options[:sourcepath]
+          project.doc.sourcepath = project.compile.sources.dup if project.doc.sourcepath.empty?
         end
       end
     end
