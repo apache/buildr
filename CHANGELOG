@@ -10,6 +10,9 @@
           can be specified by modifying the `project.iml.annotation_paths` property.
 * Fixed:  Explicitly specify the `:sourcepath` parameter for javadoc tool. This enables additional parameters
           such as `-packagenames` and `-subpackages` to be passed to the underling tool.
+* Fixed:  Stop generating poms with the parent POM `org.sonatype.oss:oss-parent:8`. The las update was a long time
+          ago (i.e. 2012) and it is no longer maintained. It was also deprecated several years ago and is not
+          guaranteed to work in modern Maven deployments.
 
 1.5.7 (2019-02-16)
 * Fixed:  The fix that allowed special characters in usernames and passwords was only partially applied

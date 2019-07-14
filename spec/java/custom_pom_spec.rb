@@ -98,13 +98,6 @@ describe Buildr::CustomPom do
       #$stderr.puts @pom_xml.to_s
     end
 
-    it 'has correct static metadata' do
-      @pom_xml.should match_xpath('/project/modelVersion', '4.0.0')
-      @pom_xml.should match_xpath('/project/parent/groupId', 'org.sonatype.oss')
-      @pom_xml.should match_xpath('/project/parent/artifactId', 'oss-parent')
-      @pom_xml.should match_xpath('/project/parent/version', '8')
-    end
-
     it 'has correct project level metadata' do
       @pom_xml.should match_xpath('/project/groupId', 'org.myproject')
       @pom_xml.should match_xpath('/project/artifactId', 'foo')

@@ -170,11 +170,6 @@ module Buildr
                     'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                     'xsi:schemaLocation' => 'http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd') do
           xml.modelVersion '4.0.0'
-          xml.parent do
-            xml.groupId 'org.sonatype.oss'
-            xml.artifactId 'oss-parent'
-            xml.version '8'
-          end
           xml.groupId project.group
           xml.artifactId project.id
           xml.version project.version

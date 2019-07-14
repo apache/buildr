@@ -1214,13 +1214,6 @@ end
 describe Buildr, '#transitive' do
   before do
     repositories.remote = 'http://buildr.apache.org/repository/noexist'
-    write artifact('org.sonatype.oss:oss-parent:pom:8').pom.to_s, <<-XML
-<project>
-  <artifactId>oss-parent</artifactId>
-  <groupId>org.sonatype.oss</groupId>
-  <version>8</version>
-</project>
-XML
 
     @simple = %w(saxon:saxon:jar:8.4 saxon:saxon-dom:jar:8.4 saxon:saxon-xpath:jar:8.4)
     @simple.map { |spec| artifact(spec).pom }.each { |task| write task.name, task.pom_xml.call }
