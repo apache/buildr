@@ -1,3 +1,5 @@
+1.5.9 (Pending)
+
 1.5.8 (2019-07-14)
 * Fixed:  Changed references to `https://repo1.maven.org/maven2` to use https where possible.
 * Change: Use the `zapwhite` gem to manage file whitespace within repository.
