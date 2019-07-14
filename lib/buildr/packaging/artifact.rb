@@ -130,7 +130,7 @@ module Buildr #:nodoc:
     def sources_artifact
       sources_spec = to_spec_hash.merge(:classifier=>'sources')
       sources_task = OptionalArtifact.define_task(Buildr.repositories.locate(sources_spec))
-      sources_task.send :apply_spec, sources_spec if sources_task.respond_to?(:apply_spec)
+      sources_task.send :apply_spec, sources_spec
       sources_task
     end
 
@@ -141,7 +141,7 @@ module Buildr #:nodoc:
     def javadoc_artifact
       javadoc_spec = to_spec_hash.merge(:classifier=>'javadoc')
       javadoc_task = OptionalArtifact.define_task(Buildr.repositories.locate(javadoc_spec))
-      javadoc_task.send :apply_spec, javadoc_spec if javadoc_task.respond_to?(:apply_spec)
+      javadoc_task.send :apply_spec, javadoc_spec
       javadoc_task
     end
 
@@ -153,7 +153,7 @@ module Buildr #:nodoc:
     def annotations_artifact
       annotations_spec = to_spec_hash.merge(:classifier=>'annotations')
       annotations_task = OptionalArtifact.define_task(Buildr.repositories.locate(annotations_spec))
-      annotations_task.send :apply_spec, annotations_spec if annotations_task.respond_to?(:apply_spec)
+      annotations_task.send :apply_spec, annotations_spec
       annotations_task
     end
 
