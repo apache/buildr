@@ -50,7 +50,7 @@ task 'release' do
   lambda do
     files = FileList["_release/#{spec.version}/dist/*.{gem}"]
     files.each do |f|
-      puts "Push gem #{f} to RubyForge.org ... "
+      puts "Push gem #{f} to RubyGems.org ... "
       sh 'gem', 'push', f do |ok, res|
           if ok
             puts "[X] Pushed gem #{File.basename(f)} to Rubyforge.org"
