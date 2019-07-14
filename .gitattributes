@@ -17,6 +17,7 @@
 *.xml text
 *.xsl text
 *.yml text
+.gitattributes text
 .gitignore text
 Buildfile text
 CHANGELOG text
