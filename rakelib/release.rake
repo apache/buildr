@@ -46,21 +46,21 @@ task 'release' do
     puts "[X] Publishing #{spec.name}"
   end.call
 
-  # Push gems to Rubyforge.org
+  # Push gems to RubyGems.org
   lambda do
     files = FileList["_release/#{spec.version}/dist/*.{gem}"]
     files.each do |f|
       puts "Push gem #{f} to RubyGems.org ... "
       sh 'gem', 'push', f do |ok, res|
           if ok
-            puts "[X] Pushed gem #{File.basename(f)} to Rubyforge.org"
+            puts "[X] Pushed gem #{File.basename(f)} to RubyGems.org"
           else
             puts 'Could not push gem, please do it yourself!'
             puts %{  gem push #{f}}
           end
         end
     end
-    puts '[X] Pushed gems to Rubyforge.org'
+    puts '[X] Pushed gems to RubyGems.org'
   end.call
 
   # Create an tag for this release.
