@@ -483,12 +483,12 @@ module Buildr #:nodoc:
           export = true
           source_path = nil
           annotations_path = nil
-          if d.respond_to?(:to_spec_hash)
+          if d.is_a?(Buildr::Artifact)
             source_spec = d.to_spec_hash.merge(:classifier => 'sources')
             source_path = Buildr.artifact(source_spec).to_s
             source_path = nil unless File.exist?(source_path)
           end
-          if d.respond_to?(:to_spec_hash)
+          if d.is_a?(Buildr::Artifact)
             annotations_spec = d.to_spec_hash.merge(:classifier => 'annotations')
             annotations_path = Buildr.artifact(annotations_spec).to_s
             annotations_path = nil unless File.exist?(annotations_path)
@@ -505,12 +505,12 @@ module Buildr #:nodoc:
           export = main_dependencies_paths.include?(dependency_path)
           source_path = nil
           annotations_path = nil
-          if d.respond_to?(:to_spec_hash)
+          if d.is_a?(Buildr::Artifact)
             source_spec = d.to_spec_hash.merge(:classifier => 'sources')
             source_path = Buildr.artifact(source_spec).to_s
             source_path = nil unless File.exist?(source_path)
           end
-          if d.respond_to?(:to_spec_hash)
+          if d.is_a?(Buildr::Artifact)
             annotations_spec = d.to_spec_hash.merge(:classifier => 'annotations')
             annotations_path = Buildr.artifact(annotations_spec).to_s
             annotations_path = nil unless File.exist?(annotations_path)

@@ -1,4 +1,9 @@
 1.5.9 (Pending)
+* Fixed:  Prior to `1.5.8`, generating IntelliJ IDEA modules could generate a failure if the project included
+          a dependency defined by a `JarTask` that specified a non-nil classifier. This failure scenario is now
+          much more frequent given the changes to support external annotations that are packaged as jars. This
+          crash is now avoided by changing guard from `artifact.respond_to?(:to_spec_hash)` to
+          `artifact.is_a?(Buildr::Artifact)`.
 
 1.5.8 (2019-07-14)
 * Fixed:  Changed references to `https://repo1.maven.org/maven2` to use https where possible.
