@@ -12,6 +12,8 @@
           list of failed tests which would mean that buildr would not mark the containing projects test task as
           failing when it runs. This has been patched to report any errors and fail the test task as expected.
 * Added:  Add support for the GWT version `2.8.2-v20191108` released with the nonstandard group id.
+* Added:  Add the `buildr/spotbugs` addon. Spotbugs is the successor of the Findbugs project and the buildr addon
+          is based on the original findbugs addon.
 
 1.5.8 (2019-07-14)
 * Fixed:  Changed references to `https://repo1.maven.org/maven2` to use https where possible.
