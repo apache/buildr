@@ -4,6 +4,10 @@
           much more frequent given the changes to support external annotations that are packaged as jars. This
           crash is now avoided by changing guard from `artifact.respond_to?(:to_spec_hash)` to
           `artifact.is_a?(Buildr::Artifact)`.
+* Fixed:  The `add_glassfish_remote_configuration` method and the `add_glassfish_configuration` method used the
+          incorrect types for the default values for the `exploded` optional property. This is unlikely to have
+          caused problems during normal usage but could lead to unexpected behaviour when the innards of these
+          methods were monkey patched and expected the "correct" type for these properties.
 
 1.5.8 (2019-07-14)
 * Fixed:  Changed references to `https://repo1.maven.org/maven2` to use https where possible.

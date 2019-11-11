@@ -1046,7 +1046,7 @@ module Buildr #:nodoc:
         domain_name = options[:domain] || project.iml.id
         domain_port = options[:port] || '9009'
         packaged = options[:packaged] || {}
-        exploded = options[:exploded] || {}
+        exploded = options[:exploded] || []
 
         add_to_composite_component(self.configurations) do |xml|
           xml.configuration(:name => configuration_name, :type => 'GlassfishConfiguration', :factoryName => 'Local', :default => false, :APPLICATION_SERVER_NAME => server_name) do |xml|
@@ -1114,7 +1114,7 @@ module Buildr #:nodoc:
         configuration_name = options[:configuration_name] || "Remote #{server_name}"
         domain_port = options[:port] || '9009'
         packaged = options[:packaged] || {}
-        exploded = options[:exploded] || {}
+        exploded = options[:exploded] || []
 
         add_to_composite_component(self.configurations) do |xml|
           xml.configuration(:name => configuration_name, :type => 'GlassfishConfiguration', :factoryName => 'Remote', :default => false, :APPLICATION_SERVER_NAME => server_name) do |xml|
