@@ -330,16 +330,18 @@ module Buildr #:nodoc:
         tmp.write cmd_args.join("\n")
         tmp.close
         Java::Commands.java ['org.testng.TestNG', "@#{tmp.path}"], cmd_options
-        return tests
-      rescue
-        # testng-failed.xml contains the list of failed tests *only*
-        report = File.read(File.join(task.report_to.to_s, 'testng-failed.xml'))
-        failed = report.scan(/<class name="(.*?)">/im).flatten
-        error "TestNG regexp returned unexpected failed tests #{failed.inspect}" unless (failed - tests).empty?
-        # return the list of passed tests
-        return tests - failed
       ensure
         tmp.close unless tmp.nil?
+      end
+      # testng-failed.xml contains the list of failed tests *only*
+      failed_tests = File.join(task.report_to.to_s, 'testng-failed.xml')
+      if File.exist?(failed_tests)
+        report = File.read(failed_tests)
+        failed = report.scan(/<class name="(.*?)">/im).flatten
+        # return the list of passed tests
+        return tests - failed
+      else
+        return tests
       end
     end
 

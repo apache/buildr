@@ -8,6 +8,9 @@
           incorrect types for the default values for the `exploded` optional property. This is unlikely to have
           caused problems during normal usage but could lead to unexpected behaviour when the innards of these
           methods were monkey patched and expected the "correct" type for these properties.
+* Fixed:  If all of the TestNG tests failed during the test setup then these tests would not be written to the
+          list of failed tests which would mean that buildr would not mark the containing projects test task as
+          failing when it runs. This has been patched to report any errors and fail the test task as expected.
 
 1.5.8 (2019-07-14)
 * Fixed:  Changed references to `https://repo1.maven.org/maven2` to use https where possible.
