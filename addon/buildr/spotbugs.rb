@@ -39,7 +39,6 @@ module Buildr
           org.ow2.asm:asm-commons:jar:7.1
           org.ow2.asm:asm-tree:jar:7.1
           org.ow2.asm:asm-util:jar:7.1
-          org.ow2.asm:asm-xml:jar:7.1
         )
       end
 
