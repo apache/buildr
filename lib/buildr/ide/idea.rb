@@ -748,7 +748,7 @@ module Buildr #:nodoc:
           params[:type] = type
           params[:factoryName] = factory_name
           params[:name] = name unless default
-          params[:default] = true if default
+          params[:default] = !!default
           xml.configuration(params) do |xml|
             yield xml if block_given?
           end
