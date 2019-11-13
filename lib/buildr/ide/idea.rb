@@ -742,11 +742,11 @@ module Buildr #:nodoc:
         end
       end
 
-      def add_configuration(name, type, factory_name, default = false, options = {})
+      def add_configuration(name, type, factory_name = nil, default = false, options = {})
         add_to_composite_component(self.configurations) do |xml|
           params = options.dup
           params[:type] = type
-          params[:factoryName] = factory_name
+          params[:factoryName] = factory_name if factory_name
           params[:name] = name unless default
           params[:default] = !!default
           xml.configuration(params) do
