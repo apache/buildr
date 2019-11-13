@@ -14,6 +14,8 @@
 * Added:  Add support for the GWT version `2.8.2-v20191108` released with the nonstandard group id.
 * Added:  Add the `buildr/spotbugs` addon. Spotbugs is the successor of the Findbugs project and the buildr addon
           is based on the original findbugs addon.
+* Added:  Add support for configuring non-template TestNG run configurations for IntelliJ IDEA projects. The
+          configurations are created via the `ipr.add_testng_configuration(...)` configuration method.
 
 1.5.8 (2019-07-14)
 * Fixed:  Changed references to `https://repo1.maven.org/maven2` to use https where possible.
