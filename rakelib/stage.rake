@@ -154,7 +154,7 @@ task 'stage' => %w(clobber prepare) do
   lambda do
     puts 'Updating download page with links to release packages ... '
     mirror = "http://www.apache.org/dyn/closer.cgi/#{spec.name}/#{spec.version}"
-    official = "http://www.apache.org/dist/#{spec.name}/#{spec.version}"
+    official = "http://downloads.apache.org/#{spec.name}/#{spec.version}"
     rows = FileList['_staged/dist/*.{gem,tgz,zip}'].map { |pkg|
       name, md5 = File.basename(pkg), Digest::MD5.file(pkg).to_s
       %{| "#{name}":#{mirror}/#{name} | "#{md5}":#{official}/#{name}.md5 | "Sig":#{official}/#{name}.asc |}
@@ -170,7 +170,7 @@ p>. ("Release signing keys":#{official}/KEYS)
     file_name = 'doc/download.textile'
     print "Adding download links to #{file_name} ... "
     modified = File.read(file_name).
-      gsub('http://www.apache.org/dist','http://archive.apache.org/dist').
+      gsub('http://downloads.apache.org','http://archive.apache.org/dist').
       gsub('http://www.apache.org/dyn/closer.cgi','http://archive.apache.org/dist').
       sub(/^h2\(#dist\).*$/) { |header| "#{header}\n\n#{textile}" }
     File.open file_name, 'w' do |file|

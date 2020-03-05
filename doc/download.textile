@@ -21,13 +21,13 @@ h2(#dist).  Binaries and Source Code
 h3. buildr 1.5.8 (2019-07-14)
 
 |_. Package |_. MD5 Checksum |_. PGP |
-| "buildr-1.5.8-java.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.5.8/buildr-1.5.8-java.gem | "76e064a1561187fb76de7438726b0e15":http://www.apache.org/dist/buildr/1.5.8/buildr-1.5.8-java.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.5.8/buildr-1.5.8-java.gem.asc |
-| "buildr-1.5.8-x86-mswin32.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.5.8/buildr-1.5.8-x86-mswin32.gem | "55a11ef5cab8b480f6425e4e81b347f2":http://www.apache.org/dist/buildr/1.5.8/buildr-1.5.8-x86-mswin32.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.5.8/buildr-1.5.8-x86-mswin32.gem.asc |
-| "buildr-1.5.8.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.5.8/buildr-1.5.8.gem | "19dcaea6d8f86b3930789864aeb9f415":http://www.apache.org/dist/buildr/1.5.8/buildr-1.5.8.gem.md5 | "Sig":http://www.apache.org/dist/buildr/1.5.8/buildr-1.5.8.gem.asc |
-| "buildr-1.5.8.tgz":http://www.apache.org/dyn/closer.cgi/buildr/1.5.8/buildr-1.5.8.tgz | "8a2d60ffdeef8939d75d03272052cb38":http://www.apache.org/dist/buildr/1.5.8/buildr-1.5.8.tgz.md5 | "Sig":http://www.apache.org/dist/buildr/1.5.8/buildr-1.5.8.tgz.asc |
-| "buildr-1.5.8.zip":http://www.apache.org/dyn/closer.cgi/buildr/1.5.8/buildr-1.5.8.zip | "802900020276449d34e03df5d1d50f29":http://www.apache.org/dist/buildr/1.5.8/buildr-1.5.8.zip.md5 | "Sig":http://www.apache.org/dist/buildr/1.5.8/buildr-1.5.8.zip.asc |
+| "buildr-1.5.8-java.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.5.8/buildr-1.5.8-java.gem | "76e064a1561187fb76de7438726b0e15":http://downloads.apache.org/buildr/1.5.8/buildr-1.5.8-java.gem.md5 | "Sig":http://downloads.apache.org/buildr/1.5.8/buildr-1.5.8-java.gem.asc |
+| "buildr-1.5.8-x86-mswin32.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.5.8/buildr-1.5.8-x86-mswin32.gem | "55a11ef5cab8b480f6425e4e81b347f2":http://downloads.apache.org/buildr/1.5.8/buildr-1.5.8-x86-mswin32.gem.md5 | "Sig":http://downloads.apache.org/buildr/1.5.8/buildr-1.5.8-x86-mswin32.gem.asc |
+| "buildr-1.5.8.gem":http://www.apache.org/dyn/closer.cgi/buildr/1.5.8/buildr-1.5.8.gem | "19dcaea6d8f86b3930789864aeb9f415":http://downloads.apache.org/buildr/1.5.8/buildr-1.5.8.gem.md5 | "Sig":http://downloads.apache.org/buildr/1.5.8/buildr-1.5.8.gem.asc |
+| "buildr-1.5.8.tgz":http://www.apache.org/dyn/closer.cgi/buildr/1.5.8/buildr-1.5.8.tgz | "8a2d60ffdeef8939d75d03272052cb38":http://downloads.apache.org/buildr/1.5.8/buildr-1.5.8.tgz.md5 | "Sig":http://downloads.apache.org/buildr/1.5.8/buildr-1.5.8.tgz.asc |
+| "buildr-1.5.8.zip":http://www.apache.org/dyn/closer.cgi/buildr/1.5.8/buildr-1.5.8.zip | "802900020276449d34e03df5d1d50f29":http://downloads.apache.org/buildr/1.5.8/buildr-1.5.8.zip.md5 | "Sig":http://downloads.apache.org/buildr/1.5.8/buildr-1.5.8.zip.asc |
 
-p>. ("Release signing keys":http://www.apache.org/dist/buildr/1.5.8/KEYS)
+p>. ("Release signing keys":http://downloads.apache.org/buildr/1.5.8/KEYS)
 
 
 h3. buildr 1.5.7 (2019-02-16)
