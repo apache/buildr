@@ -1,6 +1,6 @@
 language: ruby
 jdk:
-  - oraclejdk8
+  - openjdk8
 rvm:
   - 2.3.1
   - jruby-1.7.27
