@@ -70,6 +70,7 @@ task 'release' do
       sh 'git', 'tag', '-m', "'Release #{spec.version}'", spec.version.to_s do |ok, res|
         if ok
           puts "[X] Tagged this release as #{spec.version} ... "
+          sh 'git', 'push', '--tags'
         else
           puts 'Could not create tag, please do it yourself!'
           puts %{  git tag -m "Release #{spec.version}" #{spec.version} }
